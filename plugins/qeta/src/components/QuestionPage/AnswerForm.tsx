@@ -4,7 +4,6 @@ import MDEditor from '@uiw/react-md-editor';
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { AnswerResponse, qetaApiRef, QuestionResponse } from '../../api';
-import 'style-loader!css-loader!sass-loader!../../style/_AskPage.scss';
 
 export const AnswerForm = (props: {
   question: QuestionResponse;

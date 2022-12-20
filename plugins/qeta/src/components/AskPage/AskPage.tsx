@@ -11,7 +11,6 @@ import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useNavigate } from 'react-router-dom';
 import { Autocomplete } from '@material-ui/lab';
-import 'style-loader!css-loader!sass-loader!../../style/_AskPage.scss';
 
 export const AskPage = () => {
   const navigate = useNavigate();

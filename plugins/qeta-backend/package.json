@@ -1,6 +1,6 @@
 {
   "name": "@drodil/backstage-plugin-qeta-backend",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Backstage.io Q&A plugin backend",
   "keywords": [
     "backstage",
@@ -63,7 +63,8 @@
   },
   "files": [
     "dist",
-    "migrations/**/*.{js,d.ts}"
+    "migrations/**/*.{js,d.ts}",
+    "configSchema.d.ts"
   ],
   "configSchema": "configSchema.d.ts"
 }

@@ -4,7 +4,6 @@ import { Box, Divider, Grid } from '@material-ui/core';
 import React from 'react';
 import { QuestionListItem } from './QuestionListItem';
 import { Pagination, Skeleton } from '@material-ui/lab';
-import 'style-loader!css-loader!sass-loader!../../../style/_QuestionList.scss';
 
 export const QuestionList = (props: { tags?: string[]; author?: string }) => {
   const { tags, author } = props;

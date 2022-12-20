@@ -7,7 +7,7 @@
     "frontend",
     "backstage.io"
   ],
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "prepublishOnly": "yarn tsc && yarn build",
@@ -52,9 +52,7 @@
     "react-relative-time": "^0.0.7",
     "react-router": "^6.5.0",
     "react-router-dom": "^6.5.0",
-    "react-use": "^17.2.4",
-    "sass": "^1.57.0",
-    "sass-loader": "^13.2.0"
+    "react-use": "^17.2.4"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"

@@ -1,6 +1,5 @@
 import { QuestionResponse } from '../../../api';
 import { Card, CardContent, Chip, Link, Typography } from '@material-ui/core';
-import 'style-loader!css-loader!sass-loader!../../../style/_QuestionListItem.scss';
 import React from 'react';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';

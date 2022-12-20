@@ -9,7 +9,6 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { MarkdownContent } from '@backstage/core-components';
-import 'style-loader!css-loader!sass-loader!../../style/_QuestionCard.scss';
 import { VoteButtons } from './VoteButtons';
 
 export const AnswerCard = (props: {
