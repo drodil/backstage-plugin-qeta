@@ -1,10 +1,13 @@
-name: Publish Package to npmjs
+name: Publish packages to npmjs
 on:
   release:
     types: [created]
 jobs:
-  build:
+  frontend-publish:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./plugins/qeta
     steps:
       - uses: actions/checkout@v3
       # Setup .npmrc file to publish to npm
@@ -12,8 +15,23 @@ jobs:
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
-          # Defaults to the user or organization that owns the workflow file
-          scope: '@octocat'
+      - run: yarn
+      - run: yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  backend-publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./plugins/qeta-backend
+    steps:
+      - uses: actions/checkout@v3
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
       - run: yarn
       - run: yarn publish
         env:

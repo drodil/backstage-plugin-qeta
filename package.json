@@ -19,9 +19,7 @@
     "test:all": "backstage-cli repo test --coverage",
     "lint": "backstage-cli repo lint --since origin/main",
     "lint:all": "backstage-cli repo lint",
-    "version": "changeset version",
-    "prettier:check": "prettier --check .",
-    "release": "changeset publish"
+    "prettier:check": "prettier --check ."
   },
   "workspaces": {
     "packages": [
