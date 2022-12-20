@@ -18,11 +18,11 @@ Find [installation instructions](./docs/index.md#installation) in our documentat
 
 Questions list:
 
-![Questions list](./docs/images/questions_list.png)
+![Questions list](./docs/images/question_list.png)
 
 Posting question:
 
-![Questions list](./docs/images/posting_question.png)
+![Questions list](./docs/images/question_posting.png)
 
 Answering question:
 
