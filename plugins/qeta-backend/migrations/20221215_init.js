@@ -9,19 +9,19 @@ exports.up = async function up(knex) {
     table.datetime('created').notNullable();
     table.datetime('updated').nullable();
     table.string('updatedBy').nullable();
-    table.bigIncrements('id');
+    table.increments('id');
     table.index('author');
   });
 
   await knex.schema.createTable('answers', table => {
-    table.bigint('questionId').unsigned().notNullable();
+    table.integer('questionId').unsigned().notNullable();
     table.string('author').notNullable();
     table.text('content').notNullable();
     table.boolean('correct').notNullable();
     table.datetime('created').notNullable();
     table.datetime('updated').nullable();
     table.string('updatedBy').nullable();
-    table.bigIncrements('id');
+    table.increments('id');
     table
       .foreign('questionId')
       .references('id')
@@ -31,7 +31,7 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.createTable('question_votes', table => {
-    table.bigint('questionId').unsigned().notNullable();
+    table.integer('questionId').unsigned().notNullable();
     table.string('author').notNullable();
     table.smallint('score').notNullable();
     table.datetime('timestamp').notNullable();
@@ -44,7 +44,7 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.createTable('question_views', table => {
-    table.bigint('questionId').unsigned().notNullable();
+    table.integer('questionId').unsigned().notNullable();
     table.string('author').notNullable();
     table.datetime('timestamp').notNullable();
     table
@@ -55,7 +55,7 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.createTable('answer_votes', table => {
-    table.bigint('answerId').unsigned().notNullable();
+    table.integer('answerId').unsigned().notNullable();
     table.string('author').notNullable();
     table.smallint('score').notNullable();
     table.datetime('timestamp').notNullable();
@@ -70,12 +70,12 @@ exports.up = async function up(knex) {
   await knex.schema.createTable('tags', table => {
     table.string('tag').notNullable();
     table.unique(['tag']);
-    table.bigIncrements('id');
+    table.increments('id');
   });
 
   await knex.schema.createTable('question_tags', table => {
-    table.bigint('questionId').unsigned().notNullable();
-    table.bigint('tagId').notNullable();
+    table.integer('questionId').unsigned().notNullable();
+    table.integer('tagId').notNullable();
     table.primary(['questionId', 'tagId']);
     table
       .foreign('questionId')
