@@ -1,6 +1,6 @@
 {
   "name": "@drodil/backstage-plugin-qeta",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "prepublish": "tsc",
