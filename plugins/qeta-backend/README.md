@@ -20,7 +20,10 @@ It is only meant for local development, and the setup for it can be found inside
 Create new file to packages/backend/src/plugins/qeta.ts:
 
 ```ts
-import { createRouter, DatabaseQetaStore } from '@internal/plugin-qeta-backend';
+import {
+  createRouter,
+  DatabaseQetaStore,
+} from '@drodil/backstage-plugin-qeta-backend';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
