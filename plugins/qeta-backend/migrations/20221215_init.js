@@ -10,7 +10,7 @@ exports.up = async function up(knex) {
     table.datetime('updated').nullable();
     table.string('updatedBy').nullable();
     table.primary(['id']);
-    table.increments('id');
+    table.bigIncrements('id');
     table.index('author');
   });
 
@@ -23,7 +23,7 @@ exports.up = async function up(knex) {
     table.datetime('updated').nullable();
     table.string('updatedBy').nullable();
     table.primary(['id']);
-    table.increments('id');
+    table.bigIncrements('id');
     table
       .foreign('questionId')
       .references('id')
@@ -73,7 +73,7 @@ exports.up = async function up(knex) {
     table.string('tag').notNullable();
     table.primary(['id']);
     table.unique(['tag']);
-    table.increments('id');
+    table.bigIncrements('id');
   });
 
   await knex.schema.createTable('question_tags', table => {

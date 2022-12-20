@@ -19,6 +19,7 @@ export const useStyles = makeStyles(theme => {
     markdownEditor: {
       backgroundColor: 'initial',
       boxShadow: 'none',
+      color: theme.palette.text.primary,
       border: `1px solid ${theme.palette.grey[600]}`,
       '& .w-md-editor-toolbar': {
         backgroundColor: 'initial',
