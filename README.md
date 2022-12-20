@@ -1,5 +1,7 @@
 # backstage-plugin-qeta
 
+![Logo](./docs/images/logo.png)
+
 Backstage.io plugin for Q&A. This plugin is both frontend and backend that manages and displays questions and answers
 within Backstage. This plugin provides:
 
