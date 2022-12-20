@@ -11,6 +11,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useNavigate } from 'react-router-dom';
 import { Autocomplete } from '@material-ui/lab';
+import { useStyles } from '../../utils/hooks';
 
 export const AskPage = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export const AskPage = () => {
   const [tags, setTags] = React.useState<string[]>([]);
   const [availableTags, setAvailableTags] = React.useState<string[]>([]);
   const qetaApi = useApi(qetaApiRef);
+  const styles = useStyles();
 
   const postQuestion = () => {
     qetaApi
@@ -60,6 +62,7 @@ export const AskPage = () => {
               />
               <MDEditor
                 value={question}
+                className={styles.markdownEditor}
                 onChange={v => setQuestion(v as string)}
                 preview="edit"
                 height={400}

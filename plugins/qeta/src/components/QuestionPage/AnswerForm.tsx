@@ -4,6 +4,7 @@ import MDEditor from '@uiw/react-md-editor';
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { AnswerResponse, qetaApiRef, QuestionResponse } from '../../api';
+import { useStyles } from '../../utils/hooks';
 
 export const AnswerForm = (props: {
   question: QuestionResponse;
@@ -13,6 +14,7 @@ export const AnswerForm = (props: {
   const [answer, setAnswer] = React.useState('');
   const [error, setError] = React.useState(false);
   const qetaApi = useApi(qetaApiRef);
+  const styles = useStyles();
 
   const postAnswer = () => {
     qetaApi
@@ -34,6 +36,7 @@ export const AnswerForm = (props: {
       {error && <WarningPanel severity="error" title="Could not post answer" />}
       <MDEditor
         value={answer}
+        className={styles.markdownEditor}
         onChange={v => setAnswer(v as string)}
         preview="edit"
         height={200}

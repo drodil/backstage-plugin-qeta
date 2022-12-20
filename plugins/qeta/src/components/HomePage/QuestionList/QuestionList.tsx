@@ -1,4 +1,4 @@
-import { useQetaApi } from '../../../utils/hooks';
+import { useQetaApi, useStyles } from '../../../utils/hooks';
 import { WarningPanel } from '@backstage/core-components';
 import { Box, Divider, Grid } from '@material-ui/core';
 import React from 'react';
@@ -10,6 +10,7 @@ export const QuestionList = (props: { tags?: string[]; author?: string }) => {
   const [page, setPage] = React.useState(1);
   const pageSize = 10;
   const offset = (page - 1) * pageSize;
+  const styles = useStyles();
 
   const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
@@ -58,7 +59,7 @@ export const QuestionList = (props: { tags?: string[]; author?: string }) => {
       <Grid
         container
         spacing={0}
-        className="qeta-questionlist-pagination"
+        className={styles.questionListPagination}
         direction="column"
         alignItems="center"
         justifyContent="center"

@@ -12,13 +12,6 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
         <Typography gutterBottom variant="h5" component="div">
           <Link href={`/qeta/questions/${question.id}`}>{question.title}</Link>
         </Typography>
-        <Typography
-          variant="body1"
-          gutterBottom
-          className="qeta-questionlistitem-content"
-        >
-          {question.content}
-        </Typography>
         {question.tags &&
           question.tags.map(tag => (
             <Chip

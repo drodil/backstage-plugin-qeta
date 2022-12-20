@@ -11,15 +11,17 @@ import {
 import React from 'react';
 import { MarkdownContent } from '@backstage/core-components';
 import { VoteButtons } from './VoteButtons';
+import { useStyles } from '../../utils/hooks';
 
 export const QuestionCard = (props: { question: QuestionResponse }) => {
   const { question } = props;
+  const styles = useStyles();
 
   return (
     <Card variant="outlined">
       <CardContent>
         <Grid container spacing={0}>
-          <Grid item className="qeta-questionpage-vote">
+          <Grid item className={styles.questionCardVote}>
             <VoteButtons entity={question} />
           </Grid>
           <Grid item>
