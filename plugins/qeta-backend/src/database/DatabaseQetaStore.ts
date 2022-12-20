@@ -27,10 +27,10 @@ export type RawQuestionEntity = {
   created: Date;
   updated: Date;
   updatedBy: string;
-  score: number;
-  views: number;
-  answersCount: number;
-  correctAnswers: number;
+  score: number | string;
+  views: number | string;
+  answersCount: number | string;
+  correctAnswers: number | string;
 };
 
 export type RawAnswerEntity = {
@@ -39,7 +39,7 @@ export type RawAnswerEntity = {
   author: string;
   content: string;
   correct: boolean;
-  score: number;
+  score: number | string;
   created: Date;
   updated: Date;
   updatedBy: string;
@@ -82,6 +82,10 @@ export class DatabaseQetaStore implements QetaStore {
     return new DatabaseQetaStore(client);
   }
 
+  private mapToInteger = (val: string | number | undefined): number => {
+    return typeof val === 'string' ? Number.parseInt(val, 10) : val ?? 0;
+  };
+
   private constructor(private readonly db: Knex) {}
 
   private async mapQuestion(
@@ -103,10 +107,10 @@ export class DatabaseQetaStore implements QetaStore {
       created: val.created,
       updated: val.updated,
       updatedBy: val.updatedBy,
-      score: val.score ?? 0,
-      views: val.views ?? 0,
-      answersCount: val.answersCount ?? 0,
-      correctAnswer: val.correctAnswers > 0,
+      score: this.mapToInteger(val.score),
+      views: this.mapToInteger(val.views),
+      answersCount: this.mapToInteger(val.answersCount),
+      correctAnswer: this.mapToInteger(val.correctAnswers) > 0,
       tags: additionalInfo[0],
       answers: additionalInfo[1],
       votes: additionalInfo[2],
@@ -127,7 +131,7 @@ export class DatabaseQetaStore implements QetaStore {
       created: val.created,
       updated: val.updated,
       updatedBy: val.updatedBy,
-      score: val.score ?? 0,
+      score: this.mapToInteger(val.score),
       votes,
     };
   }
@@ -346,7 +350,10 @@ export class DatabaseQetaStore implements QetaStore {
       .into('questions');
 
     if (tags && tags.length > 0) {
-      const existingTags = await this.db('tags').whereIn('tag', tags).select();
+      const existingTags = await this.db('tags')
+        .whereIn('tag', tags)
+        .returning('id')
+        .select();
       const newTags = tags.filter(t => !existingTags.some(e => e.tag === t));
       const tagIds = (
         await Promise.all(
@@ -355,12 +362,14 @@ export class DatabaseQetaStore implements QetaStore {
               await this.db
                 .insert({ tag })
                 .into('tags')
+                .returning('id')
                 .onConflict('tag')
                 .ignore(),
           ),
         )
       )
         .flat()
+        .map(tag => tag.id)
         .concat(existingTags.map(t => t.id));
 
       await Promise.all(

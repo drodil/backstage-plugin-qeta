@@ -10,6 +10,7 @@ jest.setTimeout(60_000);
 
 const databases = TestDatabases.create({
   ids: ['POSTGRES_13', 'SQLITE_3'],
+  // disableDocker: false,
 });
 
 async function createStore(databaseId: TestDatabaseId) {
@@ -57,10 +58,13 @@ describe.each(databases.eachSupportedId())(
     let knex: Knex;
 
     const insertQuestion = async (data: InsertQuestionType) =>
-      (await knex<InsertQuestionType>('questions').insert([data]))[0];
+      (
+        await knex<InsertQuestionType>('questions').insert(data).returning('id')
+      )[0].id ?? -1;
 
     const insertAnswer = async (data: InsertAnswerType) =>
-      (await knex<InsertAnswerType>('answers').insert([data]))[0];
+      (await knex<InsertAnswerType>('answers').insert(data).returning('id'))[0]
+        .id ?? -1;
 
     const voteQuestion = (questionId: number, user: string) =>
       knex('question_votes').insert({
@@ -118,14 +122,10 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should fetch list of questions', async () => {
-        const ids = [
-          await insertQuestion(question),
-          await insertQuestion({ ...question, title: 'title2' }),
-        ];
+        await insertQuestion(question);
+        await insertQuestion({ ...question, title: 'title2' });
         const ret = await storage.getQuestions({});
         expect(ret?.questions.length).toEqual(2);
-        expect(ret?.questions[0].id).toEqual(ids[0]);
-        expect(ret?.questions[1].id).toEqual(ids[1]);
       });
 
       it('should add new question', async () => {
