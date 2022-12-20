@@ -47,7 +47,7 @@ Add the plugin to your frontend app:
 cd packages/app && yarn add @drodil/backstage-plugin-qeta
 ```
 
-Expose the announcements page:
+Expose the questions page:
 
 ```ts
 // packages/app/src/App.tsx
@@ -64,4 +64,4 @@ const AppRoutes = () => (
 );
 ```
 
-An interface to create/update/edit/delete announcements is now available at `/qeta`.
+An interface for Q&A is now available at `/qeta`.

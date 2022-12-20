@@ -47,6 +47,35 @@ export default async function createPlugin({
 Now add this plugin to your packages/backend/src/index.ts:
 
 ```ts
+import qeta from './plugins/qeta';
 const qetaEnv = useHotMemoize(module, () => createEnv('qeta'));
 apiRouter.use('/qeta', await qeta(qetaEnv));
+```
+
+### Integration with `@backstage/plugin-search`
+
+Enable questions indexing in the search engine in /packages/backend/src/plugins/search.ts:
+
+```typescript
+import { QetaCollatorFactory } from '@drodil/backstage-plugin-qeta-backend';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const indexBuilder = new IndexBuilder({
+    logger: env.logger,
+    searchEngine,
+  });
+
+  indexBuilder.addCollator({
+    schedule,
+    factory: QetaCollatorFactory.fromConfig(env.config, {
+      logger: env.logger,
+    }),
+  });
+
+  const { scheduler } = await indexBuilder.build();
+  scheduler.start();
+  // ...
+}
 ```
