@@ -20,7 +20,7 @@ export const AnswerCard = (props: {
   const styles = useStyles();
 
   return (
-    <Card>
+    <Card id={`a${answer.id}`}>
       <CardContent>
         <Grid container spacing={0}>
           <Grid item className={styles.questionCardVote}>

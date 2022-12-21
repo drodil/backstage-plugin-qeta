@@ -47,7 +47,7 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
     for (const question of data.questions) {
       yield {
         title: question.title,
-        location: `${this.appBaseUrl}/qeta/${question.id}`,
+        location: `${this.appBaseUrl}/qeta/questions/${question.id}`,
         content: question.content,
         tags: question.tags,
         creator: question.user,
@@ -56,7 +56,7 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
       for (const answer of question.answers ?? []) {
         yield {
           content: answer.content,
-          location: `${this.appBaseUrl}/qeta/${question.id}#${answer.id}`,
+          location: `${this.appBaseUrl}/qeta/questions/${question.id}#a${answer.id}`,
           creator: answer.user,
         };
       }
