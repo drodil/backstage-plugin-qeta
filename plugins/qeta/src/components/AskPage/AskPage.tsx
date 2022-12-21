@@ -8,29 +8,35 @@ import { Button, Grid, TextField } from '@material-ui/core';
 import MDEditor from '@uiw/react-md-editor';
 import React, { useEffect } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
-import { qetaApiRef } from '../../api';
+import { qetaApiRef, QuestionRequest } from '../../api';
 import { useNavigate } from 'react-router-dom';
 import { Autocomplete } from '@material-ui/lab';
 import { useStyles } from '../../utils/hooks';
+import { Controller, useForm } from 'react-hook-form';
 
 export const AskPage = () => {
   const navigate = useNavigate();
-  const [question, setQuestion] = React.useState('');
-  const [title, setTitle] = React.useState('');
   const [error, setError] = React.useState(false);
-  const [tags, setTags] = React.useState<string[]>([]);
   const [availableTags, setAvailableTags] = React.useState<string[]>([]);
   const qetaApi = useApi(qetaApiRef);
   const styles = useStyles();
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<QuestionRequest>();
 
-  const postQuestion = () => {
+  const postQuestion = (data: QuestionRequest) => {
     qetaApi
-      .postQuestion({ title, content: question, tags })
+      .postQuestion(data)
       .then(q => {
         if (!q || !q.id) {
           setError(true);
           return;
         }
+        reset();
         navigate(`/qeta/questions/${q.id}`);
       })
       .catch(_e => setError(true));
@@ -49,47 +55,75 @@ export const AskPage = () => {
         )}
         <Grid item>
           <InfoCard>
-            <form>
+            <form onSubmit={handleSubmit(postQuestion)}>
               <TextField
                 label="Title"
                 required
                 fullWidth
+                error={'title' in errors}
                 margin="normal"
-                title={title}
-                onChange={e => setTitle(e.target.value)}
                 variant="outlined"
                 helperText="Write good title for your question that people can understand"
+                {...register('title', { required: true, maxLength: 255 })}
               />
-              <MDEditor
-                value={question}
-                className={styles.markdownEditor}
-                onChange={v => setQuestion(v as string)}
-                preview="edit"
-                height={400}
-              />
-              <Autocomplete
-                multiple
-                id="tags-standard"
-                options={availableTags}
-                defaultValue={tags}
-                onChange={(_e, inputTags) => {
-                  if (inputTags.length < 5) {
-                    setTags(inputTags);
-                  }
+              <Controller
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: true,
                 }}
-                freeSolo
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    margin="normal"
-                    label="Tags"
-                    placeholder="Type or select tags"
-                    helperText="Add up to 5 tags to categorize your question"
+                render={({ field: { onChange, value } }) => (
+                  <MDEditor
+                    className={styles.markdownEditor}
+                    preview="edit"
+                    height={400}
+                    extraCommands={[]}
+                    value={value}
+                    style={{
+                      borderColor: 'content' in errors ? 'red' : undefined,
+                    }}
+                    onChange={onChange}
+                    textareaProps={{
+                      placeholder: 'Your question',
+                    }}
                   />
                 )}
+                name="content"
               />
-              <Button variant="contained" onClick={postQuestion}>
+              <Controller
+                control={control}
+                defaultValue={[]}
+                render={({ field: { onChange, value } }) => (
+                  <Autocomplete
+                    multiple
+                    id="tags-standard"
+                    value={value}
+                    options={availableTags}
+                    freeSolo
+                    onChange={(_e, newValue) => {
+                      if (!value || value.length < 5) {
+                        onChange(newValue);
+                      }
+                    }}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        margin="normal"
+                        label="Tags"
+                        placeholder="Type or select tags"
+                        helperText="Add up to 5 tags to categorize your question"
+                      />
+                    )}
+                  />
+                )}
+                name="tags"
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                className={styles.postButton}
+              >
                 Post
               </Button>
             </form>

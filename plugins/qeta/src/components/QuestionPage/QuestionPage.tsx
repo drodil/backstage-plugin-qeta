@@ -77,15 +77,19 @@ export const QuestionPage = () => {
         </Button>
       </ContentHeader>
       <QuestionCard question={question} />
-      <Typography variant="h6">
-        {question.answersCount + newAnswers.length} answers
-      </Typography>
+      <Box sx={{ mt: 3, mb: 2 }}>
+        <Typography variant="h6">
+          {question.answersCount + newAnswers.length} answers
+        </Typography>
+      </Box>
       {(question.answers ?? []).concat(newAnswers).map(a => {
         return (
-          <Box key={a.id} sx={{ mb: 1 }}>
-            <AnswerCard answer={a} question={question} />
+          <>
+            <Box key={a.id} sx={{ mb: 1 }}>
+              <AnswerCard answer={a} question={question} />
+            </Box>
             <Divider />
-          </Box>
+          </>
         );
       })}
       <Divider />

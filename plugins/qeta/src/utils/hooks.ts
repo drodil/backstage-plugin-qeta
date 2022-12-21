@@ -32,5 +32,9 @@ export const useStyles = makeStyles(theme => {
     questionListPagination: {
       marginTop: theme.spacing(2),
     },
+    postButton: {
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(1),
+    },
   };
 });

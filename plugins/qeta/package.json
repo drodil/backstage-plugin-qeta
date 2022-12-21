@@ -49,6 +49,7 @@
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
     "lodash": "^4.17.21",
+    "react-hook-form": "^7.41.0",
     "react-relative-time": "^0.0.7",
     "react-router": "^6.5.0",
     "react-router-dom": "^6.5.0",
