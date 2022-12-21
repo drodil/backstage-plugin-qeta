@@ -405,8 +405,9 @@ export class DatabaseQetaStore implements QetaStore {
         correct: false,
         created: new Date(),
       })
-      .into('answers');
-    return this.getAnswer(answers[0]);
+      .into('answers')
+      .returning('id');
+    return this.getAnswer(answers[0].id);
   }
 
   async getAnswer(answerId: number): Promise<MaybeAnswer> {

@@ -10,7 +10,7 @@ jest.setTimeout(60_000);
 
 const databases = TestDatabases.create({
   ids: ['POSTGRES_13', 'SQLITE_3'],
-  // disableDocker: false,
+  disableDocker: false,
 });
 
 async function createStore(databaseId: TestDatabaseId) {
@@ -119,6 +119,18 @@ describe.each(databases.eachSupportedId())(
 
         ret = await storage.getQuestion('user', id);
         expect(ret?.views).toEqual(1);
+
+        const ans = await storage.getQuestion('user', answerId);
+        expect(ans).toBeDefined();
+      });
+
+      it('should be able to answer question', async () => {
+        const id = await insertQuestion(question);
+
+        const ans = await storage.answerQuestion('user', id, 'answer');
+        expect(ans).toBeDefined();
+        expect(ans?.content).toEqual('answer');
+        expect(ans?.questionId).toEqual(id);
       });
 
       it('should fetch list of questions', async () => {
