@@ -1,7 +1,7 @@
 # backstage-plugin-qeta
 
 <p align="center">
-![Logo](./docs/images/logo.png)
+<img src="https://github.com/drodil/backstage-plugin-qeta/blob/b0d06479022b1051548b57aef5a9ce8c98f5ad17/docs/images/logo.png"/>:
 </p>
 
 [![CI](https://github.com/drodil/backstage-plugin-qeta/actions/workflows/ci.yaml/badge.svg)](https://github.com/drodil/backstage-plugin-qeta/actions/workflows/ci.yaml)
