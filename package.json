@@ -19,7 +19,8 @@
     "test:all": "backstage-cli repo test --coverage",
     "lint": "backstage-cli repo lint --since origin/main",
     "lint:all": "backstage-cli repo lint",
-    "prettier:check": "prettier --check ."
+    "prettier:check": "prettier --check .",
+    "backstage:bump": "backstage-cli versions:bump"
   },
   "workspaces": {
     "packages": [
@@ -27,7 +28,7 @@
     ]
   },
   "devDependencies": {
-    "@backstage/cli": "^0.21.0",
+    "@backstage/cli": "^0.22.0",
     "@spotify/prettier-config": "^12.0.0",
     "@types/webpack": "^5.28.0",
     "concurrently": "^7.0.0",
