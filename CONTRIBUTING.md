@@ -60,6 +60,9 @@ git checkout -b new-feature
 
 Make your changes, then ensure that `yarn lint` and `yarn test` still pass. If you're satisfied with your changes, push them to your fork.
 
+Also remember to run database changes against a postgres instance. The instance can reside inside docker image or on local
+machine.
+
 ```
 git push origin new-feature
 ```
@@ -69,5 +72,6 @@ Then use the GitHub UI to open a pull request.
 Your changes are much more likely to be approved if you:
 
 - add tests for new functionality
-- write a [good commit message][commit-message]
+- commit messages should follow [conventional commit message](https://www.conventionalcommits.org/en/v1.0.0/) format
 - maintain backward compatibility
+- more information available at [docs](docs)

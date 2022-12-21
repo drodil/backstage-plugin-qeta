@@ -3,6 +3,7 @@
 ## Installation
 
 - [Plugin setup](setup.md)
+- [Configuration](config.md)
 
 ## Usage
 

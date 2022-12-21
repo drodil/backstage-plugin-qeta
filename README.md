@@ -34,6 +34,10 @@ Answering question:
 
 ![Questions list](./docs/images/question_answer.png)
 
+## Contributing
+
+All contributions are very welcome. See [CONTRIBUTING](CONTRIBUTING) for more information.
+
 ## License
 
 This library is under the [MIT](LICENSE) license.
