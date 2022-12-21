@@ -4,6 +4,8 @@
 ![Logo](./docs/images/logo.png)
 </p>
 
+[![CI](https://github.com/drodil/backstage-plugin-qeta/actions/workflows/ci.yaml/badge.svg)](https://github.com/drodil/backstage-plugin-qeta/actions/workflows/ci.yaml)
+
 Backstage.io plugin for Q&A. This plugin is both frontend and backend that manages and displays questions and answers
 within Backstage. This plugin provides:
 
