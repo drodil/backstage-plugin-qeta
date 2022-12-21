@@ -24,7 +24,7 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
           ))}
         <Typography variant="body2" display="block">
           By{' '}
-          <Link href={`/qeta/user/${question.author}`}>{question.author}</Link>{' '}
+          <Link href={`/qeta/users/${question.author}`}>{question.author}</Link>{' '}
           <RelativeTime
             value={question.created}
             titleFormat="YYYY/MM/DD HH:mm"

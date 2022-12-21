@@ -40,7 +40,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
               ))}
             <Box>
               By{' '}
-              <Link href={`/qeta/user/${question.author}`}>
+              <Link href={`/qeta/users/${question.author}`}>
                 {question.author}
               </Link>
             </Box>

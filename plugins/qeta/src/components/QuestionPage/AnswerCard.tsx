@@ -32,7 +32,7 @@ export const AnswerCard = (props: {
             </Typography>
             <Box>
               By{' '}
-              <Link href={`/qeta/user/${answer.author}`}>{answer.author}</Link>
+              <Link href={`/qeta/users/${answer.author}`}>{answer.author}</Link>
             </Box>
           </Grid>
         </Grid>

@@ -38,7 +38,7 @@ export const HomePage = () => (
       <Route path="/ask" element={<AskPage />} />
       <Route path="/questions/:id" element={<QuestionPage />} />
       <Route path="/tags/:tag" element={<TagPage />} />
-      <Route path="/user/*" element={<UserPage />} />
+      <Route path="/users/*" element={<UserPage />} />
     </Routes>
   </Page>
 );
