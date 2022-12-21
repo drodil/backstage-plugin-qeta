@@ -82,6 +82,11 @@ export class DatabaseQetaStore implements QetaStore {
     return new DatabaseQetaStore(client);
   }
 
+  /**
+   * Maps string or number value to integer. This is due to fact that postgres returns
+   * strings instead numbers for count and sum functions.
+   * @param val
+   */
   private mapToInteger = (val: string | number | undefined): number => {
     return typeof val === 'string' ? Number.parseInt(val, 10) : val ?? 0;
   };
