@@ -1,19 +1,19 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { Readable } from 'stream';
-import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
+import {
+  DocumentCollatorFactory,
+  IndexableDocument,
+} from '@backstage/plugin-search-common';
 import fetch from 'node-fetch';
 
 export type QetaCollatorFactoryOptions = {
   logger: Logger;
 };
 
-export type QetaDocument = {
-  title?: string;
-  location: string;
-  content: string;
+export type QetaDocument = IndexableDocument & {
   tags?: string[];
-  creator: string;
+  author: string;
 };
 
 export class QetaCollatorFactory implements DocumentCollatorFactory {
@@ -48,16 +48,18 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
       yield {
         title: question.title,
         location: `${this.appBaseUrl}/qeta/questions/${question.id}`,
-        content: question.content,
+        text: question.content,
         tags: question.tags,
-        creator: question.user,
+        author: question.user,
       };
 
       for (const answer of question.answers ?? []) {
         yield {
-          content: answer.content,
+          title: question.title,
+          text: answer.content,
           location: `${this.appBaseUrl}/qeta/questions/${question.id}#a${answer.id}`,
-          creator: answer.user,
+          tags: question.tags,
+          author: answer.user,
         };
       }
     }
