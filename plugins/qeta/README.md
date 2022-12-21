@@ -2,6 +2,11 @@
 
 Welcome to the qeta plugin!
 
+Qeta allows you to add Q&A section to your Backstage application.
+This plugin requires that you also install
+[@drodil/backstage-plugin-qeta-backend](https://www.npmjs.com/package/@drodil/backstage-plugin-qeta-backend)
+plugin.
+
 ## Adding to your application
 
 Add the plugin to your frontend app:
