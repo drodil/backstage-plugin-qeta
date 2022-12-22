@@ -47,6 +47,13 @@ export const VoteButtons = (props: {
     }
   };
 
+  let correctTooltip = correct
+    ? 'Mark answer as incorrect'
+    : 'Mark answer as correct';
+  if (!props.question?.own) {
+    correctTooltip = correct ? 'This answer has been marked as correct' : '';
+  }
+
   const toggleCorrectAnswer = () => {
     if (!('questionId' in entity)) {
       return;
@@ -103,14 +110,15 @@ export const VoteButtons = (props: {
           <ArrowDownward />
         </IconButton>
       </Tooltip>
-      {'correct' in props.entity && props.question?.own && (
+      {'correct' in props.entity && (
         <Box>
-          <Tooltip title="Mark answer as correct">
+          <Tooltip title={correctTooltip}>
             <IconButton
               aria-label="mark correct"
-              color={correct ? 'primary' : 'default'}
+              style={{ color: correct ? 'green' : 'initial' }}
               size="small"
               onClick={toggleCorrectAnswer}
+              disabled={!props.question?.own}
             >
               <Check />
             </IconButton>
