@@ -14,6 +14,8 @@ export type QetaCollatorFactoryOptions = {
 export type QetaDocument = IndexableDocument & {
   tags?: string[];
   author: string;
+  views: number;
+  answersCount: number;
 };
 
 export class QetaCollatorFactory implements DocumentCollatorFactory {
@@ -46,20 +48,17 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
 
     for (const question of data.questions) {
       yield {
-        title: question.title,
-        location: `${this.appBaseUrl}/qeta/questions/${question.id}`,
+        ...question,
         text: question.content,
-        tags: question.tags,
-        author: question.user,
+        location: `${this.appBaseUrl}/qeta/questions/${question.id}`,
       };
 
       for (const answer of question.answers ?? []) {
         yield {
-          title: question.title,
+          ...question,
           text: answer.content,
           location: `${this.appBaseUrl}/qeta/questions/${question.id}#a${answer.id}`,
-          tags: question.tags,
-          author: answer.user,
+          author: answer.author,
         };
       }
     }
