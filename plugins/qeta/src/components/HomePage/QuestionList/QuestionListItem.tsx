@@ -35,7 +35,7 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
         </Typography>
         <Typography
           variant="caption"
-          color={question.correctAnswer ? 'secondary' : 'initial'}
+          style={{ color: question.correctAnswer ? 'green' : 'initial' }}
           display="inline"
           gutterBottom
         >
