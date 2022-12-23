@@ -3,8 +3,45 @@ on: [workflow_dispatch]
 permissions:
   contents: write
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - run: yarn lint:all
+      - run: yarn tsc
+      - run: yarn build
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - run: yarn test:all
+
   bump-version:
     runs-on: ubuntu-latest
+    needs: [lint, tests]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -12,8 +49,8 @@ jobs:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
       - run: yarn
-      - run: yarn bump
       - run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
+      - run: yarn bump
       - run: git push --tags
