@@ -40,6 +40,7 @@ jobs:
       - run: yarn test:all
 
   bump-version:
+    name: Bump version
     runs-on: ubuntu-latest
     needs: [lint, tests]
     steps:
@@ -56,17 +57,23 @@ jobs:
       - run: git push --follow-tags
 
   tagged-release:
-    name: Create Tagged Release
+    name: Create tagged release
     needs: [bump-version]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: 'WyriHaximus/github-action-get-previous-tag@v1'
       - uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: '${{ secrets.GITHUB_TOKEN }}'
           prerelease: false
-          files: CHANGELOG.md
+          automatic_release_tag: ${{ steps.previoustag.outputs.tag }}
+          files: '**'
 
   frontend-publish:
+    name: Publish plugin frontend
     runs-on: ubuntu-latest
     needs: [tagged-release]
     defaults:
@@ -87,6 +94,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   backend-publish:
+    name: Publish plugin backend
     runs-on: ubuntu-latest
     needs: [tagged-release]
     defaults:
