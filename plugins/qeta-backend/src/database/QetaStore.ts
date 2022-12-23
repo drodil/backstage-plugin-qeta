@@ -12,6 +12,7 @@ export interface Question {
   correctAnswer: boolean;
   ownVote?: number;
   tags?: string[];
+  components?: string[];
   answers?: Answer[];
   own?: boolean;
   votes?: Vote[];

@@ -64,6 +64,11 @@ export type RawTagEntity = {
   tag: string;
 };
 
+export type RawComponentEntity = {
+  id: number;
+  entity_ref: string;
+};
+
 export class DatabaseQetaStore implements QetaStore {
   static async create({
     database,
@@ -97,12 +102,14 @@ export class DatabaseQetaStore implements QetaStore {
     val: RawQuestionEntity,
     addQuestions?: boolean,
     addVotes?: boolean,
+    addComponents?: boolean,
   ): Promise<Question> {
     // TODO: This could maybe done with join
     const additionalInfo = await Promise.all([
       this.getQuestionTags(val.id),
       addQuestions ? this.getQuestionAnswers(val.id, addVotes) : undefined,
       addVotes ? this.getQuestionVotes(val.id) : undefined,
+      addComponents ? this.getQuestionComponents(val.id) : undefined,
     ]);
     return {
       id: val.id,
@@ -119,6 +126,7 @@ export class DatabaseQetaStore implements QetaStore {
       tags: additionalInfo[0],
       answers: additionalInfo[1],
       votes: additionalInfo[2],
+      components: additionalInfo[3],
     };
   }
 
@@ -155,6 +163,18 @@ export class DatabaseQetaStore implements QetaStore {
       .where('question_tags.questionId', '=', questionId)
       .select();
     return rows.map(val => val.tag);
+  }
+
+  private async getQuestionComponents(questionId: number): Promise<string[]> {
+    const rows = await this.db<RawTagEntity>('components') // nosonar
+      .leftJoin(
+        'question_components',
+        'components.id',
+        'question_components.componentId',
+      )
+      .where('question_components.questionId', '=', questionId)
+      .select();
+    return rows.map(val => val.entity_ref);
   }
 
   private async getQuestionVotes(questionId: number): Promise<Vote[]> {
@@ -312,6 +332,7 @@ export class DatabaseQetaStore implements QetaStore {
       rows[0] as unknown as RawQuestionEntity,
       true,
       true,
+      true,
     );
   }
 
@@ -341,6 +362,7 @@ export class DatabaseQetaStore implements QetaStore {
     title: string,
     content: string,
     tags?: string[],
+    components?: string[],
   ): Promise<Question> {
     const questions = await this.db
       .insert(
@@ -354,40 +376,95 @@ export class DatabaseQetaStore implements QetaStore {
       )
       .into('questions');
 
-    if (tags && tags.length > 0) {
-      const existingTags = await this.db('tags')
-        .whereIn('tag', tags)
-        .returning('id')
-        .select();
-      const newTags = tags.filter(t => !existingTags.some(e => e.tag === t));
-      const tagIds = (
-        await Promise.all(
-          [...new Set(newTags)].map(
-            async tag =>
-              await this.db
-                .insert({ tag })
-                .into('tags')
-                .returning('id')
-                .onConflict('tag')
-                .ignore(),
-          ),
-        )
-      )
-        .flat()
-        .map(tag => tag.id)
-        .concat(existingTags.map(t => t.id));
+    await Promise.all([
+      this.addQuestionTags(questions[0].id, tags),
+      this.addQuestionComponents(questions[0].id, components),
+    ]);
 
-      await Promise.all(
-        tagIds.map(async tagId => {
-          await this.db
-            .insert({ questionId: questions[0].id, tagId })
-            .into('question_tags')
-            .onConflict()
-            .ignore();
-        }),
-      );
-    }
     return this.mapQuestion(questions[0]);
+  }
+
+  private async addQuestionTags(questionId: number, tagsInput?: string[]) {
+    const tags = tagsInput?.filter(Boolean);
+    if (!tags || tags.length === 0) {
+      return;
+    }
+    const existingTags = await this.db('tags')
+      .whereIn('tag', tags)
+      .returning('id')
+      .select();
+    const newTags = tags.filter(t => !existingTags.some(e => e.tag === t));
+    const tagIds = (
+      await Promise.all(
+        [...new Set(newTags)].map(
+          async tag =>
+            await this.db
+              .insert({ tag })
+              .into('tags')
+              .returning('id')
+              .onConflict('tag')
+              .ignore(),
+        ),
+      )
+    )
+      .flat()
+      .map(tag => tag.id)
+      .concat(existingTags.map(t => t.id));
+
+    await Promise.all(
+      tagIds.map(async tagId => {
+        await this.db
+          .insert({ questionId, tagId })
+          .into('question_tags')
+          .onConflict()
+          .ignore();
+      }),
+    );
+  }
+
+  private async addQuestionComponents(
+    questionId: number,
+    componentsInput?: string[],
+  ) {
+    const regex = /\w+:\w+\/\w+/g;
+    const components = componentsInput?.filter(input => input.match(regex));
+    if (!components || components.length === 0) {
+      return;
+    }
+
+    const existingComponents = await this.db('components')
+      .whereIn('entity_ref', components)
+      .returning('id')
+      .select();
+    const newComponents = components.filter(
+      t => !existingComponents.some(e => e.tag === t),
+    );
+    const componentIds = (
+      await Promise.all(
+        [...new Set(newComponents)].map(
+          async component =>
+            await this.db
+              .insert({ entity_ref: component })
+              .into('components')
+              .returning('id')
+              .onConflict('entity_ref')
+              .ignore(),
+        ),
+      )
+    )
+      .flat()
+      .map(component => component.id)
+      .concat(existingComponents.map(c => c.id));
+
+    await Promise.all(
+      componentIds.map(async componentId => {
+        await this.db
+          .insert({ questionId, componentId })
+          .into('question_components')
+          .onConflict()
+          .ignore();
+      }),
+    );
   }
 
   async deleteQuestion(user_ref: string, id: number): Promise<boolean> {

@@ -141,20 +141,37 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should add new question', async () => {
-        const id1 = await storage.postQuestion('user1', 'title', 'content', [
-          'java',
-          'xml',
-        ]);
-        const id2 = await storage.postQuestion('user2', 'title2', 'content2', [
-          'java',
-          'mysql',
-        ]);
+        const id1 = await storage.postQuestion(
+          'user1',
+          'title',
+          'content',
+          ['java', 'xml', ''],
+          [
+            'component:default/comp1',
+            'component:default/comp2',
+            'invalidComponent',
+            '',
+          ],
+        );
+        const id2 = await storage.postQuestion(
+          'user2',
+          'title2',
+          'content2',
+          ['java', 'mysql'],
+          ['component:default/comp2', 'component:default/comp3'],
+        );
 
         const ret1 = await storage.getQuestion('user', id1.id);
-        expect(ret1?.tags).toEqual(['java', 'xml']);
+        expect(ret1?.tags?.sort()).toEqual(['xml', 'java'].sort());
+        expect(ret1?.components?.sort()).toEqual(
+          ['component:default/comp1', 'component:default/comp2'].sort(),
+        );
 
         const ret2 = await storage.getQuestion('user', id2.id);
-        expect(ret2?.tags).toEqual(['java', 'mysql']);
+        expect(ret2?.tags?.sort()).toEqual(['java', 'mysql'].sort());
+        expect(ret2?.components?.sort()).toEqual(
+          ['component:default/comp2', 'component:default/comp3'].sort(),
+        );
       });
 
       it('should delete question', async () => {
