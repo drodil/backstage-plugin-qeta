@@ -11,7 +11,10 @@ cd packages/backend && yarn add @drodil/backstage-plugin-qeta-backend
 Create new file to packages/backend/src/plugins/qeta.ts:
 
 ```ts
-import { createRouter, DatabaseQetaStore } from '@internal/plugin-qeta-backend';
+import {
+  createRouter,
+  DatabaseQetaStore,
+} from '@drodil/backstage-plugin-qeta-backend';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
@@ -23,7 +26,7 @@ export default async function createPlugin({
   const db = await DatabaseQetaStore.create({
     database: database,
   });
-  return await createRouter({
+  return createRouter({
     logger,
     database: db,
     identity,
@@ -35,6 +38,7 @@ export default async function createPlugin({
 Now add this plugin to your packages/backend/src/index.ts:
 
 ```ts
+import qeta from './plugins/qeta';
 const qetaEnv = useHotMemoize(module, () => createEnv('qeta'));
 apiRouter.use('/qeta', await qeta(qetaEnv));
 ```
