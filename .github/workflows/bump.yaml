@@ -1,5 +1,7 @@
 name: Bump version
 on: [workflow_dispatch]
+permissions:
+  contents: write
 jobs:
   bump-version:
     runs-on: ubuntu-latest
@@ -11,4 +13,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: yarn
       - run: yarn bump
+      - run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
       - run: git push --tags
