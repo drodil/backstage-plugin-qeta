@@ -18,12 +18,25 @@ export const useStyles = makeStyles(theme => {
   return {
     markdownEditor: {
       backgroundColor: 'initial',
-      boxShadow: 'none',
       color: theme.palette.text.primary,
       border: `1px solid ${theme.palette.grey[600]}`,
-      '& .w-md-editor-toolbar': {
+      borderRadius: theme.shape.borderRadius,
+      '& .mde-header': {
         backgroundColor: 'initial',
+        color: theme.palette.text.primary,
+        borderBottom: `1px solid ${theme.palette.grey[600]}`,
+        '& .mde-tabs button, .mde-header-item > button': {
+          color: `${theme.palette.text.primary} !important`,
+        },
       },
+      '& .mde-text': {
+        backgroundColor: 'initial',
+        color: theme.palette.text.primary,
+        outline: 'none',
+      },
+    },
+    markdownEditorError: {
+      border: `1px solid ${theme.palette.error.main} !important`,
     },
     questionCardVote: {
       textAlign: 'center',

@@ -12431,6 +12431,11 @@ react-markdown@^8.0.0, react-markdown@~8.0.0:
     unist-util-visit "^4.0.0"
     vfile "^5.0.0"
 
+react-mde@^11.5.0:
+  version "11.5.0"
+  resolved "https://oppartifactory.eficode.com/api/npm/op-npm-general/react-mde/-/react-mde-11.5.0.tgz#3e81a505071aa80287fb23a1c0ce5e8b34c82055"
+  integrity sha512-CH/VK6d+tpVjJ8rTXfh1dDt6GWedTgCU0668p8toqhAc3vy0Lu872O2RKYDSpkUrlbHI08fjUPTl++nExp6gag==
+
 react-redux@^7.2.0:
   version "7.2.9"
   resolved "https://registry.npmjs.org/react-redux/-/react-redux-7.2.9.tgz#09488fbb9416a4efe3735b7235055442b042481d"
@@ -12453,7 +12458,7 @@ react-relative-time@^0.0.7:
   resolved "https://registry.npmjs.org/react-relative-time/-/react-relative-time-0.0.7.tgz#9f7f4074286ebe6135b533eee1adea055df97183"
   integrity sha512-1MufiuswxbmgPR0fdfKLkQpjlphkMTjC99IOOuCENRiF+7EmtlcNFi+kCNtmeCDk3gtizG3OiuYBevN0vljNYQ==
 
-react-router-dom@^6.3.0, react-router-dom@^6.5.0:
+react-router-dom@^6.3.0:
   version "6.5.0"
   resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.5.0.tgz#3970bdcaa7c710a6e0b478a833ba0b4b8ae61a6f"
   integrity sha512-/XzRc5fq80gW1ctiIGilyKFZC/j4kfe75uivMsTChFbkvrK4ZrF3P3cGIc1f/SSkQ4JiJozPrf+AwUHHWVehVg==

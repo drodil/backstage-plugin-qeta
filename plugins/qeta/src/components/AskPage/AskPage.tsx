@@ -5,7 +5,6 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { Button, Grid, TextField } from '@material-ui/core';
-import MDEditor from '@uiw/react-md-editor';
 import React, { useEffect } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef, QuestionRequest } from '../../api';
@@ -13,6 +12,8 @@ import { useNavigate } from 'react-router-dom';
 import { Autocomplete } from '@material-ui/lab';
 import { useStyles } from '../../utils/hooks';
 import { Controller, useForm } from 'react-hook-form';
+import 'react-mde/lib/styles/css/react-mde-all.css';
+import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 
 export const AskPage = () => {
   const navigate = useNavigate();
@@ -73,19 +74,12 @@ export const AskPage = () => {
                   required: true,
                 }}
                 render={({ field: { onChange, value } }) => (
-                  <MDEditor
-                    className={styles.markdownEditor}
-                    preview="edit"
-                    height={400}
-                    extraCommands={[]}
+                  <MarkdownEditor
                     value={value}
-                    style={{
-                      borderColor: 'content' in errors ? 'red' : undefined,
-                    }}
                     onChange={onChange}
-                    textareaProps={{
-                      placeholder: 'Your question',
-                    }}
+                    height={400}
+                    error={'content' in errors}
+                    placeholder="Your question"
                   />
                 )}
                 name="content"

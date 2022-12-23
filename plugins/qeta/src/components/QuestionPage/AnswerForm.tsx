@@ -1,6 +1,5 @@
 import { WarningPanel } from '@backstage/core-components';
 import { Button, Typography } from '@material-ui/core';
-import MDEditor from '@uiw/react-md-editor';
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import {
@@ -11,6 +10,7 @@ import {
 } from '../../api';
 import { useStyles } from '../../utils/hooks';
 import { Controller, useForm } from 'react-hook-form';
+import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 
 export const AnswerForm = (props: {
   question: QuestionResponse;
@@ -53,16 +53,11 @@ export const AnswerForm = (props: {
           required: true,
         }}
         render={({ field: { onChange, value } }) => (
-          <MDEditor
-            className={styles.markdownEditor}
-            preview="edit"
-            height={200}
-            extraCommands={[]}
+          <MarkdownEditor
             value={value}
-            style={{
-              borderColor: 'answer' in errors ? 'red' : undefined,
-            }}
             onChange={onChange}
+            height={200}
+            error={'answer' in errors}
           />
         )}
         name="answer"
