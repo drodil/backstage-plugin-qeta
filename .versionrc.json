@@ -1,0 +1,16 @@
+{
+  "packageFiles": [
+    "plugins/qeta/package.json",
+    "plugins/qeta-backend/package.json"
+  ],
+  "bumpFiles": [
+    {
+      "filename": "plugins/qeta/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "plugins/qeta-backend/package.json",
+      "type": "json"
+    }
+  ]
+}
