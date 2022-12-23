@@ -53,4 +53,4 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
       - run: yarn bump
-      - run: git push --tags
+      - run: git push --follow-tags
