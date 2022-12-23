@@ -8,7 +8,7 @@ import { Button, Grid, TextField } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef, QuestionRequest } from '../../api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { Autocomplete } from '@material-ui/lab';
 import { useStyles } from '../../utils/hooks';
 import { Controller, useForm } from 'react-hook-form';

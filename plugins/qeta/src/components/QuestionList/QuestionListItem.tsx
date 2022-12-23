@@ -1,11 +1,19 @@
-import { QuestionResponse } from '../../../api';
-import { Card, CardContent, Chip, Link, Typography } from '@material-ui/core';
+import { QuestionResponse } from '../../api';
+import {
+  Card,
+  CardContent,
+  Chip,
+  Link,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
 import React from 'react';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 
 export const QuestionListItem = (props: { question: QuestionResponse }) => {
   const { question } = props;
+  const theme = useTheme();
   return (
     <Card>
       <CardContent>
@@ -35,7 +43,11 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
         </Typography>
         <Typography
           variant="caption"
-          style={{ color: question.correctAnswer ? 'green' : 'initial' }}
+          style={{
+            color: question.correctAnswer
+              ? theme.palette.success.main
+              : undefined,
+          }}
           display="inline"
           gutterBottom
         >

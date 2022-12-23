@@ -38,6 +38,9 @@ export const useStyles = makeStyles(theme => {
     markdownEditorError: {
       border: `1px solid ${theme.palette.error.main} !important`,
     },
+    successColor: {
+      color: theme.palette.success.main,
+    },
     questionCardVote: {
       textAlign: 'center',
       marginRight: '20px',

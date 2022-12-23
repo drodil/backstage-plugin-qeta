@@ -1,5 +1,11 @@
 import { AnswerResponse, qetaApiRef, QuestionResponse } from '../../api';
-import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
+import {
+  Box,
+  IconButton,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
@@ -18,6 +24,7 @@ export const VoteButtons = (props: {
     props.entity,
   );
   const qetaApi = useApi(qetaApiRef);
+  const theme = useTheme();
 
   const voteUp = () => {
     if ('title' in entity) {
@@ -115,7 +122,9 @@ export const VoteButtons = (props: {
           <Tooltip title={correctTooltip}>
             <IconButton
               aria-label="mark correct"
-              style={{ color: correct ? 'green' : 'initial' }}
+              style={{
+                color: correct ? theme.palette.success.main : undefined,
+              }}
               size="small"
               onClick={toggleCorrectAnswer}
               disabled={!props.question?.own}

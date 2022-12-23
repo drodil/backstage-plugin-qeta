@@ -1,4 +1,4 @@
-import { useQetaApi, useStyles } from '../../../utils/hooks';
+import { useQetaApi, useStyles } from '../../utils/hooks';
 import { WarningPanel } from '@backstage/core-components';
 import { Box, Divider, Grid } from '@material-ui/core';
 import React from 'react';

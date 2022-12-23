@@ -7,11 +7,10 @@ import {
   HeaderLabel,
   Page,
 } from '@backstage/core-components';
-import { Route } from 'react-router-dom';
-import { Routes } from 'react-router';
+import { Route, Routes } from 'react-router';
 import { AskPage } from '../AskPage';
 import { QuestionPage } from '../QuestionPage/QuestionPage';
-import { QuestionList } from './QuestionList/QuestionList';
+import { QuestionList } from '../QuestionList/QuestionList';
 import { TagPage } from '../TagPage/TagPage';
 import { UserPage } from '../UserPage/UserPage';
 
