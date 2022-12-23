@@ -72,7 +72,7 @@ jobs:
           repo_token: '${{ secrets.GITHUB_TOKEN }}'
           prerelease: false
           automatic_release_tag: ${{ steps.previoustag.outputs.tag }}
-          files: '**'
+          files: 'CHANGELOG.md'
 
   frontend-publish:
     name: Publish plugin frontend
