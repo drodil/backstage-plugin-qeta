@@ -51,11 +51,11 @@
     "react-hook-form": "^7.41.0",
     "react-mde": "^11.5.0",
     "react-relative-time": "^0.0.7",
-    "react-router": "^6.5.0",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.22.0",
