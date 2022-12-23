@@ -164,6 +164,7 @@ describe('createRouter', () => {
           title: 'title',
           content: 'content',
           tags: ['java'],
+          components: ['component:default/comp1'],
         });
 
       expect(qetaStore.postQuestion).toHaveBeenCalledWith(
@@ -171,6 +172,7 @@ describe('createRouter', () => {
         'title',
         'content',
         ['java'],
+        ['component:default/comp1'],
       );
       expect(response.status).toEqual(201);
       expect(response.body).toEqual({

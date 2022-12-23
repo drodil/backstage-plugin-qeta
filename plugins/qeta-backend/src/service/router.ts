@@ -47,6 +47,7 @@ interface PostQuestion {
   title: string;
   content: string;
   tags: string[];
+  components: string[];
 }
 
 const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
@@ -55,6 +56,7 @@ const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
     title: { type: 'string', minLength: 1 },
     content: { type: 'string', minLength: 1 },
     tags: { type: 'array', items: { type: 'string' } },
+    components: { type: 'array', items: { type: 'string' } },
   },
   required: ['title', 'content'],
   additionalProperties: false,
@@ -167,6 +169,7 @@ export async function createRouter({
       request.body.title,
       request.body.content,
       request.body.tags,
+      request.body.components,
     );
 
     // Response

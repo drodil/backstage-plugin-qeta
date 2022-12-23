@@ -99,12 +99,14 @@ export interface QetaStore {
    * @param title question title
    * @param content question content
    * @param tags optional tags for the question
+   * @param components optional entity refs of catalog components for the question
    */
   postQuestion(
     user_ref: string,
     title: string,
     content: string,
     tags?: string[],
+    components?: string[],
   ): Promise<Question>;
 
   /**
