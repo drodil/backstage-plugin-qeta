@@ -93,6 +93,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
+          always-auth: true
+          registry-url: 'https://registry.npmjs.org'
       - run: git pull
       - run: yarn
       - run: yarn tsc
@@ -117,6 +119,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
+          always-auth: true
+          registry-url: 'https://registry.npmjs.org'
       - run: git pull
       - run: yarn
       - run: yarn tsc
