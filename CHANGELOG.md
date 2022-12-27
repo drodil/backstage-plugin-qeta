@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.18](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.17...v0.1.18) (2022-12-27)
+
+
+### Features
+
+* allow using postgresql in local dev ([92c9651](https://github.com/drodil/backstage-plugin-qeta/commit/92c96511ad2524376961db687094eca0a46838b5))
+
 ### [0.1.17](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.16...v0.1.17) (2022-12-27)
 
 
