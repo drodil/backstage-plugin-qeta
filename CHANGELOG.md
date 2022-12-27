@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.16](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.15...v0.1.16) (2022-12-27)
+
+
+### Features
+
+* add button to ask when there is no questions ([1aa4d75](https://github.com/drodil/backstage-plugin-qeta/commit/1aa4d75fa5288fe8fe6954baddc5981a252cb16a))
+* add question highlight lists to front page ([00f32c5](https://github.com/drodil/backstage-plugin-qeta/commit/00f32c5c85ef2fbc973f41770926cbdd42774405)), closes [#3](https://github.com/drodil/backstage-plugin-qeta/issues/3)
+
+
+### Bug Fixes
+
+* correct answer fetching in the questions list ([7bd3daf](https://github.com/drodil/backstage-plugin-qeta/commit/7bd3daf4edc81c8ef4d88c3ec2976dd5337b1d85))
+
 ### [0.1.15](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.14...v0.1.15) (2022-12-27)
 
 
