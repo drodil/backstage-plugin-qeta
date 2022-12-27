@@ -1,10 +1,11 @@
 import { useStyles } from '../../utils/hooks';
 import { WarningPanel } from '@backstage/core-components';
-import { Box, Divider, Grid, Typography } from '@material-ui/core';
+import { Box, Button, Divider, Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { QuestionListItem } from './QuestionListItem';
 import { Pagination, Skeleton } from '@material-ui/lab';
 import { QuestionsResponse } from '../../api';
+import HelpOutline from '@material-ui/icons/HelpOutline';
 
 export const QuestionList = (props: {
   loading: boolean;
@@ -36,9 +37,19 @@ export const QuestionList = (props: {
 
   if (response.questions.length === 0) {
     return (
-      <Grid container justifyContent="center">
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        direction="column"
+      >
         <Grid item>
           <Typography variant="h6">No questions found</Typography>
+        </Grid>
+        <Grid item>
+          <Button href="/qeta/ask" startIcon={<HelpOutline />}>
+            Go ahead and ask one!
+          </Button>
         </Grid>
       </Grid>
     );
