@@ -38,12 +38,41 @@ export class QetaClient implements QetaApi {
     this.baseUrl = options.configApi.getString('backend.baseUrl');
   }
 
+  private getQueryParameters(params: any): URLSearchParams {
+    const asStrings = Object.fromEntries(
+      Object.entries(params).map(([k, v]) => {
+        if (!v) {
+          return [k, ''];
+        }
+        return [k, `${v}`];
+      }),
+    );
+    return new URLSearchParams(omitBy(asStrings, isEmpty));
+  }
+
   async getQuestions(options: GetQuestionsOptions): Promise<QuestionsResponse> {
-    const query = new URLSearchParams(
-      omitBy(options as any, isEmpty),
-    ).toString();
+    const query = this.getQueryParameters(options).toString();
 
     let url = `${this.baseUrl}/api/qeta/questions`;
+    if (query) {
+      url += `?${query}`;
+    }
+
+    const response = await this.fetchApi.fetch(url);
+
+    const data = (await response.json()) as QuestionsResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async getQuestionsList(type: string): Promise<QuestionsResponse> {
+    const query = new URLSearchParams({ limit: '7' }).toString();
+
+    let url = `${this.baseUrl}/api/qeta/questions/list/${type}`;
     if (query) {
       url += `?${query}`;
     }

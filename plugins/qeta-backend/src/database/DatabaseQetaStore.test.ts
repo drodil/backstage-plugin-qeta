@@ -140,6 +140,13 @@ describe.each(databases.eachSupportedId())(
         expect(ret?.questions.length).toEqual(2);
       });
 
+      it('should fetch list of random questions', async () => {
+        await insertQuestion(question);
+        await insertQuestion({ ...question, title: 'title2' });
+        const ret = await storage.getQuestions({ random: true });
+        expect(ret?.questions.length).toEqual(2);
+      });
+
       it('should add new question', async () => {
         const id1 = await storage.postQuestion(
           'user1',

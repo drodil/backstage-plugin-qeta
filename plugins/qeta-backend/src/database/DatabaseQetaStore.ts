@@ -283,7 +283,9 @@ export class DatabaseQetaStore implements QetaStore {
       query.whereIn('tags.tag', options.tags);
     }
 
-    if (options.orderBy) {
+    if (options.random) {
+      query.orderByRaw('RANDOM()');
+    } else if (options.orderBy) {
       query.orderBy(options.orderBy, options.order ? options.order : 'desc');
     } else {
       query.orderBy('created', 'desc');

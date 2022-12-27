@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
 import {
   Content,
   ContentHeader,
@@ -15,23 +15,40 @@ import { TagPage } from '../TagPage/TagPage';
 import { UserPage } from '../UserPage/UserPage';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
+import { QuestionHighlightList } from '../QuestionHighlightList/QuestionHighlightList';
 
 export const HomePageContent = () => {
   return (
     <Content>
-      <ContentHeader title="All questions">
-        <Button href="/qeta/tags" startIcon={<LoyaltyOutlined />}>
-          Tags
-        </Button>
-        <Button
-          variant="contained"
-          href="/qeta/ask"
-          startIcon={<HelpOutline />}
-        >
-          Ask question
-        </Button>
-      </ContentHeader>
-      <QuestionsContainer />
+      <Grid container spacing={3}>
+        <Grid item md={12} lg={9} xl={10}>
+          <ContentHeader title="All questions">
+            <Button href="/qeta/tags" startIcon={<LoyaltyOutlined />}>
+              Tags
+            </Button>
+            <Button
+              variant="contained"
+              href="/qeta/ask"
+              startIcon={<HelpOutline />}
+            >
+              Ask question
+            </Button>
+          </ContentHeader>
+          <QuestionsContainer />
+        </Grid>
+        <Grid item lg={3} xl={2}>
+          <QuestionHighlightList
+            type="unanswered"
+            title="Unanswered questions"
+            noQuestionsLabel="No unanswered questions"
+          />
+          <QuestionHighlightList
+            type="incorrect"
+            title="Questions without correct answer"
+            noQuestionsLabel="No questions without correct answers"
+          />
+        </Grid>
+      </Grid>
     </Content>
   );
 };

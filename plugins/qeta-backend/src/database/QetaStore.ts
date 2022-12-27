@@ -57,6 +57,7 @@ export interface QuestionsOptions {
   noAnswers?: boolean;
   tags?: string[];
   includeAnswers?: boolean;
+  random?: boolean;
 }
 
 export interface TagResponse {

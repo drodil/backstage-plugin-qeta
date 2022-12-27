@@ -2,7 +2,12 @@ import { errorHandler } from '@backstage/backend-common';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { MaybeAnswer, MaybeQuestion, QetaStore } from '../database/QetaStore';
+import {
+  MaybeAnswer,
+  MaybeQuestion,
+  QetaStore,
+  QuestionsOptions,
+} from '../database/QetaStore';
 import { AuthenticationError } from '@backstage/errors';
 import Ajv, { JSONSchemaType } from 'ajv';
 import addFormats from 'ajv-formats';
@@ -137,6 +142,37 @@ export async function createRouter({
 
     // Act
     const questions = await database.getQuestions(request.query);
+
+    // Response
+    response.send(questions);
+  });
+
+  // GET /questions
+  router.get(`/questions/list/:type`, async (request, response) => {
+    // Validation
+    const validateQuery = ajv.compile(QuestionsQuerySchema);
+    if (!validateQuery(request.query)) {
+      response
+        .status(400)
+        .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+
+    const optionOverride: QuestionsOptions = {};
+    const type = request.params.type;
+    if (type === 'unanswered') {
+      optionOverride.random = true;
+      optionOverride.noAnswers = true;
+    } else if (type === 'incorrect') {
+      optionOverride.noCorrectAnswer = true;
+      optionOverride.random = true;
+    }
+
+    // Act
+    const questions = await database.getQuestions({
+      ...request.query,
+      ...optionOverride,
+    });
 
     // Response
     response.send(questions);

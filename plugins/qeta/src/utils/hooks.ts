@@ -58,5 +58,13 @@ export const useStyles = makeStyles(theme => {
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(1),
     },
+    questionHighlightList: {
+      width: '100%',
+      border: `1px solid ${theme.palette.primary.dark}`,
+      borderRadius: theme.shape.borderRadius,
+      '&:not(:first-child)': {
+        marginTop: theme.spacing(2),
+      },
+    },
   };
 });

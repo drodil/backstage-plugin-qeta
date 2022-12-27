@@ -18,6 +18,8 @@ export type GetQuestionsOptions = {
 export interface QetaApi {
   getQuestions(options: GetQuestionsOptions): Promise<QuestionsResponse>;
 
+  getQuestionsList(type: string): Promise<QuestionsResponse>;
+
   postQuestion(question: QuestionRequest): Promise<QuestionResponse>;
 
   getQuestion(id: string | undefined): Promise<QuestionResponse>;
