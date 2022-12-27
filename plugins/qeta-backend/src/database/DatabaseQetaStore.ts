@@ -253,6 +253,7 @@ export class DatabaseQetaStore implements QetaStore {
       .as('answersCount');
 
     const correctAnswers = this.db('answers')
+      .where('answers.questionId', questionRef)
       .where('answers.correct', '=', true)
       .count('*')
       .as('correctAnswers');
