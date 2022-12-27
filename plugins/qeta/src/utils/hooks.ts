@@ -19,12 +19,18 @@ export const useStyles = makeStyles(theme => {
     markdownEditor: {
       backgroundColor: 'initial',
       color: theme.palette.text.primary,
-      border: `1px solid ${theme.palette.grey[600]}`,
+      border: `1px solid ${theme.palette.action.disabled}`,
       borderRadius: theme.shape.borderRadius,
+      '&:hover': {
+        borderColor: theme.palette.action.active,
+      },
+      '&:focus-within': {
+        borderColor: theme.palette.primary.main,
+      },
       '& .mde-header': {
         backgroundColor: 'initial',
         color: theme.palette.text.primary,
-        borderBottom: `1px solid ${theme.palette.grey[600]}`,
+        borderBottom: `1px solid ${theme.palette.action.selected}`,
         '& .mde-tabs button, .mde-header-item > button': {
           color: `${theme.palette.text.primary} !important`,
         },
