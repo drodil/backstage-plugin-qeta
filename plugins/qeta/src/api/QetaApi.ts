@@ -5,6 +5,7 @@ import {
   QuestionRequest,
   QuestionResponse,
   QuestionsResponse,
+  TagResponse,
 } from './types';
 
 export type GetQuestionsOptions = {
@@ -21,7 +22,7 @@ export interface QetaApi {
 
   getQuestion(id: string | undefined): Promise<QuestionResponse>;
 
-  getTags(): Promise<string[]>;
+  getTags(): Promise<TagResponse[]>;
 
   voteQuestionUp(id: number): Promise<QuestionResponse>;
 

@@ -39,7 +39,7 @@ export const AskForm = () => {
   };
 
   useEffect(() => {
-    qetaApi.getTags().then(data => setAvailableTags(data));
+    qetaApi.getTags().then(data => setAvailableTags(data.map(tag => tag.tag)));
   }, [qetaApi]);
 
   return (

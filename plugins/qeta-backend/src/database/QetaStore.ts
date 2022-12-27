@@ -59,6 +59,10 @@ export interface QuestionsOptions {
   includeAnswers?: boolean;
 }
 
+export interface TagResponse {
+  tag: string;
+  questionsCount: number;
+}
 /**
  * Interface for fetching and modifying Q&A data
  */
@@ -193,5 +197,5 @@ export interface QetaStore {
   /**
    * Returns all used tags for questions
    */
-  getTags(): Promise<string[]>;
+  getTags(): Promise<TagResponse[]>;
 }

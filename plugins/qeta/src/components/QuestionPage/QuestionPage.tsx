@@ -14,6 +14,8 @@ import RelativeTime from 'react-relative-time';
 import { AnswerForm } from './AnswerForm';
 import { AnswerCard } from './AnswerCard';
 import { Skeleton } from '@material-ui/lab';
+import HelpOutline from '@material-ui/icons/HelpOutline';
+import HomeOutlined from '@material-ui/icons/HomeOutlined';
 
 export const QuestionPage = () => {
   const { id } = useParams();
@@ -71,8 +73,14 @@ export const QuestionPage = () => {
         // @ts-ignore
         description={getDescription(question)}
       >
-        <Button href="/qeta">Back to questions</Button>
-        <Button variant="contained" href="/qeta/ask">
+        <Button href="/qeta" startIcon={<HomeOutlined />}>
+          Back to questions
+        </Button>
+        <Button
+          variant="contained"
+          href="/qeta/ask"
+          startIcon={<HelpOutline />}
+        >
           Ask question
         </Button>
       </ContentHeader>

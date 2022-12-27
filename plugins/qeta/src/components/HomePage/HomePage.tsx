@@ -13,12 +13,21 @@ import { QuestionPage } from '../QuestionPage/QuestionPage';
 import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
 import { TagPage } from '../TagPage/TagPage';
 import { UserPage } from '../UserPage/UserPage';
+import HelpOutline from '@material-ui/icons/HelpOutline';
+import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 
 export const HomePageContent = () => {
   return (
     <Content>
       <ContentHeader title="All questions">
-        <Button variant="contained" href="/qeta/ask">
+        <Button href="/qeta/tags" startIcon={<LoyaltyOutlined />}>
+          Tags
+        </Button>
+        <Button
+          variant="contained"
+          href="/qeta/ask"
+          startIcon={<HelpOutline />}
+        >
           Ask question
         </Button>
       </ContentHeader>
@@ -36,7 +45,7 @@ export const HomePage = () => (
       <Route path="/" element={<HomePageContent />} />
       <Route path="/ask" element={<AskPage />} />
       <Route path="/questions/:id" element={<QuestionPage />} />
-      <Route path="/tags/:tag" element={<TagPage />} />
+      <Route path="/tags/:tag?" element={<TagPage />} />
       <Route path="/users/*" element={<UserPage />} />
     </Routes>
   </Page>

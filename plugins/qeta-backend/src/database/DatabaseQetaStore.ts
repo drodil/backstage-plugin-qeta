@@ -11,6 +11,7 @@ import {
   Question,
   Questions,
   QuestionsOptions,
+  TagResponse,
   Vote,
 } from './QetaStore';
 
@@ -407,7 +408,7 @@ export class DatabaseQetaStore implements QetaStore {
         [...new Set(newTags)].map(
           async tag =>
             await this.db
-              .insert({ tag })
+              .insert({ tag: tag.trim() })
               .into('tags')
               .returning('id')
               .onConflict('tag')
@@ -610,8 +611,24 @@ export class DatabaseQetaStore implements QetaStore {
     return await this.markAnswer(user_ref, questionId, answerId, false);
   }
 
-  async getTags(): Promise<string[]> {
-    const tags = await this.db('tags').select('tag');
-    return tags.map(tag => tag.tag);
+  async getTags(): Promise<TagResponse[]> {
+    const tagRef = this.db.ref('tags.id');
+    const questionsCount = this.db('question_tags')
+      .where('question_tags.tagId', tagRef)
+      .count('*')
+      .as('questionsCount');
+
+    const tags = await this.db('tags')
+      .leftJoin('question_tags', 'tags.id', 'question_tags.tagId')
+      .orderBy('questionsCount', 'desc')
+      .select('tag', questionsCount)
+      .groupBy('tags.id');
+
+    return tags.map(tag => {
+      return {
+        tag: tag.tag,
+        questionsCount: this.mapToInteger(tag.questionsCount),
+      };
+    });
   }
 }

@@ -70,3 +70,8 @@ export interface VoteResponse {
   score: number;
   timestamp: Date;
 }
+
+export interface TagResponse {
+  tag: string;
+  questionsCount: number;
+}

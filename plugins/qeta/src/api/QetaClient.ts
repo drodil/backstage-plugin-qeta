@@ -10,6 +10,7 @@ import {
   QuestionResponseBody,
   QuestionsResponse,
   QuestionsResponseBody,
+  TagResponse,
 } from './types';
 import omitBy from 'lodash/omitBy';
 import isEmpty from 'lodash/isEmpty';
@@ -92,9 +93,9 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async getTags(): Promise<string[]> {
+  async getTags(): Promise<TagResponse[]> {
     const response = await this.fetchApi.fetch(`${this.baseUrl}/api/qeta/tags`);
-    return (await response.json()) as string[];
+    return (await response.json()) as TagResponse[];
   }
 
   async voteQuestionUp(id: number): Promise<QuestionResponse> {
