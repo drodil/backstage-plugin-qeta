@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.15](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.14...v0.1.15) (2022-12-27)
+
+
+### Features
+
+* add tags page to show all used tags ([b3a0b6f](https://github.com/drodil/backstage-plugin-qeta/commit/b3a0b6f3fcd8cd4b1da9833361455f68c49675c5)), closes [#2](https://github.com/drodil/backstage-plugin-qeta/issues/2)
+* initial filter panel for questions page ([3852032](https://github.com/drodil/backstage-plugin-qeta/commit/385203275802b65e8ee9c38ddfdc915326ef0135)), closes [#4](https://github.com/drodil/backstage-plugin-qeta/issues/4)
+
+
+### Bug Fixes
+
+* follow palette colors in markdown editor ([9756685](https://github.com/drodil/backstage-plugin-qeta/commit/9756685f584f549948571369bdeb6dd296b1fa8e))
+
 ### [0.1.14](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.13...v0.1.14) (2022-12-23)
 
 
