@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder, useHotMemoize } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  loadBackendConfig,
+  useHotMemoize,
+} from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 import { DatabaseQetaStore } from '../database';
 import Knex from 'knex';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { ConfigReader } from '@backstage/config';
 
 export interface ServerOptions {
   port: number;
@@ -35,12 +38,10 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'qeta-backend-backend' });
   logger.debug('Starting application server...');
 
+  const config = await loadBackendConfig({ logger, argv: process.argv });
+
   const database = useHotMemoize(module, () => {
-    return Knex({
-      client: 'better-sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
+    return Knex(config.get('backend.database'));
   });
 
   const db = await DatabaseQetaStore.create({
@@ -60,8 +61,6 @@ export async function startStandaloneServer(
       };
     },
   };
-
-  const config = ConfigReader.fromConfigs([]);
 
   const router = await createRouter({
     logger,

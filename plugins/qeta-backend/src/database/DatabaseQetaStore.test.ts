@@ -10,7 +10,7 @@ jest.setTimeout(60_000);
 
 const databases = TestDatabases.create({
   ids: ['POSTGRES_13', 'SQLITE_3'],
-  // disableDocker: false,
+  disableDocker: !process.env.GITHUB_ACTIONS,
 });
 
 async function createStore(databaseId: TestDatabaseId) {

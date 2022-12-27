@@ -46,24 +46,26 @@ export const QuestionHighlightList = (props: {
             <ListItemText>Failed to load questions</ListItemText>
           </ListItem>
         )}
-        {response && response.questions.length === 0 && (
+        {response && response.questions && response.questions.length === 0 && (
           <ListItem>
             <ListItemText>{props.noQuestionsLabel}</ListItemText>
           </ListItem>
         )}
-        {response?.questions.map(q => (
-          <React.Fragment key={q.id}>
-            <Divider />
-            <ListItem
-              button
-              dense
-              component="a"
-              href={`/qeta/questions/${q.id}`}
-            >
-              <ListItemText>{q.title}</ListItemText>
-            </ListItem>
-          </React.Fragment>
-        ))}
+        {response &&
+          response.questions &&
+          response?.questions.map(q => (
+            <React.Fragment key={q.id}>
+              <Divider />
+              <ListItem
+                button
+                dense
+                component="a"
+                href={`/qeta/questions/${q.id}`}
+              >
+                <ListItemText>{q.title}</ListItemText>
+              </ListItem>
+            </React.Fragment>
+          ))}
       </List>
     </Box>
   );

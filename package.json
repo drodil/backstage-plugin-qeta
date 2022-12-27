@@ -8,6 +8,8 @@
   "scripts": {
     "prepare": "husky install",
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
     "start": "yarn workspace @drodil/backstage-plugin-qeta start",
     "start-backend": "yarn workspace @drodil/backstage-plugin-qeta-backend start",
     "start:ci": "concurrently \"yarn start\" \"yarn start-backend:ci\"",
