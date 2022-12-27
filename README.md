@@ -34,6 +34,10 @@ Answering question:
 
 ![Questions list](./docs/images/question_answer.png)
 
+Tags page:
+
+![Tags page](./docs/images/tags_page.png)
+
 ## Contributing
 
 All contributions are very welcome. See [CONTRIBUTING](CONTRIBUTING.md) for more information.
