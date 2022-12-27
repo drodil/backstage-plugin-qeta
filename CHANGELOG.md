@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.17](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.16...v0.1.17) (2022-12-27)
+
+
+### Bug Fixes
+
+* remove docker from tests ([c658f60](https://github.com/drodil/backstage-plugin-qeta/commit/c658f60f6cf473dfa121fe29c06dc07c3e7db658))
+
 ### [0.1.16](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.15...v0.1.16) (2022-12-27)
 
 
