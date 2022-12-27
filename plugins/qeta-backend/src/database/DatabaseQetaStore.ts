@@ -295,6 +295,14 @@ export class DatabaseQetaStore implements QetaStore {
       query.offset(options.offset);
     }
 
+    if (options.noAnswers) {
+      query.where('answersCount', '=', 0);
+    }
+
+    if (options.noCorrectAnswer) {
+      query.where('correctAnswers', '=', 0);
+    }
+
     const rows = (await query) as RawQuestionEntity[];
     const total = (
       (await this.db<RawQuestionEntity>('questions')

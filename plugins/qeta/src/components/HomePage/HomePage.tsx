@@ -10,7 +10,7 @@ import {
 import { Route, Routes } from 'react-router-dom';
 import { AskPage } from '../AskPage';
 import { QuestionPage } from '../QuestionPage/QuestionPage';
-import { QuestionList } from '../QuestionList/QuestionList';
+import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
 import { TagPage } from '../TagPage/TagPage';
 import { UserPage } from '../UserPage/UserPage';
 
@@ -22,7 +22,7 @@ export const HomePageContent = () => {
           Ask question
         </Button>
       </ContentHeader>
-      <QuestionList />
+      <QuestionsContainer />
     </Content>
   );
 };

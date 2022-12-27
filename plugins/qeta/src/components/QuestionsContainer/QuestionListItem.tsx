@@ -23,6 +23,7 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
         {question.tags &&
           question.tags.map(tag => (
             <Chip
+              key={tag}
               label={tag}
               size="small"
               component="a"

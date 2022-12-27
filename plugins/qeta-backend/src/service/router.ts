@@ -21,23 +21,35 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 interface QuestionsQuery {
-  limit: number;
-  offset: number;
-  tags: string[];
-  author: string;
-  includeAnswers: boolean;
-  includeVotes: boolean;
+  limit?: number;
+  offset?: number;
+  tags?: string[];
+  author?: string;
+  orderBy?: 'views' | 'score' | 'answersCount' | 'created' | 'updated';
+  order?: 'desc' | 'asc';
+  noCorrectAnswer?: boolean;
+  noAnswers?: boolean;
+  includeAnswers?: boolean;
+  includeVotes?: boolean;
 }
 
 const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
   type: 'object',
   properties: {
-    limit: { type: 'integer' },
-    offset: { type: 'integer' },
-    author: { type: 'string' },
-    tags: { type: 'array', items: { type: 'string' } },
-    includeAnswers: { type: 'boolean' },
-    includeVotes: { type: 'boolean' },
+    limit: { type: 'integer', nullable: true },
+    offset: { type: 'integer', nullable: true },
+    author: { type: 'string', nullable: true },
+    orderBy: {
+      type: 'string',
+      enum: ['views', 'score', 'answersCount', 'created', 'updated'],
+      nullable: true,
+    },
+    order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
+    noCorrectAnswer: { type: 'boolean', nullable: true },
+    noAnswers: { type: 'boolean', nullable: true },
+    tags: { type: 'array', items: { type: 'string' }, nullable: true },
+    includeAnswers: { type: 'boolean', nullable: true },
+    includeVotes: { type: 'boolean', nullable: true },
   },
   required: [],
   additionalProperties: false,

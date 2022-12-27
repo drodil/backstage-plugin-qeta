@@ -51,8 +51,10 @@ export interface QuestionsOptions {
   limit?: number;
   offset?: number;
   author?: string;
-  orderBy?: string;
-  order?: 'DESC' | 'ASC';
+  orderBy?: 'views' | 'score' | 'answersCount' | 'created' | 'updated';
+  order?: 'desc' | 'asc';
+  noCorrectAnswer?: boolean;
+  noAnswers?: boolean;
   tags?: string[];
   includeAnswers?: boolean;
 }

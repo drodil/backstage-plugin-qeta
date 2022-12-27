@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Content, ContentHeader } from '@backstage/core-components';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
-import { QuestionList } from '../QuestionList';
+import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
 
 export const TagPage = () => {
   const { tag } = useParams();
@@ -16,7 +16,7 @@ export const TagPage = () => {
           Ask question
         </Button>
       </ContentHeader>
-      <QuestionList tags={[tag ?? '']} />
+      <QuestionsContainer tags={[tag ?? '']} />
     </Content>
   );
 };
