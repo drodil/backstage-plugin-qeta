@@ -25,6 +25,7 @@ import { createRouter } from './router';
 import { DatabaseQetaStore } from '../database';
 import Knex from 'knex';
 import { IdentityApi } from '@backstage/plugin-auth-node';
+import { createCatalogMockRouter } from './CatalogMockRouter';
 
 export interface ServerOptions {
   port: number;
@@ -68,10 +69,12 @@ export async function startStandaloneServer(
     identity: identityMock,
     config,
   });
+  const catalogMock = await createCatalogMockRouter();
 
   let service = createServiceBuilder(module)
     .setPort(options.port)
-    .addRouter('/api/qeta', router);
+    .addRouter('/api/qeta', router)
+    .addRouter('/api/catalog', catalogMock);
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });
   }

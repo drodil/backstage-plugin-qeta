@@ -5,11 +5,14 @@ import { FilterKey, FilterPanel } from './FilterPanel';
 import { QuestionList } from './QuestionList';
 import FilterList from '@material-ui/icons/FilterList';
 
-export const QuestionsContainer = (props: {
+export interface QuestionsContainerProps {
   tags?: string[];
   author?: string;
-}) => {
-  const { tags, author } = props;
+  component?: string;
+  showFilters?: boolean;
+}
+export const QuestionsContainer = (props: QuestionsContainerProps) => {
+  const { tags, author, component, showFilters } = props;
   const [page, setPage] = React.useState(1);
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
   const [filters, setFilters] = React.useState({
@@ -35,7 +38,14 @@ export const QuestionsContainer = (props: {
     error,
   } = useQetaApi(
     api =>
-      api.getQuestions({ limit: pageSize, offset, tags, author, ...filters }),
+      api.getQuestions({
+        limit: pageSize,
+        offset,
+        tags,
+        component,
+        author,
+        ...filters,
+      }),
     [page, offset, filters],
   );
 
@@ -47,18 +57,22 @@ export const QuestionsContainer = (props: {
             response?.questions.length ?? 0
           } questions`}</Typography>
         </Grid>
-        <Grid item>
-          <Button
-            onClick={() => setShowFilterPanel(!showFilterPanel)}
-            startIcon={<FilterList />}
-          >
-            Filter
-          </Button>
-        </Grid>
+        {(showFilters ?? true) && (
+          <Grid item>
+            <Button
+              onClick={() => setShowFilterPanel(!showFilterPanel)}
+              startIcon={<FilterList />}
+            >
+              Filter
+            </Button>
+          </Grid>
+        )}
       </Grid>
-      <Collapse in={showFilterPanel}>
-        <FilterPanel onChange={onFilterChange} filters={filters} />
-      </Collapse>
+      {(showFilters ?? true) && (
+        <Collapse in={showFilterPanel}>
+          <FilterPanel onChange={onFilterChange} filters={filters} />
+        </Collapse>
+      )}
 
       <QuestionList
         loading={loading}

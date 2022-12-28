@@ -12,6 +12,7 @@ export type GetQuestionsOptions = {
   limit?: number;
   offset?: number;
   tags?: string[];
+  component?: string;
   author?: string;
 };
 

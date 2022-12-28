@@ -22,6 +22,7 @@ export interface QuestionResponse {
   title: string;
   content: string;
   tags?: string[];
+  components?: string[];
   created: Date;
   views: number;
   score: number;
@@ -41,6 +42,7 @@ export interface QuestionRequest {
   title: string;
   content: string;
   tags?: string[];
+  components?: string[];
 }
 
 export interface AnswerRequest {

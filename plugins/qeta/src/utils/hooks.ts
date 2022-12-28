@@ -2,6 +2,8 @@ import { QetaApi, qetaApiRef } from '../api';
 import { useAsync } from 'react-use';
 import { useApi } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core';
+import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 export function useQetaApi<T>(
   f: (api: QetaApi) => Promise<T>,
@@ -11,6 +13,17 @@ export function useQetaApi<T>(
 
   return useAsync(async () => {
     return await f(qetaApi);
+  }, deps);
+}
+
+export function useCatalogApi<T>(
+  f: (api: CatalogApi) => Promise<T>,
+  deps: any[] = [],
+) {
+  const catalogApi = useApi(catalogApiRef);
+
+  return useAsync(async () => {
+    return await f(catalogApi);
   }, deps);
 }
 
@@ -49,7 +62,8 @@ export const useStyles = makeStyles(theme => {
     },
     questionCardVote: {
       textAlign: 'center',
-      marginRight: '20px',
+      marginRight: '10px',
+      marginLeft: '-10px',
     },
     questionListPagination: {
       marginTop: theme.spacing(2),
@@ -70,6 +84,10 @@ export const useStyles = makeStyles(theme => {
       border: `1px solid ${theme.palette.action.selected}`,
       borderRadius: theme.shape.borderRadius,
       padding: theme.spacing(3),
+    },
+    questionCardMetadata: {
+      width: '100%',
+      marginTop: theme.spacing(3),
     },
   };
 });

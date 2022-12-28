@@ -1156,7 +1156,7 @@
 
 "@backstage/catalog-client@^1.2.0":
   version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@backstage/catalog-client/-/catalog-client-1.2.0.tgz#14b3c69fcb41528a2da975ea4b771ee873055d70"
+  resolved "https://oppartifactory.eficode.com/api/npm/op-npm-general/@backstage/catalog-client/-/catalog-client-1.2.0.tgz#14b3c69fcb41528a2da975ea4b771ee873055d70"
   integrity sha512-aSD2bpbPvO6j4wm0cUPPT6lQNDsSNGTFFuUfrVSP/w6zt4Xu7MBBmYcm3ppk4goOZeoqq2/zlHfszs3TCjilxw==
   dependencies:
     "@backstage/catalog-model" "^1.1.4"
@@ -1165,7 +1165,7 @@
 
 "@backstage/catalog-model@^1.1.4":
   version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-1.1.4.tgz#3addf3e4708aca718734c764362a69dfc01b7006"
+  resolved "https://oppartifactory.eficode.com/api/npm/op-npm-general/@backstage/catalog-model/-/catalog-model-1.1.4.tgz#3addf3e4708aca718734c764362a69dfc01b7006"
   integrity sha512-dYswAB34/HFqwg0EhdkkirmARIQ7dXCwteM+H18qwEN/RIx7IqE5D1quAWGxvBd3frYfOsiBigRKNvZ9b5o7ug==
   dependencies:
     "@backstage/config" "^1.0.5"
@@ -1314,7 +1314,7 @@
 
 "@backstage/core-app-api@^1.3.0":
   version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@backstage/core-app-api/-/core-app-api-1.3.0.tgz#0ffd969cbf3e81f8c7b93ade4aa463579a769e95"
+  resolved "https://oppartifactory.eficode.com/api/npm/op-npm-general/@backstage/core-app-api/-/core-app-api-1.3.0.tgz#0ffd969cbf3e81f8c7b93ade4aa463579a769e95"
   integrity sha512-HUcbxTvWaE1gS1hvVHrVH5d/gkt7iaEJj5RVF5sL+Sdn4Gk9aRQ1zr/na0BlLEiWCUVOc1QZM1Ganf4/OTLnTw==
   dependencies:
     "@backstage/config" "^1.0.5"
@@ -1372,7 +1372,7 @@
 
 "@backstage/core-plugin-api@^1.2.0":
   version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@backstage/core-plugin-api/-/core-plugin-api-1.2.0.tgz#533acb42301d6d581ade247f9e99509e956788e6"
+  resolved "https://oppartifactory.eficode.com/api/npm/op-npm-general/@backstage/core-plugin-api/-/core-plugin-api-1.2.0.tgz#533acb42301d6d581ade247f9e99509e956788e6"
   integrity sha512-An8SObFyJpUrzIfg2S6W1aT+8Rs1zUxW2fzjv7wkl1EgrpwGjxPWl6KxQ15g9FQwcbhO1qJPRlcg7aK6ICvWxw==
   dependencies:
     "@backstage/config" "^1.0.5"
@@ -1415,7 +1415,7 @@
 
 "@backstage/integration-react@^1.1.8":
   version "1.1.8"
-  resolved "https://registry.yarnpkg.com/@backstage/integration-react/-/integration-react-1.1.8.tgz#a850249bcd07b619414543189442b2f3a5da7593"
+  resolved "https://oppartifactory.eficode.com/api/npm/op-npm-general/@backstage/integration-react/-/integration-react-1.1.8.tgz#a850249bcd07b619414543189442b2f3a5da7593"
   integrity sha512-ADRZrOWcxRBt17CYuKr0FAzv0jZFpC8dmxBQlR+d8/JQlWnEuxIpRGk1ndJ9PF82WO2OGVYhLmHl1i6AcZ+sZA==
   dependencies:
     "@backstage/config" "^1.0.5"
@@ -1458,7 +1458,7 @@
 
 "@backstage/plugin-catalog-common@^1.0.9":
   version "1.0.9"
-  resolved "https://registry.yarnpkg.com/@backstage/plugin-catalog-common/-/plugin-catalog-common-1.0.9.tgz#a16ce8936ace90bb35514966fcd97a54845bc702"
+  resolved "https://oppartifactory.eficode.com/api/npm/op-npm-general/@backstage/plugin-catalog-common/-/plugin-catalog-common-1.0.9.tgz#a16ce8936ace90bb35514966fcd97a54845bc702"
   integrity sha512-KjV1t9nT/6ekOEWHxhC133YJoQrdQpikEGR2En33DfPZ5oCI2ZunkkEiJIdDIl0YbKT2Jh+5WuD96VUabxnJdA==
   dependencies:
     "@backstage/catalog-model" "^1.1.4"
@@ -1467,7 +1467,7 @@
 
 "@backstage/plugin-catalog-react@^1.2.3":
   version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@backstage/plugin-catalog-react/-/plugin-catalog-react-1.2.3.tgz#38b5fc0272b487d85a521fd200dbd95a542bed5d"
+  resolved "https://oppartifactory.eficode.com/api/npm/op-npm-general/@backstage/plugin-catalog-react/-/plugin-catalog-react-1.2.3.tgz#38b5fc0272b487d85a521fd200dbd95a542bed5d"
   integrity sha512-IpO545da+qXA/yuifbZ1cPK2b/alZ8p5BhxDfmS7CcgqgzkSf8bmqgp2sbw0UwVXpRQKLfSbS0j7kOao7R+0MQ==
   dependencies:
     "@backstage/catalog-client" "^1.2.0"

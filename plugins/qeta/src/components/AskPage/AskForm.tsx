@@ -6,15 +6,36 @@ import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import 'react-mde/lib/styles/css/react-mde-all.css';
 import { useNavigate } from 'react-router-dom';
-import { qetaApiRef, QuestionRequest } from '../../api';
+import { qetaApiRef } from '../../api';
 import { useStyles } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { getEntityTitle } from '../../utils/utils';
+
+interface QuestionForm {
+  title: string;
+  content: string;
+  tags?: string[];
+  components?: Entity[];
+}
+
+const formToRequest = (form: QuestionForm) => {
+  return {
+    ...form,
+    components: form.components?.map(stringifyEntityRef),
+  };
+};
 
 export const AskForm = () => {
   const navigate = useNavigate();
   const [error, setError] = React.useState(false);
-  const [availableTags, setAvailableTags] = React.useState<string[]>([]);
+  const [availableTags, setAvailableTags] = React.useState<string[] | null>([]);
+  const [availableComponents, setAvailableComponents] = React.useState<
+    Entity[] | null
+  >([]);
   const qetaApi = useApi(qetaApiRef);
+  const catalogApi = useApi(catalogApiRef);
   const styles = useStyles();
   const {
     register,
@@ -22,11 +43,11 @@ export const AskForm = () => {
     control,
     reset,
     formState: { errors },
-  } = useForm<QuestionRequest>();
+  } = useForm<QuestionForm>();
 
-  const postQuestion = (data: QuestionRequest) => {
+  const postQuestion = (data: QuestionForm) => {
     qetaApi
-      .postQuestion(data)
+      .postQuestion(formToRequest(data))
       .then(q => {
         if (!q || !q.id) {
           setError(true);
@@ -39,8 +60,26 @@ export const AskForm = () => {
   };
 
   useEffect(() => {
-    qetaApi.getTags().then(data => setAvailableTags(data.map(tag => tag.tag)));
+    qetaApi
+      .getTags()
+      .catch(_ => setAvailableTags(null))
+      .then(data =>
+        data
+          ? setAvailableTags(data.map(tag => tag.tag))
+          : setAvailableTags(null),
+      );
   }, [qetaApi]);
+
+  useEffect(() => {
+    catalogApi
+      .getEntities()
+      .catch(_ => setAvailableComponents(null))
+      .then(data =>
+        data
+          ? setAvailableComponents(data.items)
+          : setAvailableComponents(null),
+      );
+  }, [catalogApi]);
 
   return (
     <form onSubmit={handleSubmit(postQuestion)}>
@@ -55,7 +94,10 @@ export const AskForm = () => {
         margin="normal"
         variant="outlined"
         helperText="Write good title for your question that people can understand"
-        {...register('title', { required: true, maxLength: 255 })}
+        {
+          // @ts-ignore
+          ...register('title', { required: true, maxLength: 255 })
+        }
       />
       <Controller
         control={control}
@@ -74,35 +116,70 @@ export const AskForm = () => {
         )}
         name="content"
       />
-      <Controller
-        control={control}
-        defaultValue={[]}
-        render={({ field: { onChange, value } }) => (
-          <Autocomplete
-            multiple
-            id="tags-standard"
-            value={value}
-            options={availableTags}
-            freeSolo
-            onChange={(_e, newValue) => {
-              if (!value || value.length < 5) {
-                onChange(newValue);
+      {availableTags && (
+        <Controller
+          control={control}
+          defaultValue={[]}
+          render={({ field: { onChange, value } }) => (
+            <Autocomplete
+              multiple
+              id="tags-standard"
+              value={value}
+              options={availableTags}
+              freeSolo
+              onChange={(_e, newValue) => {
+                if (!value || value.length < 5) {
+                  onChange(newValue);
+                }
+              }}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  margin="normal"
+                  label="Tags"
+                  placeholder="Type or select tags"
+                  helperText="Add up to 5 tags to categorize your question"
+                />
+              )}
+            />
+          )}
+          name="tags"
+        />
+      )}
+      {availableComponents && (
+        <Controller
+          control={control}
+          defaultValue={[]}
+          render={({ field: { onChange, value } }) => (
+            <Autocomplete
+              multiple
+              id="tags-standard"
+              options={availableComponents}
+              getOptionLabel={getEntityTitle}
+              getOptionSelected={(o, v) =>
+                stringifyEntityRef(o) === stringifyEntityRef(v)
               }
-            }}
-            renderInput={params => (
-              <TextField
-                {...params}
-                variant="outlined"
-                margin="normal"
-                label="Tags"
-                placeholder="Type or select tags"
-                helperText="Add up to 5 tags to categorize your question"
-              />
-            )}
-          />
-        )}
-        name="tags"
-      />
+              onChange={(_e, newValue) => {
+                if (!value || value.length < 3) {
+                  onChange(newValue);
+                }
+              }}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  margin="normal"
+                  label="Components"
+                  placeholder="Type or select components"
+                  helperText="Add up to 3 components this question relates to"
+                />
+              )}
+            />
+          )}
+          name="components"
+        />
+      )}
       <Button type="submit" variant="contained" className={styles.postButton}>
         Post
       </Button>
