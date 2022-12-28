@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.20](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.19...v0.1.20) (2022-12-28)
+
+
+### Bug Fixes
+
+* duplicate catalog api for plugin users ([2ce629b](https://github.com/drodil/backstage-plugin-qeta/commit/2ce629ba777f9ea98301e0f14ee82086ca747912))
+
 ### [0.1.19](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.18...v0.1.19) (2022-12-28)
 
 
