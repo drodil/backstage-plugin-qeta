@@ -101,14 +101,14 @@ export class DatabaseQetaStore implements QetaStore {
 
   private async mapQuestion(
     val: RawQuestionEntity,
-    addQuestions?: boolean,
+    addAnswers?: boolean,
     addVotes?: boolean,
     addComponents?: boolean,
   ): Promise<Question> {
     // TODO: This could maybe done with join
     const additionalInfo = await Promise.all([
       this.getQuestionTags(val.id),
-      addQuestions ? this.getQuestionAnswers(val.id, addVotes) : undefined,
+      addAnswers ? this.getQuestionAnswers(val.id, addVotes) : undefined,
       addVotes ? this.getQuestionVotes(val.id) : undefined,
       addComponents ? this.getQuestionComponents(val.id) : undefined,
     ]);
@@ -316,7 +316,12 @@ export class DatabaseQetaStore implements QetaStore {
     const ret = {
       questions: await Promise.all(
         rows.map(async val => {
-          return this.mapQuestion(val, options.includeAnswers);
+          return this.mapQuestion(
+            val,
+            options.includeAnswers,
+            options.includeVotes,
+            options.includeComponents,
+          );
         }),
       ),
       total,
@@ -376,6 +381,7 @@ export class DatabaseQetaStore implements QetaStore {
       rows[0] as unknown as RawQuestionEntity,
       true,
       true,
+      true,
     );
   }
 
@@ -403,7 +409,7 @@ export class DatabaseQetaStore implements QetaStore {
       this.addQuestionComponents(questions[0].id, components),
     ]);
 
-    return this.mapQuestion(questions[0]);
+    return this.mapQuestion(questions[0], false, false, true);
   }
 
   private async addQuestionTags(questionId: number, tagsInput?: string[]) {

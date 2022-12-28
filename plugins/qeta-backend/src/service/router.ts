@@ -36,6 +36,7 @@ interface QuestionsQuery {
   noAnswers?: boolean;
   includeAnswers?: boolean;
   includeVotes?: boolean;
+  includeComponents?: boolean;
 }
 
 const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
@@ -55,6 +56,7 @@ const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     tags: { type: 'array', items: { type: 'string' }, nullable: true },
     includeAnswers: { type: 'boolean', nullable: true },
     includeVotes: { type: 'boolean', nullable: true },
+    includeComponents: { type: 'boolean', nullable: true },
   },
   required: [],
   additionalProperties: false,

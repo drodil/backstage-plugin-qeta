@@ -57,6 +57,8 @@ export interface QuestionsOptions {
   noAnswers?: boolean;
   tags?: string[];
   includeAnswers?: boolean;
+  includeVotes?: boolean;
+  includeComponents?: boolean;
   random?: boolean;
 }
 

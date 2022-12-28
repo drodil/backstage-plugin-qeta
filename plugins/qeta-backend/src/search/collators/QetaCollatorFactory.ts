@@ -13,6 +13,7 @@ export type QetaCollatorFactoryOptions = {
 
 export type QetaDocument = IndexableDocument & {
   tags?: string[];
+  components?: string[];
   author: string;
   views: number;
   answersCount: number;
@@ -41,7 +42,7 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
   async *execute(): AsyncGenerator<QetaDocument> {
     this.logger.info('Executing QetaCollator');
     const response = await fetch(
-      `${this.backendBaseUrl}/api/qeta/questions?includeAnswers=true`,
+      `${this.backendBaseUrl}/api/qeta/questions?includeAnswers=true&includeComponents=true`,
     );
     const data = await response.json();
     this.logger.info(`Found ${data.questions.length} questions to index`);
