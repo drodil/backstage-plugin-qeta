@@ -22,6 +22,8 @@ export const QuestionHighlightList = (props: {
   } = useQetaApi(api => api.getQuestionsList(props.type), []);
   const classes = useStyles();
 
+  const questions = response?.questions ?? [];
+
   return (
     <Box
       className={classes.questionHighlightList}
@@ -31,7 +33,11 @@ export const QuestionHighlightList = (props: {
         component="nav"
         aria-labelledby="nested-list-subheader"
         subheader={
-          <ListSubheader component="div" id="nested-list-subheader">
+          <ListSubheader
+            component="div"
+            id="nested-list-subheader"
+            color="primary"
+          >
             {props.title}
           </ListSubheader>
         }
@@ -46,14 +52,13 @@ export const QuestionHighlightList = (props: {
             <ListItemText>Failed to load questions</ListItemText>
           </ListItem>
         )}
-        {response && response.questions && response.questions.length === 0 && (
+        {!error && questions.length === 0 && (
           <ListItem>
             <ListItemText>{props.noQuestionsLabel}</ListItemText>
           </ListItem>
         )}
-        {response &&
-          response.questions &&
-          response?.questions.map(q => (
+        {!error &&
+          questions.map(q => (
             <React.Fragment key={q.id}>
               <Divider />
               <ListItem

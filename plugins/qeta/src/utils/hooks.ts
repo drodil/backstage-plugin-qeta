@@ -60,11 +60,16 @@ export const useStyles = makeStyles(theme => {
     },
     questionHighlightList: {
       width: '100%',
-      border: `1px solid ${theme.palette.primary.dark}`,
+      border: `1px solid ${theme.palette.action.selected}`,
       borderRadius: theme.shape.borderRadius,
       '&:not(:first-child)': {
         marginTop: theme.spacing(2),
       },
+    },
+    filterPanel: {
+      border: `1px solid ${theme.palette.action.selected}`,
+      borderRadius: theme.shape.borderRadius,
+      padding: theme.spacing(3),
     },
   };
 });

@@ -10,6 +10,7 @@ import {
   Radio,
   RadioGroup,
 } from '@material-ui/core';
+import { useStyles } from '../../utils/hooks';
 
 const radioSelect = (value: string, label: string) => {
   return (
@@ -29,6 +30,7 @@ export interface FilterPanelProps {
 
 export const FilterPanel = (props: FilterPanelProps) => {
   const { onChange, filters } = props;
+  const styles = useStyles();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value;
@@ -39,15 +41,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
   };
 
   return (
-    <Box
-      sx={{
-        bgcolor: 'info.dark',
-        color: 'info.contrastText',
-        borderRadius: 2,
-        p: 2,
-        minWidth: 300,
-      }}
-    >
+    <Box className={styles.filterPanel}>
       <Grid container spacing={4}>
         <Grid item>
           <FormGroup>
