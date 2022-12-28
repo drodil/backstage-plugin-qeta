@@ -15,6 +15,7 @@ within Backstage. This plugin provides:
 - Interface for individual users and tags
 - Backend that saves questions and answers to desired database
 - Integration with the [`@backstage/plugin-search`](https://github.com/backstage/backstage/tree/master/plugins/search) plugin
+- Integration with the [`@backstage/plugin-catalog-react`](https://github.com/backstage/backstage/tree/master/plugins/catalog-react) plugin
 
 ## Setup
 

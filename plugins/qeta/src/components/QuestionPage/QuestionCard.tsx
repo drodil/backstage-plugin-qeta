@@ -43,57 +43,55 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
   return (
     <Card variant="outlined">
       <CardContent>
-        <Grid container spacing={0}>
-          <Grid item xs={1} className={styles.questionCardVote}>
-            <VoteButtons entity={question} />
-          </Grid>
-          <Grid item xs={11}>
-            <Typography variant="body1" gutterBottom>
-              <MarkdownContent content={question.content} dialect="gfm" />
-            </Typography>
-            <Box className={styles.questionCardMetadata}>
-              <Grid container spacing={0} justifyContent="space-around">
-                <Grid item xs={8}>
-                  {question.tags &&
-                    question.tags.map(tag => (
+        <div className={styles.questionCardVote}>
+          <VoteButtons entity={question} />
+        </div>
+        <div className={styles.questionCardContent}>
+          <Typography variant="body1" gutterBottom>
+            <MarkdownContent content={question.content} dialect="gfm" />
+          </Typography>
+          <Box className={styles.questionCardMetadata}>
+            <Grid container spacing={0} justifyContent="space-around">
+              <Grid item xs={8}>
+                {question.tags &&
+                  question.tags.map(tag => (
+                    <Chip
+                      label={tag}
+                      size="small"
+                      component="a"
+                      href={`/qeta/tags/${tag}`}
+                      clickable
+                    />
+                  ))}
+                {components &&
+                  components.map(component => (
+                    <Tooltip
+                      title={
+                        component.metadata.description?.slice(0, 50) ??
+                        stringifyEntityRef(component)
+                      }
+                      arrow
+                    >
                       <Chip
-                        label={tag}
+                        label={getEntityTitle(component)}
                         size="small"
+                        variant="outlined"
                         component="a"
-                        href={`/qeta/tags/${tag}`}
+                        href={getEntityUrl(component)}
                         clickable
                       />
-                    ))}
-                  {components &&
-                    components.map(component => (
-                      <Tooltip
-                        title={
-                          component.metadata.description?.slice(0, 50) ??
-                          stringifyEntityRef(component)
-                        }
-                        arrow
-                      >
-                        <Chip
-                          label={getEntityTitle(component)}
-                          size="small"
-                          variant="outlined"
-                          component="a"
-                          href={getEntityUrl(component)}
-                          clickable
-                        />
-                      </Tooltip>
-                    ))}
-                </Grid>
-                <Grid item xs={4}>
-                  Asked <RelativeTime value={question.created} /> by{' '}
-                  <Link href={`/qeta/users/${question.author}`}>
-                    {question.author}
-                  </Link>
-                </Grid>
+                    </Tooltip>
+                  ))}
               </Grid>
-            </Box>
-          </Grid>
-        </Grid>
+              <Grid item xs={4} className={styles.questionCardAuthor}>
+                Asked <RelativeTime value={question.created} /> by{' '}
+                <Link href={`/qeta/users/${question.author}`}>
+                  {question.author}
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
+        </div>
       </CardContent>
     </Card>
   );

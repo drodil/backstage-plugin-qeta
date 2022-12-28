@@ -62,8 +62,17 @@ export const useStyles = makeStyles(theme => {
     },
     questionCardVote: {
       textAlign: 'center',
-      marginRight: '10px',
-      marginLeft: '-10px',
+      width: '50px',
+      marginRight: '20px',
+      display: 'inline-block',
+      verticalAlign: 'top',
+    },
+    questionCardContent: {
+      display: 'inline-block',
+      width: 'calc(100% - 70px)',
+    },
+    questionCardAuthor: {
+      textAlign: 'right',
     },
     questionListPagination: {
       marginTop: theme.spacing(2),

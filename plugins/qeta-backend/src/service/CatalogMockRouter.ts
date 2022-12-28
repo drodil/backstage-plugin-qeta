@@ -1,6 +1,8 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { errorHandler } from '@backstage/backend-common';
+// @eslint-ignore
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const entitiesResponse = [
   {
@@ -51,8 +53,18 @@ export const createCatalogMockRouter = async (): Promise<express.Router> => {
     response.json(entitiesResponse);
   });
 
-  router.post('/entities/by-refs', (_, response) => {
-    response.json({ items: entitiesResponse });
+  router.post('/entities/by-refs', (request, response) => {
+    const entityRefs = request.body.entityRefs;
+    if (!entityRefs || entityRefs.length === 0) {
+      response.json([]);
+      return;
+    }
+
+    response.json({
+      items: entitiesResponse.filter(e =>
+        entityRefs.includes(stringifyEntityRef(e)),
+      ),
+    });
   });
 
   router.use(errorHandler());

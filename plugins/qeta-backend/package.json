@@ -42,6 +42,7 @@
     "@backstage/config": "^1.0.5",
     "@backstage/errors": "^1.1.4",
     "@backstage/plugin-auth-node": "^0.2.8",
+    "@backstage/catalog-model": "^1.1.4",
     "@backstage/plugin-search-common": "^1.2.0",
     "@types/express": "*",
     "ajv": "^8.11.0",
