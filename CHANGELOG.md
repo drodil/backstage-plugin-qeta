@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.22](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.21...v0.1.22) (2022-12-28)
+
+
+### Features
+
+* format username from entity reference ([5b81ddb](https://github.com/drodil/backstage-plugin-qeta/commit/5b81ddbae37ea9a5afa3b5e9f7d77bbedc0d485f)), closes [#14](https://github.com/drodil/backstage-plugin-qeta/issues/14)
+
+
+### Bug Fixes
+
+* move catalog api to dev/index ([38c34f9](https://github.com/drodil/backstage-plugin-qeta/commit/38c34f9cac64f0a9bbd2357463d83e241e9244f8)), closes [#16](https://github.com/drodil/backstage-plugin-qeta/issues/16)
+
 ### [0.1.21](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.20...v0.1.21) (2022-12-28)
 
 
