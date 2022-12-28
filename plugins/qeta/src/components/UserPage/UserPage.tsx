@@ -5,12 +5,13 @@ import { Content, ContentHeader } from '@backstage/core-components';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
+import { formatUsername } from '../../utils/utils';
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
   return (
     <Content>
-      <ContentHeader title={`Questions by [${identity}]`}>
+      <ContentHeader title={`Questions by ${formatUsername(identity)}`}>
         <Button href="/qeta">Back to questions</Button>
         <Button variant="contained" href="/qeta/ask">
           Ask question

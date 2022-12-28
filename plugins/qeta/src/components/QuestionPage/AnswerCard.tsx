@@ -11,6 +11,7 @@ import React from 'react';
 import { MarkdownContent } from '@backstage/core-components';
 import { VoteButtons } from './VoteButtons';
 import { useStyles } from '../../utils/hooks';
+import { formatUsername } from '../../utils/utils';
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;
@@ -32,7 +33,9 @@ export const AnswerCard = (props: {
             </Typography>
             <Box>
               By{' '}
-              <Link href={`/qeta/users/${answer.author}`}>{answer.author}</Link>
+              <Link href={`/qeta/users/${answer.author}`}>
+                {formatUsername(answer.author)}
+              </Link>
             </Box>
           </Grid>
         </Grid>
