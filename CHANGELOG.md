@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.19](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.18...v0.1.19) (2022-12-28)
+
+
+### Features
+
+* allow selecting components for questions ([7c2ca39](https://github.com/drodil/backstage-plugin-qeta/commit/7c2ca398a61333433630a80753e3df64de1f2102)), closes [#12](https://github.com/drodil/backstage-plugin-qeta/issues/12)
+
+
+### Bug Fixes
+
+* yarn.lock ([639d2ab](https://github.com/drodil/backstage-plugin-qeta/commit/639d2abfb8a762c663bf767f7e7d160d12eff6f1))
+
 ### [0.1.18](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.17...v0.1.18) (2022-12-27)
 
 
