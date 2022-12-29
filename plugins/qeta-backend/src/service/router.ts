@@ -29,6 +29,7 @@ interface QuestionsQuery {
   limit?: number;
   offset?: number;
   tags?: string[];
+  component?: string;
   author?: string;
   orderBy?: 'views' | 'score' | 'answersCount' | 'created' | 'updated';
   order?: 'desc' | 'asc';
@@ -54,6 +55,7 @@ const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     noCorrectAnswer: { type: 'boolean', nullable: true },
     noAnswers: { type: 'boolean', nullable: true },
     tags: { type: 'array', items: { type: 'string' }, nullable: true },
+    component: { type: 'string', nullable: true },
     includeAnswers: { type: 'boolean', nullable: true },
     includeVotes: { type: 'boolean', nullable: true },
     includeComponents: { type: 'boolean', nullable: true },

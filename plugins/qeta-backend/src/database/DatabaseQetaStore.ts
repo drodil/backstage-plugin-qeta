@@ -280,6 +280,20 @@ export class DatabaseQetaStore implements QetaStore {
       query.whereIn('tags.tag', options.tags);
     }
 
+    if (options.component) {
+      query.leftJoin(
+        'question_components',
+        'questions.id',
+        'question_components.questionId',
+      );
+      query.leftJoin(
+        'components',
+        'question_components.componentId',
+        'components.id',
+      );
+      query.where('components.entity_ref', '=', options.component);
+    }
+
     if (options.noAnswers) {
       query.orderBy('answersCount', 'asc');
     }

@@ -147,6 +147,37 @@ describe.each(databases.eachSupportedId())(
         expect(ret?.questions.length).toEqual(2);
       });
 
+      it('should fetch questions with specific component', async () => {
+        const q1 = await storage.postQuestion(
+          'user1',
+          'title',
+          'content',
+          ['java', 'xml', ''],
+          ['component:default/comp1', 'component:default/comp2'],
+        );
+        const q2 = await storage.postQuestion(
+          'user2',
+          'title2',
+          'content2',
+          ['java', 'mysql'],
+          ['component:default/comp2', 'component:default/comp3'],
+        );
+
+        const ret1 = await storage.getQuestions({
+          component: 'component:default/comp1',
+        });
+        expect(ret1.questions.length).toEqual(1);
+        expect(ret1.questions.at(0)?.id).toEqual(q1.id);
+
+        const ret2 = await storage.getQuestions({
+          component: 'component:default/comp2',
+        });
+
+        expect(ret2.questions.length).toEqual(2);
+        expect(ret2.questions.at(0)?.id).toEqual(q2.id);
+        expect(ret2.questions.at(1)?.id).toEqual(q1.id);
+      });
+
       it('should add new question', async () => {
         const id1 = await storage.postQuestion(
           'user1',

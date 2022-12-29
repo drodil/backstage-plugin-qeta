@@ -56,6 +56,7 @@ export interface QuestionsOptions {
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
   tags?: string[];
+  component?: string;
   includeAnswers?: boolean;
   includeVotes?: boolean;
   includeComponents?: boolean;
