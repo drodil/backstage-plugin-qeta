@@ -5,10 +5,12 @@ import {
   DocumentCollatorFactory,
   IndexableDocument,
 } from '@backstage/plugin-search-common';
-import fetch from 'node-fetch';
+import { PluginDatabaseManager } from '@backstage/backend-common';
+import { DatabaseQetaStore } from '../../database';
 
 export type QetaCollatorFactoryOptions = {
   logger: Logger;
+  database: PluginDatabaseManager;
 };
 
 export type QetaDocument = IndexableDocument & {
@@ -16,19 +18,23 @@ export type QetaDocument = IndexableDocument & {
   components?: string[];
   author: string;
   views: number;
+  score: number;
   answersCount: number;
+  created: Date;
+  updatedBy?: string;
+  updated?: Date;
 };
 
 export class QetaCollatorFactory implements DocumentCollatorFactory {
-  private readonly appBaseUrl: string;
-  private readonly backendBaseUrl: string;
   private readonly logger: Logger;
+  private readonly database: PluginDatabaseManager;
+  private readonly appBaseUrl: string;
   public readonly type: string = 'qeta';
 
   private constructor(config: Config, options: QetaCollatorFactoryOptions) {
     this.logger = options.logger;
+    this.database = options.database;
     this.appBaseUrl = config.getString('app.baseUrl');
-    this.backendBaseUrl = config.getString('backend.baseUrl');
   }
 
   static fromConfig(config: Config, options: QetaCollatorFactoryOptions) {
@@ -41,13 +47,17 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
 
   async *execute(): AsyncGenerator<QetaDocument> {
     this.logger.info('Executing QetaCollator');
-    const response = await fetch(
-      `${this.backendBaseUrl}/api/qeta/questions?includeAnswers=true&includeComponents=true`,
-    );
-    const data = await response.json();
-    this.logger.info(`Found ${data.questions.length} questions to index`);
+    const db = await DatabaseQetaStore.create({
+      database: this.database,
+      skipMigrations: true,
+    });
 
-    for (const question of data.questions) {
+    const questions = await db.getQuestions({
+      includeAnswers: true,
+      includeComponents: true,
+    });
+
+    for (const question of questions.questions) {
       yield {
         ...question,
         text: question.content,

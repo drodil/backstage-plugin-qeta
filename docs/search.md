@@ -17,6 +17,7 @@ export default async function createPlugin(
     schedule,
     factory: QetaCollatorFactory.fromConfig(env.config, {
       logger: env.logger,
+      database: env.database,
     }),
   });
 

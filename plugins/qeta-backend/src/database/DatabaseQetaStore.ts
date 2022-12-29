@@ -65,20 +65,17 @@ export type RawTagEntity = {
   tag: string;
 };
 
-export type RawComponentEntity = {
-  id: number;
-  entity_ref: string;
-};
-
 export class DatabaseQetaStore implements QetaStore {
   static async create({
     database,
+    skipMigrations,
   }: {
     database: PluginDatabaseManager;
+    skipMigrations?: boolean;
   }): Promise<DatabaseQetaStore> {
     const client = await database.getClient();
 
-    if (!database.migrations?.skip) {
+    if (!database.migrations?.skip && !skipMigrations) {
       // prettier-ignore
       await client.migrate.latest({ // nosonar
         directory: migrationsDir,
