@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.23](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.22...v0.1.23) (2022-12-29)
+
+
+### Bug Fixes
+
+* change search collator to use database ([4b08cb3](https://github.com/drodil/backstage-plugin-qeta/commit/4b08cb31fb3bb94f96038c91e06040a931b0b9c1))
+
 ### [0.1.22](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.21...v0.1.22) (2022-12-28)
 
 
