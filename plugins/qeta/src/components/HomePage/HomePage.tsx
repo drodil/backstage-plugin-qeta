@@ -16,14 +16,20 @@ import { UserPage } from '../UserPage/UserPage';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 import { QuestionHighlightList } from '../QuestionHighlightList/QuestionHighlightList';
+import { useStyles } from '../../utils/hooks';
 
 export const HomePageContent = () => {
+  const styles = useStyles();
   return (
     <Content>
       <Grid container spacing={3}>
         <Grid item md={12} lg={9} xl={10}>
           <ContentHeader title="All questions">
-            <Button href="/qeta/tags" startIcon={<LoyaltyOutlined />}>
+            <Button
+              href="/qeta/tags"
+              className={styles.marginRight}
+              startIcon={<LoyaltyOutlined />}
+            >
               Tags
             </Button>
             <Button

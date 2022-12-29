@@ -98,5 +98,8 @@ export const useStyles = makeStyles(theme => {
       width: '100%',
       marginTop: theme.spacing(3),
     },
+    marginRight: {
+      marginRight: theme.spacing(1),
+    },
   };
 });

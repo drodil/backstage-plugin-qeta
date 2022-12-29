@@ -6,13 +6,17 @@ import { Content, ContentHeader } from '@backstage/core-components';
 import RelativeTime from 'react-relative-time';
 import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
 import { formatUsername } from '../../utils/utils';
+import { useStyles } from '../../utils/hooks';
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
+  const styles = useStyles();
   return (
     <Content>
       <ContentHeader title={`Questions by ${formatUsername(identity)}`}>
-        <Button href="/qeta">Back to questions</Button>
+        <Button href="/qeta" className={styles.marginRight}>
+          Back to questions
+        </Button>
         <Button variant="contained" href="/qeta/ask">
           Ask question
         </Button>

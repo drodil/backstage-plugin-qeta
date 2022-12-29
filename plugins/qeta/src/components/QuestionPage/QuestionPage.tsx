@@ -6,7 +6,7 @@ import {
   ContentHeader,
   WarningPanel,
 } from '@backstage/core-components';
-import { useQetaApi } from '../../utils/hooks';
+import { useQetaApi, useStyles } from '../../utils/hooks';
 import { QuestionCard } from './QuestionCard';
 import { AnswerResponse, QuestionResponse } from '../../api';
 // @ts-ignore
@@ -19,6 +19,7 @@ import HomeOutlined from '@material-ui/icons/HomeOutlined';
 
 export const QuestionPage = () => {
   const { id } = useParams();
+  const styles = useStyles();
   const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
 
   const {
@@ -73,7 +74,11 @@ export const QuestionPage = () => {
         // @ts-ignore
         description={getDescription(question)}
       >
-        <Button href="/qeta" startIcon={<HomeOutlined />}>
+        <Button
+          className={styles.marginRight}
+          href="/qeta"
+          startIcon={<HomeOutlined />}
+        >
           Back to questions
         </Button>
         <Button
