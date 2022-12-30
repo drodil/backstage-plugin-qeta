@@ -23,6 +23,7 @@ export type QetaDocument = IndexableDocument & {
   created: Date;
   updatedBy?: string;
   updated?: Date;
+  answers?: string[];
 };
 
 export class QetaCollatorFactory implements DocumentCollatorFactory {
@@ -62,16 +63,8 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
         ...question,
         text: question.content,
         location: `${this.appBaseUrl}/qeta/questions/${question.id}`,
+        answers: question.answers?.map(a => a.content),
       };
-
-      for (const answer of question.answers ?? []) {
-        yield {
-          ...question,
-          text: answer.content,
-          location: `${this.appBaseUrl}/qeta/questions/${question.id}#a${answer.id}`,
-          author: answer.author,
-        };
-      }
     }
   }
 }
