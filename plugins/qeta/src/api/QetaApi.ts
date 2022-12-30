@@ -40,4 +40,8 @@ export interface QetaApi {
   markAnswerIncorrect(questionId: number, id: number): Promise<boolean>;
 
   postAnswer(answer: AnswerRequest): Promise<AnswerResponseBody>;
+
+  deleteQuestion(questionId: number): Promise<boolean>;
+
+  deleteAnswer(questionId: number, id: number): Promise<boolean>;
 }

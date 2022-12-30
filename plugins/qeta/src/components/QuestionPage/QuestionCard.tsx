@@ -24,12 +24,16 @@ import {
 import { compact } from 'lodash';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
+import { DeleteModal } from '../DeleteModal/DeleteModal';
 
 export const QuestionCard = (props: { question: QuestionResponse }) => {
   const { question } = props;
   const styles = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const [components, setComponents] = React.useState<Entity[]>([]);
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   useEffect(() => {
     if (question.components) {
@@ -94,6 +98,22 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
                 </Link>
               </Grid>
             </Grid>
+            {question.own && (
+              <Box className={styles.questionCardActions}>
+                <Link
+                  component="button"
+                  underline="none"
+                  onClick={handleDeleteModalOpen}
+                >
+                  Delete
+                </Link>
+                <DeleteModal
+                  open={deleteModalOpen}
+                  onClose={handleDeleteModalClose}
+                  entity={question}
+                />
+              </Box>
+            )}
           </Box>
         </div>
       </CardContent>

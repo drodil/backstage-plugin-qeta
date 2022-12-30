@@ -12,6 +12,7 @@ import { MarkdownContent } from '@backstage/core-components';
 import { VoteButtons } from './VoteButtons';
 import { useStyles } from '../../utils/hooks';
 import { formatUsername } from '../../utils/utils';
+import { DeleteModal } from '../DeleteModal/DeleteModal';
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;
@@ -19,6 +20,10 @@ export const AnswerCard = (props: {
 }) => {
   const { answer, question } = props;
   const styles = useStyles();
+
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   return (
     <Card id={`a${answer.id}`}>
@@ -37,6 +42,23 @@ export const AnswerCard = (props: {
                 {formatUsername(answer.author)}
               </Link>
             </Box>
+            {answer.own && (
+              <Box className={styles.questionCardActions}>
+                <Link
+                  component="button"
+                  underline="none"
+                  onClick={handleDeleteModalOpen}
+                >
+                  Delete
+                </Link>
+                <DeleteModal
+                  open={deleteModalOpen}
+                  onClose={handleDeleteModalClose}
+                  entity={answer}
+                  question={question}
+                />
+              </Box>
+            )}
           </Grid>
         </Grid>
       </CardContent>
