@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.27](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.26...v0.1.27) (2022-12-30)
+
+
+### Features
+
+* allow specifying component for ask form ([45c7123](https://github.com/drodil/backstage-plugin-qeta/commit/45c7123ff5ab5909e08283f886e654e0a944ecb3))
+
+
+### Bug Fixes
+
+* show total number of questions in question container ([1281b60](https://github.com/drodil/backstage-plugin-qeta/commit/1281b60fde382ecd2fa55afe592cb6f1f6692907))
+
 ### [0.1.26](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.25...v0.1.26) (2022-12-30)
 
 
