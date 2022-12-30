@@ -423,8 +423,43 @@ export class DatabaseQetaStore implements QetaStore {
     return this.mapQuestion(questions[0], false, false, true);
   }
 
-  private async addQuestionTags(questionId: number, tagsInput?: string[]) {
+  async updateQuestion(
+    id: number,
+    user_ref: string,
+    title: string,
+    content: string,
+    tags?: string[],
+    components?: string[],
+  ): Promise<MaybeQuestion> {
+    const rows = await this.db('questions')
+      .where('questions.id', '=', id)
+      .where('questions.author', '=', user_ref)
+      .update({ title, content, updatedBy: user_ref, updated: new Date() });
+
+    if (!rows) {
+      return null;
+    }
+
+    await Promise.all([
+      this.addQuestionTags(id, tags, true),
+      this.addQuestionComponents(id, components, true),
+    ]);
+
+    return await this.getQuestion(user_ref, id, false);
+  }
+
+  private async addQuestionTags(
+    questionId: number,
+    tagsInput?: string[],
+    removeOld?: boolean,
+  ) {
     const tags = tagsInput?.filter(Boolean);
+    if (removeOld) {
+      await this.db('question_tags')
+        .where('questionId', '=', questionId)
+        .delete();
+    }
+
     if (!tags || tags.length === 0) {
       return;
     }
@@ -464,7 +499,14 @@ export class DatabaseQetaStore implements QetaStore {
   private async addQuestionComponents(
     questionId: number,
     componentsInput?: string[],
+    removeOld?: boolean,
   ) {
+    if (removeOld) {
+      await this.db('question_components')
+        .where('questionId', '=', questionId)
+        .delete();
+    }
+
     const regex = /\w+:\w+\/\w+/g;
     const components = componentsInput?.filter(input => input.match(regex));
     if (!components || components.length === 0) {

@@ -229,6 +229,32 @@ export async function createRouter({
     response.send(question);
   });
 
+  // POST /questions/:id
+  router.post(`/questions/:id`, async (request, response) => {
+    // Validation
+    const validateRequestBody = ajv.compile(PostQuestionSchema);
+    if (!validateRequestBody(request.body)) {
+      response
+        .status(400)
+        .send({ errors: validateRequestBody.errors, type: 'body' });
+      return;
+    }
+
+    // Act
+    const question = await database.updateQuestion(
+      Number.parseInt(request.params.id, 10),
+      await getUsername(request),
+      request.body.title,
+      request.body.content,
+      request.body.tags,
+      request.body.components,
+    );
+
+    // Response
+    response.status(200);
+    response.send(question);
+  });
+
   // DELETE /questions/:id
   router.delete('/questions/:id', async (request, response) => {
     // Validation

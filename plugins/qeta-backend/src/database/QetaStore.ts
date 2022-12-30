@@ -120,6 +120,24 @@ export interface QetaStore {
   ): Promise<Question>;
 
   /**
+   * Update question
+   * @param id question id
+   * @param user_ref user name of the user updating question
+   * @param title new title
+   * @param content new content
+   * @param tags new tags
+   * @param components new components
+   */
+  updateQuestion(
+    id: number,
+    user_ref: string,
+    title: string,
+    content: string,
+    tags?: string[],
+    components?: string[],
+  ): Promise<MaybeQuestion>;
+
+  /**
    * Delete question. Only the user who created the question can delete it.
    * @param user_ref user name of the user deleting question
    * @param id question id

@@ -1,17 +1,18 @@
-import { WarningPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { Button, TextField } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+import { Alert, Autocomplete } from '@material-ui/lab';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import 'react-mde/lib/styles/css/react-mde-all.css';
 import { useNavigate } from 'react-router-dom';
-import { qetaApiRef } from '../../api';
+import { QetaApi, qetaApiRef, QuestionRequest } from '../../api';
 import { useStyles } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { getEntityTitle } from '../../utils/utils';
+import { CatalogApi } from '@backstage/catalog-client';
+import { compact } from 'lodash';
 
 interface QuestionForm {
   title: string;
@@ -20,15 +21,47 @@ interface QuestionForm {
   components?: Entity[];
 }
 
-const formToRequest = (form: QuestionForm) => {
+const formToRequest = (form: QuestionForm): QuestionRequest => {
   return {
     ...form,
     components: form.components?.map(stringifyEntityRef),
   };
 };
 
-export const AskForm = () => {
+const getDefaultValues = (): QuestionForm => {
+  return {
+    title: '',
+    content: '',
+    tags: [],
+    components: [],
+  };
+};
+
+const getValues = async (
+  api: QetaApi,
+  catalogApi: CatalogApi,
+  id?: string,
+): Promise<QuestionForm> => {
+  if (!id) {
+    return getDefaultValues();
+  }
+
+  const question = await api.getQuestion(id);
+  const entities = question.components
+    ? await catalogApi.getEntitiesByRefs({ entityRefs: question.components })
+    : [];
+  return {
+    title: question.title,
+    content: question.content,
+    tags: question.tags ?? [],
+    components: 'items' in entities ? compact(entities.items) : [],
+  };
+};
+
+export const AskForm = (props: { id?: string }) => {
+  const { id } = props;
   const navigate = useNavigate();
+  const [values, setValues] = React.useState(getDefaultValues());
   const [error, setError] = React.useState(false);
   const [availableTags, setAvailableTags] = React.useState<string[] | null>([]);
   const [availableComponents, setAvailableComponents] = React.useState<
@@ -43,9 +76,25 @@ export const AskForm = () => {
     control,
     reset,
     formState: { errors },
-  } = useForm<QuestionForm>();
+  } = useForm<QuestionForm>({
+    values,
+    defaultValues: getDefaultValues(),
+  });
 
   const postQuestion = (data: QuestionForm) => {
+    if (id) {
+      qetaApi
+        .updateQuestion(id, formToRequest(data))
+        .then(q => {
+          if (!q || !q.id) {
+            setError(true);
+            return;
+          }
+          reset();
+          navigate(`/qeta/questions/${q.id}`);
+        })
+        .catch(_e => setError(true));
+    }
     qetaApi
       .postQuestion(formToRequest(data))
       .then(q => {
@@ -58,6 +107,16 @@ export const AskForm = () => {
       })
       .catch(_e => setError(true));
   };
+
+  useEffect(() => {
+    getValues(qetaApi, catalogApi, id).then(data => {
+      setValues(data);
+    });
+  }, [qetaApi, catalogApi, id]);
+
+  useEffect(() => {
+    reset(values);
+  }, [values, reset]);
 
   useEffect(() => {
     qetaApi
@@ -83,9 +142,7 @@ export const AskForm = () => {
 
   return (
     <form onSubmit={handleSubmit(postQuestion)}>
-      {error && (
-        <WarningPanel severity="error" title="Could not post question" />
-      )}
+      {error && <Alert severity="error">Could not post question</Alert>}
       <TextField
         label="Title"
         required
@@ -101,7 +158,6 @@ export const AskForm = () => {
       />
       <Controller
         control={control}
-        defaultValue=""
         rules={{
           required: true,
         }}
@@ -119,11 +175,10 @@ export const AskForm = () => {
       {availableTags && (
         <Controller
           control={control}
-          defaultValue={[]}
           render={({ field: { onChange, value } }) => (
             <Autocomplete
               multiple
-              id="tags-standard"
+              id="tags-select"
               value={value}
               options={availableTags}
               freeSolo
@@ -150,11 +205,11 @@ export const AskForm = () => {
       {availableComponents && (
         <Controller
           control={control}
-          defaultValue={[]}
           render={({ field: { onChange, value } }) => (
             <Autocomplete
               multiple
-              id="tags-standard"
+              value={value}
+              id="components-select"
               options={availableComponents}
               getOptionLabel={getEntityTitle}
               getOptionSelected={(o, v) =>
@@ -181,7 +236,7 @@ export const AskForm = () => {
         />
       )}
       <Button type="submit" variant="contained" className={styles.postButton}>
-        Post
+        {id ? 'Save' : 'Post'}
       </Button>
     </form>
   );

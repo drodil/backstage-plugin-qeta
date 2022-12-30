@@ -44,11 +44,7 @@ export const AnswerCard = (props: {
             </Box>
             {answer.own && (
               <Box className={styles.questionCardActions}>
-                <Link
-                  component="button"
-                  underline="none"
-                  onClick={handleDeleteModalOpen}
-                >
+                <Link underline="none" onClick={handleDeleteModalOpen}>
                   Delete
                 </Link>
                 <DeleteModal
