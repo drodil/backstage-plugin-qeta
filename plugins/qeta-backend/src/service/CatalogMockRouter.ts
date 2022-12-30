@@ -53,6 +53,10 @@ export const createCatalogMockRouter = async (): Promise<express.Router> => {
     response.json(entitiesResponse);
   });
 
+  router.get('/entities/by-name/*', (_, response) => {
+    response.json(entitiesResponse.at(1));
+  });
+
   router.post('/entities/by-refs', (request, response) => {
     const entityRefs = request.body.entityRefs;
     if (!entityRefs || entityRefs.length === 0) {

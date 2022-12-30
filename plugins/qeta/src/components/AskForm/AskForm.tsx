@@ -58,8 +58,8 @@ const getValues = async (
   };
 };
 
-export const AskForm = (props: { id?: string }) => {
-  const { id } = props;
+export const AskForm = (props: { id?: string; component?: string }) => {
+  const { id, component } = props;
   const navigate = useNavigate();
   const [values, setValues] = React.useState(getDefaultValues());
   const [error, setError] = React.useState(false);
@@ -110,10 +110,22 @@ export const AskForm = (props: { id?: string }) => {
   };
 
   useEffect(() => {
-    getValues(qetaApi, catalogApi, id).then(data => {
-      setValues(data);
-    });
+    if (id) {
+      getValues(qetaApi, catalogApi, id).then(data => {
+        setValues(data);
+      });
+    }
   }, [qetaApi, catalogApi, id]);
+
+  useEffect(() => {
+    if (component) {
+      catalogApi.getEntityByRef(component).then(data => {
+        if (data) {
+          setValues({ ...values, components: [data] });
+        }
+      });
+    }
+  }, [catalogApi, component, values]);
 
   useEffect(() => {
     reset(values);
@@ -209,6 +221,7 @@ export const AskForm = (props: { id?: string }) => {
           render={({ field: { onChange, value } }) => (
             <Autocomplete
               multiple
+              hidden={!!component}
               value={value}
               id="components-select"
               options={availableComponents}
