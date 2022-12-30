@@ -233,4 +233,32 @@ export class QetaClient implements QetaApi {
     const data = await response;
     return data.ok;
   }
+
+  async deleteQuestion(questionId: number): Promise<boolean> {
+    if (!questionId) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    const response = await this.fetchApi.fetch(
+      `${this.baseUrl}/api/qeta/questions/${questionId}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    const data = await response;
+    return data.ok;
+  }
+
+  async deleteAnswer(questionId: number, id: number): Promise<boolean> {
+    if (!questionId || !id) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    const response = await this.fetchApi.fetch(
+      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${id}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    const data = await response;
+    return data.ok;
+  }
 }
