@@ -212,6 +212,40 @@ describe.each(databases.eachSupportedId())(
         );
       });
 
+      it('should update question', async () => {
+        const id1 = await storage.postQuestion(
+          'user1',
+          'title',
+          'content',
+          ['java', 'xml', ''],
+          [
+            'component:default/comp1',
+            'component:default/comp2',
+            'invalidComponent',
+            '',
+          ],
+        );
+
+        const ret = await storage.updateQuestion(
+          id1.id,
+          'user1',
+          'title2',
+          'content2',
+          ['java'],
+          ['component:default/comp2'],
+        );
+
+        expect(ret?.id).toEqual(id1.id);
+        expect(ret?.title).toEqual('title2');
+        expect(ret?.content).toEqual('content2');
+        expect(ret?.tags?.length).toEqual(1);
+        expect(ret?.tags?.at(0)).toEqual('java');
+        expect(ret?.components?.length).toEqual(1);
+        expect(ret?.components?.at(0)).toEqual('component:default/comp2');
+        expect(ret?.updatedBy).toEqual('user1');
+        expect(ret?.updated).toBeDefined();
+      });
+
       it('should delete question', async () => {
         const id1 = await storage.postQuestion('user1', 'title', 'content');
         let ret1 = await storage.getQuestion('user', id1.id);

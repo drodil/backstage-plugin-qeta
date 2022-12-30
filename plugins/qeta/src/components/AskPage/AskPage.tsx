@@ -4,11 +4,13 @@ import React from 'react';
 import 'react-mde/lib/styles/css/react-mde-all.css';
 import { AskForm } from './AskForm';
 import HomeOutlined from '@material-ui/icons/HomeOutlined';
+import { useParams } from 'react-router-dom';
 
 export const AskPage = () => {
+  const { id } = useParams();
   return (
     <Content>
-      <ContentHeader title="Ask question">
+      <ContentHeader title={id ? 'Edit question' : 'Ask question'}>
         <Button href="/qeta" startIcon={<HomeOutlined />}>
           Back to questions
         </Button>
@@ -16,7 +18,7 @@ export const AskPage = () => {
       <Grid container spacing={3} direction="column">
         <Grid item>
           <InfoCard>
-            <AskForm />
+            <AskForm id={id} />
           </InfoCard>
         </Grid>
       </Grid>

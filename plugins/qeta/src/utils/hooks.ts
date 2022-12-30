@@ -103,6 +103,9 @@ export const useStyles = makeStyles(theme => {
     },
     questionCardActions: {
       marginTop: theme.spacing(2),
+      '& a': {
+        marginRight: theme.spacing(1),
+      },
     },
     deleteModal: {
       position: 'absolute',

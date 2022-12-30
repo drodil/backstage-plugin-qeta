@@ -100,12 +100,14 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
             </Grid>
             {question.own && (
               <Box className={styles.questionCardActions}>
-                <Link
-                  component="button"
-                  underline="none"
-                  onClick={handleDeleteModalOpen}
-                >
+                <Link underline="none" onClick={handleDeleteModalOpen}>
                   Delete
+                </Link>
+                <Link
+                  underline="none"
+                  href={`/qeta/questions/${question.id}/edit`}
+                >
+                  Edit
                 </Link>
                 <DeleteModal
                   open={deleteModalOpen}

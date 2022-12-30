@@ -42,8 +42,8 @@ export const QuestionPage = () => {
         {q.updated && (
           <React.Fragment>
             Updated{' '}
-            <Box fontWeight="fontWeightMedium" display="inline">
-              <RelativeTime value={q.created} />
+            <Box fontWeight="fontWeightMedium" display="inline" sx={{ mr: 2 }}>
+              <RelativeTime value={q.updated} />
             </Box>
           </React.Fragment>
         )}

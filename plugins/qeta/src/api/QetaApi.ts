@@ -44,4 +44,9 @@ export interface QetaApi {
   deleteQuestion(questionId: number): Promise<boolean>;
 
   deleteAnswer(questionId: number, id: number): Promise<boolean>;
+
+  updateQuestion(
+    id: string,
+    question: QuestionRequest,
+  ): Promise<QuestionResponse>;
 }

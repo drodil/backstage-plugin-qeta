@@ -261,4 +261,25 @@ export class QetaClient implements QetaApi {
     const data = await response;
     return data.ok;
   }
+
+  async updateQuestion(
+    id: string,
+    question: QuestionRequest,
+  ): Promise<QuestionResponse> {
+    const response = await this.fetchApi.fetch(
+      `${this.baseUrl}/api/qeta/questions/${id}`,
+      {
+        method: 'POST',
+        body: JSON.stringify(question),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    const data = (await response.json()) as QuestionResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to update', data.errors);
+    }
+
+    return data;
+  }
 }
