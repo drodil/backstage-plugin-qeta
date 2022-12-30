@@ -25,9 +25,11 @@ export const VoteButtons = (props: {
   );
   const qetaApi = useApi(qetaApiRef);
   const theme = useTheme();
+  const isQuestion = 'title' in entity;
+  const own = props.entity.own ?? false;
 
   const voteUp = () => {
-    if ('title' in entity) {
+    if (isQuestion) {
       qetaApi.voteQuestionUp(entity.id).then(response => {
         setOwnVote(1);
         setEntity(response);
@@ -41,7 +43,7 @@ export const VoteButtons = (props: {
   };
 
   const voteDown = () => {
-    if ('title' in entity) {
+    if (isQuestion) {
       qetaApi.voteQuestionDown(entity.id).then(response => {
         setOwnVote(-1);
         setEntity(response);
@@ -59,6 +61,22 @@ export const VoteButtons = (props: {
     : 'Mark answer as correct';
   if (!props.question?.own) {
     correctTooltip = correct ? 'This answer has been marked as correct' : '';
+  }
+
+  let voteUpTooltip = isQuestion
+    ? 'This question is good'
+    : 'This answer is good';
+  if (own) {
+    voteUpTooltip = isQuestion
+      ? 'You cannot vote your own question'
+      : 'You cannot vote your own answer';
+  }
+
+  let voteDownTooltip = isQuestion
+    ? 'This question is not good'
+    : 'This answer is not good';
+  if (own) {
+    voteDownTooltip = voteUpTooltip;
   }
 
   const toggleCorrectAnswer = () => {
@@ -82,17 +100,11 @@ export const VoteButtons = (props: {
 
   return (
     <React.Fragment>
-      <Tooltip
-        title={
-          props.entity.own
-            ? 'You cannot vote your own post'
-            : 'This answer is good'
-        }
-      >
+      <Tooltip title={voteUpTooltip}>
         <IconButton
           aria-label="vote up"
           color={ownVote > 0 ? 'primary' : 'default'}
-          disabled={props.entity.own ?? false}
+          disabled={own}
           size="small"
           onClick={voteUp}
         >
@@ -100,24 +112,18 @@ export const VoteButtons = (props: {
         </IconButton>
       </Tooltip>
       <Typography variant="h6">{entity.score}</Typography>
-      <Tooltip
-        title={
-          props.entity.own
-            ? 'You cannot vote your own post'
-            : 'This answer is not good'
-        }
-      >
+      <Tooltip title={voteDownTooltip}>
         <IconButton
           aria-label="vote down"
           color={ownVote < 0 ? 'primary' : 'default'}
-          disabled={props.entity.own ?? false}
+          disabled={own}
           size="small"
           onClick={voteDown}
         >
           <ArrowDownward />
         </IconButton>
       </Tooltip>
-      {'correct' in props.entity && (
+      {'correct' in props.entity && (props.question?.own || correct) && (
         <Box>
           <Tooltip title={correctTooltip}>
             <IconButton
@@ -126,8 +132,7 @@ export const VoteButtons = (props: {
                 color: correct ? theme.palette.success.main : undefined,
               }}
               size="small"
-              onClick={toggleCorrectAnswer}
-              disabled={!props.question?.own}
+              onClick={props.question?.own ? toggleCorrectAnswer : undefined}
             >
               <Check />
             </IconButton>
