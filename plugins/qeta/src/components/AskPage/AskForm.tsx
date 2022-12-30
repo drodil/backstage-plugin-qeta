@@ -94,6 +94,7 @@ export const AskForm = (props: { id?: string }) => {
           navigate(`/qeta/questions/${q.id}`);
         })
         .catch(_e => setError(true));
+      return;
     }
     qetaApi
       .postQuestion(formToRequest(data))
