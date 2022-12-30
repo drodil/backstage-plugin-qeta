@@ -54,7 +54,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
       <Grid container justifyContent="space-between">
         <Grid item>
           <Typography variant="h6">{`${
-            response?.questions.length ?? 0
+            response?.total ?? 0
           } questions`}</Typography>
         </Grid>
         {(showFilters ?? true) && (
