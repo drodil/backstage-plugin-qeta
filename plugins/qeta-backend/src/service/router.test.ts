@@ -65,6 +65,7 @@ describe('createRouter', () => {
     markAnswerCorrect: jest.fn(),
     markAnswerIncorrect: jest.fn(),
     getTags: jest.fn(),
+    updateQuestion: jest.fn(),
   };
 
   const getIdentityMock = jest
