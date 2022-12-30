@@ -36,7 +36,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   useEffect(() => {
-    if (question.components) {
+    if (question.components && question.components.length > 0) {
       catalogApi
         .getEntitiesByRefs({
           entityRefs: question.components,
