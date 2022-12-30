@@ -246,6 +246,32 @@ describe.each(databases.eachSupportedId())(
         expect(ret?.updated).toBeDefined();
       });
 
+      it('should update not update someone elses question', async () => {
+        const id1 = await storage.postQuestion(
+          'user1',
+          'title',
+          'content',
+          ['java', 'xml', ''],
+          [
+            'component:default/comp1',
+            'component:default/comp2',
+            'invalidComponent',
+            '',
+          ],
+        );
+
+        const ret = await storage.updateQuestion(
+          id1.id,
+          'user3',
+          'title2',
+          'content2',
+          ['java'],
+          ['component:default/comp2'],
+        );
+
+        expect(ret?.id).toEqual(undefined);
+      });
+
       it('should delete question', async () => {
         const id1 = await storage.postQuestion('user1', 'title', 'content');
         let ret1 = await storage.getQuestion('user', id1.id);

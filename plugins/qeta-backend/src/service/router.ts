@@ -250,6 +250,11 @@ export async function createRouter({
       request.body.components,
     );
 
+    if (!question) {
+      response.sendStatus(401);
+      return;
+    }
+
     // Response
     response.status(200);
     response.send(question);
