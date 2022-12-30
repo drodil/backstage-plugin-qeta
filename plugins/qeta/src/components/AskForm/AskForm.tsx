@@ -5,7 +5,12 @@ import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import 'react-mde/lib/styles/css/react-mde-all.css';
 import { useNavigate } from 'react-router-dom';
-import { QetaApi, qetaApiRef, QuestionRequest } from '../../api';
+import {
+  QetaApi,
+  qetaApiRef,
+  QuestionRequest,
+  QuestionResponse,
+} from '../../api';
 import { useStyles } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -58,8 +63,12 @@ const getValues = async (
   };
 };
 
-export const AskForm = (props: { id?: string; component?: string }) => {
-  const { id, component } = props;
+export const AskForm = (props: {
+  id?: string;
+  component?: string;
+  onPost: (question: QuestionResponse) => void;
+}) => {
+  const { id, component, onPost } = props;
   const navigate = useNavigate();
   const [values, setValues] = React.useState(getDefaultValues());
   const [error, setError] = React.useState(false);
@@ -91,7 +100,11 @@ export const AskForm = (props: { id?: string; component?: string }) => {
             return;
           }
           reset();
-          navigate(`/qeta/questions/${q.id}`);
+          if (onPost) {
+            onPost(q);
+          } else {
+            navigate(`/qeta/questions/${q.id}`);
+          }
         })
         .catch(_e => setError(true));
       return;
