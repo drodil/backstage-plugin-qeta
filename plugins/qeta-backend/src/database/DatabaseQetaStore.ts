@@ -295,11 +295,15 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.noAnswers) {
-      query.orderBy('answersCount', 'asc');
+      query.whereNull('answers.questionId');
     }
     if (options.noCorrectAnswer) {
-      query.orderBy('correctAnswers', 'asc');
+      query
+        .where('answers.correct', '!=', true)
+        .orWhereNull('answers.questionId');
     }
+
+    const totalQuery = query.clone();
 
     if (options.random) {
       query.orderByRaw('RANDOM()');
@@ -317,14 +321,14 @@ export class DatabaseQetaStore implements QetaStore {
       query.offset(options.offset);
     }
 
-    const rows = (await query) as RawQuestionEntity[];
-    const total = (
-      (await this.db<RawQuestionEntity>('questions')
-        .count('id as CNT')
-        .first()) as any
-    )?.CNT;
+    const results = await Promise.all([
+      query,
+      this.db(totalQuery.as('totalQuery')).count('* as CNT').first(),
+    ]);
+    const rows = results[0] as RawQuestionEntity[];
+    const total = this.mapToInteger((results[1] as any)?.CNT);
 
-    const ret = {
+    return {
       questions: await Promise.all(
         rows.map(async val => {
           return this.mapQuestion(
@@ -337,17 +341,6 @@ export class DatabaseQetaStore implements QetaStore {
       ),
       total,
     };
-
-    // Does not work in postgresql for some reason to have where clause
-    // using count aliases
-    if (options.noAnswers) {
-      ret.questions = ret.questions.filter(q => q.answersCount === 0);
-    }
-    if (options.noCorrectAnswer) {
-      ret.questions = ret.questions.filter(q => !q.correctAnswer);
-    }
-
-    return ret;
   }
 
   async getQuestion(
