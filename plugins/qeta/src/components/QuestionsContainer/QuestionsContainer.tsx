@@ -8,11 +8,11 @@ import FilterList from '@material-ui/icons/FilterList';
 export interface QuestionsContainerProps {
   tags?: string[];
   author?: string;
-  component?: string;
+  entity?: string;
   showFilters?: boolean;
 }
 export const QuestionsContainer = (props: QuestionsContainerProps) => {
-  const { tags, author, component, showFilters } = props;
+  const { tags, author, entity, showFilters } = props;
   const [page, setPage] = React.useState(1);
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
   const [filters, setFilters] = React.useState({
@@ -42,7 +42,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         limit: pageSize,
         offset,
         tags,
-        component,
+        entity,
         author,
         ...filters,
       }),

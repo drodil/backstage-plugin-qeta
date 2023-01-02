@@ -15,7 +15,7 @@ export type QetaCollatorFactoryOptions = {
 
 export type QetaDocument = IndexableDocument & {
   tags?: string[];
-  components?: string[];
+  entities?: string[];
   author: string;
   views: number;
   score: number;
@@ -55,7 +55,7 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
 
     const questions = await db.getQuestions({
       includeAnswers: true,
-      includeComponents: true,
+      includeEntities: true,
     });
 
     for (const question of questions.questions) {
