@@ -49,4 +49,11 @@ export interface QetaApi {
     id: string,
     question: QuestionRequest,
   ): Promise<QuestionResponse>;
+
+  updateAnswer(id: number, answer: AnswerRequest): Promise<AnswerResponseBody>;
+
+  getAnswer(
+    questionId: string | number | undefined,
+    id: string | number | undefined,
+  ): Promise<AnswerResponseBody>;
 }

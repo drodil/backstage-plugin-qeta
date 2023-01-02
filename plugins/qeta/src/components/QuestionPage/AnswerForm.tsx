@@ -1,6 +1,6 @@
 import { WarningPanel } from '@backstage/core-components';
 import { Button, Typography } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   AnswerRequest,
@@ -12,11 +12,17 @@ import { useStyles } from '../../utils/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 
+const getDefaultValues = (questionId: number) => {
+  return { questionId, answer: '' };
+};
+
 export const AnswerForm = (props: {
   question: QuestionResponse;
   onPost: (answer: AnswerResponse) => void;
+  id?: number;
 }) => {
-  const { question, onPost } = props;
+  const { question, onPost, id } = props;
+  const [values, setValues] = React.useState(getDefaultValues(question.id));
   const [error, setError] = React.useState(false);
   const qetaApi = useApi(qetaApiRef);
   const styles = useStyles();
@@ -26,9 +32,27 @@ export const AnswerForm = (props: {
     control,
     formState: { errors },
     reset,
-  } = useForm<AnswerRequest>();
+  } = useForm<AnswerRequest>({
+    values,
+    defaultValues: getDefaultValues(question.id),
+  });
 
   const postAnswer = (data: AnswerRequest) => {
+    if (id) {
+      qetaApi
+        .updateAnswer(id, { questionId: question.id, answer: data.answer })
+        .then(a => {
+          if (!a || !('id' in a)) {
+            setError(true);
+            return;
+          }
+          reset();
+          onPost(a);
+        })
+        .catch(_e => setError(true));
+      return;
+    }
+
     qetaApi
       .postAnswer({ questionId: question.id, answer: data.answer })
       .then(a => {
@@ -41,6 +65,22 @@ export const AnswerForm = (props: {
       })
       .catch(_e => setError(true));
   };
+
+  useEffect(() => {
+    if (id) {
+      qetaApi.getAnswer(question.id, id).then(a => {
+        if ('content' in a) {
+          setValues({ questionId: question.id, answer: a.content });
+        } else {
+          setError(true);
+        }
+      });
+    }
+  }, [id, question, qetaApi]);
+
+  useEffect(() => {
+    reset(values);
+  }, [values, reset]);
 
   return (
     <form onSubmit={handleSubmit(postAnswer)}>
@@ -63,7 +103,7 @@ export const AnswerForm = (props: {
         name="answer"
       />
       <Button variant="contained" type="submit" className={styles.postButton}>
-        Post
+        {id ? 'Save' : 'Post'}
       </Button>
     </form>
   );

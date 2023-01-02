@@ -282,4 +282,44 @@ export class QetaClient implements QetaApi {
 
     return data;
   }
+
+  async updateAnswer(
+    id: number,
+    answer: AnswerRequest,
+  ): Promise<AnswerResponseBody> {
+    const response = await this.fetchApi.fetch(
+      `${this.baseUrl}/api/qeta/questions/${answer.questionId}/answers/${id}`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ answer: answer.answer }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    const data = (await response.json()) as AnswerResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async getAnswer(
+    questionId: string | number | undefined,
+    id: string | number | undefined,
+  ): Promise<AnswerResponseBody> {
+    if (!questionId || !id) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    const response = await this.fetchApi.fetch(
+      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${id}`,
+    );
+    const data = (await response.json()) as AnswerResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
 }
