@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.28](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.27...v0.1.28) (2023-01-02)
+
+
+### Features
+
+* allow ask form to have callback after posting question ([0477176](https://github.com/drodil/backstage-plugin-qeta/commit/04771765e66147e8a5bb2f52fa73f03ee6c55afb))
+* allow editing of answers ([93d4870](https://github.com/drodil/backstage-plugin-qeta/commit/93d4870d4720dc12178671dfbde1588945fa3832)), closes [#5](https://github.com/drodil/backstage-plugin-qeta/issues/5)
+* allow filtering entity kinds with config ([66a4ddb](https://github.com/drodil/backstage-plugin-qeta/commit/66a4ddb5fce0fe54c45ff929a0ce6eda6632cdc4)), closes [#18](https://github.com/drodil/backstage-plugin-qeta/issues/18) [#17](https://github.com/drodil/backstage-plugin-qeta/issues/17)
+
+
+### Bug Fixes
+
+* change the components to entities ([c42943e](https://github.com/drodil/backstage-plugin-qeta/commit/c42943e7c1e59947919f6218a4d976127e566a8a))
+* references to components ([29a0580](https://github.com/drodil/backstage-plugin-qeta/commit/29a0580e62ca54af1edede7e25b58ca13544f0b8))
+
 ### [0.1.27](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.26...v0.1.27) (2022-12-30)
 
 
