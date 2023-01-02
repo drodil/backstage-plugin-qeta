@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.30](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.29...v0.1.30) (2023-01-02)
+
+
+### Features
+
+* allow filtering with no votes ([75816ed](https://github.com/drodil/backstage-plugin-qeta/commit/75816eddf08977769fb6bbbf19d88de05922e374)), closes [#4](https://github.com/drodil/backstage-plugin-qeta/issues/4)
+* remember filter panel options ([e96e6c2](https://github.com/drodil/backstage-plugin-qeta/commit/e96e6c26468d82d8c9396e3f17d70788eb888924)), closes [#15](https://github.com/drodil/backstage-plugin-qeta/issues/15)
+
+
+### Bug Fixes
+
+* export QetaApi for external use ([858574d](https://github.com/drodil/backstage-plugin-qeta/commit/858574d1fadda3b045cf18d999ed4d75e408e614))
+
 ### [0.1.29](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.28...v0.1.29) (2023-01-02)
 
 
