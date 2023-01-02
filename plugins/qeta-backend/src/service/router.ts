@@ -300,6 +300,58 @@ export async function createRouter({
     response.send(answer);
   });
 
+  // POST /questions/:id/answers/:answerId
+  router.post(`/questions/:id/answers/:answerId`, async (request, response) => {
+    // Validation
+    const validateRequestBody = ajv.compile(PostAnswerSchema);
+    if (!validateRequestBody(request.body)) {
+      response
+        .status(400)
+        .send({ errors: validateRequestBody.errors, type: 'body' });
+      return;
+    }
+
+    const username = await getUsername(request);
+    // Act
+    const answer = await database.updateAnswer(
+      username,
+      Number.parseInt(request.params.id, 10),
+      Number.parseInt(request.params.answerId, 10),
+      request.body.answer,
+    );
+
+    if (!answer) {
+      response.sendStatus(404);
+      return;
+    }
+
+    mapAdditionalFields(username, answer);
+
+    // Response
+    response.status(201);
+    response.send(answer);
+  });
+
+  // GET /questions/:id/answers/:answerId
+  router.get(`/questions/:id/answers/:answerId`, async (request, response) => {
+    // Validation
+    // Act
+    const username = await getUsername(request);
+    const answer = await database.getAnswer(
+      Number.parseInt(request.params.answerId, 10),
+    );
+
+    if (answer === null) {
+      response.sendStatus(404);
+      return;
+    }
+
+    mapAdditionalFields(username, answer);
+
+    // Response
+    response.send(answer);
+  });
+
   // DELETE /questions/:id/answers/:answerId
   router.delete(
     '/questions/:id/answers/:answerId',

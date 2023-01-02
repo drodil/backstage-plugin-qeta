@@ -562,6 +562,24 @@ export class DatabaseQetaStore implements QetaStore {
     return this.getAnswer(answers[0].id);
   }
 
+  async updateAnswer(
+    user_ref: string,
+    questionId: number,
+    answerId: number,
+    answer: string,
+  ): Promise<MaybeAnswer> {
+    const rows = await this.db('answers')
+      .where('answers.id', '=', answerId)
+      .where('answers.questionId', '=', questionId)
+      .where('answers.author', '=', user_ref)
+      .update({ content: answer, updatedBy: user_ref, updated: new Date() });
+
+    if (!rows) {
+      return null;
+    }
+    return this.getAnswer(answerId);
+  }
+
   async getAnswer(answerId: number): Promise<MaybeAnswer> {
     const answers = await this.getAnswerBaseQuery().where('id', '=', answerId);
     return this.mapAnswer(answers[0], true);

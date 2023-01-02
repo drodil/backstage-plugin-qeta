@@ -156,6 +156,20 @@ export interface QetaStore {
     answer: string,
   ): Promise<MaybeAnswer>;
 
+  /**
+   * Update answer to a question
+   * @param user_ref user name of the user updating the answer
+   * @param questionId question id
+   * @param answerId answer id
+   * @param answer answer content
+   */
+  updateAnswer(
+    user_ref: string,
+    questionId: number,
+    answerId: number,
+    answer: string,
+  ): Promise<MaybeAnswer>;
+
   /** Get answer by id
    * @param answerId answer id
    */
