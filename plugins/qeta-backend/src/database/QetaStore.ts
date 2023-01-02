@@ -55,6 +55,7 @@ export interface QuestionsOptions {
   order?: 'desc' | 'asc';
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
+  noVotes?: boolean;
   tags?: string[];
   entity?: string;
   includeAnswers?: boolean;
