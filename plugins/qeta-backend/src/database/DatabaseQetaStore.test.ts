@@ -164,13 +164,13 @@ describe.each(databases.eachSupportedId())(
         );
 
         const ret1 = await storage.getQuestions({
-          component: 'component:default/comp1',
+          entity: 'component:default/comp1',
         });
         expect(ret1.questions.length).toEqual(1);
         expect(ret1.questions.at(0)?.id).toEqual(q1.id);
 
         const ret2 = await storage.getQuestions({
-          component: 'component:default/comp2',
+          entity: 'component:default/comp2',
         });
 
         expect(ret2.questions.length).toEqual(2);
@@ -201,13 +201,13 @@ describe.each(databases.eachSupportedId())(
 
         const ret1 = await storage.getQuestion('user', id1.id);
         expect(ret1?.tags?.sort()).toEqual(['xml', 'java'].sort());
-        expect(ret1?.components?.sort()).toEqual(
+        expect(ret1?.entities?.sort()).toEqual(
           ['component:default/comp1', 'component:default/comp2'].sort(),
         );
 
         const ret2 = await storage.getQuestion('user', id2.id);
         expect(ret2?.tags?.sort()).toEqual(['java', 'mysql'].sort());
-        expect(ret2?.components?.sort()).toEqual(
+        expect(ret2?.entities?.sort()).toEqual(
           ['component:default/comp2', 'component:default/comp3'].sort(),
         );
       });
@@ -240,8 +240,8 @@ describe.each(databases.eachSupportedId())(
         expect(ret?.content).toEqual('content2');
         expect(ret?.tags?.length).toEqual(1);
         expect(ret?.tags?.at(0)).toEqual('java');
-        expect(ret?.components?.length).toEqual(1);
-        expect(ret?.components?.at(0)).toEqual('component:default/comp2');
+        expect(ret?.entities?.length).toEqual(1);
+        expect(ret?.entities?.at(0)).toEqual('component:default/comp2');
         expect(ret?.updatedBy).toEqual('user1');
         expect(ret?.updated).toBeDefined();
       });

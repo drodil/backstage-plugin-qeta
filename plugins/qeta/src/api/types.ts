@@ -22,7 +22,7 @@ export interface QuestionResponse {
   title: string;
   content: string;
   tags?: string[];
-  components?: string[];
+  entities?: string[];
   created: Date;
   views: number;
   score: number;
@@ -42,7 +42,7 @@ export interface QuestionRequest {
   title: string;
   content: string;
   tags?: string[];
-  components?: string[];
+  entities?: string[];
 }
 
 export interface AnswerRequest {
