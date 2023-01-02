@@ -79,6 +79,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         error={error}
         response={response}
         onPageChange={onPageChange}
+        entity={entity}
       />
     </Box>
   );
