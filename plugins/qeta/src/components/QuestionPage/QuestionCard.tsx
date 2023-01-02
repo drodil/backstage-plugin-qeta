@@ -40,6 +40,12 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
       catalogApi
         .getEntitiesByRefs({
           entityRefs: question.entities,
+          fields: [
+            'kind',
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+          ],
         })
         .catch(_ => setEntities([]))
         .then(data =>

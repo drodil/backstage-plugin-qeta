@@ -1,4 +1,4 @@
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Button, TextField } from '@material-ui/core';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import React, { useEffect } from 'react';
@@ -53,7 +53,15 @@ const getValues = async (
 
   const question = await api.getQuestion(id);
   const entities = question.entities
-    ? await catalogApi.getEntitiesByRefs({ entityRefs: question.entities })
+    ? await catalogApi.getEntitiesByRefs({
+        entityRefs: question.entities,
+        fields: [
+          'kind',
+          'metadata.name',
+          'metadata.namespace',
+          'metadata.title',
+        ],
+      })
     : [];
   return {
     title: question.title,
@@ -78,6 +86,7 @@ export const AskForm = (props: {
   >([]);
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
+  const configApi = useApi(configApiRef);
   const styles = useStyles();
   const {
     register,
@@ -156,13 +165,26 @@ export const AskForm = (props: {
   }, [qetaApi]);
 
   useEffect(() => {
+    let entityKinds = configApi.getOptionalStringArray('qeta.entityKinds');
+    if (!entityKinds) {
+      entityKinds = ['Component'];
+    }
+
     catalogApi
-      .getEntities()
+      .getEntities({
+        filter: { kind: entityKinds },
+        fields: [
+          'kind',
+          'metadata.name',
+          'metadata.namespace',
+          'metadata.title',
+        ],
+      })
       .catch(_ => setAvailableEntities(null))
       .then(data =>
         data ? setAvailableEntities(data.items) : setAvailableEntities(null),
       );
-  }, [catalogApi]);
+  }, [catalogApi, configApi]);
 
   return (
     <form onSubmit={handleSubmit(postQuestion)}>
