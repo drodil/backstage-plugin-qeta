@@ -12,15 +12,14 @@ export const QuestionList = (props: {
   error: any;
   response?: QuestionsResponse;
   onPageChange: (page: number) => void;
+  page: number;
   entity?: string;
 }) => {
-  const { loading, error, response, onPageChange, entity } = props;
-  const [page, setPage] = React.useState(1);
+  const { loading, error, response, onPageChange, entity, page } = props;
   const pageSize = 10;
   const styles = useStyles();
 
   const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
     onPageChange(value);
   };
 

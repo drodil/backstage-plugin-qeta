@@ -22,12 +22,15 @@ const radioSelect = (value: string, label: string) => {
   );
 };
 
-export type FilterKey =
-  | 'orderBy'
-  | 'order'
-  | 'noAnswers'
-  | 'noCorrectAnswer'
-  | 'noVotes';
+export const filterKeys = [
+  'orderBy',
+  'order',
+  'noAnswers',
+  'noCorrectAnswer',
+  'noVotes',
+] as const;
+export type FilterKey = typeof filterKeys[number];
+
 export interface FilterPanelProps {
   onChange: (key: FilterKey, value: string) => void;
   filters: Record<FilterKey, string>;
