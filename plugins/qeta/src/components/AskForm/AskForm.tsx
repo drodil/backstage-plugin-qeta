@@ -4,7 +4,7 @@ import { Alert, Autocomplete } from '@material-ui/lab';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import 'react-mde/lib/styles/css/react-mde-all.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   QetaApi,
   qetaApiRef,
@@ -78,12 +78,15 @@ export const AskForm = (props: {
 }) => {
   const { id, entity, onPost } = props;
   const navigate = useNavigate();
+  const [entityRef, setEntityRef] = React.useState(entity);
   const [values, setValues] = React.useState(getDefaultValues());
   const [error, setError] = React.useState(false);
   const [availableTags, setAvailableTags] = React.useState<string[] | null>([]);
+  const [searchParams, _setSearchParams] = useSearchParams();
   const [availableEntities, setAvailableEntities] = React.useState<
     Entity[] | null
   >([]);
+
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
   const configApi = useApi(configApiRef);
@@ -132,6 +135,15 @@ export const AskForm = (props: {
   };
 
   useEffect(() => {
+    if (!entityRef) {
+      const e = searchParams.get('entity');
+      if (e) {
+        setEntityRef(e);
+      }
+    }
+  }, [entityRef, searchParams]);
+
+  useEffect(() => {
     if (id) {
       getValues(qetaApi, catalogApi, id).then(data => {
         setValues(data);
@@ -140,14 +152,17 @@ export const AskForm = (props: {
   }, [qetaApi, catalogApi, id]);
 
   useEffect(() => {
-    if (entity) {
-      catalogApi.getEntityByRef(entity).then(data => {
+    if (entityRef) {
+      catalogApi.getEntityByRef(entityRef).then(data => {
         if (data) {
-          setValues({ ...values, entities: [data] });
+          setValues(v => {
+            return { ...v, entities: [data] };
+          });
+          setAvailableEntities([data]);
         }
       });
     }
-  }, [catalogApi, entity, values]);
+  }, [catalogApi, entityRef]);
 
   useEffect(() => {
     reset(values);
@@ -165,6 +180,9 @@ export const AskForm = (props: {
   }, [qetaApi]);
 
   useEffect(() => {
+    if (entityRef) {
+      return;
+    }
     let entityKinds = configApi.getOptionalStringArray('qeta.entityKinds');
     if (!entityKinds) {
       entityKinds = ['Component'];
@@ -184,7 +202,7 @@ export const AskForm = (props: {
       .then(data =>
         data ? setAvailableEntities(data.items) : setAvailableEntities(null),
       );
-  }, [catalogApi, configApi]);
+  }, [catalogApi, entityRef, configApi]);
 
   return (
     <form onSubmit={handleSubmit(postQuestion)}>
@@ -254,7 +272,7 @@ export const AskForm = (props: {
           render={({ field: { onChange, value } }) => (
             <Autocomplete
               multiple
-              hidden={!!entity}
+              hidden={!!entityRef}
               value={value}
               id="entities-select"
               options={availableEntities}

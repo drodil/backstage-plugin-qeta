@@ -12,8 +12,9 @@ export const QuestionList = (props: {
   error: any;
   response?: QuestionsResponse;
   onPageChange: (page: number) => void;
+  entity?: string;
 }) => {
-  const { loading, error, response, onPageChange } = props;
+  const { loading, error, response, onPageChange, entity } = props;
   const [page, setPage] = React.useState(1);
   const pageSize = 10;
   const styles = useStyles();
@@ -47,7 +48,10 @@ export const QuestionList = (props: {
           <Typography variant="h6">No questions found</Typography>
         </Grid>
         <Grid item>
-          <Button href="/qeta/ask" startIcon={<HelpOutline />}>
+          <Button
+            href={entity ? `/qeta/ask?entity=${entity}` : '/qeta/ask'}
+            startIcon={<HelpOutline />}
+          >
             Go ahead and ask one!
           </Button>
         </Grid>
