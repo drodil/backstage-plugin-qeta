@@ -100,14 +100,14 @@ export class DatabaseQetaStore implements QetaStore {
     val: RawQuestionEntity,
     addAnswers?: boolean,
     addVotes?: boolean,
-    addComponents?: boolean,
+    addEntities?: boolean,
   ): Promise<Question> {
     // TODO: This could maybe done with join
     const additionalInfo = await Promise.all([
       this.getQuestionTags(val.id),
       addAnswers ? this.getQuestionAnswers(val.id, addVotes) : undefined,
       addVotes ? this.getQuestionVotes(val.id) : undefined,
-      addComponents ? this.getQuestionComponents(val.id) : undefined,
+      addEntities ? this.getQuestionEntities(val.id) : undefined,
     ]);
     return {
       id: val.id,
@@ -124,7 +124,7 @@ export class DatabaseQetaStore implements QetaStore {
       tags: additionalInfo[0],
       answers: additionalInfo[1],
       votes: additionalInfo[2],
-      components: additionalInfo[3],
+      entities: additionalInfo[3],
     };
   }
 
@@ -163,14 +163,14 @@ export class DatabaseQetaStore implements QetaStore {
     return rows.map(val => val.tag);
   }
 
-  private async getQuestionComponents(questionId: number): Promise<string[]> {
-    const rows = await this.db<RawTagEntity>('components') // nosonar
+  private async getQuestionEntities(questionId: number): Promise<string[]> {
+    const rows = await this.db<RawTagEntity>('entities') // nosonar
       .leftJoin(
-        'question_components',
-        'components.id',
-        'question_components.componentId',
+        'question_entities',
+        'entities.id',
+        'question_entities.entityId',
       )
-      .where('question_components.questionId', '=', questionId)
+      .where('question_entities.questionId', '=', questionId)
       .select();
     return rows.map(val => val.entity_ref);
   }
@@ -280,18 +280,14 @@ export class DatabaseQetaStore implements QetaStore {
       query.whereIn('tags.tag', options.tags);
     }
 
-    if (options.component) {
+    if (options.entity) {
       query.leftJoin(
-        'question_components',
+        'question_entities',
         'questions.id',
-        'question_components.questionId',
+        'question_entities.questionId',
       );
-      query.leftJoin(
-        'components',
-        'question_components.componentId',
-        'components.id',
-      );
-      query.where('components.entity_ref', '=', options.component);
+      query.leftJoin('entities', 'question_entities.entityId', 'entities.id');
+      query.where('entities.entity_ref', '=', options.entity);
     }
 
     if (options.noAnswers) {
@@ -335,7 +331,7 @@ export class DatabaseQetaStore implements QetaStore {
             val,
             options.includeAnswers,
             options.includeVotes,
-            options.includeComponents,
+            options.includeEntities,
           );
         }),
       ),
@@ -394,7 +390,7 @@ export class DatabaseQetaStore implements QetaStore {
     title: string,
     content: string,
     tags?: string[],
-    components?: string[],
+    entities?: string[],
   ): Promise<Question> {
     const questions = await this.db
       .insert(
@@ -410,7 +406,7 @@ export class DatabaseQetaStore implements QetaStore {
 
     await Promise.all([
       this.addQuestionTags(questions[0].id, tags),
-      this.addQuestionComponents(questions[0].id, components),
+      this.addQuestionEntities(questions[0].id, entities),
     ]);
 
     return this.mapQuestion(questions[0], false, false, true);
@@ -422,7 +418,7 @@ export class DatabaseQetaStore implements QetaStore {
     title: string,
     content: string,
     tags?: string[],
-    components?: string[],
+    entities?: string[],
   ): Promise<MaybeQuestion> {
     const rows = await this.db('questions')
       .where('questions.id', '=', id)
@@ -435,7 +431,7 @@ export class DatabaseQetaStore implements QetaStore {
 
     await Promise.all([
       this.addQuestionTags(id, tags, true),
-      this.addQuestionComponents(id, components, true),
+      this.addQuestionEntities(id, entities, true),
     ]);
 
     return await this.getQuestion(user_ref, id, false);
@@ -489,37 +485,37 @@ export class DatabaseQetaStore implements QetaStore {
     );
   }
 
-  private async addQuestionComponents(
+  private async addQuestionEntities(
     questionId: number,
-    componentsInput?: string[],
+    entitiesInput?: string[],
     removeOld?: boolean,
   ) {
     if (removeOld) {
-      await this.db('question_components')
+      await this.db('question_entities')
         .where('questionId', '=', questionId)
         .delete();
     }
 
     const regex = /\w+:\w+\/\w+/g;
-    const components = componentsInput?.filter(input => input.match(regex));
-    if (!components || components.length === 0) {
+    const entities = entitiesInput?.filter(input => input.match(regex));
+    if (!entities || entities.length === 0) {
       return;
     }
 
-    const existingComponents = await this.db('components')
-      .whereIn('entity_ref', components)
+    const existingEntities = await this.db('entities')
+      .whereIn('entity_ref', entities)
       .returning('id')
       .select();
-    const newComponents = components.filter(
-      t => !existingComponents.some(e => e.tag === t),
+    const newEntities = entities.filter(
+      t => !existingEntities.some(e => e.entity_ref === t),
     );
-    const componentIds = (
+    const entityIds = (
       await Promise.all(
-        [...new Set(newComponents)].map(
-          async component =>
+        [...new Set(newEntities)].map(
+          async entity =>
             await this.db
-              .insert({ entity_ref: component })
-              .into('components')
+              .insert({ entity_ref: entity })
+              .into('entities')
               .returning('id')
               .onConflict('entity_ref')
               .ignore(),
@@ -527,14 +523,14 @@ export class DatabaseQetaStore implements QetaStore {
       )
     )
       .flat()
-      .map(component => component.id)
-      .concat(existingComponents.map(c => c.id));
+      .map(entity => entity.id)
+      .concat(existingEntities.map(c => c.id));
 
     await Promise.all(
-      componentIds.map(async componentId => {
+      entityIds.map(async entityId => {
         await this.db
-          .insert({ questionId, componentId })
-          .into('question_components')
+          .insert({ questionId, entityId })
+          .into('question_entities')
           .onConflict()
           .ignore();
       }),

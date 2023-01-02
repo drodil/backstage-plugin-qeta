@@ -12,7 +12,7 @@ export interface Question {
   correctAnswer: boolean;
   ownVote?: number;
   tags?: string[];
-  components?: string[];
+  entities?: string[];
   answers?: Answer[];
   own?: boolean;
   votes?: Vote[];
@@ -56,10 +56,10 @@ export interface QuestionsOptions {
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
   tags?: string[];
-  component?: string;
+  entity?: string;
   includeAnswers?: boolean;
   includeVotes?: boolean;
-  includeComponents?: boolean;
+  includeEntities?: boolean;
   random?: boolean;
 }
 

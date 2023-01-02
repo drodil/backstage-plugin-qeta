@@ -30,20 +30,20 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
   const { question } = props;
   const styles = useStyles();
   const catalogApi = useApi(catalogApiRef);
-  const [components, setComponents] = React.useState<Entity[]>([]);
+  const [entities, setEntities] = React.useState<Entity[]>([]);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   useEffect(() => {
-    if (question.components && question.components.length > 0) {
+    if (question.entities && question.entities.length > 0) {
       catalogApi
         .getEntitiesByRefs({
-          entityRefs: question.components,
+          entityRefs: question.entities,
         })
-        .catch(_ => setComponents([]))
+        .catch(_ => setEntities([]))
         .then(data =>
-          data ? setComponents(compact(data.items)) : setComponents([]),
+          data ? setEntities(compact(data.items)) : setEntities([]),
         );
     }
   }, [catalogApi, question]);
@@ -71,8 +71,8 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
                       clickable
                     />
                   ))}
-                {components &&
-                  components.map(component => (
+                {entities &&
+                  entities.map(component => (
                     <Tooltip
                       title={
                         component.metadata.description?.slice(0, 50) ??

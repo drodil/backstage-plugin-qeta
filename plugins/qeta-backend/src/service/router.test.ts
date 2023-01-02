@@ -165,7 +165,7 @@ describe('createRouter', () => {
           title: 'title',
           content: 'content',
           tags: ['java'],
-          components: ['component:default/comp1'],
+          entities: ['component:default/comp1'],
         });
 
       expect(qetaStore.postQuestion).toHaveBeenCalledWith(

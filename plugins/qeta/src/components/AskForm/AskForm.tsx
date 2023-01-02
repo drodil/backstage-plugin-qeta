@@ -23,13 +23,13 @@ interface QuestionForm {
   title: string;
   content: string;
   tags?: string[];
-  components?: Entity[];
+  entities?: Entity[];
 }
 
 const formToRequest = (form: QuestionForm): QuestionRequest => {
   return {
     ...form,
-    components: form.components?.map(stringifyEntityRef),
+    entities: form.entities?.map(stringifyEntityRef),
   };
 };
 
@@ -38,7 +38,7 @@ const getDefaultValues = (): QuestionForm => {
     title: '',
     content: '',
     tags: [],
-    components: [],
+    entities: [],
   };
 };
 
@@ -52,28 +52,28 @@ const getValues = async (
   }
 
   const question = await api.getQuestion(id);
-  const entities = question.components
-    ? await catalogApi.getEntitiesByRefs({ entityRefs: question.components })
+  const entities = question.entities
+    ? await catalogApi.getEntitiesByRefs({ entityRefs: question.entities })
     : [];
   return {
     title: question.title,
     content: question.content,
     tags: question.tags ?? [],
-    components: 'items' in entities ? compact(entities.items) : [],
+    entities: 'items' in entities ? compact(entities.items) : [],
   };
 };
 
 export const AskForm = (props: {
   id?: string;
-  component?: string;
-  onPost: (question: QuestionResponse) => void;
+  entity?: string;
+  onPost?: (question: QuestionResponse) => void;
 }) => {
-  const { id, component, onPost } = props;
+  const { id, entity, onPost } = props;
   const navigate = useNavigate();
   const [values, setValues] = React.useState(getDefaultValues());
   const [error, setError] = React.useState(false);
   const [availableTags, setAvailableTags] = React.useState<string[] | null>([]);
-  const [availableComponents, setAvailableComponents] = React.useState<
+  const [availableEntities, setAvailableEntities] = React.useState<
     Entity[] | null
   >([]);
   const qetaApi = useApi(qetaApiRef);
@@ -131,14 +131,14 @@ export const AskForm = (props: {
   }, [qetaApi, catalogApi, id]);
 
   useEffect(() => {
-    if (component) {
-      catalogApi.getEntityByRef(component).then(data => {
+    if (entity) {
+      catalogApi.getEntityByRef(entity).then(data => {
         if (data) {
-          setValues({ ...values, components: [data] });
+          setValues({ ...values, entities: [data] });
         }
       });
     }
-  }, [catalogApi, component, values]);
+  }, [catalogApi, entity, values]);
 
   useEffect(() => {
     reset(values);
@@ -158,11 +158,9 @@ export const AskForm = (props: {
   useEffect(() => {
     catalogApi
       .getEntities()
-      .catch(_ => setAvailableComponents(null))
+      .catch(_ => setAvailableEntities(null))
       .then(data =>
-        data
-          ? setAvailableComponents(data.items)
-          : setAvailableComponents(null),
+        data ? setAvailableEntities(data.items) : setAvailableEntities(null),
       );
   }, [catalogApi]);
 
@@ -228,16 +226,16 @@ export const AskForm = (props: {
           name="tags"
         />
       )}
-      {availableComponents && (
+      {availableEntities && (
         <Controller
           control={control}
           render={({ field: { onChange, value } }) => (
             <Autocomplete
               multiple
-              hidden={!!component}
+              hidden={!!entity}
               value={value}
-              id="components-select"
-              options={availableComponents}
+              id="entities-select"
+              options={availableEntities}
               getOptionLabel={getEntityTitle}
               getOptionSelected={(o, v) =>
                 stringifyEntityRef(o) === stringifyEntityRef(v)
@@ -252,14 +250,14 @@ export const AskForm = (props: {
                   {...params}
                   variant="outlined"
                   margin="normal"
-                  label="Components"
-                  placeholder="Type or select components"
-                  helperText="Add up to 3 components this question relates to"
+                  label="Entities"
+                  placeholder="Type or select entities"
+                  helperText="Add up to 3 entities this question relates to"
                 />
               )}
             />
           )}
-          name="components"
+          name="entities"
         />
       )}
       <Button type="submit" variant="contained" className={styles.postButton}>

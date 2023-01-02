@@ -29,7 +29,7 @@ interface QuestionsQuery {
   limit?: number;
   offset?: number;
   tags?: string[];
-  component?: string;
+  entity?: string;
   author?: string;
   orderBy?: 'views' | 'score' | 'answersCount' | 'created' | 'updated';
   order?: 'desc' | 'asc';
@@ -37,7 +37,7 @@ interface QuestionsQuery {
   noAnswers?: boolean;
   includeAnswers?: boolean;
   includeVotes?: boolean;
-  includeComponents?: boolean;
+  includeEntities?: boolean;
 }
 
 const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
@@ -55,10 +55,10 @@ const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     noCorrectAnswer: { type: 'boolean', nullable: true },
     noAnswers: { type: 'boolean', nullable: true },
     tags: { type: 'array', items: { type: 'string' }, nullable: true },
-    component: { type: 'string', nullable: true },
+    entity: { type: 'string', nullable: true },
     includeAnswers: { type: 'boolean', nullable: true },
     includeVotes: { type: 'boolean', nullable: true },
-    includeComponents: { type: 'boolean', nullable: true },
+    includeEntities: { type: 'boolean', nullable: true },
   },
   required: [],
   additionalProperties: false,
@@ -68,7 +68,7 @@ interface PostQuestion {
   title: string;
   content: string;
   tags: string[];
-  components: string[];
+  entities: string[];
 }
 
 const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
@@ -77,7 +77,7 @@ const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
     title: { type: 'string', minLength: 1 },
     content: { type: 'string', minLength: 1 },
     tags: { type: 'array', items: { type: 'string' } },
-    components: { type: 'array', items: { type: 'string' } },
+    entities: { type: 'array', items: { type: 'string' } },
   },
   required: ['title', 'content'],
   additionalProperties: false,
@@ -221,7 +221,7 @@ export async function createRouter({
       request.body.title,
       request.body.content,
       request.body.tags,
-      request.body.components,
+      request.body.entities,
     );
 
     // Response
@@ -247,7 +247,7 @@ export async function createRouter({
       request.body.title,
       request.body.content,
       request.body.tags,
-      request.body.components,
+      request.body.entities,
     );
 
     if (!question) {
