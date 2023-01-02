@@ -22,7 +22,12 @@ const radioSelect = (value: string, label: string) => {
   );
 };
 
-export type FilterKey = 'orderBy' | 'order' | 'noAnswers' | 'noCorrectAnswer';
+export type FilterKey =
+  | 'orderBy'
+  | 'order'
+  | 'noAnswers'
+  | 'noCorrectAnswer'
+  | 'noVotes';
 export interface FilterPanelProps {
   onChange: (key: FilterKey, value: string) => void;
   filters: Record<FilterKey, string>;
@@ -67,6 +72,17 @@ export const FilterPanel = (props: FilterPanelProps) => {
                 />
               }
               label="No correct answers"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  name="noVotes"
+                  checked={filters.noVotes === 'true'}
+                  onChange={handleChange}
+                />
+              }
+              label="No votes"
             />
           </FormGroup>
         </Grid>

@@ -298,6 +298,9 @@ export class DatabaseQetaStore implements QetaStore {
         .where('answers.correct', '!=', true)
         .orWhereNull('answers.questionId');
     }
+    if (options.noVotes) {
+      query.whereNull('question_votes.questionId');
+    }
 
     const totalQuery = query.clone();
 

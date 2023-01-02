@@ -35,6 +35,7 @@ interface QuestionsQuery {
   order?: 'desc' | 'asc';
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
+  noVotes?: boolean;
   includeAnswers?: boolean;
   includeVotes?: boolean;
   includeEntities?: boolean;
@@ -54,6 +55,7 @@ const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
     noCorrectAnswer: { type: 'boolean', nullable: true },
     noAnswers: { type: 'boolean', nullable: true },
+    noVotes: { type: 'boolean', nullable: true },
     tags: { type: 'array', items: { type: 'string' }, nullable: true },
     entity: { type: 'string', nullable: true },
     includeAnswers: { type: 'boolean', nullable: true },
