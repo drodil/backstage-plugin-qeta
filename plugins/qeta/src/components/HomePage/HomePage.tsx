@@ -4,7 +4,6 @@ import {
   Content,
   ContentHeader,
   Header,
-  HeaderLabel,
   Page,
 } from '@backstage/core-components';
 import { Route, Routes } from 'react-router-dom';
@@ -61,9 +60,7 @@ export const HomePageContent = () => {
 
 export const HomePage = () => (
   <Page themeId="tool">
-    <Header title="Q&A">
-      <HeaderLabel label="Lifecycle" value="Alpha" />
-    </Header>
+    <Header title="Q&A" style={{ paddingTop: '1rem', paddingBottom: '1rem' }} />
     <Routes>
       <Route path="/" element={<HomePageContent />} />
       <Route path="/ask" element={<AskPage />} />
