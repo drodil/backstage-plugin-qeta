@@ -2,9 +2,9 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [1.0.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.0.0...v1.0.1) (2023-01-06)
+### [1.0.1](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.30...v1.0.1) (2023-01-06)
 
-## [1.0.0](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.30...v1.0.0) (2023-01-05)
+First stable release. No new features or bug fixes.
 
 ### [0.1.30](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.29...v0.1.30) (2023-01-02)
 
@@ -53,36 +53,25 @@ All notable changes to this project will be documented in this file. See [standa
 
 * show total number of questions in question container ([1281b60](https://github.com/drodil/backstage-plugin-qeta/commit/1281b60fde382ecd2fa55afe592cb6f1f6692907))
 
-### [0.1.26](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.25...v0.1.26) (2022-12-30)
+### [0.1.26](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.23...v0.1.26) (2022-12-30)
 
 
 ### Bug Fixes
 
 * no new question when editing ([9c76dad](https://github.com/drodil/backstage-plugin-qeta/commit/9c76dad9aeb22ec5c639e4b6f82a2195067eec6d))
+* add missing mock for question update ([8d1f7c7](https://github.com/drodil/backstage-plugin-qeta/commit/8d1f7c711f130791cfd459402cd4772b11f6e35c))
+* change the search collator to only return answer contents ([32a3833](https://github.com/drodil/backstage-plugin-qeta/commit/32a3833d4918e1e38fcbb2e846012baf078f246d))
+* delete button to be a link ([dbce2be](https://github.com/drodil/backstage-plugin-qeta/commit/dbce2be182f890a2f9d5b14706cb346b7922ca9c))
+* vote buttons tooltip for questions ([95fa77c](https://github.com/drodil/backstage-plugin-qeta/commit/95fa77c45fbfed2bce149f8cc48e1c30bad70b5b))
+* add margin to top buttons and fix search docs ([cf30db5](https://github.com/drodil/backstage-plugin-qeta/commit/cf30db51fd97b7b31524e8d4b07d63ceb29e5f05))
 
-### [0.1.25](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.24...v0.1.25) (2022-12-30)
 
-
-### Features
+### Feature**s**
 
 * allow deleting questions and answers ([e06c0e7](https://github.com/drodil/backstage-plugin-qeta/commit/e06c0e73b56aeead90b1b58f88b3321ac7f215f1)), closes [#6](https://github.com/drodil/backstage-plugin-qeta/issues/6)
 * allow fetching questions by component ([e68767d](https://github.com/drodil/backstage-plugin-qeta/commit/e68767db6b418f7bc1ba73d6764f8519a1b5f2a0))
 * allow users to edit questions ([e8a15dd](https://github.com/drodil/backstage-plugin-qeta/commit/e8a15dd91239b650b3f3c8211ef3a3c14db760b7)), closes [#5](https://github.com/drodil/backstage-plugin-qeta/issues/5)
 
-
-### Bug Fixes
-
-* add missing mock for question update ([8d1f7c7](https://github.com/drodil/backstage-plugin-qeta/commit/8d1f7c711f130791cfd459402cd4772b11f6e35c))
-* change the search collator to only return answer contents ([32a3833](https://github.com/drodil/backstage-plugin-qeta/commit/32a3833d4918e1e38fcbb2e846012baf078f246d))
-* delete button to be a link ([dbce2be](https://github.com/drodil/backstage-plugin-qeta/commit/dbce2be182f890a2f9d5b14706cb346b7922ca9c))
-* vote buttons tooltip for questions ([95fa77c](https://github.com/drodil/backstage-plugin-qeta/commit/95fa77c45fbfed2bce149f8cc48e1c30bad70b5b))
-
-### [0.1.24](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.23...v0.1.24) (2022-12-29)
-
-
-### Bug Fixes
-
-* add margin to top buttons and fix search docs ([cf30db5](https://github.com/drodil/backstage-plugin-qeta/commit/cf30db51fd97b7b31524e8d4b07d63ceb29e5f05))
 
 ### [0.1.23](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.22...v0.1.23) (2022-12-29)
 
@@ -103,31 +92,19 @@ All notable changes to this project will be documented in this file. See [standa
 
 * move catalog api to dev/index ([38c34f9](https://github.com/drodil/backstage-plugin-qeta/commit/38c34f9cac64f0a9bbd2357463d83e241e9244f8)), closes [#16](https://github.com/drodil/backstage-plugin-qeta/issues/16)
 
-### [0.1.21](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.20...v0.1.21) (2022-12-28)
+### [0.1.21](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.18...v0.1.21) (2022-12-28)
 
 
 ### Bug Fixes
 
 * remove catalog api completely from released version ([61ed863](https://github.com/drodil/backstage-plugin-qeta/commit/61ed8632e88912837ddbe91e736e2c4b128e2425))
-
-### [0.1.20](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.19...v0.1.20) (2022-12-28)
-
-
-### Bug Fixes
-
 * duplicate catalog api for plugin users ([2ce629b](https://github.com/drodil/backstage-plugin-qeta/commit/2ce629ba777f9ea98301e0f14ee82086ca747912))
-
-### [0.1.19](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.18...v0.1.19) (2022-12-28)
-
+* yarn.lock ([639d2ab](https://github.com/drodil/backstage-plugin-qeta/commit/639d2abfb8a762c663bf767f7e7d160d12eff6f1))
 
 ### Features
 
 * allow selecting components for questions ([7c2ca39](https://github.com/drodil/backstage-plugin-qeta/commit/7c2ca398a61333433630a80753e3df64de1f2102)), closes [#12](https://github.com/drodil/backstage-plugin-qeta/issues/12)
 
-
-### Bug Fixes
-
-* yarn.lock ([639d2ab](https://github.com/drodil/backstage-plugin-qeta/commit/639d2abfb8a762c663bf767f7e7d160d12eff6f1))
 
 ### [0.1.18](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.17...v0.1.18) (2022-12-27)
 
