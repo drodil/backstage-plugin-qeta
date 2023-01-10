@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.0.1...v1.1.0) (2023-01-10)
+
+
+### Features
+
+* allow setting qeta page title and subtitle ([e9d306b](https://github.com/drodil/backstage-plugin-qeta/commit/e9d306b3bb52cf6917246ff07c22d60b9b9cc15e)), closes [#23](https://github.com/drodil/backstage-plugin-qeta/issues/23)
+
+
+### Bug Fixes
+
+* remove deprecated versions from changelog ([21c7f3a](https://github.com/drodil/backstage-plugin-qeta/commit/21c7f3a97f9ecde98ed4ff52bf476e6eaefcaea5))
+
 ### [1.0.1](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.30...v1.0.1) (2023-01-06)
 
 First stable release. No new features or bug fixes.
