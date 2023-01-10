@@ -32,7 +32,12 @@ const qetaDevPlugin = createPlugin({
 createDevApp()
   .registerPlugin(qetaDevPlugin)
   .addPage({
-    element: <QetaPage />,
+    element: (
+      <QetaPage
+        title="Questions and answers"
+        subtitle="We have answers to everything!"
+      />
+    ),
     title: 'Root Page',
     path: '/qeta',
   })
