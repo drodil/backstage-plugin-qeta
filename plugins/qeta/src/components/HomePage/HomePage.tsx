@@ -58,9 +58,17 @@ export const HomePageContent = () => {
   );
 };
 
-export const HomePage = () => (
+type Props = {
+  title?: string;
+  subtitle?: string;
+  headerElements?: JSX.Element[];
+};
+
+export const HomePage = (props: Props) => (
   <Page themeId="tool">
-    <Header title="Q&A" style={{ paddingTop: '1rem', paddingBottom: '1rem' }} />
+    <Header title={props.title ?? 'Q&A'} subtitle={props.subtitle}>
+      {props.headerElements}
+    </Header>
     <Routes>
       <Route path="/" element={<HomePageContent />} />
       <Route path="/ask" element={<AskPage />} />
