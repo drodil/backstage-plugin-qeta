@@ -294,9 +294,12 @@ export class DatabaseQetaStore implements QetaStore {
       query.whereNull('answers.questionId');
     }
     if (options.noCorrectAnswer) {
-      query
-        .where('answers.correct', '!=', true)
-        .orWhereNull('answers.questionId');
+      query.leftJoin('answers as correct_answer', builder => {
+        builder
+          .on('questions.id', 'correct_answer.questionId')
+          .on('correct_answer.correct', this.db.raw('?', [true]));
+      });
+      query.whereNull('correct_answer.questionId');
     }
     if (options.noVotes) {
       query.whereNull('question_votes.questionId');
