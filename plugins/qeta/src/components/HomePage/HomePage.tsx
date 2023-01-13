@@ -74,7 +74,8 @@ export const HomePage = (props: Props) => (
       <Route path="/ask" element={<AskPage />} />
       <Route path="/questions/:id/edit" element={<AskPage />} />
       <Route path="/questions/:id" element={<QuestionPage />} />
-      <Route path="/tags/:tag?" element={<TagPage />} />
+      <Route path="/tags" element={<TagPage />} />
+      <Route path="/tags/:tag" element={<TagPage />} />
       <Route path="/users/*" element={<UserPage />} />
     </Routes>
   </Page>
