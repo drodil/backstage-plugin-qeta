@@ -14,6 +14,7 @@ export const QuestionHighlightList = (props: {
   type: string;
   title: string;
   noQuestionsLabel: string;
+  icon?: JSX.Element;
 }) => {
   const {
     value: response,
@@ -39,6 +40,7 @@ export const QuestionHighlightList = (props: {
             color="primary"
           >
             {props.title}
+            {props.icon}
           </ListSubheader>
         }
       >

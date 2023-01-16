@@ -16,6 +16,7 @@ import HelpOutline from '@material-ui/icons/HelpOutline';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 import { QuestionHighlightList } from '../QuestionHighlightList/QuestionHighlightList';
 import { useStyles } from '../../utils/hooks';
+import Whatshot from '@material-ui/icons/Whatshot';
 
 export const HomePageContent = () => {
   const styles = useStyles();
@@ -42,6 +43,12 @@ export const HomePageContent = () => {
           <QuestionsContainer />
         </Grid>
         <Grid item lg={3} xl={2}>
+          <QuestionHighlightList
+            type="hot"
+            title="Hot questions"
+            noQuestionsLabel="No questions"
+            icon={<Whatshot fontSize="small" />}
+          />
           <QuestionHighlightList
             type="unanswered"
             title="Unanswered questions"

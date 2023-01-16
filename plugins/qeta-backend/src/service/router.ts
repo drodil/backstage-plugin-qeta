@@ -39,6 +39,7 @@ interface QuestionsQuery {
   includeAnswers?: boolean;
   includeVotes?: boolean;
   includeEntities?: boolean;
+  includeTrend?: boolean;
 }
 
 const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
@@ -61,6 +62,7 @@ const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     includeAnswers: { type: 'boolean', nullable: true },
     includeVotes: { type: 'boolean', nullable: true },
     includeEntities: { type: 'boolean', nullable: true },
+    includeTrend: { type: 'boolean', nullable: true },
   },
   required: [],
   additionalProperties: false,
@@ -172,6 +174,9 @@ export async function createRouter({
     } else if (type === 'incorrect') {
       optionOverride.noCorrectAnswer = true;
       optionOverride.random = true;
+    } else if (type === 'hot') {
+      optionOverride.includeTrend = true;
+      optionOverride.orderBy = 'trend';
     }
 
     // Act

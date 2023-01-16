@@ -16,6 +16,7 @@ export interface Question {
   answers?: Answer[];
   own?: boolean;
   votes?: Vote[];
+  trend?: number;
 }
 
 export interface Answer {
@@ -51,7 +52,13 @@ export interface QuestionsOptions {
   limit?: number;
   offset?: number;
   author?: string;
-  orderBy?: 'views' | 'score' | 'answersCount' | 'created' | 'updated';
+  orderBy?:
+    | 'views'
+    | 'score'
+    | 'answersCount'
+    | 'created'
+    | 'updated'
+    | 'trend';
   order?: 'desc' | 'asc';
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
@@ -61,6 +68,8 @@ export interface QuestionsOptions {
   includeAnswers?: boolean;
   includeVotes?: boolean;
   includeEntities?: boolean;
+
+  includeTrend?: boolean;
   random?: boolean;
 }
 
