@@ -10,9 +10,9 @@ export const getEntityUrl = (entity: Entity) => {
   }`.toLowerCase();
 };
 
-export const formatUsername = (username: string) => {
-  const plainUsername = username.split(/[\/:]+/).pop();
-  return plainUsername
+export const formatEntityName = (username: string) => {
+  const plainName = username.split(/[\/:]+/).pop();
+  return plainName
     ?.split(/[_.-]+/)
     .map(a => a.charAt(0).toUpperCase() + a.slice(1))
     .join(' ');

@@ -10,7 +10,7 @@ import {
 import React from 'react';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
-import { formatUsername } from '../../utils/utils';
+import { formatEntityName } from '../../utils/utils';
 
 export const QuestionListItem = (props: { question: QuestionResponse }) => {
   const { question } = props;
@@ -35,7 +35,7 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
         <Typography variant="body2" display="block">
           By{' '}
           <Link href={`/qeta/users/${question.author}`}>
-            {formatUsername(question.author)}
+            {formatEntityName(question.author)}
           </Link>{' '}
           <RelativeTime
             value={question.created}

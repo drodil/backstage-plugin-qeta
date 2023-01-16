@@ -17,7 +17,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
-  formatUsername,
+  formatEntityName,
   getEntityTitle,
   getEntityUrl,
 } from '../../utils/utils';
@@ -100,7 +100,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
               <Grid item xs={4} className={styles.questionCardAuthor}>
                 Asked <RelativeTime value={question.created} /> by{' '}
                 <Link href={`/qeta/users/${question.author}`}>
-                  {formatUsername(question.author)}
+                  {formatEntityName(question.author)}
                 </Link>
               </Grid>
             </Grid>

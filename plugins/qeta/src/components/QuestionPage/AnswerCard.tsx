@@ -11,7 +11,7 @@ import React from 'react';
 import { MarkdownContent } from '@backstage/core-components';
 import { VoteButtons } from './VoteButtons';
 import { useStyles } from '../../utils/hooks';
-import { formatUsername } from '../../utils/utils';
+import { formatEntityName } from '../../utils/utils';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
 import { AnswerForm } from './AnswerForm';
 // @ts-ignore
@@ -62,7 +62,7 @@ export const AnswerCard = (props: {
                   <Typography variant="caption" gutterBottom>
                     By{' '}
                     <Link href={`/qeta/users/${answerEntity.author}`}>
-                      {formatUsername(answerEntity.author)}
+                      {formatEntityName(answerEntity.author)}
                     </Link>{' '}
                     <RelativeTime value={answerEntity.created} />
                     {answerEntity.updated && (
