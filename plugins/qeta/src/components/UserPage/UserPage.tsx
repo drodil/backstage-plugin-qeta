@@ -5,7 +5,7 @@ import { Content, ContentHeader } from '@backstage/core-components';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
-import { formatUsername } from '../../utils/utils';
+import { formatEntityName } from '../../utils/utils';
 import { useStyles } from '../../utils/hooks';
 
 export const UserPage = () => {
@@ -13,7 +13,7 @@ export const UserPage = () => {
   const styles = useStyles();
   return (
     <Content>
-      <ContentHeader title={`Questions by ${formatUsername(identity)}`}>
+      <ContentHeader title={`Questions by ${formatEntityName(identity)}`}>
         <Button href="/qeta" className={styles.marginRight}>
           Back to questions
         </Button>
