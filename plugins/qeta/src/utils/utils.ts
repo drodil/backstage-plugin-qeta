@@ -14,6 +14,7 @@ export const formatEntityName = (username: string) => {
     .join(' ');
 };
 
-export const getEntityTitle = (entity: Entity) => {
-  return formatEntityName(entity.metadata.title ?? stringifyEntityRef(entity));
+export const getEntityTitle = (entity: Entity): string => {
+  const stringified = stringifyEntityRef(entity);
+  return formatEntityName(entity.metadata.title ?? stringified) ?? stringified;
 };
