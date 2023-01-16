@@ -32,6 +32,7 @@ export type RawQuestionEntity = {
   views: number | string;
   answersCount: number | string;
   correctAnswers: number | string;
+  trend: number | string;
 };
 
 export type RawAnswerEntity = {
@@ -127,6 +128,14 @@ export class DatabaseQetaStore implements QetaStore {
     }
     if (options.noVotes) {
       query.whereNull('question_votes.questionId');
+    }
+    if (options.includeTrend) {
+      query.select(
+        this.db.raw(
+          '(EXTRACT(EPOCH FROM questions.created) * (SELECT coalesce(COUNT(*), 1) FROM question_views WHERE ?? = ??) * (SELECT coalesce(COUNT(*), 1) FROM answers WHERE ?? = ??) / 100000) as trend',
+          ['questionId', 'questions.id', 'questionId', 'questions.id'],
+        ),
+      );
     }
 
     const totalQuery = query.clone();
@@ -439,6 +448,7 @@ export class DatabaseQetaStore implements QetaStore {
       answers: additionalInfo[1],
       votes: additionalInfo[2],
       entities: additionalInfo[3],
+      trend: this.mapToInteger(val.trend),
     };
   }
 
