@@ -66,6 +66,8 @@ export type RawTagEntity = {
 };
 
 export class DatabaseQetaStore implements QetaStore {
+  private constructor(private readonly db: Knex) {}
+
   static async create({
     database,
     skipMigrations,
@@ -83,184 +85,6 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     return new DatabaseQetaStore(client);
-  }
-
-  /**
-   * Maps string or number value to integer. This is due to fact that postgres returns
-   * strings instead numbers for count and sum functions.
-   * @param val
-   */
-  private mapToInteger = (val: string | number | undefined): number => {
-    return typeof val === 'string' ? Number.parseInt(val, 10) : val ?? 0;
-  };
-
-  private constructor(private readonly db: Knex) {}
-
-  private async mapQuestion(
-    val: RawQuestionEntity,
-    addAnswers?: boolean,
-    addVotes?: boolean,
-    addEntities?: boolean,
-  ): Promise<Question> {
-    // TODO: This could maybe done with join
-    const additionalInfo = await Promise.all([
-      this.getQuestionTags(val.id),
-      addAnswers ? this.getQuestionAnswers(val.id, addVotes) : undefined,
-      addVotes ? this.getQuestionVotes(val.id) : undefined,
-      addEntities ? this.getQuestionEntities(val.id) : undefined,
-    ]);
-    return {
-      id: val.id,
-      author: val.author,
-      title: val.title,
-      content: val.content,
-      created: val.created,
-      updated: val.updated,
-      updatedBy: val.updatedBy,
-      score: this.mapToInteger(val.score),
-      views: this.mapToInteger(val.views),
-      answersCount: this.mapToInteger(val.answersCount),
-      correctAnswer: this.mapToInteger(val.correctAnswers) > 0,
-      tags: additionalInfo[0],
-      answers: additionalInfo[1],
-      votes: additionalInfo[2],
-      entities: additionalInfo[3],
-    };
-  }
-
-  private async mapAnswer(
-    val: RawAnswerEntity,
-    addVotes?: boolean,
-  ): Promise<Answer> {
-    const votes = addVotes ? await this.getAnswerVotes(val.id) : undefined;
-    return {
-      id: val.id,
-      questionId: val.questionId,
-      author: val.author,
-      content: val.content,
-      correct: val.correct,
-      created: val.created,
-      updated: val.updated,
-      updatedBy: val.updatedBy,
-      score: this.mapToInteger(val.score),
-      votes,
-    };
-  }
-
-  private mapVote(val: RawQuestionVoteEntity | RawAnswerVoteEntity): Vote {
-    return {
-      author: val.author,
-      score: val.score,
-      timestamp: val.timestamp,
-    };
-  }
-
-  private async getQuestionTags(questionId: number): Promise<string[]> {
-    const rows = await this.db<RawTagEntity>('tags') // nosonar
-      .leftJoin('question_tags', 'tags.id', 'question_tags.tagId')
-      .where('question_tags.questionId', '=', questionId)
-      .select();
-    return rows.map(val => val.tag);
-  }
-
-  private async getQuestionEntities(questionId: number): Promise<string[]> {
-    const rows = await this.db<RawTagEntity>('entities') // nosonar
-      .leftJoin(
-        'question_entities',
-        'entities.id',
-        'question_entities.entityId',
-      )
-      .where('question_entities.questionId', '=', questionId)
-      .select();
-    return rows.map(val => val.entity_ref);
-  }
-
-  private async getQuestionVotes(questionId: number): Promise<Vote[]> {
-    const rows = (await this.db<RawQuestionVoteEntity>('question_votes')
-      .where('questionId', '=', questionId)
-      .select()) as RawQuestionVoteEntity[];
-    return rows.map(val => this.mapVote(val));
-  }
-
-  private async getAnswerVotes(answerId: number): Promise<Vote[]> {
-    const rows = (await this.db<RawAnswerVoteEntity>('answer_votes')
-      .where('answerId', '=', answerId)
-      .select()) as RawAnswerVoteEntity[];
-    return rows.map(val => this.mapVote(val));
-  }
-
-  private getAnswerBaseQuery() {
-    const questionRef = this.db.ref('answers.id');
-
-    const score = this.db('answer_votes')
-      .where('answer_votes.answerId', questionRef)
-      .sum('score')
-      .as('score');
-
-    return this.db<RawAnswerEntity>('answers') // nosonar
-      .leftJoin('answer_votes', 'answers.id', 'answer_votes.answerId')
-      .select('answers.*', score)
-      .groupBy('answers.id');
-  }
-
-  private async getQuestionAnswers(
-    questionId: number,
-    addVotes?: boolean,
-  ): Promise<Answer[]> {
-    const rows = await this.getAnswerBaseQuery()
-      .where('questionId', '=', questionId)
-      .orderBy('answers.correct', 'desc')
-      .orderBy('answers.created');
-    return await Promise.all(
-      rows.map(async val => {
-        return this.mapAnswer(val, addVotes);
-      }),
-    );
-  }
-
-  private async recordQuestionView(
-    questionId: number,
-    user_ref: string,
-  ): Promise<void> {
-    await this.db
-      .insert({
-        author: user_ref,
-        questionId,
-        timestamp: new Date(),
-      })
-      .into('question_views');
-  }
-
-  private getQuestionBaseQuery() {
-    const questionRef = this.db.ref('questions.id');
-
-    const score = this.db('question_votes')
-      .where('question_votes.questionId', questionRef)
-      .sum('score')
-      .as('score');
-
-    const views = this.db('question_views')
-      .where('question_views.questionId', questionRef)
-      .count('*')
-      .as('views');
-
-    const answersCount = this.db('answers')
-      .where('answers.questionId', questionRef)
-      .count('*')
-      .as('answersCount');
-
-    const correctAnswers = this.db('answers')
-      .where('answers.questionId', questionRef)
-      .where('answers.correct', '=', true)
-      .count('*')
-      .as('correctAnswers');
-
-    return this.db<RawQuestionEntity>('questions') // nosonar
-      .select('questions.*', score, views, answersCount, correctAnswers)
-      .leftJoin('question_votes', 'questions.id', 'question_votes.questionId')
-      .leftJoin('question_views', 'questions.id', 'question_views.questionId')
-      .leftJoin('answers', 'questions.id', 'answers.questionId')
-      .groupBy('questions.id');
   }
 
   async getQuestions(options: QuestionsOptions): Promise<Questions> {
@@ -443,6 +267,316 @@ export class DatabaseQetaStore implements QetaStore {
     return await this.getQuestion(user_ref, id, false);
   }
 
+  async deleteQuestion(user_ref: string, id: number): Promise<boolean> {
+    return !!(await this.db('questions')
+      .where('id', '=', id)
+      .where('author', '=', user_ref)
+      .delete());
+  }
+
+  async answerQuestion(
+    user_ref: string,
+    questionId: number,
+    answer: string,
+  ): Promise<MaybeAnswer> {
+    const answers = await this.db
+      .insert({
+        questionId,
+        author: user_ref,
+        content: answer,
+        correct: false,
+        created: new Date(),
+      })
+      .into('answers')
+      .returning('id');
+    return this.getAnswer(answers[0].id);
+  }
+
+  async updateAnswer(
+    user_ref: string,
+    questionId: number,
+    answerId: number,
+    answer: string,
+  ): Promise<MaybeAnswer> {
+    const rows = await this.db('answers')
+      .where('answers.id', '=', answerId)
+      .where('answers.questionId', '=', questionId)
+      .where('answers.author', '=', user_ref)
+      .update({ content: answer, updatedBy: user_ref, updated: new Date() });
+
+    if (!rows) {
+      return null;
+    }
+    return this.getAnswer(answerId);
+  }
+
+  async getAnswer(answerId: number): Promise<MaybeAnswer> {
+    const answers = await this.getAnswerBaseQuery().where('id', '=', answerId);
+    return this.mapAnswer(answers[0], true);
+  }
+
+  async deleteAnswer(user_ref: string, id: number): Promise<boolean> {
+    return !!(await this.db('answers')
+      .where('id', '=', id)
+      .where('author', '=', user_ref)
+      .delete());
+  }
+
+  async voteQuestion(
+    user_ref: string,
+    questionId: number,
+    score: number,
+  ): Promise<boolean> {
+    const id = await this.db
+      .insert(
+        {
+          author: user_ref,
+          questionId,
+          score,
+          timestamp: new Date(),
+        },
+        ['questionId'],
+      )
+      .onConflict()
+      .ignore()
+      .into('question_votes');
+    return id && id.length > 0;
+  }
+
+  async voteAnswer(
+    user_ref: string,
+    answerId: number,
+    score: number,
+  ): Promise<boolean> {
+    const id = await this.db
+      .insert(
+        {
+          author: user_ref,
+          answerId,
+          score,
+          timestamp: new Date(),
+        },
+        ['answerId'],
+      )
+      .onConflict()
+      .ignore()
+      .into('answer_votes');
+    return id && id.length > 0;
+  }
+
+  async markAnswerCorrect(
+    user_ref: string,
+    questionId: number,
+    answerId: number,
+  ): Promise<boolean> {
+    return await this.markAnswer(user_ref, questionId, answerId, true);
+  }
+
+  async markAnswerIncorrect(
+    user_ref: string,
+    questionId: number,
+    answerId: number,
+  ): Promise<boolean> {
+    return await this.markAnswer(user_ref, questionId, answerId, false);
+  }
+
+  async getTags(): Promise<TagResponse[]> {
+    const tagRef = this.db.ref('tags.id');
+    const questionsCount = this.db('question_tags')
+      .where('question_tags.tagId', tagRef)
+      .count('*')
+      .as('questionsCount');
+
+    const tags = await this.db('tags')
+      .leftJoin('question_tags', 'tags.id', 'question_tags.tagId')
+      .orderBy('questionsCount', 'desc')
+      .select('tag', questionsCount)
+      .groupBy('tags.id');
+
+    return tags.map(tag => {
+      return {
+        tag: tag.tag,
+        questionsCount: this.mapToInteger(tag.questionsCount),
+      };
+    });
+  }
+
+  /**
+   * Maps string or number value to integer. This is due to fact that postgres returns
+   * strings instead numbers for count and sum functions.
+   * @param val
+   */
+  private mapToInteger = (val: string | number | undefined): number => {
+    return typeof val === 'string' ? Number.parseInt(val, 10) : val ?? 0;
+  };
+
+  private async mapQuestion(
+    val: RawQuestionEntity,
+    addAnswers?: boolean,
+    addVotes?: boolean,
+    addEntities?: boolean,
+  ): Promise<Question> {
+    // TODO: This could maybe done with join
+    const additionalInfo = await Promise.all([
+      this.getQuestionTags(val.id),
+      addAnswers ? this.getQuestionAnswers(val.id, addVotes) : undefined,
+      addVotes ? this.getQuestionVotes(val.id) : undefined,
+      addEntities ? this.getQuestionEntities(val.id) : undefined,
+    ]);
+    return {
+      id: val.id,
+      author: val.author,
+      title: val.title,
+      content: val.content,
+      created: val.created,
+      updated: val.updated,
+      updatedBy: val.updatedBy,
+      score: this.mapToInteger(val.score),
+      views: this.mapToInteger(val.views),
+      answersCount: this.mapToInteger(val.answersCount),
+      correctAnswer: this.mapToInteger(val.correctAnswers) > 0,
+      tags: additionalInfo[0],
+      answers: additionalInfo[1],
+      votes: additionalInfo[2],
+      entities: additionalInfo[3],
+    };
+  }
+
+  private async mapAnswer(
+    val: RawAnswerEntity,
+    addVotes?: boolean,
+  ): Promise<Answer> {
+    const votes = addVotes ? await this.getAnswerVotes(val.id) : undefined;
+    return {
+      id: val.id,
+      questionId: val.questionId,
+      author: val.author,
+      content: val.content,
+      correct: val.correct,
+      created: val.created,
+      updated: val.updated,
+      updatedBy: val.updatedBy,
+      score: this.mapToInteger(val.score),
+      votes,
+    };
+  }
+
+  private mapVote(val: RawQuestionVoteEntity | RawAnswerVoteEntity): Vote {
+    return {
+      author: val.author,
+      score: val.score,
+      timestamp: val.timestamp,
+    };
+  }
+
+  private async getQuestionTags(questionId: number): Promise<string[]> {
+    const rows = await this.db<RawTagEntity>('tags') // nosonar
+      .leftJoin('question_tags', 'tags.id', 'question_tags.tagId')
+      .where('question_tags.questionId', '=', questionId)
+      .select();
+    return rows.map(val => val.tag);
+  }
+
+  private async getQuestionEntities(questionId: number): Promise<string[]> {
+    const rows = await this.db<RawTagEntity>('entities') // nosonar
+      .leftJoin(
+        'question_entities',
+        'entities.id',
+        'question_entities.entityId',
+      )
+      .where('question_entities.questionId', '=', questionId)
+      .select();
+    return rows.map(val => val.entity_ref);
+  }
+
+  private async getQuestionVotes(questionId: number): Promise<Vote[]> {
+    const rows = (await this.db<RawQuestionVoteEntity>('question_votes')
+      .where('questionId', '=', questionId)
+      .select()) as RawQuestionVoteEntity[];
+    return rows.map(val => this.mapVote(val));
+  }
+
+  private async getAnswerVotes(answerId: number): Promise<Vote[]> {
+    const rows = (await this.db<RawAnswerVoteEntity>('answer_votes')
+      .where('answerId', '=', answerId)
+      .select()) as RawAnswerVoteEntity[];
+    return rows.map(val => this.mapVote(val));
+  }
+
+  private getAnswerBaseQuery() {
+    const questionRef = this.db.ref('answers.id');
+
+    const score = this.db('answer_votes')
+      .where('answer_votes.answerId', questionRef)
+      .sum('score')
+      .as('score');
+
+    return this.db<RawAnswerEntity>('answers') // nosonar
+      .leftJoin('answer_votes', 'answers.id', 'answer_votes.answerId')
+      .select('answers.*', score)
+      .groupBy('answers.id');
+  }
+
+  private async getQuestionAnswers(
+    questionId: number,
+    addVotes?: boolean,
+  ): Promise<Answer[]> {
+    const rows = await this.getAnswerBaseQuery()
+      .where('questionId', '=', questionId)
+      .orderBy('answers.correct', 'desc')
+      .orderBy('answers.created');
+    return await Promise.all(
+      rows.map(async val => {
+        return this.mapAnswer(val, addVotes);
+      }),
+    );
+  }
+
+  private async recordQuestionView(
+    questionId: number,
+    user_ref: string,
+  ): Promise<void> {
+    await this.db
+      .insert({
+        author: user_ref,
+        questionId,
+        timestamp: new Date(),
+      })
+      .into('question_views');
+  }
+
+  private getQuestionBaseQuery() {
+    const questionRef = this.db.ref('questions.id');
+
+    const score = this.db('question_votes')
+      .where('question_votes.questionId', questionRef)
+      .sum('score')
+      .as('score');
+
+    const views = this.db('question_views')
+      .where('question_views.questionId', questionRef)
+      .count('*')
+      .as('views');
+
+    const answersCount = this.db('answers')
+      .where('answers.questionId', questionRef)
+      .count('*')
+      .as('answersCount');
+
+    const correctAnswers = this.db('answers')
+      .where('answers.questionId', questionRef)
+      .where('answers.correct', '=', true)
+      .count('*')
+      .as('correctAnswers');
+
+    return this.db<RawQuestionEntity>('questions') // nosonar
+      .select('questions.*', score, views, answersCount, correctAnswers)
+      .leftJoin('question_votes', 'questions.id', 'question_votes.questionId')
+      .leftJoin('question_views', 'questions.id', 'question_views.questionId')
+      .leftJoin('answers', 'questions.id', 'answers.questionId')
+      .groupBy('questions.id');
+  }
+
   private async addQuestionTags(
     questionId: number,
     tagsInput?: string[],
@@ -543,107 +677,6 @@ export class DatabaseQetaStore implements QetaStore {
     );
   }
 
-  async deleteQuestion(user_ref: string, id: number): Promise<boolean> {
-    return !!(await this.db('questions')
-      .where('id', '=', id)
-      .where('author', '=', user_ref)
-      .delete());
-  }
-
-  async answerQuestion(
-    user_ref: string,
-    questionId: number,
-    answer: string,
-  ): Promise<MaybeAnswer> {
-    const answers = await this.db
-      .insert({
-        questionId,
-        author: user_ref,
-        content: answer,
-        correct: false,
-        created: new Date(),
-      })
-      .into('answers')
-      .returning('id');
-    return this.getAnswer(answers[0].id);
-  }
-
-  async updateAnswer(
-    user_ref: string,
-    questionId: number,
-    answerId: number,
-    answer: string,
-  ): Promise<MaybeAnswer> {
-    const rows = await this.db('answers')
-      .where('answers.id', '=', answerId)
-      .where('answers.questionId', '=', questionId)
-      .where('answers.author', '=', user_ref)
-      .update({ content: answer, updatedBy: user_ref, updated: new Date() });
-
-    if (!rows) {
-      return null;
-    }
-    return this.getAnswer(answerId);
-  }
-
-  async getAnswer(answerId: number): Promise<MaybeAnswer> {
-    const answers = await this.getAnswerBaseQuery().where('id', '=', answerId);
-    return this.mapAnswer(answers[0], true);
-  }
-
-  async deleteAnswer(user_ref: string, id: number): Promise<boolean> {
-    return !!(await this.db('answers')
-      .where('id', '=', id)
-      .where('author', '=', user_ref)
-      .delete());
-  }
-
-  async voteQuestion(
-    user_ref: string,
-    questionId: number,
-    score: number,
-  ): Promise<boolean> {
-    // delete old votes if exist
-    await this.db('question_votes').where('author', '=', user_ref).delete();
-    const id = await this.db
-      .insert(
-        {
-          author: user_ref,
-          questionId,
-          score,
-          timestamp: new Date(),
-        },
-        ['questionId'],
-      )
-      .onConflict()
-      .ignore()
-      .into('question_votes');
-    return id && id.length > 0;
-  }
-
-  async voteAnswer(
-    user_ref: string,
-    answerId: number,
-    score: number,
-  ): Promise<boolean> {
-    // delete old votes if exist
-    await this.db('answer_votes').where('author', '=', user_ref).delete();
-    const id = await this.db
-      .insert(
-        {
-          author: user_ref,
-          answerId,
-          score,
-          timestamp: new Date(),
-        },
-        ['answerId'],
-      )
-      .onConflict()
-      .ignore()
-      .into('answer_votes');
-    return id && id.length > 0;
-  }
-
   private async markAnswer(
     user_ref: string,
     questionId: number,
@@ -678,42 +711,5 @@ export class DatabaseQetaStore implements QetaStore {
       });
 
     return ret !== undefined && ret?.length > 0;
-  }
-
-  async markAnswerCorrect(
-    user_ref: string,
-    questionId: number,
-    answerId: number,
-  ): Promise<boolean> {
-    return await this.markAnswer(user_ref, questionId, answerId, true);
-  }
-
-  async markAnswerIncorrect(
-    user_ref: string,
-    questionId: number,
-    answerId: number,
-  ): Promise<boolean> {
-    return await this.markAnswer(user_ref, questionId, answerId, false);
-  }
-
-  async getTags(): Promise<TagResponse[]> {
-    const tagRef = this.db.ref('tags.id');
-    const questionsCount = this.db('question_tags')
-      .where('question_tags.tagId', tagRef)
-      .count('*')
-      .as('questionsCount');
-
-    const tags = await this.db('tags')
-      .leftJoin('question_tags', 'tags.id', 'question_tags.tagId')
-      .orderBy('questionsCount', 'desc')
-      .select('tag', questionsCount)
-      .groupBy('tags.id');
-
-    return tags.map(tag => {
-      return {
-        tag: tag.tag,
-        questionsCount: this.mapToInteger(tag.questionsCount),
-      };
-    });
   }
 }
