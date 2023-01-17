@@ -15,7 +15,10 @@ export const QetaContent = () => {
 
   return (
     <Container>
-      <QuestionsContainer entity={stringifyEntityRef(entity)} />
+      <QuestionsContainer
+        entity={stringifyEntityRef(entity)}
+        showTitle={true}
+      />
       <AskForm
         entity={stringifyEntityRef(entity)}
         onPost={q => console.log(q)}
