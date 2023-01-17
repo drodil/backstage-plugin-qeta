@@ -13,9 +13,10 @@ export interface QuestionsContainerProps {
   entity?: string;
   showFilters?: boolean;
   showTitle?: boolean;
+  title?: string;
 }
 export const QuestionsContainer = (props: QuestionsContainerProps) => {
-  const { tags, author, entity, showFilters, showTitle } = props;
+  const { tags, author, entity, showFilters, showTitle, title } = props;
   const [page, setPage] = React.useState(1);
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -81,18 +82,18 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     [page, offset, filters],
   );
 
-  let title;
+  let shownTitle = title;
   if (author) {
-    title = `Questions by ${formatEntityName(author)}`;
+    shownTitle = `Questions by ${formatEntityName(author)}`;
   } else if (entity) {
-    title = `Questions about ${formatEntityName(entity)}`;
+    shownTitle = `Questions about ${formatEntityName(entity)}`;
   } else if (tags) {
-    title = `Questions tagged with [${tags.join(', ')}]`;
+    shownTitle = `Questions tagged with [${tags.join(', ')}]`;
   }
 
   return (
     <Box>
-      {showTitle && <Typography variant="h5">{title}</Typography>}
+      {showTitle && <Typography variant="h5">{shownTitle}</Typography>}
       <Grid container justifyContent="space-between">
         <Grid item>
           <Typography variant="h6">{`${
