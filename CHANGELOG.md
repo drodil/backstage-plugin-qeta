@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.1.2...v1.2.0) (2023-01-17)
+
+
+### Features
+
+* add hot questions list ([b07a314](https://github.com/drodil/backstage-plugin-qeta/commit/b07a3145832497f65176582e237ba1a78d12139d))
+* allow showing title in question container ([300ecbc](https://github.com/drodil/backstage-plugin-qeta/commit/300ecbc773f257f0143d5cd7d891157651a285c0))
+* allow specifying own title for question container ([72fe0ef](https://github.com/drodil/backstage-plugin-qeta/commit/72fe0efd07ad7feab153897a544d894faa52ed2e))
+* format all entities the same way ([e79bf3f](https://github.com/drodil/backstage-plugin-qeta/commit/e79bf3f12701e18651cf58f47019e8bd62ac92cb))
+* improve hot question trend rating ([065797d](https://github.com/drodil/backstage-plugin-qeta/commit/065797d041222a251bf6e59ce9a6c3b319d08228))
+
+
+### Bug Fixes
+
+* entity title in utils ([4b4e435](https://github.com/drodil/backstage-plugin-qeta/commit/4b4e4359a58d577832437b79abc06dc8799dd6a6))
+
 ### [1.1.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.1.1...v1.1.2) (2023-01-16)
 
 
