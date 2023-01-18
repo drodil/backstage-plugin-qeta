@@ -27,15 +27,13 @@ export type QetaDocument = IndexableDocument & {
 };
 
 export class QetaCollatorFactory implements DocumentCollatorFactory {
+  public readonly type: string = 'qeta';
   private readonly logger: Logger;
   private readonly database: PluginDatabaseManager;
-  private readonly appBaseUrl: string;
-  public readonly type: string = 'qeta';
 
-  private constructor(config: Config, options: QetaCollatorFactoryOptions) {
+  private constructor(_config: Config, options: QetaCollatorFactoryOptions) {
     this.logger = options.logger;
     this.database = options.database;
-    this.appBaseUrl = config.getString('app.baseUrl');
   }
 
   static fromConfig(config: Config, options: QetaCollatorFactoryOptions) {
@@ -62,7 +60,7 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
       yield {
         ...question,
         text: question.content,
-        location: `${this.appBaseUrl}/qeta/questions/${question.id}`,
+        location: `/qeta/questions/${question.id}`,
         answers: question.answers?.map(a => a.content),
       };
     }
