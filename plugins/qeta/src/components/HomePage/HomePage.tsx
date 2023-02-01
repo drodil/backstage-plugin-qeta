@@ -1,5 +1,13 @@
 import React from 'react';
-import { Button, Grid } from '@material-ui/core';
+import {
+  Button,
+  Grid,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Tooltip,
+} from '@material-ui/core';
 import {
   Content,
   ContentHeader,
@@ -15,23 +23,83 @@ import { UserPage } from '../UserPage/UserPage';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 import { QuestionHighlightList } from '../QuestionHighlightList/QuestionHighlightList';
-import { useStyles } from '../../utils/hooks';
+import { useIdentityApi, useStyles } from '../../utils/hooks';
 import Whatshot from '@material-ui/icons/Whatshot';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import AccountBox from '@material-ui/icons/AccountBox';
+
+const MoreMenu = () => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const styles = useStyles();
+  const {
+    value: user,
+    loading: loadingUser,
+    error: userError,
+  } = useIdentityApi(api => api.getBackstageIdentity(), []);
+
+  const handleMenuOpen = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <>
+      <Tooltip arrow title="More">
+        <IconButton
+          aria-label="more"
+          aria-controls="long-menu"
+          aria-haspopup="true"
+          onClick={handleMenuOpen}
+        >
+          <MoreVertIcon />
+        </IconButton>
+      </Tooltip>
+      <Menu
+        id="long-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={open}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        onClose={handleMenuClose}
+      >
+        <MenuItem component="a" href="/qeta/tags">
+          <ListItemIcon className={styles.menuIcon}>
+            <LoyaltyOutlined fontSize="small" />
+          </ListItemIcon>
+          Tags
+        </MenuItem>
+        {user && !loadingUser && !userError && (
+          <MenuItem component="a" href={`/qeta/users/${user?.userEntityRef}`}>
+            <ListItemIcon className={styles.menuIcon}>
+              <AccountBox fontSize="small" />
+            </ListItemIcon>
+            My questions
+          </MenuItem>
+        )}
+      </Menu>
+    </>
+  );
+};
 
 export const HomePageContent = () => {
-  const styles = useStyles();
   return (
     <Content>
       <Grid container spacing={3}>
         <Grid item md={12} lg={9} xl={10}>
           <ContentHeader title="All questions">
-            <Button
-              href="/qeta/tags"
-              className={styles.marginRight}
-              startIcon={<LoyaltyOutlined />}
-            >
-              Tags
-            </Button>
+            <MoreMenu />
             <Button
               variant="contained"
               href="/qeta/ask"

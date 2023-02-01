@@ -1,6 +1,10 @@
 import { QetaApi, qetaApiRef } from '../api';
 import { useAsync } from 'react-use';
-import { useApi } from '@backstage/core-plugin-api';
+import {
+  IdentityApi,
+  identityApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -24,6 +28,17 @@ export function useCatalogApi<T>(
 
   return useAsync(async () => {
     return await f(catalogApi);
+  }, deps);
+}
+
+export function useIdentityApi<T>(
+  f: (api: IdentityApi) => Promise<T>,
+  deps: any[] = [],
+) {
+  const identityApi = useApi(identityApiRef);
+
+  return useAsync(async () => {
+    return await f(identityApi);
   }, deps);
 }
 
@@ -106,6 +121,9 @@ export const useStyles = makeStyles(theme => {
       '& a': {
         marginRight: theme.spacing(1),
       },
+    },
+    menuIcon: {
+      minWidth: '26px',
     },
     deleteModal: {
       position: 'absolute',
