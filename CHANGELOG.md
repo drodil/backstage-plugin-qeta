@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.2.2...v1.3.0) (2023-02-01)
+
+
+### Features
+
+* add shortcut to users own questions ([f3d34a2](https://github.com/drodil/backstage-plugin-qeta/commit/f3d34a218e78ae451a12a656a6f405975ce6b89b)), closes [#32](https://github.com/drodil/backstage-plugin-qeta/issues/32)
+* allow selecting number of questions in list ([1607e85](https://github.com/drodil/backstage-plugin-qeta/commit/1607e85080efce274677854e80b050b0a6ce7d7f)), closes [#19](https://github.com/drodil/backstage-plugin-qeta/issues/19)
+* allow users to favorite questions ([25a82e9](https://github.com/drodil/backstage-plugin-qeta/commit/25a82e9f8bb86b6a4dfadd5f647850238ff88ff3)), closes [#33](https://github.com/drodil/backstage-plugin-qeta/issues/33)
+
 ### [1.2.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.2.1...v1.2.2) (2023-01-20)
 
 ### [1.2.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.2.0...v1.2.1) (2023-01-18)
