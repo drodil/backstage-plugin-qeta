@@ -96,6 +96,12 @@ export const useStyles = makeStyles(theme => {
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(1),
     },
+    questionsPerPageInput: {
+      paddingTop: '10px',
+    },
+    questionsPerPage: {
+      marginRight: theme.spacing(3),
+    },
     questionHighlightList: {
       width: '100%',
       border: `1px solid ${theme.palette.action.selected}`,
