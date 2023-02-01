@@ -20,6 +20,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   const { tags, author, entity, showFilters, showTitle, title, favorite } =
     props;
   const [page, setPage] = React.useState(1);
+  const [questionsPerPage, setQuestionsPerPage] = React.useState(10);
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = React.useState({
@@ -29,8 +30,6 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     noCorrectAnswer: 'false',
     noVotes: 'false',
   });
-  const pageSize = 10;
-  const offset = (page - 1) * pageSize;
 
   const onPageChange = (value: number) => {
     setPage(value);
@@ -54,11 +53,23 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   useEffect(() => {
     let filtersApplied = false;
     searchParams.forEach((value, key) => {
-      if (key === 'page') {
-        setPage(Number.parseInt(value, 10));
-      } else if (key in filterKeys) {
-        filtersApplied = true;
-        filters[key as FilterKey] = value;
+      try {
+        if (key === 'page') {
+          const pv = Number.parseInt(value, 10);
+          if (pv > 0) {
+            setPage(pv);
+          } else {
+            setPage(1);
+          }
+        } else if (key === 'questionsPerPage') {
+          const qpp = Number.parseInt(value, 10);
+          if (qpp > 0) setQuestionsPerPage(qpp);
+        } else if (key in filterKeys) {
+          filtersApplied = true;
+          filters[key as FilterKey] = value;
+        }
+      } catch (_e) {
+        // NOOP
       }
     });
     setFilters(filters);
@@ -74,16 +85,32 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   } = useQetaApi(
     api =>
       api.getQuestions({
-        limit: pageSize,
-        offset,
+        limit: questionsPerPage,
+        offset: (page - 1) * questionsPerPage,
         tags,
         entity,
         author,
         favorite,
         ...filters,
       }),
-    [page, offset, filters],
+    [page, filters, questionsPerPage],
   );
+
+  const onPageSizeChange = (value: number) => {
+    if (response) {
+      let newPage = page;
+      while (newPage * value > response.total) {
+        newPage -= 1;
+      }
+      onPageChange(Math.max(1, newPage));
+    }
+    setQuestionsPerPage(value);
+    setSearchParams(prev => {
+      const newValue = prev;
+      newValue.set('questionsPerPage', String(value));
+      return newValue;
+    });
+  };
 
   let shownTitle = title;
   if (author) {
@@ -127,8 +154,10 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         error={error}
         response={response}
         onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
         entity={entity}
         page={page}
+        pageSize={questionsPerPage}
       />
     </Box>
   );
