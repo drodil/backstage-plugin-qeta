@@ -38,18 +38,6 @@ export class QetaClient implements QetaApi {
     this.baseUrl = options.configApi.getString('backend.baseUrl');
   }
 
-  private getQueryParameters(params: any): URLSearchParams {
-    const asStrings = Object.fromEntries(
-      Object.entries(params).map(([k, v]) => {
-        if (!v) {
-          return [k, ''];
-        }
-        return [k, `${v}`];
-      }),
-    );
-    return new URLSearchParams(omitBy(asStrings, isEmpty));
-  }
-
   async getQuestions(options: GetQuestionsOptions): Promise<QuestionsResponse> {
     const query = this.getQueryParameters(options).toString();
 
@@ -149,6 +137,38 @@ export class QetaClient implements QetaApi {
     }
     const response = await this.fetchApi.fetch(
       `${this.baseUrl}/api/qeta/questions/${id}/downvote`,
+    );
+    const data = (await response.json()) as QuestionResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async favoriteQuestion(id: number): Promise<QuestionResponse> {
+    if (!id) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    const response = await this.fetchApi.fetch(
+      `${this.baseUrl}/api/qeta/questions/${id}/favorite`,
+    );
+    const data = (await response.json()) as QuestionResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async unfavoriteQuestion(id: number): Promise<QuestionResponse> {
+    if (!id) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    const response = await this.fetchApi.fetch(
+      `${this.baseUrl}/api/qeta/questions/${id}/unfavorite`,
     );
     const data = (await response.json()) as QuestionResponseBody;
 
@@ -321,5 +341,17 @@ export class QetaClient implements QetaApi {
     }
 
     return data;
+  }
+
+  private getQueryParameters(params: any): URLSearchParams {
+    const asStrings = Object.fromEntries(
+      Object.entries(params).map(([k, v]) => {
+        if (!v) {
+          return [k, ''];
+        }
+        return [k, `${v}`];
+      }),
+    );
+    return new URLSearchParams(omitBy(asStrings, isEmpty));
   }
 }

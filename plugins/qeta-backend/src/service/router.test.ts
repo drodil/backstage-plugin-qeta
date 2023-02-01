@@ -33,6 +33,7 @@ const question: Question = {
   author: 'user',
   title: 'title',
   content: 'content',
+  favorite: false,
   created: new Date('2022-01-01T00:00:00Z'),
   answersCount: 0,
   correctAnswer: false,
@@ -67,6 +68,8 @@ describe('createRouter', () => {
     getTags: jest.fn(),
     updateQuestion: jest.fn(),
     updateAnswer: jest.fn(),
+    favoriteQuestion: jest.fn(),
+    unfavoriteQuestion: jest.fn(),
   };
 
   const getIdentityMock = jest
@@ -361,6 +364,68 @@ describe('createRouter', () => {
     it('unauthorized', async () => {
       getIdentityMock.mockResolvedValue(undefined);
       const response = await request(app).get('/questions/1/downvote');
+      expect(response.status).toEqual(401);
+    });
+  });
+
+  describe('GET /questions/:id/favorite', () => {
+    it('marks question favorite', async () => {
+      qetaStore.favoriteQuestion.mockResolvedValue(true);
+      qetaStore.getQuestion.mockResolvedValue(question);
+
+      const response = await request(app).get('/questions/1/favorite');
+
+      expect(qetaStore.favoriteQuestion).toHaveBeenCalledWith('user', 1);
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        ...question,
+        created: '2022-01-01T00:00:00.000Z',
+      });
+    });
+
+    it('favorite fails', async () => {
+      qetaStore.favoriteQuestion.mockResolvedValue(false);
+
+      const response = await request(app).get('/questions/1/favorite');
+
+      expect(qetaStore.favoriteQuestion).toHaveBeenCalledWith('user', 1);
+      expect(response.status).toEqual(404);
+    });
+
+    it('unauthorized', async () => {
+      getIdentityMock.mockResolvedValue(undefined);
+      const response = await request(app).get('/questions/1/favorite');
+      expect(response.status).toEqual(401);
+    });
+  });
+
+  describe('GET /questions/:id/unfavorite', () => {
+    it('unfavorite question', async () => {
+      qetaStore.unfavoriteQuestion.mockResolvedValue(true);
+      qetaStore.getQuestion.mockResolvedValue(question);
+
+      const response = await request(app).get('/questions/1/unfavorite');
+
+      expect(qetaStore.unfavoriteQuestion).toHaveBeenCalledWith('user', 1);
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        ...question,
+        created: '2022-01-01T00:00:00.000Z',
+      });
+    });
+
+    it('unfavorite fails', async () => {
+      qetaStore.unfavoriteQuestion.mockResolvedValue(false);
+
+      const response = await request(app).get('/questions/1/unfavorite');
+
+      expect(qetaStore.unfavoriteQuestion).toHaveBeenCalledWith('user', 1);
+      expect(response.status).toEqual(404);
+    });
+
+    it('unauthorized', async () => {
+      getIdentityMock.mockResolvedValue(undefined);
+      const response = await request(app).get('/questions/1/unfavorite');
       expect(response.status).toEqual(401);
     });
   });

@@ -14,9 +14,11 @@ export interface QuestionsContainerProps {
   showFilters?: boolean;
   showTitle?: boolean;
   title?: string;
+  favorite?: boolean;
 }
 export const QuestionsContainer = (props: QuestionsContainerProps) => {
-  const { tags, author, entity, showFilters, showTitle, title } = props;
+  const { tags, author, entity, showFilters, showTitle, title, favorite } =
+    props;
   const [page, setPage] = React.useState(1);
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -77,6 +79,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         tags,
         entity,
         author,
+        favorite,
         ...filters,
       }),
     [page, offset, filters],
@@ -89,6 +92,8 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     shownTitle = `Questions about ${formatEntityName(entity)}`;
   } else if (tags) {
     shownTitle = `Questions tagged with [${tags.join(', ')}]`;
+  } else if (favorite) {
+    shownTitle = 'Your favorite questions';
   }
 
   return (

@@ -51,7 +51,7 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
       skipMigrations: true,
     });
 
-    const questions = await db.getQuestions({
+    const questions = await db.getQuestions('', {
       includeAnswers: true,
       includeEntities: true,
     });

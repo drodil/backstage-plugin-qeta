@@ -25,6 +25,7 @@ import { compact } from 'lodash';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
+import { FavoriteButton } from './FavoriteButton';
 
 export const QuestionCard = (props: { question: QuestionResponse }) => {
   const { question } = props;
@@ -59,6 +60,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
       <CardContent>
         <div className={styles.questionCardVote}>
           <VoteButtons entity={question} />
+          <FavoriteButton entity={question} />
         </div>
         <div className={styles.questionCardContent}>
           <Typography variant="body1" gutterBottom>

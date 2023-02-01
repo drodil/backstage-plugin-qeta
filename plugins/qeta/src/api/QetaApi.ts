@@ -14,6 +14,7 @@ export type GetQuestionsOptions = {
   tags?: string[];
   entity?: string;
   author?: string;
+  favorite?: boolean;
 };
 
 export interface QetaApi {
@@ -38,6 +39,10 @@ export interface QetaApi {
   markAnswerCorrect(questionId: number, id: number): Promise<boolean>;
 
   markAnswerIncorrect(questionId: number, id: number): Promise<boolean>;
+
+  favoriteQuestion(id: number): Promise<QuestionResponse>;
+
+  unfavoriteQuestion(id: number): Promise<QuestionResponse>;
 
   postAnswer(answer: AnswerRequest): Promise<AnswerResponseBody>;
 
