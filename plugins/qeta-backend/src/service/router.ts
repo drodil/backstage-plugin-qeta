@@ -35,6 +35,7 @@ interface QuestionsQuery {
   order?: 'desc' | 'asc';
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
+  favorite?: boolean;
   noVotes?: boolean;
   includeAnswers?: boolean;
   includeVotes?: boolean;
@@ -56,6 +57,7 @@ const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
     noCorrectAnswer: { type: 'boolean', nullable: true },
     noAnswers: { type: 'boolean', nullable: true },
+    favorite: { type: 'boolean', nullable: true },
     noVotes: { type: 'boolean', nullable: true },
     tags: { type: 'array', items: { type: 'string' }, nullable: true },
     entity: { type: 'string', nullable: true },
@@ -140,6 +142,7 @@ export async function createRouter({
   // GET /questions
   router.get(`/questions`, async (request, response) => {
     // Validation
+    const username = await getUsername(request);
     const validateQuery = ajv.compile(QuestionsQuerySchema);
     if (!validateQuery(request.query)) {
       response
@@ -149,7 +152,7 @@ export async function createRouter({
     }
 
     // Act
-    const questions = await database.getQuestions(request.query);
+    const questions = await database.getQuestions(username, request.query);
 
     // Response
     response.send(questions);
@@ -159,6 +162,7 @@ export async function createRouter({
   router.get(`/questions/list/:type`, async (request, response) => {
     // Validation
     const validateQuery = ajv.compile(QuestionsQuerySchema);
+    const username = await getUsername(request);
     if (!validateQuery(request.query)) {
       response
         .status(400)
@@ -180,7 +184,7 @@ export async function createRouter({
     }
 
     // Act
-    const questions = await database.getQuestions({
+    const questions = await database.getQuestions(username, {
       ...request.query,
       ...optionOverride,
     });
@@ -419,6 +423,56 @@ export async function createRouter({
   // GET /questions/:id/downvote
   router.get(`/questions/:id/downvote`, async (request, response) => {
     return await voteQuestion(request, response, -1);
+  });
+
+  // GET /questions/:id/favorite
+  router.get(`/questions/:id/favorite`, async (request, response) => {
+    const username = await getUsername(request);
+    const favorited = await database.favoriteQuestion(
+      username,
+      Number.parseInt(request.params.id, 10),
+    );
+
+    if (!favorited) {
+      response.sendStatus(404);
+      return;
+    }
+
+    const question = await database.getQuestion(
+      username,
+      Number.parseInt(request.params.id, 10),
+      false,
+    );
+
+    mapAdditionalFields(username, question);
+
+    // Response
+    response.send(question);
+  });
+
+  // GET /questions/:id/unfavorite
+  router.get(`/questions/:id/unfavorite`, async (request, response) => {
+    const username = await getUsername(request);
+    const unfavorited = await database.unfavoriteQuestion(
+      username,
+      Number.parseInt(request.params.id, 10),
+    );
+
+    if (!unfavorited) {
+      response.sendStatus(404);
+      return;
+    }
+
+    const question = await database.getQuestion(
+      username,
+      Number.parseInt(request.params.id, 10),
+      false,
+    );
+
+    mapAdditionalFields(username, question);
+
+    // Response
+    response.send(question);
   });
 
   const voteAnswer = async (

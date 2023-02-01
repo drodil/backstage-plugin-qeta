@@ -10,6 +10,7 @@ export interface Question {
   views: number;
   answersCount: number;
   correctAnswer: boolean;
+  favorite: boolean;
   ownVote?: number;
   tags?: string[];
   entities?: string[];
@@ -63,6 +64,7 @@ export interface QuestionsOptions {
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
   noVotes?: boolean;
+  favorite?: boolean;
   tags?: string[];
   entity?: string;
   includeAnswers?: boolean;
@@ -83,9 +85,10 @@ export interface TagResponse {
 export interface QetaStore {
   /**
    * Fetch all stored questions with options
+   * @param user_ref user name requesting question
    * @param options Search options
    */
-  getQuestions(options: QuestionsOptions): Promise<Questions>;
+  getQuestions(user_ref: string, options: QuestionsOptions): Promise<Questions>;
 
   /**
    * Fetch single question by id
@@ -239,6 +242,20 @@ export interface QetaStore {
     questionId: number,
     answerId: number,
   ): Promise<boolean>;
+
+  /**
+   * Mark question favorite for user
+   * @param user_ref user name of the user voting question
+   * @param questionId question id
+   */
+  favoriteQuestion(user_ref: string, questionId: number): Promise<boolean>;
+
+  /**
+   * Mark question unfavorite for user
+   * @param user_ref user name of the user voting question
+   * @param questionId question id
+   */
+  unfavoriteQuestion(user_ref: string, questionId: number): Promise<boolean>;
 
   /**
    * Returns all used tags for questions

@@ -136,14 +136,14 @@ describe.each(databases.eachSupportedId())(
       it('should fetch list of questions', async () => {
         await insertQuestion(question);
         await insertQuestion({ ...question, title: 'title2' });
-        const ret = await storage.getQuestions({});
+        const ret = await storage.getQuestions('user1', {});
         expect(ret?.questions.length).toEqual(2);
       });
 
       it('should fetch list of random questions', async () => {
         await insertQuestion(question);
         await insertQuestion({ ...question, title: 'title2' });
-        const ret = await storage.getQuestions({ random: true });
+        const ret = await storage.getQuestions('user1', { random: true });
         expect(ret?.questions.length).toEqual(2);
       });
 
@@ -163,19 +163,57 @@ describe.each(databases.eachSupportedId())(
           ['component:default/comp2', 'component:default/comp3'],
         );
 
-        const ret1 = await storage.getQuestions({
+        const ret1 = await storage.getQuestions('user1', {
           entity: 'component:default/comp1',
         });
         expect(ret1.questions.length).toEqual(1);
         expect(ret1.questions.at(0)?.id).toEqual(q1.id);
 
-        const ret2 = await storage.getQuestions({
+        const ret2 = await storage.getQuestions('user1', {
           entity: 'component:default/comp2',
         });
 
         expect(ret2.questions.length).toEqual(2);
         expect(ret2.questions.at(0)?.id).toEqual(q2.id);
         expect(ret2.questions.at(1)?.id).toEqual(q1.id);
+      });
+
+      it('should mark question as favorite', async () => {
+        const q1 = await storage.postQuestion(
+          'user1',
+          'title',
+          'content',
+          ['java', 'xml', ''],
+          ['component:default/comp1', 'component:default/comp2'],
+        );
+        await storage.postQuestion(
+          'user2',
+          'title2',
+          'content2',
+          ['java', 'mysql'],
+          ['component:default/comp2', 'component:default/comp3'],
+        );
+
+        const favorite = await storage.favoriteQuestion('user1', q1.id);
+        expect(favorite).toBeTruthy();
+
+        const ret1 = await storage.getQuestions('user1', {
+          favorite: true,
+          author: 'user1',
+        });
+
+        expect(ret1.questions.length).toEqual(1);
+        expect(ret1.questions.at(0)?.id).toEqual(q1.id);
+        expect(ret1.questions.at(0)?.favorite).toBeTruthy();
+
+        const unfavorite = await storage.unfavoriteQuestion('user1', q1.id);
+        expect(unfavorite).toBeTruthy();
+
+        const ret2 = await storage.getQuestions('user1', {
+          favorite: true,
+          author: 'user1',
+        });
+        expect(ret2.questions.length).toEqual(0);
       });
 
       it('should add new question', async () => {

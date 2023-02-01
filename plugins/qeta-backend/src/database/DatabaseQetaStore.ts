@@ -32,6 +32,7 @@ export type RawQuestionEntity = {
   views: number | string;
   answersCount: number | string;
   correctAnswers: number | string;
+  favorite: number | string;
   trend: number | string;
 };
 
@@ -88,8 +89,11 @@ export class DatabaseQetaStore implements QetaStore {
     return new DatabaseQetaStore(client);
   }
 
-  async getQuestions(options: QuestionsOptions): Promise<Questions> {
-    const query = this.getQuestionBaseQuery();
+  async getQuestions(
+    user_ref: string,
+    options: QuestionsOptions,
+  ): Promise<Questions> {
+    const query = this.getQuestionBaseQuery(user_ref);
 
     if (options.author) {
       query.where('questions.author', '=', options.author);
@@ -118,6 +122,7 @@ export class DatabaseQetaStore implements QetaStore {
     if (options.noAnswers) {
       query.whereNull('answers.questionId');
     }
+
     if (options.noCorrectAnswer) {
       query.leftJoin('answers as correct_answer', builder => {
         builder
@@ -126,9 +131,16 @@ export class DatabaseQetaStore implements QetaStore {
       });
       query.whereNull('correct_answer.questionId');
     }
+
     if (options.noVotes) {
       query.whereNull('question_votes.questionId');
     }
+
+    if (options.favorite) {
+      query.where('user_favorite.user', '=', user_ref);
+      query.whereNotNull('user_favorite.questionId');
+    }
+
     if (options.includeTrend) {
       query.select(
         this.db.raw(
@@ -190,7 +202,7 @@ export class DatabaseQetaStore implements QetaStore {
     id: number,
     recordView?: boolean,
   ): Promise<MaybeQuestion> {
-    const rows = await this.getQuestionBaseQuery().where(
+    const rows = await this.getQuestionBaseQuery(user_ref).where(
       'questions.id',
       '=',
       id,
@@ -214,7 +226,7 @@ export class DatabaseQetaStore implements QetaStore {
     answerId: number,
     recordView?: boolean,
   ): Promise<MaybeQuestion> {
-    const rows = await this.getQuestionBaseQuery()
+    const rows = await this.getQuestionBaseQuery(user_ref)
       .where('answers.id', '=', answerId)
       .select('questions.*');
     if (!rows || rows.length === 0) {
@@ -359,6 +371,34 @@ export class DatabaseQetaStore implements QetaStore {
     return id && id.length > 0;
   }
 
+  async favoriteQuestion(
+    user_ref: string,
+    questionId: number,
+  ): Promise<boolean> {
+    const id = await this.db
+      .insert(
+        {
+          user: user_ref,
+          questionId,
+        },
+        ['questionId'],
+      )
+      .onConflict()
+      .ignore()
+      .into('user_favorite');
+    return id && id.length > 0;
+  }
+
+  async unfavoriteQuestion(
+    user_ref: string,
+    questionId: number,
+  ): Promise<boolean> {
+    return !!(await this.db('user_favorite')
+      .where('user', '=', user_ref)
+      .where('questionId', '=', questionId)
+      .delete());
+  }
+
   async voteAnswer(
     user_ref: string,
     answerId: number,
@@ -451,6 +491,7 @@ export class DatabaseQetaStore implements QetaStore {
       views: this.mapToInteger(val.views),
       answersCount: this.mapToInteger(val.answersCount),
       correctAnswer: this.mapToInteger(val.correctAnswers) > 0,
+      favorite: this.mapToInteger(val.favorite) > 0,
       tags: additionalInfo[0],
       answers: additionalInfo[1],
       votes: additionalInfo[2],
@@ -562,7 +603,7 @@ export class DatabaseQetaStore implements QetaStore {
       .into('question_views');
   }
 
-  private getQuestionBaseQuery() {
+  private getQuestionBaseQuery(user: string) {
     const questionRef = this.db.ref('questions.id');
 
     const score = this.db('question_votes')
@@ -586,11 +627,25 @@ export class DatabaseQetaStore implements QetaStore {
       .count('*')
       .as('correctAnswers');
 
+    const favorite = this.db('user_favorite')
+      .where('user_favorite.user', '=', user)
+      .where('user_favorite.questionId', questionRef)
+      .count('*')
+      .as('favorite');
+
     return this.db<RawQuestionEntity>('questions') // nosonar
-      .select('questions.*', score, views, answersCount, correctAnswers)
+      .select(
+        'questions.*',
+        score,
+        views,
+        answersCount,
+        correctAnswers,
+        favorite,
+      )
       .leftJoin('question_votes', 'questions.id', 'question_votes.questionId')
       .leftJoin('question_views', 'questions.id', 'question_views.questionId')
       .leftJoin('answers', 'questions.id', 'answers.questionId')
+      .leftJoin('user_favorite', 'questions.id', 'user_favorite.questionId')
       .groupBy('questions.id');
   }
 

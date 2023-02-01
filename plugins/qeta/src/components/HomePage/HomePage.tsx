@@ -26,7 +26,9 @@ import { QuestionHighlightList } from '../QuestionHighlightList/QuestionHighligh
 import { useIdentityApi, useStyles } from '../../utils/hooks';
 import Whatshot from '@material-ui/icons/Whatshot';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import StarIcon from '@material-ui/icons/Star';
 import AccountBox from '@material-ui/icons/AccountBox';
+import { FavoritePage } from '../FavoritePage/FavoritePage';
 
 const MoreMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -88,6 +90,12 @@ const MoreMenu = () => {
             My questions
           </MenuItem>
         )}
+        <MenuItem component="a" href="/qeta/questions/favorite">
+          <ListItemIcon className={styles.menuIcon}>
+            <StarIcon fontSize="small" />
+          </ListItemIcon>
+          Favorite questions
+        </MenuItem>
       </Menu>
     </>
   );
@@ -147,6 +155,7 @@ export const HomePage = (props: Props) => (
     <Routes>
       <Route path="/" element={<HomePageContent />} />
       <Route path="/ask" element={<AskPage />} />
+      <Route path="/questions/favorite" element={<FavoritePage />} />
       <Route path="/questions/:id/edit" element={<AskPage />} />
       <Route path="/questions/:id" element={<QuestionPage />} />
       <Route path="/tags" element={<TagPage />} />
