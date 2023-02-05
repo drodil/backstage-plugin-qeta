@@ -3,6 +3,7 @@ import {
   resolvePackagePath,
 } from '@backstage/backend-common';
 import { Knex } from 'knex';
+import { answersMock, questionsMock } from './mocks';
 import {
   Answer,
   MaybeAnswer,
@@ -87,6 +88,45 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     return new DatabaseQetaStore(client);
+  }
+
+  async populateDatabase(): Promise<void> {
+    const questions = await this.postMockQuestions();
+    await this.postMockAnswers(questions);
+  }
+
+  async postMockQuestions(): Promise<Question[]> {
+    const questions: Question[] = [];
+    await this.db.delete().from('questions');
+
+    for (const question of questionsMock) {
+      const postedQuestion = await this.postQuestion(
+        question.author,
+        question.title,
+        question.content,
+        question.tags,
+      );
+      questions.push(postedQuestion);
+    }
+
+    return questions;
+  }
+
+  async postMockAnswers(questions: Question[]): Promise<void> {
+    await this.db.delete().from('answers');
+
+    answersMock.forEach(async answer => {
+      const randomQuestion = questions.at(
+        Math.floor(Math.random() * questions.length),
+      );
+      if (randomQuestion) {
+        await this.answerQuestion(
+          answer.author,
+          randomQuestion.id,
+          answer.content,
+        );
+      }
+    });
   }
 
   async getQuestions(

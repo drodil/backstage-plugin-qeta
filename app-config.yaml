@@ -1,6 +1,7 @@
 app:
   title: Announcements Dev App
   baseUrl: http://localhost:3000
+  environment: 'development'
 
 backend:
   baseUrl: http://localhost:7007
