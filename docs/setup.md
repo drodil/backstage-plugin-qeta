@@ -68,6 +68,21 @@ const AppRoutes = () => (
 );
 ```
 
+Add the navigation in the frontend:
+
+```ts
+// packages/app/src/components/Root/Root.tsx
+import LiveHelpIcon from '@material-ui/icons/LiveHelp';
+// ...
+export const Root = ({ children }: PropsWithChildren<{}>) => (
+  <SidebarPage>
+    // ...
+    <SidebarItem icon={LiveHelpIcon} to="qeta" text="Q&A" />
+    // ...
+  </SidebarPage>
+);
+```
+
 An interface for Q&A is now available at `/qeta`.
 
 QetaPage also takes optional properties if you want to change the page title/subtitle/elements shown in the header.
