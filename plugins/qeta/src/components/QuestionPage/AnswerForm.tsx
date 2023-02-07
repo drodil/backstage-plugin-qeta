@@ -102,7 +102,12 @@ export const AnswerForm = (props: {
         )}
         name="answer"
       />
-      <Button variant="contained" type="submit" className={styles.postButton}>
+      <Button
+        variant="outlined"
+        type="submit"
+        color="primary"
+        className={styles.postButton}
+      >
         {id ? 'Save' : 'Post'}
       </Button>
     </form>

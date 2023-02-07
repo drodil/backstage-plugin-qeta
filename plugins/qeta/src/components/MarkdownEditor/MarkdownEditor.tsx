@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactMde from 'react-mde';
 import { MarkdownContent } from '@backstage/core-components';
+import 'react-mde/lib/styles/css/react-mde.css';
+import 'react-mde/lib/styles/css/react-mde-editor.css';
+import 'react-mde/lib/styles/css/react-mde-toolbar.css';
 import { useStyles } from '../../utils/hooks';
 
 export const MarkdownEditor = (props: {
@@ -27,10 +30,21 @@ export const MarkdownEditor = (props: {
       selectedTab={selectedTab}
       onTabChange={setSelectedTab}
       minEditorHeight={height}
-      minPreviewHeight={height}
-      childProps={{ textArea: { required: true, placeholder } }}
+      minPreviewHeight={height - 10}
+      childProps={{
+        textArea: {
+          required: true,
+          placeholder,
+        },
+      }}
       generateMarkdownPreview={content =>
-        Promise.resolve(<MarkdownContent content={content} />)
+        Promise.resolve(
+          <MarkdownContent
+            content={content}
+            dialect="gfm"
+            className={styles.markdownContent}
+          />,
+        )
       }
     />
   );

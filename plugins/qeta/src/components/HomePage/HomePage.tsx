@@ -111,6 +111,7 @@ export const HomePageContent = () => {
             <Button
               variant="contained"
               href="/qeta/ask"
+              color="primary"
               startIcon={<HelpOutline />}
             >
               Ask question

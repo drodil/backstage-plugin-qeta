@@ -63,6 +63,14 @@ export const useStyles = makeStyles(theme => {
           color: `${theme.palette.text.primary} !important`,
         },
       },
+      '& .mde-preview-content': {
+        padding: '0 10px 0px 10px',
+      },
+      '& .mde-text, .mde-preview': {
+        fontSize: theme.typography.body1.fontSize,
+        fontFamily: theme.typography.body1.fontFamily,
+        lineHeight: theme.typography.body1.lineHeight,
+      },
       '& .mde-text': {
         backgroundColor: 'initial',
         color: theme.palette.text.primary,
@@ -71,6 +79,11 @@ export const useStyles = makeStyles(theme => {
     },
     markdownEditorError: {
       border: `1px solid ${theme.palette.error.main} !important`,
+    },
+    markdownContent: {
+      '& h1, h2, h3, h4, h5, h6': {
+        marginTop: 0,
+      },
     },
     successColor: {
       color: theme.palette.success.main,

@@ -3,7 +3,6 @@ import { Button, TextField } from '@material-ui/core';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import 'react-mde/lib/styles/css/react-mde-all.css';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   QetaApi,
@@ -300,7 +299,12 @@ export const AskForm = (props: {
           name="entities"
         />
       )}
-      <Button type="submit" variant="contained" className={styles.postButton}>
+      <Button
+        color="primary"
+        type="submit"
+        variant="contained"
+        className={styles.postButton}
+      >
         {id ? 'Save' : 'Post'}
       </Button>
     </form>

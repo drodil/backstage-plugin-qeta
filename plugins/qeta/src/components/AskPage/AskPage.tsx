@@ -1,7 +1,7 @@
 import { Content, ContentHeader, InfoCard } from '@backstage/core-components';
 import { Button, Grid } from '@material-ui/core';
 import React from 'react';
-import 'react-mde/lib/styles/css/react-mde-all.css';
+
 import { AskForm } from '../AskForm/AskForm';
 import HomeOutlined from '@material-ui/icons/HomeOutlined';
 import { useParams } from 'react-router-dom';
