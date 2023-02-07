@@ -86,3 +86,35 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
 An interface for Q&A is now available at `/qeta`.
 
 QetaPage also takes optional properties if you want to change the page title/subtitle/elements shown in the header.
+
+### Adding questions to entity page
+
+You can also add questions list to any entity page. This will render questions related to that entity. First
+create the questions component:
+
+```ts
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { Container } from '@material-ui/core';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import React from 'react';
+import { QuestionsContainer } from '@drodil/backstage-plugin-qeta';
+
+export const QetaContent = () => {
+  const { entity } = useEntity();
+
+  return (
+    <Container>
+      <QuestionsContainer entity={stringifyEntityRef(entity)} showTitle />
+    </Container>
+  );
+};
+```
+
+Then add it to your entity page:
+
+```ts
+// EntityPage.tsx
+<EntityLayout.Route path="/qeta" title="Q&A">
+    <QetaContent />
+</EntityLayout.Route>,
+```
