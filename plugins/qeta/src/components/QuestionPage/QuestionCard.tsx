@@ -64,7 +64,11 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
         </div>
         <div className={styles.questionCardContent}>
           <Typography variant="body1" gutterBottom>
-            <MarkdownContent content={question.content} dialect="gfm" />
+            <MarkdownContent
+              content={question.content}
+              dialect="gfm"
+              className={styles.markdownContent}
+            />
           </Typography>
           <Box className={styles.questionCardMetadata}>
             <Grid container spacing={0} justifyContent="space-around">

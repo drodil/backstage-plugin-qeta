@@ -78,6 +78,8 @@ export const QuestionList = (props: {
           <Button
             href={entity ? `/qeta/ask?entity=${entity}` : '/qeta/ask'}
             startIcon={<HelpOutline />}
+            color="primary"
+            variant="outlined"
           >
             Go ahead and ask one!
           </Button>
