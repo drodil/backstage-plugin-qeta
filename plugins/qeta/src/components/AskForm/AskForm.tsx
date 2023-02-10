@@ -1,7 +1,7 @@
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Button, TextField } from '@material-ui/core';
 import { Alert, Autocomplete } from '@material-ui/lab';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -101,6 +101,15 @@ export const AskForm = (props: {
     defaultValues: getDefaultValues(),
   });
 
+  const entityKinds: string[] = useMemo(
+    () =>
+      configApi.getOptionalStringArray('qeta.entityKinds') || [
+        'Component',
+        'System',
+      ],
+    [configApi],
+  );
+
   const postQuestion = (data: QuestionForm) => {
     if (id) {
       qetaApi
@@ -182,10 +191,6 @@ export const AskForm = (props: {
     if (entityRef) {
       return;
     }
-    let entityKinds = configApi.getOptionalStringArray('qeta.entityKinds');
-    if (!entityKinds) {
-      entityKinds = ['Component'];
-    }
 
     catalogApi
       .getEntities({
@@ -201,7 +206,7 @@ export const AskForm = (props: {
       .then(data =>
         data ? setAvailableEntities(data.items) : setAvailableEntities(null),
       );
-  }, [catalogApi, entityRef, configApi]);
+  }, [catalogApi, entityRef, configApi, entityKinds]);
 
   return (
     <form onSubmit={handleSubmit(postQuestion)}>
@@ -273,6 +278,9 @@ export const AskForm = (props: {
               multiple
               hidden={!!entityRef}
               value={value}
+              groupBy={
+                entityKinds.length > 1 ? option => option.kind : undefined
+              }
               id="entities-select"
               options={availableEntities}
               getOptionLabel={getEntityTitle}
