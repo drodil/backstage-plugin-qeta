@@ -2,7 +2,7 @@ export interface Config {
   qeta?: {
     /**
      * Determine what kind of entities can be attached to questions.
-     * For example [Component, API, Location, Template]. Default is [Component].
+     * For example [System, Component, API, Location, Template]. Default is [Component, System].
      *
      * @visibility frontend
      */
