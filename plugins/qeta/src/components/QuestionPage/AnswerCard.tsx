@@ -1,12 +1,5 @@
 import { AnswerResponse, QuestionResponse } from '../../api';
-import {
-  Box,
-  Card,
-  CardContent,
-  Grid,
-  Link,
-  Typography,
-} from '@material-ui/core';
+import { Box, Card, CardContent, Link, Typography } from '@material-ui/core';
 import React from 'react';
 import { MarkdownContent } from '@backstage/core-components';
 import { VoteButtons } from './VoteButtons';
@@ -38,70 +31,68 @@ export const AnswerCard = (props: {
 
   return (
     <Card id={`a${answer.id}`}>
-      <CardContent>
-        <Grid container spacing={0}>
-          <Grid item className={styles.questionCardVote}>
-            <VoteButtons entity={answerEntity} question={question} />
-          </Grid>
-          <Grid item>
-            {editMode ? (
-              <AnswerForm
-                question={question}
-                onPost={onAnswerEdit}
-                id={answerEntity.id}
-              />
-            ) : (
-              <>
-                <Typography variant="body1" gutterBottom>
-                  <MarkdownContent
-                    className={styles.markdownContent}
-                    content={answerEntity.content}
-                    dialect="gfm"
-                  />
+      <CardContent className={styles.questionCard}>
+        <div className={styles.questionCardVote}>
+          <VoteButtons entity={answerEntity} question={question} />
+        </div>
+        <div className={styles.questionCardContent}>
+          {editMode ? (
+            <AnswerForm
+              question={question}
+              onPost={onAnswerEdit}
+              id={answerEntity.id}
+            />
+          ) : (
+            <>
+              <Typography variant="body1" gutterBottom>
+                <MarkdownContent
+                  className={styles.markdownContent}
+                  content={answerEntity.content}
+                  dialect="gfm"
+                />
+              </Typography>
+              <Box>
+                <Typography variant="caption" gutterBottom>
+                  By{' '}
+                  <Link href={`/qeta/users/${answerEntity.author}`}>
+                    {formatEntityName(answerEntity.author)}
+                  </Link>{' '}
+                  <RelativeTime value={answerEntity.created} />
+                  {answerEntity.updated && (
+                    <>
+                      {' '}
+                      (updated <RelativeTime value={answerEntity.updated} />)
+                    </>
+                  )}
                 </Typography>
-                <Box>
-                  <Typography variant="caption" gutterBottom>
-                    By{' '}
-                    <Link href={`/qeta/users/${answerEntity.author}`}>
-                      {formatEntityName(answerEntity.author)}
-                    </Link>{' '}
-                    <RelativeTime value={answerEntity.created} />
-                    {answerEntity.updated && (
-                      <>
-                        {' '}
-                        (updated <RelativeTime value={answerEntity.updated} />)
-                      </>
-                    )}
-                  </Typography>
+              </Box>
+              {answerEntity.own && (
+                <Box className={styles.questionCardActions}>
+                  <Link
+                    underline="none"
+                    href="#"
+                    onClick={handleDeleteModalOpen}
+                  >
+                    Delete
+                  </Link>
+                  <Link
+                    underline="none"
+                    href="#"
+                    onClick={() => setEditMode(true)}
+                  >
+                    Edit
+                  </Link>
+                  <DeleteModal
+                    open={deleteModalOpen}
+                    onClose={handleDeleteModalClose}
+                    entity={answerEntity}
+                    question={question}
+                  />
                 </Box>
-                {answerEntity.own && (
-                  <Box className={styles.questionCardActions}>
-                    <Link
-                      underline="none"
-                      href="#"
-                      onClick={handleDeleteModalOpen}
-                    >
-                      Delete
-                    </Link>
-                    <Link
-                      underline="none"
-                      href="#"
-                      onClick={() => setEditMode(true)}
-                    >
-                      Edit
-                    </Link>
-                    <DeleteModal
-                      open={deleteModalOpen}
-                      onClose={handleDeleteModalClose}
-                      entity={answerEntity}
-                      question={question}
-                    />
-                  </Box>
-                )}
-              </>
-            )}
-          </Grid>
-        </Grid>
+              )}
+            </>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
