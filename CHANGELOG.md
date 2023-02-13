@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.3.1...v1.4.0) (2023-02-13)
+
+
+### Features
+
+* group entities in ask form autocomplete by kind ([f690903](https://github.com/drodil/backstage-plugin-qeta/commit/f690903a0f5251cb5414ff03b73cd92b1c2d928a))
+
+
+### Bug Fixes
+
+* styling when long answer given without word breaks ([9240ca4](https://github.com/drodil/backstage-plugin-qeta/commit/9240ca482cb0f8d9dd6ed1242c79a75cc5de224a))
+
 ### [1.3.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.3.0...v1.3.1) (2023-02-07)
 
 
