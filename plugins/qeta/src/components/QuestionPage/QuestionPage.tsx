@@ -99,14 +99,14 @@ export const QuestionPage = () => {
       {(question.answers ?? []).concat(newAnswers).map(a => {
         return (
           <>
+            <Divider className={styles.questionDivider} />
             <Box key={a.id} sx={{ mb: 1 }}>
               <AnswerCard answer={a} question={question} />
             </Box>
-            <Divider />
           </>
         );
       })}
-      <Divider />
+      <Divider className={styles.questionDivider} />
       <AnswerForm question={question} onPost={onAnswerPost} />
     </Content>
   );

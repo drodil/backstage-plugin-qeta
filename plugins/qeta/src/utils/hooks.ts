@@ -81,6 +81,9 @@ export const useStyles = makeStyles(theme => {
       border: `1px solid ${theme.palette.error.main} !important`,
     },
     markdownContent: {
+      '& *': {
+        wordBreak: 'break-word',
+      },
       '& h1, h2, h3, h4, h5, h6': {
         marginTop: 0,
       },
@@ -88,9 +91,17 @@ export const useStyles = makeStyles(theme => {
     successColor: {
       color: theme.palette.success.main,
     },
+    questionDivider: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+    },
+    questionCard: {
+      paddingTop: '0px',
+    },
     questionCardVote: {
       textAlign: 'center',
-      width: '50px',
+      width: '32px',
+      marginTop: '10px',
       marginRight: '20px',
       display: 'inline-block',
       verticalAlign: 'top',

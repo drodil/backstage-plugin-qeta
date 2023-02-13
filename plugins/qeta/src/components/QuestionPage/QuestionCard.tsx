@@ -57,7 +57,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
 
   return (
     <Card variant="outlined">
-      <CardContent>
+      <CardContent className={styles.questionCard}>
         <div className={styles.questionCardVote}>
           <VoteButtons entity={question} />
           <FavoriteButton entity={question} />
