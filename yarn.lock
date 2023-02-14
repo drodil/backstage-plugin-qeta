@@ -1163,12 +1163,12 @@
     "@backstage/errors" "^1.1.4"
     cross-fetch "^3.1.5"
 
-"@backstage/catalog-model@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-1.1.4.tgz#3addf3e4708aca718734c764362a69dfc01b7006"
-  integrity sha512-dYswAB34/HFqwg0EhdkkirmARIQ7dXCwteM+H18qwEN/RIx7IqE5D1quAWGxvBd3frYfOsiBigRKNvZ9b5o7ug==
+"@backstage/catalog-model@^1.1.4", "@backstage/catalog-model@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-1.2.0.tgz#ff72246e5b5bbbbd82a7e876db7761ecc25f1d5c"
+  integrity sha512-4IRHcj4d2DdB/atB6D1IJgGF8JwGGW3BMwH+qNjh0y8TQ/ou3UnoZWBHhHJGSkkuPLVXofk+XLqddWugZ0aKQw==
   dependencies:
-    "@backstage/config" "^1.0.5"
+    "@backstage/config" "^1.0.6"
     "@backstage/errors" "^1.1.4"
     "@backstage/types" "^1.0.2"
     ajv "^8.10.0"
@@ -1304,10 +1304,10 @@
     yaml "^2.0.0"
     yup "^0.32.9"
 
-"@backstage/config@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@backstage/config/-/config-1.0.5.tgz#ce1358570b2ed3fee83ed9561dcc55fbff4b29f4"
-  integrity sha512-GFT9V71AHRcot2FQGIUq7WhM4vVYiJJ9ZrZ5oee/Z4Clf9oxsKsturNEJDxBy2Sd92jra0xrVNhPR7HSsyKmfg==
+"@backstage/config@^1.0.5", "@backstage/config@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@backstage/config/-/config-1.0.6.tgz#551ffe6793aec29f7d7f9e5ba1bb010ba6ed0b00"
+  integrity sha512-ZN3ABydLRZNTtL9FXPpvw678CJ/G2UtGHrX/Cq6Tfd9QJ6/wjMTagTe/KibxGh6lxIG+VGU+BOAqt6mHgMDopA==
   dependencies:
     "@backstage/types" "^1.0.2"
     lodash "^4.17.21"
