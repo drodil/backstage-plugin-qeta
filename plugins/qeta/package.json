@@ -40,7 +40,7 @@
   "dependencies": {
     "@backstage/catalog-client": "^1.2.0",
     "@backstage/catalog-model": "^1.1.4",
-    "@backstage/core-components": "^0.12.1",
+    "@backstage/core-components": "^0.12.4",
     "@backstage/core-plugin-api": "^1.2.0",
     "@backstage/errors": "^1.1.4",
     "@backstage/plugin-catalog-react": "^1.2.3",
