@@ -101,41 +101,47 @@ export const VoteButtons = (props: {
   return (
     <React.Fragment>
       <Tooltip title={voteUpTooltip}>
-        <IconButton
-          aria-label="vote up"
-          color={ownVote > 0 ? 'primary' : 'default'}
-          disabled={own}
-          size="small"
-          onClick={voteUp}
-        >
-          <ArrowUpward />
-        </IconButton>
+        <span>
+          <IconButton
+            aria-label="vote up"
+            color={ownVote > 0 ? 'primary' : 'default'}
+            disabled={own}
+            size="small"
+            onClick={voteUp}
+          >
+            <ArrowUpward />
+          </IconButton>
+        </span>
       </Tooltip>
       <Typography variant="h6">{entity.score}</Typography>
       <Tooltip title={voteDownTooltip}>
-        <IconButton
-          aria-label="vote down"
-          color={ownVote < 0 ? 'primary' : 'default'}
-          disabled={own}
-          size="small"
-          onClick={voteDown}
-        >
-          <ArrowDownward />
-        </IconButton>
+        <span>
+          <IconButton
+            aria-label="vote down"
+            color={ownVote < 0 ? 'primary' : 'default'}
+            disabled={own}
+            size="small"
+            onClick={voteDown}
+          >
+            <ArrowDownward />
+          </IconButton>
+        </span>
       </Tooltip>
       {'correct' in props.entity && (props.question?.own || correct) && (
         <Box>
           <Tooltip title={correctTooltip}>
-            <IconButton
-              aria-label="mark correct"
-              style={{
-                color: correct ? theme.palette.success.main : undefined,
-              }}
-              size="small"
-              onClick={props.question?.own ? toggleCorrectAnswer : undefined}
-            >
-              <Check />
-            </IconButton>
+            <span>
+              <IconButton
+                aria-label="mark correct"
+                style={{
+                  color: correct ? theme.palette.success.main : undefined,
+                }}
+                size="small"
+                onClick={props.question?.own ? toggleCorrectAnswer : undefined}
+              >
+                <Check />
+              </IconButton>
+            </span>
           </Tooltip>
         </Box>
       )}
