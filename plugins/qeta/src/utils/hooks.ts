@@ -96,7 +96,7 @@ export const useStyles = makeStyles(theme => {
       marginBottom: theme.spacing(2),
     },
     questionCard: {
-      paddingTop: '0px',
+      paddingTop: theme.spacing(1),
     },
     questionCardVote: {
       textAlign: 'center',
