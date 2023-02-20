@@ -1,9 +1,11 @@
-site_name: 'Backstage Announcements plugin'
-site_description: 'Announcements management for Backstage'
+site_name: 'Backstage Q&A plugin'
+site_description: 'Q&A for Backstage'
 
 nav:
   - Home: index.md
   - Setup: setup.md
+  - Config: config.md
+  - Catalog: catalog.md
   - 'Integration with @backstage/plugin-search': search.md
 
 plugins:
