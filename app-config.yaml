@@ -1,5 +1,5 @@
 app:
-  title: Announcements Dev App
+  title: Q&A Dev App
   baseUrl: http://localhost:3000
 
 backend:
