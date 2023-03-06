@@ -3,54 +3,27 @@ import {
   Box,
   Card,
   CardContent,
-  Chip,
   Grid,
   Link,
-  Tooltip,
   Typography,
 } from '@material-ui/core';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { MarkdownContent } from '@backstage/core-components';
 import { VoteButtons } from './VoteButtons';
 import { useStyles } from '../../utils/hooks';
-import { useApi } from '@backstage/core-plugin-api';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { getEntityTitle, getEntityUrl } from '../../utils/utils';
-import { compact } from 'lodash';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
 import { FavoriteButton } from './FavoriteButton';
 import { AuthorBox } from './AuthorBox';
+import { TagsAndEntities } from './TagsAndEntities';
 
 export const QuestionCard = (props: { question: QuestionResponse }) => {
   const { question } = props;
   const styles = useStyles();
-  const catalogApi = useApi(catalogApiRef);
-  const [entities, setEntities] = React.useState<Entity[]>([]);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
-
-  useEffect(() => {
-    if (question.entities && question.entities.length > 0) {
-      catalogApi
-        .getEntitiesByRefs({
-          entityRefs: question.entities,
-          fields: [
-            'kind',
-            'metadata.name',
-            'metadata.namespace',
-            'metadata.title',
-          ],
-        })
-        .catch(_ => setEntities([]))
-        .then(data =>
-          data ? setEntities(compact(data.items)) : setEntities([]),
-        );
-    }
-  }, [catalogApi, question]);
 
   return (
     <Card variant="outlined">
@@ -70,35 +43,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
           <Box className={styles.questionCardMetadata}>
             <Grid container spacing={0}>
               <Grid item>
-                {question.tags &&
-                  question.tags.map(tag => (
-                    <Chip
-                      label={tag}
-                      size="small"
-                      component="a"
-                      href={`/qeta/tags/${tag}`}
-                      clickable
-                    />
-                  ))}
-                {entities &&
-                  entities.map(component => (
-                    <Tooltip
-                      title={
-                        component.metadata.description?.slice(0, 50) ??
-                        stringifyEntityRef(component)
-                      }
-                      arrow
-                    >
-                      <Chip
-                        label={getEntityTitle(component)}
-                        size="small"
-                        variant="outlined"
-                        component="a"
-                        href={getEntityUrl(component)}
-                        clickable
-                      />
-                    </Tooltip>
-                  ))}
+                <TagsAndEntities question={question} />
               </Grid>
             </Grid>
             <Grid container justifyContent="space-around">
