@@ -111,7 +111,15 @@ export const useStyles = makeStyles(theme => {
       width: 'calc(100% - 70px)',
     },
     questionCardAuthor: {
-      textAlign: 'right',
+      padding: theme.spacing(1),
+      float: 'right',
+      maxWidth: '200px',
+      border: `1px solid ${theme.palette.action.selected}`,
+      '& .avatar': {
+        width: theme.spacing(3),
+        height: theme.spacing(3),
+        fontSize: '1rem',
+      },
     },
     questionListPagination: {
       marginTop: theme.spacing(2),
