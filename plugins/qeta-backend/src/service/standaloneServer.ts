@@ -49,6 +49,12 @@ export async function startStandaloneServer(
     database: { getClient: async () => database },
   });
 
+  const environment = config.getString('app.environment');
+
+  if (environment === 'development') {
+    await db.populateDatabase();
+  }
+
   const identityMock: IdentityApi = {
     async getIdentity({ request }) {
       const token = request.headers.authorization?.split(' ')[1];
