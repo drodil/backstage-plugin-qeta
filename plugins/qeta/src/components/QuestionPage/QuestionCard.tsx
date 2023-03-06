@@ -16,16 +16,13 @@ import { useStyles } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import {
-  formatEntityName,
-  getEntityTitle,
-  getEntityUrl,
-} from '../../utils/utils';
+import { getEntityTitle, getEntityUrl } from '../../utils/utils';
 import { compact } from 'lodash';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
 import { FavoriteButton } from './FavoriteButton';
+import { AuthorBox } from './AuthorBox';
 
 export const QuestionCard = (props: { question: QuestionResponse }) => {
   const { question } = props;
@@ -71,8 +68,8 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
             />
           </Typography>
           <Box className={styles.questionCardMetadata}>
-            <Grid container spacing={0} justifyContent="space-around">
-              <Grid item xs={8}>
+            <Grid container spacing={0}>
+              <Grid item>
                 {question.tags &&
                   question.tags.map(tag => (
                     <Chip
@@ -103,31 +100,36 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
                     </Tooltip>
                   ))}
               </Grid>
-              <Grid item xs={4} className={styles.questionCardAuthor}>
-                Asked <RelativeTime value={question.created} /> by{' '}
-                <Link href={`/qeta/users/${question.author}`}>
-                  {formatEntityName(question.author)}
-                </Link>
+            </Grid>
+            <Grid container justifyContent="space-around">
+              <Grid item xs={9}>
+                {question.own && (
+                  <Box className={styles.questionCardActions}>
+                    <Link
+                      underline="none"
+                      href="#"
+                      onClick={handleDeleteModalOpen}
+                    >
+                      Delete
+                    </Link>
+                    <Link
+                      underline="none"
+                      href={`/qeta/questions/${question.id}/edit`}
+                    >
+                      Edit
+                    </Link>
+                    <DeleteModal
+                      open={deleteModalOpen}
+                      onClose={handleDeleteModalClose}
+                      entity={question}
+                    />
+                  </Box>
+                )}
+              </Grid>
+              <Grid item xs={3}>
+                <AuthorBox entity={question} />
               </Grid>
             </Grid>
-            {question.own && (
-              <Box className={styles.questionCardActions}>
-                <Link underline="none" href="#" onClick={handleDeleteModalOpen}>
-                  Delete
-                </Link>
-                <Link
-                  underline="none"
-                  href={`/qeta/questions/${question.id}/edit`}
-                >
-                  Edit
-                </Link>
-                <DeleteModal
-                  open={deleteModalOpen}
-                  onClose={handleDeleteModalClose}
-                  entity={question}
-                />
-              </Box>
-            )}
           </Box>
         </div>
       </CardContent>

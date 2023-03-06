@@ -1,14 +1,21 @@
 import { AnswerResponse, QuestionResponse } from '../../api';
-import { Box, Card, CardContent, Link, Typography } from '@material-ui/core';
+import {
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  Link,
+  Typography,
+} from '@material-ui/core';
 import React from 'react';
 import { MarkdownContent } from '@backstage/core-components';
 import { VoteButtons } from './VoteButtons';
 import { useStyles } from '../../utils/hooks';
-import { formatEntityName } from '../../utils/utils';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
 import { AnswerForm } from './AnswerForm';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
+import { AuthorBox } from './AuthorBox';
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;
@@ -51,45 +58,37 @@ export const AnswerCard = (props: {
                   dialect="gfm"
                 />
               </Typography>
-              <Box>
-                <Typography variant="caption" gutterBottom>
-                  By{' '}
-                  <Link href={`/qeta/users/${answerEntity.author}`}>
-                    {formatEntityName(answerEntity.author)}
-                  </Link>{' '}
-                  <RelativeTime value={answerEntity.created} />
-                  {answerEntity.updated && (
-                    <>
-                      {' '}
-                      (updated <RelativeTime value={answerEntity.updated} />)
-                    </>
+              <Grid container justifyContent="space-around">
+                <Grid item xs={9}>
+                  {answerEntity.own && (
+                    <Box className={styles.questionCardActions}>
+                      <Link
+                        underline="none"
+                        href="#"
+                        onClick={handleDeleteModalOpen}
+                      >
+                        Delete
+                      </Link>
+                      <Link
+                        underline="none"
+                        href="#"
+                        onClick={() => setEditMode(true)}
+                      >
+                        Edit
+                      </Link>
+                      <DeleteModal
+                        open={deleteModalOpen}
+                        onClose={handleDeleteModalClose}
+                        entity={answerEntity}
+                        question={question}
+                      />
+                    </Box>
                   )}
-                </Typography>
-              </Box>
-              {answerEntity.own && (
-                <Box className={styles.questionCardActions}>
-                  <Link
-                    underline="none"
-                    href="#"
-                    onClick={handleDeleteModalOpen}
-                  >
-                    Delete
-                  </Link>
-                  <Link
-                    underline="none"
-                    href="#"
-                    onClick={() => setEditMode(true)}
-                  >
-                    Edit
-                  </Link>
-                  <DeleteModal
-                    open={deleteModalOpen}
-                    onClose={handleDeleteModalClose}
-                    entity={answerEntity}
-                    question={question}
-                  />
-                </Box>
-              )}
+                </Grid>
+                <Grid item xs={3}>
+                  <AuthorBox entity={answerEntity} />
+                </Grid>
+              </Grid>
             </>
           )}
         </div>
