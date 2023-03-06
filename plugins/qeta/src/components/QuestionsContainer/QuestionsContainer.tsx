@@ -87,6 +87,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
       api.getQuestions({
         limit: questionsPerPage,
         offset: (page - 1) * questionsPerPage,
+        includeEntities: true,
         tags,
         entity,
         author,

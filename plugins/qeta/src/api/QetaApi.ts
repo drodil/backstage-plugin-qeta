@@ -15,6 +15,8 @@ export type GetQuestionsOptions = {
   entity?: string;
   author?: string;
   favorite?: boolean;
+
+  includeEntities?: boolean;
 };
 
 export interface QetaApi {
