@@ -7,6 +7,7 @@ import RelativeTime from 'react-relative-time';
 import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
 import { formatEntityName } from '../../utils/utils';
 import { useStyles } from '../../utils/hooks';
+import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
@@ -17,9 +18,7 @@ export const UserPage = () => {
         <Button href="/qeta" className={styles.marginRight}>
           Back to questions
         </Button>
-        <Button variant="contained" href="/qeta/ask">
-          Ask question
-        </Button>
+        <AskQuestionButton />
       </ContentHeader>
       <QuestionsContainer author={identity ?? ''} />
     </Content>

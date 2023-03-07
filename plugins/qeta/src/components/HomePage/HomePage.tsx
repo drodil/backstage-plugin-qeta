@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Button,
   Grid,
   IconButton,
   ListItemIcon,
@@ -20,7 +19,6 @@ import { QuestionPage } from '../QuestionPage/QuestionPage';
 import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
 import { TagPage } from '../TagPage/TagPage';
 import { UserPage } from '../UserPage/UserPage';
-import HelpOutline from '@material-ui/icons/HelpOutline';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 import { QuestionHighlightList } from '../QuestionHighlightList/QuestionHighlightList';
 import { useIdentityApi, useStyles } from '../../utils/hooks';
@@ -29,6 +27,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import StarIcon from '@material-ui/icons/Star';
 import AccountBox from '@material-ui/icons/AccountBox';
 import { FavoritePage } from '../FavoritePage/FavoritePage';
+import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 
 const MoreMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -108,14 +107,7 @@ export const HomePageContent = () => {
         <Grid item md={12} lg={9} xl={10}>
           <ContentHeader title="All questions">
             <MoreMenu />
-            <Button
-              variant="contained"
-              href="/qeta/ask"
-              color="primary"
-              startIcon={<HelpOutline />}
-            >
-              Ask question
-            </Button>
+            <AskQuestionButton />
           </ContentHeader>
           <QuestionsContainer />
         </Grid>

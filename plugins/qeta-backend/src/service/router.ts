@@ -8,18 +8,32 @@ import {
   QetaStore,
   QuestionsOptions,
 } from '../database/QetaStore';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import Ajv, { JSONSchemaType } from 'ajv';
 import addFormats from 'ajv-formats';
 import { Response } from 'express-serve-static-core';
 import { Config } from '@backstage/config';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import {
+  getBearerTokenFromAuthorizationHeader,
+  IdentityApi,
+} from '@backstage/plugin-auth-node';
+import {
+  AuthorizeResult,
+  BasicPermission,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import {
+  qetaCreateAnswerPermission,
+  qetaCreateQuestionPermission,
+  qetaReadPermission,
+} from '@drodil/backstage-plugin-qeta-common';
 
 export interface RouterOptions {
   identity: IdentityApi;
   database: QetaStore;
   logger: Logger;
   config: Config;
+  permissions?: PermissionEvaluator;
 }
 
 const ajv = new Ajv({ coerceTypes: 'array' });
@@ -107,6 +121,7 @@ export async function createRouter({
   database,
   identity,
   config,
+  permissions,
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
@@ -134,6 +149,28 @@ export async function createRouter({
     resp.own = resp.author === username;
   };
 
+  const checkPermissions = async (
+    request: Request<unknown>,
+    permission: BasicPermission,
+  ): Promise<void> => {
+    if (!permissions) {
+      return;
+    }
+
+    const token =
+      getBearerTokenFromAuthorizationHeader(request.header('authorization')) ||
+      (request.cookies?.token as string | undefined);
+    const decision = (
+      await permissions.authorize([{ permission }], {
+        token,
+      })
+    )[0];
+
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
+  };
+
   router.get('/health', (_, response) => {
     logger.info('PONG!');
     response.json({ status: 'ok' });
@@ -143,6 +180,7 @@ export async function createRouter({
   router.get(`/questions`, async (request, response) => {
     // Validation
     const username = await getUsername(request);
+    await checkPermissions(request, qetaReadPermission);
     const validateQuery = ajv.compile(QuestionsQuerySchema);
     if (!validateQuery(request.query)) {
       response
@@ -161,8 +199,9 @@ export async function createRouter({
   // GET /questions
   router.get(`/questions/list/:type`, async (request, response) => {
     // Validation
-    const validateQuery = ajv.compile(QuestionsQuerySchema);
     const username = await getUsername(request);
+    await checkPermissions(request, qetaReadPermission);
+    const validateQuery = ajv.compile(QuestionsQuerySchema);
     if (!validateQuery(request.query)) {
       response
         .status(400)
@@ -198,6 +237,7 @@ export async function createRouter({
     // Validation
     // Act
     const username = await getUsername(request);
+    await checkPermissions(request, qetaReadPermission);
     const question = await database.getQuestion(
       username,
       Number.parseInt(request.params.id, 10),
@@ -218,6 +258,7 @@ export async function createRouter({
   // POST /questions
   router.post(`/questions`, async (request, response) => {
     // Validation
+    await checkPermissions(request, qetaCreateQuestionPermission);
     const validateRequestBody = ajv.compile(PostQuestionSchema);
     if (!validateRequestBody(request.body)) {
       response
@@ -288,6 +329,7 @@ export async function createRouter({
   // POST /questions/:id/answers
   router.post(`/questions/:id/answers`, async (request, response) => {
     // Validation
+    await checkPermissions(request, qetaCreateAnswerPermission);
     const validateRequestBody = ajv.compile(PostAnswerSchema);
     if (!validateRequestBody(request.body)) {
       response
@@ -348,6 +390,7 @@ export async function createRouter({
     // Validation
     // Act
     const username = await getUsername(request);
+    await checkPermissions(request, qetaReadPermission);
     const answer = await database.getAnswer(
       Number.parseInt(request.params.answerId, 10),
     );

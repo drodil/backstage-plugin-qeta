@@ -6,9 +6,9 @@ import { Content, ContentHeader } from '@backstage/core-components';
 import RelativeTime from 'react-relative-time';
 import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
 import { TagsContainer } from './TagsContainer';
-import HelpOutline from '@material-ui/icons/HelpOutline';
 import HomeOutlined from '@material-ui/icons/HomeOutlined';
 import { useStyles } from '../../utils/hooks';
+import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 
 export const TagPage = () => {
   const { tag } = useParams();
@@ -23,13 +23,7 @@ export const TagPage = () => {
         >
           Back to questions
         </Button>
-        <Button
-          variant="contained"
-          href="/qeta/ask"
-          startIcon={<HelpOutline />}
-        >
-          Ask question
-        </Button>
+        <AskQuestionButton />
       </ContentHeader>
       {tag ? <QuestionsContainer tags={[tag ?? '']} /> : <TagsContainer />}
     </Content>

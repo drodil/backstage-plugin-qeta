@@ -4,9 +4,9 @@ import { Content, ContentHeader } from '@backstage/core-components';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
-import HelpOutline from '@material-ui/icons/HelpOutline';
 import HomeOutlined from '@material-ui/icons/HomeOutlined';
 import { useStyles } from '../../utils/hooks';
+import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 
 export const FavoritePage = () => {
   const styles = useStyles();
@@ -20,13 +20,7 @@ export const FavoritePage = () => {
         >
           Back to questions
         </Button>
-        <Button
-          variant="contained"
-          href="/qeta/ask"
-          startIcon={<HelpOutline />}
-        >
-          Ask question
-        </Button>
+        <AskQuestionButton />
       </ContentHeader>
       <QuestionsContainer favorite />
     </Content>

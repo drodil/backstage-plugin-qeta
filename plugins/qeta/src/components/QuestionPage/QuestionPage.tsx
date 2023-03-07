@@ -14,8 +14,8 @@ import RelativeTime from 'react-relative-time';
 import { AnswerForm } from './AnswerForm';
 import { AnswerCard } from './AnswerCard';
 import { Skeleton } from '@material-ui/lab';
-import HelpOutline from '@material-ui/icons/HelpOutline';
 import HomeOutlined from '@material-ui/icons/HomeOutlined';
+import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 
 export const QuestionPage = () => {
   const { id } = useParams();
@@ -81,14 +81,7 @@ export const QuestionPage = () => {
         >
           Back to questions
         </Button>
-        <Button
-          variant="contained"
-          href="/qeta/ask"
-          color="primary"
-          startIcon={<HelpOutline />}
-        >
-          Ask question
-        </Button>
+        <AskQuestionButton />
       </ContentHeader>
       <QuestionCard question={question} />
       <Box sx={{ mt: 3, mb: 2 }}>

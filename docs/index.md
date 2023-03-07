@@ -9,3 +9,4 @@
 
 - [Integration with `@backstage/plugin-search`](search.md)
 - [Integration with Backstage catalog](catalog.md)
+- [Integration with permissions](permissions.md)

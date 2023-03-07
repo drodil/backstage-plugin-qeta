@@ -25,6 +25,10 @@ import {
   IdentityApi,
 } from '@backstage/plugin-auth-node';
 import { ConfigReader } from '@backstage/config';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 
 const question: Question = {
   id: 1,
@@ -89,18 +93,31 @@ describe('createRouter', () => {
 
   const config = ConfigReader.fromConfigs([]);
 
+  const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
+    jest.fn();
+  const mockedPermissionQuery: jest.MockedFunction<
+    PermissionEvaluator['authorizeConditional']
+  > = jest.fn();
+
+  const permissionEvaluator: PermissionEvaluator = {
+    authorize: mockedAuthorize,
+    authorizeConditional: mockedPermissionQuery,
+  };
+
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
       database: qetaStore,
       identity: identityApi,
       config,
+      permissions: permissionEvaluator,
     });
     app = express().use(router);
   });
 
   beforeEach(() => {
     jest.resetAllMocks();
+    mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
     getIdentityMock.mockResolvedValue({
       token: 'a',
       identity: {
@@ -156,6 +173,12 @@ describe('createRouter', () => {
       getIdentityMock.mockResolvedValue(undefined);
       const response = await request(app).get('/questions/1');
       expect(response.status).toEqual(401);
+    });
+
+    it('forbidden', async () => {
+      mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+      const response = await request(app).get('/questions/1');
+      expect(response.status).toEqual(403);
     });
   });
 
@@ -215,6 +238,18 @@ describe('createRouter', () => {
           tags: ['java'],
         });
       expect(response.status).toEqual(401);
+    });
+
+    it('forbidden', async () => {
+      mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+      const response = await request(app)
+        .post('/questions')
+        .send({
+          title: 'title',
+          content: 'content',
+          tags: ['java'],
+        });
+      expect(response.status).toEqual(403);
     });
   });
 
@@ -283,6 +318,14 @@ describe('createRouter', () => {
         answer: 'answer',
       });
       expect(response.status).toEqual(401);
+    });
+
+    it('forbidden', async () => {
+      mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+      const response = await request(app).post('/questions/1/answers').send({
+        answer: 'answer',
+      });
+      expect(response.status).toEqual(403);
     });
   });
 

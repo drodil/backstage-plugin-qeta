@@ -11,6 +11,8 @@ import {
 import { useStyles } from '../../utils/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { qetaCreateAnswerPermission } from '@drodil/backstage-plugin-qeta-common';
 
 const getDefaultValues = (questionId: number) => {
   return { questionId, answer: '' };
@@ -83,33 +85,40 @@ export const AnswerForm = (props: {
   }, [values, reset]);
 
   return (
-    <form onSubmit={handleSubmit(postAnswer)}>
-      <Typography variant="h6">Your answer</Typography>
-      {error && <WarningPanel severity="error" title="Could not post answer" />}
-      <Controller
-        control={control}
-        defaultValue=""
-        rules={{
-          required: true,
-        }}
-        render={({ field: { onChange, value } }) => (
-          <MarkdownEditor
-            value={value}
-            onChange={onChange}
-            height={200}
-            error={'answer' in errors}
-          />
+    <RequirePermission
+      permission={qetaCreateAnswerPermission}
+      errorPage={<></>}
+    >
+      <form onSubmit={handleSubmit(postAnswer)}>
+        <Typography variant="h6">Your answer</Typography>
+        {error && (
+          <WarningPanel severity="error" title="Could not post answer" />
         )}
-        name="answer"
-      />
-      <Button
-        variant="outlined"
-        type="submit"
-        color="primary"
-        className={styles.postButton}
-      >
-        {id ? 'Save' : 'Post'}
-      </Button>
-    </form>
+        <Controller
+          control={control}
+          defaultValue=""
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, value } }) => (
+            <MarkdownEditor
+              value={value}
+              onChange={onChange}
+              height={200}
+              error={'answer' in errors}
+            />
+          )}
+          name="answer"
+        />
+        <Button
+          variant="outlined"
+          type="submit"
+          color="primary"
+          className={styles.postButton}
+        >
+          {id ? 'Save' : 'Post'}
+        </Button>
+      </form>
+    </RequirePermission>
   );
 };

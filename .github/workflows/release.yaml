@@ -128,3 +128,29 @@ jobs:
       - run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  common-publish:
+    name: Publish plugin common
+    runs-on: ubuntu-latest
+    needs: [tagged-release]
+    defaults:
+      run:
+        working-directory: ./plugins/qeta-common
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          always-auth: true
+          registry-url: 'https://registry.npmjs.org'
+      - run: git pull
+      - run: yarn
+      - run: yarn tsc
+      - run: yarn build
+      - run: yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

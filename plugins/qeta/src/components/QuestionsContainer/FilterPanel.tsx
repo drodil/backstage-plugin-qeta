@@ -29,7 +29,7 @@ export const filterKeys = [
   'noCorrectAnswer',
   'noVotes',
 ] as const;
-export type FilterKey = typeof filterKeys[number];
+export type FilterKey = (typeof filterKeys)[number];
 
 export interface FilterPanelProps {
   onChange: (key: FilterKey, value: string) => void;
