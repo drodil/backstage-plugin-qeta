@@ -3,10 +3,10 @@ import {
   Card,
   CardContent,
   Grid,
-  Link,
   Typography,
   useTheme,
 } from '@material-ui/core';
+import { Link } from '@backstage/core-components';
 import React from 'react';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';

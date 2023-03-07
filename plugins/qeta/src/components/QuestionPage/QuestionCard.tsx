@@ -1,12 +1,6 @@
 import { QuestionResponse } from '../../api';
-import {
-  Box,
-  Card,
-  CardContent,
-  Grid,
-  Link,
-  Typography,
-} from '@material-ui/core';
+import { Box, Card, CardContent, Grid, Typography } from '@material-ui/core';
+import { Link } from '@backstage/core-components';
 import React from 'react';
 import { MarkdownContent } from '@backstage/core-components';
 import { VoteButtons } from './VoteButtons';

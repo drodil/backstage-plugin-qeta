@@ -1,5 +1,6 @@
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Button, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
+import { LinkButton } from '@backstage/core-components';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -307,14 +308,14 @@ export const AskForm = (props: {
           name="entities"
         />
       )}
-      <Button
+      <LinkButton
         color="primary"
         type="submit"
         variant="contained"
         className={styles.postButton}
       >
         {id ? 'Save' : 'Post'}
-      </Button>
+      </LinkButton>
     </form>
   );
 };

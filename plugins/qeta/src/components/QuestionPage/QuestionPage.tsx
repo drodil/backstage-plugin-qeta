@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Button, Divider, Typography } from '@material-ui/core';
+import { Box, Divider, Typography } from '@material-ui/core';
+import { LinkButton } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
   Content,
@@ -74,13 +75,13 @@ export const QuestionPage = () => {
         // @ts-ignore
         description={getDescription(question)}
       >
-        <Button
+        <LinkButton
           className={styles.marginRight}
           href="/qeta"
           startIcon={<HomeOutlined />}
         >
           Back to questions
-        </Button>
+        </LinkButton>
         <AskQuestionButton />
       </ContentHeader>
       <QuestionCard question={question} />

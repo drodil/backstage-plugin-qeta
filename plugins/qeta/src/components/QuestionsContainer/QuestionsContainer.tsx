@@ -1,5 +1,6 @@
 import { useQetaApi } from '../../utils/hooks';
-import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
+import { Box, Collapse, Grid, Typography } from '@material-ui/core';
+import { LinkButton } from '@backstage/core-components';
 import React, { useEffect } from 'react';
 import { FilterKey, filterKeys, FilterPanel } from './FilterPanel';
 import { QuestionList } from './QuestionList';
@@ -135,12 +136,12 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         </Grid>
         {(showFilters ?? true) && (
           <Grid item>
-            <Button
+            <LinkButton
               onClick={() => setShowFilterPanel(!showFilterPanel)}
               startIcon={<FilterList />}
             >
               Filter
-            </Button>
+            </LinkButton>
           </Grid>
         )}
       </Grid>

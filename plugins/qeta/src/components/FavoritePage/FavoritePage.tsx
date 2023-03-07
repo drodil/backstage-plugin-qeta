@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@material-ui/core';
+import { Button } from '@backstage/core-components';
 import { Content, ContentHeader } from '@backstage/core-components';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';

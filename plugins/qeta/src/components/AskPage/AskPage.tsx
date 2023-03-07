@@ -1,5 +1,5 @@
 import { Content, ContentHeader, InfoCard } from '@backstage/core-components';
-import { Button, Grid } from '@material-ui/core';
+import { LinkButton } from '@backstage/core-components';
 import React from 'react';
 
 import { AskForm } from '../AskForm/AskForm';
@@ -11,9 +11,9 @@ export const AskPage = () => {
   return (
     <Content>
       <ContentHeader title={id ? 'Edit question' : 'Ask question'}>
-        <Button href="/qeta" startIcon={<HomeOutlined />}>
+        <LinkButton href="/qeta" startIcon={<HomeOutlined />}>
           Back to questions
-        </Button>
+        </LinkButton>
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>

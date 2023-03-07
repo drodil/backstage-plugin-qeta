@@ -1,4 +1,5 @@
-import { Avatar, Box, Grid, Link, Typography } from '@material-ui/core';
+import { Avatar, Box, Grid, Typography } from '@material-ui/core';
+import { Link } from '@backstage/core-components';
 import { formatEntityName } from '../../utils/utils';
 import React, { useEffect } from 'react';
 import { useStyles } from '../../utils/hooks';

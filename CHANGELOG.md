@@ -2,6 +2,61 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.24...v1.5.0) (2023-03-07)
+
+
+### Features
+
+* add hot questions list ([66e33b8](https://github.com/drodil/backstage-plugin-qeta/commit/66e33b8e079a10ba0fcde0e6fb7b01d4e590ca0e))
+* add optional permissions framework to the plugin ([6c60c24](https://github.com/drodil/backstage-plugin-qeta/commit/6c60c24203b9cd090d11850b253cf4588ef440a7)), closes [#41](https://github.com/drodil/backstage-plugin-qeta/issues/41)
+* add shortcut to users own questions ([78fb4c6](https://github.com/drodil/backstage-plugin-qeta/commit/78fb4c607ad646e42f4d0bb432a00043b89bb9fc)), closes [#32](https://github.com/drodil/backstage-plugin-qeta/issues/32)
+* allow ask form to have callback after posting question ([39a7716](https://github.com/drodil/backstage-plugin-qeta/commit/39a771614d821d4ad890b1c60b4e39a846acb8f1))
+* allow deleting questions and answers ([2ffdd12](https://github.com/drodil/backstage-plugin-qeta/commit/2ffdd125bd4d8a37792db8bc511e48f7b792ac73)), closes [#6](https://github.com/drodil/backstage-plugin-qeta/issues/6)
+* allow editing of answers ([ec3705b](https://github.com/drodil/backstage-plugin-qeta/commit/ec3705b50457b113b32aa7c76fca0f84160f31bd)), closes [#5](https://github.com/drodil/backstage-plugin-qeta/issues/5)
+* allow fetching questions by component ([e68767d](https://github.com/drodil/backstage-plugin-qeta/commit/e68767db6b418f7bc1ba73d6764f8519a1b5f2a0))
+* allow filtering entity kinds with config ([d23e12a](https://github.com/drodil/backstage-plugin-qeta/commit/d23e12a529b8fe56a9ab812fd218ca3b98d7e1eb)), closes [#18](https://github.com/drodil/backstage-plugin-qeta/issues/18) [#17](https://github.com/drodil/backstage-plugin-qeta/issues/17)
+* allow filtering with no votes ([98c57ef](https://github.com/drodil/backstage-plugin-qeta/commit/98c57ef12c3dac45ab67a227a1213d1dc37b2193)), closes [#4](https://github.com/drodil/backstage-plugin-qeta/issues/4)
+* allow selecting number of questions in list ([43741c6](https://github.com/drodil/backstage-plugin-qeta/commit/43741c65139bb6791f5243e3e2b3f58b03d28e21)), closes [#19](https://github.com/drodil/backstage-plugin-qeta/issues/19)
+* allow setting entity to ask in URL param ([f297e63](https://github.com/drodil/backstage-plugin-qeta/commit/f297e633e7040a4408c3a0508e5a08197fae53c4))
+* allow setting qeta page title and subtitle ([c2a2ebf](https://github.com/drodil/backstage-plugin-qeta/commit/c2a2ebf3540341e5b55cb3958fa701139380cea3)), closes [#23](https://github.com/drodil/backstage-plugin-qeta/issues/23)
+* allow showing title in question container ([e3b98d0](https://github.com/drodil/backstage-plugin-qeta/commit/e3b98d0169b51dbfed66487974ad1f01a2e06be6))
+* allow specifying component for ask form ([19e7a9b](https://github.com/drodil/backstage-plugin-qeta/commit/19e7a9bdeba8a4786d33f5e92e990d79bab0d4e2))
+* allow specifying own title for question container ([417a15a](https://github.com/drodil/backstage-plugin-qeta/commit/417a15a0697232e474ad9f0a7967000359d71833))
+* allow users to edit questions ([e8d5923](https://github.com/drodil/backstage-plugin-qeta/commit/e8d5923db1fd9acb78b0115cba71ef3d096e8aec)), closes [#5](https://github.com/drodil/backstage-plugin-qeta/issues/5)
+* allow users to favorite questions ([33cc0f6](https://github.com/drodil/backstage-plugin-qeta/commit/33cc0f64e3e3fa9c2e5ff31b5c6a500a40fda1a9)), closes [#33](https://github.com/drodil/backstage-plugin-qeta/issues/33)
+* format all entities the same way ([4937da9](https://github.com/drodil/backstage-plugin-qeta/commit/4937da990f429c10fb8d2480ad1a0adfd58f4b59))
+* group entities in ask form autocomplete by kind ([6838e32](https://github.com/drodil/backstage-plugin-qeta/commit/6838e32d165beead9c829e7ca0d34462c3e5ea6c))
+* improve hot question trend rating ([a1ea2bf](https://github.com/drodil/backstage-plugin-qeta/commit/a1ea2bf60ff68e773972a2123394b5273725da0f))
+* refactor author showing in question page ([129a197](https://github.com/drodil/backstage-plugin-qeta/commit/129a197d046aca0f095022122a7342b2955cc026))
+* remember filter panel options ([384c378](https://github.com/drodil/backstage-plugin-qeta/commit/384c378a5c43dec9f592477b76ba64d4fb9acd4d)), closes [#15](https://github.com/drodil/backstage-plugin-qeta/issues/15)
+* show linked entities in question list ([0cef37d](https://github.com/drodil/backstage-plugin-qeta/commit/0cef37d58b71cf4ac71aa33cc0d2c21665680173))
+
+
+### Bug Fixes
+
+* add common bump version config ([97a4c56](https://github.com/drodil/backstage-plugin-qeta/commit/97a4c56033b8d4d6b1ff5d02aaa15e181c776a9b))
+* add missing mock for question update ([290c210](https://github.com/drodil/backstage-plugin-qeta/commit/290c210b71efc90fcbd7b1c9cd2570956a00bc53))
+* allow voting multiple q&a ([532e7cd](https://github.com/drodil/backstage-plugin-qeta/commit/532e7cd7b34dbca56fd499cc02431971b5ec26aa)), closes [#28](https://github.com/drodil/backstage-plugin-qeta/issues/28)
+* app-config ([fee6754](https://github.com/drodil/backstage-plugin-qeta/commit/fee67546adc94c4cb97f24b2f4f65d8baa1a1de9))
+* change the components to entities ([c92f7ef](https://github.com/drodil/backstage-plugin-qeta/commit/c92f7ef5aab967b47d2a855564e217c65e5b69eb))
+* change the search collator to only return answer contents ([32a3833](https://github.com/drodil/backstage-plugin-qeta/commit/32a3833d4918e1e38fcbb2e846012baf078f246d))
+* delete button to be a link ([c265f8e](https://github.com/drodil/backstage-plugin-qeta/commit/c265f8ec6d456bd82bf4afaa7307dd4cb5775493))
+* entity title in utils ([ae12125](https://github.com/drodil/backstage-plugin-qeta/commit/ae1212543afb1d41a48d7b7896114f58fffaf9ce))
+* export QetaApi for external use ([53b089d](https://github.com/drodil/backstage-plugin-qeta/commit/53b089dbd4714b86fc13ab39cb2a1d823570d088))
+* mkdocs ([ccc4d3a](https://github.com/drodil/backstage-plugin-qeta/commit/ccc4d3a3fa689cf4736ff8e15026e9aadd1778c5))
+* no new question when editing ([80b8fde](https://github.com/drodil/backstage-plugin-qeta/commit/80b8fde1fe2e47b9d752b390794ac567b5ec9fe1))
+* questions without correct answer query ([d09aea1](https://github.com/drodil/backstage-plugin-qeta/commit/d09aea1069ea7bd9eb12018f31b8ff04fb5d4fbd)), closes [#26](https://github.com/drodil/backstage-plugin-qeta/issues/26)
+* references to components ([5475f7e](https://github.com/drodil/backstage-plugin-qeta/commit/5475f7ec82612cc4a9b52c5421922fe76dd6c937))
+* remove deprecated versions from changelog ([77ef862](https://github.com/drodil/backstage-plugin-qeta/commit/77ef8627f44dbf5d58e09440c376ad4dc422f19a))
+* remove optional from tags routing ([94ff27b](https://github.com/drodil/backstage-plugin-qeta/commit/94ff27b50d37da1eda56d78ab53c8516564cd879)), closes [#27](https://github.com/drodil/backstage-plugin-qeta/issues/27)
+* show total number of questions in question container ([c5d078e](https://github.com/drodil/backstage-plugin-qeta/commit/c5d078e0c4382c7f86713fc51c609119680b4931))
+* styling when long answer given without word breaks ([e4bb89b](https://github.com/drodil/backstage-plugin-qeta/commit/e4bb89bd5b4e2dda3cdc5edbb8cd9bae3c652882))
+* support for node18 ([8a712e5](https://github.com/drodil/backstage-plugin-qeta/commit/8a712e5cedb59f25a39eab496dc0b6860cb5e428))
+* top padding of question card ([d73642d](https://github.com/drodil/backstage-plugin-qeta/commit/d73642db7dfd8dd526be9b7e8a3be5b88dc48e9c))
+* use primary color for buttons ([73c4e32](https://github.com/drodil/backstage-plugin-qeta/commit/73c4e3208f8791fbe462774445580b108feb9398)), closes [#37](https://github.com/drodil/backstage-plugin-qeta/issues/37)
+* use relative url to question location from search collator ([c6a9cb7](https://github.com/drodil/backstage-plugin-qeta/commit/c6a9cb7790c985c4ee24fb55b2c0c3e1a261452d)), closes [#29](https://github.com/drodil/backstage-plugin-qeta/issues/29)
+* vote buttons tooltip for questions ([c40729e](https://github.com/drodil/backstage-plugin-qeta/commit/c40729e35f1fa1d77bc9670cf6654e394d27ea0f))
+
 ### [1.4.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.4.0...v1.4.1) (2023-02-17)
 
 
