@@ -2,7 +2,6 @@ import { useStyles } from '../../utils/hooks';
 import { WarningPanel } from '@backstage/core-components';
 import {
   Box,
-  Button,
   Divider,
   FormControl,
   Grid,
@@ -11,6 +10,7 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
+import { LinkButton } from '@backstage/core-components';
 import React from 'react';
 import { QuestionListItem } from './QuestionListItem';
 import { Pagination, Skeleton } from '@material-ui/lab';
@@ -75,14 +75,14 @@ export const QuestionList = (props: {
           <Typography variant="h6">No questions found</Typography>
         </Grid>
         <Grid item>
-          <Button
-            href={entity ? `/qeta/ask?entity=${entity}` : '/qeta/ask'}
+          <LinkButton
+            to={entity ? `/qeta/ask?entity=${entity}` : '/qeta/ask'}
             startIcon={<HelpOutline />}
             color="primary"
             variant="outlined"
           >
             Go ahead and ask one!
-          </Button>
+          </LinkButton>
         </Grid>
       </Grid>
     );

@@ -1,9 +1,10 @@
 import { AnswerResponse, qetaApiRef, QuestionResponse } from '../../api';
-import { Backdrop, Box, Button, Modal, Typography } from '@material-ui/core';
+import { Backdrop, Box, Modal, Typography } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Delete from '@material-ui/icons/Delete';
 import React from 'react';
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useBasePath } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,6 +15,7 @@ export const DeleteModal = (props: {
   question?: QuestionResponse;
 }) => {
   const qetaApi = useApi(qetaApiRef);
+  const base_path = useBasePath();
   const navigate = useNavigate();
   const { entity, open, question, onClose } = props;
   const styles = useStyles();
@@ -32,7 +34,7 @@ export const DeleteModal = (props: {
         .then(ret => {
           if (ret) {
             onClose();
-            navigate(`/qeta`);
+            navigate(`${base_path}/qeta`);
           } else {
             setError(true);
           }

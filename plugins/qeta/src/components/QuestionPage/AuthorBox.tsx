@@ -1,4 +1,5 @@
-import { Avatar, Box, Grid, Link, Typography } from '@material-ui/core';
+import { Avatar, Box, Grid, Typography } from '@material-ui/core';
+import { Link } from '@backstage/core-components';
 import { formatEntityName } from '../../utils/utils';
 import React, { useEffect } from 'react';
 import { useStyles } from '../../utils/hooks';
@@ -57,7 +58,7 @@ export const AuthorBox = (props: {
           </Avatar>
         </Grid>
         <Grid item xs={10} style={{ paddingTop: 0 }}>
-          <Link href={`/qeta/users/${entity.author}`}>{name}</Link>
+          <Link to={`/qeta/users/${entity.author}`}>{name}</Link>
         </Grid>
       </Grid>
     </Box>

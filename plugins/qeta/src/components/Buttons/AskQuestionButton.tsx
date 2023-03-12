@@ -1,8 +1,8 @@
 import HelpOutline from '@material-ui/icons/HelpOutline';
-import { Button } from '@material-ui/core';
 import React from 'react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { qetaCreateQuestionPermission } from '@drodil/backstage-plugin-qeta-common';
+import { LinkButton } from '@backstage/core-components';
 
 export const AskQuestionButton = () => {
   return (
@@ -10,14 +10,14 @@ export const AskQuestionButton = () => {
       permission={qetaCreateQuestionPermission}
       errorPage={<></>}
     >
-      <Button
+      <LinkButton
         variant="contained"
-        href="/qeta/ask"
+        to="/qeta/ask"
         color="primary"
         startIcon={<HelpOutline />}
       >
         Ask question
-      </Button>
+      </LinkButton>
     </RequirePermission>
   );
 };

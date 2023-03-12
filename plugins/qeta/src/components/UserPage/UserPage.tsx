@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@material-ui/core';
+import { LinkButton } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import { Content, ContentHeader } from '@backstage/core-components';
 // @ts-ignore
@@ -15,9 +15,9 @@ export const UserPage = () => {
   return (
     <Content>
       <ContentHeader title={`Questions by ${formatEntityName(identity)}`}>
-        <Button href="/qeta" className={styles.marginRight}>
+        <LinkButton to="/qeta" className={styles.marginRight}>
           Back to questions
-        </Button>
+        </LinkButton>
         <AskQuestionButton />
       </ContentHeader>
       <QuestionsContainer author={identity ?? ''} />

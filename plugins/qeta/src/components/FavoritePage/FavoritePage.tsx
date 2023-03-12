@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@material-ui/core';
+import { LinkButton } from '@backstage/core-components';
 import { Content, ContentHeader } from '@backstage/core-components';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
@@ -13,13 +13,13 @@ export const FavoritePage = () => {
   return (
     <Content>
       <ContentHeader title="Your favorite questions">
-        <Button
-          href="/qeta"
+        <LinkButton
+          to="/qeta"
           className={styles.marginRight}
           startIcon={<HomeOutlined />}
         >
           Back to questions
-        </Button>
+        </LinkButton>
         <AskQuestionButton />
       </ContentHeader>
       <QuestionsContainer favorite />

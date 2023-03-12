@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@material-ui/core';
+import { LinkButton } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import { Content, ContentHeader } from '@backstage/core-components';
 // @ts-ignore
@@ -16,13 +16,13 @@ export const TagPage = () => {
   return (
     <Content>
       <ContentHeader title={tag ? `Questions tagged [${tag}]` : 'Tags'}>
-        <Button
-          href="/qeta"
+        <LinkButton
+          to="/qeta"
           className={styles.marginRight}
           startIcon={<HomeOutlined />}
         >
           Back to questions
-        </Button>
+        </LinkButton>
         <AskQuestionButton />
       </ContentHeader>
       {tag ? <QuestionsContainer tags={[tag ?? '']} /> : <TagsContainer />}
