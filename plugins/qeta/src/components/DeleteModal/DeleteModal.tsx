@@ -71,11 +71,7 @@ export const DeleteModal = (props: {
         <Typography id="modal-modal-title" variant="h6" component="h2">
           {title}
         </Typography>
-        <Button
-          onClick={handleDelete}
-          startIcon={<Delete />}
-          color="secondary"
-        >
+        <Button onClick={handleDelete} startIcon={<Delete />} color="secondary">
           Delete
         </Button>
         <Button onClick={onClose}>Cancel</Button>
