@@ -17,7 +17,7 @@ export const TagPage = () => {
     <Content>
       <ContentHeader title={tag ? `Questions tagged [${tag}]` : 'Tags'}>
         <LinkButton
-          href="/qeta"
+          to="/qeta"
           className={styles.marginRight}
           startIcon={<HomeOutlined />}
         >

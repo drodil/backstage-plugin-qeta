@@ -15,7 +15,7 @@ export const UserPage = () => {
   return (
     <Content>
       <ContentHeader title={`Questions by ${formatEntityName(identity)}`}>
-        <LinkButton href="/qeta" className={styles.marginRight}>
+        <LinkButton to="/qeta" className={styles.marginRight}>
           Back to questions
         </LinkButton>
         <AskQuestionButton />

@@ -1,10 +1,10 @@
 import { AnswerResponse, qetaApiRef, QuestionResponse } from '../../api';
 import { Backdrop, Box, Modal, Typography } from '@material-ui/core';
-import { LinkButton } from '@backstage/core-components';
+import { Button } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Delete from '@material-ui/icons/Delete';
 import React from 'react';
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useBasePath } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,6 +15,7 @@ export const DeleteModal = (props: {
   question?: QuestionResponse;
 }) => {
   const qetaApi = useApi(qetaApiRef);
+  const base_path = useBasePath();
   const navigate = useNavigate();
   const { entity, open, question, onClose } = props;
   const styles = useStyles();
@@ -33,7 +34,7 @@ export const DeleteModal = (props: {
         .then(ret => {
           if (ret) {
             onClose();
-            navigate(`/qeta`);
+            navigate(`${base_path}/qeta`);
           } else {
             setError(true);
           }
@@ -70,14 +71,14 @@ export const DeleteModal = (props: {
         <Typography id="modal-modal-title" variant="h6" component="h2">
           {title}
         </Typography>
-        <LinkButton
+        <Button
           onClick={handleDelete}
           startIcon={<Delete />}
           color="secondary"
         >
           Delete
-        </LinkButton>
-        <LinkButton onClick={onClose}>Cancel</LinkButton>
+        </Button>
+        <Button onClick={onClose}>Cancel</Button>
       </Box>
     </Modal>
   );

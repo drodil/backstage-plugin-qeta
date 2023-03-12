@@ -1,6 +1,5 @@
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { TextField } from '@material-ui/core';
-import { LinkButton } from '@backstage/core-components';
+import { TextField, Button } from '@material-ui/core';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -11,7 +10,7 @@ import {
   QuestionRequest,
   QuestionResponse,
 } from '../../api';
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useBasePath } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
@@ -77,6 +76,7 @@ export const AskForm = (props: {
   onPost?: (question: QuestionResponse) => void;
 }) => {
   const { id, entity, onPost } = props;
+  const base_path = useBasePath();
   const navigate = useNavigate();
   const [entityRef, setEntityRef] = React.useState(entity);
   const [values, setValues] = React.useState(getDefaultValues());
@@ -124,7 +124,7 @@ export const AskForm = (props: {
           if (onPost) {
             onPost(q);
           } else {
-            navigate(`/qeta/questions/${q.id}`);
+            navigate(`${base_path}/qeta/questions/${q.id}`);
           }
         })
         .catch(_e => setError(true));
@@ -138,7 +138,7 @@ export const AskForm = (props: {
           return;
         }
         reset();
-        navigate(`/qeta/questions/${q.id}`);
+        navigate(`${base_path}/qeta/questions/${q.id}`);
       })
       .catch(_e => setError(true));
   };
@@ -308,14 +308,14 @@ export const AskForm = (props: {
           name="entities"
         />
       )}
-      <LinkButton
+      <Button
         color="primary"
         type="submit"
         variant="contained"
         className={styles.postButton}
       >
         {id ? 'Save' : 'Post'}
-      </LinkButton>
+      </Button>
     </form>
   );
 };

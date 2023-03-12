@@ -58,14 +58,14 @@ export const AnswerCard = (props: {
                     <Box className={styles.questionCardActions}>
                       <Link
                         underline="none"
-                        href="#"
+                        to="#"
                         onClick={handleDeleteModalOpen}
                       >
                         Delete
                       </Link>
                       <Link
                         underline="none"
-                        href="#"
+                        to="#"
                         onClick={() => setEditMode(true)}
                       >
                         Edit

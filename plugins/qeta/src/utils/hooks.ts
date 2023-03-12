@@ -4,10 +4,12 @@ import {
   IdentityApi,
   identityApiRef,
   useApi,
+  configApiRef
 } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { trimEnd } from 'lodash';
 
 export function useQetaApi<T>(
   f: (api: QetaApi) => Promise<T>,
@@ -180,3 +182,27 @@ export const useStyles = makeStyles(theme => {
     },
   };
 });
+
+
+// Url resolving logic from https://github.com/backstage/backstage/blob/master/packages/core-components/src/components/Link/Link.tsx
+
+/**
+ * Returns the app base url that could be empty if the Config API is not properly implemented.
+ * The only cases there would be no Config API are in tests and in storybook stories, and in those cases, it's unlikely that callers would rely on this subpath behavior.
+ */
+export const useBaseUrl = () => {
+  try {
+    const config = useApi(configApiRef);
+    return config.getOptionalString('app.baseUrl');
+  } catch {
+    return undefined;
+  }
+};
+
+export const useBasePath = () => {
+  // baseUrl can be specified as just a path
+  const base = 'http://sample.dev';
+  const url = useBaseUrl() ?? '/';
+  const { pathname } = new URL(url, base);
+  return trimEnd(pathname, '/');
+};

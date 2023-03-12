@@ -77,7 +77,7 @@ export const QuestionPage = () => {
       >
         <LinkButton
           className={styles.marginRight}
-          href="/qeta"
+          to="/qeta"
           startIcon={<HomeOutlined />}
         >
           Back to questions

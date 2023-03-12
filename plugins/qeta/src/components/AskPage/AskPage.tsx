@@ -1,5 +1,6 @@
 import { Content, ContentHeader, InfoCard } from '@backstage/core-components';
 import { LinkButton } from '@backstage/core-components';
+import { Grid } from '@material-ui/core';
 import React from 'react';
 
 import { AskForm } from '../AskForm/AskForm';
@@ -11,7 +12,7 @@ export const AskPage = () => {
   return (
     <Content>
       <ContentHeader title={id ? 'Edit question' : 'Ask question'}>
-        <LinkButton href="/qeta" startIcon={<HomeOutlined />}>
+        <LinkButton to="/qeta" startIcon={<HomeOutlined />}>
           Back to questions
         </LinkButton>
       </ContentHeader>

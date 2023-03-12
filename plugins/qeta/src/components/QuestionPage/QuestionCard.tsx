@@ -46,14 +46,14 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
                   <Box className={styles.questionCardActions}>
                     <Link
                       underline="none"
-                      href="#"
+                      to="#"
                       onClick={handleDeleteModalOpen}
                     >
                       Delete
                     </Link>
                     <Link
                       underline="none"
-                      href={`/qeta/questions/${question.id}/edit`}
+                      to={`/qeta/questions/${question.id}/edit`}
                     >
                       Edit
                     </Link>

@@ -12,7 +12,7 @@ export const AskQuestionButton = () => {
     >
       <LinkButton
         variant="contained"
-        href="/qeta/ask"
+        to="/qeta/ask"
         color="primary"
         startIcon={<HelpOutline />}
       >

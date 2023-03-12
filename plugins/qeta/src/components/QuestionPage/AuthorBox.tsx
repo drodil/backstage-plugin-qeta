@@ -58,7 +58,7 @@ export const AuthorBox = (props: {
           </Avatar>
         </Grid>
         <Grid item xs={10} style={{ paddingTop: 0 }}>
-          <Link href={`/qeta/users/${entity.author}`}>{name}</Link>
+          <Link to={`/qeta/users/${entity.author}`}>{name}</Link>
         </Grid>
       </Grid>
     </Box>

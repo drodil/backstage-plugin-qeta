@@ -76,7 +76,7 @@ export const QuestionList = (props: {
         </Grid>
         <Grid item>
           <LinkButton
-            href={entity ? `/qeta/ask?entity=${entity}` : '/qeta/ask'}
+            to={entity ? `/qeta/ask?entity=${entity}` : '/qeta/ask'}
             startIcon={<HelpOutline />}
             color="primary"
             variant="outlined"

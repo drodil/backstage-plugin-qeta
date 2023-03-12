@@ -22,7 +22,7 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
         <Grid container justifyContent="space-between">
           <Grid item xs={12}>
             <Typography gutterBottom variant="h5" component="div">
-              <Link href={`/qeta/questions/${question.id}`}>
+              <Link to={`/qeta/questions/${question.id}`}>
                 {question.title}
               </Link>
             </Typography>
@@ -30,7 +30,7 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
           <Grid item>
             <Typography variant="body2" display="block">
               By{' '}
-              <Link href={`/qeta/users/${question.author}`}>
+              <Link to={`/qeta/users/${question.author}`}>
                 {formatEntityName(question.author)}
               </Link>{' '}
               <RelativeTime

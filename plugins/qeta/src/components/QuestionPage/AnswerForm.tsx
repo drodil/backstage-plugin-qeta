@@ -1,6 +1,5 @@
 import { WarningPanel } from '@backstage/core-components';
-import { Typography } from '@material-ui/core';
-import { LinkButton } from '@backstage/core-components';
+import { Typography, Button } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import {
@@ -111,14 +110,14 @@ export const AnswerForm = (props: {
           )}
           name="answer"
         />
-        <LinkButton
+        <Button
           variant="outlined"
           type="submit"
           color="primary"
           className={styles.postButton}
         >
           {id ? 'Save' : 'Post'}
-        </LinkButton>
+        </Button>
       </form>
     </RequirePermission>
   );
