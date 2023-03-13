@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.5.0...v1.5.1) (2023-03-13)
+
+
+### Bug Fixes
+
+* update props for LinkButton, use basepath when navigate function is called ([a04edc1](https://github.com/drodil/backstage-plugin-qeta/commit/a04edc1b89666b4a35547fe23a69de97fb64ac62))
+* update props for LinkButton, use basepath when navigate function is called ([bb01c59](https://github.com/drodil/backstage-plugin-qeta/commit/bb01c5915097232a327129fd16f1eb1b6b02d482))
+
 ## [1.5.0](https://github.com/drodil/backstage-plugin-qeta/compare/v0.1.24...v1.5.0) (2023-03-07)
 
 
