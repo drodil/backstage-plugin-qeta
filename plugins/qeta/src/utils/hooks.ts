@@ -4,7 +4,7 @@ import {
   IdentityApi,
   identityApiRef,
   useApi,
-  configApiRef
+  configApiRef,
 } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -182,7 +182,6 @@ export const useStyles = makeStyles(theme => {
     },
   };
 });
-
 
 // Url resolving logic from https://github.com/backstage/backstage/blob/master/packages/core-components/src/components/Link/Link.tsx
 

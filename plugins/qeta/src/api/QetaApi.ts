@@ -15,6 +15,7 @@ export type GetQuestionsOptions = {
   entity?: string;
   author?: string;
   favorite?: boolean;
+  searchQuery?: string;
 
   includeEntities?: boolean;
 };

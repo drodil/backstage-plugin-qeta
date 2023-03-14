@@ -147,6 +147,19 @@ describe.each(databases.eachSupportedId())(
         expect(ret?.questions.length).toEqual(2);
       });
 
+      it('should fetch list of questions based on searchQuery', async () => {
+        await insertQuestion(question);
+        await insertQuestion({
+          ...question,
+          title: 'title2',
+          content: 'content to search for',
+        });
+        const ret = await storage.getQuestions('user1', {
+          searchQuery: 'search',
+        });
+        expect(ret?.questions.length).toEqual(1);
+      });
+
       it('should fetch questions with specific component', async () => {
         const q1 = await storage.postQuestion(
           'user1',

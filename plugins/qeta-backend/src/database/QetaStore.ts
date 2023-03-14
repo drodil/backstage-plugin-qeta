@@ -73,6 +73,7 @@ export interface QuestionsOptions {
 
   includeTrend?: boolean;
   random?: boolean;
+  searchQuery?: string;
 }
 
 export interface TagResponse {
