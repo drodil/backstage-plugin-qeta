@@ -155,9 +155,14 @@ describe.each(databases.eachSupportedId())(
           content: 'content to search for',
         });
         const ret = await storage.getQuestions('user1', {
-          searchQuery: 'search',
+          searchQuery: 'to search',
         });
         expect(ret?.questions.length).toEqual(1);
+
+        const noQuestions = await storage.getQuestions('user1', {
+          searchQuery: 'missing',
+        });
+        expect(noQuestions?.questions.length).toEqual(0);
       });
 
       it('should fetch questions with specific component', async () => {

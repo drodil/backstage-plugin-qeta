@@ -100,13 +100,17 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.searchQuery) {
-      // Only works for postgres but should scale well when used together with the GIN index created in the migration.
-      query.whereRaw(
-        `to_tsvector('english', questions.title || ' ' || questions.content) @@ websearch_to_tsquery(?)`,
-        [`${options.searchQuery}`],
-      );
-      // Works for both postgres and SQLITE but not sure how it would scale for many/large questions.
-      // query.whereRaw('LOWER(questions.content) LIKE LOWER(?)', [`%${options.searchQuery}%`]);
+      if (this.db.client.config.client === 'pg') {
+        query.whereRaw(
+          `to_tsvector('english', questions.title || ' ' || questions.content) @@ websearch_to_tsquery('english', ?)`,
+          [`${options.searchQuery}`],
+        );
+      } else {
+        query.whereRaw(
+          `LOWER(questions.title || ' ' || questions.content) LIKE LOWER(?)`,
+          [`%${options.searchQuery}%`],
+        );
+      }
     }
 
     if (options.tags) {
