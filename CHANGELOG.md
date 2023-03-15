@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.5.1...v1.6.0) (2023-03-15)
+
+
+### Features
+
+* add support for both postgres and sqlite ([69258c8](https://github.com/drodil/backstage-plugin-qeta/commit/69258c88cce7b8f42734882b4875f5531bab4313))
+* initial implementation supporting postgres ([5e1240b](https://github.com/drodil/backstage-plugin-qeta/commit/5e1240bf4d9042b085a53f109cc6e09c98522924))
+
 ### [1.5.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.5.0...v1.5.1) (2023-03-13)
 
 
