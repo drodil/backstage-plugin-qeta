@@ -1,12 +1,12 @@
 import React from 'react';
-import { Box, Divider, Typography } from '@material-ui/core';
-import { LinkButton } from '@backstage/core-components';
-import { useParams } from 'react-router-dom';
+import { Box, Container, Divider, Typography } from '@material-ui/core';
 import {
   Content,
   ContentHeader,
+  LinkButton,
   WarningPanel,
 } from '@backstage/core-components';
+import { useParams } from 'react-router-dom';
 import { useQetaApi, useStyles } from '../../utils/hooks';
 import { QuestionCard } from './QuestionCard';
 import { AnswerResponse, QuestionResponse } from '../../api';
@@ -84,24 +84,26 @@ export const QuestionPage = () => {
         </LinkButton>
         <AskQuestionButton />
       </ContentHeader>
-      <QuestionCard question={question} />
-      <Box sx={{ mt: 3, mb: 2 }}>
-        <Typography variant="h6">
-          {question.answersCount + newAnswers.length} answers
-        </Typography>
-      </Box>
-      {(question.answers ?? []).concat(newAnswers).map(a => {
-        return (
-          <>
-            <Divider className={styles.questionDivider} />
-            <Box key={a.id} sx={{ mb: 1 }}>
-              <AnswerCard answer={a} question={question} />
-            </Box>
-          </>
-        );
-      })}
-      <Divider className={styles.questionDivider} />
-      <AnswerForm question={question} onPost={onAnswerPost} />
+      <Container maxWidth="md">
+        <QuestionCard question={question} />
+        <Box sx={{ mt: 3, mb: 2 }}>
+          <Typography variant="h6">
+            {question.answersCount + newAnswers.length} answers
+          </Typography>
+        </Box>
+        {(question.answers ?? []).concat(newAnswers).map(a => {
+          return (
+            <>
+              <Divider className={styles.questionDivider} />
+              <Box key={a.id} sx={{ mb: 1 }}>
+                <AnswerCard answer={a} question={question} />
+              </Box>
+            </>
+          );
+        })}
+        <Divider className={styles.questionDivider} />
+        <AnswerForm question={question} onPost={onAnswerPost} />
+      </Container>
     </Content>
   );
 };
