@@ -55,6 +55,7 @@ interface QuestionsQuery {
   includeVotes?: boolean;
   includeEntities?: boolean;
   includeTrend?: boolean;
+  searchQuery?: string;
 }
 
 const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
@@ -79,6 +80,7 @@ const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     includeVotes: { type: 'boolean', nullable: true },
     includeEntities: { type: 'boolean', nullable: true },
     includeTrend: { type: 'boolean', nullable: true },
+    searchQuery: { type: 'string', nullable: true },
   },
   required: [],
   additionalProperties: false,

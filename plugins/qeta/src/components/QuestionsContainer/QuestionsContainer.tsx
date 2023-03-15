@@ -1,6 +1,15 @@
 import { useQetaApi } from '../../utils/hooks';
-import { Box, Collapse, Grid, Typography, Button } from '@material-ui/core';
+import {
+  Box,
+  Collapse,
+  Grid,
+  Typography,
+  Button,
+  TextField,
+} from '@material-ui/core';
+
 import React, { useEffect } from 'react';
+import useDebounce from 'react-use/lib/useDebounce';
 import { FilterKey, filterKeys, FilterPanel } from './FilterPanel';
 import { QuestionList } from './QuestionList';
 import FilterList from '@material-ui/icons/FilterList';
@@ -23,12 +32,14 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   const [questionsPerPage, setQuestionsPerPage] = React.useState(10);
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = React.useState('');
   const [filters, setFilters] = React.useState({
     order: 'desc',
     orderBy: 'created',
     noAnswers: 'false',
     noCorrectAnswer: 'false',
     noVotes: 'false',
+    searchQuery: '',
   });
 
   const onPageChange = (value: number) => {
@@ -49,6 +60,14 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
       return newValue;
     });
   };
+
+  const onSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  useDebounce(() => setFilters({ ...filters, searchQuery: searchQuery }), 400, [
+    searchQuery,
+  ]);
 
   useEffect(() => {
     let filtersApplied = false;
@@ -127,6 +146,20 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   return (
     <Box>
       {showTitle && <Typography variant="h5">{shownTitle}</Typography>}
+      <Grid container>
+        <Grid item xs={12} md={4}>
+          <TextField
+            id="search-bar"
+            fullWidth
+            onChange={onSearchQueryChange}
+            label="Search for questions"
+            variant="outlined"
+            placeholder="Search..."
+            size="small"
+            style={{ marginBottom: '5px' }}
+          />
+        </Grid>
+      </Grid>
       <Grid container justifyContent="space-between">
         <Grid item>
           <Typography variant="h6">{`${

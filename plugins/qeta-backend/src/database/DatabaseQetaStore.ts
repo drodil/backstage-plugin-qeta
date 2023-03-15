@@ -99,6 +99,20 @@ export class DatabaseQetaStore implements QetaStore {
       query.where('questions.author', '=', options.author);
     }
 
+    if (options.searchQuery) {
+      if (this.db.client.config.client === 'pg') {
+        query.whereRaw(
+          `to_tsvector('english', questions.title || ' ' || questions.content) @@ websearch_to_tsquery('english', ?)`,
+          [`${options.searchQuery}`],
+        );
+      } else {
+        query.whereRaw(
+          `LOWER(questions.title || ' ' || questions.content) LIKE LOWER(?)`,
+          [`%${options.searchQuery}%`],
+        );
+      }
+    }
+
     if (options.tags) {
       query.leftJoin(
         'question_tags',
