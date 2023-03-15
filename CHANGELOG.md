@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.6.1...v1.6.2) (2023-03-15)
+
+
+### Bug Fixes
+
+* filter updated when searchQuery not changed ([afb6334](https://github.com/drodil/backstage-plugin-qeta/commit/afb63346c24d4436e46ad850af15ccd7837de91c))
+
 ### [1.6.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.6.0...v1.6.1) (2023-03-15)
 
 
