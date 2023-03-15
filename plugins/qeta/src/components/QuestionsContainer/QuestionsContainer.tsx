@@ -65,9 +65,15 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     setSearchQuery(event.target.value);
   };
 
-  useDebounce(() => setFilters({ ...filters, searchQuery: searchQuery }), 400, [
-    searchQuery,
-  ]);
+  useDebounce(
+    () => {
+      if (filters.searchQuery !== searchQuery) {
+        setFilters({ ...filters, searchQuery: searchQuery });
+      }
+    },
+    400,
+    [searchQuery],
+  );
 
   useEffect(() => {
     let filtersApplied = false;
