@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.6.0...v1.6.1) (2023-03-15)
+
+
+### Bug Fixes
+
+* add question page inside container ([a8ffd26](https://github.com/drodil/backstage-plugin-qeta/commit/a8ffd2600d05714d92098da25486bc3fa86b98db)), closes [#44](https://github.com/drodil/backstage-plugin-qeta/issues/44)
+* contains filter for question search ([8fa9ed2](https://github.com/drodil/backstage-plugin-qeta/commit/8fa9ed2a0ba6c187dbd944c6b762fcfb799f7763))
+
 ## [1.6.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.5.1...v1.6.0) (2023-03-15)
 
 
