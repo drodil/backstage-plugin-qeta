@@ -1,5 +1,5 @@
 import { useStyles } from '../../utils/hooks';
-import { WarningPanel } from '@backstage/core-components';
+import { LinkButton, WarningPanel, Progress } from '@backstage/core-components';
 import {
   Box,
   Divider,
@@ -10,7 +10,6 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
-import { LinkButton, Progress } from '@backstage/core-components';
 import React from 'react';
 import { QuestionListItem } from './QuestionListItem';
 import { Pagination } from '@material-ui/lab';
@@ -63,7 +62,7 @@ export const QuestionList = (props: {
     );
   }
 
-  if (response.questions.length === 0) {
+  if (!response.questions || response.questions.length === 0) {
     return (
       <Grid
         container

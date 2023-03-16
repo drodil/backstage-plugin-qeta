@@ -47,7 +47,9 @@ export class QetaClient implements QetaApi {
     }
 
     const response = await this.fetchApi.fetch(url);
-
+    if (response.status === 403) {
+      return { questions: [], total: 0 };
+    }
     const data = (await response.json()) as QuestionsResponseBody;
 
     if ('errors' in data) {
@@ -66,6 +68,9 @@ export class QetaClient implements QetaApi {
     }
 
     const response = await this.fetchApi.fetch(url);
+    if (response.status === 403) {
+      return { questions: [], total: 0 };
+    }
 
     const data = (await response.json()) as QuestionsResponseBody;
 
@@ -101,6 +106,7 @@ export class QetaClient implements QetaApi {
     const response = await this.fetchApi.fetch(
       `${this.baseUrl}/api/qeta/questions/${id}`,
     );
+
     const data = (await response.json()) as QuestionResponseBody;
 
     if ('errors' in data) {
