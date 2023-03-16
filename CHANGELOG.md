@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.6.2...v1.7.0) (2023-03-16)
+
+
+### Features
+
+* allow commenting questions and answers ([b34be05](https://github.com/drodil/backstage-plugin-qeta/commit/b34be05e05a15ca6037ec382cc7ed6aebb44006d)), closes [#42](https://github.com/drodil/backstage-plugin-qeta/issues/42)
+
+
+### Bug Fixes
+
+* check for questions to be in the response ([1a0fffc](https://github.com/drodil/backstage-plugin-qeta/commit/1a0fffc7075b5dae9b14e9a7bee2849517a2ce4f))
+* flickering on questions page due to skeleton ([0ab0673](https://github.com/drodil/backstage-plugin-qeta/commit/0ab0673da91276d47ed919759328554ce7894352))
+* handle unauthorized listing properly ([6da5d08](https://github.com/drodil/backstage-plugin-qeta/commit/6da5d08cd980246801a0d2ca665107ca520366d5))
+* replace skeleton in TagsContainer ([783aa32](https://github.com/drodil/backstage-plugin-qeta/commit/783aa325538b89323d1ccd2866220c773df078a5))
+
 ### [1.6.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.6.1...v1.6.2) (2023-03-15)
 
 
