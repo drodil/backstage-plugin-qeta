@@ -8,8 +8,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useQetaApi } from '../../utils/hooks';
-import { Skeleton } from '@material-ui/lab';
-import { WarningPanel } from '@backstage/core-components';
+import { WarningPanel, Progress } from '@backstage/core-components';
 import { TagResponse } from '../../api';
 
 export const TagsContainer = () => {
@@ -21,7 +20,7 @@ export const TagsContainer = () => {
   } = useQetaApi(api => api.getTags(), []);
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Progress />;
   }
 
   if (error || response === undefined) {
