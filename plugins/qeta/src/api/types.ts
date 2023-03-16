@@ -14,6 +14,16 @@ export interface QuestionsResponse {
   total: number;
 }
 
+export interface CommentResponse {
+  id: number;
+  content: string;
+  author: string;
+  created: Date;
+  own: boolean;
+  updated?: Date;
+  updatedBy?: string;
+}
+
 export type QuestionsResponseBody = QuestionsResponse | ErrorResponse;
 
 export interface QuestionResponse {
@@ -36,6 +46,7 @@ export interface QuestionResponse {
   own?: boolean;
   answers?: AnswerResponse[];
   votes?: VoteResponse[];
+  comments: CommentResponse[];
 }
 
 export type QuestionResponseBody = QuestionResponse | ErrorResponse;
@@ -65,6 +76,7 @@ export interface AnswerResponse {
   ownVote?: number;
   own?: boolean;
   votes?: VoteResponse[];
+  comments?: CommentResponse[];
 }
 
 export type AnswerResponseBody = AnswerResponse | ErrorResponse;

@@ -27,6 +27,13 @@ export interface QetaApi {
 
   postQuestion(question: QuestionRequest): Promise<QuestionResponse>;
 
+  commentQuestion(id: number, content: string): Promise<QuestionResponse>;
+
+  deleteQuestionComment(
+    questionId: number,
+    id: number,
+  ): Promise<QuestionResponse>;
+
   getQuestion(id: string | undefined): Promise<QuestionResponse>;
 
   getTags(): Promise<TagResponse[]>;
@@ -48,6 +55,18 @@ export interface QetaApi {
   unfavoriteQuestion(id: number): Promise<QuestionResponse>;
 
   postAnswer(answer: AnswerRequest): Promise<AnswerResponseBody>;
+
+  commentAnswer(
+    questionId: number,
+    id: number,
+    content: string,
+  ): Promise<AnswerResponse>;
+
+  deleteAnswerComment(
+    questionId: number,
+    answerId: number,
+    id: number,
+  ): Promise<AnswerResponse>;
 
   deleteQuestion(questionId: number): Promise<boolean>;
 

@@ -95,6 +95,8 @@ describe.each(databases.eachSupportedId())(
       await knex('answer_votes').del();
       await knex('question_views').del();
       await knex('tags').del();
+      await knex('question_comments').del();
+      await knex('answer_comments').del();
     });
 
     describe('questions and answers database', () => {
@@ -131,6 +133,13 @@ describe.each(databases.eachSupportedId())(
         expect(ans).toBeDefined();
         expect(ans?.content).toEqual('answer');
         expect(ans?.questionId).toEqual(id);
+
+        const ans2 = await storage.commentAnswer(
+          ans?.id ?? 0,
+          'user:default/user',
+          'this is comment',
+        );
+        expect(ans2?.comments?.length).toEqual(1);
       });
 
       it('should fetch list of questions', async () => {
@@ -266,6 +275,13 @@ describe.each(databases.eachSupportedId())(
         expect(ret2?.entities?.sort()).toEqual(
           ['component:default/comp2', 'component:default/comp3'].sort(),
         );
+
+        const ret3 = await storage.commentQuestion(
+          id1.id,
+          'user:default/user',
+          'this is comment',
+        );
+        expect(ret3?.comments?.length).toEqual(1);
       });
 
       it('should update question', async () => {

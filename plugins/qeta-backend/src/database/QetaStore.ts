@@ -18,6 +18,7 @@ export interface Question {
   own?: boolean;
   votes?: Vote[];
   trend?: number;
+  comments?: Comment[];
 }
 
 export interface Answer {
@@ -33,12 +34,22 @@ export interface Answer {
   ownVote?: number;
   own?: boolean;
   votes?: Vote[];
+  comments?: Comment[];
 }
 
 export interface Vote {
   author: string;
   score: number;
   timestamp: Date;
+}
+
+export interface Comment {
+  author: string;
+  content: string;
+  created: Date;
+  own?: boolean;
+  updated?: Date;
+  updatedBy?: string;
 }
 
 export type MaybeAnswer = Answer | null;
@@ -134,6 +145,30 @@ export interface QetaStore {
   ): Promise<Question>;
 
   /**
+   * Comment question
+   * @param question_id question id
+   * @param user_ref user
+   * @param content comment content
+   */
+  commentQuestion(
+    question_id: number,
+    user_ref: string,
+    content: string,
+  ): Promise<MaybeQuestion>;
+
+  /**
+   * Delete question comment
+   * @param question_id question id
+   * @param id comment id
+   * @param user_ref username
+   */
+  deleteQuestionComment(
+    question_id: number,
+    id: number,
+    user_ref: string,
+  ): Promise<MaybeQuestion>;
+
+  /**
    * Update question
    * @param id question id
    * @param user_ref user name of the user updating question
@@ -168,6 +203,30 @@ export interface QetaStore {
     user_ref: string,
     questionId: number,
     answer: string,
+  ): Promise<MaybeAnswer>;
+
+  /**
+   * Comment answer
+   * @param answer_id answer id
+   * @param user_ref user commenting
+   * @param content comment content
+   */
+  commentAnswer(
+    answer_id: number,
+    user_ref: string,
+    content: string,
+  ): Promise<MaybeAnswer>;
+
+  /**
+   * Delete answer comment
+   * @param answer_id answer id
+   * @param id comment id
+   * @param user_ref username
+   */
+  deleteAnswerComment(
+    answer_id: number,
+    id: number,
+    user_ref: string,
   ): Promise<MaybeAnswer>;
 
   /**

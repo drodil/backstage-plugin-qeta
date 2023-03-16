@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Container,
   Grid,
   IconButton,
   ListItemIcon,
@@ -103,33 +104,35 @@ const MoreMenu = () => {
 export const HomePageContent = () => {
   return (
     <Content>
-      <Grid container spacing={3}>
-        <Grid item md={12} lg={9} xl={10}>
-          <ContentHeader title="All questions">
-            <MoreMenu />
-            <AskQuestionButton />
-          </ContentHeader>
-          <QuestionsContainer />
+      <Container maxWidth="lg">
+        <Grid container spacing={3}>
+          <Grid item md={12} lg={9} xl={10}>
+            <ContentHeader title="All questions">
+              <MoreMenu />
+              <AskQuestionButton />
+            </ContentHeader>
+            <QuestionsContainer />
+          </Grid>
+          <Grid item lg={3} xl={2}>
+            <QuestionHighlightList
+              type="hot"
+              title="Hot questions"
+              noQuestionsLabel="No questions"
+              icon={<Whatshot fontSize="small" />}
+            />
+            <QuestionHighlightList
+              type="unanswered"
+              title="Unanswered questions"
+              noQuestionsLabel="No unanswered questions"
+            />
+            <QuestionHighlightList
+              type="incorrect"
+              title="Questions without correct answer"
+              noQuestionsLabel="No questions without correct answers"
+            />
+          </Grid>
         </Grid>
-        <Grid item lg={3} xl={2}>
-          <QuestionHighlightList
-            type="hot"
-            title="Hot questions"
-            noQuestionsLabel="No questions"
-            icon={<Whatshot fontSize="small" />}
-          />
-          <QuestionHighlightList
-            type="unanswered"
-            title="Unanswered questions"
-            noQuestionsLabel="No unanswered questions"
-          />
-          <QuestionHighlightList
-            type="incorrect"
-            title="Questions without correct answer"
-            noQuestionsLabel="No questions without correct answers"
-          />
-        </Grid>
-      </Grid>
+      </Container>
     </Content>
   );
 };

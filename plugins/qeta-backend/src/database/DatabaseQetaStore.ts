@@ -67,6 +67,15 @@ export type RawTagEntity = {
   tag: string;
 };
 
+export type RawCommentEntity = {
+  id: number;
+  author: string;
+  content: string;
+  created: Date;
+  updated: Date;
+  updatedBy: string;
+};
+
 export class DatabaseQetaStore implements QetaStore {
   private constructor(private readonly db: Knex) {}
 
@@ -236,6 +245,7 @@ export class DatabaseQetaStore implements QetaStore {
       true,
       true,
       true,
+      true,
     );
   }
 
@@ -286,6 +296,65 @@ export class DatabaseQetaStore implements QetaStore {
     ]);
 
     return this.mapQuestion(questions[0], false, false, true);
+  }
+
+  async commentQuestion(
+    question_id: number,
+    user_ref: string,
+    content: string,
+  ): Promise<MaybeQuestion> {
+    await this.db
+      .insert({
+        author: user_ref,
+        content,
+        created: new Date(),
+        questionId: question_id,
+      })
+      .into('question_comments');
+
+    return await this.getQuestion(user_ref, question_id, false);
+  }
+
+  async deleteQuestionComment(
+    question_id: number,
+    id: number,
+    user_ref: string,
+  ): Promise<MaybeQuestion> {
+    await this.db('question_comments')
+      .where('id', '=', id)
+      .where('author', '=', user_ref)
+      .where('questionId', '=', question_id)
+      .delete();
+    return this.getQuestion(user_ref, question_id, false);
+  }
+
+  async commentAnswer(
+    answer_id: number,
+    user_ref: string,
+    content: string,
+  ): Promise<MaybeAnswer> {
+    await this.db
+      .insert({
+        author: user_ref,
+        content,
+        created: new Date(),
+        answerId: answer_id,
+      })
+      .into('answer_comments');
+    return this.getAnswer(answer_id);
+  }
+
+  async deleteAnswerComment(
+    answer_id: number,
+    id: number,
+    user_ref: string,
+  ): Promise<MaybeAnswer> {
+    await this.db('answer_comments')
+      .where('id', '=', id)
+      .where('author', '=', user_ref)
+      .where('answerId', '=', answer_id)
+      .delete();
+    return this.getAnswer(answer_id);
   }
 
   async updateQuestion(
@@ -358,7 +427,7 @@ export class DatabaseQetaStore implements QetaStore {
 
   async getAnswer(answerId: number): Promise<MaybeAnswer> {
     const answers = await this.getAnswerBaseQuery().where('id', '=', answerId);
-    return this.mapAnswer(answers[0], true);
+    return this.mapAnswer(answers[0], true, true);
   }
 
   async deleteAnswer(user_ref: string, id: number): Promise<boolean> {
@@ -489,13 +558,17 @@ export class DatabaseQetaStore implements QetaStore {
     addAnswers?: boolean,
     addVotes?: boolean,
     addEntities?: boolean,
+    addComments?: boolean,
   ): Promise<Question> {
     // TODO: This could maybe done with join
     const additionalInfo = await Promise.all([
       this.getQuestionTags(val.id),
-      addAnswers ? this.getQuestionAnswers(val.id, addVotes) : undefined,
+      addAnswers
+        ? this.getQuestionAnswers(val.id, addVotes, addComments)
+        : undefined,
       addVotes ? this.getQuestionVotes(val.id) : undefined,
       addEntities ? this.getQuestionEntities(val.id) : undefined,
+      addComments ? this.getQuestionComments(val.id) : undefined,
     ]);
     return {
       id: val.id,
@@ -515,14 +588,19 @@ export class DatabaseQetaStore implements QetaStore {
       votes: additionalInfo[2],
       entities: additionalInfo[3],
       trend: this.mapToInteger(val.trend),
+      comments: additionalInfo[4],
     };
   }
 
   private async mapAnswer(
     val: RawAnswerEntity,
     addVotes?: boolean,
+    addComments?: boolean,
   ): Promise<Answer> {
-    const votes = addVotes ? await this.getAnswerVotes(val.id) : undefined;
+    const additionalInfo = await Promise.all([
+      addVotes ? this.getAnswerVotes(val.id) : undefined,
+      addComments ? this.getAnswerComments(val.id) : undefined,
+    ]);
     return {
       id: val.id,
       questionId: val.questionId,
@@ -533,7 +611,8 @@ export class DatabaseQetaStore implements QetaStore {
       updated: val.updated,
       updatedBy: val.updatedBy,
       score: this.mapToInteger(val.score),
-      votes,
+      votes: additionalInfo[0],
+      comments: additionalInfo[1],
     };
   }
 
@@ -551,6 +630,22 @@ export class DatabaseQetaStore implements QetaStore {
       .where('question_tags.questionId', '=', questionId)
       .select();
     return rows.map(val => val.tag);
+  }
+
+  private async getQuestionComments(
+    questionId: number,
+  ): Promise<RawCommentEntity[]> {
+    return this.db<RawCommentEntity>('question_comments') // nosonar
+      .where('question_comments.questionId', '=', questionId)
+      .select();
+  }
+
+  private async getAnswerComments(
+    answerId: number,
+  ): Promise<RawCommentEntity[]> {
+    return this.db<RawCommentEntity>('answer_comments') // nosonar
+      .where('answer_comments.answerId', '=', answerId)
+      .select();
   }
 
   private async getQuestionEntities(questionId: number): Promise<string[]> {
@@ -596,6 +691,7 @@ export class DatabaseQetaStore implements QetaStore {
   private async getQuestionAnswers(
     questionId: number,
     addVotes?: boolean,
+    addComments?: boolean,
   ): Promise<Answer[]> {
     const rows = await this.getAnswerBaseQuery()
       .where('questionId', '=', questionId)
@@ -603,7 +699,7 @@ export class DatabaseQetaStore implements QetaStore {
       .orderBy('answers.created');
     return await Promise.all(
       rows.map(async val => {
-        return this.mapAnswer(val, addVotes);
+        return this.mapAnswer(val, addVotes, addComments);
       }),
     );
   }

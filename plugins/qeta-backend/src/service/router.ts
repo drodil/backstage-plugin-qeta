@@ -55,6 +55,7 @@ interface QuestionsQuery {
   includeVotes?: boolean;
   includeEntities?: boolean;
   includeTrend?: boolean;
+  includeComments?: boolean;
   searchQuery?: string;
 }
 
@@ -80,6 +81,7 @@ const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     includeVotes: { type: 'boolean', nullable: true },
     includeEntities: { type: 'boolean', nullable: true },
     includeTrend: { type: 'boolean', nullable: true },
+    includeComments: { type: 'boolean', nullable: true },
     searchQuery: { type: 'string', nullable: true },
   },
   required: [],
@@ -118,6 +120,19 @@ const PostAnswerSchema: JSONSchemaType<AnswerQuestion> = {
   additionalProperties: false,
 };
 
+interface Comment {
+  content: string;
+}
+
+const CommentSchema: JSONSchemaType<Comment> = {
+  type: 'object',
+  properties: {
+    content: { type: 'string', minLength: 1 },
+  },
+  required: ['content'],
+  additionalProperties: false,
+};
+
 export async function createRouter({
   logger,
   database,
@@ -149,6 +164,9 @@ export async function createRouter({
     }
     resp.ownVote = resp.votes?.find(v => v.author === username)?.score;
     resp.own = resp.author === username;
+    resp.comments = resp.comments?.map(c => {
+      return { ...c, own: c.author === username };
+    });
   };
 
   const checkPermissions = async (
@@ -256,6 +274,64 @@ export async function createRouter({
     // Response
     response.send(question);
   });
+
+  // POST /questions/:id/comments
+  router.post(`/questions/:id/comments`, async (request, response) => {
+    // Validation
+    // Act
+    const username = await getUsername(request);
+    await checkPermissions(request, qetaReadPermission);
+    const validateRequestBody = ajv.compile(CommentSchema);
+    if (!validateRequestBody(request.body)) {
+      response
+        .status(400)
+        .send({ errors: validateRequestBody.errors, type: 'body' });
+      return;
+    }
+    const question = await database.commentQuestion(
+      Number.parseInt(request.params.id, 10),
+      username,
+      request.body.content,
+    );
+
+    if (question === null) {
+      response.sendStatus(404);
+      return;
+    }
+
+    mapAdditionalFields(username, question);
+    question.answers?.map(a => mapAdditionalFields(username, a));
+
+    // Response
+    response.send(question);
+  });
+
+  // DELETE /questions/:id/comments/:commentId
+  router.delete(
+    `/questions/:id/comments/:commentId`,
+    async (request, response) => {
+      // Validation
+      // Act
+      const username = await getUsername(request);
+      await checkPermissions(request, qetaReadPermission);
+      const question = await database.deleteQuestionComment(
+        Number.parseInt(request.params.id, 10),
+        Number.parseInt(request.params.commentId, 10),
+        username,
+      );
+
+      if (question === null) {
+        response.sendStatus(404);
+        return;
+      }
+
+      mapAdditionalFields(username, question);
+      question.answers?.map(a => mapAdditionalFields(username, a));
+
+      // Response
+      response.send(question);
+    },
+  );
 
   // POST /questions
   router.post(`/questions`, async (request, response) => {
@@ -386,6 +462,66 @@ export async function createRouter({
     response.status(201);
     response.send(answer);
   });
+
+  // POST /questions/:id/answers/:answerId/comments
+  router.post(
+    `/questions/:id/answers/:answerId/comments`,
+    async (request, response) => {
+      // Validation
+      const validateRequestBody = ajv.compile(CommentSchema);
+      if (!validateRequestBody(request.body)) {
+        response
+          .status(400)
+          .send({ errors: validateRequestBody.errors, type: 'body' });
+        return;
+      }
+
+      const username = await getUsername(request);
+      // Act
+      const answer = await database.commentAnswer(
+        Number.parseInt(request.params.answerId, 10),
+        username,
+        request.body.content,
+      );
+
+      if (!answer) {
+        response.sendStatus(404);
+        return;
+      }
+
+      mapAdditionalFields(username, answer);
+
+      // Response
+      response.status(201);
+      response.send(answer);
+    },
+  );
+
+  // DELETE /questions/:id/answers/:answerId/comments/:commentId
+  router.delete(
+    `/questions/:id/answers/:answerId/comments/:commentId`,
+    async (request, response) => {
+      // Validation
+      const username = await getUsername(request);
+      // Act
+      const answer = await database.deleteAnswerComment(
+        Number.parseInt(request.params.answerId, 10),
+        Number.parseInt(request.params.commentId, 10),
+        username,
+      );
+
+      if (!answer) {
+        response.sendStatus(404);
+        return;
+      }
+
+      mapAdditionalFields(username, answer);
+
+      // Response
+      response.status(201);
+      response.send(answer);
+    },
+  );
 
   // GET /questions/:id/answers/:answerId
   router.get(`/questions/:id/answers/:answerId`, async (request, response) => {

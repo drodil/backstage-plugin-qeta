@@ -57,6 +57,10 @@ describe('createRouter', () => {
   let app: express.Express;
 
   const qetaStore: jest.Mocked<QetaStore> = {
+    commentAnswer: jest.fn(),
+    commentQuestion: jest.fn(),
+    deleteAnswerComment: jest.fn(),
+    deleteQuestionComment: jest.fn(),
     getQuestions: jest.fn(),
     getQuestion: jest.fn(),
     getQuestionByAnswerId: jest.fn(),

@@ -70,21 +70,22 @@ export const QuestionPage = () => {
 
   return (
     <Content>
-      <ContentHeader
-        title={question.title}
-        // @ts-ignore
-        description={getDescription(question)}
-      >
-        <LinkButton
-          className={styles.marginRight}
-          to="/qeta"
-          startIcon={<HomeOutlined />}
+      <Container maxWidth="lg">
+        <ContentHeader
+          title={question.title}
+          // @ts-ignore
+          description={getDescription(question)}
         >
-          Back to questions
-        </LinkButton>
-        <AskQuestionButton />
-      </ContentHeader>
-      <Container maxWidth="md">
+          <LinkButton
+            className={styles.marginRight}
+            to="/qeta"
+            startIcon={<HomeOutlined />}
+          >
+            Back to questions
+          </LinkButton>
+          <AskQuestionButton />
+        </ContentHeader>
+
         <QuestionCard question={question} />
         <Box sx={{ mt: 3, mb: 2 }}>
           <Typography variant="h6">

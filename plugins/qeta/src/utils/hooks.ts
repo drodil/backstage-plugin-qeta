@@ -1,10 +1,10 @@
 import { QetaApi, qetaApiRef } from '../api';
 import { useAsync } from 'react-use';
 import {
+  configApiRef,
   IdentityApi,
   identityApiRef,
   useApi,
-  configApiRef,
 } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -88,6 +88,9 @@ export const useStyles = makeStyles(theme => {
       },
       '& h1, h2, h3, h4, h5, h6': {
         marginTop: 0,
+      },
+      '&.inline': {
+        display: 'inline-block',
       },
     },
     successColor: {

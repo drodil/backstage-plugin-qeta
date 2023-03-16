@@ -99,6 +99,46 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
+  async commentQuestion(
+    id: number,
+    content: string,
+  ): Promise<QuestionResponse> {
+    const response = await this.fetchApi.fetch(
+      `${this.baseUrl}/api/qeta/questions/${id}/comments`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ content }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    const data = (await response.json()) as QuestionResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async deleteQuestionComment(
+    questionId: number,
+    id: number,
+  ): Promise<QuestionResponse> {
+    const response = await this.fetchApi.fetch(
+      `${this.baseUrl}/api/qeta/questions/${questionId}/comments/${id}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    const data = (await response.json()) as QuestionResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
   async getQuestion(id?: string): Promise<QuestionResponse> {
     if (!id) {
       throw new QetaError('Invalid id provided', undefined);
@@ -192,6 +232,48 @@ export class QetaClient implements QetaApi {
         method: 'POST',
         body: JSON.stringify({ answer: answer.answer }),
         headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    const data = (await response.json()) as AnswerResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async commentAnswer(
+    questionId: number,
+    id: number,
+    content: string,
+  ): Promise<AnswerResponse> {
+    const response = await this.fetchApi.fetch(
+      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${id}/comments`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ content }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    const data = (await response.json()) as AnswerResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async deleteAnswerComment(
+    questionId: number,
+    answerId: number,
+    id: number,
+  ): Promise<AnswerResponse> {
+    const response = await this.fetchApi.fetch(
+      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${answerId}/comments/${id}`,
+      {
+        method: 'DELETE',
       },
     );
     const data = (await response.json()) as AnswerResponseBody;
