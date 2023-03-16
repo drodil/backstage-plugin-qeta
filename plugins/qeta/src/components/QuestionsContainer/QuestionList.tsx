@@ -1,5 +1,5 @@
 import { useStyles } from '../../utils/hooks';
-import { LinkButton, WarningPanel } from '@backstage/core-components';
+import { LinkButton, WarningPanel, Progress } from '@backstage/core-components';
 import {
   Box,
   Divider,
@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { QuestionListItem } from './QuestionListItem';
-import { Pagination, Skeleton } from '@material-ui/lab';
+import { Pagination } from '@material-ui/lab';
 import { QuestionsResponse } from '../../api';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 
@@ -51,7 +51,7 @@ export const QuestionList = (props: {
   };
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Progress />;
   }
 
   if (error || response === undefined) {
