@@ -1,7 +1,7 @@
 import { WarningPanel } from '@backstage/core-components';
-import { Typography, Button } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import React, { useEffect } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   AnswerRequest,
   AnswerResponse,
@@ -25,6 +25,7 @@ export const AnswerForm = (props: {
 }) => {
   const { question, onPost, id } = props;
   const [values, setValues] = React.useState(getDefaultValues(question.id));
+  const analytics = useAnalytics();
   const [error, setError] = React.useState(false);
   const qetaApi = useApi(qetaApiRef);
   const styles = useStyles();
@@ -48,6 +49,7 @@ export const AnswerForm = (props: {
             setError(true);
             return;
           }
+          analytics.captureEvent('edit', 'answer');
           reset();
           onPost(a);
         })
@@ -62,6 +64,7 @@ export const AnswerForm = (props: {
           setError(true);
           return;
         }
+        analytics.captureEvent('post', 'answer');
         reset();
         onPost(a);
       })

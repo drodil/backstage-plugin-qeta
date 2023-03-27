@@ -3,7 +3,7 @@ import { Box, Button, Grid, TextField } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import { AnswerResponse, qetaApiRef, QuestionResponse } from '../../api';
 import { Controller, useForm } from 'react-hook-form';
-import { useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
 
 export const CommentSection = (props: {
@@ -16,6 +16,7 @@ export const CommentSection = (props: {
   answer?: AnswerResponse;
 }) => {
   const { answer, question, onCommentPost, onCommentDelete } = props;
+  const analytics = useAnalytics();
   const qetaApi = useApi(qetaApiRef);
   const [formVisible, setFormVisible] = useState(false);
   const {
@@ -29,6 +30,7 @@ export const CommentSection = (props: {
     if (answer) {
       qetaApi.commentAnswer(question.id, answer.id, data.content).then(a => {
         setFormVisible(false);
+        analytics.captureEvent('comment', 'answer');
         reset();
         onCommentPost(question, a);
       });
@@ -37,6 +39,7 @@ export const CommentSection = (props: {
 
     qetaApi.commentQuestion(question.id, data.content).then(q => {
       setFormVisible(false);
+      analytics.captureEvent('comment', 'question');
       reset();
       onCommentPost(q);
     });

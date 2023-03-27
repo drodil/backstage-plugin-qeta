@@ -10,13 +10,14 @@ import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
 import React from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 
 export const VoteButtons = (props: {
   entity: QuestionResponse | AnswerResponse;
   question?: QuestionResponse;
 }) => {
   const [ownVote, setOwnVote] = React.useState(props.entity.ownVote ?? 0);
+  const analytics = useAnalytics();
   const isCorrectAnswer =
     'questionId' in props.entity ? props.entity.correct : false;
   const [correct, setCorrect] = React.useState(isCorrectAnswer);
@@ -32,11 +33,13 @@ export const VoteButtons = (props: {
     if (isQuestion) {
       qetaApi.voteQuestionUp(entity.id).then(response => {
         setOwnVote(1);
+        analytics.captureEvent('vote', 'question', { value: 1 });
         setEntity(response);
       });
     } else if ('questionId' in entity) {
       qetaApi.voteAnswerUp(entity.questionId, entity.id).then(response => {
         setOwnVote(1);
+        analytics.captureEvent('vote', 'answer', { value: 1 });
         setEntity(response);
       });
     }
@@ -46,11 +49,13 @@ export const VoteButtons = (props: {
     if (isQuestion) {
       qetaApi.voteQuestionDown(entity.id).then(response => {
         setOwnVote(-1);
+        analytics.captureEvent('vote', 'question', { value: -1 });
         setEntity(response);
       });
     } else if ('questionId' in entity) {
       qetaApi.voteAnswerDown(entity.questionId, entity.id).then(response => {
         setOwnVote(-1);
+        analytics.captureEvent('vote', 'answer', { value: -1 });
         setEntity(response);
       });
     }

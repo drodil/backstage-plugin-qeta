@@ -1,4 +1,4 @@
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { Button, TextField } from '@material-ui/core';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo } from 'react';
@@ -79,6 +79,7 @@ export const AskForm = (props: {
   const { id, entity, onPost } = props;
   const base_path = useBasePath();
   const navigate = useNavigate();
+  const analytics = useAnalytics();
   const [entityRef, setEntityRef] = React.useState(entity);
   const [values, setValues] = React.useState(getDefaultValues());
   const [error, setError] = React.useState(false);
@@ -122,6 +123,7 @@ export const AskForm = (props: {
             return;
           }
           reset();
+          analytics.captureEvent('edit', 'question');
           if (onPost) {
             onPost(q);
           } else {
@@ -138,6 +140,7 @@ export const AskForm = (props: {
           setError(true);
           return;
         }
+        analytics.captureEvent('post', 'question');
         reset();
         navigate(`${base_path}/qeta/questions/${q.id}`);
       })
