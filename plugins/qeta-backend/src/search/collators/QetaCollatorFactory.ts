@@ -13,19 +13,6 @@ export type QetaCollatorFactoryOptions = {
   database: PluginDatabaseManager;
 };
 
-export type QetaDocument = IndexableDocument & {
-  tags?: string[];
-  entities?: string[];
-  author: string;
-  views: number;
-  score: number;
-  answersCount: number;
-  created: Date;
-  updatedBy?: string;
-  updated?: Date;
-  answers?: string[];
-};
-
 export class QetaCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'qeta';
   private readonly logger: Logger;
@@ -44,7 +31,7 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
     return Readable.from(this.execute());
   }
 
-  async *execute(): AsyncGenerator<QetaDocument> {
+  async *execute(): AsyncGenerator<IndexableDocument> {
     this.logger.info('Executing QetaCollator');
     const db = await DatabaseQetaStore.create({
       database: this.database,
@@ -53,16 +40,22 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
 
     const questions = await db.getQuestions('', {
       includeAnswers: true,
-      includeEntities: true,
     });
 
     for (const question of questions.questions) {
       yield {
-        ...question,
+        title: question.title,
         text: question.content,
         location: `/qeta/questions/${question.id}`,
-        answers: question.answers?.map(a => a.content),
       };
+
+      for (const answer of question.answers ?? []) {
+        yield {
+          title: `Answer for ${question.title}`,
+          text: answer.content,
+          location: `/qeta/questions/${question.id}`,
+        };
+      }
     }
   }
 }
