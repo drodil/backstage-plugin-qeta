@@ -1,5 +1,5 @@
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { TextField, Button } from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -10,7 +10,7 @@ import {
   QuestionRequest,
   QuestionResponse,
 } from '../../api';
-import { useStyles, useBasePath } from '../../utils/hooks';
+import { useBasePath, useStyles } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
@@ -51,17 +51,18 @@ const getValues = async (
   }
 
   const question = await api.getQuestion(id);
-  const entities = question.entities
-    ? await catalogApi.getEntitiesByRefs({
-        entityRefs: question.entities,
-        fields: [
-          'kind',
-          'metadata.name',
-          'metadata.namespace',
-          'metadata.title',
-        ],
-      })
-    : [];
+  const entities =
+    question.entities && question.entities.length > 0
+      ? await catalogApi.getEntitiesByRefs({
+          entityRefs: question.entities,
+          fields: [
+            'kind',
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+          ],
+        })
+      : [];
   return {
     title: question.title,
     content: question.content,

@@ -101,13 +101,12 @@ export const useStyles = makeStyles(theme => {
       marginBottom: theme.spacing(2),
     },
     questionCard: {
-      paddingTop: theme.spacing(1),
+      marginBottom: theme.spacing(1),
     },
     questionCardVote: {
       textAlign: 'center',
       width: '32px',
-      marginTop: '10px',
-      marginRight: '20px',
+      marginRight: '26px',
       display: 'inline-block',
       verticalAlign: 'top',
     },

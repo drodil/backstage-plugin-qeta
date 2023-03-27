@@ -10,6 +10,7 @@ import { DeleteModal } from '../DeleteModal/DeleteModal';
 import { FavoriteButton } from './FavoriteButton';
 import { AuthorBox } from './AuthorBox';
 import { TagsAndEntities } from './TagsAndEntities';
+import 'react-mde/lib/styles/css/react-mde-preview.css';
 import { CommentSection } from '../CommentSection/CommentSection';
 
 export const QuestionCard = (props: { question: QuestionResponse }) => {
@@ -25,8 +26,8 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
 
   return (
     <>
-      <Card variant="outlined">
-        <CardContent className={styles.questionCard}>
+      <Card variant="outlined" className={styles.questionCard}>
+        <CardContent>
           <div className={styles.questionCardVote}>
             <VoteButtons entity={questionEntity} />
             <FavoriteButton entity={questionEntity} />

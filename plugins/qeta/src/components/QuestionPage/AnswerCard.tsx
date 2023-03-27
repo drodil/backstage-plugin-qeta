@@ -38,8 +38,8 @@ export const AnswerCard = (props: {
 
   return (
     <>
-      <Card id={`a${answer.id}`}>
-        <CardContent className={styles.questionCard}>
+      <Card id={`a${answer.id}`} className={styles.questionCard}>
+        <CardContent>
           <div className={styles.questionCardVote}>
             <VoteButtons entity={answerEntity} question={question} />
           </div>

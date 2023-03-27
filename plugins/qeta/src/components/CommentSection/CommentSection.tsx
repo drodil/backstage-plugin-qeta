@@ -42,10 +42,8 @@ export const CommentSection = (props: {
     });
   };
 
-  const entity = answer ?? question;
-
   return (
-    <Box marginTop={entity.comments?.length === 0 ? 2 : 0} marginLeft={8}>
+    <Box marginLeft={9}>
       <CommentList
         question={question}
         answer={answer}
