@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.7.0...v1.8.0) (2023-03-27)
+
+
+### Features
+
+* support analytics from Q&A ([72fff17](https://github.com/drodil/backstage-plugin-qeta/commit/72fff1763a254d30f5dedbc3e43020e9f50e17ad)), closes [#51](https://github.com/drodil/backstage-plugin-qeta/issues/51)
+
+
+### Bug Fixes
+
+* change search collator to return only IndexableDocuments ([4642297](https://github.com/drodil/backstage-plugin-qeta/commit/46422973edec7bd7eb4fbef6aa2e1e5052d62cc8)), closes [#52](https://github.com/drodil/backstage-plugin-qeta/issues/52)
+
 ## [1.7.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.6.2...v1.7.0) (2023-03-16)
 
 
