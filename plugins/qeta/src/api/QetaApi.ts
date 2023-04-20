@@ -9,15 +9,19 @@ import {
 } from './types';
 
 export type GetQuestionsOptions = {
-  limit?: number;
-  offset?: number;
-  tags?: string[];
-  entity?: string;
+  noCorrectAnswer: string;
+  offset: number;
+  includeEntities: boolean;
   author?: string;
+  orderBy: string;
+  tags?: string[];
+  noVotes: string;
+  noAnswers: string;
+  searchQuery: string;
+  limit: number;
   favorite?: boolean;
-  searchQuery?: string;
-
-  includeEntities?: boolean;
+  entity?: string;
+  order: string;
 };
 
 export interface QetaApi {

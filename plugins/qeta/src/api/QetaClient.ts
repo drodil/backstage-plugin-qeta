@@ -1,4 +1,4 @@
-import { GetQuestionsOptions, QetaApi } from './QetaApi';
+import { QetaApi } from './QetaApi';
 import { ConfigApi, createApiRef, FetchApi } from '@backstage/core-plugin-api';
 import { CustomErrorBase } from '@backstage/errors';
 import {
@@ -38,7 +38,21 @@ export class QetaClient implements QetaApi {
     this.baseUrl = options.configApi.getString('backend.baseUrl');
   }
 
-  async getQuestions(options: GetQuestionsOptions): Promise<QuestionsResponse> {
+  async getQuestions(options: {
+    noCorrectAnswer: string;
+    offset: number;
+    includeEntities: boolean;
+    author: string | undefined;
+    orderBy: string;
+    tags: string[] | undefined;
+    noVotes: string;
+    noAnswers: string;
+    searchQuery: string;
+    limit: number;
+    favorite: undefined | boolean;
+    entity: string | undefined;
+    order: string;
+  }): Promise<QuestionsResponse> {
     const query = this.getQueryParameters(options).toString();
 
     let url = `${this.baseUrl}/api/qeta/questions`;
