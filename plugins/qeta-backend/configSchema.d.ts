@@ -6,5 +6,14 @@ export interface Config {
      * @visibility backend
      */
     allowAnonymous: boolean;
+    /**
+     * Configuration about images attachments storage
+     *
+     * @visibility backend
+     */
+    storage: {
+      type?: string;
+      folder?: string;
+    };
   };
 }

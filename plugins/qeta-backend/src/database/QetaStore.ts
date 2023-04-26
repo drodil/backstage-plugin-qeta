@@ -91,6 +91,17 @@ export interface TagResponse {
   tag: string;
   questionsCount: number;
 }
+export interface Attachment {
+  id: number;
+  locationType: string;
+  locationURI: string;
+  binaryImage: Buffer;
+  question_id: string;
+  answer_id: string;
+  creator: string;
+  created: Date;
+}
+
 /**
  * Interface for fetching and modifying Q&A data
  */
@@ -321,4 +332,11 @@ export interface QetaStore {
    * Returns all used tags for questions
    */
   getTags(): Promise<TagResponse[]>;
+
+  postAttachment(
+    locationType: string,
+    binaryImage: Buffer,
+  ): Promise<Attachment[]>;
+
+  getAttachment(uuid: number): Promise<Attachment[]>;
 }

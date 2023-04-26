@@ -1,17 +1,13 @@
-import { errorHandler } from '@backstage/backend-common';
+import fs from 'fs';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import {
-  MaybeAnswer,
-  MaybeQuestion,
-  QetaStore,
-  QuestionsOptions,
-} from '../database/QetaStore';
-import { AuthenticationError, NotAllowedError } from '@backstage/errors';
-import Ajv, { JSONSchemaType } from 'ajv';
+import bodyParser from 'body-parser';
 import addFormats from 'ajv-formats';
+import Ajv, { JSONSchemaType } from 'ajv';
+import { Logger } from 'winston';
 import { Response } from 'express-serve-static-core';
+import { errorHandler } from '@backstage/backend-common';
+import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import {
   getBearerTokenFromAuthorizationHeader,
@@ -22,13 +18,20 @@ import {
   BasicPermission,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import {
   qetaCreateAnswerPermission,
   qetaCreateQuestionPermission,
   qetaReadPermission,
-  qetaPermissions,
 } from '@drodil/backstage-plugin-qeta-common';
+
+import {
+  MaybeAnswer,
+  MaybeQuestion,
+  QetaStore,
+  QuestionsOptions,
+} from '../database/QetaStore';
+
+import { multerUploaderMiddleware } from '../upload/multer';
 
 export interface RouterOptions {
   identity: IdentityApi;
@@ -144,6 +147,7 @@ export async function createRouter({
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
+  router.use(bodyParser.urlencoded({ extended: true }));
 
   const getUsername = async (req: Request<unknown>): Promise<string> => {
     const user = await identity.getIdentity({ request: req });
@@ -171,10 +175,6 @@ export async function createRouter({
     });
   };
 
-  const permissionIntegrationRouter = createPermissionIntegrationRouter({
-    permissions: qetaPermissions,
-  });
-
   const checkPermissions = async (
     request: Request<unknown>,
     permission: BasicPermission,
@@ -201,8 +201,6 @@ export async function createRouter({
     logger.info('PONG!');
     response.json({ status: 'ok' });
   });
-
-  router.use(permissionIntegrationRouter);
 
   // GET /questions
   router.get(`/questions`, async (request, response) => {
@@ -742,6 +740,52 @@ export async function createRouter({
   router.get('/tags', async (_request, response) => {
     const tags = await database.getTags();
     response.send(tags);
+  });
+
+  // POST /attachments
+  router.post(
+    '/attachments',
+    multerUploaderMiddleware(config, 'image'),
+    async (request, response) => {
+      const backendBaseUrl = config.getString('backend.baseUrl');
+      const qetaUrl = `${backendBaseUrl}/api/qeta/attachments`;
+
+      const storageType =
+        config.getOptionalString('qeta.storage.type') || 'database';
+
+      const imageBuffer = await fs.promises.readFile(`${request.file?.path}`);
+
+      const attachments = await database.postAttachment(
+        storageType,
+        imageBuffer,
+      );
+
+      const attachmentID = attachments[0].id;
+      const imageURL = `${qetaUrl}/${attachmentID}`;
+
+      response.json({
+        attachmentID: attachmentID,
+        imageURL: imageURL,
+      });
+    },
+  );
+
+  // GET /attachments/:id
+  router.get('/attachments/:id', async (request, response) => {
+    const storageImagesFolderType =
+      config.getOptionalString('qeta.storage.folder') ||
+      '/tmp/backstage-qeta-images';
+
+    const { id } = request.params;
+
+    const attachment = await database.getAttachment(Number(id));
+    const imageBuffer = attachment[0].binaryImage;
+
+    const imageName = `${storageImagesFolderType}/image-${id}-${Date.now()}`;
+
+    fs.writeFileSync(imageName, imageBuffer);
+
+    return response.sendFile(imageName);
   });
 
   router.use(errorHandler());

@@ -6,9 +6,16 @@ The following configuration options are available for your app-config.yaml:
 qeta:
   allowAnonymous: true
   entityKinds: ['Component']
+  storage:
+    disabled: true
+    type: database
+    folder: /tmp/my-attachments
 ```
 
 The configuration values are:
 
 - allowAnonymous, boolean, allows anonymous users to post questions and answers. If enabled all users without authentication will be named after guest user. Required for local development.
 - entityKinds, string array, what kind of catalog entities can be attached to a question. Default is ['Component']
+- storage.type, string, what kind of storage is used to upload images used in questions. Default is `database`
+- storage.folder, string, what folder is used to storage temporarily images to convert and send to frontend. Default is `/tmp/backstage-qeta-images`
+- storage.disabled, boolean, If for some specific scenario you want to disable the upload of images. Default `false`
