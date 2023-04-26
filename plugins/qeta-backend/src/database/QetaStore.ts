@@ -93,13 +93,25 @@ export interface TagResponse {
 }
 export interface Attachment {
   id: number;
+  uuid: string;
   locationType: string;
-  locationURI: string;
+  locationUri: string;
+  path: string;
   binaryImage: Buffer;
-  question_id: string;
-  answer_id: string;
+  mimeType: string;
+  extension: string;
   creator: string;
   created: Date;
+}
+export interface AttachmentParameters {
+  uuid: string;
+  locationType: string;
+  locationUri: string;
+  extension: string;
+  mimeType: string;
+  path?: string;
+  binaryImage?: Buffer;
+  creator?: string;
 }
 
 /**
@@ -333,10 +345,16 @@ export interface QetaStore {
    */
   getTags(): Promise<TagResponse[]>;
 
-  postAttachment(
-    locationType: string,
-    binaryImage: Buffer,
-  ): Promise<Attachment[]>;
+  postAttachment({
+    uuid,
+    locationType,
+    locationUri,
+    extension,
+    mimeType,
+    binaryImage,
+    path,
+    creator,
+  }: AttachmentParameters): Promise<Attachment>;
 
-  getAttachment(uuid: number): Promise<Attachment[]>;
+  getAttachment(uuid: string): Promise<Attachment | undefined>;
 }

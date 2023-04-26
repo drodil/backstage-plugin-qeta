@@ -17,6 +17,11 @@ export interface Config {
        * @visibility frontend
        */
       disabled?: boolean;
+      /**
+       * Sets the maximum allowed size of upload files in bytes. Default: 2500000
+       * @visibility frontend
+       */
+      maxSizeImage?: number;
     };
   };
 }

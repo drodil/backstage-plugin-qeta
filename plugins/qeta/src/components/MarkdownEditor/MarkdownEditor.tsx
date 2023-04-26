@@ -8,8 +8,22 @@ import 'react-mde/lib/styles/css/react-mde.css';
 import 'react-mde/lib/styles/css/react-mde-editor.css';
 import 'react-mde/lib/styles/css/react-mde-toolbar.css';
 import { useStyles } from '../../utils/hooks';
+import FileType from 'file-type';
+import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
 
-export const submitImage = async (config: Config, file: Blob) => {
+const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
+const SUPPORTED_FILES_TYPES = [
+  'image/png',
+  'image/jpg',
+  'image/jpeg',
+  'image/gif',
+];
+
+export const submitImage = async (
+  config: Config,
+  file: Blob,
+  erroAlert: ErrorApi,
+) => {
   const backendBaseUrl = config.getString('backend.baseUrl');
   const qetaUrl = `${backendBaseUrl}/api/qeta/attachments`;
   const formData = new FormData();
@@ -25,20 +39,44 @@ export const submitImage = async (config: Config, file: Blob) => {
 
   if (response.status >= 400) {
     const responseError = await response.text();
+    const error = new Error(
+      `Failed to upload image question : ${responseError}`,
+    );
+    erroAlert.post(error);
     throw new Error(`Failed to upload image question : ${responseError}`);
   }
   return response.json();
 };
 
-const imageUpload = (config: Config) => {
+const imageUpload = (config: Config, erroAlert: ErrorApi) => {
+  const maxSizeImage =
+    config?.getOptionalNumber('qeta.storage.maxSizeImage') ||
+    DEFAULT_IMAGE_SIZE_LIMIT;
+
   // eslint-disable-next-line func-names
   return async function* (data: ArrayBuffer) {
-    const { imageURL } = await submitImage(
+    const fileType = await FileType.fromBuffer(data);
+
+    if (fileType && !SUPPORTED_FILES_TYPES.includes(fileType?.mime)) {
+      erroAlert.post(new Error(`Image type (${fileType.mime}) not supported.`));
+      return false;
+    }
+
+    if (data.byteLength > maxSizeImage) {
+      erroAlert.post(
+        new Error(
+          `Image larger than ${maxSizeImage} bytes try to make it smaller before uploading.`,
+        ),
+      );
+      return false;
+    }
+    const { locationUri } = await submitImage(
       config,
       new Blob([data], { type: 'text/plain' }),
+      erroAlert,
     );
 
-    yield imageURL;
+    yield locationUri;
 
     return true;
   };
@@ -57,6 +95,8 @@ export const MarkdownEditor = (props: {
     'write',
   );
   const styles = useStyles();
+  const errorApi = useApi(errorApiRef);
+
   const isUploadDisabled =
     config?.getOptionalBoolean('qeta.storage.disabled') || false;
 
@@ -91,7 +131,7 @@ export const MarkdownEditor = (props: {
         isUploadDisabled
           ? undefined
           : {
-              saveImage: imageUpload(config),
+              saveImage: imageUpload(config, errorApi),
             }
       }
     />

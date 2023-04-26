@@ -1,8 +1,12 @@
-import fs from 'fs';
+import * as fs from 'fs';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import bodyParser from 'body-parser';
 import addFormats from 'ajv-formats';
+import multiparty from 'multiparty';
+import FileType from 'file-type';
+import FilesystemStoreEngine from '../upload/filesystem';
+import DatabaseStoreEngine from '../upload/database';
 import Ajv, { JSONSchemaType } from 'ajv';
 import { Logger } from 'winston';
 import { Response } from 'express-serve-static-core';
@@ -25,13 +29,14 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 
 import {
+  Attachment,
   MaybeAnswer,
   MaybeQuestion,
   QetaStore,
   QuestionsOptions,
 } from '../database/QetaStore';
 
-import { multerUploaderMiddleware } from '../upload/multer';
+import { File } from '../upload/types';
 
 export interface RouterOptions {
   identity: IdentityApi;
@@ -743,49 +748,73 @@ export async function createRouter({
   });
 
   // POST /attachments
-  router.post(
-    '/attachments',
-    multerUploaderMiddleware(config, 'image'),
-    async (request, response) => {
-      const backendBaseUrl = config.getString('backend.baseUrl');
-      const qetaUrl = `${backendBaseUrl}/api/qeta/attachments`;
+  router.post('/attachments', async (request, response) => {
+    let attachment: Attachment;
 
-      const storageType =
-        config.getOptionalString('qeta.storage.type') || 'database';
+    const storageType =
+      config.getOptionalString('qeta.storage.type') || 'filesystem';
 
-      const imageBuffer = await fs.promises.readFile(`${request.file?.path}`);
+    const form = new multiparty.Form();
+    const fileSystemEngine = FilesystemStoreEngine({ config, database });
+    const databaseEngine = DatabaseStoreEngine({ config, database });
 
-      const attachments = await database.postAttachment(
-        storageType,
-        imageBuffer,
-      );
+    form.parse(request, async (err, _fields, files) => {
+      if (err) {
+        console.log(err);
+        response.status(500).send(err);
+        return;
+      }
 
-      const attachmentID = attachments[0].id;
-      const imageURL = `${qetaUrl}/${attachmentID}`;
+      const fileRequest = files.image[0];
 
-      response.json({
-        attachmentID: attachmentID,
-        imageURL: imageURL,
-      });
-    },
-  );
+      const fileBuffer = await fs.promises.readFile(`${fileRequest?.path}`);
+      const mimeType = await FileType.fromBuffer(fileBuffer);
+
+      const file: File = {
+        name: fileRequest.fieldName,
+        path: fileRequest.path,
+        buffer: fileBuffer,
+        mimeType: mimeType?.mime.toString() || '',
+        ext: mimeType?.ext.toString() || '',
+        size: fileBuffer.byteLength || 0,
+      };
+
+      if (storageType === 'database') {
+        attachment = await databaseEngine.handleFile(file);
+        response.json(attachment);
+      } else {
+        attachment = await fileSystemEngine.handleFile(file);
+        response.json(attachment);
+      }
+    });
+  });
 
   // GET /attachments/:id
-  router.get('/attachments/:id', async (request, response) => {
-    const storageImagesFolderType =
-      config.getOptionalString('qeta.storage.folder') ||
-      '/tmp/backstage-qeta-images';
+  router.get('/attachments/:uuid', async (request, response) => {
+    const { uuid } = request.params;
 
-    const { id } = request.params;
+    const attachment = await database.getAttachment(uuid);
 
-    const attachment = await database.getAttachment(Number(id));
-    const imageBuffer = attachment[0].binaryImage;
+    if (attachment) {
+      let imageBuffer: Buffer;
+      if (attachment.locationType === 'database') {
+        imageBuffer = attachment.binaryImage;
+      } else {
+        imageBuffer = await fs.promises.readFile(attachment.path);
+      }
 
-    const imageName = `${storageImagesFolderType}/image-${id}-${Date.now()}`;
+      if (!imageBuffer) {
+        response.status(500).send('Image buffer is undefined');
+      }
 
-    fs.writeFileSync(imageName, imageBuffer);
+      response.writeHead(200, {
+        'Content-Type': attachment.mimeType,
+        'Content-Length': imageBuffer ? imageBuffer.byteLength : '',
+      });
 
-    return response.sendFile(imageName);
+      return response.end(imageBuffer);
+    }
+    return response.status(404).send('Image not found');
   });
 
   router.use(errorHandler());

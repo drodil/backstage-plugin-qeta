@@ -14,7 +14,7 @@ backend:
       host: localhost
       port: 5432
       user: postgres
-      password: postgres
+      password: root
     knexConfig:
       pool:
         min: 15
@@ -42,6 +42,7 @@ backend:
 qeta:
   storage:
     type: database
+    # maxSizeImage: 2500000
   allowAnonymous: true
   entityKinds: 
     - Component

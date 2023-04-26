@@ -78,6 +78,10 @@ export const useStyles = makeStyles(theme => {
         color: theme.palette.text.primary,
         outline: 'none',
       },
+      '& .image-tip': {
+        color: theme.palette.text.primary,
+        backgroundColor: 'initial',
+      },
     },
     markdownEditorError: {
       border: `1px solid ${theme.palette.error.main} !important`,

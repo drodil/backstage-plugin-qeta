@@ -6,6 +6,7 @@ import { Knex } from 'knex';
 import {
   Answer,
   Attachment,
+  AttachmentParameters,
   MaybeAnswer,
   MaybeQuestion,
   QetaStore,
@@ -545,28 +546,42 @@ export class DatabaseQetaStore implements QetaStore {
     });
   }
 
-  async postAttachment(
-    locationType: string,
-    binaryImage: Buffer,
-  ): Promise<Attachment[]> {
+  async postAttachment({
+    uuid,
+    locationType,
+    locationUri,
+    extension,
+    mimeType,
+    binaryImage,
+    path,
+    creator,
+  }: AttachmentParameters): Promise<Attachment> {
     const attachments: Attachment[] = await this.db
       .insert(
         {
-          locationType,
-          binaryImage,
+          uuid: uuid,
+          locationType: locationType,
+          locationUri: locationUri,
+          extension: extension,
+          mimeType: mimeType,
+          path: path,
+          binaryImage: binaryImage,
+          creator: creator,
           created: new Date(),
         },
-        ['id'],
+        ['id', 'uuid', 'locationUri', 'locationType'],
       )
       .into('question_attachments');
 
-    return attachments;
+    return attachments[0];
   }
 
-  async getAttachment(uuid: number): Promise<Attachment[]> {
-    return this.db<Attachment>('question_attachments')
-      .where('id', '=', uuid)
-      .select();
+  async getAttachment(uuid: string): Promise<Attachment | undefined> {
+    const attachment = await this.db<Attachment>('question_attachments')
+      .where('uuid', '=', uuid)
+      .first();
+
+    return attachment;
   }
 
   /**

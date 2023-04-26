@@ -241,6 +241,7 @@ export const AskForm = (props: {
             height={400}
             error={'content' in errors}
             placeholder="Your question"
+            config={configApi}
           />
         )}
         name="content"

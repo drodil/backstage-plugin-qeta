@@ -53,6 +53,7 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
+    "file-type": "16.5.4",
     "lodash": "^4.17.21",
     "react-hook-form": "^7.41.0",
     "react-mde": "^11.5.0",
