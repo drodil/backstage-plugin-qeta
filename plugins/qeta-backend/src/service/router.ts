@@ -22,9 +22,11 @@ import {
   BasicPermission,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import {
   qetaCreateAnswerPermission,
   qetaCreateQuestionPermission,
+  qetaPermissions,
   qetaReadPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 
@@ -180,6 +182,10 @@ export async function createRouter({
     });
   };
 
+  const permissionIntegrationRouter = createPermissionIntegrationRouter({
+    permissions: qetaPermissions,
+  });
+
   const checkPermissions = async (
     request: Request<unknown>,
     permission: BasicPermission,
@@ -206,6 +212,8 @@ export async function createRouter({
     logger.info('PONG!');
     response.json({ status: 'ok' });
   });
+
+  router.use(permissionIntegrationRouter);
 
   // GET /questions
   router.get(`/questions`, async (request, response) => {
