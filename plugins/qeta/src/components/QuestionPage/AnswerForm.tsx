@@ -1,7 +1,7 @@
 import { WarningPanel } from '@backstage/core-components';
 import { Button, Typography } from '@material-ui/core';
 import React, { useEffect } from 'react';
-import { useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   AnswerRequest,
   AnswerResponse,
@@ -29,6 +29,7 @@ export const AnswerForm = (props: {
   const [error, setError] = React.useState(false);
   const qetaApi = useApi(qetaApiRef);
   const styles = useStyles();
+  const configApi = useApi(configApiRef);
 
   const {
     handleSubmit,
@@ -109,6 +110,7 @@ export const AnswerForm = (props: {
               onChange={onChange}
               height={200}
               error={'answer' in errors}
+              config={configApi}
             />
           )}
           name="answer"

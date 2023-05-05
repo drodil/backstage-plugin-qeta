@@ -793,9 +793,7 @@ export async function createRouter({
       const mimeType = await FileType.fromBuffer(fileBuffer);
 
       if (mimeType && !supportedFilesTypes.includes(mimeType.mime)) {
-        response
-          .status(400)
-          .send(new Error(`Image type (${mimeType}) not supported.`));
+        response.status(400).send(`Image type (${mimeType}) not supported.`);
         return;
       }
 
@@ -803,9 +801,7 @@ export async function createRouter({
         response
           .status(400)
           .send(
-            new Error(
-              `Image larger than ${maxSizeImage} bytes try to make it smaller before uploading.`,
-            ),
+            `Image larger than ${maxSizeImage} bytes try to make it smaller before uploading.`,
           );
         return;
       }

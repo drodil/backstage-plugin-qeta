@@ -78,6 +78,8 @@ describe('createRouter', () => {
     updateAnswer: jest.fn(),
     favoriteQuestion: jest.fn(),
     unfavoriteQuestion: jest.fn(),
+    postAttachment: jest.fn(),
+    getAttachment: jest.fn(),
   };
 
   const getIdentityMock = jest

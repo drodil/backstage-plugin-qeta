@@ -31,12 +31,16 @@ export const submitImage = async (
 
   if (response.status >= 400) {
     const responseError = await response.text();
+
+    console.log(responseError);
+
     const error = new Error(
-      `Failed to upload image question: ${responseError}`,
+      `[${response.status}] Failed to upload image question: ${responseError}`,
     );
     erroAlert.post(error);
-    throw new Error(`Failed to upload image question : ${responseError}`);
+    return undefined;
   }
+
   return response.json();
 };
 
@@ -47,13 +51,13 @@ const imageUpload = (config: Config, erroAlert: ErrorApi) => {
 
     const mimeType = fileType ? fileType.mime : 'text/plain';
 
-    const { locationUri } = await submitImage(
+    const image = await submitImage(
       config,
       new Blob([data], { type: mimeType }),
       erroAlert,
     );
 
-    yield locationUri;
+    yield image ? image.locationUri : '';
 
     return true;
   };
