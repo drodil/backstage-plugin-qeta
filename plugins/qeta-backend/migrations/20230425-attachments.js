@@ -2,7 +2,7 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
-  await knex.schema.createTable('question_attachments', table => {
+  await knex.schema.createTable('attachments', table => {
     table.increments('id').primary();
     table.string('uuid').notNullable();
     table.string('locationType').notNullable();
@@ -20,5 +20,5 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  await knex.schema.dropTable('question_attachments');
+  await knex.schema.dropTable('attachments');
 };

@@ -571,13 +571,13 @@ export class DatabaseQetaStore implements QetaStore {
         },
         ['id', 'uuid', 'locationUri', 'locationType'],
       )
-      .into('question_attachments');
+      .into('attachments');
 
     return attachments[0];
   }
 
   async getAttachment(uuid: string): Promise<Attachment | undefined> {
-    const attachment = await this.db<Attachment>('question_attachments')
+    const attachment = await this.db<Attachment>('attachments')
       .where('uuid', '=', uuid)
       .first();
 

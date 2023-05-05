@@ -48,6 +48,14 @@ export interface RouterOptions {
   permissions?: PermissionEvaluator;
 }
 
+const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
+const SUPPORTED_FILES_TYPES = [
+  'image/png',
+  'image/jpg',
+  'image/jpeg',
+  'image/gif',
+];
+
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
@@ -761,6 +769,12 @@ export async function createRouter({
 
     const storageType =
       config.getOptionalString('qeta.storage.type') || 'filesystem';
+    const maxSizeImage =
+      config?.getOptionalNumber('qeta.storage.maxSizeImage') ||
+      DEFAULT_IMAGE_SIZE_LIMIT;
+    const supportedFilesTypes =
+      config?.getOptionalStringArray('qeta.storage.allowedFilesTypes') ||
+      SUPPORTED_FILES_TYPES;
 
     const form = new multiparty.Form();
     const fileSystemEngine = FilesystemStoreEngine({ config, database });
@@ -777,6 +791,24 @@ export async function createRouter({
 
       const fileBuffer = await fs.promises.readFile(`${fileRequest?.path}`);
       const mimeType = await FileType.fromBuffer(fileBuffer);
+
+      if (mimeType && !supportedFilesTypes.includes(mimeType.mime)) {
+        response
+          .status(400)
+          .send(new Error(`Image type (${mimeType}) not supported.`));
+        return;
+      }
+
+      if (fileBuffer.byteLength > maxSizeImage) {
+        response
+          .status(400)
+          .send(
+            new Error(
+              `Image larger than ${maxSizeImage} bytes try to make it smaller before uploading.`,
+            ),
+          );
+        return;
+      }
 
       const file: File = {
         name: fileRequest.fieldName,

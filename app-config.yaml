@@ -43,6 +43,7 @@ qeta:
   storage:
     type: database
     # maxSizeImage: 2500000
+    # allowedFilesTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/gif']
   allowAnonymous: true
   entityKinds: 
     - Component

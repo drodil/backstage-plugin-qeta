@@ -14,6 +14,8 @@ export interface Config {
     storage: {
       type?: string;
       folder?: string;
+      maxSizeImage?: number;
+      allowedFilesTypes?: string[];
     };
   };
 }
