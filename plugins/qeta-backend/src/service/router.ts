@@ -782,27 +782,31 @@ export async function createRouter({
 
     form.parse(request, async (err, _fields, files) => {
       if (err) {
-        console.log(err);
-        response.status(500).send(err);
+        response.status(500).json({ errors: [{ message: err.message }] });
         return;
       }
 
       const fileRequest = files.image[0];
-
       const fileBuffer = await fs.promises.readFile(`${fileRequest?.path}`);
       const mimeType = await FileType.fromBuffer(fileBuffer);
 
       if (mimeType && !supportedFilesTypes.includes(mimeType.mime)) {
-        response.status(400).send(`Image type (${mimeType}) not supported.`);
+        response.status(400).json({
+          errors: [
+            { message: `Attachment type (${mimeType.mime}) not supported.` },
+          ],
+        });
         return;
       }
 
       if (fileBuffer.byteLength > maxSizeImage) {
-        response
-          .status(400)
-          .send(
-            `Image larger than ${maxSizeImage} bytes try to make it smaller before uploading.`,
-          );
+        response.status(400).json({
+          errors: [
+            {
+              message: `Attachment is larger than ${maxSizeImage} bytes. Try to make it smaller before uploading.`,
+            },
+          ],
+        });
         return;
       }
 
@@ -840,7 +844,7 @@ export async function createRouter({
       }
 
       if (!imageBuffer) {
-        response.status(500).send('Image buffer is undefined');
+        response.status(500).send('Attachment buffer is undefined');
       }
 
       response.writeHead(200, {
@@ -850,7 +854,7 @@ export async function createRouter({
 
       return response.end(imageBuffer);
     }
-    return response.status(404).send('Image not found');
+    return response.status(404).send('Attachment not found');
   });
 
   router.use(errorHandler());

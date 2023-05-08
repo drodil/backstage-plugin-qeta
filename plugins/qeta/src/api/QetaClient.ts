@@ -5,6 +5,7 @@ import {
   AnswerRequest,
   AnswerResponse,
   AnswerResponseBody,
+  AttachmentResponseBody,
   QuestionRequest,
   QuestionResponse,
   QuestionResponseBody,
@@ -443,6 +444,21 @@ export class QetaClient implements QetaApi {
     }
 
     return data;
+  }
+
+  async postAttachment(file: Blob): Promise<AttachmentResponseBody> {
+    const qetaUrl = `${this.baseUrl}/api/qeta/attachments`;
+    const formData = new FormData();
+
+    formData.append('image', file);
+
+    const requestOptions = {
+      method: 'POST',
+      body: formData,
+    };
+
+    const response = await fetch(qetaUrl, requestOptions);
+    return (await response.json()) as AttachmentResponseBody;
   }
 
   private getQueryParameters(params: any): URLSearchParams {

@@ -9,59 +9,8 @@ import 'react-mde/lib/styles/css/react-mde-editor.css';
 import 'react-mde/lib/styles/css/react-mde-toolbar.css';
 import { useStyles } from '../../utils/hooks';
 import FileType from 'file-type';
-import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
-
-export const submitImage = async (
-  config: Config,
-  file: Blob,
-  erroAlert: ErrorApi,
-) => {
-  const backendBaseUrl = config.getString('backend.baseUrl');
-  const qetaUrl = `${backendBaseUrl}/api/qeta/attachments`;
-  const formData = new FormData();
-
-  formData.append('image', file);
-
-  const requestOptions = {
-    method: 'POST',
-    body: formData,
-  };
-
-  const response = await fetch(qetaUrl, requestOptions);
-
-  if (response.status >= 400) {
-    const responseError = await response.text();
-
-    console.log(responseError);
-
-    const error = new Error(
-      `[${response.status}] Failed to upload image question: ${responseError}`,
-    );
-    erroAlert.post(error);
-    return undefined;
-  }
-
-  return response.json();
-};
-
-const imageUpload = (config: Config, erroAlert: ErrorApi) => {
-  // eslint-disable-next-line func-names
-  return async function* (data: ArrayBuffer) {
-    const fileType = await FileType.fromBuffer(data);
-
-    const mimeType = fileType ? fileType.mime : 'text/plain';
-
-    const image = await submitImage(
-      config,
-      new Blob([data], { type: mimeType }),
-      erroAlert,
-    );
-
-    yield image ? image.locationUri : '';
-
-    return true;
-  };
-};
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { qetaApiRef } from '../../api';
 
 export const MarkdownEditor = (props: {
   config: Config;
@@ -77,6 +26,28 @@ export const MarkdownEditor = (props: {
   );
   const styles = useStyles();
   const errorApi = useApi(errorApiRef);
+  const qetaApi = useApi(qetaApiRef);
+
+  const imageUpload = () => {
+    // eslint-disable-next-line func-names
+    return async function* (data: ArrayBuffer) {
+      const fileType = await FileType.fromBuffer(data);
+
+      const mimeType = fileType ? fileType.mime : 'text/plain';
+      const attachment = await qetaApi.postAttachment(
+        new Blob([data], { type: mimeType }),
+      );
+      if ('errors' in attachment) {
+        errorApi.post({
+          name: 'Upload failed',
+          message: attachment.errors?.map(e => e.message).join(', '),
+        });
+        return false;
+      }
+      yield attachment.locationUri;
+      return true;
+    };
+  };
 
   const isUploadDisabled =
     config?.getOptionalBoolean('qeta.storage.disabled') || false;
@@ -112,7 +83,7 @@ export const MarkdownEditor = (props: {
         isUploadDisabled
           ? undefined
           : {
-              saveImage: imageUpload(config, errorApi),
+              saveImage: imageUpload(),
             }
       }
     />

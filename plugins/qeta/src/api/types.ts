@@ -91,3 +91,18 @@ export interface TagResponse {
   tag: string;
   questionsCount: number;
 }
+
+export interface AttachmentResponse {
+  id: number;
+  uuid: string;
+  locationType: string;
+  locationUri: string;
+  path: string;
+  binaryImage: Buffer;
+  mimeType: string;
+  extension: string;
+  creator: string;
+  created: Date;
+}
+
+export type AttachmentResponseBody = AttachmentResponse | ErrorResponse;

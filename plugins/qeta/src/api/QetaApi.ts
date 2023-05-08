@@ -2,6 +2,7 @@ import {
   AnswerRequest,
   AnswerResponse,
   AnswerResponseBody,
+  AttachmentResponseBody,
   QuestionRequest,
   QuestionResponse,
   QuestionsResponse,
@@ -59,6 +60,8 @@ export interface QetaApi {
   unfavoriteQuestion(id: number): Promise<QuestionResponse>;
 
   postAnswer(answer: AnswerRequest): Promise<AnswerResponseBody>;
+
+  postAttachment(file: Blob): Promise<AttachmentResponseBody>;
 
   commentAnswer(
     questionId: number,
