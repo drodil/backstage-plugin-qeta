@@ -14,7 +14,6 @@ class FilesystemStoreEngine {
   database: QetaStore;
   backendBaseUrl: string;
   qetaUrl: string;
-  storageType: string;
   folder: string;
 
   constructor(opts: Options) {
@@ -22,8 +21,6 @@ class FilesystemStoreEngine {
     this.database = opts.database;
     this.backendBaseUrl = this.config.getString('backend.baseUrl');
     this.qetaUrl = `${this.backendBaseUrl}/api/qeta/attachments`;
-    this.storageType =
-      this.config.getOptionalString('qeta.storage.type') || 'filesystem';
     this.folder =
       this.config.getOptionalString('qeta.storage.folder') ||
       '/tmp/backstage-qeta-images';
@@ -45,7 +42,7 @@ class FilesystemStoreEngine {
 
     const attachment = await this.database.postAttachment({
       uuid: imageUuid,
-      locationType: this.storageType,
+      locationType: 'filesystem',
       locationUri: imageURI,
       extension: file.ext,
       path: newPath,

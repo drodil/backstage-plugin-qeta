@@ -13,15 +13,12 @@ class DatabaseStoreEngine {
   database: QetaStore;
   backendBaseUrl: string;
   qetaUrl: string;
-  storageType: string;
 
   constructor(opts: Options) {
     this.config = opts.config;
     this.database = opts.database;
     this.backendBaseUrl = this.config.getString('backend.baseUrl');
     this.qetaUrl = `${this.backendBaseUrl}/api/qeta/attachments`;
-    this.storageType =
-      this.config.getOptionalString('qeta.storage.type') || 'filesystem';
   }
 
   handleFile = async (file: File) => {
@@ -30,7 +27,7 @@ class DatabaseStoreEngine {
 
     const attachment = await this.database.postAttachment({
       uuid: imageUuid,
-      locationType: this.storageType,
+      locationType: 'database',
       locationUri: locationUri,
       extension: file.ext,
       mimeType: file.mimeType,
