@@ -33,7 +33,7 @@ export const QetaPage = qetaPlugin.provide(
 );
 
 export const QuestionTableCard = qetaPlugin.provide(
-  createCardExtension<{ toolId?: string }>({
+  createCardExtension<{ rowsPerPage?: number; quickFilter?: string }>({
     name: 'QuestionsTableCard',
     title: 'Q&A',
     description: 'Shows Q&A questions',
