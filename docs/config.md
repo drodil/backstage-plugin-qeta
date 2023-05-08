@@ -19,5 +19,5 @@ The configuration values are:
 - storage.type, string, what kind of storage is used to upload images used in questions. Default is `database`
 - storage.maxSizeImage, number, the maximum allowed size of upload files in bytes. Default is `2500000`
 - storage.folder, string, what folder is used to storage temporarily images to convert and send to frontend. Default is `/tmp/backstage-qeta-images`
-- storage.allowedFilesTypes, string[], A list of allowed upload formats. Default: `png,jpg,jpeg,gif`
+- storage.allowedMimeTypes, string[], A list of allowed upload formats. Default: `png,jpg,jpeg,gif`
 - storage.disabled, boolean, If for some specific scenario you want to disable the upload of images. Default `false`

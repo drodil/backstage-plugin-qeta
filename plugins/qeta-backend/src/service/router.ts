@@ -49,7 +49,7 @@ export interface RouterOptions {
 }
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
-const SUPPORTED_FILES_TYPES = [
+const DEFAULT_MIME_TYPES = [
   'image/png',
   'image/jpg',
   'image/jpeg',
@@ -776,13 +776,13 @@ export async function createRouter({
     let attachment: Attachment;
 
     const storageType =
-      config.getOptionalString('qeta.storage.type') || 'filesystem';
+      config?.getOptionalString('qeta.storage.type') || 'database';
     const maxSizeImage =
       config?.getOptionalNumber('qeta.storage.maxSizeImage') ||
       DEFAULT_IMAGE_SIZE_LIMIT;
     const supportedFilesTypes =
-      config?.getOptionalStringArray('qeta.storage.allowedFilesTypes') ||
-      SUPPORTED_FILES_TYPES;
+      config?.getOptionalStringArray('qeta.storage.allowedMimeTypes') ||
+      DEFAULT_MIME_TYPES;
 
     const form = new multiparty.Form();
     const fileSystemEngine = FilesystemStoreEngine({ config, database });

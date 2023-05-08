@@ -11,7 +11,7 @@ export interface Config {
      * If desire to disable image upload.
      * @visibility frontend
      */
-    storage: {
+    storage?: {
       /**
        * If desire to disable image upload.
        * @visibility frontend

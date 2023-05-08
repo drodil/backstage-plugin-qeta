@@ -5,17 +5,17 @@ export interface Config {
      *
      * @visibility backend
      */
-    allowAnonymous: boolean;
+    allowAnonymous?: boolean;
     /**
      * Configuration about images attachments storage
      *
      * @visibility backend
      */
-    storage: {
-      type?: string;
+    storage?: {
+      type?: 'database' | 'filesystem';
       folder?: string;
       maxSizeImage?: number;
-      allowedFilesTypes?: string[];
+      allowedMimeTypes?: string[];
     };
   };
 }
