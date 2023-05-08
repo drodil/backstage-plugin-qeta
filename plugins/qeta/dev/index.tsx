@@ -45,7 +45,7 @@ createDevApp()
   })
   .addPage({
     element: <TablePage />,
-    title: 'Table card',
+    title: 'Table',
     path: '/table',
   })
   .addPage({
