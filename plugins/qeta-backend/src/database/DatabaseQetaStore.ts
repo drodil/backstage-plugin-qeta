@@ -422,7 +422,6 @@ export class DatabaseQetaStore implements QetaStore {
       .into('answers')
       .returning('id');
 
-    console.log(images);
     if (images && images.length > 0) {
       await this.db('attachments')
         .whereIn('id', images)

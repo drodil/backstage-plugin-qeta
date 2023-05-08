@@ -207,6 +207,7 @@ describe('createRouter', () => {
         'content',
         ['java'],
         ['component:default/comp1'],
+        undefined,
       );
       expect(response.status).toEqual(201);
       expect(response.body).toEqual({
@@ -291,6 +292,7 @@ describe('createRouter', () => {
         'user',
         1,
         'content',
+        undefined,
       );
       expect(response.status).toEqual(201);
       expect(response.body).toEqual({
