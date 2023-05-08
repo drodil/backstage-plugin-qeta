@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.3](https://github.com/drodil/backstage-plugin-qeta/compare/v1.9.2...v1.9.3) (2023-05-08)
+
+
+### Bug Fixes
+
+* correct attachment location type ([8d13e08](https://github.com/drodil/backstage-plugin-qeta/commit/8d13e08e59c829866824da9ded913cb9d270a5b5))
+
 ### [1.9.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.9.1...v1.9.2) (2023-05-08)
 
 
