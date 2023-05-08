@@ -1,17 +1,17 @@
-import { errorHandler } from '@backstage/backend-common';
+import * as fs from 'fs';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import {
-  MaybeAnswer,
-  MaybeQuestion,
-  QetaStore,
-  QuestionsOptions,
-} from '../database/QetaStore';
-import { AuthenticationError, NotAllowedError } from '@backstage/errors';
-import Ajv, { JSONSchemaType } from 'ajv';
+import bodyParser from 'body-parser';
 import addFormats from 'ajv-formats';
+import multiparty from 'multiparty';
+import FileType from 'file-type';
+import FilesystemStoreEngine from '../upload/filesystem';
+import DatabaseStoreEngine from '../upload/database';
+import Ajv, { JSONSchemaType } from 'ajv';
+import { Logger } from 'winston';
 import { Response } from 'express-serve-static-core';
+import { errorHandler } from '@backstage/backend-common';
+import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import {
   getBearerTokenFromAuthorizationHeader,
@@ -26,9 +26,19 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 import {
   qetaCreateAnswerPermission,
   qetaCreateQuestionPermission,
-  qetaReadPermission,
   qetaPermissions,
+  qetaReadPermission,
 } from '@drodil/backstage-plugin-qeta-common';
+
+import {
+  Attachment,
+  MaybeAnswer,
+  MaybeQuestion,
+  QetaStore,
+  QuestionsOptions,
+} from '../database/QetaStore';
+
+import { File } from '../upload/types';
 
 export interface RouterOptions {
   identity: IdentityApi;
@@ -37,6 +47,14 @@ export interface RouterOptions {
   config: Config;
   permissions?: PermissionEvaluator;
 }
+
+const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
+const SUPPORTED_FILES_TYPES = [
+  'image/png',
+  'image/jpg',
+  'image/jpeg',
+  'image/gif',
+];
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -144,6 +162,7 @@ export async function createRouter({
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
+  router.use(bodyParser.urlencoded({ extended: true }));
 
   const getUsername = async (req: Request<unknown>): Promise<string> => {
     const user = await identity.getIdentity({ request: req });
@@ -742,6 +761,96 @@ export async function createRouter({
   router.get('/tags', async (_request, response) => {
     const tags = await database.getTags();
     response.send(tags);
+  });
+
+  // POST /attachments
+  router.post('/attachments', async (request, response) => {
+    let attachment: Attachment;
+
+    const storageType =
+      config.getOptionalString('qeta.storage.type') || 'filesystem';
+    const maxSizeImage =
+      config?.getOptionalNumber('qeta.storage.maxSizeImage') ||
+      DEFAULT_IMAGE_SIZE_LIMIT;
+    const supportedFilesTypes =
+      config?.getOptionalStringArray('qeta.storage.allowedFilesTypes') ||
+      SUPPORTED_FILES_TYPES;
+
+    const form = new multiparty.Form();
+    const fileSystemEngine = FilesystemStoreEngine({ config, database });
+    const databaseEngine = DatabaseStoreEngine({ config, database });
+
+    form.parse(request, async (err, _fields, files) => {
+      if (err) {
+        console.log(err);
+        response.status(500).send(err);
+        return;
+      }
+
+      const fileRequest = files.image[0];
+
+      const fileBuffer = await fs.promises.readFile(`${fileRequest?.path}`);
+      const mimeType = await FileType.fromBuffer(fileBuffer);
+
+      if (mimeType && !supportedFilesTypes.includes(mimeType.mime)) {
+        response.status(400).send(`Image type (${mimeType}) not supported.`);
+        return;
+      }
+
+      if (fileBuffer.byteLength > maxSizeImage) {
+        response
+          .status(400)
+          .send(
+            `Image larger than ${maxSizeImage} bytes try to make it smaller before uploading.`,
+          );
+        return;
+      }
+
+      const file: File = {
+        name: fileRequest.fieldName,
+        path: fileRequest.path,
+        buffer: fileBuffer,
+        mimeType: mimeType?.mime.toString() || '',
+        ext: mimeType?.ext.toString() || '',
+        size: fileBuffer.byteLength || 0,
+      };
+
+      if (storageType === 'database') {
+        attachment = await databaseEngine.handleFile(file);
+        response.json(attachment);
+      } else {
+        attachment = await fileSystemEngine.handleFile(file);
+        response.json(attachment);
+      }
+    });
+  });
+
+  // GET /attachments/:id
+  router.get('/attachments/:uuid', async (request, response) => {
+    const { uuid } = request.params;
+
+    const attachment = await database.getAttachment(uuid);
+
+    if (attachment) {
+      let imageBuffer: Buffer;
+      if (attachment.locationType === 'database') {
+        imageBuffer = attachment.binaryImage;
+      } else {
+        imageBuffer = await fs.promises.readFile(attachment.path);
+      }
+
+      if (!imageBuffer) {
+        response.status(500).send('Image buffer is undefined');
+      }
+
+      response.writeHead(200, {
+        'Content-Type': attachment.mimeType,
+        'Content-Length': imageBuffer ? imageBuffer.byteLength : '',
+      });
+
+      return response.end(imageBuffer);
+    }
+    return response.status(404).send('Image not found');
   });
 
   router.use(errorHandler());

@@ -91,6 +91,29 @@ export interface TagResponse {
   tag: string;
   questionsCount: number;
 }
+export interface Attachment {
+  id: number;
+  uuid: string;
+  locationType: string;
+  locationUri: string;
+  path: string;
+  binaryImage: Buffer;
+  mimeType: string;
+  extension: string;
+  creator: string;
+  created: Date;
+}
+export interface AttachmentParameters {
+  uuid: string;
+  locationType: string;
+  locationUri: string;
+  extension: string;
+  mimeType: string;
+  path?: string;
+  binaryImage?: Buffer;
+  creator?: string;
+}
+
 /**
  * Interface for fetching and modifying Q&A data
  */
@@ -321,4 +344,17 @@ export interface QetaStore {
    * Returns all used tags for questions
    */
   getTags(): Promise<TagResponse[]>;
+
+  postAttachment({
+    uuid,
+    locationType,
+    locationUri,
+    extension,
+    mimeType,
+    binaryImage,
+    path,
+    creator,
+  }: AttachmentParameters): Promise<Attachment>;
+
+  getAttachment(uuid: string): Promise<Attachment | undefined>;
 }

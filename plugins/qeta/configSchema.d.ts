@@ -7,5 +7,16 @@ export interface Config {
      * @visibility frontend
      */
     entityKinds?: string[];
+    /**
+     * If desire to disable image upload.
+     * @visibility frontend
+     */
+    storage: {
+      /**
+       * If desire to disable image upload.
+       * @visibility frontend
+       */
+      disabled?: boolean;
+    };
   };
 }
