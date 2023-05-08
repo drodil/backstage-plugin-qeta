@@ -1,3 +1,3 @@
-export { qetaPlugin, QetaPage } from './plugin';
+export { qetaPlugin, QetaPage, QuestionTableCard } from './plugin';
 export * from './components';
 export * from './api';
