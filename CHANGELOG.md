@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.4](https://github.com/drodil/backstage-plugin-qeta/compare/v1.9.3...v1.9.4) (2023-05-08)
+
+
+### Bug Fixes
+
+* correct extension parameters ([27b4c3b](https://github.com/drodil/backstage-plugin-qeta/commit/27b4c3be8c3be6d893061905b0db8f2e696d79f7))
+* remove resolutions for react ([1461139](https://github.com/drodil/backstage-plugin-qeta/commit/1461139b23dcaea350a1568bca29a268b83ebcb2))
+
 ### [1.9.3](https://github.com/drodil/backstage-plugin-qeta/compare/v1.9.2...v1.9.3) (2023-05-08)
 
 
