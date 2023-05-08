@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.8.0...v1.9.0) (2023-05-08)
+
+
+### Features
+
+* add questions table component and homepage card ([0ad71b9](https://github.com/drodil/backstage-plugin-qeta/commit/0ad71b9a08bec243cdf58b0b466eb6e1c2815dbb)), closes [#54](https://github.com/drodil/backstage-plugin-qeta/issues/54)
+* automatic cleanup of question/answer attachments ([be447b9](https://github.com/drodil/backstage-plugin-qeta/commit/be447b9b7b09ae50ca90110ebe02ccc9ea704f64))
+
+
+### Bug Fixes
+
+* Add missing createPermissionIntegrationRouter call ([1379a01](https://github.com/drodil/backstage-plugin-qeta/commit/1379a01cebf66a4643c3c50dea38c3b1ae07a854))
+* add react types as resolutions ([d972168](https://github.com/drodil/backstage-plugin-qeta/commit/d972168210a40b85f54b9748ac86c71e580c54d2))
+* add react types to devDeps ([6eaeb60](https://github.com/drodil/backstage-plugin-qeta/commit/6eaeb60d51d3eb40fd22348aaf5ff80f0c17c14e))
+* **local:** docker compose config ([3cdf861](https://github.com/drodil/backstage-plugin-qeta/commit/3cdf861e84f4e61e49511dfc69895a75cc734eb6))
+* move back to TS 4.7 ([c2a3bdd](https://github.com/drodil/backstage-plugin-qeta/commit/c2a3bdd796e66cd1aa45fc28f33e83794dc6835e))
+
 ## [1.8.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.7.0...v1.8.0) (2023-03-27)
 
 
