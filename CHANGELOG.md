@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.9.0...v1.9.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* make Q&A config optional ([bc2bb6a](https://github.com/drodil/backstage-plugin-qeta/commit/bc2bb6ac17f49919edd43f0e6114006edc3434ed))
+
 ## [1.9.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.8.0...v1.9.0) (2023-05-08)
 
 
