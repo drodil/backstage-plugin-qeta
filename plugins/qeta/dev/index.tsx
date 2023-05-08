@@ -11,6 +11,8 @@ import {
 import { rootRouteRef } from '../src/routes';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { CatalogClient } from '@backstage/catalog-client';
+import { TablePage } from './TablePage';
+import { HomePage } from './HomePage';
 
 const apiFactories: AnyApiFactory[] = [
   createApiFactory({
@@ -40,5 +42,15 @@ createDevApp()
     ),
     title: 'Root Page',
     path: '/qeta',
+  })
+  .addPage({
+    element: <TablePage />,
+    title: 'Table card',
+    path: '/table',
+  })
+  .addPage({
+    element: <HomePage />,
+    title: 'Home Page',
+    path: '/home',
   })
   .render();
