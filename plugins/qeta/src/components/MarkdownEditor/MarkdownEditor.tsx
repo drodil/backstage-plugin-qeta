@@ -19,6 +19,7 @@ export const MarkdownEditor = (props: {
   height: number;
   error?: boolean;
   placeholder?: string;
+  onImageUpload: (imageId: number) => void;
 }) => {
   const { config, value, onChange, height, error, placeholder } = props;
   const [selectedTab, setSelectedTab] = React.useState<'write' | 'preview'>(
@@ -40,10 +41,11 @@ export const MarkdownEditor = (props: {
       if ('errors' in attachment) {
         errorApi.post({
           name: 'Upload failed',
-          message: attachment.errors?.map(e => e.message).join(', '),
+          message: attachment.errors?.map(e => e.message).join(', ') ?? '',
         });
         return false;
       }
+      props.onImageUpload(attachment.id);
       yield attachment.locationUri;
       return true;
     };

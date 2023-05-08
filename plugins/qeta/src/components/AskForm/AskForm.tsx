@@ -25,10 +25,14 @@ interface QuestionForm {
   entities?: Entity[];
 }
 
-const formToRequest = (form: QuestionForm): QuestionRequest => {
+const formToRequest = (
+  form: QuestionForm,
+  images: number[],
+): QuestionRequest => {
   return {
     ...form,
     entities: form.entities?.map(stringifyEntityRef),
+    images,
   };
 };
 
@@ -84,6 +88,7 @@ export const AskForm = (props: {
   const [values, setValues] = React.useState(getDefaultValues());
   const [error, setError] = React.useState(false);
   const [availableTags, setAvailableTags] = React.useState<string[] | null>([]);
+  const [images, setImages] = React.useState<number[]>([]);
   const [searchParams, _setSearchParams] = useSearchParams();
   const [availableEntities, setAvailableEntities] = React.useState<
     Entity[] | null
@@ -116,7 +121,7 @@ export const AskForm = (props: {
   const postQuestion = (data: QuestionForm) => {
     if (id) {
       qetaApi
-        .updateQuestion(id, formToRequest(data))
+        .updateQuestion(id, formToRequest(data, images))
         .then(q => {
           if (!q || !q.id) {
             setError(true);
@@ -134,7 +139,7 @@ export const AskForm = (props: {
       return;
     }
     qetaApi
-      .postQuestion(formToRequest(data))
+      .postQuestion(formToRequest(data, images))
       .then(q => {
         if (!q || !q.id) {
           setError(true);
@@ -242,6 +247,9 @@ export const AskForm = (props: {
             error={'content' in errors}
             placeholder="Your question"
             config={configApi}
+            onImageUpload={(imageId: number) => {
+              setImages(prevImages => [...prevImages, imageId]);
+            }}
           />
         )}
         name="content"

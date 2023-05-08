@@ -279,6 +279,7 @@ export class DatabaseQetaStore implements QetaStore {
     content: string,
     tags?: string[],
     entities?: string[],
+    images?: number[],
   ): Promise<Question> {
     const questions = await this.db
       .insert(
@@ -296,6 +297,12 @@ export class DatabaseQetaStore implements QetaStore {
       this.addQuestionTags(questions[0].id, tags),
       this.addQuestionEntities(questions[0].id, entities),
     ]);
+
+    if (images && images.length > 0) {
+      await this.db('attachments')
+        .whereIn('id', images)
+        .update({ questionId: questions[0].id });
+    }
 
     return this.mapQuestion(questions[0], false, false, true);
   }
@@ -366,6 +373,7 @@ export class DatabaseQetaStore implements QetaStore {
     content: string,
     tags?: string[],
     entities?: string[],
+    images?: number[],
   ): Promise<MaybeQuestion> {
     const rows = await this.db('questions')
       .where('questions.id', '=', id)
@@ -381,6 +389,12 @@ export class DatabaseQetaStore implements QetaStore {
       this.addQuestionEntities(id, entities, true),
     ]);
 
+    if (images && images.length > 0) {
+      await this.db('attachments')
+        .whereIn('id', images)
+        .update({ questionId: id });
+    }
+
     return await this.getQuestion(user_ref, id, false);
   }
 
@@ -395,6 +409,7 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     questionId: number,
     answer: string,
+    images?: number[],
   ): Promise<MaybeAnswer> {
     const answers = await this.db
       .insert({
@@ -406,6 +421,14 @@ export class DatabaseQetaStore implements QetaStore {
       })
       .into('answers')
       .returning('id');
+
+    console.log(images);
+    if (images && images.length > 0) {
+      await this.db('attachments')
+        .whereIn('id', images)
+        .update({ answerId: answers[0].id });
+    }
+
     return this.getAnswer(answers[0].id);
   }
 
@@ -414,6 +437,7 @@ export class DatabaseQetaStore implements QetaStore {
     questionId: number,
     answerId: number,
     answer: string,
+    images?: number[],
   ): Promise<MaybeAnswer> {
     const rows = await this.db('answers')
       .where('answers.id', '=', answerId)
@@ -424,6 +448,13 @@ export class DatabaseQetaStore implements QetaStore {
     if (!rows) {
       return null;
     }
+
+    if (images && images.length > 0) {
+      await this.db('attachments')
+        .whereIn('id', images)
+        .update({ answerId: answerId });
+    }
+
     return this.getAnswer(answerId);
   }
 

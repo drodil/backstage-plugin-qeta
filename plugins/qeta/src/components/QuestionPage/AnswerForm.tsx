@@ -27,6 +27,7 @@ export const AnswerForm = (props: {
   const [values, setValues] = React.useState(getDefaultValues(question.id));
   const analytics = useAnalytics();
   const [error, setError] = React.useState(false);
+  const [images, setImages] = React.useState<number[]>([]);
   const qetaApi = useApi(qetaApiRef);
   const styles = useStyles();
   const configApi = useApi(configApiRef);
@@ -44,7 +45,11 @@ export const AnswerForm = (props: {
   const postAnswer = (data: AnswerRequest) => {
     if (id) {
       qetaApi
-        .updateAnswer(id, { questionId: question.id, answer: data.answer })
+        .updateAnswer(id, {
+          questionId: question.id,
+          answer: data.answer,
+          images,
+        })
         .then(a => {
           if (!a || !('id' in a)) {
             setError(true);
@@ -57,9 +62,9 @@ export const AnswerForm = (props: {
         .catch(_e => setError(true));
       return;
     }
-
+    // http://localhost:7007/api/qeta/attachments/36e551b1-3be7-479a-8942-b7018434e710
     qetaApi
-      .postAnswer({ questionId: question.id, answer: data.answer })
+      .postAnswer({ questionId: question.id, answer: data.answer, images })
       .then(a => {
         if (!a || !('id' in a)) {
           setError(true);
@@ -111,6 +116,9 @@ export const AnswerForm = (props: {
               height={200}
               error={'answer' in errors}
               config={configApi}
+              onImageUpload={(imageId: number) => {
+                setImages(prevImages => [...prevImages, imageId]);
+              }}
             />
           )}
           name="answer"

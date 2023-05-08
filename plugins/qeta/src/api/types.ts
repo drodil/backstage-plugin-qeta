@@ -56,11 +56,13 @@ export interface QuestionRequest {
   content: string;
   tags?: string[];
   entities?: string[];
+  images?: number[];
 }
 
 export interface AnswerRequest {
   questionId: number;
   answer: string;
+  images?: number[];
 }
 
 export interface AnswerResponse {

@@ -165,6 +165,7 @@ export interface QetaStore {
     content: string,
     tags?: string[],
     components?: string[],
+    images?: number[],
   ): Promise<Question>;
 
   /**
@@ -207,6 +208,7 @@ export interface QetaStore {
     content: string,
     tags?: string[],
     components?: string[],
+    images?: number[],
   ): Promise<MaybeQuestion>;
 
   /**
@@ -226,6 +228,7 @@ export interface QetaStore {
     user_ref: string,
     questionId: number,
     answer: string,
+    images?: number[],
   ): Promise<MaybeAnswer>;
 
   /**
@@ -264,6 +267,7 @@ export interface QetaStore {
     questionId: number,
     answerId: number,
     answer: string,
+    images?: number[],
   ): Promise<MaybeAnswer>;
 
   /** Get answer by id

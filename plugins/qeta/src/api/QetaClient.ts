@@ -245,7 +245,7 @@ export class QetaClient implements QetaApi {
       `${this.baseUrl}/api/qeta/questions/${answer.questionId}/answers`,
       {
         method: 'POST',
-        body: JSON.stringify({ answer: answer.answer }),
+        body: JSON.stringify({ answer: answer.answer, images: answer.images }),
         headers: { 'Content-Type': 'application/json' },
       },
     );
@@ -414,7 +414,7 @@ export class QetaClient implements QetaApi {
       `${this.baseUrl}/api/qeta/questions/${answer.questionId}/answers/${id}`,
       {
         method: 'POST',
-        body: JSON.stringify({ answer: answer.answer }),
+        body: JSON.stringify({ answer: answer.answer, images: answer.images }),
         headers: { 'Content-Type': 'application/json' },
       },
     );

@@ -111,8 +111,9 @@ const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
 interface PostQuestion {
   title: string;
   content: string;
-  tags: string[];
-  entities: string[];
+  tags?: string[];
+  entities?: string[];
+  images?: number[];
 }
 
 const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
@@ -120,8 +121,9 @@ const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
   properties: {
     title: { type: 'string', minLength: 1 },
     content: { type: 'string', minLength: 1 },
-    tags: { type: 'array', items: { type: 'string' } },
-    entities: { type: 'array', items: { type: 'string' } },
+    tags: { type: 'array', items: { type: 'string' }, nullable: true },
+    entities: { type: 'array', items: { type: 'string' }, nullable: true },
+    images: { type: 'array', items: { type: 'integer' }, nullable: true },
   },
   required: ['title', 'content'],
   additionalProperties: false,
@@ -129,12 +131,14 @@ const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
 
 interface AnswerQuestion {
   answer: string;
+  images?: number[];
 }
 
 const PostAnswerSchema: JSONSchemaType<AnswerQuestion> = {
   type: 'object',
   properties: {
     answer: { type: 'string', minLength: 1 },
+    images: { type: 'array', items: { type: 'integer' }, nullable: true },
   },
   required: ['answer'],
   additionalProperties: false,
@@ -379,6 +383,7 @@ export async function createRouter({
       request.body.content,
       request.body.tags,
       request.body.entities,
+      request.body.images,
     );
 
     // Response
@@ -405,6 +410,7 @@ export async function createRouter({
       request.body.content,
       request.body.tags,
       request.body.entities,
+      request.body.images,
     );
 
     if (!question) {
@@ -449,6 +455,7 @@ export async function createRouter({
       username,
       Number.parseInt(request.params.id, 10),
       request.body.answer,
+      request.body.images,
     );
 
     mapAdditionalFields(username, answer);
@@ -476,6 +483,7 @@ export async function createRouter({
       Number.parseInt(request.params.id, 10),
       Number.parseInt(request.params.answerId, 10),
       request.body.answer,
+      request.body.images,
     );
 
     if (!answer) {
