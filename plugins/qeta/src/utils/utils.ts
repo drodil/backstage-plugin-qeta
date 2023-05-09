@@ -44,7 +44,7 @@ export const removeMarkdownFormatting = (text: string): string => {
     .replace(/(?:\*\*|__)([^\n*]+)(?:\*\*|__)/g, '$1') // Bold
     .replace(/(?:\*|_)([^\n*]+)(?:\*|_)/g, '$1') // Italic
     .replace(/(?:~~)([^~]+)(?:~~)/g, '$1') // Strikethrough
-    .replace(/^[ \t]{0,3}>+\s?/gm, '') // Blockquotes
+    .replace(/^[>\t]{0,3}>+\s?/gm, '') // Blockquotes
     .replace(/\[\^.+?\](\: .*?$)?/g, '') // Footnotes
     .replace(/^([ \t]*)([\*\-\+]|\d+\.)\s+/gm, '') // Lists
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1') // Images
