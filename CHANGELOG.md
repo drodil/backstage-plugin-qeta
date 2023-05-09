@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.9.4...v1.10.0) (2023-05-09)
+
+
+### Features
+
+* show truncated content of question in questions list ([3fec4e9](https://github.com/drodil/backstage-plugin-qeta/commit/3fec4e9ec710b79f158be12a29f178ffdee34161))
+
+
+### Bug Fixes
+
+* add missing character in regex ([c53a51d](https://github.com/drodil/backstage-plugin-qeta/commit/c53a51d8442538fd32ce65e090b8ff2feccc0daa))
+
 ### [1.9.4](https://github.com/drodil/backstage-plugin-qeta/compare/v1.9.3...v1.9.4) (2023-05-08)
 
 
