@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.10.0...v1.10.1) (2023-05-09)
+
+
+### Bug Fixes
+
+* resolution for react types ([0594b60](https://github.com/drodil/backstage-plugin-qeta/commit/0594b604fbf81c416c5f675f5cf3b8ac601aabc8))
+
 ## [1.10.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.9.4...v1.10.0) (2023-05-09)
 
 
