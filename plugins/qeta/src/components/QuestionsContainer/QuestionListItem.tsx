@@ -10,23 +10,37 @@ import { Link } from '@backstage/core-components';
 import React from 'react';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
-import { formatEntityName } from '../../utils/utils';
+import DOMPurify from 'dompurify';
+import {
+  formatEntityName,
+  truncate,
+  removeMarkdownFormatting,
+} from '../../utils/utils';
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
 
 export const QuestionListItem = (props: { question: QuestionResponse }) => {
   const { question } = props;
   const theme = useTheme();
+
   return (
     <Card>
       <CardContent>
         <Grid container justifyContent="space-between">
           <Grid item xs={12}>
-            <Typography gutterBottom variant="h5" component="div">
+            <Typography variant="h5" component="div">
               <Link to={`/qeta/questions/${question.id}`}>
                 {question.title}
               </Link>
             </Typography>
           </Grid>
+          <Grid item xs={12}>
+            <Typography variant="caption" noWrap component="div">
+              {DOMPurify.sanitize(
+                truncate(removeMarkdownFormatting(question.content), 150),
+              )}
+            </Typography>
+          </Grid>
+
           <Grid item>
             <Typography variant="body2" display="block">
               By{' '}
