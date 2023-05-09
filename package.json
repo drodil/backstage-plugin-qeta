@@ -62,9 +62,5 @@
       "prettier --write"
     ]
   },
-  "packageManager": "yarn@3.2.4",
-  "dependencies": {
-    "body-parser": "^1.20.2",
-    "multer": "^1.4.5-lts.1"
-  }
+  "packageManager": "yarn@3.5.1"
 }
