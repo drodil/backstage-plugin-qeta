@@ -106,7 +106,7 @@ export const HomePageContent = () => {
     <Content>
       <Container maxWidth="lg">
         <Grid container spacing={3}>
-          <Grid item md={12} lg={9} xl={10}>
+          <Grid item xs={12} lg={9} xl={10}>
             <ContentHeader title="All questions">
               <MoreMenu />
               <AskQuestionButton />
