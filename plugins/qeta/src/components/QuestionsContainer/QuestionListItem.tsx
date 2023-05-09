@@ -13,8 +13,8 @@ import RelativeTime from 'react-relative-time';
 import DOMPurify from 'dompurify';
 import {
   formatEntityName,
-  truncate,
   removeMarkdownFormatting,
+  truncate,
 } from '../../utils/utils';
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
 
@@ -33,7 +33,7 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
               </Link>
             </Typography>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} style={{ paddingTop: 0, paddingBottom: 0 }}>
             <Typography variant="caption" noWrap component="div">
               {DOMPurify.sanitize(
                 truncate(removeMarkdownFormatting(question.content), 150),

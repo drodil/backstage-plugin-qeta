@@ -5,8 +5,8 @@ import bodyParser from 'body-parser';
 import addFormats from 'ajv-formats';
 import multiparty from 'multiparty';
 import FileType from 'file-type';
-import FilesystemStoreEngine from '../upload/filesystem';
-import DatabaseStoreEngine from '../upload/database';
+import FilesystemStoreEngine from './upload/filesystem';
+import DatabaseStoreEngine from './upload/database';
 import Ajv, { JSONSchemaType } from 'ajv';
 import { Logger } from 'winston';
 import { Response } from 'express-serve-static-core';
@@ -37,8 +37,7 @@ import {
   QetaStore,
   QuestionsOptions,
 } from '../database/QetaStore';
-
-import { File } from '../upload/types';
+import { File } from './upload/types';
 
 export interface RouterOptions {
   identity: IdentityApi;

@@ -103,6 +103,18 @@ dist
 # TernJS port file
 .tern-port
 
+*.iml
+.DS_Store
 .idea
-.vscode
+.vscode/
+.vsls.json
+.pnp.*
+
+**/.yarn/*
+!**/.yarn/patches
+!**/.yarn/plugins
+!**/.yarn/releases
+!**/.yarn/sdks
+!**/.yarn/versions
+
 dist-types/

@@ -7,7 +7,7 @@ export const getEntityUrl = (entity: Entity) => {
 };
 
 export const formatEntityName = (username: string) => {
-  const plainName = username.split(/[\/:]+/).pop();
+  const plainName = username.split(/[/:]+/).pop();
   return plainName
     ?.split(/[_.-]+/)
     .map(a => a.charAt(0).toUpperCase() + a.slice(1))
@@ -45,12 +45,12 @@ export const removeMarkdownFormatting = (text: string): string => {
     .replace(/(?:\*|_)([^\n*]+)(?:\*|_)/g, '$1') // Italic
     .replace(/(?:~~)([^~]+)(?:~~)/g, '$1') // Strikethrough
     .replace(/^[>\t]{0,3}>+\s?/gm, '') // Blockquotes
-    .replace(/\[\^.+?\](\: .*?$)?/g, '') // Footnotes
-    .replace(/^([ \t]*)([\*\-\+]|\d+\.)\s+/gm, '') // Lists
+    .replace(/\[\^.+?\](: .*?$)?/g, '') // Footnotes
+    .replace(/^([ \t]*)([*\-+]|\d+\.)\s+/gm, '') // Lists
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1') // Images
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // Links
     .replace(/^#{1,6}[ \t]+/gm, '') // Headers
-    .replace(/^[=\-]{2,}\s*$/g, '') // Setex style headers
+    .replace(/^[=-]{2,}\s*$/g, '') // Setex style headers
     .replace(/(?:\r\n|\r|\n)/g, ' ') // Newlines
     .replace(/(^\s+|\s+$)/g, ''); // Trimming leading and trailing spaces
 

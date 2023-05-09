@@ -3715,12 +3715,9 @@ __metadata:
     "@backstage/plugin-permission-common": ^0.7.5
     "@backstage/plugin-permission-node": ^0.7.7
     "@backstage/plugin-search-common": ^1.2.3
-    "@drodil/backstage-plugin-qeta-common": ^1.4.1
+    "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@types/express": "*"
-    "@types/mime-types": ^2.1.1
-    "@types/multer": ^1.4.7
     "@types/multiparty": ^0.0.33
-    "@types/node-fetch": ^2.6.1
     "@types/supertest": ^2.0.12
     "@types/uuid": ^9.0.1
     ajv: ^8.11.0
@@ -3730,10 +3727,7 @@ __metadata:
     express-promise-router: ^4.1.0
     file-type: 16.5.4
     knex: ^2.4.0
-    mime-types: ^2.1.35
-    msw: ^0.47.0
     multiparty: ^4.2.3
-    node-fetch: ^2.6.1
     supertest: ^6.2.4
     uuid: ^9.0.0
     winston: ^3.2.1
@@ -3741,7 +3735,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@drodil/backstage-plugin-qeta-common@^1.4.1, @drodil/backstage-plugin-qeta-common@workspace:plugins/qeta-common":
+"@drodil/backstage-plugin-qeta-common@workspace:^, @drodil/backstage-plugin-qeta-common@workspace:plugins/qeta-common":
   version: 0.0.0-use.local
   resolution: "@drodil/backstage-plugin-qeta-common@workspace:plugins/qeta-common"
   dependencies:
@@ -3749,7 +3743,6 @@ __metadata:
     "@backstage/plugin-permission-common": ^0.7.5
   peerDependencies:
     "@backstage/catalog-model": ^1.3.0
-    react: ^16.13.1 || ^17.0.0
   languageName: unknown
   linkType: soft
 
@@ -3761,34 +3754,25 @@ __metadata:
     "@backstage/catalog-model": ^1.3.0
     "@backstage/cli": ^0.22.6
     "@backstage/config": ^1.0.7
-    "@backstage/core-app-api": ^1.7.0
     "@backstage/core-components": ^0.13.0
     "@backstage/core-plugin-api": ^1.5.1
     "@backstage/dev-utils": ^1.0.14
     "@backstage/errors": ^1.1.5
     "@backstage/plugin-catalog-react": ^1.5.0
     "@backstage/plugin-home": ^0.5.1
-    "@backstage/plugin-permission-node": ^0.7.7
     "@backstage/plugin-permission-react": ^0.4.12
-    "@backstage/test-utils": ^1.3.0
-    "@backstage/theme": ^0.2.19
-    "@drodil/backstage-plugin-qeta-common": ^1.4.1
+    "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": 4.0.0-alpha.61
     "@rjsf/core": ^3.0.0
     "@testing-library/jest-dom": ^5.10.1
-    "@testing-library/react": ^12.1.3
-    "@testing-library/user-event": ^14.0.0
     "@types/dompurify": ^3.0.0
-    "@types/node": "*"
     ajv: ^8.12.0
-    ajv-formats: ^2.1.1
     cross-fetch: ^3.1.5
     dompurify: ^3.0.3
     file-type: 16.5.4
     lodash: ^4.17.21
-    msw: ^0.47.0
     react-hook-form: ^7.41.0
     react-mde: ^11.5.0
     react-relative-time: ^0.0.7
@@ -3796,6 +3780,7 @@ __metadata:
   peerDependencies:
     "@backstage/catalog-client": ^1.4.1
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: ^6.3.0
   languageName: unknown
   linkType: soft
@@ -6354,13 +6339,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mime-types@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "@types/mime-types@npm:2.1.1"
-  checksum: 106b5d556add46446a579ad25ff15d6b421851790d887edcad558c90c1e64b1defc72bfbaf4b08f208916e21d9cc45cdb951d77be51268b18221544cfe054a3c
-  languageName: node
-  linkType: hard
-
 "@types/mime@npm:*":
   version: 3.0.1
   resolution: "@types/mime@npm:3.0.1"
@@ -6389,31 +6367,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/multer@npm:^1.4.7":
-  version: 1.4.7
-  resolution: "@types/multer@npm:1.4.7"
-  dependencies:
-    "@types/express": "*"
-  checksum: 680cb0710aa25264d20cdcdaf34c212b636b55ea141310f06c25354ab1401193c7aa6839f9d22abf64a223fab1f2b8287f2512b0bef7e1628c4e9ffe54b4aeb2
-  languageName: node
-  linkType: hard
-
 "@types/multiparty@npm:^0.0.33":
   version: 0.0.33
   resolution: "@types/multiparty@npm:0.0.33"
   dependencies:
     "@types/node": "*"
   checksum: 792fd6a92a675adb12f0efbdddd8a125d73c3aa4bf1467fc1837b58610fb636d470e59441c01dd1a8205028ce7196ea7b782aa690ce1afb33126e42539c6803a
-  languageName: node
-  linkType: hard
-
-"@types/node-fetch@npm:^2.6.1":
-  version: 2.6.3
-  resolution: "@types/node-fetch@npm:2.6.3"
-  dependencies:
-    "@types/node": "*"
-    form-data: ^3.0.0
-  checksum: b68cda58e91535a42dd5337932443c37f8e198ca1e8deeb95bd92a64a9a84d92071867b91c5eb84ee8e13f33d45a70549fe2bc11dd070a894dd561909f4d39f5
   languageName: node
   linkType: hard
 
@@ -6755,17 +6714,6 @@ __metadata:
   version: 1.18.0
   resolution: "@types/webpack-env@npm:1.18.0"
   checksum: ecf4daa31cb37d474ac0ce058d83a3cadeb9881ca8107ae93c2299eaa9954943aae09b43e143c62ccbe4288a14db00c918c9debd707afe17c3998f873eaabc59
-  languageName: node
-  linkType: hard
-
-"@types/webpack@npm:^5.28.0":
-  version: 5.28.1
-  resolution: "@types/webpack@npm:5.28.1"
-  dependencies:
-    "@types/node": "*"
-    tapable: ^2.2.0
-    webpack: ^5
-  checksum: 9f9bfe041382acfab36015f95011f6539705ba116fd9b3b8d7599a6396d996b7efcdb71947dba6d24a1a1bf397d15fdfb3c50d2f73e0aa5366a76198d5ec98b3
   languageName: node
   linkType: hard
 
@@ -11825,17 +11773,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "form-data@npm:3.0.1"
-  dependencies:
-    asynckit: ^0.4.0
-    combined-stream: ^1.0.8
-    mime-types: ^2.1.12
-  checksum: b019e8d35c8afc14a2bd8a7a92fa4f525a4726b6d5a9740e8d2623c30e308fbb58dc8469f90415a856698933c8479b01646a9dff33c87cc4e76d72aedbbf860d
-  languageName: node
-  linkType: hard
-
 "form-data@npm:^4.0.0":
   version: 4.0.0
   resolution: "form-data@npm:4.0.0"
@@ -13481,7 +13418,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-node-process@npm:^1.0.1, is-node-process@npm:^1.2.0":
+"is-node-process@npm:^1.2.0":
   version: 1.2.0
   resolution: "is-node-process@npm:1.2.0"
   checksum: 930765cdc6d81ab8f1bbecbea4a8d35c7c6d88a3ff61f3630e0fc7f22d624d7661c1df05c58547d0eb6a639dfa9304682c8e342c4113a6ed51472b704cee2928
@@ -16105,7 +16042,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.0.8, mime-types@npm:^2.1.12, mime-types@npm:^2.1.27, mime-types@npm:^2.1.31, mime-types@npm:^2.1.35, mime-types@npm:~2.1.17, mime-types@npm:~2.1.19, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
+"mime-types@npm:^2.0.8, mime-types@npm:^2.1.12, mime-types@npm:^2.1.27, mime-types@npm:^2.1.31, mime-types@npm:~2.1.17, mime-types@npm:~2.1.19, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -16377,41 +16314,6 @@ __metadata:
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
   checksum: aa92de608021b242401676e35cfa5aa42dd70cbdc082b916da7fb925c542173e36bce97ea3e804923fe92c0ad991434e4a38327e15a1b5b5f945d66df615ae6d
-  languageName: node
-  linkType: hard
-
-"msw@npm:^0.47.0":
-  version: 0.47.4
-  resolution: "msw@npm:0.47.4"
-  dependencies:
-    "@mswjs/cookies": ^0.2.2
-    "@mswjs/interceptors": ^0.17.5
-    "@open-draft/until": ^1.0.3
-    "@types/cookie": ^0.4.1
-    "@types/js-levenshtein": ^1.1.1
-    chalk: 4.1.1
-    chokidar: ^3.4.2
-    cookie: ^0.4.2
-    graphql: ^15.0.0 || ^16.0.0
-    headers-polyfill: ^3.1.0
-    inquirer: ^8.2.0
-    is-node-process: ^1.0.1
-    js-levenshtein: ^1.1.6
-    node-fetch: ^2.6.7
-    outvariant: ^1.3.0
-    path-to-regexp: ^6.2.0
-    statuses: ^2.0.0
-    strict-event-emitter: ^0.2.6
-    type-fest: ^2.19.0
-    yargs: ^17.3.1
-  peerDependencies:
-    typescript: ">= 4.2.x <= 4.8.x"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  bin:
-    msw: cli/index.js
-  checksum: 10ff632641d40384d6622abf4df6399e4ae649db0f676b5d1ee2d0a515ec96f33abe9d4fecba08cdba4b2e43255af419da9eefc020d40a7e10669d0906457197
   languageName: node
   linkType: hard
 
@@ -17109,7 +17011,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"outvariant@npm:^1.2.1, outvariant@npm:^1.3.0, outvariant@npm:^1.4.0":
+"outvariant@npm:^1.2.1, outvariant@npm:^1.4.0":
   version: 1.4.0
   resolution: "outvariant@npm:1.4.0"
   checksum: ec32dfc315c464bb6e4906b2f450d259ce0b86caf70b70b249054359d9af21a7fccf53a8b6aa232f8d718449e31c1cfa594e6ebffaafe7bf908b502495256d7b
@@ -19561,7 +19463,6 @@ __metadata:
     "@commitlint/cli": ^17.2.0
     "@commitlint/config-conventional": ^17.2.0
     "@spotify/prettier-config": ^12.0.0
-    "@types/webpack": ^5.28.0
     concurrently: ^7.0.0
     husky: ^8.0.1
     lint-staged: ^13.0.3
@@ -20417,7 +20318,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"statuses@npm:2.0.1, statuses@npm:^2.0.0":
+"statuses@npm:2.0.1":
   version: 2.0.1
   resolution: "statuses@npm:2.0.1"
   checksum: 18c7623fdb8f646fb213ca4051be4df7efb3484d4ab662937ca6fbef7ced9b9e12842709872eb3020cc3504b93bde88935c9f6417489627a7786f24f8031cbcb
@@ -20493,7 +20394,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strict-event-emitter@npm:^0.2.4, strict-event-emitter@npm:^0.2.6":
+"strict-event-emitter@npm:^0.2.4":
   version: 0.2.8
   resolution: "strict-event-emitter@npm:0.2.8"
   dependencies:
@@ -22266,7 +22167,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5, webpack@npm:^5.70.0":
+"webpack@npm:^5.70.0":
   version: 5.82.0
   resolution: "webpack@npm:5.82.0"
   dependencies:
