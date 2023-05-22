@@ -36,8 +36,12 @@ import {
   MaybeQuestion,
   QetaStore,
   QuestionsOptions,
+  Statistic,
+  StatisticResponse,
+  StatisticsOptions,
 } from '../database/QetaStore';
 import { File } from './upload/types';
+import { stringDateTime } from '../utils/utils';
 
 export interface RouterOptions {
   identity: IdentityApi;
@@ -863,6 +867,192 @@ export async function createRouter({
     }
     return response.status(404).send('Attachment not found');
   });
+
+  // GET /statistics/questions/top-upvoted-users?period=x&limit=x&loggedUser=x
+  router.get(
+    '/statistics/questions/top-upvoted-users',
+    async (request, response) => {
+      const { period, limit, loggedUser } = request.query;
+
+      const options: StatisticsOptions = {
+        period: period && stringDateTime(period?.toString()),
+        limit: Number(limit),
+        loggedUser: loggedUser?.toString(),
+      };
+
+      const mostUpvotedQuestions: Statistic[] =
+        await database.getMostUpvotedQuestions({
+          options,
+        });
+
+      const rankingResponse = {
+        ranking: mostUpvotedQuestions,
+        loggedUser: {},
+      } as StatisticResponse;
+
+      if (mostUpvotedQuestions.length === 0) {
+        return response.status(204).json(rankingResponse);
+      }
+
+      if (loggedUser) {
+        const findLoggerUserInData = mostUpvotedQuestions.find(userStats => {
+          return userStats.author?.includes(loggedUser.toString());
+        });
+
+        if (!findLoggerUserInData) {
+          const userRef = `user:default/${loggedUser.toString()}`;
+          const loggedUserUpvotedQuestions =
+            await database.getMostUpvotedQuestions({
+              author: userRef,
+              options,
+            });
+
+          if (loggedUserUpvotedQuestions) {
+            rankingResponse.loggedUser!.author =
+              loggedUserUpvotedQuestions.length > 0
+                ? loggedUserUpvotedQuestions[0].author
+                : userRef;
+
+            rankingResponse.loggedUser!.total =
+              loggedUserUpvotedQuestions.length > 0
+                ? loggedUserUpvotedQuestions[0].total
+                : 0;
+
+            rankingResponse.loggedUser!.position = `${mostUpvotedQuestions.length}+`;
+          }
+        } else {
+          rankingResponse.loggedUser = findLoggerUserInData;
+        }
+      }
+
+      return response.status(200).json(rankingResponse);
+    },
+  );
+
+  // GET /statistics/answers/top-upvoted-users?period=x&limit=x&loggedUser=x
+  router.get(
+    '/statistics/answers/top-upvoted-users',
+    async (request, response) => {
+      const { period, limit, loggedUser } = request.query;
+
+      const options: StatisticsOptions = {
+        period: period && stringDateTime(period?.toString()),
+        limit: Number(limit),
+        loggedUser: loggedUser?.toString(),
+      };
+
+      const mostUpvotedAnswers: Statistic[] =
+        await database.getMostUpvotedAnswers({
+          options,
+        });
+
+      const rankingResponse = {
+        ranking: mostUpvotedAnswers,
+        loggedUser: {},
+      } as StatisticResponse;
+
+      if (mostUpvotedAnswers.length === 0) {
+        return response.status(204).json(rankingResponse);
+      }
+
+      if (loggedUser) {
+        const findLoggerUserInData = mostUpvotedAnswers.find(userStats => {
+          return userStats.author?.includes(loggedUser.toString());
+        });
+
+        if (!findLoggerUserInData) {
+          const userRef = `user:default/${loggedUser.toString()}`;
+          const loggedUserUpvotedAnswers = await database.getMostUpvotedAnswers(
+            {
+              author: userRef,
+              options,
+            },
+          );
+
+          if (loggedUserUpvotedAnswers) {
+            rankingResponse.loggedUser!.author =
+              loggedUserUpvotedAnswers.length > 0
+                ? loggedUserUpvotedAnswers[0].author
+                : userRef;
+
+            rankingResponse.loggedUser!.total =
+              loggedUserUpvotedAnswers.length > 0
+                ? loggedUserUpvotedAnswers[0].total
+                : 0;
+
+            rankingResponse.loggedUser!.position = `${mostUpvotedAnswers.length}+`;
+          }
+        } else {
+          rankingResponse.loggedUser = findLoggerUserInData;
+        }
+      }
+
+      return response.status(200).json(rankingResponse);
+    },
+  );
+
+  // GET /statistics/answers/gi?period=x&limit=x&loggedUser=x
+  router.get(
+    '/statistics/answers/top-correct-upvoted-users',
+    async (request, response) => {
+      const { period, limit, loggedUser } = request.query;
+
+      const options: StatisticsOptions = {
+        period: period && stringDateTime(period?.toString()),
+        limit: Number(limit),
+        loggedUser: loggedUser?.toString(),
+      };
+
+      const mostUpvotedCorrectAnswers: Statistic[] =
+        await database.getMostUpvotedCorrectAnswers({
+          options,
+        });
+
+      const rankingResponse = {
+        ranking: mostUpvotedCorrectAnswers,
+        loggedUser: {},
+      } as StatisticResponse;
+
+      if (mostUpvotedCorrectAnswers.length === 0) {
+        return response.status(204).json(rankingResponse);
+      }
+
+      if (loggedUser) {
+        const findLoggerUserInData = mostUpvotedCorrectAnswers.find(
+          userStats => {
+            return userStats.author?.includes(loggedUser.toString());
+          },
+        );
+
+        if (!findLoggerUserInData) {
+          const userRef = `user:default/${loggedUser.toString()}`;
+          const loggedUserUpvotedCorrectAnswers =
+            await database.getMostUpvotedCorrectAnswers({
+              author: userRef,
+              options,
+            });
+
+          if (loggedUserUpvotedCorrectAnswers) {
+            rankingResponse.loggedUser!.author =
+              loggedUserUpvotedCorrectAnswers.length > 0
+                ? loggedUserUpvotedCorrectAnswers[0].author
+                : userRef;
+
+            rankingResponse.loggedUser!.total =
+              loggedUserUpvotedCorrectAnswers.length > 0
+                ? loggedUserUpvotedCorrectAnswers[0].total
+                : 0;
+
+            rankingResponse.loggedUser!.position = `${mostUpvotedCorrectAnswers.length}+`;
+          }
+        } else {
+          rankingResponse.loggedUser = findLoggerUserInData;
+        }
+      }
+
+      return response.status(200).json(rankingResponse);
+    },
+  );
 
   router.use(errorHandler());
   return router;

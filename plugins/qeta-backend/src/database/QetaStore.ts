@@ -60,6 +60,17 @@ export interface Questions {
   total: number;
 }
 
+export interface StatisticResponse {
+  ranking: Statistic[];
+  loggedUser?: Statistic;
+}
+
+export interface Statistic {
+  author?: string;
+  total?: number;
+  position?: string;
+}
+
 export interface QuestionsOptions {
   limit?: number;
   offset?: number;
@@ -114,6 +125,16 @@ export interface AttachmentParameters {
   creator?: string;
 }
 
+export interface StatisticsOptions {
+  limit?: number;
+  period?: string;
+  loggedUser?: string;
+}
+
+export interface StatisticsRequestParameters {
+  author?: string;
+  options?: StatisticsOptions;
+}
 /**
  * Interface for fetching and modifying Q&A data
  */
@@ -361,4 +382,25 @@ export interface QetaStore {
   }: AttachmentParameters): Promise<Attachment>;
 
   getAttachment(uuid: string): Promise<Attachment | undefined>;
+
+  getMostUpvotedQuestions({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]>;
+  getTotalQuestions({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]>;
+  getMostUpvotedAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]>;
+  getMostUpvotedCorrectAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]>;
+  getTotalAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]>;
 }
