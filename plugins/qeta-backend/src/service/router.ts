@@ -991,7 +991,7 @@ export async function createRouter({
     },
   );
 
-  // GET /statistics/answers/gi?period=x&limit=x&loggedUser=x
+  // GET /statistics/answers/top-correct-upvoted-users?period=x&limit=x&loggedUser=x
   router.get(
     '/statistics/answers/top-correct-upvoted-users',
     async (request, response) => {
