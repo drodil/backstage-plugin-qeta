@@ -500,7 +500,7 @@ export class QetaClient implements QetaApi {
   async getMostUpvotedQuestions(
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
-    const query = this.getQueryParameters(Option).toString();
+    const query = this.getQueryParameters(options).toString();
 
     let url = `${this.baseUrl}/api/qeta/statistics/answers/top-correct-upvoted-users`;
 
