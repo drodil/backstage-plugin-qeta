@@ -24,7 +24,7 @@ export interface CommentResponse {
   updatedBy?: string;
 }
 
-export type QuestionsResponseBody = QuestionsResponse | any[];
+export type QuestionsResponseBody = QuestionsResponse | ErrorResponse;
 
 export interface QuestionResponse {
   id: number;
