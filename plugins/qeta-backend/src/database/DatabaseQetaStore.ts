@@ -474,6 +474,11 @@ export class DatabaseQetaStore implements QetaStore {
     questionId: number,
     score: number,
   ): Promise<boolean> {
+    await this.db('question_votes')
+      .where('author', '=', user_ref)
+      .where('questionId', '=', questionId)
+      .delete();
+
     const id = await this.db
       .insert(
         {
@@ -523,6 +528,11 @@ export class DatabaseQetaStore implements QetaStore {
     answerId: number,
     score: number,
   ): Promise<boolean> {
+    await this.db('answer_votes')
+      .where('author', '=', user_ref)
+      .where('answerId', '=', answerId)
+      .delete();
+
     const id = await this.db
       .insert(
         {
