@@ -13,11 +13,13 @@ import {
   Question,
   Questions,
   QuestionsOptions,
-  Statistic,
-  StatisticsRequestParameters,
   TagResponse,
   Vote,
 } from './QetaStore';
+import {
+  Statistic,
+  StatisticsRequestParameters,
+} from '@drodil/backstage-plugin-qeta-common';
 
 const migrationsDir = resolvePackagePath(
   '@drodil/backstage-plugin-qeta-backend',

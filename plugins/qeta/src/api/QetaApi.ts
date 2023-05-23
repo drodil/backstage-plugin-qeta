@@ -1,4 +1,8 @@
 import {
+  StatisticResponse,
+  StatisticsRequestParameters,
+} from '@drodil/backstage-plugin-qeta-common';
+import {
   AnswerRequest,
   AnswerResponse,
   AnswerResponseBody,
@@ -6,8 +10,6 @@ import {
   QuestionRequest,
   QuestionResponse,
   QuestionsResponse,
-  StatisticResponse,
-  StatisticsRequestParameters,
   TagResponse,
 } from './types';
 

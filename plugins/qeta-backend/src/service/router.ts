@@ -24,6 +24,9 @@ import {
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import {
+  Statistic,
+  StatisticResponse,
+  StatisticsOptions,
   qetaCreateAnswerPermission,
   qetaCreateQuestionPermission,
   qetaPermissions,
@@ -36,9 +39,6 @@ import {
   MaybeQuestion,
   QetaStore,
   QuestionsOptions,
-  Statistic,
-  StatisticResponse,
-  StatisticsOptions,
 } from '../database/QetaStore';
 import { File } from './upload/types';
 import { stringDateTime } from '../utils/utils';
@@ -872,12 +872,12 @@ export async function createRouter({
   router.get(
     '/statistics/questions/top-upvoted-users',
     async (request, response) => {
-      const { period, limit, loggedUser } = request.query;
+      const { period, limit } = request.query;
 
       const options: StatisticsOptions = {
         period: period && stringDateTime(period?.toString()),
         limit: Number(limit),
-        loggedUser: loggedUser?.toString(),
+        loggedUser: await getUsername(request),
       };
 
       const mostUpvotedQuestions: Statistic[] =
@@ -894,16 +894,15 @@ export async function createRouter({
         return response.status(204).json(rankingResponse);
       }
 
-      if (loggedUser) {
+      if (options.loggedUser) {
         const findLoggerUserInData = mostUpvotedQuestions.find(userStats => {
-          return userStats.author?.includes(loggedUser.toString());
+          return userStats.author?.includes(options.loggedUser || '');
         });
 
         if (!findLoggerUserInData) {
-          const userRef = `user:default/${loggedUser.toString()}`;
           const loggedUserUpvotedQuestions =
             await database.getMostUpvotedQuestions({
-              author: userRef,
+              author: options.loggedUser,
               options,
             });
 
@@ -911,7 +910,7 @@ export async function createRouter({
             rankingResponse.loggedUser!.author =
               loggedUserUpvotedQuestions.length > 0
                 ? loggedUserUpvotedQuestions[0].author
-                : userRef;
+                : options.loggedUser;
 
             rankingResponse.loggedUser!.total =
               loggedUserUpvotedQuestions.length > 0
@@ -995,12 +994,12 @@ export async function createRouter({
   router.get(
     '/statistics/answers/top-correct-upvoted-users',
     async (request, response) => {
-      const { period, limit, loggedUser } = request.query;
+      const { period, limit } = request.query;
 
       const options: StatisticsOptions = {
         period: period && stringDateTime(period?.toString()),
         limit: Number(limit),
-        loggedUser: loggedUser?.toString(),
+        loggedUser: await getUsername(request),
       };
 
       const mostUpvotedCorrectAnswers: Statistic[] =
@@ -1017,18 +1016,17 @@ export async function createRouter({
         return response.status(204).json(rankingResponse);
       }
 
-      if (loggedUser) {
+      if (options.loggedUser) {
         const findLoggerUserInData = mostUpvotedCorrectAnswers.find(
           userStats => {
-            return userStats.author?.includes(loggedUser.toString());
+            return userStats.author?.includes(options.loggedUser || '');
           },
         );
 
         if (!findLoggerUserInData) {
-          const userRef = `user:default/${loggedUser.toString()}`;
           const loggedUserUpvotedCorrectAnswers =
             await database.getMostUpvotedCorrectAnswers({
-              author: userRef,
+              author: options.loggedUser,
               options,
             });
 
@@ -1036,7 +1034,7 @@ export async function createRouter({
             rankingResponse.loggedUser!.author =
               loggedUserUpvotedCorrectAnswers.length > 0
                 ? loggedUserUpvotedCorrectAnswers[0].author
-                : userRef;
+                : options.loggedUser;
 
             rankingResponse.loggedUser!.total =
               loggedUserUpvotedCorrectAnswers.length > 0

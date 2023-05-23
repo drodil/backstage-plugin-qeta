@@ -1,3 +1,8 @@
+import {
+  Statistic,
+  StatisticsRequestParameters,
+} from '@drodil/backstage-plugin-qeta-common';
+
 export interface Question {
   id: number;
   author: string;
@@ -60,17 +65,6 @@ export interface Questions {
   total: number;
 }
 
-export interface StatisticResponse {
-  ranking: Statistic[];
-  loggedUser?: Statistic;
-}
-
-export interface Statistic {
-  author?: string;
-  total?: number;
-  position?: string;
-}
-
 export interface QuestionsOptions {
   limit?: number;
   offset?: number;
@@ -125,16 +119,6 @@ export interface AttachmentParameters {
   creator?: string;
 }
 
-export interface StatisticsOptions {
-  limit?: number;
-  period?: string;
-  loggedUser?: string;
-}
-
-export interface StatisticsRequestParameters {
-  author?: string;
-  options?: StatisticsOptions;
-}
 /**
  * Interface for fetching and modifying Q&A data
  */
