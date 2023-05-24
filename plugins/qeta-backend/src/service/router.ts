@@ -868,16 +868,16 @@ export async function createRouter({
     return response.status(404).send('Attachment not found');
   });
 
-  // GET /statistics/questions/top-upvoted-users?period=x&limit=x&loggedUser=x
+  // GET /statistics/questions/top-upvoted-users?period=x&limit=x
   router.get(
     '/statistics/questions/top-upvoted-users',
     async (request, response) => {
       const { period, limit } = request.query;
+      const userRef = await getUsername(request);
 
       const options: StatisticsOptions = {
         period: period && stringDateTime(period?.toString()),
         limit: Number(limit),
-        loggedUser: await getUsername(request),
       };
 
       const mostUpvotedQuestions: Statistic[] =
@@ -894,50 +894,48 @@ export async function createRouter({
         return response.status(204).json(rankingResponse);
       }
 
-      if (options.loggedUser) {
-        const findLoggerUserInData = mostUpvotedQuestions.find(userStats => {
-          return userStats.author?.includes(options.loggedUser || '');
-        });
+      const findLoggerUserInData = mostUpvotedQuestions.find(userStats => {
+        return userStats.author?.includes(userRef);
+      });
 
-        if (!findLoggerUserInData) {
-          const loggedUserUpvotedQuestions =
-            await database.getMostUpvotedQuestions({
-              author: options.loggedUser,
-              options,
-            });
+      if (!findLoggerUserInData) {
+        const loggedUserUpvotedQuestions =
+          await database.getMostUpvotedQuestions({
+            author: userRef,
+            options,
+          });
 
-          if (loggedUserUpvotedQuestions) {
-            rankingResponse.loggedUser!.author =
-              loggedUserUpvotedQuestions.length > 0
-                ? loggedUserUpvotedQuestions[0].author
-                : options.loggedUser;
+        if (loggedUserUpvotedQuestions) {
+          rankingResponse.loggedUser!.author =
+            loggedUserUpvotedQuestions.length > 0
+              ? loggedUserUpvotedQuestions[0].author
+              : userRef;
 
-            rankingResponse.loggedUser!.total =
-              loggedUserUpvotedQuestions.length > 0
-                ? loggedUserUpvotedQuestions[0].total
-                : 0;
+          rankingResponse.loggedUser!.total =
+            loggedUserUpvotedQuestions.length > 0
+              ? loggedUserUpvotedQuestions[0].total
+              : 0;
 
-            rankingResponse.loggedUser!.position = `${mostUpvotedQuestions.length}+`;
-          }
-        } else {
-          rankingResponse.loggedUser = findLoggerUserInData;
+          rankingResponse.loggedUser!.position = `${mostUpvotedQuestions.length}+`;
         }
+      } else {
+        rankingResponse.loggedUser = findLoggerUserInData;
       }
 
       return response.status(200).json(rankingResponse);
     },
   );
 
-  // GET /statistics/answers/top-upvoted-users?period=x&limit=x&loggedUser=x
+  // GET /statistics/answers/top-upvoted-users?period=x&limit=x
   router.get(
     '/statistics/answers/top-upvoted-users',
     async (request, response) => {
-      const { period, limit, loggedUser } = request.query;
+      const { period, limit } = request.query;
+      const userRef = await getUsername(request);
 
       const options: StatisticsOptions = {
         period: period && stringDateTime(period?.toString()),
         limit: Number(limit),
-        loggedUser: loggedUser?.toString(),
       };
 
       const mostUpvotedAnswers: Statistic[] =
@@ -954,52 +952,47 @@ export async function createRouter({
         return response.status(204).json(rankingResponse);
       }
 
-      if (loggedUser) {
-        const findLoggerUserInData = mostUpvotedAnswers.find(userStats => {
-          return userStats.author?.includes(loggedUser.toString());
+      const findLoggerUserInData = mostUpvotedAnswers.find(userStats => {
+        return userStats.author?.includes(userRef);
+      });
+
+      if (!findLoggerUserInData) {
+        const loggedUserUpvotedAnswers = await database.getMostUpvotedAnswers({
+          author: userRef,
+          options,
         });
 
-        if (!findLoggerUserInData) {
-          const userRef = `user:default/${loggedUser.toString()}`;
-          const loggedUserUpvotedAnswers = await database.getMostUpvotedAnswers(
-            {
-              author: userRef,
-              options,
-            },
-          );
+        if (loggedUserUpvotedAnswers) {
+          rankingResponse.loggedUser!.author =
+            loggedUserUpvotedAnswers.length > 0
+              ? loggedUserUpvotedAnswers[0].author
+              : userRef;
 
-          if (loggedUserUpvotedAnswers) {
-            rankingResponse.loggedUser!.author =
-              loggedUserUpvotedAnswers.length > 0
-                ? loggedUserUpvotedAnswers[0].author
-                : userRef;
+          rankingResponse.loggedUser!.total =
+            loggedUserUpvotedAnswers.length > 0
+              ? loggedUserUpvotedAnswers[0].total
+              : 0;
 
-            rankingResponse.loggedUser!.total =
-              loggedUserUpvotedAnswers.length > 0
-                ? loggedUserUpvotedAnswers[0].total
-                : 0;
-
-            rankingResponse.loggedUser!.position = `${mostUpvotedAnswers.length}+`;
-          }
-        } else {
-          rankingResponse.loggedUser = findLoggerUserInData;
+          rankingResponse.loggedUser!.position = `${mostUpvotedAnswers.length}+`;
         }
+      } else {
+        rankingResponse.loggedUser = findLoggerUserInData;
       }
 
       return response.status(200).json(rankingResponse);
     },
   );
 
-  // GET /statistics/answers/top-correct-upvoted-users?period=x&limit=x&loggedUser=x
+  // GET /statistics/answers/top-correct-upvoted-users?period=x&limit=x
   router.get(
     '/statistics/answers/top-correct-upvoted-users',
     async (request, response) => {
       const { period, limit } = request.query;
+      const userRef = await getUsername(request);
 
       const options: StatisticsOptions = {
         period: period && stringDateTime(period?.toString()),
         limit: Number(limit),
-        loggedUser: await getUsername(request),
       };
 
       const mostUpvotedCorrectAnswers: Statistic[] =
@@ -1016,36 +1009,32 @@ export async function createRouter({
         return response.status(204).json(rankingResponse);
       }
 
-      if (options.loggedUser) {
-        const findLoggerUserInData = mostUpvotedCorrectAnswers.find(
-          userStats => {
-            return userStats.author?.includes(options.loggedUser || '');
-          },
-        );
+      const findLoggerUserInData = mostUpvotedCorrectAnswers.find(userStats => {
+        return userStats.author?.includes(userRef);
+      });
 
-        if (!findLoggerUserInData) {
-          const loggedUserUpvotedCorrectAnswers =
-            await database.getMostUpvotedCorrectAnswers({
-              author: options.loggedUser,
-              options,
-            });
+      if (!findLoggerUserInData) {
+        const loggedUserUpvotedCorrectAnswers =
+          await database.getMostUpvotedCorrectAnswers({
+            author: userRef,
+            options,
+          });
 
-          if (loggedUserUpvotedCorrectAnswers) {
-            rankingResponse.loggedUser!.author =
-              loggedUserUpvotedCorrectAnswers.length > 0
-                ? loggedUserUpvotedCorrectAnswers[0].author
-                : options.loggedUser;
+        if (loggedUserUpvotedCorrectAnswers) {
+          rankingResponse.loggedUser!.author =
+            loggedUserUpvotedCorrectAnswers.length > 0
+              ? loggedUserUpvotedCorrectAnswers[0].author
+              : userRef;
 
-            rankingResponse.loggedUser!.total =
-              loggedUserUpvotedCorrectAnswers.length > 0
-                ? loggedUserUpvotedCorrectAnswers[0].total
-                : 0;
+          rankingResponse.loggedUser!.total =
+            loggedUserUpvotedCorrectAnswers.length > 0
+              ? loggedUserUpvotedCorrectAnswers[0].total
+              : 0;
 
-            rankingResponse.loggedUser!.position = `${mostUpvotedCorrectAnswers.length}+`;
-          }
-        } else {
-          rankingResponse.loggedUser = findLoggerUserInData;
+          rankingResponse.loggedUser!.position = `${mostUpvotedCorrectAnswers.length}+`;
         }
+      } else {
+        rankingResponse.loggedUser = findLoggerUserInData;
       }
 
       return response.status(200).json(rankingResponse);
