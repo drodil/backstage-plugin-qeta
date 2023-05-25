@@ -1,4 +1,8 @@
 import {
+  StatisticResponse,
+  StatisticsRequestParameters,
+} from '@drodil/backstage-plugin-qeta-common';
+import {
   AnswerRequest,
   AnswerResponse,
   AnswerResponseBody,
@@ -42,6 +46,21 @@ export interface QetaApi {
   getQuestion(id: string | undefined): Promise<QuestionResponse>;
 
   getTags(): Promise<TagResponse[]>;
+
+  getMostUpvotedQuestions({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<StatisticResponse>;
+
+  getMostUpvotedAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<StatisticResponse>;
+
+  getMostUpvotedCorrectAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<StatisticResponse>;
 
   voteQuestionUp(id: number): Promise<QuestionResponse>;
 

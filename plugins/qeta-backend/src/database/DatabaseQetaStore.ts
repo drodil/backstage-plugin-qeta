@@ -16,6 +16,10 @@ import {
   TagResponse,
   Vote,
 } from './QetaStore';
+import {
+  Statistic,
+  StatisticsRequestParameters,
+} from '@drodil/backstage-plugin-qeta-common';
 
 const migrationsDir = resolvePackagePath(
   '@drodil/backstage-plugin-qeta-backend',
@@ -584,6 +588,156 @@ export class DatabaseQetaStore implements QetaStore {
         questionsCount: this.mapToInteger(tag.questionsCount),
       };
     });
+  }
+
+  async getMostUpvotedQuestions({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]> {
+    const query = this.db<Statistic>('questions as q')
+      .sum('qv.score as total')
+      .select('q.author')
+      .join('question_votes as qv', 'q.id', 'qv.questionId')
+      .groupBy('q.author')
+      .orderBy('total', 'desc');
+
+    if (author) {
+      query.where('q.author', '=', author);
+    }
+
+    if (options?.period) {
+      query.where('q.created', '>', options.period);
+    }
+
+    if (options?.limit) {
+      query.limit(options.limit);
+    }
+
+    const rows = (await query) as unknown as Statistic[];
+
+    // This can probably be replaced to use
+    // DENSE_RANK() over (total) directly by the  query
+    rows.map((row, index) => {
+      row.position = `${index + 1}`;
+    });
+
+    return rows;
+  }
+
+  async getTotalQuestions({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]> {
+    const query = this.db<Statistic>('questions as q')
+      .count('q.id as total')
+      .select('q.author')
+      .groupBy('author');
+
+    if (author) {
+      query.where('q.author', '=', author);
+    }
+
+    if (options?.period) {
+      query.where('q.created', '>', options.period);
+    }
+
+    const rows = await query;
+
+    return rows;
+  }
+
+  async getMostUpvotedAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]> {
+    const query = this.db<Statistic>('answers as a')
+      .sum('av.score as total')
+      .select('a.author')
+      .join('answer_votes as av', 'a.id', 'av.answerId')
+      .groupBy('a.author')
+      .orderBy('total', 'desc');
+
+    if (author) {
+      query.where('a.author', '=', author);
+    }
+
+    if (options?.period) {
+      query.where('a.created', '>', options.period);
+    }
+
+    if (options?.limit) {
+      query.limit(options.limit);
+    }
+
+    const rows = (await query) as unknown as Statistic[];
+
+    rows.map((row, index) => {
+      row.position = `${index + 1}`;
+    });
+
+    return rows;
+  }
+
+  async getMostUpvotedCorrectAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]> {
+    const query = this.db<Statistic>('answers as a')
+      .sum('av.score as total')
+      .select('a.author')
+      .join('answer_votes as av', 'a.id', 'av.answerId')
+      .groupBy('a.author')
+      .orderBy('total', 'desc')
+      .where('a.correct', '=', true);
+
+    if (author) {
+      query.where('a.author', '=', author);
+    }
+
+    if (options?.period) {
+      query.where('a.created', '>', options.period);
+    }
+
+    if (options?.limit) {
+      query.limit(options.limit);
+    }
+
+    const rows = (await query) as unknown as Statistic[];
+
+    rows.map((row, index) => {
+      row.position = `${index + 1}`;
+    });
+
+    return rows;
+  }
+
+  async getTotalAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]> {
+    const query = this.db<Statistic>('answers as a')
+      .count('a.id as total')
+      .select('a.author')
+      .groupBy('author');
+
+    if (author) {
+      query.where('a.author', '=', author);
+    }
+
+    if (options?.period) {
+      query.where('a.created', '>', options.period);
+    }
+    if (options?.limit) {
+      query.limit(options.limit);
+    }
+
+    const rows = (await query) as unknown as Statistic[];
+
+    rows.map((row, index) => {
+      row.position = `${index + 1}`;
+    });
+
+    return rows;
   }
 
   async postAttachment({

@@ -33,6 +33,24 @@ export interface ServerOptions {
   logger: Logger;
 }
 
+const getRandomMarvelCharacter = () => {
+  const characters: string[] = [
+    'user:default/iron_man',
+    'user:default/captain_america',
+    'user:default/thor',
+    'user:default/hulk',
+    'user:default/black_widow',
+    'user:default/spider_man',
+    'user:default/black_panther',
+    'user:default/doctor_strange',
+    'user:default/captain_marvel',
+    'user:default/scarlet_witch',
+  ];
+
+  const randomIndex = Math.floor(Math.random() * characters.length);
+  return characters[randomIndex];
+};
+
 export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
@@ -56,7 +74,7 @@ export async function startStandaloneServer(
         identity: {
           type: 'user',
           ownershipEntityRefs: [],
-          userEntityRef: token || 'user:default/john_doe',
+          userEntityRef: token || getRandomMarvelCharacter(),
         },
         token: token || 'no-token',
       };

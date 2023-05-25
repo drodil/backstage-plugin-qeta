@@ -15,6 +15,10 @@ import {
 } from './types';
 import omitBy from 'lodash/omitBy';
 import isEmpty from 'lodash/isEmpty';
+import {
+  StatisticResponse,
+  StatisticsRequestParameters,
+} from '@drodil/backstage-plugin-qeta-common';
 
 export const qetaApiRef = createApiRef<QetaApi>({
   id: 'plugin.qeta.service',
@@ -459,6 +463,58 @@ export class QetaClient implements QetaApi {
 
     const response = await fetch(qetaUrl, requestOptions);
     return (await response.json()) as AttachmentResponseBody;
+  }
+
+  async getMostUpvotedAnswers(
+    options: StatisticsRequestParameters,
+  ): Promise<StatisticResponse> {
+    const query = this.getQueryParameters(options).toString();
+
+    let url = `${this.baseUrl}/api/qeta/statistics/answers/top-upvoted-users`;
+    if (query) {
+      url += `?${query}`;
+    }
+
+    const response = await this.fetchApi.fetch(url);
+
+    const data = (await response.json()) as StatisticResponse;
+
+    return data;
+  }
+
+  async getMostUpvotedCorrectAnswers(
+    options: StatisticsRequestParameters,
+  ): Promise<StatisticResponse> {
+    const query = this.getQueryParameters(options).toString();
+    let url = `${this.baseUrl}/api/qeta/statistics/answers/top-correct-upvoted-users`;
+
+    if (query) {
+      url += `?${query}`;
+    }
+
+    const response = await this.fetchApi.fetch(url);
+
+    const data = (await response.json()) as StatisticResponse;
+
+    return data;
+  }
+
+  async getMostUpvotedQuestions(
+    options: StatisticsRequestParameters,
+  ): Promise<StatisticResponse> {
+    const query = this.getQueryParameters(options).toString();
+
+    let url = `${this.baseUrl}/api/qeta/statistics/answers/top-correct-upvoted-users`;
+
+    if (query) {
+      url += `?${query}`;
+    }
+
+    const response = await this.fetchApi.fetch(url);
+
+    const data = (await response.json()) as StatisticResponse;
+
+    return data;
   }
 
   private getQueryParameters(params: any): URLSearchParams {

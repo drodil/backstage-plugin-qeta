@@ -1,3 +1,8 @@
+import {
+  Statistic,
+  StatisticsRequestParameters,
+} from '@drodil/backstage-plugin-qeta-common';
+
 export interface Question {
   id: number;
   author: string;
@@ -361,4 +366,25 @@ export interface QetaStore {
   }: AttachmentParameters): Promise<Attachment>;
 
   getAttachment(uuid: string): Promise<Attachment | undefined>;
+
+  getMostUpvotedQuestions({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]>;
+  getTotalQuestions({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]>;
+  getMostUpvotedAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]>;
+  getMostUpvotedCorrectAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]>;
+  getTotalAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<Statistic[]>;
 }

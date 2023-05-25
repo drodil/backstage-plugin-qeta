@@ -3723,6 +3723,7 @@ __metadata:
     ajv: ^8.11.0
     ajv-formats: ^2.1.1
     body-parser: ^1.20.2
+    date-fns: ^2.30.0
     express: ^4.17.3
     express-promise-router: ^4.1.0
     file-type: 16.5.4
@@ -9815,7 +9816,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.16.1, date-fns@npm:^2.29.1":
+"date-fns@npm:^2.16.1, date-fns@npm:^2.29.1, date-fns@npm:^2.30.0":
   version: 2.30.0
   resolution: "date-fns@npm:2.30.0"
   dependencies:
