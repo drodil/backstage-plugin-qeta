@@ -29,6 +29,43 @@ import {
   AuthorizeResult,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
+import { Statistic } from '@drodil/backstage-plugin-qeta-common';
+
+const mostUpvotedQuestions: Statistic[] = [
+  {
+    total: 5,
+    author: 'user:default/captain_america',
+    position: '1',
+  },
+  {
+    total: 4,
+    author: 'user:default/black_widow',
+    position: '2',
+  },
+  {
+    total: 2,
+    author: 'user:default/spider_man',
+    position: '3',
+  },
+];
+
+const mostUpvotedAnswers: Statistic[] = [
+  {
+    total: 9,
+    author: 'user:default/iron_man',
+    position: '1',
+  },
+  {
+    total: 8,
+    author: 'user:default/john_doe',
+    position: '2',
+  },
+  {
+    total: 7,
+    author: 'user:default/scarlet_witch',
+    position: '3',
+  },
+];
 
 const question: Question = {
   id: 1,
@@ -607,6 +644,242 @@ describe('createRouter', () => {
       getIdentityMock.mockResolvedValue(undefined);
       const response = await request(app).get(
         '/questions/1/answers/2/incorrect',
+      );
+      expect(response.status).toEqual(401);
+    });
+  });
+
+  describe('GET /statistics/questions/top-upvoted-users', () => {
+    it('returns the users with the best voted questions', async () => {
+      getIdentityMock.mockResolvedValueOnce({
+        identity: {
+          userEntityRef: 'user:default/thor',
+          type: 'user',
+          ownershipEntityRefs: [],
+        },
+        token: 'dummy',
+      });
+
+      qetaStore.getMostUpvotedQuestions.mockResolvedValueOnce(
+        mostUpvotedQuestions,
+      );
+
+      qetaStore.getMostUpvotedQuestions.mockResolvedValueOnce([
+        {
+          total: 1,
+          author: 'user:default/thor',
+          position: '1',
+        },
+      ]);
+
+      const response = await request(app).get(
+        '/statistics/questions/top-upvoted-users',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body.ranking.length).toBeGreaterThan(0);
+      expect(response.body.loggedUser.author).toBeDefined();
+      expect(response.body.loggedUser.position).toBeDefined();
+      expect(response.body.loggedUser.total).toBeDefined();
+    });
+
+    it('ensure that the position of the logged user is equal to the ranking', async () => {
+      getIdentityMock.mockResolvedValueOnce({
+        identity: {
+          userEntityRef: 'user:default/captain_america',
+          type: 'user',
+          ownershipEntityRefs: [],
+        },
+        token: 'dummy',
+      });
+
+      qetaStore.getMostUpvotedQuestions.mockResolvedValueOnce(
+        mostUpvotedQuestions,
+      );
+
+      const response = await request(app).get(
+        '/statistics/questions/top-upvoted-users',
+      );
+
+      expect(qetaStore.getMostUpvotedQuestions).toHaveBeenCalledTimes(1);
+      expect(response.status).toEqual(200);
+      expect(response.body.ranking.length).toBeGreaterThan(0);
+      expect(response.body.loggedUser.author).toEqual(
+        'user:default/captain_america',
+      );
+      expect(response.body.loggedUser.position).toEqual('1');
+      expect(response.body.loggedUser.total).toEqual(5);
+    });
+
+    it('empty ranking', async () => {
+      qetaStore.getMostUpvotedQuestions.mockResolvedValueOnce([]);
+
+      const response = await request(app).get(
+        '/statistics/questions/top-upvoted-users',
+      );
+      expect(qetaStore.getMostUpvotedQuestions).toHaveBeenCalledTimes(1);
+      expect(response.status).toEqual(204);
+    });
+
+    it('unauthorized', async () => {
+      getIdentityMock.mockResolvedValue(undefined);
+      const response = await request(app).get(
+        '/statistics/questions/top-upvoted-users',
+      );
+      expect(response.status).toEqual(401);
+    });
+  });
+
+  describe('GET /statistics/answers/top-upvoted-users', () => {
+    it('returns the users with the best voted answers', async () => {
+      getIdentityMock.mockResolvedValueOnce({
+        identity: {
+          userEntityRef: 'user:default/thanos',
+          type: 'user',
+          ownershipEntityRefs: [],
+        },
+        token: 'dummy',
+      });
+
+      qetaStore.getMostUpvotedAnswers.mockResolvedValueOnce(mostUpvotedAnswers);
+
+      qetaStore.getMostUpvotedAnswers.mockResolvedValueOnce([
+        {
+          total: 1,
+          author: 'user:default/thanos',
+          position: '1',
+        },
+      ]);
+
+      const response = await request(app).get(
+        '/statistics/answers/top-upvoted-users',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body.ranking.length).toBeGreaterThan(0);
+      expect(response.body.loggedUser.author).toBeDefined();
+      expect(response.body.loggedUser.position).toBeDefined();
+      expect(response.body.loggedUser.total).toBeDefined();
+    });
+
+    it('ensure that the position of the logged user is equal to the ranking', async () => {
+      getIdentityMock.mockResolvedValueOnce({
+        identity: {
+          userEntityRef: 'user:default/iron_man',
+          type: 'user',
+          ownershipEntityRefs: [],
+        },
+        token: 'dummy',
+      });
+
+      qetaStore.getMostUpvotedAnswers.mockResolvedValueOnce(mostUpvotedAnswers);
+
+      const response = await request(app).get(
+        '/statistics/answers/top-upvoted-users',
+      );
+
+      expect(qetaStore.getMostUpvotedAnswers).toHaveBeenCalledTimes(1);
+      expect(response.status).toEqual(200);
+      expect(response.body.ranking.length).toBeGreaterThan(0);
+      expect(response.body.loggedUser.author).toEqual('user:default/iron_man');
+      expect(response.body.loggedUser.position).toEqual('1');
+      expect(response.body.loggedUser.total).toEqual(9);
+    });
+
+    it('empty ranking', async () => {
+      qetaStore.getMostUpvotedAnswers.mockResolvedValueOnce([]);
+
+      const response = await request(app).get(
+        '/statistics/answers/top-upvoted-users',
+      );
+
+      expect(qetaStore.getMostUpvotedAnswers).toHaveBeenCalledTimes(1);
+      expect(response.status).toEqual(204);
+    });
+
+    it('unauthorized', async () => {
+      getIdentityMock.mockResolvedValue(undefined);
+      const response = await request(app).get(
+        '/statistics/answers/top-upvoted-users',
+      );
+      expect(response.status).toEqual(401);
+    });
+  });
+
+  describe('GET /statistics/answers/top-correct-upvoted-users', () => {
+    it('returns the users with the best voted correct answers', async () => {
+      getIdentityMock.mockResolvedValueOnce({
+        identity: {
+          userEntityRef: 'user:default/peter_parker',
+          type: 'user',
+          ownershipEntityRefs: [],
+        },
+        token: 'dummy',
+      });
+
+      qetaStore.getMostUpvotedCorrectAnswers.mockResolvedValueOnce(
+        mostUpvotedAnswers,
+      );
+
+      qetaStore.getMostUpvotedCorrectAnswers.mockResolvedValueOnce([
+        {
+          total: 1,
+          author: 'user:default/peter_parker',
+          position: '1',
+        },
+      ]);
+
+      const response = await request(app).get(
+        '/statistics/answers/top-correct-upvoted-users',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body.ranking.length).toBeGreaterThan(0);
+      expect(response.body.loggedUser.author).toBeDefined();
+      expect(response.body.loggedUser.position).toBeDefined();
+      expect(response.body.loggedUser.total).toBeDefined();
+    });
+
+    it('ensure that the position of the logged user is equal to the ranking', async () => {
+      getIdentityMock.mockResolvedValueOnce({
+        identity: {
+          userEntityRef: 'user:default/iron_man',
+          type: 'user',
+          ownershipEntityRefs: [],
+        },
+        token: 'dummy',
+      });
+
+      qetaStore.getMostUpvotedCorrectAnswers.mockResolvedValueOnce(
+        mostUpvotedAnswers,
+      );
+
+      const response = await request(app).get(
+        '/statistics/answers/top-correct-upvoted-users',
+      );
+
+      expect(qetaStore.getMostUpvotedCorrectAnswers).toHaveBeenCalledTimes(1);
+      expect(response.status).toEqual(200);
+      expect(response.body.ranking.length).toBeGreaterThan(0);
+      expect(response.body.loggedUser.author).toEqual('user:default/iron_man');
+      expect(response.body.loggedUser.position).toEqual('1');
+      expect(response.body.loggedUser.total).toEqual(9);
+    });
+
+    it('empty ranking', async () => {
+      qetaStore.getMostUpvotedCorrectAnswers.mockResolvedValueOnce([]);
+
+      const response = await request(app).get(
+        '/statistics/answers/top-correct-upvoted-users',
+      );
+      expect(qetaStore.getMostUpvotedCorrectAnswers).toHaveBeenCalledTimes(1);
+      expect(response.status).toEqual(204);
+    });
+
+    it('unauthorized', async () => {
+      getIdentityMock.mockResolvedValue(undefined);
+      const response = await request(app).get(
+        '/statistics/answers/top-correct-upvoted-users',
       );
       expect(response.status).toEqual(401);
     });

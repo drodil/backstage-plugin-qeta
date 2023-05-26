@@ -173,6 +173,7 @@ export async function createRouter({
 
   const getUsername = async (req: Request<unknown>): Promise<string> => {
     const user = await identity.getIdentity({ request: req });
+
     const allowAnonymous = config.getOptionalBoolean('qeta.allowAnonymous');
     if (!user) {
       if (allowAnonymous) {
