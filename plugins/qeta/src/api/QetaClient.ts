@@ -20,7 +20,6 @@ import {
   StatisticResponse,
   StatisticsRequestParameters,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useAsync } from 'react-use';
 
 export const qetaApiRef = createApiRef<QetaApi>({
   id: 'plugin.qeta.service',
@@ -504,9 +503,7 @@ export class QetaClient implements QetaApi {
   async getMostUpvotedQuestions(
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
-    console.log(options.options);
     const query = this.getQueryParameters(options.options).toString();
-    console.log('query', query);
     let url = `${this.baseUrl}/api/qeta/statistics/answers/top-correct-upvoted-users`;
 
     if (query) {
@@ -528,8 +525,6 @@ export class QetaClient implements QetaApi {
       this.getMostUpvotedAnswers(options),
       this.getMostUpvotedCorrectAnswers(options),
     ]);
-
-    console.log(response);
 
     return response;
   }

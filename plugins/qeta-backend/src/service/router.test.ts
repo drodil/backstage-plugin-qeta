@@ -35,17 +35,17 @@ const mostUpvotedQuestions: Statistic[] = [
   {
     total: 5,
     author: 'user:default/captain_america',
-    position: '1',
+    position: 1,
   },
   {
     total: 4,
     author: 'user:default/black_widow',
-    position: '2',
+    position: 2,
   },
   {
     total: 2,
     author: 'user:default/spider_man',
-    position: '3',
+    position: 3,
   },
 ];
 
@@ -53,17 +53,17 @@ const mostUpvotedAnswers: Statistic[] = [
   {
     total: 9,
     author: 'user:default/iron_man',
-    position: '1',
+    position: 1,
   },
   {
     total: 8,
     author: 'user:default/john_doe',
-    position: '2',
+    position: 2,
   },
   {
     total: 7,
     author: 'user:default/scarlet_witch',
-    position: '3',
+    position: 3,
   },
 ];
 
@@ -668,7 +668,7 @@ describe('createRouter', () => {
         {
           total: 1,
           author: 'user:default/thor',
-          position: '1',
+          position: 1,
         },
       ]);
 
@@ -747,7 +747,7 @@ describe('createRouter', () => {
         {
           total: 1,
           author: 'user:default/thanos',
-          position: '1',
+          position: 1,
         },
       ]);
 
@@ -825,7 +825,7 @@ describe('createRouter', () => {
         {
           total: 1,
           author: 'user:default/peter_parker',
-          position: '1',
+          position: 1,
         },
       ]);
 

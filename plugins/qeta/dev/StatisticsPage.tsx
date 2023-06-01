@@ -1,6 +1,6 @@
 import React from 'react';
 import { Content, Page } from '@backstage/core-components';
-import { Card, CardContent, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { TopRankingUsers } from '../src/components/StatisticsCards/TopRankingUsersCard';
 
 export const StatisticsPage = () => {
