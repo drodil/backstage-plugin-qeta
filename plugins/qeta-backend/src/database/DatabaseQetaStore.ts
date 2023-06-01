@@ -618,7 +618,7 @@ export class DatabaseQetaStore implements QetaStore {
     // This can probably be replaced to use
     // DENSE_RANK() over (total) directly by the  query
     rows.map((row, index) => {
-      row.position = `${index + 1}`;
+      row.position = index + 1;
     });
 
     return rows;
@@ -672,7 +672,7 @@ export class DatabaseQetaStore implements QetaStore {
     const rows = (await query) as unknown as Statistic[];
 
     rows.map((row, index) => {
-      row.position = `${index + 1}`;
+      row.position = index + 1;
     });
 
     return rows;
@@ -705,7 +705,7 @@ export class DatabaseQetaStore implements QetaStore {
     const rows = (await query) as unknown as Statistic[];
 
     rows.map((row, index) => {
-      row.position = `${index + 1}`;
+      row.position = index + 1;
     });
 
     return rows;
@@ -734,7 +734,7 @@ export class DatabaseQetaStore implements QetaStore {
     const rows = (await query) as unknown as Statistic[];
 
     rows.map((row, index) => {
-      row.position = `${index + 1}`;
+      row.position = index + 1;
     });
 
     return rows;

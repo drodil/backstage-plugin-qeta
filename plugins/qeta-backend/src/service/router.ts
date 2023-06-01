@@ -917,7 +917,8 @@ export async function createRouter({
               ? loggedUserUpvotedQuestions[0].total
               : 0;
 
-          rankingResponse.loggedUser!.position = `${mostUpvotedQuestions.length}+`;
+          rankingResponse.loggedUser!.position =
+            mostUpvotedQuestions.length === 1 ? 0 : mostUpvotedQuestions.length;
         }
       } else {
         rankingResponse.loggedUser = findLoggerUserInData;
@@ -974,7 +975,8 @@ export async function createRouter({
               ? loggedUserUpvotedAnswers[0].total
               : 0;
 
-          rankingResponse.loggedUser!.position = `${mostUpvotedAnswers.length}+`;
+          rankingResponse.loggedUser!.position =
+            mostUpvotedAnswers.length === 1 ? 0 : mostUpvotedAnswers.length;
         }
       } else {
         rankingResponse.loggedUser = findLoggerUserInData;
@@ -1032,7 +1034,10 @@ export async function createRouter({
               ? loggedUserUpvotedCorrectAnswers[0].total
               : 0;
 
-          rankingResponse.loggedUser!.position = `${mostUpvotedCorrectAnswers.length}+`;
+          rankingResponse.loggedUser!.position =
+            mostUpvotedCorrectAnswers.length === 1
+              ? 0
+              : mostUpvotedCorrectAnswers.length;
         }
       } else {
         rankingResponse.loggedUser = findLoggerUserInData;

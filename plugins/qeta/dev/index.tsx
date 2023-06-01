@@ -13,6 +13,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { CatalogClient } from '@backstage/catalog-client';
 import { TablePage } from './TablePage';
 import { HomePage } from './HomePage';
+import { StatisticsPage } from './StatisticsPage';
 
 const apiFactories: AnyApiFactory[] = [
   createApiFactory({
@@ -52,5 +53,10 @@ createDevApp()
     element: <HomePage />,
     title: 'Home Page',
     path: '/home',
+  })
+  .addPage({
+    element: <StatisticsPage />,
+    title: 'Statistics Components',
+    path: '/statistics',
   })
   .render();
