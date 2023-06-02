@@ -707,7 +707,7 @@ describe('createRouter', () => {
       expect(response.body.loggedUser.author).toEqual(
         'user:default/captain_america',
       );
-      expect(response.body.loggedUser.position).toEqual('1');
+      expect(response.body.loggedUser.position).toEqual(1);
       expect(response.body.loggedUser.total).toEqual(5);
     });
 
@@ -782,7 +782,7 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.body.ranking.length).toBeGreaterThan(0);
       expect(response.body.loggedUser.author).toEqual('user:default/iron_man');
-      expect(response.body.loggedUser.position).toEqual('1');
+      expect(response.body.loggedUser.position).toEqual(1);
       expect(response.body.loggedUser.total).toEqual(9);
     });
 
@@ -862,7 +862,7 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.body.ranking.length).toBeGreaterThan(0);
       expect(response.body.loggedUser.author).toEqual('user:default/iron_man');
-      expect(response.body.loggedUser.position).toEqual('1');
+      expect(response.body.loggedUser.position).toEqual(1);
       expect(response.body.loggedUser.total).toEqual(9);
     });
 
