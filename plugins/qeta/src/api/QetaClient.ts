@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { QetaApi } from './QetaApi';
 import { ConfigApi, createApiRef, FetchApi } from '@backstage/core-plugin-api';
 import { CustomErrorBase } from '@backstage/errors';
@@ -468,7 +469,7 @@ export class QetaClient implements QetaApi {
   async getMostUpvotedAnswers(
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
-    const query = this.getQueryParameters(options).toString();
+    const query = this.getQueryParameters(options.options).toString();
 
     let url = `${this.baseUrl}/api/qeta/statistics/answers/top-upvoted-users`;
     if (query) {
@@ -485,7 +486,7 @@ export class QetaClient implements QetaApi {
   async getMostUpvotedCorrectAnswers(
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
-    const query = this.getQueryParameters(options).toString();
+    const query = this.getQueryParameters(options.options).toString();
     let url = `${this.baseUrl}/api/qeta/statistics/answers/top-correct-upvoted-users`;
 
     if (query) {
@@ -502,8 +503,7 @@ export class QetaClient implements QetaApi {
   async getMostUpvotedQuestions(
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
-    const query = this.getQueryParameters(options).toString();
-
+    const query = this.getQueryParameters(options.options).toString();
     let url = `${this.baseUrl}/api/qeta/statistics/answers/top-correct-upvoted-users`;
 
     if (query) {
@@ -515,6 +515,18 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as StatisticResponse;
 
     return data;
+  }
+
+  async getTopStatisticsHomepage(
+    options: StatisticsRequestParameters,
+  ): Promise<StatisticResponse[]> {
+    const response = await Promise.all([
+      this.getMostUpvotedQuestions(options),
+      this.getMostUpvotedAnswers(options),
+      this.getMostUpvotedCorrectAnswers(options),
+    ]);
+
+    return response;
   }
 
   private getQueryParameters(params: any): URLSearchParams {

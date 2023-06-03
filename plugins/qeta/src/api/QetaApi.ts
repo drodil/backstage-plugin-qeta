@@ -62,6 +62,11 @@ export interface QetaApi {
     options,
   }: StatisticsRequestParameters): Promise<StatisticResponse>;
 
+  getTopStatisticsHomepage({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<StatisticResponse[]>;
+
   voteQuestionUp(id: number): Promise<QuestionResponse>;
 
   voteQuestionDown(id: number): Promise<QuestionResponse>;

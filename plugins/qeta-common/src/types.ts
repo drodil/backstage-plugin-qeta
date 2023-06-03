@@ -6,7 +6,7 @@ export interface StatisticResponse {
 export interface Statistic {
   author?: string;
   total?: number;
-  position?: string;
+  position?: number;
 }
 
 export interface StatisticsOptions {
