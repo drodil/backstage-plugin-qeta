@@ -1,13 +1,13 @@
-import React, { ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import {
   CardTab,
+  Link,
   Progress,
   TabbedCard,
   WarningPanel,
 } from '@backstage/core-components';
 import {
   Avatar,
-  Grid,
   List,
   ListItem,
   ListItemAvatar,
@@ -27,20 +27,24 @@ type RankingIcon = {
 const DefaultRankingIcons = new Map<number, ReactNode>([
   [
     1,
-    <TrophyIcon style={{ color: '#DAA520', height: '100%', width: '100%' }} />,
+    <TrophyIcon
+      style={{ color: '#DAA520', height: '2.2rem', width: '2.2rem' }}
+    />,
   ],
   [
     2,
-    <TrophyIcon style={{ color: '#C0C0C0', height: '100%', width: '100%' }} />,
+    <TrophyIcon
+      style={{ color: '#C0C0C0', height: '2.1rem', width: '2.1rem' }}
+    />,
   ],
   [
     3,
-    <TrophyIcon style={{ color: '#B87333', height: '100%', width: '100%' }} />,
+    <TrophyIcon style={{ color: '#B87333', height: '2rem', width: '2rem' }} />,
   ],
 ]);
 
 const DefaultUserIcon = (
-  <TrophyIcon style={{ height: '100%', width: '100%' }} />
+  <TrophyIcon style={{ height: '2rem', width: '2rem' }} />
 );
 
 const getOrdinal = (n: number) => {
@@ -92,16 +96,18 @@ export const RankingRow = (props: {
           <div style={{ display: 'flex' }}>
             <Typography
               style={{ marginRight: '10px', fontWeight: 400 }}
-              variant="h6"
+              variant="subtitle1"
             >{`${ordinalPosition}`}</Typography>
-            <Typography variant="h3">{`${name}`}</Typography>
+            <Link
+              to={`/qeta/users/${name}`}
+              variant="subtitle1"
+            >{`${name}`}</Link>
           </div>
         }
       />
 
       <div className={classes.votesText}>
-        <Typography variant="h3">{props?.votes}</Typography>
-        <Typography variant="h5">votes</Typography>
+        <Typography variant="subtitle1">{props?.votes} votes</Typography>
       </div>
     </ListItem>
   );
@@ -129,7 +135,7 @@ export const RankingCard = (props: {
             />
           );
         })}
-        <span>Your Ranking</span>
+        <hr />
         <RankingRow
           votes={props.statistic?.loggedUser?.total || 0}
           position={props.statistic?.loggedUser?.position || 0}
@@ -170,7 +176,7 @@ export const TopRankingUsers = (props: {
     },
   ];
 
-  if (error || topStatistics === undefined) {
+  if ((error || topStatistics === undefined) && !loading) {
     return (
       <WarningPanel severity="error" title="Could not load statistics.">
         {error?.message}
@@ -178,27 +184,31 @@ export const TopRankingUsers = (props: {
     );
   }
 
+  let content: ReactElement[];
+
+  if (loading) {
+    content = [
+      <CardTab>
+        <Progress />
+      </CardTab>,
+    ];
+  } else if (topStatistics && topStatistics.length > 0) {
+    content = topStatistics?.map((stats, index) => {
+      return (
+        <CardTab label={tabData[index].title}>
+          <RankingCard
+            description={tabData[index].description}
+            limit={3}
+            statistic={stats}
+          />
+        </CardTab>
+      );
+    });
+  } else {
+    content = [<CardTab>No statistics available</CardTab>];
+  }
+
   return (
-    <>
-      <Grid container>
-        {loading ? (
-          <Progress />
-        ) : (
-          <TabbedCard title={props.title || 'Ranking Q&A 🏆'}>
-            {topStatistics?.map((stats, index) => {
-              return (
-                <CardTab label={tabData[index].title}>
-                  <RankingCard
-                    description={tabData[index].description}
-                    limit={3}
-                    statistic={stats}
-                  />
-                </CardTab>
-              );
-            })}
-          </TabbedCard>
-        )}
-      </Grid>
-    </>
+    <TabbedCard title={props.title || 'Ranking Q&A 🏆'}>{content}</TabbedCard>
   );
 };

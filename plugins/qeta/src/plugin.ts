@@ -1,8 +1,8 @@
 import {
-  configApiRef,
   createApiFactory,
   createPlugin,
   createRoutableExtension,
+  discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home';
@@ -17,9 +17,9 @@ export const qetaPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: qetaApiRef,
-      deps: { configApi: configApiRef, fetchApi: fetchApiRef },
-      factory: ({ configApi, fetchApi }) =>
-        new QetaClient({ configApi, fetchApi }),
+      deps: { fetchApi: fetchApiRef, discoveryApi: discoveryApiRef },
+      factory: ({ fetchApi, discoveryApi }) =>
+        new QetaClient({ fetchApi, discoveryApi }),
     }),
   ],
 });

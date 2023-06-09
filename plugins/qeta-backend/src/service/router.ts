@@ -24,13 +24,13 @@ import {
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import {
-  Statistic,
-  StatisticResponse,
-  StatisticsOptions,
   qetaCreateAnswerPermission,
   qetaCreateQuestionPermission,
   qetaPermissions,
   qetaReadPermission,
+  Statistic,
+  StatisticResponse,
+  StatisticsOptions,
 } from '@drodil/backstage-plugin-qeta-common';
 
 import {
@@ -891,10 +891,6 @@ export async function createRouter({
         loggedUser: {},
       } as StatisticResponse;
 
-      if (mostUpvotedQuestions.length === 0) {
-        return response.status(204).json(rankingResponse);
-      }
-
       const findLoggerUserInData = mostUpvotedQuestions.find(userStats => {
         return userStats.author?.includes(userRef);
       });
@@ -950,10 +946,6 @@ export async function createRouter({
         loggedUser: {},
       } as StatisticResponse;
 
-      if (mostUpvotedAnswers.length === 0) {
-        return response.status(204).json(rankingResponse);
-      }
-
       const findLoggerUserInData = mostUpvotedAnswers.find(userStats => {
         return userStats.author?.includes(userRef);
       });
@@ -1007,10 +999,6 @@ export async function createRouter({
         ranking: mostUpvotedCorrectAnswers,
         loggedUser: {},
       } as StatisticResponse;
-
-      if (mostUpvotedCorrectAnswers.length === 0) {
-        return response.status(204).json(rankingResponse);
-      }
 
       const findLoggerUserInData = mostUpvotedCorrectAnswers.find(userStats => {
         return userStats.author?.includes(userRef);

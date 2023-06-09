@@ -1,7 +1,7 @@
 import React from 'react';
 import { Content, Page } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
-import { TopRankingUsers } from '../src/components/StatisticsCards/TopRankingUsersCard';
+import { TopRankingUsers } from '../src/components/Statistics/TopRankingUsersCard';
 
 export const StatisticsPage = () => {
   return (

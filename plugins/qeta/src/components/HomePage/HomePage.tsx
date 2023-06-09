@@ -29,6 +29,7 @@ import StarIcon from '@material-ui/icons/Star';
 import AccountBox from '@material-ui/icons/AccountBox';
 import { FavoritePage } from '../FavoritePage/FavoritePage';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
+import { StatisticsPage, TrophyIcon } from '../Statistics';
 
 const MoreMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -96,6 +97,12 @@ const MoreMenu = () => {
           </ListItemIcon>
           Favorite questions
         </MenuItem>
+        <MenuItem component="a" href="/qeta/statistics">
+          <ListItemIcon className={styles.menuIcon}>
+            <TrophyIcon />
+          </ListItemIcon>
+          Statistics
+        </MenuItem>
       </Menu>
     </>
   );
@@ -157,6 +164,7 @@ export const HomePage = (props: Props) => (
       <Route path="/tags" element={<TagPage />} />
       <Route path="/tags/:tag" element={<TagPage />} />
       <Route path="/users/*" element={<UserPage />} />
+      <Route path="/statistics" element={<StatisticsPage />} />
     </Routes>
   </Page>
 );

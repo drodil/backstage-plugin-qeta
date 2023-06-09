@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
 import { QetaApi } from './QetaApi';
-import { ConfigApi, createApiRef, FetchApi } from '@backstage/core-plugin-api';
+import {
+  createApiRef,
+  DiscoveryApi,
+  FetchApi,
+} from '@backstage/core-plugin-api';
 import { CustomErrorBase } from '@backstage/errors';
 import {
   AnswerRequest,
@@ -36,12 +40,14 @@ export class QetaError extends CustomErrorBase {
 }
 
 export class QetaClient implements QetaApi {
-  private readonly baseUrl: string;
+  private baseUrl?: string;
   private readonly fetchApi: FetchApi;
 
-  constructor(options: { configApi: ConfigApi; fetchApi: FetchApi }) {
+  constructor(options: { fetchApi: FetchApi; discoveryApi: DiscoveryApi }) {
     this.fetchApi = options.fetchApi;
-    this.baseUrl = options.configApi.getString('backend.baseUrl');
+    options.discoveryApi.getBaseUrl('qeta').then(baseUrl => {
+      this.baseUrl = baseUrl;
+    });
   }
 
   async getQuestions(options: {
@@ -61,7 +67,7 @@ export class QetaClient implements QetaApi {
   }): Promise<QuestionsResponse> {
     const query = this.getQueryParameters(options).toString();
 
-    let url = `${this.baseUrl}/api/qeta/questions`;
+    let url = `${this.baseUrl}/questions`;
     if (query) {
       url += `?${query}`;
     }
@@ -82,7 +88,7 @@ export class QetaClient implements QetaApi {
   async getQuestionsList(type: string): Promise<QuestionsResponse> {
     const query = new URLSearchParams({ limit: '7' }).toString();
 
-    let url = `${this.baseUrl}/api/qeta/questions/list/${type}`;
+    let url = `${this.baseUrl}/questions/list/${type}`;
     if (query) {
       url += `?${query}`;
     }
@@ -102,14 +108,11 @@ export class QetaClient implements QetaApi {
   }
 
   async postQuestion(question: QuestionRequest): Promise<QuestionResponse> {
-    const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions`,
-      {
-        method: 'POST',
-        body: JSON.stringify(question),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    const response = await this.fetchApi.fetch(`${this.baseUrl}/questions`, {
+      method: 'POST',
+      body: JSON.stringify(question),
+      headers: { 'Content-Type': 'application/json' },
+    });
     const data = (await response.json()) as QuestionResponseBody;
 
     if ('errors' in data) {
@@ -124,7 +127,7 @@ export class QetaClient implements QetaApi {
     content: string,
   ): Promise<QuestionResponse> {
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${id}/comments`,
+      `${this.baseUrl}/questions/${id}/comments`,
       {
         method: 'POST',
         body: JSON.stringify({ content }),
@@ -145,7 +148,7 @@ export class QetaClient implements QetaApi {
     id: number,
   ): Promise<QuestionResponse> {
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${questionId}/comments/${id}`,
+      `${this.baseUrl}/questions/${questionId}/comments/${id}`,
       {
         method: 'DELETE',
       },
@@ -164,7 +167,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${id}`,
+      `${this.baseUrl}/questions/${id}`,
     );
 
     const data = (await response.json()) as QuestionResponseBody;
@@ -186,7 +189,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${id}/upvote`,
+      `${this.baseUrl}/questions/${id}/upvote`,
     );
     const data = (await response.json()) as QuestionResponseBody;
 
@@ -202,7 +205,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${id}/downvote`,
+      `${this.baseUrl}/questions/${id}/downvote`,
     );
     const data = (await response.json()) as QuestionResponseBody;
 
@@ -218,7 +221,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${id}/favorite`,
+      `${this.baseUrl}/questions/${id}/favorite`,
     );
     const data = (await response.json()) as QuestionResponseBody;
 
@@ -234,7 +237,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${id}/unfavorite`,
+      `${this.baseUrl}/questions/${id}/unfavorite`,
     );
     const data = (await response.json()) as QuestionResponseBody;
 
@@ -247,7 +250,7 @@ export class QetaClient implements QetaApi {
 
   async postAnswer(answer: AnswerRequest): Promise<AnswerResponseBody> {
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${answer.questionId}/answers`,
+      `${this.baseUrl}/questions/${answer.questionId}/answers`,
       {
         method: 'POST',
         body: JSON.stringify({ answer: answer.answer, images: answer.images }),
@@ -269,7 +272,7 @@ export class QetaClient implements QetaApi {
     content: string,
   ): Promise<AnswerResponse> {
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${id}/comments`,
+      `${this.baseUrl}/questions/${questionId}/answers/${id}/comments`,
       {
         method: 'POST',
         body: JSON.stringify({ content }),
@@ -291,7 +294,7 @@ export class QetaClient implements QetaApi {
     id: number,
   ): Promise<AnswerResponse> {
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${answerId}/comments/${id}`,
+      `${this.baseUrl}/questions/${questionId}/answers/${answerId}/comments/${id}`,
       {
         method: 'DELETE',
       },
@@ -310,7 +313,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${id}/upvote`,
+      `${this.baseUrl}/questions/${questionId}/answers/${id}/upvote`,
     );
     const data = (await response.json()) as AnswerResponseBody;
 
@@ -329,7 +332,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${id}/downvote`,
+      `${this.baseUrl}/questions/${questionId}/answers/${id}/downvote`,
     );
     const data = (await response.json()) as AnswerResponseBody;
 
@@ -345,7 +348,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${id}/correct`,
+      `${this.baseUrl}/questions/${questionId}/answers/${id}/correct`,
     );
     const data = await response;
     return data.ok;
@@ -356,7 +359,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${id}/incorrect`,
+      `${this.baseUrl}/questions/${questionId}/answers/${id}/incorrect`,
     );
     const data = await response;
     return data.ok;
@@ -367,7 +370,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${questionId}`,
+      `${this.baseUrl}/questions/${questionId}`,
       {
         method: 'DELETE',
       },
@@ -381,7 +384,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${id}`,
+      `${this.baseUrl}/questions/${questionId}/answers/${id}`,
       {
         method: 'DELETE',
       },
@@ -395,7 +398,7 @@ export class QetaClient implements QetaApi {
     question: QuestionRequest,
   ): Promise<QuestionResponse> {
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${id}`,
+      `${this.baseUrl}/questions/${id}`,
       {
         method: 'POST',
         body: JSON.stringify(question),
@@ -416,7 +419,7 @@ export class QetaClient implements QetaApi {
     answer: AnswerRequest,
   ): Promise<AnswerResponseBody> {
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${answer.questionId}/answers/${id}`,
+      `${this.baseUrl}/questions/${answer.questionId}/answers/${id}`,
       {
         method: 'POST',
         body: JSON.stringify({ answer: answer.answer, images: answer.images }),
@@ -440,7 +443,7 @@ export class QetaClient implements QetaApi {
       throw new QetaError('Invalid id provided', undefined);
     }
     const response = await this.fetchApi.fetch(
-      `${this.baseUrl}/api/qeta/questions/${questionId}/answers/${id}`,
+      `${this.baseUrl}/questions/${questionId}/answers/${id}`,
     );
     const data = (await response.json()) as AnswerResponseBody;
 
@@ -452,7 +455,7 @@ export class QetaClient implements QetaApi {
   }
 
   async postAttachment(file: Blob): Promise<AttachmentResponseBody> {
-    const qetaUrl = `${this.baseUrl}/api/qeta/attachments`;
+    const qetaUrl = `${this.baseUrl}/attachments`;
     const formData = new FormData();
 
     formData.append('image', file);
@@ -471,7 +474,7 @@ export class QetaClient implements QetaApi {
   ): Promise<StatisticResponse> {
     const query = this.getQueryParameters(options.options).toString();
 
-    let url = `${this.baseUrl}/api/qeta/statistics/answers/top-upvoted-users`;
+    let url = `${this.baseUrl}/statistics/answers/top-upvoted-users`;
     if (query) {
       url += `?${query}`;
     }
@@ -487,7 +490,7 @@ export class QetaClient implements QetaApi {
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
     const query = this.getQueryParameters(options.options).toString();
-    let url = `${this.baseUrl}/api/qeta/statistics/answers/top-correct-upvoted-users`;
+    let url = `${this.baseUrl}/statistics/answers/top-correct-upvoted-users`;
 
     if (query) {
       url += `?${query}`;
@@ -504,7 +507,7 @@ export class QetaClient implements QetaApi {
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
     const query = this.getQueryParameters(options.options).toString();
-    let url = `${this.baseUrl}/api/qeta/statistics/answers/top-correct-upvoted-users`;
+    let url = `${this.baseUrl}/statistics/answers/top-correct-upvoted-users`;
 
     if (query) {
       url += `?${query}`;
