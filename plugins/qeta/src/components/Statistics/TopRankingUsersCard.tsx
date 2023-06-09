@@ -135,12 +135,19 @@ export const RankingCard = (props: {
             />
           );
         })}
-        <hr />
-        <RankingRow
-          votes={props.statistic?.loggedUser?.total || 0}
-          position={props.statistic?.loggedUser?.position || 0}
-          userRef={props.statistic?.loggedUser?.author}
-        />
+        {!rankingStats?.some(
+          authorStats =>
+            authorStats.author === props.statistic?.loggedUser?.author,
+        ) && (
+          <>
+            <hr />
+            <RankingRow
+              votes={props.statistic?.loggedUser?.total || 0}
+              position={props.statistic?.loggedUser?.position || 0}
+              userRef={props.statistic?.loggedUser?.author}
+            />
+          </>
+        )}
       </List>
     </div>
   );

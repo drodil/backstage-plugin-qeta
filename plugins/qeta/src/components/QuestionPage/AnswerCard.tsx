@@ -63,13 +63,15 @@ export const AnswerCard = (props: {
                   <Grid item xs={9}>
                     {answerEntity.own && (
                       <Box className={styles.questionCardActions}>
-                        <Link
-                          underline="none"
-                          to="#"
-                          onClick={handleDeleteModalOpen}
-                        >
-                          Delete
-                        </Link>
+                        {!answerEntity.correct && (
+                          <Link
+                            underline="none"
+                            to="#"
+                            onClick={handleDeleteModalOpen}
+                          >
+                            Delete
+                          </Link>
+                        )}
                         <Link
                           underline="none"
                           to="#"

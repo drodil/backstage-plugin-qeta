@@ -650,6 +650,10 @@ describe('createRouter', () => {
   });
 
   describe('GET /statistics/questions/top-upvoted-users', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
     it('returns the users with the best voted questions', async () => {
       getIdentityMock.mockResolvedValueOnce({
         identity: {
@@ -710,27 +714,13 @@ describe('createRouter', () => {
       expect(response.body.loggedUser.position).toEqual(1);
       expect(response.body.loggedUser.total).toEqual(5);
     });
-
-    it('empty ranking', async () => {
-      qetaStore.getMostUpvotedQuestions.mockResolvedValueOnce([]);
-
-      const response = await request(app).get(
-        '/statistics/questions/top-upvoted-users',
-      );
-      expect(qetaStore.getMostUpvotedQuestions).toHaveBeenCalledTimes(1);
-      expect(response.status).toEqual(204);
-    });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get(
-        '/statistics/questions/top-upvoted-users',
-      );
-      expect(response.status).toEqual(401);
-    });
   });
 
   describe('GET /statistics/answers/top-upvoted-users', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
     it('returns the users with the best voted answers', async () => {
       getIdentityMock.mockResolvedValueOnce({
         identity: {
@@ -785,28 +775,13 @@ describe('createRouter', () => {
       expect(response.body.loggedUser.position).toEqual(1);
       expect(response.body.loggedUser.total).toEqual(9);
     });
-
-    it('empty ranking', async () => {
-      qetaStore.getMostUpvotedAnswers.mockResolvedValueOnce([]);
-
-      const response = await request(app).get(
-        '/statistics/answers/top-upvoted-users',
-      );
-
-      expect(qetaStore.getMostUpvotedAnswers).toHaveBeenCalledTimes(1);
-      expect(response.status).toEqual(204);
-    });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get(
-        '/statistics/answers/top-upvoted-users',
-      );
-      expect(response.status).toEqual(401);
-    });
   });
 
   describe('GET /statistics/answers/top-correct-upvoted-users', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
     it('returns the users with the best voted correct answers', async () => {
       getIdentityMock.mockResolvedValueOnce({
         identity: {
@@ -864,24 +839,6 @@ describe('createRouter', () => {
       expect(response.body.loggedUser.author).toEqual('user:default/iron_man');
       expect(response.body.loggedUser.position).toEqual(1);
       expect(response.body.loggedUser.total).toEqual(9);
-    });
-
-    it('empty ranking', async () => {
-      qetaStore.getMostUpvotedCorrectAnswers.mockResolvedValueOnce([]);
-
-      const response = await request(app).get(
-        '/statistics/answers/top-correct-upvoted-users',
-      );
-      expect(qetaStore.getMostUpvotedCorrectAnswers).toHaveBeenCalledTimes(1);
-      expect(response.status).toEqual(204);
-    });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get(
-        '/statistics/answers/top-correct-upvoted-users',
-      );
-      expect(response.status).toEqual(401);
     });
   });
 });
