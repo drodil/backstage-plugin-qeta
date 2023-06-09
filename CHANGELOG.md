@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.10.3...v1.11.0) (2023-06-09)
+
+
+### Features
+
+* add statistics page and use discovery api in the client ([1ae307c](https://github.com/drodil/backstage-plugin-qeta/commit/1ae307cb21cc0b34c2511bdfc6f8ef1432d056cf))
+* **statistics:** create top statistics component ([63db423](https://github.com/drodil/backstage-plugin-qeta/commit/63db4233da3dc1304dc6bc366a38f70fae3dd973))
+* **statistics:** create user statistics endpoints ([60baee1](https://github.com/drodil/backstage-plugin-qeta/commit/60baee13ddcda754484abaebcede389274fde97c))
+* **tests:** add tests to statistics endpoints ([038aa08](https://github.com/drodil/backstage-plugin-qeta/commit/038aa08549a0635b37f75fe6d9fa7582bbf94ca5))
+
+
+### Bug Fixes
+
+* **comments:** fix route comment ([ef18710](https://github.com/drodil/backstage-plugin-qeta/commit/ef18710da222db189f72752ac4db963b46c06927))
+* few styling improvements to question page ([1f70d06](https://github.com/drodil/backstage-plugin-qeta/commit/1f70d064e7e60a2d415e4208368d3d5ef2ae9900))
+* **lint:** fix tsc errors ([dbc11ad](https://github.com/drodil/backstage-plugin-qeta/commit/dbc11ad116b35a1ad074ba7e11c5387118b7247f))
+* **minor:** fix locally change ([3eae89f](https://github.com/drodil/backstage-plugin-qeta/commit/3eae89fcc5c7af4fe6146f9938883ee3a720a4d5))
+* tests + discovery api base url ([13c525f](https://github.com/drodil/backstage-plugin-qeta/commit/13c525f8a741a96e7a42b08ab87702c5b536e8ec))
+* **tests:** fix ci tests ([05069db](https://github.com/drodil/backstage-plugin-qeta/commit/05069db3a49f8954ed36701c9d7fdd0e76b04cbc))
+
 ### [1.10.3](https://github.com/drodil/backstage-plugin-qeta/compare/v1.10.2...v1.10.3) (2023-05-23)
 
 

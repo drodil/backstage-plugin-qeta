@@ -69,6 +69,7 @@ export const RankingRow = (props: {
 
   const ordinalPosition = props?.position ? getOrdinal(props?.position) : '';
   const name = props?.userRef?.split('/')[1];
+  const userRef = props?.userRef;
 
   const userIcon = props.rankingIcon?.userRankingIcon
     ? props.rankingIcon?.userRankingIcon
@@ -99,7 +100,7 @@ export const RankingRow = (props: {
               variant="subtitle1"
             >{`${ordinalPosition}`}</Typography>
             <Link
-              to={`/qeta/users/${name}`}
+              to={`/qeta/users/${userRef}`}
               variant="subtitle1"
             >{`${name}`}</Link>
           </div>
