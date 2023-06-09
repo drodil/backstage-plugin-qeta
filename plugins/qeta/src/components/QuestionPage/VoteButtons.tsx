@@ -138,13 +138,14 @@ export const VoteButtons = (props: {
             <span>
               <IconButton
                 aria-label="mark correct"
-                style={{
-                  color: correct ? theme.palette.success.main : undefined,
-                }}
                 size="small"
                 onClick={props.question?.own ? toggleCorrectAnswer : undefined}
               >
-                <Check />
+                <Check
+                  style={{
+                    color: correct ? theme.palette.success.main : undefined,
+                  }}
+                />
               </IconButton>
             </span>
           </Tooltip>

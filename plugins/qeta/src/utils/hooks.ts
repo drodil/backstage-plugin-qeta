@@ -186,6 +186,11 @@ export const useStyles = makeStyles(theme => {
         float: 'right',
       },
     },
+    authorLink: {
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+    },
   };
 });
 
