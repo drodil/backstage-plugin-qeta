@@ -170,7 +170,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         <Grid item>
           <Typography variant="h6">{`${
             response?.total ?? 0
-          } questions`}</Typography>
+          } ${response?.total === 1 ? 'question' : 'questions'}`}</Typography>
         </Grid>
         {(showFilters ?? true) && (
           <Grid item>
