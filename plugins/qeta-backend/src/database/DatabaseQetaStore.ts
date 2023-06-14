@@ -631,7 +631,8 @@ export class DatabaseQetaStore implements QetaStore {
     const query = this.db<Statistic>('questions as q')
       .count('q.id as total')
       .select('q.author')
-      .groupBy('author');
+      .groupBy('author')
+      .orderBy('total', 'desc');
 
     if (author) {
       query.where('q.author', '=', author);
@@ -641,7 +642,16 @@ export class DatabaseQetaStore implements QetaStore {
       query.where('q.created', '>', options.period);
     }
 
-    const rows = await query;
+    if (options?.limit) {
+      query.limit(options.limit);
+    }
+
+    const rows = (await query) as unknown as Statistic[];
+    if (!author) {
+      rows.map((row, index) => {
+        row.position = index + 1;
+      });
+    }
 
     return rows;
   }
@@ -718,7 +728,8 @@ export class DatabaseQetaStore implements QetaStore {
     const query = this.db<Statistic>('answers as a')
       .count('a.id as total')
       .select('a.author')
-      .groupBy('author');
+      .groupBy('author')
+      .orderBy('total', 'desc');
 
     if (author) {
       query.where('a.author', '=', author);
@@ -733,9 +744,11 @@ export class DatabaseQetaStore implements QetaStore {
 
     const rows = (await query) as unknown as Statistic[];
 
-    rows.map((row, index) => {
-      row.position = index + 1;
-    });
+    if (!author) {
+      rows.map((row, index) => {
+        row.position = index + 1;
+      });
+    }
 
     return rows;
   }

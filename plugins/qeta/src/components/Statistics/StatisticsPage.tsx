@@ -15,7 +15,7 @@ export const StatisticsPage = () => {
           <BackToQuestionsButton />
           <AskQuestionButton />
         </ContentHeader>
-        <TopRankingUsers />
+        <TopRankingUsers limit={10} />
       </Container>
     </Content>
   );

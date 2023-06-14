@@ -527,10 +527,46 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
+  async getMostQuestions(
+    options: StatisticsRequestParameters,
+  ): Promise<StatisticResponse> {
+    const query = this.getQueryParameters(options.options).toString();
+    let url = `${await this.getBaseUrl()}/statistics/questions/most-questions`;
+
+    if (query) {
+      url += `?${query}`;
+    }
+
+    const response = await this.fetchApi.fetch(url);
+
+    const data = (await response.json()) as StatisticResponse;
+
+    return data;
+  }
+
+  async getMostAnswers(
+    options: StatisticsRequestParameters,
+  ): Promise<StatisticResponse> {
+    const query = this.getQueryParameters(options.options).toString();
+    let url = `${await this.getBaseUrl()}/statistics/answers/most-answers`;
+
+    if (query) {
+      url += `?${query}`;
+    }
+
+    const response = await this.fetchApi.fetch(url);
+
+    const data = (await response.json()) as StatisticResponse;
+
+    return data;
+  }
+
   async getTopStatisticsHomepage(
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse[]> {
     const response = await Promise.all([
+      this.getMostQuestions(options),
+      this.getMostAnswers(options),
       this.getMostUpvotedQuestions(options),
       this.getMostUpvotedAnswers(options),
       this.getMostUpvotedCorrectAnswers(options),
