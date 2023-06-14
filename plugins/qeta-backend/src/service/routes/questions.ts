@@ -19,7 +19,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const questionsRoutes = (router: Router, options: RouterOptions) => {
-  const { database } = options;
+  const { database, eventBroker } = options;
   // GET /questions
   router.get(`/questions`, async (request, response) => {
     // Validation
@@ -126,6 +126,18 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     mapAdditionalFields(username, question);
     question.answers?.map(a => mapAdditionalFields(username, a));
 
+    if (eventBroker) {
+      await eventBroker.publish({
+        topic: 'qeta',
+        eventPayload: {
+          question,
+          comment: request.body.content,
+          author: username,
+        },
+        metadata: { action: 'comment_question' },
+      });
+    }
+
     // Response
     response.send(question);
   });
@@ -169,15 +181,27 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
+    const username = await getUsername(request, options);
     // Act
     const question = await database.postQuestion(
-      await getUsername(request, options),
+      username,
       request.body.title,
       request.body.content,
       request.body.tags,
       request.body.entities,
       request.body.images,
     );
+
+    if (eventBroker) {
+      await eventBroker.publish({
+        topic: 'qeta',
+        eventPayload: {
+          question,
+          author: username,
+        },
+        metadata: { action: 'post_question' },
+      });
+    }
 
     // Response
     response.status(201);
@@ -195,10 +219,11 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
+    const username = await getUsername(request, options);
     // Act
     const question = await database.updateQuestion(
       Number.parseInt(request.params.id, 10),
-      await getUsername(request, options),
+      username,
       request.body.title,
       request.body.content,
       request.body.tags,
@@ -259,6 +284,18 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     mapAdditionalFields(username, question);
     if (question) {
       question.ownVote = score;
+    }
+
+    if (eventBroker) {
+      await eventBroker.publish({
+        topic: 'qeta',
+        eventPayload: {
+          question,
+          author: username,
+          score,
+        },
+        metadata: { action: 'vote_question' },
+      });
     }
 
     // Response

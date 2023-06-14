@@ -14,7 +14,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const answersRoutes = (router: Router, options: RouterOptions) => {
-  const { database } = options;
+  const { database, eventBroker } = options;
 
   // POST /questions/:id/answers
   router.post(`/questions/:id/answers`, async (request, response) => {
@@ -29,15 +29,29 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     }
 
     const username = await getUsername(request, options);
+    const questionId = Number.parseInt(request.params.id, 10);
     // Act
     const answer = await database.answerQuestion(
       username,
-      Number.parseInt(request.params.id, 10),
+      questionId,
       request.body.answer,
       request.body.images,
     );
 
     mapAdditionalFields(username, answer);
+
+    if (eventBroker) {
+      const question = await database.getQuestion(username, questionId, false);
+      await eventBroker.publish({
+        topic: 'qeta',
+        eventPayload: {
+          answer,
+          question,
+          author: username,
+        },
+        metadata: { action: 'post_answer' },
+      });
+    }
 
     // Response
     response.status(201);
@@ -91,9 +105,10 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       }
 
       const username = await getUsername(request, options);
+      const answerId = Number.parseInt(request.params.answerId, 10);
       // Act
       const answer = await database.commentAnswer(
-        Number.parseInt(request.params.answerId, 10),
+        answerId,
         username,
         request.body.content,
       );
@@ -104,6 +119,24 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       }
 
       mapAdditionalFields(username, answer);
+
+      if (eventBroker) {
+        const questionId = Number.parseInt(request.params.id, 10);
+        const question = await database.getQuestion(
+          username,
+          questionId,
+          false,
+        );
+        await eventBroker.publish({
+          topic: 'qeta',
+          eventPayload: {
+            question,
+            comment: request.body.content,
+            author: username,
+          },
+          metadata: { action: 'comment_answer' },
+        });
+      }
 
       // Response
       response.status(201);
@@ -184,24 +217,34 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
     // Act
     const username = await getUsername(request, options);
-    const voted = await database.voteAnswer(
-      username,
-      Number.parseInt(request.params.answerId, 10),
-      score,
-    );
+    const answerId = Number.parseInt(request.params.answerId, 10);
+    const voted = await database.voteAnswer(username, answerId, score);
 
     if (!voted) {
       response.sendStatus(404);
       return;
     }
 
-    const answer = await database.getAnswer(
-      Number.parseInt(request.params.answerId, 10),
-    );
+    const answer = await database.getAnswer(answerId);
 
     mapAdditionalFields(username, answer);
     if (answer) {
       answer.ownVote = score;
+    }
+
+    if (eventBroker) {
+      const questionId = Number.parseInt(request.params.id, 10);
+      const question = await database.getQuestion(username, questionId, false);
+      await eventBroker.publish({
+        topic: 'qeta',
+        eventPayload: {
+          question,
+          answer,
+          author: username,
+          score,
+        },
+        metadata: { action: 'vote_answer' },
+      });
     }
     // Response
     response.send(answer);
@@ -227,11 +270,32 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
   router.get(
     `/questions/:id/answers/:answerId/correct`,
     async (request, response) => {
+      const username = await getUsername(request, options);
+      const questionId = Number.parseInt(request.params.id, 10);
+      const answerId = Number.parseInt(request.params.answerId, 10);
       const marked = await database.markAnswerCorrect(
-        await getUsername(request, options),
-        Number.parseInt(request.params.id, 10),
-        Number.parseInt(request.params.answerId, 10),
+        username,
+        questionId,
+        answerId,
       );
+
+      if (eventBroker) {
+        const question = await database.getQuestion(
+          username,
+          questionId,
+          false,
+        );
+        const answer = await database.getAnswer(answerId);
+        await eventBroker.publish({
+          topic: 'qeta',
+          eventPayload: {
+            question,
+            answer,
+            author: username,
+          },
+          metadata: { action: 'correct_answer' },
+        });
+      }
       response.sendStatus(marked ? 200 : 404);
     },
   );
@@ -240,11 +304,31 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
   router.get(
     `/questions/:id/answers/:answerId/incorrect`,
     async (request, response) => {
+      const username = await getUsername(request, options);
+      const questionId = Number.parseInt(request.params.id, 10);
+      const answerId = Number.parseInt(request.params.answerId, 10);
       const marked = await database.markAnswerIncorrect(
-        await getUsername(request, options),
-        Number.parseInt(request.params.id, 10),
-        Number.parseInt(request.params.answerId, 10),
+        username,
+        questionId,
+        answerId,
       );
+      if (eventBroker) {
+        const question = await database.getQuestion(
+          username,
+          questionId,
+          false,
+        );
+        const answer = await database.getAnswer(answerId);
+        await eventBroker.publish({
+          topic: 'qeta',
+          eventPayload: {
+            question,
+            answer,
+            author: username,
+          },
+          metadata: { action: 'incorrect_answer' },
+        });
+      }
       response.sendStatus(marked ? 200 : 404);
     },
   );

@@ -15,6 +15,7 @@ import { questionsRoutes } from './routes/questions';
 import { tagsRoutes } from './routes/tags';
 import { attachmentsRoutes } from './routes/attachments';
 import { answersRoutes } from './routes/answers';
+import { EventBroker } from '@backstage/plugin-events-node';
 
 export interface RouterOptions {
   identity: IdentityApi;
@@ -22,6 +23,7 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   permissions?: PermissionEvaluator;
+  eventBroker?: EventBroker;
 }
 
 export async function createRouter(

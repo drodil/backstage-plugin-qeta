@@ -3276,6 +3276,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/plugin-events-node@npm:^0.2.6":
+  version: 0.2.6
+  resolution: "@backstage/plugin-events-node@npm:0.2.6"
+  dependencies:
+    "@backstage/backend-plugin-api": ^0.5.2
+  checksum: f4fedf3a214e4c1020d9d5c22ed73edd8e6f7e5c7df99be70f08cf231f8c21b9217877fbe60c51ee5baa408fd9f873e55b8c07ad3e8254bbdffd3bf8cf842995
+  languageName: node
+  linkType: hard
+
 "@backstage/plugin-home@npm:^0.5.2":
   version: 0.5.2
   resolution: "@backstage/plugin-home@npm:0.5.2"
@@ -3712,6 +3721,7 @@ __metadata:
     "@backstage/config": ^1.0.7
     "@backstage/errors": ^1.1.5
     "@backstage/plugin-auth-node": ^0.2.14
+    "@backstage/plugin-events-node": ^0.2.6
     "@backstage/plugin-permission-common": ^0.7.5
     "@backstage/plugin-permission-node": ^0.7.8
     "@backstage/plugin-search-common": ^1.2.3
