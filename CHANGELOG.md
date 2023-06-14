@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.12.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.11.0...v1.12.0) (2023-06-14)
+
+
+### Features
+
+* add css classes to different parts of the UI ([07294b3](https://github.com/drodil/backstage-plugin-qeta/commit/07294b3ff61af227dc4c2f25d63eef97461f710b)), closes [#66](https://github.com/drodil/backstage-plugin-qeta/issues/66)
+
 ## [1.11.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.10.3...v1.11.0) (2023-06-09)
 
 
