@@ -74,7 +74,11 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
             </Typography>
             <Typography
               variant="caption"
-              className="qetaQuestionListItemAnswers"
+              className={`qetaQuestionListItemAnswers ${
+                question.correctAnswer
+                  ? 'qetaQuestionListItemCorrectAnswer'
+                  : 'quetaQuestionListItemNoCorrectAnswer'
+              }`}
               style={{
                 color: question.correctAnswer
                   ? theme.palette.success.main
