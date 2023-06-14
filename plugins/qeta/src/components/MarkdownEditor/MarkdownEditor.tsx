@@ -57,8 +57,10 @@ export const MarkdownEditor = (props: {
   return (
     <ReactMde
       classes={{
-        reactMde: styles.markdownEditor,
-        textArea: error ? styles.markdownEditorError : undefined,
+        reactMde: `qetaMarkdownEditorEdit ${styles.markdownEditor}`,
+        textArea: error
+          ? `qetaMarkdownEditorError ${styles.markdownEditorError}`
+          : undefined,
       }}
       value={value}
       onChange={onChange}
@@ -77,7 +79,7 @@ export const MarkdownEditor = (props: {
           <MarkdownContent
             content={content}
             dialect="gfm"
-            className={styles.markdownContent}
+            className={`qetaMarkdownEditorPreview ${styles.markdownContent}`}
           />,
         )
       }

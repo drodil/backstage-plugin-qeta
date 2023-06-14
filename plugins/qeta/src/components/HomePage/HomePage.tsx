@@ -110,7 +110,7 @@ const MoreMenu = () => {
 
 export const HomePageContent = () => {
   return (
-    <Content>
+    <Content className="qetaHomePage">
       <Container maxWidth="lg">
         <Grid container spacing={3}>
           <Grid item xs={12} lg={9} xl={10}>

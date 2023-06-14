@@ -1,11 +1,11 @@
 import { useQetaApi } from '../../utils/hooks';
 import {
   Box,
+  Button,
   Collapse,
   Grid,
-  Typography,
-  Button,
   TextField,
+  Typography,
 } from '@material-ui/core';
 
 import React, { useEffect } from 'react';
@@ -150,8 +150,12 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   }
 
   return (
-    <Box>
-      {showTitle && <Typography variant="h5">{shownTitle}</Typography>}
+    <Box className="qetaQuestionsContainer">
+      {showTitle && (
+        <Typography variant="h5" className="qetaQuestionsContainerTitle">
+          {shownTitle}
+        </Typography>
+      )}
       <Grid container>
         <Grid item xs={12} md={4}>
           <TextField
@@ -159,6 +163,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
             fullWidth
             onChange={onSearchQueryChange}
             label="Search for questions"
+            className="qetaQuestionsContainerSearchInput"
             variant="outlined"
             placeholder="Search..."
             size="small"
@@ -168,14 +173,18 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
       </Grid>
       <Grid container justifyContent="space-between">
         <Grid item>
-          <Typography variant="h6">{`${
-            response?.total ?? 0
-          } ${response?.total === 1 ? 'question' : 'questions'}`}</Typography>
+          <Typography
+            variant="h6"
+            className="qetaQuestionsContainerQuestionCount"
+          >{`${response?.total ?? 0} ${
+            response?.total === 1 ? 'question' : 'questions'
+          }`}</Typography>
         </Grid>
         {(showFilters ?? true) && (
           <Grid item>
             <Button
               onClick={() => setShowFilterPanel(!showFilterPanel)}
+              className="qetaQuestionsContainerFilterPanelBtn"
               startIcon={<FilterList />}
             >
               Filter

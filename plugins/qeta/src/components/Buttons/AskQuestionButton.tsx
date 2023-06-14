@@ -14,6 +14,7 @@ export const AskQuestionButton = () => {
         variant="contained"
         to="/qeta/ask"
         color="primary"
+        className="qetaAskQuestionBtn"
         startIcon={<HelpOutline />}
       >
         Ask question

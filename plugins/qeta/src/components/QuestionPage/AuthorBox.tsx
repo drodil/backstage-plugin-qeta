@@ -33,16 +33,16 @@ export const AuthorBox = (props: {
     .toUpperCase();
 
   return (
-    <Box className={styles.questionCardAuthor}>
+    <Box className={`qetaAuthorBox ${styles.questionCardAuthor}`}>
       <Grid container alignItems="center">
         <Grid item xs={12} style={{ paddingBottom: 0 }}>
-          <Typography variant="caption">
+          <Typography className="qetaAuthorBoxCreated" variant="caption">
             Posted <RelativeTime value={entity.created} />
           </Typography>
         </Grid>
         {entity.updated && (
           <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0 }}>
-            <Typography variant="caption">
+            <Typography className="qetaAuthorBoxUpdated" variant="caption">
               Updated <RelativeTime value={entity.updated} />
             </Typography>
           </Grid>
@@ -50,7 +50,7 @@ export const AuthorBox = (props: {
         <Grid item xs={2}>
           <Avatar
             src={user?.spec.profile?.picture}
-            className="avatar"
+            className="qetaAuthorBoxAvatar avatar"
             alt={name}
             variant="rounded"
           >
@@ -58,7 +58,9 @@ export const AuthorBox = (props: {
           </Avatar>
         </Grid>
         <Grid item xs={10} className={styles.authorLink}>
-          <Link to={`/qeta/users/${entity.author}`}>{name}</Link>
+          <Link className="qetaUserBtn" to={`/qeta/users/${entity.author}`}>
+            {name}
+          </Link>
         </Grid>
       </Grid>
     </Box>

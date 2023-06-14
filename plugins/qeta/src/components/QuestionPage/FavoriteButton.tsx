@@ -29,6 +29,7 @@ export const FavoriteButton = (props: { entity: QuestionResponse }) => {
             aria-label="unfavorite"
             size="small"
             onClick={unfavoriteQuestion}
+            className="qetaUnfavoriteBtn"
           >
             <StarIcon />
           </IconButton>
@@ -39,6 +40,7 @@ export const FavoriteButton = (props: { entity: QuestionResponse }) => {
             aria-label="favorite"
             size="small"
             onClick={favoriteQuestion}
+            className="qetaFavoriteBtn"
           >
             <StarOutlineIcon />
           </IconButton>

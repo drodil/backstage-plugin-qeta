@@ -8,7 +8,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useQetaApi } from '../../utils/hooks';
-import { WarningPanel, Progress } from '@backstage/core-components';
+import { Progress, WarningPanel } from '@backstage/core-components';
 import { TagResponse } from '../../api';
 
 export const TagsContainer = () => {
@@ -41,11 +41,11 @@ export const TagsContainer = () => {
   const tags = filterData(searchQuery, response);
 
   return (
-    <Grid container>
+    <Grid container className="qetaTagsContainer">
       <Grid item xs={12}>
         <TextField
           id="search-bar"
-          className="text"
+          className="text qetaTagsContainerSearchInput"
           onChange={(
             event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
           ) => setSearchQuery(event.target.value)}
@@ -57,7 +57,10 @@ export const TagsContainer = () => {
         <IconButton type="submit" aria-label="search" />
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="h6">{`Showing ${tags.length} tags`}</Typography>
+        <Typography
+          variant="h6"
+          className="qetaTagsContainerTitle"
+        >{`Showing ${tags.length} tags`}</Typography>
       </Grid>
       <Grid item>
         {tags.map(tag => (
@@ -66,6 +69,7 @@ export const TagsContainer = () => {
             variant="outlined"
             avatar={<Avatar>{tag.questionsCount}</Avatar>}
             label={tag.tag}
+            className="qetaTagsContainerChip"
             component="a"
             clickable
             href={`/qeta/tags/${tag.tag}`}

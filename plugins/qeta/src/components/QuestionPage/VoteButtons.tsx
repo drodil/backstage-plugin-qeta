@@ -110,6 +110,7 @@ export const VoteButtons = (props: {
           <IconButton
             aria-label="vote up"
             color={ownVote > 0 ? 'primary' : 'default'}
+            className={ownVote > 0 ? 'qetaVoteUpSelected' : 'qetaVoteUp'}
             disabled={own}
             size="small"
             onClick={voteUp}
@@ -124,6 +125,7 @@ export const VoteButtons = (props: {
           <IconButton
             aria-label="vote down"
             color={ownVote < 0 ? 'primary' : 'default'}
+            className={ownVote < 0 ? 'qetaVoteDownSelected' : 'qetaVoteDown'}
             disabled={own}
             size="small"
             onClick={voteDown}
@@ -142,6 +144,9 @@ export const VoteButtons = (props: {
                 onClick={props.question?.own ? toggleCorrectAnswer : undefined}
               >
                 <Check
+                  className={
+                    correct ? 'qetaCorrectAnswerSelected' : 'qetaCorrectAnswer'
+                  }
                   style={{
                     color: correct ? theme.palette.success.main : undefined,
                   }}

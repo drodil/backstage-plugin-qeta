@@ -27,12 +27,13 @@ export const QuestionHighlightList = (props: {
 
   return (
     <Box
-      className={classes.questionHighlightList}
+      className={`qetaQuestionHighlightList ${classes.questionHighlightList}`}
       display={{ md: 'none', lg: 'block' }}
     >
       <List
         component="nav"
         aria-labelledby="nested-list-subheader"
+        className="qetaQuestionHighlightListList"
         subheader={
           <ListSubheader
             component="div"
@@ -64,6 +65,7 @@ export const QuestionHighlightList = (props: {
             <React.Fragment key={q.id}>
               <Divider />
               <ListItem
+                className="qetaQuestionHighlightListListItem"
                 button
                 dense
                 component="a"

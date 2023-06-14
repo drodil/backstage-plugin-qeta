@@ -1,20 +1,17 @@
 import { Content, ContentHeader, InfoCard } from '@backstage/core-components';
-import { LinkButton } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 
 import { AskForm } from '../AskForm/AskForm';
-import HomeOutlined from '@material-ui/icons/HomeOutlined';
 import { useParams } from 'react-router-dom';
+import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 
 export const AskPage = () => {
   const { id } = useParams();
   return (
-    <Content>
+    <Content className="qetaAskPage">
       <ContentHeader title={id ? 'Edit question' : 'Ask question'}>
-        <LinkButton to="/qeta" startIcon={<HomeOutlined />}>
-          Back to questions
-        </LinkButton>
+        <BackToQuestionsButton />
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>

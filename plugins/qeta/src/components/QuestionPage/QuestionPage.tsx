@@ -3,7 +3,6 @@ import { Box, Container, Divider, Typography } from '@material-ui/core';
 import {
   Content,
   ContentHeader,
-  LinkButton,
   WarningPanel,
 } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
@@ -15,8 +14,8 @@ import RelativeTime from 'react-relative-time';
 import { AnswerForm } from './AnswerForm';
 import { AnswerCard } from './AnswerCard';
 import { Skeleton } from '@material-ui/lab';
-import HomeOutlined from '@material-ui/icons/HomeOutlined';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
+import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 
 export const QuestionPage = () => {
   const { id } = useParams();
@@ -76,16 +75,9 @@ export const QuestionPage = () => {
           // @ts-ignore
           description={getDescription(question)}
         >
-          <LinkButton
-            className={styles.marginRight}
-            to="/qeta"
-            startIcon={<HomeOutlined />}
-          >
-            Back to questions
-          </LinkButton>
           <AskQuestionButton />
+          <BackToQuestionsButton />
         </ContentHeader>
-
         <QuestionCard question={question} />
         <Box sx={{ mt: 3, mb: 2 }}>
           <Typography variant="h6">

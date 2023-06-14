@@ -81,7 +81,7 @@ export const RankingRow = (props: {
   const rankingIcon = props?.position > 3 ? userIcon : topRankingIcon;
 
   return (
-    <ListItem>
+    <ListItem className="qetaRankingCardRow">
       <ListItemAvatar>
         <Avatar className={classes.trophyIcon}>{rankingIcon}</Avatar>
       </ListItemAvatar>
@@ -123,9 +123,9 @@ export const RankingCard = (props: {
     : props.statistic?.ranking;
 
   return (
-    <div style={{ display: 'block' }}>
-      <span>{props.description}</span>
-      <List>
+    <div style={{ display: 'block' }} className="qetaRankingCard">
+      <span className="qetaRankingCardDescription">{props.description}</span>
+      <List className="qetaRankingCardList">
         {rankingStats?.map(authorStats => {
           return (
             <RankingRow

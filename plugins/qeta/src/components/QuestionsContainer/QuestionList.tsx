@@ -1,5 +1,5 @@
 import { useStyles } from '../../utils/hooks';
-import { LinkButton, WarningPanel, Progress } from '@backstage/core-components';
+import { LinkButton, Progress, WarningPanel } from '@backstage/core-components';
 import {
   Box,
   Divider,
@@ -93,8 +93,8 @@ export const QuestionList = (props: {
       : Math.ceil(response.total / props.pageSize);
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Grid container spacing={2}>
+    <Box sx={{ mt: 2 }} className="qetaQuestionList">
+      <Grid container spacing={2} className="qetaQuestionListGrid">
         {response.questions.map(question => {
           return (
             <Grid item xs={12} key={question.id}>
@@ -107,7 +107,7 @@ export const QuestionList = (props: {
       <Grid
         container
         spacing={0}
-        className={styles.questionListPagination}
+        className={`qetaQuestionListPaginationGrid ${styles.questionListPagination}`}
         alignItems="center"
         justifyContent="space-between"
       >
@@ -116,7 +116,7 @@ export const QuestionList = (props: {
             <Select
               value={props.pageSize}
               onChange={handlePageSizeChange}
-              className={styles.questionsPerPage}
+              className={`qetaQuestionListPaginationSizeSelect ${styles.questionsPerPage}`}
               inputProps={{ className: styles.questionsPerPageInput }}
             >
               <MenuItem value={5}>5</MenuItem>
@@ -133,6 +133,7 @@ export const QuestionList = (props: {
           count={pageCount}
           size="large"
           variant="outlined"
+          className="qetaQuestionListPagination"
           showFirstButton
           showLastButton
         />
