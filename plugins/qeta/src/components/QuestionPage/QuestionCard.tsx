@@ -26,7 +26,10 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
 
   return (
     <>
-      <Card variant="outlined" className={styles.questionCard}>
+      <Card
+        variant="outlined"
+        className={`qetaQuestionCard ${styles.questionCard}`}
+      >
         <CardContent>
           <div className={styles.questionCardVote}>
             <VoteButtons entity={questionEntity} />
@@ -54,12 +57,14 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
                         underline="none"
                         to="#"
                         onClick={handleDeleteModalOpen}
+                        className="qetaQuestionCardDeleteBtn"
                       >
                         Delete
                       </Link>
                       <Link
                         underline="none"
                         to={`/qeta/questions/${questionEntity.id}/edit`}
+                        className="qetaQuestionCardEditBtn"
                       >
                         Edit
                       </Link>

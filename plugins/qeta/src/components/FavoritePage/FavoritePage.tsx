@@ -1,26 +1,18 @@
 import React from 'react';
-import { Content, ContentHeader, LinkButton } from '@backstage/core-components';
+import { Content, ContentHeader } from '@backstage/core-components';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
-import HomeOutlined from '@material-ui/icons/HomeOutlined';
-import { useStyles } from '../../utils/hooks';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { Container } from '@material-ui/core';
+import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 
 export const FavoritePage = () => {
-  const styles = useStyles();
   return (
-    <Content>
+    <Content className="qetaFavoritePage">
       <Container maxWidth="lg">
         <ContentHeader title="Your favorite questions">
-          <LinkButton
-            to="/qeta"
-            className={styles.marginRight}
-            startIcon={<HomeOutlined />}
-          >
-            Back to questions
-          </LinkButton>
+          <BackToQuestionsButton />
           <AskQuestionButton />
         </ContentHeader>
         <QuestionsContainer favorite />

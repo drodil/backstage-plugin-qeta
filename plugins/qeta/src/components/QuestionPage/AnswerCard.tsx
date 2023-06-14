@@ -38,7 +38,10 @@ export const AnswerCard = (props: {
 
   return (
     <>
-      <Card id={`a${answer.id}`} className={styles.questionCard}>
+      <Card
+        id={`a${answer.id}`}
+        className={`qetaAnswerCard ${styles.questionCard}`}
+      >
         <CardContent>
           <div className={styles.questionCardVote}>
             <VoteButtons entity={answerEntity} question={question} />
@@ -54,7 +57,7 @@ export const AnswerCard = (props: {
               <>
                 <Typography variant="body1" gutterBottom>
                   <MarkdownContent
-                    className={styles.markdownContent}
+                    className={`qetaAndswerCardAnswerContent ${styles.markdownContent}`}
                     content={answerEntity.content}
                     dialect="gfm"
                   />
@@ -62,12 +65,15 @@ export const AnswerCard = (props: {
                 <Grid container justifyContent="space-around">
                   <Grid item xs={9}>
                     {answerEntity.own && (
-                      <Box className={styles.questionCardActions}>
+                      <Box
+                        className={`qetaAnswerCardActions ${styles.questionCardActions}`}
+                      >
                         {!answerEntity.correct && (
                           <Link
                             underline="none"
                             to="#"
                             onClick={handleDeleteModalOpen}
+                            className="qetaAnswerCardDeleteBtn"
                           >
                             Delete
                           </Link>
@@ -76,6 +82,7 @@ export const AnswerCard = (props: {
                           underline="none"
                           to="#"
                           onClick={() => setEditMode(true)}
+                          className="qetaAnswerCardEditBtn"
                         >
                           Edit
                         </Link>

@@ -98,7 +98,7 @@ export const AnswerForm = (props: {
       permission={qetaCreateAnswerPermission}
       errorPage={<></>}
     >
-      <form onSubmit={handleSubmit(postAnswer)}>
+      <form onSubmit={handleSubmit(postAnswer)} className="qetaAnswerForm">
         <Typography variant="h6">Your answer</Typography>
         {error && (
           <WarningPanel severity="error" title="Could not post answer" />
@@ -127,7 +127,7 @@ export const AnswerForm = (props: {
           variant="outlined"
           type="submit"
           color="primary"
-          className={styles.postButton}
+          className={`qetaAnswerFormPostBtn ${styles.postButton}`}
         >
           {id ? 'Save' : 'Post'}
         </Button>

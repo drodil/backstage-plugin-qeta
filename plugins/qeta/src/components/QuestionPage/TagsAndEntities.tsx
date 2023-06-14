@@ -38,6 +38,7 @@ export const TagsAndEntities = (props: { question: QuestionResponse }) => {
             key={tag}
             label={tag}
             size="small"
+            className="qetaTagChip"
             component="a"
             href={`/qeta/tags/${tag}`}
             clickable
@@ -57,6 +58,7 @@ export const TagsAndEntities = (props: { question: QuestionResponse }) => {
               label={getEntityTitle(component)}
               size="small"
               variant="outlined"
+              className="qetaEntityChip"
               component="a"
               href={getEntityUrl(component)}
               clickable

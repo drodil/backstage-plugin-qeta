@@ -23,18 +23,26 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
   const theme = useTheme();
 
   return (
-    <Card>
+    <Card className="qetaQuestionListItem">
       <CardContent>
         <Grid container justifyContent="space-between">
           <Grid item xs={12}>
             <Typography variant="h5" component="div">
-              <Link to={`/qeta/questions/${question.id}`}>
+              <Link
+                to={`/qeta/questions/${question.id}`}
+                className="qetaQuestionListItemQuestionBtn"
+              >
                 {question.title}
               </Link>
             </Typography>
           </Grid>
           <Grid item xs={12} style={{ paddingTop: 0, paddingBottom: 0 }}>
-            <Typography variant="caption" noWrap component="div">
+            <Typography
+              variant="caption"
+              noWrap
+              component="div"
+              className="qetaQuestionListItemContent"
+            >
               {DOMPurify.sanitize(
                 truncate(removeMarkdownFormatting(question.content), 150),
               )}
@@ -42,7 +50,11 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
           </Grid>
 
           <Grid item>
-            <Typography variant="body2" display="block">
+            <Typography
+              variant="body2"
+              display="block"
+              className="qetaQuestionListItemAuthor"
+            >
               By{' '}
               <Link to={`/qeta/users/${question.author}`}>
                 {formatEntityName(question.author)}
@@ -52,11 +64,21 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
                 titleFormat="YYYY/MM/DD HH:mm"
               />
             </Typography>
-            <Typography variant="caption" display="inline" gutterBottom>
+            <Typography
+              variant="caption"
+              display="inline"
+              gutterBottom
+              className="qetaQuestionListItemScore"
+            >
               Score: {question.score} {' | '}
             </Typography>
             <Typography
               variant="caption"
+              className={`qetaQuestionListItemAnswers ${
+                question.correctAnswer
+                  ? 'qetaQuestionListItemCorrectAnswer'
+                  : 'quetaQuestionListItemNoCorrectAnswer'
+              }`}
               style={{
                 color: question.correctAnswer
                   ? theme.palette.success.main
@@ -67,7 +89,12 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
             >
               Answers: {question.answersCount}
             </Typography>
-            <Typography variant="caption" display="inline" gutterBottom>
+            <Typography
+              variant="caption"
+              display="inline"
+              gutterBottom
+              className="qetaQuestionListItemViews"
+            >
               {' | '} Views: {question.views}
             </Typography>
           </Grid>

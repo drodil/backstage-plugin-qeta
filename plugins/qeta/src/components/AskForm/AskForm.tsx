@@ -219,10 +219,11 @@ export const AskForm = (props: {
   }, [catalogApi, entityRef, configApi, entityKinds]);
 
   return (
-    <form onSubmit={handleSubmit(postQuestion)}>
+    <form onSubmit={handleSubmit(postQuestion)} className="qetaAskForm">
       {error && <Alert severity="error">Could not post question</Alert>}
       <TextField
         label="Title"
+        className="qetaAskFormTitle"
         required
         fullWidth
         error={'title' in errors}
@@ -261,6 +262,7 @@ export const AskForm = (props: {
             <Autocomplete
               multiple
               id="tags-select"
+              className="qetaAskFormTags"
               value={value}
               options={availableTags}
               freeSolo
@@ -291,6 +293,7 @@ export const AskForm = (props: {
             <Autocomplete
               multiple
               hidden={!!entityRef}
+              className="qetaAskFormEntities"
               value={value}
               groupBy={
                 entityKinds.length > 1 ? option => option.kind : undefined
@@ -325,7 +328,7 @@ export const AskForm = (props: {
         color="primary"
         type="submit"
         variant="contained"
-        className={styles.postButton}
+        className={`qetaAskFormSubmitBtn ${styles.postButton}`}
       >
         {id ? 'Save' : 'Post'}
       </Button>

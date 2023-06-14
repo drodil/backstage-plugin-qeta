@@ -62,6 +62,16 @@ export interface QetaApi {
     options,
   }: StatisticsRequestParameters): Promise<StatisticResponse>;
 
+  getMostQuestions({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<StatisticResponse>;
+
+  getMostAnswers({
+    author,
+    options,
+  }: StatisticsRequestParameters): Promise<StatisticResponse>;
+
   getTopStatisticsHomepage({
     author,
     options,

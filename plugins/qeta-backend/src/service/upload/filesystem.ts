@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { Config } from '@backstage/config';
 import { Attachment, QetaStore } from '../../database/QetaStore';
-import { File } from './types';
+import { File } from '../types';
 
 type Options = {
   config: Config;

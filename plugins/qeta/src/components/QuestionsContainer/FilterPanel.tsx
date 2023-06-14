@@ -49,11 +49,10 @@ export const FilterPanel = (props: FilterPanelProps) => {
   };
 
   return (
-    <Box className={styles.filterPanel}>
+    <Box className={`qetaFilterPanel ${styles.filterPanel}`}>
       <Grid container spacing={4}>
         <Grid item>
           <FormGroup>
-            <FormLabel id="qeta-filter-order-by">Filter</FormLabel>
             <FormControlLabel
               control={
                 <Checkbox

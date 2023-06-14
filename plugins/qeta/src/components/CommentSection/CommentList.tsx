@@ -39,15 +39,17 @@ export const CommentList = (props: {
         const name = formatEntityName(c.author);
         return (
           <>
-            <Box key={c.id}>
+            <Box key={c.id} className="qetaCommentBox">
               <MarkdownContent
                 dialect="gfm"
                 content={c.content}
                 className={`${styles.markdownContent} inline`}
               />
               {' – '}
-              <Link to={`/qeta/users/${c.author}`}>{name}</Link>{' '}
-              <Typography variant="caption">
+              <Link to={`/qeta/users/${c.author}`} className="qetaUserBtn">
+                {name}
+              </Link>{' '}
+              <Typography variant="caption" className="qetaCommentTime">
                 <RelativeTime value={c.created} />
               </Typography>
               {c.own && (
@@ -56,6 +58,7 @@ export const CommentList = (props: {
                   <Link
                     underline="none"
                     to="#"
+                    className="qetaCommentDeleteBtn"
                     onClick={() => deleteComment(c.id)}
                   >
                     delete

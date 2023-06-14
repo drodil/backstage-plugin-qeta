@@ -46,19 +46,24 @@ export const CommentSection = (props: {
   };
 
   return (
-    <Box marginLeft={9}>
+    <Box marginLeft={9} className="qetaCommentSection">
       <CommentList
         question={question}
         answer={answer}
         onCommentDelete={onCommentDelete}
       />
       {!formVisible && (
-        <Link underline="none" to="#" onClick={() => setFormVisible(true)}>
+        <Link
+          underline="none"
+          to="#"
+          className="qetaAddCommentBtn"
+          onClick={() => setFormVisible(true)}
+        >
           Add comment
         </Link>
       )}
       {formVisible && (
-        <form onSubmit={handleSubmit(postComment)}>
+        <form onSubmit={handleSubmit(postComment)} className="qetaCommentForm">
           <Grid container>
             <Grid item xs={11}>
               <Controller
@@ -73,6 +78,7 @@ export const CommentSection = (props: {
                     multiline
                     minRows={2}
                     fullWidth
+                    className="qetaCommentInput"
                     value={value}
                     placeholder="Your commment"
                     onChange={onChange}
@@ -87,6 +93,7 @@ export const CommentSection = (props: {
               <Button
                 variant="contained"
                 size="small"
+                className="qetaCommentBtn"
                 type="submit"
                 color="primary"
               >

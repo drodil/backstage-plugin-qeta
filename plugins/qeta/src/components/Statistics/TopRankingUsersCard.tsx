@@ -61,9 +61,10 @@ const getOrdinal = (n: number) => {
 
 export const RankingRow = (props: {
   userRef?: string;
-  votes: number;
+  total: number;
   position: number;
   rankingIcon?: RankingIcon;
+  unit: string;
 }) => {
   const classes = useStyles();
 
@@ -82,7 +83,7 @@ export const RankingRow = (props: {
   const rankingIcon = props?.position > 3 ? userIcon : topRankingIcon;
 
   return (
-    <ListItem>
+    <ListItem className="qetaRankingCardRow">
       <ListItemAvatar>
         <Avatar className={classes.trophyIcon}>{rankingIcon}</Avatar>
       </ListItemAvatar>
@@ -108,7 +109,9 @@ export const RankingRow = (props: {
       />
 
       <div className={classes.votesText}>
-        <Typography variant="subtitle1">{props?.votes} votes</Typography>
+        <Typography variant="subtitle1">
+          {props?.total} {props.unit}
+        </Typography>
       </div>
     </ListItem>
   );
@@ -118,21 +121,23 @@ export const RankingCard = (props: {
   limit?: number;
   description: string;
   statistic?: StatisticResponse;
+  unit: string;
 }) => {
   const rankingStats = props.limit
     ? props.statistic?.ranking.slice(0, props.limit)
     : props.statistic?.ranking;
 
   return (
-    <div style={{ display: 'block' }}>
-      <span>{props.description}</span>
-      <List>
+    <div style={{ display: 'block' }} className="qetaRankingCard">
+      <span className="qetaRankingCardDescription">{props.description}</span>
+      <List className="qetaRankingCardList">
         {rankingStats?.map(authorStats => {
           return (
             <RankingRow
-              votes={authorStats.total || 0}
+              total={authorStats.total || 0}
               position={authorStats.position || 0}
               userRef={authorStats.author}
+              unit={props.unit}
             />
           );
         })}
@@ -143,9 +148,10 @@ export const RankingCard = (props: {
           <>
             <hr />
             <RankingRow
-              votes={props.statistic?.loggedUser?.total || 0}
+              total={props.statistic?.loggedUser?.total || 0}
               position={props.statistic?.loggedUser?.position || 0}
               userRef={props.statistic?.loggedUser?.author}
+              unit={props.unit}
             />
           </>
         )}
@@ -171,16 +177,29 @@ export const TopRankingUsers = (props: {
 
   const tabData = [
     {
+      title: 'Most questions',
+      description: 'People who have posted most questions',
+      unit: 'questions',
+    },
+    {
+      title: 'Most answers',
+      description: 'People who have answered most questions',
+      unit: 'answers',
+    },
+    {
       title: 'Top Upvoted Questions',
       description: 'People who have the highest rated questions',
+      unit: 'votes',
     },
     {
       title: 'Top Upvoted Answers',
       description: 'People who have the highest rated answers',
+      unit: 'votes',
     },
     {
       title: 'Top Upvoted Correct Answers',
       description: 'People who have the highest rated correct answers',
+      unit: 'votes',
     },
   ];
 
@@ -206,8 +225,9 @@ export const TopRankingUsers = (props: {
         <CardTab label={tabData[index].title}>
           <RankingCard
             description={tabData[index].description}
-            limit={3}
+            limit={props.limit}
             statistic={stats}
+            unit={tabData[index].unit}
           />
         </CardTab>
       );

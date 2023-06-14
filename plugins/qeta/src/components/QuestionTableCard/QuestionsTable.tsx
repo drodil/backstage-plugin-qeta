@@ -114,6 +114,7 @@ export const QuestionsTable = (props: {
         justifyContent="space-between"
         alignItems="center"
         style={{ marginBottom: '1em' }}
+        className="qetaQuestionsTableGrid"
       >
         <Grid item>
           {props.hideTitle === true ? null : (
@@ -151,7 +152,7 @@ export const QuestionsTable = (props: {
         </Grid>
       </Grid>
       <TableContainer>
-        <Table>
+        <Table className="qetaQuestionsTable">
           <TableHead>
             <TableRow>
               <TableCell>Title</TableCell>
