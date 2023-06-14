@@ -1,6 +1,6 @@
 import { Config } from '@backstage/config';
 import { QetaStore } from '../../database/QetaStore';
-import { File } from './types';
+import { File } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 type Options = {
