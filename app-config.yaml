@@ -45,6 +45,14 @@ qeta:
     # maxSizeImage: 2500000
     # allowedFilesTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/gif']
   allowAnonymous: true
+  entities:
+    max: 2
+  tags:
+    #allowCreation: false
+    #allowedTags:
+      #- test
+      #- another_tag
+    max: 3
   entityKinds: 
     - Component
     - Resource

@@ -19,7 +19,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const questionsRoutes = (router: Router, options: RouterOptions) => {
-  const { database, eventBroker } = options;
+  const { database, eventBroker, config } = options;
   // GET /questions
   router.get(`/questions`, async (request, response) => {
     // Validation
@@ -169,6 +169,32 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     },
   );
 
+  const getTags = (request: Request) => {
+    const maxTags = config.getOptionalNumber('qeta.tags.max') ?? 5;
+    const allowedTags =
+      config.getOptionalStringArray('qeta.tags.allowedTags') ?? [];
+    const allowTagCreation =
+      config.getOptionalBoolean('qeta.tags.allowCreation') ?? true;
+
+    let tags = request.body.tags;
+    if (Array.isArray(tags)) {
+      if (!allowTagCreation) {
+        tags = tags.filter(tag => !allowedTags?.includes(tag));
+      }
+      tags = tags.slice(0, maxTags);
+    }
+    return tags;
+  };
+
+  const getEntities = (request: Request) => {
+    const maxEntities = config.getOptionalNumber('qeta.entities.max') ?? 3;
+    let entities = request.body.entities;
+    if (Array.isArray(entities)) {
+      entities = entities.slice(0, maxEntities);
+    }
+    return entities;
+  };
+
   // POST /questions
   router.post(`/questions`, async (request, response) => {
     // Validation
@@ -181,14 +207,16 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
+    const tags = getTags(request);
+    const entities = getEntities(request);
     const username = await getUsername(request, options);
     // Act
     const question = await database.postQuestion(
       username,
       request.body.title,
       request.body.content,
-      request.body.tags,
-      request.body.entities,
+      tags,
+      entities,
       request.body.images,
     );
 
@@ -219,6 +247,8 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
+    const tags = getTags(request);
+    const entities = getEntities(request);
     const username = await getUsername(request, options);
     // Act
     const question = await database.updateQuestion(
@@ -226,8 +256,8 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       username,
       request.body.title,
       request.body.content,
-      request.body.tags,
-      request.body.entities,
+      tags,
+      entities,
       request.body.images,
     );
 
