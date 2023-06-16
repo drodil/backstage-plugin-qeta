@@ -15,6 +15,7 @@ import { QuestionList } from './QuestionList';
 import FilterList from '@material-ui/icons/FilterList';
 import { useSearchParams } from 'react-router-dom';
 import { formatEntityName } from '../../utils/utils';
+import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 
 export interface QuestionsContainerProps {
   tags?: string[];
@@ -24,10 +25,19 @@ export interface QuestionsContainerProps {
   showTitle?: boolean;
   title?: string;
   favorite?: boolean;
+  showAskButton?: boolean;
 }
 export const QuestionsContainer = (props: QuestionsContainerProps) => {
-  const { tags, author, entity, showFilters, showTitle, title, favorite } =
-    props;
+  const {
+    tags,
+    author,
+    entity,
+    showFilters,
+    showTitle,
+    title,
+    favorite,
+    showAskButton,
+  } = props;
   const [page, setPage] = React.useState(1);
   const [questionsPerPage, setQuestionsPerPage] = React.useState(10);
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
@@ -152,11 +162,15 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   return (
     <Box className="qetaQuestionsContainer">
       {showTitle && (
-        <Typography variant="h5" className="qetaQuestionsContainerTitle">
+        <Typography
+          variant="h5"
+          className="qetaQuestionsContainerTitle"
+          style={{ marginBottom: '1.5rem' }}
+        >
           {shownTitle}
         </Typography>
       )}
-      <Grid container>
+      <Grid container justifyContent="space-between">
         <Grid item xs={12} md={4}>
           <TextField
             id="search-bar"
@@ -170,6 +184,11 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
             style={{ marginBottom: '5px' }}
           />
         </Grid>
+        {showAskButton && (
+          <Grid item>
+            <AskQuestionButton entity={entity} />
+          </Grid>
+        )}
       </Grid>
       <Grid container justifyContent="space-between">
         <Grid item>

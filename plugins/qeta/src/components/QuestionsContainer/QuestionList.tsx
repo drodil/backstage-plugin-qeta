@@ -98,7 +98,7 @@ export const QuestionList = (props: {
         {response.questions.map(question => {
           return (
             <Grid item xs={12} key={question.id}>
-              <QuestionListItem question={question} />
+              <QuestionListItem question={question} entity={entity} />
               <Divider />
             </Grid>
           );

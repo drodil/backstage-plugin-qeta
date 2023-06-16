@@ -114,6 +114,8 @@ export const AskForm = (props: {
           analytics.captureEvent('edit', 'question');
           if (onPost) {
             onPost(q);
+          } else if (entity) {
+            navigate(`${base_path}/qeta/questions/${q.id}?entity=${entity}`);
           } else {
             navigate(`${base_path}/qeta/questions/${q.id}`);
           }
@@ -130,7 +132,11 @@ export const AskForm = (props: {
         }
         analytics.captureEvent('post', 'question');
         reset();
-        navigate(`${base_path}/qeta/questions/${q.id}`);
+        if (entity) {
+          navigate(`${base_path}/qeta/questions/${q.id}?entity=${entity}`);
+        } else {
+          navigate(`${base_path}/qeta/questions/${q.id}`);
+        }
       })
       .catch(_e => setError(true));
   };

@@ -18,8 +18,13 @@ import {
 } from '../../utils/utils';
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
 
-export const QuestionListItem = (props: { question: QuestionResponse }) => {
-  const { question } = props;
+export interface QuestionListItemProps {
+  question: QuestionResponse;
+  entity?: string;
+}
+
+export const QuestionListItem = (props: QuestionListItemProps) => {
+  const { question, entity } = props;
   const theme = useTheme();
 
   return (
@@ -29,7 +34,11 @@ export const QuestionListItem = (props: { question: QuestionResponse }) => {
           <Grid item xs={12}>
             <Typography variant="h5" component="div">
               <Link
-                to={`/qeta/questions/${question.id}`}
+                to={
+                  entity
+                    ? `/qeta/questions/${question.id}?entity=${entity}`
+                    : `/qeta/questions/${question.id}`
+                }
                 className="qetaQuestionListItemQuestionBtn"
               >
                 {question.title}

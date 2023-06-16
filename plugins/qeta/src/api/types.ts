@@ -38,7 +38,6 @@ export interface QuestionResponse {
   score: number;
   answersCount: number;
   correctAnswer: boolean;
-
   favorite: boolean;
   ownVote?: number;
   updated?: string;

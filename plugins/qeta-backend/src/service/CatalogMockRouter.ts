@@ -53,7 +53,13 @@ export const createCatalogMockRouter = async (): Promise<express.Router> => {
     response.json(entitiesResponse);
   });
 
-  router.get('/entities/by-name/*', (_, response) => {
+  router.get('/entities/by-name/*/*/:name', (req, response) => {
+    const name = req.params.name;
+    const found = entitiesResponse.find(e => e.metadata.name === name);
+    if (found) {
+      response.json(found);
+      return;
+    }
     response.json(entitiesResponse.at(1));
   });
 
