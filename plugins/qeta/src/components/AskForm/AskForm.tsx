@@ -1,7 +1,7 @@
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { Button, TextField } from '@material-ui/core';
-import { Alert, Autocomplete } from '@material-ui/lab';
-import React, { useEffect, useMemo } from 'react';
+import { Alert } from '@material-ui/lab';
+import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -13,17 +13,12 @@ import {
 import { useBasePath, useStyles } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { getEntityTitle } from '../../utils/utils';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { compact } from 'lodash';
-
-interface QuestionForm {
-  title: string;
-  content: string;
-  tags?: string[];
-  entities?: Entity[];
-}
+import { TagInput } from './TagInput';
+import { QuestionForm } from './types';
+import { EntitiesInput } from './EntitiesInput';
 
 const formToRequest = (
   form: QuestionForm,
@@ -87,12 +82,9 @@ export const AskForm = (props: {
   const [entityRef, setEntityRef] = React.useState(entity);
   const [values, setValues] = React.useState(getDefaultValues());
   const [error, setError] = React.useState(false);
-  const [availableTags, setAvailableTags] = React.useState<string[] | null>([]);
+
   const [images, setImages] = React.useState<number[]>([]);
   const [searchParams, _setSearchParams] = useSearchParams();
-  const [availableEntities, setAvailableEntities] = React.useState<
-    Entity[] | null
-  >([]);
 
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -109,15 +101,6 @@ export const AskForm = (props: {
     defaultValues: getDefaultValues(),
   });
 
-  const entityKinds: string[] = useMemo(
-    () =>
-      configApi.getOptionalStringArray('qeta.entityKinds') || [
-        'Component',
-        'System',
-      ],
-    [configApi],
-  );
-
   const postQuestion = (data: QuestionForm) => {
     if (id) {
       qetaApi
@@ -131,6 +114,8 @@ export const AskForm = (props: {
           analytics.captureEvent('edit', 'question');
           if (onPost) {
             onPost(q);
+          } else if (entity) {
+            navigate(`${base_path}/qeta/questions/${q.id}?entity=${entity}`);
           } else {
             navigate(`${base_path}/qeta/questions/${q.id}`);
           }
@@ -147,7 +132,11 @@ export const AskForm = (props: {
         }
         analytics.captureEvent('post', 'question');
         reset();
-        navigate(`${base_path}/qeta/questions/${q.id}`);
+        if (entity) {
+          navigate(`${base_path}/qeta/questions/${q.id}?entity=${entity}`);
+        } else {
+          navigate(`${base_path}/qeta/questions/${q.id}`);
+        }
       })
       .catch(_e => setError(true));
   };
@@ -176,7 +165,6 @@ export const AskForm = (props: {
           setValues(v => {
             return { ...v, entities: [data] };
           });
-          setAvailableEntities([data]);
         }
       });
     }
@@ -185,38 +173,6 @@ export const AskForm = (props: {
   useEffect(() => {
     reset(values);
   }, [values, reset]);
-
-  useEffect(() => {
-    qetaApi
-      .getTags()
-      .catch(_ => setAvailableTags(null))
-      .then(data =>
-        data
-          ? setAvailableTags(data.map(tag => tag.tag))
-          : setAvailableTags(null),
-      );
-  }, [qetaApi]);
-
-  useEffect(() => {
-    if (entityRef) {
-      return;
-    }
-
-    catalogApi
-      .getEntities({
-        filter: { kind: entityKinds },
-        fields: [
-          'kind',
-          'metadata.name',
-          'metadata.namespace',
-          'metadata.title',
-        ],
-      })
-      .catch(_ => setAvailableEntities(null))
-      .then(data =>
-        data ? setAvailableEntities(data.items) : setAvailableEntities(null),
-      );
-  }, [catalogApi, entityRef, configApi, entityKinds]);
 
   return (
     <form onSubmit={handleSubmit(postQuestion)} className="qetaAskForm">
@@ -255,75 +211,8 @@ export const AskForm = (props: {
         )}
         name="content"
       />
-      {availableTags && (
-        <Controller
-          control={control}
-          render={({ field: { onChange, value } }) => (
-            <Autocomplete
-              multiple
-              id="tags-select"
-              className="qetaAskFormTags"
-              value={value}
-              options={availableTags}
-              freeSolo
-              onChange={(_e, newValue) => {
-                if (!value || value.length < 5) {
-                  onChange(newValue);
-                }
-              }}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  margin="normal"
-                  label="Tags"
-                  placeholder="Type or select tags"
-                  helperText="Add up to 5 tags to categorize your question"
-                />
-              )}
-            />
-          )}
-          name="tags"
-        />
-      )}
-      {availableEntities && (
-        <Controller
-          control={control}
-          render={({ field: { onChange, value } }) => (
-            <Autocomplete
-              multiple
-              hidden={!!entityRef}
-              className="qetaAskFormEntities"
-              value={value}
-              groupBy={
-                entityKinds.length > 1 ? option => option.kind : undefined
-              }
-              id="entities-select"
-              options={availableEntities}
-              getOptionLabel={getEntityTitle}
-              getOptionSelected={(o, v) =>
-                stringifyEntityRef(o) === stringifyEntityRef(v)
-              }
-              onChange={(_e, newValue) => {
-                if (!value || value.length < 3) {
-                  onChange(newValue);
-                }
-              }}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  margin="normal"
-                  label="Entities"
-                  placeholder="Type or select entities"
-                  helperText="Add up to 3 entities this question relates to"
-                />
-              )}
-            />
-          )}
-          name="entities"
-        />
-      )}
+      <TagInput control={control} />
+      <EntitiesInput control={control} entityRef={entityRef} />
       <Button
         color="primary"
         type="submit"

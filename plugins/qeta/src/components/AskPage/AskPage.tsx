@@ -8,6 +8,8 @@ import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 
 export const AskPage = () => {
   const { id } = useParams();
+  const params = new URLSearchParams(window.location.search);
+  const entity = params.get('entity') ?? undefined;
   return (
     <Content className="qetaAskPage">
       <ContentHeader title={id ? 'Edit question' : 'Ask question'}>
@@ -16,7 +18,7 @@ export const AskPage = () => {
       <Grid container spacing={3} direction="column">
         <Grid item>
           <InfoCard>
-            <AskForm id={id} />
+            <AskForm id={id} entity={entity} />
           </InfoCard>
         </Grid>
       </Grid>

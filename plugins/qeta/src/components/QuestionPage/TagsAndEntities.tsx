@@ -1,15 +1,20 @@
 import { QuestionResponse } from '../../api';
-import { useApi } from '@backstage/core-plugin-api';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  getCompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { compact } from 'lodash';
 import { Chip, Tooltip } from '@material-ui/core';
-import { getEntityTitle, getEntityUrl } from '../../utils/utils';
+import { getEntityTitle } from '../../utils/utils';
 
 export const TagsAndEntities = (props: { question: QuestionResponse }) => {
   const { question } = props;
   const catalogApi = useApi(catalogApiRef);
+  const entityRoute = useRouteRef(entityRouteRef);
   const [entities, setEntities] = React.useState<Entity[]>([]);
   useEffect(() => {
     if (question.entities && question.entities.length > 0) {
@@ -60,7 +65,7 @@ export const TagsAndEntities = (props: { question: QuestionResponse }) => {
               variant="outlined"
               className="qetaEntityChip"
               component="a"
-              href={getEntityUrl(component)}
+              href={entityRoute(getCompoundEntityRef(component))}
               clickable
             />
           </Tooltip>

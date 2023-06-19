@@ -2,37 +2,52 @@ import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { QetaPage } from '../src/plugin';
 import {
-  AnyApiFactory,
   createApiFactory,
   createPlugin,
+  createRoutableExtension,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../src/routes';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { CatalogClient } from '@backstage/catalog-client';
 import { TablePage } from './TablePage';
 import { HomePage } from './HomePage';
 import { StatisticsPage } from './StatisticsPage';
 
-const apiFactories: AnyApiFactory[] = [
-  createApiFactory({
-    api: catalogApiRef,
-    deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
-    factory: ({ discoveryApi, fetchApi }) =>
-      new CatalogClient({ discoveryApi, fetchApi }),
+const fakeCatalogPlugin = createPlugin({
+  id: 'catalog',
+  routes: {
+    catalogEntity: entityRouteRef,
+  },
+  apis: [
+    createApiFactory({
+      api: catalogApiRef,
+      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new CatalogClient({ discoveryApi, fetchApi }),
+    }),
+  ],
+});
+
+export const CatalogEntityPage: () => JSX.Element = fakeCatalogPlugin.provide(
+  createRoutableExtension({
+    name: 'CatalogEntityPage',
+    component: () => import('./ComponentPage').then(m => m.ComponentPage),
+    mountPoint: entityRouteRef,
   }),
-];
+);
 
 const qetaDevPlugin = createPlugin({
   id: 'qetaDev',
   routes: {
     root: rootRouteRef,
   },
-  apis: apiFactories,
+  externalRoutes: {},
 });
 
 createDevApp()
+  .registerPlugin(fakeCatalogPlugin)
   .registerPlugin(qetaDevPlugin)
   .addPage({
     element: (
@@ -43,6 +58,11 @@ createDevApp()
     ),
     title: 'Root Page',
     path: '/qeta',
+  })
+  .addPage({
+    element: <CatalogEntityPage />,
+    title: 'Component',
+    path: '/catalog/default/component/artist-web',
   })
   .addPage({
     element: <TablePage />,

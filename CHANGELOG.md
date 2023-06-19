@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.12.0...v1.13.0) (2023-06-16)
+
+
+### Features
+
+* add stats for most questions and answers ([ab6f3fd](https://github.com/drodil/backstage-plugin-qeta/commit/ab6f3fd0de88516f5176a5720a8a30b8e9071fbe))
+* add support for backstage events ([026064e](https://github.com/drodil/backstage-plugin-qeta/commit/026064e71d430b5fe05999238a9b345734316c3b)), closes [#55](https://github.com/drodil/backstage-plugin-qeta/issues/55)
+* allow specifying allowed tags in app config ([ca0b443](https://github.com/drodil/backstage-plugin-qeta/commit/ca0b443ead1d78eae1eba301751a30e2c093fdba)), closes [#66](https://github.com/drodil/backstage-plugin-qeta/issues/66)
+
+
+### Bug Fixes
+
+* redirect back to entity page from question container ([85c7c24](https://github.com/drodil/backstage-plugin-qeta/commit/85c7c24c667367c5dd3e38e2b474c66b14fb8dc1)), closes [#65](https://github.com/drodil/backstage-plugin-qeta/issues/65)
+
 ## [1.12.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.11.0...v1.12.0) (2023-06-14)
 
 
