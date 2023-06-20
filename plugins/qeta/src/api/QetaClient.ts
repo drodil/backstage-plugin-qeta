@@ -514,7 +514,7 @@ export class QetaClient implements QetaApi {
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
     const query = this.getQueryParameters(options.options).toString();
-    let url = `${await this.getBaseUrl()}/statistics/questions/top-correct-upvoted-users`;
+    let url = `${await this.getBaseUrl()}/statistics/questions/top-upvoted-users`;
 
     if (query) {
       url += `?${query}`;
