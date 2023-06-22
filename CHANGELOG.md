@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.13.1...v1.13.2) (2023-06-22)
+
+
+### Bug Fixes
+
+* **getMostUpvotedQuestions:** fix url getMostUpvotedQuestions QetaClient ([761585d](https://github.com/drodil/backstage-plugin-qeta/commit/761585d537bac6ddfc333048aee8fb96357b7c48))
+
 ### [1.13.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.13.0...v1.13.1) (2023-06-20)
 
 
