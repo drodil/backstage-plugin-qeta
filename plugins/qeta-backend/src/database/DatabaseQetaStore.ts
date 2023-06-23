@@ -295,7 +295,8 @@ export class DatabaseQetaStore implements QetaStore {
         },
         ['id'],
       )
-      .into('questions');
+      .into('questions')
+      .returning(['id', 'author', 'title', 'content', 'created']);
 
     await Promise.all([
       this.addQuestionTags(questions[0].id, tags),
