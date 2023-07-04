@@ -26,6 +26,8 @@ export interface PostQuestion {
   tags?: string[];
   entities?: string[];
   images?: number[];
+  user?: string;
+  created?: string;
 }
 
 export const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
@@ -65,6 +67,8 @@ export const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
     tags: { type: 'array', items: { type: 'string' }, nullable: true },
     entities: { type: 'array', items: { type: 'string' }, nullable: true },
     images: { type: 'array', items: { type: 'integer' }, nullable: true },
+    user: { type: 'string', minLength: 1, nullable: true },
+    created: { type: 'string', minLength: 1, nullable: true },
   },
   required: ['title', 'content'],
   additionalProperties: false,
@@ -73,6 +77,8 @@ export const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
 export interface AnswerQuestion {
   answer: string;
   images?: number[];
+  user?: string;
+  created?: string;
 }
 
 export const PostAnswerSchema: JSONSchemaType<AnswerQuestion> = {
@@ -80,6 +86,8 @@ export const PostAnswerSchema: JSONSchemaType<AnswerQuestion> = {
   properties: {
     answer: { type: 'string', minLength: 1 },
     images: { type: 'array', items: { type: 'integer' }, nullable: true },
+    user: { type: 'string', minLength: 1, nullable: true },
+    created: { type: 'string', minLength: 1, nullable: true },
   },
   required: ['answer'],
   additionalProperties: false,
@@ -87,12 +95,16 @@ export const PostAnswerSchema: JSONSchemaType<AnswerQuestion> = {
 
 export interface Comment {
   content: string;
+  user?: string;
+  created?: string;
 }
 
 export const CommentSchema: JSONSchemaType<Comment> = {
   type: 'object',
   properties: {
     content: { type: 'string', minLength: 1 },
+    user: { type: 'string', minLength: 1, nullable: true },
+    created: { type: 'string', minLength: 1, nullable: true },
   },
   required: ['content'],
   additionalProperties: false,

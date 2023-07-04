@@ -118,3 +118,7 @@ Then add it to your entity page:
     <QetaContent />
 </EntityLayout.Route>,
 ```
+
+## Importing content from another system
+
+You can use the backend API to import content via the question, answer, and comment endpoints. If you set `allowMetadataInput` to `true` in your config, you can also pass in the `created` and `user` fields to preserve this metadata from another system.

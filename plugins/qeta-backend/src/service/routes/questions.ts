@@ -1,6 +1,11 @@
 import { RouterOptions } from '../router';
 import { QuestionsOptions } from '../../database/QetaStore';
-import { checkPermissions, getUsername, mapAdditionalFields } from '../util';
+import {
+  checkPermissions,
+  getUsername,
+  getCreated,
+  mapAdditionalFields,
+} from '../util';
 import Ajv from 'ajv';
 import { Request, Router } from 'express';
 import {
@@ -104,6 +109,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     // Validation
     // Act
     const username = await getUsername(request, options);
+    const created = await getCreated(request, options);
     await checkPermissions(request, qetaReadPermission, options);
     const validateRequestBody = ajv.compile(CommentSchema);
     if (!validateRequestBody(request.body)) {
@@ -116,6 +122,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       Number.parseInt(request.params.id, 10),
       username,
       request.body.content,
+      created,
     );
 
     if (question === null) {
@@ -210,11 +217,14 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     const tags = getTags(request);
     const entities = getEntities(request);
     const username = await getUsername(request, options);
+    const created = await getCreated(request, options);
+
     // Act
     const question = await database.postQuestion(
       username,
       request.body.title,
       request.body.content,
+      created,
       tags,
       entities,
       request.body.images,

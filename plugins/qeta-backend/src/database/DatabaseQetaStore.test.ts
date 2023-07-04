@@ -129,7 +129,12 @@ describe.each(databases.eachSupportedId())(
       it('should be able to answer question', async () => {
         const id = await insertQuestion(question);
 
-        const ans = await storage.answerQuestion('user', id, 'answer');
+        const ans = await storage.answerQuestion(
+          'user',
+          id,
+          'answer',
+          new Date(),
+        );
         expect(ans).toBeDefined();
         expect(ans?.content).toEqual('answer');
         expect(ans?.questionId).toEqual(id);
@@ -138,6 +143,7 @@ describe.each(databases.eachSupportedId())(
           ans?.id ?? 0,
           'user:default/user',
           'this is comment',
+          new Date(),
         );
         expect(ans2?.comments?.length).toEqual(1);
       });
@@ -179,6 +185,7 @@ describe.each(databases.eachSupportedId())(
           'user1',
           'title',
           'content',
+          new Date(),
           ['java', 'xml', ''],
           ['component:default/comp1', 'component:default/comp2'],
         );
@@ -186,6 +193,7 @@ describe.each(databases.eachSupportedId())(
           'user2',
           'title2',
           'content2',
+          new Date(),
           ['java', 'mysql'],
           ['component:default/comp2', 'component:default/comp3'],
         );
@@ -210,6 +218,7 @@ describe.each(databases.eachSupportedId())(
           'user1',
           'title',
           'content',
+          new Date(),
           ['java', 'xml', ''],
           ['component:default/comp1', 'component:default/comp2'],
         );
@@ -217,6 +226,7 @@ describe.each(databases.eachSupportedId())(
           'user2',
           'title2',
           'content2',
+          new Date(),
           ['java', 'mysql'],
           ['component:default/comp2', 'component:default/comp3'],
         );
@@ -248,6 +258,7 @@ describe.each(databases.eachSupportedId())(
           'user1',
           'title',
           'content',
+          new Date(),
           ['java', 'xml', ''],
           [
             'component:default/comp1',
@@ -260,6 +271,7 @@ describe.each(databases.eachSupportedId())(
           'user2',
           'title2',
           'content2',
+          new Date(),
           ['java', 'mysql'],
           ['component:default/comp2', 'component:default/comp3'],
         );
@@ -280,6 +292,7 @@ describe.each(databases.eachSupportedId())(
           id1.id,
           'user:default/user',
           'this is comment',
+          new Date(),
         );
         expect(ret3?.comments?.length).toEqual(1);
       });
@@ -289,6 +302,7 @@ describe.each(databases.eachSupportedId())(
           'user1',
           'title',
           'content',
+          new Date(),
           ['java', 'xml', ''],
           [
             'component:default/comp1',
@@ -323,6 +337,7 @@ describe.each(databases.eachSupportedId())(
           'user1',
           'title',
           'content',
+          new Date(),
           ['java', 'xml', ''],
           [
             'component:default/comp1',
@@ -345,7 +360,7 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should delete question', async () => {
-        const id1 = await storage.postQuestion('user1', 'title', 'content');
+        const id1 = await storage.postQuestion('user1', 'title', 'content', new Date());
         let ret1 = await storage.getQuestion('user', id1.id);
         expect(ret1?.title).toEqual('title');
 

@@ -90,6 +90,14 @@ const answer: Answer = {
   created: new Date('2022-01-01T00:00:00Z'),
 };
 
+const comment: Comment = {
+  id: 1,
+  questionId: 1,
+  author: 'user',
+  content: 'content',
+  created: new Date('2022-01-01T00:00:00Z'),
+};
+
 describe('createRouter', () => {
   let app: express.Express;
 
@@ -139,8 +147,6 @@ describe('createRouter', () => {
     getIdentity: getIdentityMock,
   };
 
-  const config = ConfigReader.fromConfigs([]);
-
   const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
     jest.fn();
   const mockedPermissionQuery: jest.MockedFunction<
@@ -152,7 +158,7 @@ describe('createRouter', () => {
     authorizeConditional: mockedPermissionQuery,
   };
 
-  beforeAll(async () => {
+  const buildApp = async (config: ConfigReader) => {
     const router = await createRouter({
       logger: getVoidLogger(),
       database: qetaStore,
@@ -160,10 +166,11 @@ describe('createRouter', () => {
       config,
       permissions: permissionEvaluator,
     });
-    app = express().use(router);
-  });
+    return express().use(router);
+  };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    app = await buildApp(ConfigReader.fromConfigs([]));
     jest.resetAllMocks();
     mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
     getIdentityMock.mockResolvedValue({
@@ -233,6 +240,9 @@ describe('createRouter', () => {
   describe('POST /questions', () => {
     it('creates new question', async () => {
       qetaStore.postQuestion.mockResolvedValue(question);
+      const spy = jest
+        .spyOn(global, 'Date')
+        .mockImplementation(() => question.created);
 
       const response = await request(app)
         .post('/questions')
@@ -247,6 +257,7 @@ describe('createRouter', () => {
         'user',
         'title',
         'content',
+        question.created,
         ['java'],
         ['component:default/comp1'],
         undefined,
@@ -256,6 +267,38 @@ describe('createRouter', () => {
         ...question,
         created: '2022-01-01T00:00:00.000Z',
       });
+      spy.mockRestore();
+    });
+
+    it('allows user and created to be specified if allowMetadataInput is true', async () => {
+      qetaStore.postQuestion.mockResolvedValue(question);
+      const config = ConfigReader.fromConfigs([
+        { context: 'qeta', data: { qeta: { allowMetadataInput: true } } },
+      ]);
+      app = await buildApp(config);
+
+      const testDate = new Date('1999-01-01T00:00:00.000Z');
+      const response = await request(app)
+        .post('/questions')
+        .send({
+          user: 'user2',
+          title: 'title',
+          content: 'content',
+          tags: ['java'],
+          entities: ['component:default/comp1'],
+          created: testDate.toISOString(),
+        });
+
+      expect(qetaStore.postQuestion).toHaveBeenCalledWith(
+        'user2',
+        'title',
+        'content',
+        testDate,
+        ['java'],
+        ['component:default/comp1'],
+        undefined,
+      );
+      expect(response.status).toEqual(201);
     });
 
     it('invalid request', async () => {
@@ -325,6 +368,9 @@ describe('createRouter', () => {
   describe('POST /questions/:id/answers', () => {
     it('posts answer', async () => {
       qetaStore.answerQuestion.mockResolvedValue(answer);
+      const spy = jest
+        .spyOn(global, 'Date')
+        .mockImplementation(() => answer.created);
 
       const response = await request(app).post('/questions/1/answers').send({
         answer: 'content',
@@ -334,6 +380,7 @@ describe('createRouter', () => {
         'user',
         1,
         'content',
+        answer.created,
         undefined,
       );
       expect(response.status).toEqual(201);
@@ -341,6 +388,32 @@ describe('createRouter', () => {
         ...answer,
         created: '2022-01-01T00:00:00.000Z',
       });
+      spy.mockRestore();
+    });
+
+    it('allows user and created to be specified if allowMetadataInput is true', async () => {
+      qetaStore.answerQuestion.mockResolvedValue(answer);
+
+      const config = ConfigReader.fromConfigs([
+        { context: 'qeta', data: { qeta: { allowMetadataInput: true } } },
+      ]);
+      app = await buildApp(config);
+
+      const testDate = new Date('1999-01-01T00:00:00.000Z');
+      const response = await request(app).post('/questions/1/answers').send({
+        user: 'user2',
+        answer: 'content',
+        created: testDate.toISOString(),
+      });
+
+      expect(qetaStore.answerQuestion).toHaveBeenCalledWith(
+        'user2',
+        1,
+        'content',
+        testDate,
+        undefined,
+      );
+      expect(response.status).toEqual(201);
     });
 
     it('invalid request', async () => {
