@@ -360,7 +360,12 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should delete question', async () => {
-        const id1 = await storage.postQuestion('user1', 'title', 'content', new Date());
+        const id1 = await storage.postQuestion(
+          'user1',
+          'title',
+          'content',
+          new Date(),
+        );
         let ret1 = await storage.getQuestion('user', id1.id);
         expect(ret1?.title).toEqual('title');
 

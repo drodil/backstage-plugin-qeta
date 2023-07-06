@@ -683,6 +683,24 @@ describe('createRouter', () => {
       expect(response.status).toEqual(404);
     });
 
+    it('allows user to be specified as a header if allowMetadataInput is true', async () => {
+      qetaStore.markAnswerCorrect.mockResolvedValue(false);
+      const config = ConfigReader.fromConfigs([
+        { context: 'qeta', data: { qeta: { allowMetadataInput: true } } },
+      ]);
+      app = await buildApp(config);
+
+      const response = await request(app)
+        .get('/questions/1/answers/2/correct')
+        .set('x-qeta-user', 'another-user');
+      expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith(
+        'another-user',
+        1,
+        2,
+      );
+      expect(response.status).toEqual(404);
+    });
+
     it('unauthorized', async () => {
       getIdentityMock.mockResolvedValue(undefined);
       const response = await request(app).get('/questions/1/answers/2/correct');

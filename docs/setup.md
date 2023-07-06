@@ -121,4 +121,4 @@ Then add it to your entity page:
 
 ## Importing content from another system
 
-You can use the backend API to import content via the question, answer, and comment endpoints. If you set `allowMetadataInput` to `true` in your config, you can also pass in the `created` and `user` fields to preserve this metadata from another system.
+You can use the backend API to import content via the question, answer, and comment endpoints. If you set `allowMetadataInput` to `true` in your config, you can also pass in the `created` and `user` fields in to preserve this metadata from another system. For POST requests, you can pass these as keys in the JSON payload. For GET requests, you can pass the username with a `x-qeta-user` header.

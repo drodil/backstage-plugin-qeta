@@ -29,6 +29,8 @@ export const getUsername = async (
     throw new AuthenticationError(`Missing token in 'authorization' header`);
   } else if (allowMetadataInput && req.body.user) {
     return req.body.user;
+  } else if (allowMetadataInput && req.get('x-qeta-user')) {
+    return req.get('x-qeta-user')!;
   } else {
     return user.identity.userEntityRef;
   }
