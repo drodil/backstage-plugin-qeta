@@ -68,7 +68,7 @@ git rebase upstream/main
 git checkout -b new-feature
 ```
 
-Make your changes, then ensure that `yarn lint` and `yarn test` still pass. If you're satisfied with your changes, push them to your fork.
+Make your changes, then ensure that `yarn lint`, `yarn tsc` and `yarn test` still pass. If you're satisfied with your changes, push them to your fork.
 
 Also remember to run database changes against a postgres instance. The instance can reside inside docker image or on local
 machine.
