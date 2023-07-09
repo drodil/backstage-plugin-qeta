@@ -19,7 +19,7 @@ import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
-import { Answer, QetaStore, Question } from '../database/QetaStore';
+import { Answer, QetaStore, Question, Comment } from '../database/QetaStore';
 import {
   BackstageIdentityResponse,
   IdentityApi,
@@ -91,11 +91,19 @@ const answer: Answer = {
 };
 
 const comment: Comment = {
-  id: 1,
-  questionId: 1,
   author: 'user',
   content: 'content',
   created: new Date('2022-01-01T00:00:00Z'),
+};
+
+const answerWithComment: Answer = {
+  ...answer,
+  comments: [comment],
+};
+
+const questionWithComment: Question = {
+  ...question,
+  comments: [comment],
 };
 
 describe('createRouter', () => {
@@ -158,7 +166,14 @@ describe('createRouter', () => {
     authorizeConditional: mockedPermissionQuery,
   };
 
-  const buildApp = async (config: ConfigReader) => {
+  const mockSystemDate = (mockDate: Date) => {
+    jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
+  };
+
+  const buildApp = async (qetaConfig?: Record<string, string | object>) => {
+    const config = ConfigReader.fromConfigs([
+      { context: 'qeta', data: qetaConfig || {} },
+    ]);
     const router = await createRouter({
       logger: getVoidLogger(),
       database: qetaStore,
@@ -170,8 +185,8 @@ describe('createRouter', () => {
   };
 
   beforeEach(async () => {
-    app = await buildApp(ConfigReader.fromConfigs([]));
-    jest.resetAllMocks();
+    app = await buildApp();
+    jest.restoreAllMocks();
     mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
     getIdentityMock.mockResolvedValue({
       token: 'a',
@@ -240,9 +255,7 @@ describe('createRouter', () => {
   describe('POST /questions', () => {
     it('creates new question', async () => {
       qetaStore.postQuestion.mockResolvedValue(question);
-      const spy = jest
-        .spyOn(global, 'Date')
-        .mockImplementation(() => question.created);
+      mockSystemDate(question.created);
 
       const response = await request(app)
         .post('/questions')
@@ -267,15 +280,11 @@ describe('createRouter', () => {
         ...question,
         created: '2022-01-01T00:00:00.000Z',
       });
-      spy.mockRestore();
     });
 
     it('allows user and created to be specified if allowMetadataInput is true', async () => {
       qetaStore.postQuestion.mockResolvedValue(question);
-      const config = ConfigReader.fromConfigs([
-        { context: 'qeta', data: { qeta: { allowMetadataInput: true } } },
-      ]);
-      app = await buildApp(config);
+      app = await buildApp({ qeta: { allowMetadataInput: true } });
 
       const testDate = new Date('1999-01-01T00:00:00.000Z');
       const response = await request(app)
@@ -365,13 +374,81 @@ describe('createRouter', () => {
     });
   });
 
+  describe('POST /questions/:id/comments', () => {
+    it('posts a comment on the question', async () => {
+      qetaStore.commentQuestion.mockResolvedValue(questionWithComment);
+      mockSystemDate(answer.created);
+
+      const response = await request(app).post(`/questions/1/comments`).send({
+        content: 'content',
+      });
+
+      expect(response.status).toEqual(200);
+      expect(qetaStore.commentQuestion).toHaveBeenCalledWith(
+        1,
+        'user',
+        'content',
+        question.created,
+      );
+      expect(response.body).toEqual(
+        JSON.parse(JSON.stringify(questionWithComment)),
+      );
+    });
+
+    it('allows user and created to be specified if allowMetadataInput is true', async () => {
+      qetaStore.commentQuestion.mockResolvedValue(questionWithComment);
+      app = await buildApp({ qeta: { allowMetadataInput: true } });
+
+      const testDate = new Date('1999-01-01T00:00:00.000Z');
+      const response = await request(app).post(`/questions/1/comments`).send({
+        user: 'user2',
+        content: 'content2',
+        created: testDate.toISOString(),
+      });
+
+      expect(response.status).toEqual(200);
+      expect(qetaStore.commentQuestion).toHaveBeenCalledWith(
+        1,
+        'user2',
+        'content2',
+        testDate,
+      );
+    });
+
+    it('invalid request', async () => {
+      const response = await request(app)
+        .post(`/questions/1/comments`)
+        .send({});
+      expect(response.status).toEqual(400);
+      expect(response.body).toEqual({
+        errors: [
+          {
+            instancePath: '',
+            keyword: 'required',
+            message: "must have required property 'content'",
+            params: {
+              missingProperty: 'content',
+            },
+            schemaPath: '#/required',
+          },
+        ],
+        type: 'body',
+      });
+    });
+
+    it('unauthorized', async () => {
+      getIdentityMock.mockResolvedValue(undefined);
+      const response = await request(app).post(`/questions/1/comments`).send({
+        content: 'comment',
+      });
+      expect(response.status).toEqual(401);
+    });
+  });
+
   describe('POST /questions/:id/answers', () => {
     it('posts answer', async () => {
       qetaStore.answerQuestion.mockResolvedValue(answer);
-      const spy = jest
-        .spyOn(global, 'Date')
-        .mockImplementation(() => answer.created);
-
+      mockSystemDate(answer.created);
       const response = await request(app).post('/questions/1/answers').send({
         answer: 'content',
       });
@@ -388,16 +465,11 @@ describe('createRouter', () => {
         ...answer,
         created: '2022-01-01T00:00:00.000Z',
       });
-      spy.mockRestore();
     });
 
     it('allows user and created to be specified if allowMetadataInput is true', async () => {
       qetaStore.answerQuestion.mockResolvedValue(answer);
-
-      const config = ConfigReader.fromConfigs([
-        { context: 'qeta', data: { qeta: { allowMetadataInput: true } } },
-      ]);
-      app = await buildApp(config);
+      app = await buildApp({ qeta: { allowMetadataInput: true } });
 
       const testDate = new Date('1999-01-01T00:00:00.000Z');
       const response = await request(app).post('/questions/1/answers').send({
@@ -685,10 +757,7 @@ describe('createRouter', () => {
 
     it('allows user to be specified as a header if allowMetadataInput is true', async () => {
       qetaStore.markAnswerCorrect.mockResolvedValue(false);
-      const config = ConfigReader.fromConfigs([
-        { context: 'qeta', data: { qeta: { allowMetadataInput: true } } },
-      ]);
-      app = await buildApp(config);
+      app = await buildApp({ qeta: { allowMetadataInput: true } });
 
       const response = await request(app)
         .get('/questions/1/answers/2/correct')
@@ -740,9 +809,86 @@ describe('createRouter', () => {
     });
   });
 
+  describe('POST /questions/:id/answers/:answerId/comments', () => {
+    it('posts a comment on the answer', async () => {
+      qetaStore.commentAnswer.mockResolvedValue(answerWithComment);
+      mockSystemDate(answer.created);
+
+      const response = await request(app)
+        .post(`/questions/1/answers/1/comments`)
+        .send({
+          content: 'content',
+        });
+
+      expect(response.status).toEqual(201);
+      expect(qetaStore.commentAnswer).toHaveBeenCalledWith(
+        1,
+        'user',
+        'content',
+        answer.created,
+      );
+      expect(response.body).toEqual(
+        JSON.parse(JSON.stringify(answerWithComment)),
+      );
+    });
+
+    it('allows user and created to be specified if allowMetadataInput is true', async () => {
+      qetaStore.commentAnswer.mockResolvedValue(answerWithComment);
+      app = await buildApp({ qeta: { allowMetadataInput: true } });
+
+      const testDate = new Date('1999-01-01T00:00:00.000Z');
+      const response = await request(app)
+        .post(`/questions/1/answers/1/comments`)
+        .send({
+          user: 'user2',
+          content: 'content2',
+          created: testDate.toISOString(),
+        });
+
+      expect(response.status).toEqual(201);
+      expect(qetaStore.commentAnswer).toHaveBeenCalledWith(
+        1,
+        'user2',
+        'content2',
+        testDate,
+      );
+    });
+
+    it('invalid request', async () => {
+      const response = await request(app)
+        .post(`/questions/1/answers/1/comments`)
+        .send({});
+      expect(response.status).toEqual(400);
+      expect(response.body).toEqual({
+        errors: [
+          {
+            instancePath: '',
+            keyword: 'required',
+            message: "must have required property 'content'",
+            params: {
+              missingProperty: 'content',
+            },
+            schemaPath: '#/required',
+          },
+        ],
+        type: 'body',
+      });
+    });
+
+    it('unauthorized', async () => {
+      getIdentityMock.mockResolvedValue(undefined);
+      const response = await request(app)
+        .post(`/questions/1/answers/1/comments`)
+        .send({
+          content: 'comment',
+        });
+      expect(response.status).toEqual(401);
+    });
+  });
+
   describe('GET /statistics/questions/top-upvoted-users', () => {
     beforeEach(() => {
-      jest.resetAllMocks();
+      jest.restoreAllMocks();
     });
 
     it('returns the users with the best voted questions', async () => {
