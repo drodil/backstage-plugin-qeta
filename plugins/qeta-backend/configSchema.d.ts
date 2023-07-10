@@ -7,6 +7,12 @@ export interface Config {
      */
     allowAnonymous?: boolean;
     /**
+     * Allow author and created fields to be specified
+     *
+     * @visibility backend
+     */
+    allowMetadataInput?: boolean;
+    /**
      * Entities configuration for questions.
      *
      * @visibility frontend

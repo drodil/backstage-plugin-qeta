@@ -45,6 +45,7 @@ qeta:
     # maxSizeImage: 2500000
     # allowedFilesTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/gif']
   allowAnonymous: true
+  allowMetadataInput: false
   entities:
     max: 2
   tags:

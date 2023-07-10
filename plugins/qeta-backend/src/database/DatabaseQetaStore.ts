@@ -281,6 +281,7 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     title: string,
     content: string,
+    created: Date,
     tags?: string[],
     entities?: string[],
     images?: number[],
@@ -291,7 +292,7 @@ export class DatabaseQetaStore implements QetaStore {
           author: user_ref,
           title,
           content,
-          created: new Date(),
+          created,
         },
         ['id'],
       )
@@ -316,12 +317,13 @@ export class DatabaseQetaStore implements QetaStore {
     question_id: number,
     user_ref: string,
     content: string,
+    created: Date,
   ): Promise<MaybeQuestion> {
     await this.db
       .insert({
         author: user_ref,
         content,
-        created: new Date(),
+        created,
         questionId: question_id,
       })
       .into('question_comments');
@@ -346,12 +348,13 @@ export class DatabaseQetaStore implements QetaStore {
     answer_id: number,
     user_ref: string,
     content: string,
+    created: Date,
   ): Promise<MaybeAnswer> {
     await this.db
       .insert({
         author: user_ref,
         content,
-        created: new Date(),
+        created,
         answerId: answer_id,
       })
       .into('answer_comments');
@@ -414,6 +417,7 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     questionId: number,
     answer: string,
+    created: Date,
     images?: number[],
   ): Promise<MaybeAnswer> {
     const answers = await this.db
@@ -422,7 +426,7 @@ export class DatabaseQetaStore implements QetaStore {
         author: user_ref,
         content: answer,
         correct: false,
-        created: new Date(),
+        created,
       })
       .into('answers')
       .returning('id');

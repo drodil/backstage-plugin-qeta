@@ -1,7 +1,12 @@
 import { RouterOptions } from '../router';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import { checkPermissions, getUsername, mapAdditionalFields } from '../util';
+import {
+  checkPermissions,
+  getUsername,
+  getCreated,
+  mapAdditionalFields,
+} from '../util';
 import { CommentSchema, PostAnswerSchema } from '../types';
 import { Request, Router } from 'express';
 import {
@@ -29,12 +34,14 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     }
 
     const username = await getUsername(request, options);
+    const created = await getCreated(request, options);
     const questionId = Number.parseInt(request.params.id, 10);
     // Act
     const answer = await database.answerQuestion(
       username,
       questionId,
       request.body.answer,
+      created,
       request.body.images,
     );
 
@@ -105,12 +112,14 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       }
 
       const username = await getUsername(request, options);
+      const created = await getCreated(request, options);
       const answerId = Number.parseInt(request.params.answerId, 10);
       // Act
       const answer = await database.commentAnswer(
         answerId,
         username,
         request.body.content,
+        created,
       );
 
       if (!answer) {

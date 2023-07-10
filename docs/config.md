@@ -5,6 +5,7 @@ The following configuration options are available for your app-config.yaml:
 ```yaml
 qeta:
   allowAnonymous: true
+  allowMetadataInput: false
   entities:
     kinds: ['Component']
     max: 3
@@ -23,6 +24,7 @@ qeta:
 The configuration values are:
 
 - allowAnonymous, boolean, allows anonymous users to post questions and answers. If enabled all users without authentication will be named after guest user. Required for local development.
+- allowMetadataInput, boolean, allows `created` and `user` fields to be passed when creating questions, answers, or comments. Useful if migrating information into the system. Default is `false`
 - entities.kinds, string array, what kind of catalog entities can be attached to a question. Default is ['Component']
 - entities.max, integer, maximum number of entities to attach to a question. Default is `3`
 - tags.allowCreation, boolean, determines whether it's possible to add new tags when creating question. Default is `true`

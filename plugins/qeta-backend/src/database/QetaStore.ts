@@ -168,6 +168,7 @@ export interface QetaStore {
     user_ref: string,
     title: string,
     content: string,
+    created: Date,
     tags?: string[],
     components?: string[],
     images?: number[],
@@ -183,6 +184,7 @@ export interface QetaStore {
     question_id: number,
     user_ref: string,
     content: string,
+    created: Date,
   ): Promise<MaybeQuestion>;
 
   /**
@@ -233,6 +235,7 @@ export interface QetaStore {
     user_ref: string,
     questionId: number,
     answer: string,
+    created: Date,
     images?: number[],
   ): Promise<MaybeAnswer>;
 
@@ -246,6 +249,7 @@ export interface QetaStore {
     answer_id: number,
     user_ref: string,
     content: string,
+    created: Date,
   ): Promise<MaybeAnswer>;
 
   /**

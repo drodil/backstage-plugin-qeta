@@ -18,13 +18,37 @@ export const getUsername = async (
   const allowAnonymous = options.config.getOptionalBoolean(
     'qeta.allowAnonymous',
   );
+  const allowMetadataInput = options.config.getOptionalBoolean(
+    'qeta.allowMetadataInput',
+  );
+
   if (!user) {
     if (allowAnonymous) {
       return 'user:default/guest';
     }
     throw new AuthenticationError(`Missing token in 'authorization' header`);
+  } else if (allowMetadataInput && req.body.user) {
+    return req.body.user;
+  } else if (allowMetadataInput && req.get('x-qeta-user')) {
+    return req.get('x-qeta-user')!;
+  } else {
+    return user.identity.userEntityRef;
   }
-  return user.identity.userEntityRef;
+};
+
+export const getCreated = async (
+  req: Request<unknown>,
+  options: RouterOptions,
+): Promise<Date> => {
+  const allowMetadataInput = options.config.getOptionalBoolean(
+    'qeta.allowMetadataInput',
+  );
+
+  if (allowMetadataInput && req.body.created) {
+    return new Date(req.body.created);
+  }
+
+  return new Date();
 };
 
 export const checkPermissions = async (
