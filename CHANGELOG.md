@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.14.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.13.3...v1.14.0) (2023-07-13)
+
+
+### Features
+
+* add tests for comment routes ([d36d339](https://github.com/drodil/backstage-plugin-qeta/commit/d36d3399e80b9661f501677074436f4445d66229))
+* allow user to be specified for GET routes via x-qeta-user header ([f85e4e0](https://github.com/drodil/backstage-plugin-qeta/commit/f85e4e0fd7dfe2f86b28fdcf030776b54055765d))
+* use entity title on entity ask page ([6547e6c](https://github.com/drodil/backstage-plugin-qeta/commit/6547e6c5defff3e97bc6eb742511517bbf12b7a9))
+* when allowMetadataInput is enabled, accept created and user fields ([e3b90cb](https://github.com/drodil/backstage-plugin-qeta/commit/e3b90cbf39011858b000ce8bbac20c3af5a0b319))
+
 ### [1.13.3](https://github.com/drodil/backstage-plugin-qeta/compare/v1.13.2...v1.13.3) (2023-06-27)
 
 ### [1.13.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.13.1...v1.13.2) (2023-06-22)
