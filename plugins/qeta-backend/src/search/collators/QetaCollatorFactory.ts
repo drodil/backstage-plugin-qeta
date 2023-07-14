@@ -13,6 +13,13 @@ export type QetaCollatorFactoryOptions = {
   database: PluginDatabaseManager;
 };
 
+export interface QetaDocument extends IndexableDocument {
+  docType: string;
+  author: string;
+  score: number;
+  answerCount?: number;
+}
+
 export class QetaCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'qeta';
   private readonly logger: Logger;
@@ -31,7 +38,7 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
     return Readable.from(this.execute());
   }
 
-  async *execute(): AsyncGenerator<IndexableDocument> {
+  async *execute(): AsyncGenerator<QetaDocument> {
     this.logger.info('Executing QetaCollator');
     const db = await DatabaseQetaStore.create({
       database: this.database,
@@ -47,6 +54,10 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
         title: question.title,
         text: question.content,
         location: `/qeta/questions/${question.id}`,
+        docType: 'qeta',
+        author: question.author,
+        score: question.score,
+        answerCount: question.answersCount,
       };
 
       for (const answer of question.answers ?? []) {
@@ -54,6 +65,9 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
           title: `Answer for ${question.title}`,
           text: answer.content,
           location: `/qeta/questions/${question.id}`,
+          docType: 'qeta',
+          author: answer.author,
+          score: answer.score,
         };
       }
     }
