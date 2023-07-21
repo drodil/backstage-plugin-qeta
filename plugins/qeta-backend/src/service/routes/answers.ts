@@ -140,6 +140,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
           topic: 'qeta',
           eventPayload: {
             question,
+            answer,
             comment: request.body.content,
             author: username,
           },
