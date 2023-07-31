@@ -5,7 +5,7 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import { createCardExtension } from '@backstage/plugin-home';
+import { createCardExtension } from '@backstage/plugin-home-react';
 import { rootRouteRef } from './routes';
 import { qetaApiRef, QetaClient } from './api';
 
