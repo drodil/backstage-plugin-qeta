@@ -6,12 +6,12 @@ export const qetaReadPermission = createPermission({
 });
 
 export const qetaCreateQuestionPermission = createPermission({
-  name: 'qeta.create',
+  name: 'qeta.create.question',
   attributes: { action: 'create' },
 });
 
 export const qetaCreateAnswerPermission = createPermission({
-  name: 'qeta.create',
+  name: 'qeta.create.answer',
   attributes: { action: 'create' },
 });
 
