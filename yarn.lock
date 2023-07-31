@@ -3521,6 +3521,7 @@ __metadata:
     "@backstage/errors": ^1.2.1
     "@backstage/plugin-catalog-react": ^1.8.0
     "@backstage/plugin-home": ^0.5.4
+    "@backstage/plugin-home-react": ^0.1.1
     "@backstage/plugin-permission-react": ^0.4.14
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@material-ui/core": ^4.12.2
