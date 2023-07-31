@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.14.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.14.0...v1.14.1) (2023-07-31)
+
+
+### Bug Fixes
+
+* add separate name for permissions ([cd944c4](https://github.com/drodil/backstage-plugin-qeta/commit/cd944c484e0bfddf8a74610ef42095f4361003af)), closes [#83](https://github.com/drodil/backstage-plugin-qeta/issues/83)
+* disable buttons on post ([8dce2f4](https://github.com/drodil/backstage-plugin-qeta/commit/8dce2f45c5deac30747ff8d8cf6d0d8c919ec1f6)), closes [#76](https://github.com/drodil/backstage-plugin-qeta/issues/76)
+* lock file ([29b3e32](https://github.com/drodil/backstage-plugin-qeta/commit/29b3e3231281d19957c4f25edd8ba4ace3c46dba))
+
 ## [1.14.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.13.3...v1.14.0) (2023-07-13)
 
 
