@@ -80,6 +80,7 @@ export const AskForm = (props: {
   const navigate = useNavigate();
   const analytics = useAnalytics();
   const [entityRef, setEntityRef] = React.useState(entity);
+  const [posting, setPosting] = React.useState(false);
   const [values, setValues] = React.useState(getDefaultValues());
   const [error, setError] = React.useState(false);
 
@@ -102,6 +103,7 @@ export const AskForm = (props: {
   });
 
   const postQuestion = (data: QuestionForm) => {
+    setPosting(true);
     if (id) {
       qetaApi
         .updateQuestion(id, formToRequest(data, images))
@@ -120,7 +122,10 @@ export const AskForm = (props: {
             navigate(`${base_path}/qeta/questions/${q.id}`);
           }
         })
-        .catch(_e => setError(true));
+        .catch(_e => {
+          setError(true);
+          setPosting(false);
+        });
       return;
     }
     qetaApi
@@ -138,7 +143,10 @@ export const AskForm = (props: {
           navigate(`${base_path}/qeta/questions/${q.id}`);
         }
       })
-      .catch(_e => setError(true));
+      .catch(_e => {
+        setError(true);
+        setPosting(false);
+      });
   };
 
   useEffect(() => {
@@ -217,6 +225,7 @@ export const AskForm = (props: {
         color="primary"
         type="submit"
         variant="contained"
+        disabled={posting}
         className={`qetaAskFormSubmitBtn ${styles.postButton}`}
       >
         {id ? 'Save' : 'Post'}

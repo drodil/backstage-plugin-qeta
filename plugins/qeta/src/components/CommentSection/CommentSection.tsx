@@ -18,6 +18,7 @@ export const CommentSection = (props: {
   const { answer, question, onCommentPost, onCommentDelete } = props;
   const analytics = useAnalytics();
   const qetaApi = useApi(qetaApiRef);
+  const [posting, setPosting] = React.useState(false);
   const [formVisible, setFormVisible] = useState(false);
   const {
     handleSubmit,
@@ -27,11 +28,13 @@ export const CommentSection = (props: {
   } = useForm<{ content: string }>({});
 
   const postComment = (data: { content: string }) => {
+    setPosting(true);
     if (answer) {
       qetaApi.commentAnswer(question.id, answer.id, data.content).then(a => {
         setFormVisible(false);
         analytics.captureEvent('comment', 'answer');
         reset();
+        setPosting(false);
         onCommentPost(question, a);
       });
       return;
@@ -41,6 +44,7 @@ export const CommentSection = (props: {
       setFormVisible(false);
       analytics.captureEvent('comment', 'question');
       reset();
+      setPosting(false);
       onCommentPost(q);
     });
   };
@@ -96,6 +100,7 @@ export const CommentSection = (props: {
                 className="qetaCommentBtn"
                 type="submit"
                 color="primary"
+                disabled={posting}
               >
                 Post
               </Button>
