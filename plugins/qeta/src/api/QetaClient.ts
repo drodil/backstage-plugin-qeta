@@ -8,16 +8,16 @@ import {
 import { CustomErrorBase } from '@backstage/errors';
 import {
   AnswerRequest,
-  AnswerResponse,
   AnswerResponseBody,
   AttachmentResponseBody,
   QuestionRequest,
-  QuestionResponse,
   QuestionResponseBody,
   QuestionsResponse,
   QuestionsResponseBody,
   TagResponse,
 } from './types';
+
+import { Answer, Question } from '@drodil/backstage-plugin-qeta-common';
 import omitBy from 'lodash/omitBy';
 import isEmpty from 'lodash/isEmpty';
 import {
@@ -109,7 +109,7 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async postQuestion(question: QuestionRequest): Promise<QuestionResponse> {
+  async postQuestion(question: QuestionRequest): Promise<Question> {
     const response = await this.fetchApi.fetch(
       `${await this.getBaseUrl()}/questions`,
       {
@@ -127,10 +127,7 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async commentQuestion(
-    id: number,
-    content: string,
-  ): Promise<QuestionResponse> {
+  async commentQuestion(id: number, content: string): Promise<Question> {
     const response = await this.fetchApi.fetch(
       `${await this.getBaseUrl()}/questions/${id}/comments`,
       {
@@ -151,7 +148,7 @@ export class QetaClient implements QetaApi {
   async deleteQuestionComment(
     questionId: number,
     id: number,
-  ): Promise<QuestionResponse> {
+  ): Promise<Question> {
     const response = await this.fetchApi.fetch(
       `${await this.getBaseUrl()}/questions/${questionId}/comments/${id}`,
       {
@@ -167,7 +164,7 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async getQuestion(id?: string): Promise<QuestionResponse> {
+  async getQuestion(id?: string): Promise<Question> {
     if (!id) {
       throw new QetaError('Invalid id provided', undefined);
     }
@@ -191,7 +188,7 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as TagResponse[];
   }
 
-  async voteQuestionUp(id: number): Promise<QuestionResponse> {
+  async voteQuestionUp(id: number): Promise<Question> {
     if (!id) {
       throw new QetaError('Invalid id provided', undefined);
     }
@@ -207,7 +204,7 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async voteQuestionDown(id: number): Promise<QuestionResponse> {
+  async voteQuestionDown(id: number): Promise<Question> {
     if (!id) {
       throw new QetaError('Invalid id provided', undefined);
     }
@@ -223,7 +220,7 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async favoriteQuestion(id: number): Promise<QuestionResponse> {
+  async favoriteQuestion(id: number): Promise<Question> {
     if (!id) {
       throw new QetaError('Invalid id provided', undefined);
     }
@@ -239,7 +236,7 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async unfavoriteQuestion(id: number): Promise<QuestionResponse> {
+  async unfavoriteQuestion(id: number): Promise<Question> {
     if (!id) {
       throw new QetaError('Invalid id provided', undefined);
     }
@@ -277,7 +274,7 @@ export class QetaClient implements QetaApi {
     questionId: number,
     id: number,
     content: string,
-  ): Promise<AnswerResponse> {
+  ): Promise<Answer> {
     const response = await this.fetchApi.fetch(
       `${await this.getBaseUrl()}/questions/${questionId}/answers/${id}/comments`,
       {
@@ -299,7 +296,7 @@ export class QetaClient implements QetaApi {
     questionId: number,
     answerId: number,
     id: number,
-  ): Promise<AnswerResponse> {
+  ): Promise<Answer> {
     const response = await this.fetchApi.fetch(
       `${await this.getBaseUrl()}/questions/${questionId}/answers/${answerId}/comments/${id}`,
       {
@@ -315,7 +312,7 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async voteAnswerUp(questionId: number, id: number): Promise<AnswerResponse> {
+  async voteAnswerUp(questionId: number, id: number): Promise<Answer> {
     if (!id || !questionId) {
       throw new QetaError('Invalid id provided', undefined);
     }
@@ -331,10 +328,7 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async voteAnswerDown(
-    questionId: number,
-    id: number,
-  ): Promise<AnswerResponse> {
+  async voteAnswerDown(questionId: number, id: number): Promise<Answer> {
     if (!id || !questionId) {
       throw new QetaError('Invalid id provided', undefined);
     }
@@ -403,7 +397,7 @@ export class QetaClient implements QetaApi {
   async updateQuestion(
     id: string,
     question: QuestionRequest,
-  ): Promise<QuestionResponse> {
+  ): Promise<Question> {
     const response = await this.fetchApi.fetch(
       `${await this.getBaseUrl()}/questions/${id}`,
       {

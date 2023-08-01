@@ -4,21 +4,21 @@ import {
 } from '@backstage/backend-common';
 import { Knex } from 'knex';
 import {
-  Answer,
-  Attachment,
   AttachmentParameters,
   MaybeAnswer,
   MaybeQuestion,
   QetaStore,
-  Question,
   Questions,
   QuestionsOptions,
   TagResponse,
-  Vote,
 } from './QetaStore';
 import {
   Statistic,
   StatisticsRequestParameters,
+  Vote,
+  Question,
+  Answer,
+  Attachment,
 } from '@drodil/backstage-plugin-qeta-common';
 
 const migrationsDir = resolvePackagePath(

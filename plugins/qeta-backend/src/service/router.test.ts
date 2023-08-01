@@ -19,7 +19,12 @@ import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
-import { Answer, QetaStore, Question, Comment } from '../database/QetaStore';
+import { QetaStore } from '../database/QetaStore';
+import {
+  Answer,
+  Question,
+  Comment,
+} from '@drodil/backstage-plugin-qeta-common';
 import {
   BackstageIdentityResponse,
   IdentityApi,
@@ -91,6 +96,7 @@ const answer: Answer = {
 };
 
 const comment: Comment = {
+  id: 23,
   author: 'user',
   content: 'content',
   created: new Date('2022-01-01T00:00:00Z'),
