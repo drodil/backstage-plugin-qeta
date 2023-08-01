@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { Config } from '@backstage/config';
-import { Attachment, QetaStore } from '../../database/QetaStore';
+import { QetaStore } from '../../database/QetaStore';
+import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
 
 type Options = {

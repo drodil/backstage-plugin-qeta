@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { RouterOptions } from '../router';
-import { Attachment } from '../../database/QetaStore';
+import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import multiparty from 'multiparty';
 import FilesystemStoreEngine from '../upload/filesystem';
 import DatabaseStoreEngine from '../upload/database';
