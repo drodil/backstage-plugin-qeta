@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.15.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.14.1...v1.15.0) (2023-08-02)
+
+
+### Features
+
+* more global access management ([f078b34](https://github.com/drodil/backstage-plugin-qeta/commit/f078b342d50885eac96395fd7a6611f9263333d1)), closes [#81](https://github.com/drodil/backstage-plugin-qeta/issues/81) [#75](https://github.com/drodil/backstage-plugin-qeta/issues/75)
+
+
+### Bug Fixes
+
+* global edit checks in routes ([902c2a4](https://github.com/drodil/backstage-plugin-qeta/commit/902c2a42f19ae771521294a33d85b709e420b7cb))
+
 ### [1.14.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.14.0...v1.14.1) (2023-07-31)
 
 
