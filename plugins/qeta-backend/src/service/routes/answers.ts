@@ -80,9 +80,8 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
     const username = await getUsername(request, options);
     const moderator = await isModerator(request, options);
-    const globalEdit = options.config.getOptionalBoolean(
-      'qeta.allowGlobalEdits',
-    );
+    const globalEdit =
+      options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
 
     // Act
     const answer = await database.updateAnswer(
@@ -297,9 +296,8 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     async (request, response) => {
       const username = await getUsername(request, options);
       const moderator = await isModerator(request, options);
-      const globalEdit = options.config.getOptionalBoolean(
-        'qeta.allowGlobalEdits',
-      );
+      const globalEdit =
+        options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
       const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
       const marked = await database.markAnswerCorrect(
@@ -336,9 +334,8 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     async (request, response) => {
       const username = await getUsername(request, options);
       const moderator = await isModerator(request, options);
-      const globalEdit = options.config.getOptionalBoolean(
-        'qeta.allowGlobalEdits',
-      );
+      const globalEdit =
+        options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
       const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
       const marked = await database.markAnswerIncorrect(

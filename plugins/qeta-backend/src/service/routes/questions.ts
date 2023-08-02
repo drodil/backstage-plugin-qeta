@@ -272,9 +272,8 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     const entities = getEntities(request);
     const username = await getUsername(request, options);
     const moderator = await isModerator(request, options);
-    const globalEdit = options.config.getOptionalBoolean(
-      'qeta.allowGlobalEdits',
-    );
+    const globalEdit =
+      options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
     // Act
     const question = await database.updateQuestion(
       Number.parseInt(request.params.id, 10),
