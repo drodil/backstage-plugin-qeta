@@ -52,7 +52,7 @@ export const CommentList = (props: {
               <Typography variant="caption" className="qetaCommentTime">
                 <RelativeTime value={c.created} />
               </Typography>
-              {c.own && (
+              {(c.own || c.canDelete) && (
                 <>
                   {' / '}
                   <Link

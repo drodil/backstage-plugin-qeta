@@ -20,43 +20,40 @@ export interface StatisticsRequestParameters {
   options?: StatisticsOptions;
 }
 
-export interface Question {
+export interface QetaEntity {
   id: number;
   author: string;
-  title: string;
   content: string;
   created: Date;
+  own?: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
   updated?: Date;
   updatedBy?: string;
+}
+
+export interface QuestionAnswerEntity extends QetaEntity {
   score: number;
+  ownVote?: number;
+  comments?: Comment[];
+  votes?: Vote[];
+}
+
+export interface Question extends QuestionAnswerEntity {
+  title: string;
   views: number;
   answersCount: number;
   correctAnswer: boolean;
   favorite: boolean;
-  ownVote?: number;
   tags?: string[];
   entities?: string[];
   answers?: Answer[];
-  own?: boolean;
-  votes?: Vote[];
   trend?: number;
-  comments?: Comment[];
 }
 
-export interface Answer {
-  id: number;
+export interface Answer extends QuestionAnswerEntity {
   questionId: number;
-  author: string;
-  content: string;
   correct: boolean;
-  created: Date;
-  updated?: Date;
-  updatedBy?: string;
-  score: number;
-  ownVote?: number;
-  own?: boolean;
-  votes?: Vote[];
-  comments?: Comment[];
 }
 
 export interface Vote {
@@ -65,15 +62,7 @@ export interface Vote {
   timestamp: Date;
 }
 
-export interface Comment {
-  id: number;
-  author: string;
-  content: string;
-  created: Date;
-  own?: boolean;
-  updated?: Date;
-  updatedBy?: string;
-}
+export interface Comment extends QetaEntity {}
 
 export interface Attachment {
   id: number;

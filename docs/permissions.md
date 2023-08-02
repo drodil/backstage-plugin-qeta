@@ -6,8 +6,10 @@ The default permissions are hard-coded. These include:
 
 - Only author can edit and delete own questions
 - Only author can edit and delete own answers
+- Only author can delete their own comments
 - User cannot vote their own questions or answers
 - Only question author can mark answer as correct
+- Except for moderators, who can do these for any questions/answer/comment
 
 ## Set up
 

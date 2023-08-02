@@ -43,7 +43,10 @@ export const AuthorBox = (props: {
         {entity.updated && (
           <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0 }}>
             <Typography className="qetaAuthorBoxUpdated" variant="caption">
-              Updated <RelativeTime value={entity.updated} />
+              Updated <RelativeTime value={entity.updated} /> by{' '}
+              <Link to={`/qeta/users/${entity.updatedBy}`}>
+                {formatEntityName(entity.updatedBy)}
+              </Link>
             </Typography>
           </Grid>
         )}

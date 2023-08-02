@@ -3,6 +3,7 @@ import { Box, Container, Divider, Typography } from '@material-ui/core';
 import {
   Content,
   ContentHeader,
+  Link,
   WarningPanel,
 } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
@@ -16,6 +17,7 @@ import { AnswerCard } from './AnswerCard';
 import { Skeleton } from '@material-ui/lab';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
+import { formatEntityName } from '../../utils/utils';
 
 export const QuestionPage = () => {
   const { id } = useParams();
@@ -43,7 +45,10 @@ export const QuestionPage = () => {
           <React.Fragment>
             Updated{' '}
             <Box fontWeight="fontWeightMedium" display="inline" sx={{ mr: 2 }}>
-              <RelativeTime value={q.updated} />
+              <RelativeTime value={q.updated} /> by{' '}
+              <Link to={`/qeta/users/${q.updatedBy}`}>
+                {formatEntityName(q.updatedBy)}
+              </Link>
             </Box>
           </React.Fragment>
         )}

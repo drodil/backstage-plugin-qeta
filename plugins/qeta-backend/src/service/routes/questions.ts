@@ -2,8 +2,9 @@ import { RouterOptions } from '../router';
 import { QuestionsOptions } from '../../database/QetaStore';
 import {
   checkPermissions,
-  getUsername,
   getCreated,
+  getUsername,
+  isModerator,
   mapAdditionalFields,
 } from '../util';
 import Ajv from 'ajv';
@@ -86,6 +87,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     // Validation
     // Act
     const username = await getUsername(request, options);
+    const moderator = await isModerator(request, options);
     await checkPermissions(request, qetaReadPermission, options);
     const question = await database.getQuestion(
       username,
@@ -97,8 +99,10 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
-    mapAdditionalFields(username, question);
-    question.answers?.map(a => mapAdditionalFields(username, a));
+    mapAdditionalFields(username, question, options, moderator);
+    question.answers?.map(a =>
+      mapAdditionalFields(username, a, options, moderator),
+    );
 
     // Response
     response.send(question);
@@ -109,6 +113,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     // Validation
     // Act
     const username = await getUsername(request, options);
+    const moderator = await isModerator(request, options);
     const created = await getCreated(request, options);
     await checkPermissions(request, qetaReadPermission, options);
     const validateRequestBody = ajv.compile(CommentSchema);
@@ -130,8 +135,10 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
-    mapAdditionalFields(username, question);
-    question.answers?.map(a => mapAdditionalFields(username, a));
+    mapAdditionalFields(username, question, options, moderator);
+    question.answers?.map(a =>
+      mapAdditionalFields(username, a, options, moderator),
+    );
 
     if (eventBroker) {
       await eventBroker.publish({
@@ -156,11 +163,13 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       // Validation
       // Act
       const username = await getUsername(request, options);
+      const moderator = await isModerator(request, options);
       await checkPermissions(request, qetaReadPermission, options);
       const question = await database.deleteQuestionComment(
         Number.parseInt(request.params.id, 10),
         Number.parseInt(request.params.commentId, 10),
         username,
+        moderator,
       );
 
       if (question === null) {
@@ -168,8 +177,10 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
         return;
       }
 
-      mapAdditionalFields(username, question);
-      question.answers?.map(a => mapAdditionalFields(username, a));
+      mapAdditionalFields(username, question, options, moderator);
+      question.answers?.map(a =>
+        mapAdditionalFields(username, a, options, moderator),
+      );
 
       // Response
       response.send(question);
@@ -260,6 +271,10 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     const tags = getTags(request);
     const entities = getEntities(request);
     const username = await getUsername(request, options);
+    const moderator = await isModerator(request, options);
+    const globalEdit = options.config.getOptionalBoolean(
+      'qeta.allowGlobalEdits',
+    );
     // Act
     const question = await database.updateQuestion(
       Number.parseInt(request.params.id, 10),
@@ -269,6 +284,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       tags,
       entities,
       request.body.images,
+      moderator || globalEdit,
     );
 
     if (!question) {
@@ -284,11 +300,13 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
   // DELETE /questions/:id
   router.delete('/questions/:id', async (request, response) => {
     // Validation
+    const moderator = await isModerator(request, options);
 
     // Act
     const deleted = await database.deleteQuestion(
       await getUsername(request, options),
       Number.parseInt(request.params.id, 10),
+      moderator,
     );
 
     // Response
@@ -304,6 +322,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
 
     // Act
     const username = await getUsername(request, options);
+    const moderator = await isModerator(request, options);
     const voted = await database.voteQuestion(
       username,
       Number.parseInt(request.params.id, 10),
@@ -321,7 +340,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       false,
     );
 
-    mapAdditionalFields(username, question);
+    mapAdditionalFields(username, question, options, moderator);
     if (question) {
       question.ownVote = score;
     }
@@ -355,6 +374,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
   // GET /questions/:id/favorite
   router.get(`/questions/:id/favorite`, async (request, response) => {
     const username = await getUsername(request, options);
+    const moderator = await isModerator(request, options);
     const favorited = await database.favoriteQuestion(
       username,
       Number.parseInt(request.params.id, 10),
@@ -371,7 +391,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       false,
     );
 
-    mapAdditionalFields(username, question);
+    mapAdditionalFields(username, question, options, moderator);
 
     // Response
     response.send(question);
@@ -380,6 +400,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
   // GET /questions/:id/unfavorite
   router.get(`/questions/:id/unfavorite`, async (request, response) => {
     const username = await getUsername(request, options);
+    const moderator = await isModerator(request, options);
     const unfavorited = await database.unfavoriteQuestion(
       username,
       Number.parseInt(request.params.id, 10),
@@ -396,7 +417,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       false,
     );
 
-    mapAdditionalFields(username, question);
+    mapAdditionalFields(username, question, options, moderator);
 
     // Response
     response.send(question);

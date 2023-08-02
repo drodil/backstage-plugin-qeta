@@ -36,6 +36,21 @@ export const getUsername = async (
   }
 };
 
+export const isModerator = async (
+  req: Request<unknown>,
+  options: RouterOptions,
+): Promise<boolean> => {
+  const user = await options.identity.getIdentity({ request: req });
+  const username = await getUsername(req, options);
+
+  const ownership: string[] = user?.identity.ownershipEntityRefs ?? [];
+  ownership.push(username);
+
+  const moderators =
+    options.config.getOptionalStringArray('qeta.moderators') ?? [];
+  return moderators.some(m => ownership.includes(m));
+};
+
 export const getCreated = async (
   req: Request<unknown>,
   options: RouterOptions,
@@ -77,14 +92,26 @@ export const checkPermissions = async (
 export const mapAdditionalFields = (
   username: string,
   resp: MaybeQuestion | MaybeAnswer,
+  options: RouterOptions,
+  moderator?: boolean,
 ) => {
   if (!resp) {
     return;
   }
   resp.ownVote = resp.votes?.find(v => v.author === username)?.score;
   resp.own = resp.author === username;
+  resp.canEdit =
+    moderator ||
+    options.config.getOptionalBoolean('qeta.allowGlobalEdits') ||
+    resp.author === username;
+  resp.canDelete = moderator || resp.author === username;
   resp.comments = resp.comments?.map(c => {
-    return { ...c, own: c.author === username };
+    return {
+      ...c,
+      own: c.author === username,
+      canEdit: moderator || c.author === username,
+      canDelete: moderator || c.author === username,
+    };
   });
 };
 

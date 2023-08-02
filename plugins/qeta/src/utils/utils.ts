@@ -1,6 +1,9 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
-export const formatEntityName = (username: string) => {
+export const formatEntityName = (username?: string) => {
+  if (!username) {
+    return '';
+  }
   const plainName = username.split(/[/:]+/).pop();
   return plainName
     ?.split(/[_.-]+/)

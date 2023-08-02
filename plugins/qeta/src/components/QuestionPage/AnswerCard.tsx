@@ -64,34 +64,41 @@ export const AnswerCard = (props: {
                 </Typography>
                 <Grid container justifyContent="space-around">
                   <Grid item xs={9}>
-                    {answerEntity.own && (
+                    {(answerEntity.own ||
+                      answerEntity.canDelete ||
+                      answerEntity.canEdit) && (
                       <Box
                         className={`qetaAnswerCardActions ${styles.questionCardActions}`}
                       >
-                        {!answerEntity.correct && (
+                        {!answerEntity.correct &&
+                          (answerEntity.own || answerEntity.canDelete) && (
+                            <>
+                              <Link
+                                underline="none"
+                                to="#"
+                                onClick={handleDeleteModalOpen}
+                                className="qetaAnswerCardDeleteBtn"
+                              >
+                                Delete
+                              </Link>
+                              <DeleteModal
+                                open={deleteModalOpen}
+                                onClose={handleDeleteModalClose}
+                                entity={answerEntity}
+                                question={question}
+                              />
+                            </>
+                          )}
+                        {(answerEntity.own || answerEntity.canEdit) && (
                           <Link
                             underline="none"
                             to="#"
-                            onClick={handleDeleteModalOpen}
-                            className="qetaAnswerCardDeleteBtn"
+                            onClick={() => setEditMode(true)}
+                            className="qetaAnswerCardEditBtn"
                           >
-                            Delete
+                            Edit
                           </Link>
                         )}
-                        <Link
-                          underline="none"
-                          to="#"
-                          onClick={() => setEditMode(true)}
-                          className="qetaAnswerCardEditBtn"
-                        >
-                          Edit
-                        </Link>
-                        <DeleteModal
-                          open={deleteModalOpen}
-                          onClose={handleDeleteModalClose}
-                          entity={answerEntity}
-                          question={question}
-                        />
                       </Box>
                     )}
                   </Grid>

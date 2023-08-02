@@ -51,28 +51,34 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
               </Grid>
               <Grid container justifyContent="space-around">
                 <Grid item xs={9}>
-                  {question.own && (
+                  {(question.own || question.canEdit || question.canDelete) && (
                     <Box className={styles.questionCardActions}>
-                      <Link
-                        underline="none"
-                        to="#"
-                        onClick={handleDeleteModalOpen}
-                        className="qetaQuestionCardDeleteBtn"
-                      >
-                        Delete
-                      </Link>
-                      <Link
-                        underline="none"
-                        to={`/qeta/questions/${questionEntity.id}/edit`}
-                        className="qetaQuestionCardEditBtn"
-                      >
-                        Edit
-                      </Link>
-                      <DeleteModal
-                        open={deleteModalOpen}
-                        onClose={handleDeleteModalClose}
-                        entity={questionEntity}
-                      />
+                      {(question.own || question.canDelete) && (
+                        <>
+                          <Link
+                            underline="none"
+                            to="#"
+                            onClick={handleDeleteModalOpen}
+                            className="qetaQuestionCardDeleteBtn"
+                          >
+                            Delete
+                          </Link>
+                          <DeleteModal
+                            open={deleteModalOpen}
+                            onClose={handleDeleteModalClose}
+                            entity={questionEntity}
+                          />
+                        </>
+                      )}
+                      {(question.own || question.canEdit) && (
+                        <Link
+                          underline="none"
+                          to={`/qeta/questions/${questionEntity.id}/edit`}
+                          className="qetaQuestionCardEditBtn"
+                        >
+                          Edit
+                        </Link>
+                      )}
                     </Box>
                   )}
                 </Grid>

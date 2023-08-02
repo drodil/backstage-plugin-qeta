@@ -46,6 +46,7 @@ qeta:
     # allowedFilesTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/gif']
   allowAnonymous: true
   allowMetadataInput: false
+  #allowGlobalEdits: true
   entities:
     max: 2
   tags:
@@ -54,7 +55,9 @@ qeta:
       #- test
       #- another_tag
     max: 3
-  entityKinds: 
+  # moderators:
+    # - 'user:default/guest'
+  entityKinds:
     - Component
     - Resource
     - Group

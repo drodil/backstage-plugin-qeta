@@ -22,8 +22,9 @@ import { createRouter } from './router';
 import { QetaStore } from '../database/QetaStore';
 import {
   Answer,
-  Question,
   Comment,
+  Question,
+  Statistic,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   BackstageIdentityResponse,
@@ -34,7 +35,6 @@ import {
   AuthorizeResult,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
-import { Statistic } from '@drodil/backstage-plugin-qeta-common';
 
 const mostUpvotedQuestions: Statistic[] = [
   {
@@ -748,7 +748,12 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/answers/2/correct');
 
-      expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith('user', 1, 2);
+      expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith(
+        'user',
+        1,
+        2,
+        false,
+      );
       expect(response.status).toEqual(200);
     });
 
@@ -757,7 +762,12 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/answers/2/correct');
 
-      expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith('user', 1, 2);
+      expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith(
+        'user',
+        1,
+        2,
+        false,
+      );
       expect(response.status).toEqual(404);
     });
 
@@ -772,6 +782,7 @@ describe('createRouter', () => {
         'another-user',
         1,
         2,
+        false,
       );
       expect(response.status).toEqual(404);
     });
@@ -791,7 +802,12 @@ describe('createRouter', () => {
         '/questions/1/answers/2/incorrect',
       );
 
-      expect(qetaStore.markAnswerIncorrect).toHaveBeenCalledWith('user', 1, 2);
+      expect(qetaStore.markAnswerIncorrect).toHaveBeenCalledWith(
+        'user',
+        1,
+        2,
+        false,
+      );
       expect(response.status).toEqual(200);
     });
 
@@ -802,7 +818,12 @@ describe('createRouter', () => {
         '/questions/1/answers/2/incorrect',
       );
 
-      expect(qetaStore.markAnswerIncorrect).toHaveBeenCalledWith('user', 1, 2);
+      expect(qetaStore.markAnswerIncorrect).toHaveBeenCalledWith(
+        'user',
+        1,
+        2,
+        false,
+      );
       expect(response.status).toEqual(404);
     });
 

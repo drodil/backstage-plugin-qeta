@@ -13,12 +13,12 @@ import {
   TagResponse,
 } from './QetaStore';
 import {
+  Answer,
+  Attachment,
+  Question,
   Statistic,
   StatisticsRequestParameters,
   Vote,
-  Question,
-  Answer,
-  Attachment,
 } from '@drodil/backstage-plugin-qeta-common';
 
 const migrationsDir = resolvePackagePath(
@@ -335,12 +335,15 @@ export class DatabaseQetaStore implements QetaStore {
     question_id: number,
     id: number,
     user_ref: string,
+    moderator?: boolean,
   ): Promise<MaybeQuestion> {
-    await this.db('question_comments')
+    const query = this.db('question_comments')
       .where('id', '=', id)
-      .where('author', '=', user_ref)
-      .where('questionId', '=', question_id)
-      .delete();
+      .where('questionId', '=', question_id);
+    if (!moderator) {
+      query.where('author', '=', user_ref);
+    }
+    await query.delete();
     return this.getQuestion(user_ref, question_id, false);
   }
 
@@ -365,12 +368,16 @@ export class DatabaseQetaStore implements QetaStore {
     answer_id: number,
     id: number,
     user_ref: string,
+    moderator?: boolean,
   ): Promise<MaybeAnswer> {
-    await this.db('answer_comments')
+    const query = this.db('answer_comments')
       .where('id', '=', id)
-      .where('author', '=', user_ref)
-      .where('answerId', '=', answer_id)
-      .delete();
+      .where('answerId', '=', answer_id);
+
+    if (!moderator) {
+      query.where('author', '=', user_ref);
+    }
+    await query.delete();
     return this.getAnswer(answer_id);
   }
 
@@ -382,11 +389,18 @@ export class DatabaseQetaStore implements QetaStore {
     tags?: string[],
     entities?: string[],
     images?: number[],
+    moderator?: boolean,
   ): Promise<MaybeQuestion> {
-    const rows = await this.db('questions')
-      .where('questions.id', '=', id)
-      .where('questions.author', '=', user_ref)
-      .update({ title, content, updatedBy: user_ref, updated: new Date() });
+    const query = this.db('questions').where('questions.id', '=', id);
+    if (!moderator) {
+      query.where('questions.author', '=', user_ref);
+    }
+    const rows = await query.update({
+      title,
+      content,
+      updatedBy: user_ref,
+      updated: new Date(),
+    });
 
     if (!rows) {
       return null;
@@ -406,11 +420,16 @@ export class DatabaseQetaStore implements QetaStore {
     return await this.getQuestion(user_ref, id, false);
   }
 
-  async deleteQuestion(user_ref: string, id: number): Promise<boolean> {
-    return !!(await this.db('questions')
-      .where('id', '=', id)
-      .where('author', '=', user_ref)
-      .delete());
+  async deleteQuestion(
+    user_ref: string,
+    id: number,
+    moderator?: boolean,
+  ): Promise<boolean> {
+    const query = this.db('questions').where('id', '=', id);
+    if (!moderator) {
+      query.where('author', '=', user_ref);
+    }
+    return !!(await query.delete());
   }
 
   async answerQuestion(
@@ -446,12 +465,20 @@ export class DatabaseQetaStore implements QetaStore {
     answerId: number,
     answer: string,
     images?: number[],
+    moderator?: boolean,
   ): Promise<MaybeAnswer> {
-    const rows = await this.db('answers')
+    const query = this.db('answers')
       .where('answers.id', '=', answerId)
-      .where('answers.questionId', '=', questionId)
-      .where('answers.author', '=', user_ref)
-      .update({ content: answer, updatedBy: user_ref, updated: new Date() });
+      .where('answers.questionId', '=', questionId);
+    if (!moderator) {
+      query.where('answers.author', '=', user_ref);
+    }
+
+    const rows = await query.update({
+      content: answer,
+      updatedBy: user_ref,
+      updated: new Date(),
+    });
 
     if (!rows) {
       return null;
@@ -471,11 +498,17 @@ export class DatabaseQetaStore implements QetaStore {
     return this.mapAnswer(answers[0], true, true);
   }
 
-  async deleteAnswer(user_ref: string, id: number): Promise<boolean> {
-    return !!(await this.db('answers')
-      .where('id', '=', id)
-      .where('author', '=', user_ref)
-      .delete());
+  async deleteAnswer(
+    user_ref: string,
+    id: number,
+    moderator?: boolean,
+  ): Promise<boolean> {
+    const query = this.db('answers').where('id', '=', id);
+    if (!moderator) {
+      query.where('author', '=', user_ref);
+    }
+
+    return !!(await query.delete());
   }
 
   async voteQuestion(
@@ -562,16 +595,30 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     questionId: number,
     answerId: number,
+    moderator?: boolean,
   ): Promise<boolean> {
-    return await this.markAnswer(user_ref, questionId, answerId, true);
+    return await this.markAnswer(
+      user_ref,
+      questionId,
+      answerId,
+      true,
+      moderator,
+    );
   }
 
   async markAnswerIncorrect(
     user_ref: string,
     questionId: number,
     answerId: number,
+    moderator?: boolean,
   ): Promise<boolean> {
-    return await this.markAnswer(user_ref, questionId, answerId, false);
+    return await this.markAnswer(
+      user_ref,
+      questionId,
+      answerId,
+      false,
+      moderator,
+    );
   }
 
   async getTags(): Promise<TagResponse[]> {
@@ -1120,6 +1167,7 @@ export class DatabaseQetaStore implements QetaStore {
     questionId: number,
     answerId: number,
     correct: boolean,
+    moderator?: boolean,
   ): Promise<boolean> {
     // There can be only one correct answer
     if (correct) {
@@ -1132,22 +1180,24 @@ export class DatabaseQetaStore implements QetaStore {
       }
     }
 
-    const ret = await this.db('answers')
-      .update({ correct }, ['id'])
+    const query = this.db('answers')
       .onConflict()
       .ignore()
       .where('answers.id', '=', answerId)
-      .where('questionId', '=', questionId)
+      .where('questionId', '=', questionId);
+    if (!moderator) {
       // Need to do with subquery as missing join functionality for update in knex.
       // See: https://github.com/knex/knex/issues/2796
       // eslint-disable-next-line
-      .whereIn('questionId', function () {
+      query.whereIn('questionId', function () {
         this.from('questions')
           .select('id')
           .where('id', '=', questionId)
           .where('author', '=', user_ref);
       });
+    }
 
+    const ret = await query.update({ correct }, ['id']);
     return ret !== undefined && ret?.length > 0;
   }
 }

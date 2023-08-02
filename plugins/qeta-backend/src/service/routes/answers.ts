@@ -3,8 +3,9 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import {
   checkPermissions,
-  getUsername,
   getCreated,
+  getUsername,
+  isModerator,
   mapAdditionalFields,
 } from '../util';
 import { CommentSchema, PostAnswerSchema } from '../types';
@@ -34,6 +35,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     }
 
     const username = await getUsername(request, options);
+    const moderator = await isModerator(request, options);
     const created = await getCreated(request, options);
     const questionId = Number.parseInt(request.params.id, 10);
     // Act
@@ -45,7 +47,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       request.body.images,
     );
 
-    mapAdditionalFields(username, answer);
+    mapAdditionalFields(username, answer, options, moderator);
 
     if (eventBroker) {
       const question = await database.getQuestion(username, questionId, false);
@@ -77,6 +79,11 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     }
 
     const username = await getUsername(request, options);
+    const moderator = await isModerator(request, options);
+    const globalEdit = options.config.getOptionalBoolean(
+      'qeta.allowGlobalEdits',
+    );
+
     // Act
     const answer = await database.updateAnswer(
       username,
@@ -84,6 +91,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       Number.parseInt(request.params.answerId, 10),
       request.body.answer,
       request.body.images,
+      moderator || globalEdit,
     );
 
     if (!answer) {
@@ -91,7 +99,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
-    mapAdditionalFields(username, answer);
+    mapAdditionalFields(username, answer, options, moderator);
 
     // Response
     response.status(201);
@@ -112,6 +120,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       }
 
       const username = await getUsername(request, options);
+      const moderator = await isModerator(request, options);
       const created = await getCreated(request, options);
       const answerId = Number.parseInt(request.params.answerId, 10);
       // Act
@@ -127,7 +136,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         return;
       }
 
-      mapAdditionalFields(username, answer);
+      mapAdditionalFields(username, answer, options, moderator);
 
       if (eventBroker) {
         const questionId = Number.parseInt(request.params.id, 10);
@@ -160,11 +169,13 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     async (request, response) => {
       // Validation
       const username = await getUsername(request, options);
+      const moderator = await isModerator(request, options);
       // Act
       const answer = await database.deleteAnswerComment(
         Number.parseInt(request.params.answerId, 10),
         Number.parseInt(request.params.commentId, 10),
         username,
+        moderator,
       );
 
       if (!answer) {
@@ -172,7 +183,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         return;
       }
 
-      mapAdditionalFields(username, answer);
+      mapAdditionalFields(username, answer, options, moderator);
 
       // Response
       response.status(201);
@@ -185,6 +196,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     // Validation
     // Act
     const username = await getUsername(request, options);
+    const moderator = await isModerator(request, options);
     await checkPermissions(request, qetaReadPermission, options);
     const answer = await database.getAnswer(
       Number.parseInt(request.params.answerId, 10),
@@ -195,7 +207,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
-    mapAdditionalFields(username, answer);
+    mapAdditionalFields(username, answer, options, moderator);
 
     // Response
     response.send(answer);
@@ -206,11 +218,13 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     '/questions/:id/answers/:answerId',
     async (request, response) => {
       // Validation
+      const moderator = await isModerator(request, options);
 
       // Act
       const deleted = await database.deleteAnswer(
         await getUsername(request, options),
         Number.parseInt(request.params.answerId, 10),
+        moderator,
       );
 
       // Response
@@ -227,6 +241,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
     // Act
     const username = await getUsername(request, options);
+    const moderator = await isModerator(request, options);
     const answerId = Number.parseInt(request.params.answerId, 10);
     const voted = await database.voteAnswer(username, answerId, score);
 
@@ -237,7 +252,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
     const answer = await database.getAnswer(answerId);
 
-    mapAdditionalFields(username, answer);
+    mapAdditionalFields(username, answer, options, moderator);
     if (answer) {
       answer.ownVote = score;
     }
@@ -281,12 +296,17 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     `/questions/:id/answers/:answerId/correct`,
     async (request, response) => {
       const username = await getUsername(request, options);
+      const moderator = await isModerator(request, options);
+      const globalEdit = options.config.getOptionalBoolean(
+        'qeta.allowGlobalEdits',
+      );
       const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
       const marked = await database.markAnswerCorrect(
         username,
         questionId,
         answerId,
+        moderator || globalEdit,
       );
 
       if (eventBroker) {
@@ -310,17 +330,22 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     },
   );
 
-  // GET /questions/:id/answers/:answerId/correct
+  // GET /questions/:id/answers/:answerId/incorrect
   router.get(
     `/questions/:id/answers/:answerId/incorrect`,
     async (request, response) => {
       const username = await getUsername(request, options);
+      const moderator = await isModerator(request, options);
+      const globalEdit = options.config.getOptionalBoolean(
+        'qeta.allowGlobalEdits',
+      );
       const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
       const marked = await database.markAnswerIncorrect(
         username,
         questionId,
         answerId,
+        moderator || globalEdit,
       );
       if (eventBroker) {
         const question = await database.getQuestion(

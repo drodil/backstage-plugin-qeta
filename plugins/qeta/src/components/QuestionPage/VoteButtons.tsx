@@ -134,28 +134,35 @@ export const VoteButtons = (props: {
           </IconButton>
         </span>
       </Tooltip>
-      {'correct' in props.entity && (props.question?.own || correct) && (
-        <Box>
-          <Tooltip title={correctTooltip}>
-            <span>
-              <IconButton
-                aria-label="mark correct"
-                size="small"
-                onClick={props.question?.own ? toggleCorrectAnswer : undefined}
-              >
-                <Check
-                  className={
-                    correct ? 'qetaCorrectAnswerSelected' : 'qetaCorrectAnswer'
+      {'correct' in props.entity &&
+        (props.question?.own || props.question?.canEdit || correct) && (
+          <Box>
+            <Tooltip title={correctTooltip}>
+              <span>
+                <IconButton
+                  aria-label="mark correct"
+                  size="small"
+                  onClick={
+                    props.question?.own || props.question?.canEdit
+                      ? toggleCorrectAnswer
+                      : undefined
                   }
-                  style={{
-                    color: correct ? theme.palette.success.main : undefined,
-                  }}
-                />
-              </IconButton>
-            </span>
-          </Tooltip>
-        </Box>
-      )}
+                >
+                  <Check
+                    className={
+                      correct
+                        ? 'qetaCorrectAnswerSelected'
+                        : 'qetaCorrectAnswer'
+                    }
+                    style={{
+                      color: correct ? theme.palette.success.main : undefined,
+                    }}
+                  />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Box>
+        )}
     </React.Fragment>
   );
 };
