@@ -1,5 +1,5 @@
 import { QetaApi, qetaApiRef } from '../api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import {
   configApiRef,
   IdentityApi,

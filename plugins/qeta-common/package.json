@@ -39,13 +39,13 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/plugin-permission-common": "^0.7.7"
+    "@backstage/plugin-permission-common": "^0.7.8"
   },
   "peerDependencies": {
-    "@backstage/catalog-model": "^1.4.1"
+    "@backstage/catalog-model": "^1.4.2"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.22.9"
+    "@backstage/cli": "^0.22.13"
   },
   "files": [
     "dist"

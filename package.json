@@ -15,7 +15,7 @@
     "start:ci": "concurrently \"yarn start\" \"yarn start-backend:ci\"",
     "build": "backstage-cli repo build --all",
     "tsc": "tsc",
-    "tsc:full": "tsc --skipLibCheck false --incremental false",
+    "tsc:full": "tsc --incremental false",
     "clean": "backstage-cli repo clean",
     "test": "backstage-cli repo test",
     "test:all": "backstage-cli repo test --coverage",
@@ -24,7 +24,8 @@
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "backstage:bump": "backstage-cli versions:bump",
-    "bump": "yarn run standard-version --no-verify --releaseCommitMessageFormat 'v{{currentTag}}'"
+    "bump": "yarn run standard-version --no-verify --releaseCommitMessageFormat 'v{{currentTag}}'",
+    "fix": "backstage-cli repo fix"
   },
   "workspaces": {
     "packages": [
@@ -33,23 +34,24 @@
   },
   "resolutions": {
     "@types/react": "^17.0.59",
-    "@types/react-dom": "^17"
+    "@types/react-dom": "^17",
+    "@octokit/rest": "19.0.8"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.22.9",
-    "@commitlint/cli": "^17.2.0",
-    "@commitlint/config-conventional": "^17.2.0",
-    "@spotify/prettier-config": "^12.0.0",
+    "@backstage/cli": "^0.22.13",
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0",
+    "@spotify/prettier-config": "^15.0.0",
     "concurrently": "^7.0.0",
     "husky": "^8.0.1",
-    "lint-staged": "^13.0.3",
+    "lint-staged": "^14.0.1",
     "prettier": "^2.4.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "standard-version": "^9.5.0",
-    "typescript": "~4.7.0"
+    "typescript": "~5.0.0"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {
@@ -61,5 +63,8 @@
       "prettier --write"
     ]
   },
-  "packageManager": "yarn@3.5.1"
+  "packageManager": "yarn@3.5.1",
+  "dependencies": {
+    "@octokit/rest": "19.0.8"
+  }
 }
