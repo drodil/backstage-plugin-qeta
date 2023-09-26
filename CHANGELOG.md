@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.4](https://github.com/drodil/backstage-plugin-qeta/compare/v1.15.3...v1.15.4) (2023-09-26)
+
+
+### Bug Fixes
+
+* remove margin from first and last child of markdown ([de3f08d](https://github.com/drodil/backstage-plugin-qeta/commit/de3f08d91d0e7864025741aaeb9dcd7d23a441fb))
+* use same padding for preview as it is for writing ([0e5480e](https://github.com/drodil/backstage-plugin-qeta/commit/0e5480e352fced2a3789d3744fe8505f79261fef))
+
 ### [1.15.3](https://github.com/drodil/backstage-plugin-qeta/compare/v1.15.2...v1.15.3) (2023-09-26)
 
 
