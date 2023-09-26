@@ -66,7 +66,7 @@ export const useStyles = makeStyles(theme => {
         },
       },
       '& .mde-preview-content': {
-        padding: '0 10px 0px 10px',
+        padding: theme.spacing(2),
       },
       '& .mde-text, .mde-preview': {
         fontSize: theme.typography.body1.fontSize,
@@ -90,12 +90,14 @@ export const useStyles = makeStyles(theme => {
       '& *': {
         wordBreak: 'break-word',
       },
-      '& :first-child': {
-        marginTop: 0,
-        paddingTop: 0,
-      },
       '&.inline': {
         display: 'inline-block',
+      },
+      '& > :first-child': {
+        marginTop: '0px !important',
+      },
+      '& > :last-child': {
+        marginBottom: '0px !important',
       },
     },
     successColor: {
