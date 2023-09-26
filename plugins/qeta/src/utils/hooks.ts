@@ -66,7 +66,7 @@ export const useStyles = makeStyles(theme => {
         },
       },
       '& .mde-preview-content': {
-        padding: theme.spacing(2),
+        padding: '10px',
       },
       '& .mde-text, .mde-preview': {
         fontSize: theme.typography.body1.fontSize,
