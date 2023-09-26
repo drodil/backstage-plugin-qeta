@@ -61,6 +61,8 @@ export const MarkdownEditor = (props: {
         textArea: error
           ? `qetaMarkdownEditorError ${styles.markdownEditorError}`
           : undefined,
+        preview: 'qetaMarkdownEditorPreview',
+        toolbar: 'qetaMarkdownEditorToolbar',
       }}
       value={value}
       onChange={onChange}

@@ -10,7 +10,6 @@ import { DeleteModal } from '../DeleteModal/DeleteModal';
 import { FavoriteButton } from './FavoriteButton';
 import { AuthorBox } from './AuthorBox';
 import { TagsAndEntities } from './TagsAndEntities';
-import 'react-mde/lib/styles/css/react-mde-preview.css';
 import { CommentSection } from '../CommentSection/CommentSection';
 
 export const QuestionCard = (props: { question: QuestionResponse }) => {

@@ -57,7 +57,7 @@ export const AnswerCard = (props: {
               <>
                 <Typography variant="body1" gutterBottom>
                   <MarkdownContent
-                    className={`qetaAndswerCardAnswerContent ${styles.markdownContent}`}
+                    className={`qetaAndwerCardAnswerContent ${styles.markdownContent}`}
                     content={answerEntity.content}
                     dialect="gfm"
                   />
