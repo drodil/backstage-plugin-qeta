@@ -18,6 +18,8 @@ import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from '../../utils/hooks';
 import { TrophyIcon } from './TrophyIcon';
 import { useStyles } from './styles';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { userRouteRef } from '../../routes';
 
 type RankingIcon = {
   iconsByRanking: Map<number, ReactNode>;
@@ -71,6 +73,7 @@ export const RankingRow = (props: {
   const ordinalPosition = props?.position ? getOrdinal(props?.position) : '';
   const name = props?.userRef?.split('/')[1];
   const userRef = props?.userRef;
+  const userRoute = useRouteRef(userRouteRef);
 
   const userIcon = props.rankingIcon?.userRankingIcon
     ? props.rankingIcon?.userRankingIcon
@@ -101,7 +104,7 @@ export const RankingRow = (props: {
               variant="subtitle1"
             >{`${ordinalPosition}`}</Typography>
             <Link
-              to={`/qeta/users/${userRef}`}
+              to={`${userRoute()}/${userRef}`}
               variant="subtitle1"
             >{`${name}`}</Link>
           </div>

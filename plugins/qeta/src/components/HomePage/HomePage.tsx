@@ -30,9 +30,24 @@ import AccountBox from '@material-ui/icons/AccountBox';
 import { FavoritePage } from '../FavoritePage/FavoritePage';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { StatisticsPage, TrophyIcon } from '../Statistics';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import {
+  askRouteRef,
+  editQuestionRouteRef,
+  favoriteQuestionsRouteRef,
+  questionRouteRef,
+  statisticsRouteRef,
+  tagRouteRef,
+  tagsRouteRef,
+  userRouteRef,
+} from '../../routes';
 
 const MoreMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const tagsRoute = useRouteRef(tagsRouteRef);
+  const favoritesRoute = useRouteRef(favoriteQuestionsRouteRef);
+  const statisticsRoute = useRouteRef(statisticsRouteRef);
+  const userRoute = useRouteRef(userRouteRef);
   const open = Boolean(anchorEl);
   const styles = useStyles();
   const {
@@ -77,27 +92,27 @@ const MoreMenu = () => {
         }}
         onClose={handleMenuClose}
       >
-        <MenuItem component="a" href="/qeta/tags">
+        <MenuItem component="a" href={tagsRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <LoyaltyOutlined fontSize="small" />
           </ListItemIcon>
           Tags
         </MenuItem>
         {user && !loadingUser && !userError && (
-          <MenuItem component="a" href={`/qeta/users/${user?.userEntityRef}`}>
+          <MenuItem component="a" href={`${userRoute()}/${user.userEntityRef}`}>
             <ListItemIcon className={styles.menuIcon}>
               <AccountBox fontSize="small" />
             </ListItemIcon>
             My questions
           </MenuItem>
         )}
-        <MenuItem component="a" href="/qeta/questions/favorite">
+        <MenuItem component="a" href={favoritesRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <StarIcon fontSize="small" />
           </ListItemIcon>
           Favorite questions
         </MenuItem>
-        <MenuItem component="a" href="/qeta/statistics">
+        <MenuItem component="a" href={statisticsRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <TrophyIcon />
           </ListItemIcon>
@@ -157,14 +172,14 @@ export const HomePage = (props: Props) => (
     </Header>
     <Routes>
       <Route path="/" element={<HomePageContent />} />
-      <Route path="/ask" element={<AskPage />} />
-      <Route path="/questions/favorite" element={<FavoritePage />} />
-      <Route path="/questions/:id/edit" element={<AskPage />} />
-      <Route path="/questions/:id" element={<QuestionPage />} />
-      <Route path="/tags" element={<TagPage />} />
-      <Route path="/tags/:tag" element={<TagPage />} />
-      <Route path="/users/*" element={<UserPage />} />
-      <Route path="/statistics" element={<StatisticsPage />} />
+      <Route path={askRouteRef.path} element={<AskPage />} />
+      <Route path={favoriteQuestionsRouteRef.path} element={<FavoritePage />} />
+      <Route path={editQuestionRouteRef.path} element={<AskPage />} />
+      <Route path={questionRouteRef.path} element={<QuestionPage />} />
+      <Route path={tagsRouteRef.path} element={<TagPage />} />
+      <Route path={tagRouteRef.path} element={<TagPage />} />
+      <Route path={userRouteRef.path} element={<UserPage />} />
+      <Route path={statisticsRouteRef.path} element={<StatisticsPage />} />
     </Routes>
   </Page>
 );

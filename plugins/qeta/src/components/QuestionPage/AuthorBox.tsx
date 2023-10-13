@@ -6,15 +6,17 @@ import { useStyles } from '../../utils/hooks';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import { AnswerResponse, QuestionResponse } from '../../api';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { UserEntity } from '@backstage/catalog-model';
+import { userRouteRef } from '../../routes';
 
 export const AuthorBox = (props: {
   entity: QuestionResponse | AnswerResponse;
 }) => {
   const { entity } = props;
   const catalogApi = useApi(catalogApiRef);
+  const userRoute = useRouteRef(userRouteRef);
   const [user, setUser] = React.useState<UserEntity | null>(null);
   const styles = useStyles();
   useEffect(() => {
@@ -44,7 +46,7 @@ export const AuthorBox = (props: {
           <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0 }}>
             <Typography className="qetaAuthorBoxUpdated" variant="caption">
               Updated <RelativeTime value={entity.updated} /> by{' '}
-              <Link to={`/qeta/users/${entity.updatedBy}`}>
+              <Link to={`${userRoute()}/${entity.updatedBy}`}>
                 {formatEntityName(entity.updatedBy)}
               </Link>
             </Typography>
@@ -61,7 +63,7 @@ export const AuthorBox = (props: {
           </Avatar>
         </Grid>
         <Grid item xs={10} className={styles.authorLink}>
-          <Link className="qetaUserBtn" to={`/qeta/users/${entity.author}`}>
+          <Link className="qetaUserBtn" to={`${userRoute()}/${entity.author}`}>
             {name}
           </Link>
         </Grid>
