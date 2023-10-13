@@ -11,10 +11,13 @@ import { FavoriteButton } from './FavoriteButton';
 import { AuthorBox } from './AuthorBox';
 import { TagsAndEntities } from './TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { editQuestionRouteRef } from '../../routes';
 
 export const QuestionCard = (props: { question: QuestionResponse }) => {
   const { question } = props;
   const styles = useStyles();
+  const editQuestionRoute = useRouteRef(editQuestionRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [questionEntity, setQuestionEntity] = React.useState(question);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
@@ -72,7 +75,9 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
                       {(question.own || question.canEdit) && (
                         <Link
                           underline="none"
-                          to={`/qeta/questions/${questionEntity.id}/edit`}
+                          to={editQuestionRoute({
+                            id: question.id.toString(10),
+                          })}
                           className="qetaQuestionCardEditBtn"
                         >
                           Edit

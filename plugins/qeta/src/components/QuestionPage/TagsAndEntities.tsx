@@ -10,11 +10,13 @@ import {
 import { compact } from 'lodash';
 import { Chip, Tooltip } from '@material-ui/core';
 import { getEntityTitle } from '../../utils/utils';
+import { tagRouteRef } from '../../routes';
 
 export const TagsAndEntities = (props: { question: QuestionResponse }) => {
   const { question } = props;
   const catalogApi = useApi(catalogApiRef);
   const entityRoute = useRouteRef(entityRouteRef);
+  const tagRoute = useRouteRef(tagRouteRef);
   const [entities, setEntities] = React.useState<Entity[]>([]);
   useEffect(() => {
     if (question.entities && question.entities.length > 0) {
@@ -45,7 +47,7 @@ export const TagsAndEntities = (props: { question: QuestionResponse }) => {
             size="small"
             className="qetaTagChip"
             component="a"
-            href={`/qeta/tags/${tag}`}
+            href={tagRoute({ tag: tag })}
             clickable
           />
         ))}

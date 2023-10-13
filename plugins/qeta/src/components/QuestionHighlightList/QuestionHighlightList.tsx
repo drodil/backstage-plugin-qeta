@@ -9,6 +9,8 @@ import {
 import React from 'react';
 import { useQetaApi, useStyles } from '../../utils/hooks';
 import { Skeleton } from '@material-ui/lab';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { questionRouteRef } from '../../routes';
 
 export const QuestionHighlightList = (props: {
   type: string;
@@ -22,6 +24,7 @@ export const QuestionHighlightList = (props: {
     error,
   } = useQetaApi(api => api.getQuestionsList(props.type), []);
   const classes = useStyles();
+  const questionRoute = useRouteRef(questionRouteRef);
 
   const questions = response?.questions ?? [];
 
@@ -69,7 +72,7 @@ export const QuestionHighlightList = (props: {
                 button
                 dense
                 component="a"
-                href={`/qeta/questions/${q.id}`}
+                href={questionRoute({ id: q.id.toString(10) })}
               >
                 <ListItemText>{q.title}</ListItemText>
               </ListItem>

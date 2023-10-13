@@ -18,10 +18,13 @@ import { Skeleton } from '@material-ui/lab';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 import { formatEntityName } from '../../utils/utils';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { userRouteRef } from '../../routes';
 
 export const QuestionPage = () => {
   const { id } = useParams();
   const styles = useStyles();
+  const userRoute = useRouteRef(userRouteRef);
   const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
 
   const {
@@ -46,7 +49,7 @@ export const QuestionPage = () => {
             Updated{' '}
             <Box fontWeight="fontWeightMedium" display="inline" sx={{ mr: 2 }}>
               <RelativeTime value={q.updated} /> by{' '}
-              <Link to={`/qeta/users/${q.updatedBy}`}>
+              <Link to={`${userRoute()}/${q.author}`}>
                 {formatEntityName(q.updatedBy)}
               </Link>
             </Box>
