@@ -1,3 +1,5 @@
+import { IndexableDocument } from '@backstage/plugin-search-common';
+
 export interface StatisticResponse {
   ranking: Statistic[];
   loggedUser?: Statistic;
@@ -75,4 +77,12 @@ export interface Attachment {
   extension: string;
   creator: string;
   created: Date;
+}
+
+export interface QetaDocument extends IndexableDocument {
+  docType: string;
+  author: string;
+  score: number;
+  answerCount?: number;
+  views?: number;
 }
