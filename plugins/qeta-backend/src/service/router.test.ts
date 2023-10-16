@@ -280,6 +280,7 @@ describe('createRouter', () => {
         ['java'],
         ['component:default/comp1'],
         undefined,
+        false,
       );
       expect(response.status).toEqual(201);
       expect(response.body).toEqual({
@@ -312,6 +313,7 @@ describe('createRouter', () => {
         ['java'],
         ['component:default/comp1'],
         undefined,
+        false,
       );
       expect(response.status).toEqual(201);
     });
@@ -465,6 +467,7 @@ describe('createRouter', () => {
         'content',
         answer.created,
         undefined,
+        false,
       );
       expect(response.status).toEqual(201);
       expect(response.body).toEqual({
@@ -490,6 +493,7 @@ describe('createRouter', () => {
         'content',
         testDate,
         undefined,
+        false,
       );
       expect(response.status).toEqual(201);
     });

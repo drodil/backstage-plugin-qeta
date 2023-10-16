@@ -176,7 +176,11 @@ export const QuestionsTable = (props: {
                     </Link>
                   </TableCell>
                   <TableCell>
-                    <Link to={`${userRoute()}/${q.author}`}>{q.author}</Link>
+                    {q.author === 'anonymous' ? (
+                      'Anonymous'
+                    ) : (
+                      <Link to={`${userRoute()}/${q.author}`}>{q.author}</Link>
+                    )}
                   </TableCell>
                   <TableCell>
                     <RelativeTime

@@ -53,8 +53,24 @@ export const createCatalogMockRouter = async (): Promise<express.Router> => {
     response.json(entitiesResponse);
   });
 
-  router.get('/entities/by-name/*/*/:name', (req, response) => {
+  router.get('/entities/by-name/:kind/*/:name', (req, response) => {
+    const kind = req.params.kind;
     const name = req.params.name;
+    if (kind === 'user') {
+      response.json({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: name,
+          title: name
+            .split(/[_.-]+/)
+            .map(a => a.charAt(0).toUpperCase() + a.slice(1))
+            .join(' '),
+        },
+        spec: {},
+      });
+      return;
+    }
     const found = entitiesResponse.find(e => e.metadata.name === name);
     if (found) {
       response.json(found);

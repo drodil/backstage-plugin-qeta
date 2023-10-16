@@ -5,4 +5,5 @@ export interface QuestionForm {
   content: string;
   tags?: string[];
   entities?: Entity[];
+  anonymous?: boolean;
 }

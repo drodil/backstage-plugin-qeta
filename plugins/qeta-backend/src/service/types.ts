@@ -28,6 +28,7 @@ export interface PostQuestion {
   images?: number[];
   user?: string;
   created?: string;
+  anonymous?: boolean;
 }
 
 export const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
@@ -69,6 +70,7 @@ export const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
     images: { type: 'array', items: { type: 'integer' }, nullable: true },
     user: { type: 'string', minLength: 1, nullable: true },
     created: { type: 'string', minLength: 1, nullable: true },
+    anonymous: { type: 'boolean', nullable: true },
   },
   required: ['title', 'content'],
   additionalProperties: false,
@@ -79,6 +81,7 @@ export interface AnswerQuestion {
   images?: number[];
   user?: string;
   created?: string;
+  anonymous?: boolean;
 }
 
 export const PostAnswerSchema: JSONSchemaType<AnswerQuestion> = {
@@ -88,6 +91,7 @@ export const PostAnswerSchema: JSONSchemaType<AnswerQuestion> = {
     images: { type: 'array', items: { type: 'integer' }, nullable: true },
     user: { type: 'string', minLength: 1, nullable: true },
     created: { type: 'string', minLength: 1, nullable: true },
+    anonymous: { type: 'boolean', nullable: true },
   },
   required: ['answer'],
   additionalProperties: false,

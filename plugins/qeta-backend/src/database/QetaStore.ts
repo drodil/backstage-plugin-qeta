@@ -112,6 +112,7 @@ export interface QetaStore {
     tags?: string[],
     components?: string[],
     images?: number[],
+    anonymous?: boolean,
   ): Promise<Question>;
 
   /**
@@ -186,6 +187,7 @@ export interface QetaStore {
     answer: string,
     created: Date,
     images?: number[],
+    anonymous?: boolean,
   ): Promise<MaybeAnswer>;
 
   /**
@@ -234,8 +236,9 @@ export interface QetaStore {
 
   /** Get answer by id
    * @param answerId answer id
+   * @param user_ref user name of the user getting answer
    */
-  getAnswer(answerId: number): Promise<MaybeAnswer>;
+  getAnswer(answerId: number, user_ref: string): Promise<MaybeAnswer>;
 
   /**
    * Delete answer. Only the user who created the answer can delete it.

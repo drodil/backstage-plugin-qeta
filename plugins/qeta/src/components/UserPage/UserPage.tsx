@@ -18,7 +18,10 @@ export const UserPage = () => {
           <BackToQuestionsButton />
           <AskQuestionButton />
         </ContentHeader>
-        <QuestionsContainer author={identity ?? ''} />
+        <QuestionsContainer
+          author={identity ?? ''}
+          showNoQuestionsBtn={false}
+        />
       </Container>
     </Content>
   );

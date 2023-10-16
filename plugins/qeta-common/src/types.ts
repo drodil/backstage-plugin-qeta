@@ -39,6 +39,7 @@ export interface QuestionAnswerEntity extends QetaEntity {
   ownVote?: number;
   comments?: Comment[];
   votes?: Vote[];
+  anonymous?: boolean;
 }
 
 export interface Question extends QuestionAnswerEntity {
