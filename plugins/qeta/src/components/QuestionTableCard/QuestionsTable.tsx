@@ -19,11 +19,10 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { questionRouteRef, userRouteRef } from '../../routes';
+import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 
 type QuickFilterType = 'latest' | 'favorites' | 'most_viewed';
 
@@ -183,15 +182,11 @@ export const QuestionsTable = (props: {
                     )}
                   </TableCell>
                   <TableCell>
-                    <RelativeTime
-                      value={q.created}
-                      titleFormat="YYYY/MM/DD HH:mm"
-                    />
+                    <RelativeTimeWithTooltip value={q.created} />
                   </TableCell>
                   <TableCell>
-                    <RelativeTime
+                    <RelativeTimeWithTooltip
                       value={q.updated ? q.updated : q.created}
-                      titleFormat="YYYY/MM/DD HH:mm"
                     />
                   </TableCell>
                 </TableRow>

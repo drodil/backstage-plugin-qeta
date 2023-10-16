@@ -8,8 +8,6 @@ import {
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import React from 'react';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
 import DOMPurify from 'dompurify';
 import {
   formatEntityName,
@@ -19,6 +17,7 @@ import {
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { questionRouteRef, userRouteRef } from '../../routes';
+import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 
 export interface QuestionListItemProps {
   question: QuestionResponse;
@@ -78,10 +77,7 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
                   {formatEntityName(question.author)}
                 </Link>
               )}{' '}
-              <RelativeTime
-                value={question.created}
-                titleFormat="YYYY/MM/DD HH:mm"
-              />
+              <RelativeTimeWithTooltip value={question.created} />
             </Typography>
             <Typography
               variant="caption"

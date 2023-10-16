@@ -1,5 +1,13 @@
 import React from 'react';
-import { Box, Container, Divider, Typography } from '@material-ui/core';
+import {
+  Box,
+  Container,
+  Divider,
+  FormControl,
+  Grid,
+  Select,
+  Typography,
+} from '@material-ui/core';
 import {
   Content,
   ContentHeader,
@@ -10,8 +18,6 @@ import { useParams } from 'react-router-dom';
 import { useQetaApi, useStyles } from '../../utils/hooks';
 import { QuestionCard } from './QuestionCard';
 import { AnswerResponse, QuestionResponse } from '../../api';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
 import { AnswerForm } from './AnswerForm';
 import { AnswerCard } from './AnswerCard';
 import { Skeleton } from '@material-ui/lab';
@@ -20,12 +26,15 @@ import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 import { formatEntityName } from '../../utils/utils';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { userRouteRef } from '../../routes';
+import { Answer } from '@drodil/backstage-plugin-qeta-common';
+import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 
 export const QuestionPage = () => {
   const { id } = useParams();
   const styles = useStyles();
   const userRoute = useRouteRef(userRouteRef);
   const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
+  const [answerSort, setAnswerSort] = React.useState<string>('default');
 
   const {
     value: question,
@@ -42,13 +51,13 @@ export const QuestionPage = () => {
       <span>
         Asked{' '}
         <Box fontWeight="fontWeightMedium" display="inline" sx={{ mr: 2 }}>
-          <RelativeTime value={q.created} />
+          <RelativeTimeWithTooltip value={q.created} />
         </Box>
         {q.updated && (
           <React.Fragment>
             Updated{' '}
             <Box fontWeight="fontWeightMedium" display="inline" sx={{ mr: 2 }}>
-              <RelativeTime value={q.updated} /> by{' '}
+              <RelativeTimeWithTooltip value={q.updated} /> by{' '}
               <Link to={`${userRoute()}/${q.author}`}>
                 {formatEntityName(q.updatedBy)}
               </Link>
@@ -75,6 +84,43 @@ export const QuestionPage = () => {
     );
   }
 
+  const sortAnswers = (a: Answer, b: Answer) => {
+    if (answerSort === 'default') {
+      return 1;
+    }
+
+    const parts = answerSort.split('_');
+    const field = parts[0];
+    const order = parts[1];
+
+    let ret = -1;
+    switch (field) {
+      case 'created':
+        ret = a.created > b.created ? -1 : 1;
+        break;
+      case 'score':
+        ret = a.score > b.score ? -1 : 1;
+        break;
+      case 'author':
+        ret = a.author > b.author ? -1 : 1;
+        break;
+      case 'comments':
+        ret = (a.comments?.length ?? 0) > (b.comments?.length ?? 0) ? -1 : 1;
+        break;
+      case 'updated':
+        ret = (a.updated ?? a.created) > (b.updated ?? b.created) ? -1 : 1;
+        break;
+      default:
+        return 1;
+    }
+
+    if (order === 'desc') {
+      ret *= -1;
+    }
+    return ret;
+  };
+
+  const allQuestions = (question.answers ?? []).concat(newAnswers);
   return (
     <Content>
       <Container maxWidth="lg">
@@ -88,11 +134,43 @@ export const QuestionPage = () => {
         </ContentHeader>
         <QuestionCard question={question} />
         <Box sx={{ mt: 3, mb: 2 }}>
-          <Typography variant="h6">
-            {question.answersCount + newAnswers.length} answers
-          </Typography>
+          <Grid container justifyContent="space-between" alignItems="center">
+            <Grid item>
+              <Typography variant="h6">
+                {question.answersCount + newAnswers.length} answers
+              </Typography>
+            </Grid>
+            {allQuestions.length > 1 && (
+              <Grid item>
+                <FormControl>
+                  <Select
+                    native
+                    label="Sort answers"
+                    value={answerSort}
+                    onChange={val => setAnswerSort(val.target.value as string)}
+                    inputProps={{
+                      name: 'sortAnswers',
+                      id: 'sort-answers',
+                    }}
+                  >
+                    <option value="default">Default</option>
+                    <option value="created_desc">Created (desc)</option>
+                    <option value="created_asc">Created (asc)</option>
+                    <option value="score_desc">Score (desc)</option>
+                    <option value="score_asc">Score (asc)</option>
+                    <option value="comments_desc">Comments (desc)</option>
+                    <option value="comments_asc">Comments (asc)</option>
+                    <option value="author_desc">Author (desc)</option>
+                    <option value="author_asc">Author (asc)</option>
+                    <option value="updated_desc">Updated (desc)</option>
+                    <option value="updated_asc">Updated (asc)</option>
+                  </Select>
+                </FormControl>
+              </Grid>
+            )}
+          </Grid>
         </Box>
-        {(question.answers ?? []).concat(newAnswers).map(a => {
+        {allQuestions.sort(sortAnswers).map(a => {
           return (
             <>
               <Divider className={styles.questionDivider} />

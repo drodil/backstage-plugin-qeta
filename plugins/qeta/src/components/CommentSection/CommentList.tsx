@@ -4,10 +4,9 @@ import React from 'react';
 import { Link, MarkdownContent } from '@backstage/core-components';
 import { formatEntityName } from '../../utils/utils';
 import { useStyles } from '../../utils/hooks';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { userRouteRef } from '../../routes';
+import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 
 export const CommentList = (props: {
   onCommentDelete: (
@@ -52,7 +51,7 @@ export const CommentList = (props: {
                 {name}
               </Link>{' '}
               <Typography variant="caption" className="qetaCommentTime">
-                <RelativeTime value={c.created} />
+                <RelativeTimeWithTooltip value={c.created} />
               </Typography>
               {(c.own || c.canDelete) && (
                 <>
