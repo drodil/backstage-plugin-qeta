@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.16.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.15.4...v1.16.0) (2023-10-16)
+
+
+### Features
+
+* add events from deleting questions and answers ([fdd5d01](https://github.com/drodil/backstage-plugin-qeta/commit/fdd5d012c20053c1c777a16294366873cef3a271)), closes [#99](https://github.com/drodil/backstage-plugin-qeta/issues/99)
+* Added support for new backend system ([f08a1ba](https://github.com/drodil/backstage-plugin-qeta/commit/f08a1ba9761482426832a7f9f0e0105645c07c42))
+* allow asking and answering anonymously ([9bb602b](https://github.com/drodil/backstage-plugin-qeta/commit/9bb602b9a0f46237e2d3721ff3d140a7f4ac2849)), closes [#93](https://github.com/drodil/backstage-plugin-qeta/issues/93)
+* allow sorting answers ([5c41b12](https://github.com/drodil/backstage-plugin-qeta/commit/5c41b128c95b87a51911da09083a5c9740a0dd2a)), closes [#88](https://github.com/drodil/backstage-plugin-qeta/issues/88)
+* export search document from common package ([f9e495a](https://github.com/drodil/backstage-plugin-qeta/commit/f9e495a43517b212458015c2228557661325ed01))
+
+
+### Bug Fixes
+
+* build error with new  plugin.ts file ([6037b4d](https://github.com/drodil/backstage-plugin-qeta/commit/6037b4d3f5d1119b8327a432573d520d36716871))
+
 ### [1.15.4](https://github.com/drodil/backstage-plugin-qeta/compare/v1.15.3...v1.15.4) (2023-09-26)
 
 
