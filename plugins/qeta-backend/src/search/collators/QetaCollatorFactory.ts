@@ -1,24 +1,15 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { Readable } from 'stream';
-import {
-  DocumentCollatorFactory,
-  IndexableDocument,
-} from '@backstage/plugin-search-common';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { DatabaseQetaStore } from '../../database';
+import { QetaDocument } from '@drodil/backstage-plugin-qeta-common';
 
 export type QetaCollatorFactoryOptions = {
   logger: Logger;
   database: PluginDatabaseManager;
 };
-
-export interface QetaDocument extends IndexableDocument {
-  docType: string;
-  author: string;
-  score: number;
-  answerCount?: number;
-}
 
 export class QetaCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'qeta';
@@ -58,6 +49,7 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
         author: question.author,
         score: question.score,
         answerCount: question.answersCount,
+        views: question.views,
       };
 
       for (const answer of question.answers ?? []) {

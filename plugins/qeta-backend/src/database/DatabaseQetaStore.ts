@@ -40,6 +40,7 @@ export type RawQuestionEntity = {
   correctAnswers: number | string;
   favorite: number | string;
   trend: number | string;
+  anonymous: boolean;
 };
 
 export type RawAnswerEntity = {
@@ -52,6 +53,7 @@ export type RawAnswerEntity = {
   created: Date;
   updated: Date;
   updatedBy: string;
+  anonymous: boolean;
 };
 
 export type RawQuestionVoteEntity = {
@@ -220,6 +222,7 @@ export class DatabaseQetaStore implements QetaStore {
         rows.map(async val => {
           return this.mapQuestion(
             val,
+            user_ref,
             options.includeAnswers,
             options.includeVotes,
             options.includeEntities,
@@ -248,6 +251,7 @@ export class DatabaseQetaStore implements QetaStore {
     }
     return await this.mapQuestion(
       rows[0] as unknown as RawQuestionEntity,
+      user_ref,
       true,
       true,
       true,
@@ -271,6 +275,7 @@ export class DatabaseQetaStore implements QetaStore {
     }
     return await this.mapQuestion(
       rows[0] as unknown as RawQuestionEntity,
+      user_ref,
       true,
       true,
       true,
@@ -285,6 +290,7 @@ export class DatabaseQetaStore implements QetaStore {
     tags?: string[],
     entities?: string[],
     images?: number[],
+    anonymous?: boolean,
   ): Promise<Question> {
     const questions = await this.db
       .insert(
@@ -293,11 +299,12 @@ export class DatabaseQetaStore implements QetaStore {
           title,
           content,
           created,
+          anonymous: anonymous ?? false,
         },
         ['id'],
       )
       .into('questions')
-      .returning(['id', 'author', 'title', 'content', 'created']);
+      .returning(['id', 'author', 'title', 'content', 'created', 'anonymous']);
 
     await Promise.all([
       this.addQuestionTags(questions[0].id, tags),
@@ -310,7 +317,7 @@ export class DatabaseQetaStore implements QetaStore {
         .update({ questionId: questions[0].id });
     }
 
-    return this.mapQuestion(questions[0], false, false, true);
+    return this.mapQuestion(questions[0], user_ref, false, false, true);
   }
 
   async commentQuestion(
@@ -361,7 +368,7 @@ export class DatabaseQetaStore implements QetaStore {
         answerId: answer_id,
       })
       .into('answer_comments');
-    return this.getAnswer(answer_id);
+    return this.getAnswer(answer_id, user_ref);
   }
 
   async deleteAnswerComment(
@@ -378,7 +385,7 @@ export class DatabaseQetaStore implements QetaStore {
       query.where('author', '=', user_ref);
     }
     await query.delete();
-    return this.getAnswer(answer_id);
+    return this.getAnswer(answer_id, user_ref);
   }
 
   async updateQuestion(
@@ -438,6 +445,7 @@ export class DatabaseQetaStore implements QetaStore {
     answer: string,
     created: Date,
     images?: number[],
+    anonymous?: boolean,
   ): Promise<MaybeAnswer> {
     const answers = await this.db
       .insert({
@@ -446,6 +454,7 @@ export class DatabaseQetaStore implements QetaStore {
         content: answer,
         correct: false,
         created,
+        anonymous: anonymous ?? false,
       })
       .into('answers')
       .returning('id');
@@ -456,7 +465,7 @@ export class DatabaseQetaStore implements QetaStore {
         .update({ answerId: answers[0].id });
     }
 
-    return this.getAnswer(answers[0].id);
+    return this.getAnswer(answers[0].id, user_ref);
   }
 
   async updateAnswer(
@@ -490,12 +499,12 @@ export class DatabaseQetaStore implements QetaStore {
         .update({ answerId: answerId });
     }
 
-    return this.getAnswer(answerId);
+    return this.getAnswer(answerId, user_ref);
   }
 
-  async getAnswer(answerId: number): Promise<MaybeAnswer> {
+  async getAnswer(answerId: number, user_ref: string): Promise<MaybeAnswer> {
     const answers = await this.getAnswerBaseQuery().where('id', '=', answerId);
-    return this.mapAnswer(answers[0], true, true);
+    return this.mapAnswer(answers[0], user_ref, true, true);
   }
 
   async deleteAnswer(
@@ -651,7 +660,8 @@ export class DatabaseQetaStore implements QetaStore {
       .select('q.author')
       .join('question_votes as qv', 'q.id', 'qv.questionId')
       .groupBy('q.author')
-      .orderBy('total', 'desc');
+      .orderBy('total', 'desc')
+      .where('anonymous', '!=', true);
 
     if (author) {
       query.where('q.author', '=', author);
@@ -684,7 +694,8 @@ export class DatabaseQetaStore implements QetaStore {
       .count('q.id as total')
       .select('q.author')
       .groupBy('author')
-      .orderBy('total', 'desc');
+      .orderBy('total', 'desc')
+      .where('q.anonymous', '!=', true);
 
     if (author) {
       query.where('q.author', '=', author);
@@ -717,7 +728,8 @@ export class DatabaseQetaStore implements QetaStore {
       .select('a.author')
       .join('answer_votes as av', 'a.id', 'av.answerId')
       .groupBy('a.author')
-      .orderBy('total', 'desc');
+      .orderBy('total', 'desc')
+      .where('a.anonymous', '!=', true);
 
     if (author) {
       query.where('a.author', '=', author);
@@ -750,7 +762,8 @@ export class DatabaseQetaStore implements QetaStore {
       .join('answer_votes as av', 'a.id', 'av.answerId')
       .groupBy('a.author')
       .orderBy('total', 'desc')
-      .where('a.correct', '=', true);
+      .where('a.correct', '=', true)
+      .where('a.anonymous', '!=', true);
 
     if (author) {
       query.where('a.author', '=', author);
@@ -781,7 +794,8 @@ export class DatabaseQetaStore implements QetaStore {
       .count('a.id as total')
       .select('a.author')
       .groupBy('author')
-      .orderBy('total', 'desc');
+      .orderBy('total', 'desc')
+      .where('a.anonymous', '!=', true);
 
     if (author) {
       query.where('a.author', '=', author);
@@ -854,6 +868,7 @@ export class DatabaseQetaStore implements QetaStore {
 
   private async mapQuestion(
     val: RawQuestionEntity,
+    user_ref: string,
     addAnswers?: boolean,
     addVotes?: boolean,
     addEntities?: boolean,
@@ -863,7 +878,7 @@ export class DatabaseQetaStore implements QetaStore {
     const additionalInfo = await Promise.all([
       this.getQuestionTags(val.id),
       addAnswers
-        ? this.getQuestionAnswers(val.id, addVotes, addComments)
+        ? this.getQuestionAnswers(val.id, user_ref, addVotes, addComments)
         : undefined,
       addVotes ? this.getQuestionVotes(val.id) : undefined,
       addEntities ? this.getQuestionEntities(val.id) : undefined,
@@ -871,7 +886,8 @@ export class DatabaseQetaStore implements QetaStore {
     ]);
     return {
       id: val.id,
-      author: val.author,
+      author:
+        val.anonymous && val.author !== user_ref ? 'anonymous' : val.author,
       title: val.title,
       content: val.content,
       created: val.created,
@@ -888,11 +904,13 @@ export class DatabaseQetaStore implements QetaStore {
       entities: additionalInfo[3],
       trend: this.mapToInteger(val.trend),
       comments: additionalInfo[4],
+      anonymous: val.anonymous,
     };
   }
 
   private async mapAnswer(
     val: RawAnswerEntity,
+    user_ref: string,
     addVotes?: boolean,
     addComments?: boolean,
   ): Promise<Answer> {
@@ -903,7 +921,8 @@ export class DatabaseQetaStore implements QetaStore {
     return {
       id: val.id,
       questionId: val.questionId,
-      author: val.author,
+      author:
+        val.anonymous && val.author !== user_ref ? 'anonymous' : val.author,
       content: val.content,
       correct: val.correct,
       created: val.created,
@@ -912,6 +931,7 @@ export class DatabaseQetaStore implements QetaStore {
       score: this.mapToInteger(val.score),
       votes: additionalInfo[0],
       comments: additionalInfo[1],
+      anonymous: val.anonymous,
     };
   }
 
@@ -989,6 +1009,7 @@ export class DatabaseQetaStore implements QetaStore {
 
   private async getQuestionAnswers(
     questionId: number,
+    user_ref: string,
     addVotes?: boolean,
     addComments?: boolean,
   ): Promise<Answer[]> {
@@ -998,7 +1019,7 @@ export class DatabaseQetaStore implements QetaStore {
       .orderBy('answers.created');
     return await Promise.all(
       rows.map(async val => {
-        return this.mapAnswer(val, addVotes, addComments);
+        return this.mapAnswer(val, user_ref, addVotes, addComments);
       }),
     );
   }

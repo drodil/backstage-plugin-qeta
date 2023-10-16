@@ -19,9 +19,10 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { questionRouteRef, userRouteRef } from '../../routes';
+import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 
 type QuickFilterType = 'latest' | 'favorites' | 'most_viewed';
 
@@ -30,6 +31,8 @@ export const QuestionsTable = (props: {
   rowsPerPage?: number;
   quickFilter?: QuickFilterType;
 }) => {
+  const questionRoute = useRouteRef(questionRouteRef);
+  const userRoute = useRouteRef(userRouteRef);
   const [page, setPage] = React.useState(1);
   const [questionsPerPage, setQuestionsPerPage] = React.useState(
     props.rowsPerPage ?? 10,
@@ -167,21 +170,23 @@ export const QuestionsTable = (props: {
               return (
                 <TableRow key={q.id}>
                   <TableCell>
-                    <Link to={`/qeta/questions/${q.id}`}>{q.title}</Link>
+                    <Link to={questionRoute({ id: q.id.toString(10) })}>
+                      {q.title}
+                    </Link>
                   </TableCell>
                   <TableCell>
-                    <Link to={`/qeta/users/${q.author}`}>{q.author}</Link>
+                    {q.author === 'anonymous' ? (
+                      'Anonymous'
+                    ) : (
+                      <Link to={`${userRoute()}/${q.author}`}>{q.author}</Link>
+                    )}
                   </TableCell>
                   <TableCell>
-                    <RelativeTime
-                      value={q.created}
-                      titleFormat="YYYY/MM/DD HH:mm"
-                    />
+                    <RelativeTimeWithTooltip value={q.created} />
                   </TableCell>
                   <TableCell>
-                    <RelativeTime
+                    <RelativeTimeWithTooltip
                       value={q.updated ? q.updated : q.created}
-                      titleFormat="YYYY/MM/DD HH:mm"
                     />
                   </TableCell>
                 </TableRow>

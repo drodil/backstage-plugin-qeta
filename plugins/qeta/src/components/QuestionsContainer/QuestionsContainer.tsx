@@ -26,6 +26,7 @@ export interface QuestionsContainerProps {
   title?: string;
   favorite?: boolean;
   showAskButton?: boolean;
+  showNoQuestionsBtn?: boolean;
 }
 export const QuestionsContainer = (props: QuestionsContainerProps) => {
   const {
@@ -37,6 +38,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     title,
     favorite,
     showAskButton,
+    showNoQuestionsBtn,
   } = props;
   const [page, setPage] = React.useState(1);
   const [questionsPerPage, setQuestionsPerPage] = React.useState(10);
@@ -226,6 +228,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         entity={entity}
         page={page}
         pageSize={questionsPerPage}
+        showNoQuestionsBtn={showNoQuestionsBtn}
       />
     </Box>
   );

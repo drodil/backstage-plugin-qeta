@@ -17,13 +17,14 @@ import {
   TagResponse,
 } from './types';
 
-import { Answer, Question } from '@drodil/backstage-plugin-qeta-common';
-import omitBy from 'lodash/omitBy';
-import isEmpty from 'lodash/isEmpty';
 import {
+  Answer,
+  Question,
   StatisticResponse,
   StatisticsRequestParameters,
 } from '@drodil/backstage-plugin-qeta-common';
+import omitBy from 'lodash/omitBy';
+import isEmpty from 'lodash/isEmpty';
 
 export const qetaApiRef = createApiRef<QetaApi>({
   id: 'plugin.qeta.service',
@@ -257,7 +258,11 @@ export class QetaClient implements QetaApi {
       `${await this.getBaseUrl()}/questions/${answer.questionId}/answers`,
       {
         method: 'POST',
-        body: JSON.stringify({ answer: answer.answer, images: answer.images }),
+        body: JSON.stringify({
+          answer: answer.answer,
+          images: answer.images,
+          anonymous: answer.anonymous,
+        }),
         headers: { 'Content-Type': 'application/json' },
       },
     );

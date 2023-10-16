@@ -1,8 +1,8 @@
 import { ErrorObject } from 'ajv';
 import {
-  Question,
   Answer,
   Attachment,
+  Question,
 } from '@drodil/backstage-plugin-qeta-common';
 
 interface CustomError {
@@ -35,6 +35,7 @@ export interface AnswerRequest {
   questionId: number;
   answer: string;
   images?: number[];
+  anonymous?: boolean;
 }
 
 export type AnswerResponseBody = Answer | ErrorResponse;

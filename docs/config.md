@@ -27,7 +27,7 @@ qeta:
 
 The configuration values are:
 
-- allowAnonymous, boolean, allows anonymous users to post questions and answers. If enabled all users without authentication will be named after guest user. Required for local development.
+- allowAnonymous, boolean, allows anonymous users to post questions and answers anonymously. This enables also guest users to be able to post. Adds checkbox to the forms to post as anonymous. Default is `false`
 - allowMetadataInput, boolean, allows `created` and `user` fields to be passed when creating questions, answers, or comments. Useful if migrating information into the system. Default is `false`
 - allowGlobalEdits, boolean, allows editing other users' questions and answers by any user. Default is `false`.
 - entities.kinds, string array, what kind of catalog entities can be attached to a question. Default is ['Component']

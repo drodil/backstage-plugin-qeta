@@ -10,9 +10,12 @@ import React from 'react';
 import { useQetaApi } from '../../utils/hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import { TagResponse } from '../../api';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { tagRouteRef } from '../../routes';
 
 export const TagsContainer = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
+  const tagRoute = useRouteRef(tagRouteRef);
   const {
     value: response,
     loading,
@@ -72,7 +75,7 @@ export const TagsContainer = () => {
             className="qetaTagsContainerChip"
             component="a"
             clickable
-            href={`/qeta/tags/${tag.tag}`}
+            href={tagRoute({ tag: tag.tag })}
           />
         ))}
       </Grid>

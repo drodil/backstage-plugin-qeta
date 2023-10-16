@@ -1,4 +1,9 @@
-import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  useAnalytics,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import { Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useEffect } from 'react';
@@ -10,7 +15,7 @@ import {
   QuestionRequest,
   QuestionResponse,
 } from '../../api';
-import { useBasePath, useStyles } from '../../utils/hooks';
+import { useStyles } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -19,6 +24,8 @@ import { compact } from 'lodash';
 import { TagInput } from './TagInput';
 import { QuestionForm } from './types';
 import { EntitiesInput } from './EntitiesInput';
+import { questionRouteRef } from '../../routes';
+import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymouslyCheckbox';
 
 const formToRequest = (
   form: QuestionForm,
@@ -76,7 +83,7 @@ export const AskForm = (props: {
   onPost?: (question: QuestionResponse) => void;
 }) => {
   const { id, entity, onPost } = props;
-  const base_path = useBasePath();
+  const questionRoute = useRouteRef(questionRouteRef);
   const navigate = useNavigate();
   const analytics = useAnalytics();
   const [entityRef, setEntityRef] = React.useState(entity);
@@ -90,6 +97,7 @@ export const AskForm = (props: {
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
   const configApi = useApi(configApiRef);
+  const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const styles = useStyles();
   const {
     register,
@@ -117,9 +125,11 @@ export const AskForm = (props: {
           if (onPost) {
             onPost(q);
           } else if (entity) {
-            navigate(`${base_path}/qeta/questions/${q.id}?entity=${entity}`);
+            navigate(
+              `${questionRoute({ id: q.id.toString(10) })}?entity=${entity}`,
+            );
           } else {
-            navigate(`${base_path}/qeta/questions/${q.id}`);
+            navigate(questionRoute({ id: q.id.toString(10) }));
           }
         })
         .catch(_e => {
@@ -138,9 +148,11 @@ export const AskForm = (props: {
         analytics.captureEvent('post', 'question');
         reset();
         if (entity) {
-          navigate(`${base_path}/qeta/questions/${q.id}?entity=${entity}`);
+          navigate(
+            `${questionRoute({ id: q.id.toString(10) })}?entity=${entity}`,
+          );
         } else {
-          navigate(`${base_path}/qeta/questions/${q.id}`);
+          navigate(questionRoute({ id: q.id.toString(10) }));
         }
       })
       .catch(_e => {
@@ -221,6 +233,9 @@ export const AskForm = (props: {
       />
       <TagInput control={control} />
       <EntitiesInput control={control} entityRef={entityRef} />
+      {allowAnonymouns && !id && (
+        <AskAnonymouslyCheckbox control={control} label="Ask anonymously" />
+      )}
       <Button
         color="primary"
         type="submit"

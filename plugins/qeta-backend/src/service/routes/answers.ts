@@ -45,6 +45,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       request.body.answer,
       created,
       request.body.images,
+      request.body.anonymous || username === 'user:default/guest',
     );
 
     mapAdditionalFields(username, answer, options, moderator);
@@ -199,6 +200,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     await checkPermissions(request, qetaReadPermission, options);
     const answer = await database.getAnswer(
       Number.parseInt(request.params.answerId, 10),
+      username,
     );
 
     if (answer === null) {
@@ -249,7 +251,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
-    const answer = await database.getAnswer(answerId);
+    const answer = await database.getAnswer(answerId, username);
 
     mapAdditionalFields(username, answer, options, moderator);
     if (answer) {
@@ -313,7 +315,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
           questionId,
           false,
         );
-        const answer = await database.getAnswer(answerId);
+        const answer = await database.getAnswer(answerId, username);
         await eventBroker.publish({
           topic: 'qeta',
           eventPayload: {
@@ -350,7 +352,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
           questionId,
           false,
         );
-        const answer = await database.getAnswer(answerId);
+        const answer = await database.getAnswer(answerId, username);
         await eventBroker.publish({
           topic: 'qeta',
           eventPayload: {

@@ -8,8 +8,6 @@ import {
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import React from 'react';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
 import DOMPurify from 'dompurify';
 import {
   formatEntityName,
@@ -17,6 +15,9 @@ import {
   truncate,
 } from '../../utils/utils';
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { questionRouteRef, userRouteRef } from '../../routes';
+import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 
 export interface QuestionListItemProps {
   question: QuestionResponse;
@@ -25,6 +26,8 @@ export interface QuestionListItemProps {
 
 export const QuestionListItem = (props: QuestionListItemProps) => {
   const { question, entity } = props;
+  const questionRoute = useRouteRef(questionRouteRef);
+  const userRoute = useRouteRef(userRouteRef);
   const theme = useTheme();
 
   return (
@@ -36,8 +39,10 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
               <Link
                 to={
                   entity
-                    ? `/qeta/questions/${question.id}?entity=${entity}`
-                    : `/qeta/questions/${question.id}`
+                    ? `${questionRoute({
+                        id: question.id.toString(10),
+                      })}?entity=${entity}`
+                    : questionRoute({ id: question.id.toString(10) })
                 }
                 className="qetaQuestionListItemQuestionBtn"
               >
@@ -65,13 +70,14 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
               className="qetaQuestionListItemAuthor"
             >
               By{' '}
-              <Link to={`/qeta/users/${question.author}`}>
-                {formatEntityName(question.author)}
-              </Link>{' '}
-              <RelativeTime
-                value={question.created}
-                titleFormat="YYYY/MM/DD HH:mm"
-              />
+              {question.author === 'anonymous' ? (
+                'Anonymous'
+              ) : (
+                <Link to={`${userRoute()}/${question.author}`}>
+                  {formatEntityName(question.author)}
+                </Link>
+              )}{' '}
+              <RelativeTimeWithTooltip value={question.created} />
             </Typography>
             <Typography
               variant="caption"
