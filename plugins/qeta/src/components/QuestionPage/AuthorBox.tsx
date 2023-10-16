@@ -6,7 +6,11 @@ import { useStyles } from '../../utils/hooks';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import { AnswerResponse, QuestionResponse } from '../../api';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  identityApiRef,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { UserEntity } from '@backstage/catalog-model';
 import { userRouteRef } from '../../routes';
@@ -17,16 +21,38 @@ export const AuthorBox = (props: {
   const { entity } = props;
   const catalogApi = useApi(catalogApiRef);
   const userRoute = useRouteRef(userRouteRef);
+  const identityApi = useApi(identityApiRef);
   const [user, setUser] = React.useState<UserEntity | null>(null);
+  const [currentUser, setCurrentUser] = React.useState<string | null>(null);
   const styles = useStyles();
+  const anonymous = entity.anonymous ?? false;
   useEffect(() => {
-    catalogApi
-      .getEntityByRef(entity.author)
-      .catch(_ => setUser(null))
-      .then(data => (data ? setUser(data as UserEntity) : setUser(null)));
-  }, [catalogApi, entity]);
+    if (!anonymous) {
+      catalogApi
+        .getEntityByRef(entity.author)
+        .catch(_ => setUser(null))
+        .then(data => (data ? setUser(data as UserEntity) : setUser(null)));
+    }
+  }, [catalogApi, entity, anonymous]);
 
-  const name = formatEntityName(entity.author);
+  useEffect(() => {
+    identityApi.getBackstageIdentity().then(res => {
+      setCurrentUser(res.userEntityRef ?? 'user:default/guest');
+    });
+  }, [identityApi]);
+
+  let name = formatEntityName(entity.author);
+  if (user && user.metadata.title) {
+    name = user.metadata.title;
+  }
+
+  if (entity.author === currentUser) {
+    name = 'You';
+    if (anonymous) {
+      name += ' (anonymous)';
+    }
+  }
+
   const initials = (name ?? '')
     .split(' ')
     .map(p => p[0])
@@ -54,7 +80,7 @@ export const AuthorBox = (props: {
         )}
         <Grid item xs={2}>
           <Avatar
-            src={user?.spec.profile?.picture}
+            src={user?.spec?.profile?.picture}
             className="qetaAuthorBoxAvatar avatar"
             alt={name}
             variant="rounded"
@@ -63,9 +89,16 @@ export const AuthorBox = (props: {
           </Avatar>
         </Grid>
         <Grid item xs={10} className={styles.authorLink}>
-          <Link className="qetaUserBtn" to={`${userRoute()}/${entity.author}`}>
-            {name}
-          </Link>
+          {name === 'Anonymous' ? (
+            name
+          ) : (
+            <Link
+              className="qetaUserBtn"
+              to={`${userRoute()}/${entity.author}`}
+            >
+              {name}
+            </Link>
+          )}
         </Grid>
       </Grid>
     </Box>

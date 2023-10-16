@@ -25,6 +25,7 @@ import { TagInput } from './TagInput';
 import { QuestionForm } from './types';
 import { EntitiesInput } from './EntitiesInput';
 import { questionRouteRef } from '../../routes';
+import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymouslyCheckbox';
 
 const formToRequest = (
   form: QuestionForm,
@@ -96,6 +97,7 @@ export const AskForm = (props: {
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
   const configApi = useApi(configApiRef);
+  const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const styles = useStyles();
   const {
     register,
@@ -231,6 +233,9 @@ export const AskForm = (props: {
       />
       <TagInput control={control} />
       <EntitiesInput control={control} entityRef={entityRef} />
+      {allowAnonymouns && !id && (
+        <AskAnonymouslyCheckbox control={control} label="Ask anonymously" />
+      )}
       <Button
         color="primary"
         type="submit"

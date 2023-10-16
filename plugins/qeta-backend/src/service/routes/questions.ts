@@ -239,6 +239,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       tags,
       entities,
       request.body.images,
+      request.body.anonymous || username === 'user:default/guest',
     );
 
     if (eventBroker) {

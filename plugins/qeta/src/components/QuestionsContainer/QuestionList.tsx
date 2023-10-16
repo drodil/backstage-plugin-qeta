@@ -25,6 +25,7 @@ export const QuestionList = (props: {
   page: number;
   pageSize: number;
   entity?: string;
+  showNoQuestionsBtn?: boolean;
 }) => {
   const {
     loading,
@@ -34,6 +35,7 @@ export const QuestionList = (props: {
     entity,
     page,
     onPageSizeChange,
+    showNoQuestionsBtn = true,
   } = props;
   const styles = useStyles();
 
@@ -73,16 +75,18 @@ export const QuestionList = (props: {
         <Grid item>
           <Typography variant="h6">No questions found</Typography>
         </Grid>
-        <Grid item>
-          <LinkButton
-            to={entity ? `/qeta/ask?entity=${entity}` : '/qeta/ask'}
-            startIcon={<HelpOutline />}
-            color="primary"
-            variant="outlined"
-          >
-            Go ahead and ask one!
-          </LinkButton>
-        </Grid>
+        {showNoQuestionsBtn && (
+          <Grid item>
+            <LinkButton
+              to={entity ? `/qeta/ask?entity=${entity}` : '/qeta/ask'}
+              startIcon={<HelpOutline />}
+              color="primary"
+              variant="outlined"
+            >
+              Go ahead and ask one!
+            </LinkButton>
+          </Grid>
+        )}
       </Grid>
     );
   }

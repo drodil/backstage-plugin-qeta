@@ -71,9 +71,13 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
               className="qetaQuestionListItemAuthor"
             >
               By{' '}
-              <Link to={`${userRoute()}/${question.author}`}>
-                {formatEntityName(question.author)}
-              </Link>{' '}
+              {question.author === 'anonymous' ? (
+                'Anonymous'
+              ) : (
+                <Link to={`${userRoute()}/${question.author}`}>
+                  {formatEntityName(question.author)}
+                </Link>
+              )}{' '}
               <RelativeTime
                 value={question.created}
                 titleFormat="YYYY/MM/DD HH:mm"

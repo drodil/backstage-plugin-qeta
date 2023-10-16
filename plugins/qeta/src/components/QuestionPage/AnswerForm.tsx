@@ -13,6 +13,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { qetaCreateAnswerPermission } from '@drodil/backstage-plugin-qeta-common';
+import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymouslyCheckbox';
 
 const getDefaultValues = (questionId: number) => {
   return { questionId, answer: '' };
@@ -31,6 +32,7 @@ export const AnswerForm = (props: {
   const qetaApi = useApi(qetaApiRef);
   const styles = useStyles();
   const configApi = useApi(configApiRef);
+  const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
 
   const {
     handleSubmit,
@@ -64,7 +66,12 @@ export const AnswerForm = (props: {
     }
     // http://localhost:7007/api/qeta/attachments/36e551b1-3be7-479a-8942-b7018434e710
     qetaApi
-      .postAnswer({ questionId: question.id, answer: data.answer, images })
+      .postAnswer({
+        questionId: question.id,
+        answer: data.answer,
+        images,
+        anonymous: data.anonymous,
+      })
       .then(a => {
         if (!a || !('id' in a)) {
           setError(true);
@@ -123,6 +130,12 @@ export const AnswerForm = (props: {
           )}
           name="answer"
         />
+        {allowAnonymouns && !id && (
+          <AskAnonymouslyCheckbox
+            control={control}
+            label="Answer anonymously"
+          />
+        )}
         <Button
           variant="outlined"
           type="submit"
