@@ -292,6 +292,17 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
+    if (eventBroker) {
+      await eventBroker.publish({
+        topic: 'qeta',
+        eventPayload: {
+          question,
+          author: username,
+        },
+        metadata: { action: 'update_question' },
+      });
+    }
+
     // Response
     response.status(200);
     response.send(question);
@@ -301,11 +312,25 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
   router.delete('/questions/:id', async (request, response) => {
     // Validation
     const moderator = await isModerator(request, options);
+    const username = await getUsername(request, options);
+    const questionId = Number.parseInt(request.params.id, 10);
+
+    if (eventBroker) {
+      const question = database.getQuestion(username, questionId, false);
+      await eventBroker.publish({
+        topic: 'qeta',
+        eventPayload: {
+          question,
+          author: username,
+        },
+        metadata: { action: 'delete_question' },
+      });
+    }
 
     // Act
     const deleted = await database.deleteQuestion(
-      await getUsername(request, options),
-      Number.parseInt(request.params.id, 10),
+      username,
+      questionId,
       moderator,
     );
 

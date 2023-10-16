@@ -170,6 +170,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       // Validation
       const username = await getUsername(request, options);
       const moderator = await isModerator(request, options);
+
       // Act
       const answer = await database.deleteAnswerComment(
         Number.parseInt(request.params.answerId, 10),
@@ -220,11 +221,32 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     async (request, response) => {
       // Validation
       const moderator = await isModerator(request, options);
+      const username = await getUsername(request, options);
+      const answerId = Number.parseInt(request.params.answerId, 10);
+
+      if (eventBroker) {
+        const questionId = Number.parseInt(request.params.id, 10);
+        const question = await database.getQuestion(
+          username,
+          questionId,
+          false,
+        );
+        const answer = await database.getAnswer(answerId, username);
+        await eventBroker.publish({
+          topic: 'qeta',
+          eventPayload: {
+            question,
+            answer,
+            author: username,
+          },
+          metadata: { action: 'delete_answer' },
+        });
+      }
 
       // Act
       const deleted = await database.deleteAnswer(
-        await getUsername(request, options),
-        Number.parseInt(request.params.answerId, 10),
+        username,
+        answerId,
         moderator,
       );
 

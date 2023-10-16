@@ -33,3 +33,9 @@ Events are published in topic `qeta`. The following events are published:
 - Vote answer
   - payload: question, answer, author, score
   - metadata.action = `vote_answer`
+- Delete question
+  - payload: question, author
+  - metadata.action = `delete_question`
+- Delete answer
+  - payload: question, answer, author
+  - metadata.action = `delete_answer`
