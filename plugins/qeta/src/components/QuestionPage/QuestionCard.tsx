@@ -4,8 +4,6 @@ import { Link, MarkdownContent } from '@backstage/core-components';
 import React from 'react';
 import { VoteButtons } from './VoteButtons';
 import { useStyles } from '../../utils/hooks';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
 import { FavoriteButton } from './FavoriteButton';
 import { AuthorBox } from './AuthorBox';

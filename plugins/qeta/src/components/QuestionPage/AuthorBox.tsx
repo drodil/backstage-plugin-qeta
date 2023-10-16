@@ -3,8 +3,6 @@ import { Link } from '@backstage/core-components';
 import { formatEntityName } from '../../utils/utils';
 import React, { useEffect } from 'react';
 import { useStyles } from '../../utils/hooks';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
 import { AnswerResponse, QuestionResponse } from '../../api';
 import {
   identityApiRef,
@@ -14,6 +12,7 @@ import {
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { UserEntity } from '@backstage/catalog-model';
 import { userRouteRef } from '../../routes';
+import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 
 export const AuthorBox = (props: {
   entity: QuestionResponse | AnswerResponse;
@@ -65,13 +64,13 @@ export const AuthorBox = (props: {
       <Grid container alignItems="center">
         <Grid item xs={12} style={{ paddingBottom: 0 }}>
           <Typography className="qetaAuthorBoxCreated" variant="caption">
-            Posted <RelativeTime value={entity.created} />
+            Posted <RelativeTimeWithTooltip value={entity.created} />
           </Typography>
         </Grid>
         {entity.updated && (
           <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0 }}>
             <Typography className="qetaAuthorBoxUpdated" variant="caption">
-              Updated <RelativeTime value={entity.updated} /> by{' '}
+              Updated <RelativeTimeWithTooltip value={entity.updated} /> by{' '}
               <Link to={`${userRoute()}/${entity.updatedBy}`}>
                 {formatEntityName(entity.updatedBy)}
               </Link>

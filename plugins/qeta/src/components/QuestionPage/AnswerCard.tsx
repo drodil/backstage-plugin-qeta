@@ -6,8 +6,6 @@ import { VoteButtons } from './VoteButtons';
 import { useStyles } from '../../utils/hooks';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
 import { AnswerForm } from './AnswerForm';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
 import { AuthorBox } from './AuthorBox';
 import { CommentSection } from '../CommentSection/CommentSection';
 
