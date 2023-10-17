@@ -1,21 +1,18 @@
-import { loadBackendConfig, useHotMemoize } from '@backstage/backend-common';
+import { getRootLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
 import { DatabaseQetaStore } from './database/DatabaseQetaStore';
-import Knex from 'knex';
-import { getRootLogger } from '@backstage/backend-common';
+
+const logger = getRootLogger();
 
 /**
  * Qeta backend plugin
  *
  * @public
  */
-
-const logger = getRootLogger();
-
 export const qetaPlugin = createBackendPlugin({
   pluginId: 'qeta',
   register(env) {
@@ -24,16 +21,11 @@ export const qetaPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         httpRouter: coreServices.httpRouter,
         identity: coreServices.identity,
+        database: coreServices.database,
       },
-      async init({ config, httpRouter, identity }) {
-        const configs = await loadBackendConfig({ logger, argv: process.argv });
-
-        const getDatabase = useHotMemoize(module, () => {
-          return Knex(configs.get('backend.database'));
-        });
-
-        const database = await DatabaseQetaStore.create({
-          database: { getClient: async () => getDatabase },
+      async init({ config, httpRouter, identity, database }) {
+        const qetaStore = await DatabaseQetaStore.create({
+          database,
         });
 
         httpRouter.use(
@@ -41,7 +33,7 @@ export const qetaPlugin = createBackendPlugin({
             config,
             logger,
             identity,
-            database,
+            database: qetaStore,
           }),
         );
       },

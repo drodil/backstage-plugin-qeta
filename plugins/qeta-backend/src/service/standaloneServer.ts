@@ -17,7 +17,6 @@
 import {
   createServiceBuilder,
   loadBackendConfig,
-  useHotMemoize,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -59,9 +58,7 @@ export async function startStandaloneServer(
 
   const config = await loadBackendConfig({ logger, argv: process.argv });
 
-  const database = useHotMemoize(module, () => {
-    return Knex(config.get('backend.database'));
-  });
+  const database = Knex(config.get('backend.database'));
 
   const db = await DatabaseQetaStore.create({
     database: { getClient: async () => database },

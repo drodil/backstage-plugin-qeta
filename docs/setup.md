@@ -43,6 +43,21 @@ const qetaEnv = useHotMemoize(module, () => createEnv('qeta'));
 apiRouter.use('/qeta', await qeta(qetaEnv));
 ```
 
+## New Backend System
+
+The qeta backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
++ import { qetaPlugin } from '@drodil/backstage-plugin-qeta-backend';
+  const backend = createBackend();
+  // ... other feature additions
++ backend.add(qetaPlugin());
+  backend.start();
+```
+
 ## Frontend
 
 Add the plugin to your frontend app:
