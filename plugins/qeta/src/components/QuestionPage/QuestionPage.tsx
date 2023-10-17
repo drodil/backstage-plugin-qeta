@@ -129,8 +129,8 @@ export const QuestionPage = () => {
           // @ts-ignore
           description={getDescription(question)}
         >
-          <AskQuestionButton />
           <BackToQuestionsButton />
+          <AskQuestionButton />
         </ContentHeader>
         <QuestionCard question={question} />
         <Box sx={{ mt: 3, mb: 2 }}>
