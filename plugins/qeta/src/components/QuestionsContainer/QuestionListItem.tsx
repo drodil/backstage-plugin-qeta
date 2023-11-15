@@ -12,9 +12,9 @@ import DOMPurify from 'dompurify';
 import { removeMarkdownFormatting, truncate } from '../../utils/utils';
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { questionRouteRef } from '../../routes';
+import { questionRouteRef, userRouteRef } from '../../routes';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 
 export interface QuestionListItemProps {
   question: QuestionResponse;
@@ -24,6 +24,8 @@ export interface QuestionListItemProps {
 export const QuestionListItem = (props: QuestionListItemProps) => {
   const { question, entity } = props;
   const questionRoute = useRouteRef(questionRouteRef);
+  const userRoute = useRouteRef(userRouteRef);
+  const { primaryTitle: userName } = useEntityPresentation(question.author);
   const theme = useTheme();
 
   return (
@@ -69,7 +71,7 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
               {question.author === 'anonymous' ? (
                 'Anonymous'
               ) : (
-                <EntityRefLink entityRef={question.author} hideIcon />
+                <Link to={`${userRoute()}/${question.author}`}>{userName}</Link>
               )}{' '}
               <RelativeTimeWithTooltip value={question.created} />
             </Typography>

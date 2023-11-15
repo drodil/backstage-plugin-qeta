@@ -4,8 +4,8 @@ import React from 'react';
 
 import { AskForm } from '../AskForm/AskForm';
 import { useParams } from 'react-router-dom';
-import { formatEntityName } from '../../utils/utils';
 import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 
 export const AskPage = () => {
   const { id } = useParams();
@@ -15,7 +15,9 @@ export const AskPage = () => {
   if (id) {
     title = 'Edit question';
   } else if (entity) {
-    title = `Ask a question about ${formatEntityName(entity)}`;
+    title = `Ask a question about ${(
+      <EntityDisplayName entityRef={entity} hideIcon defaultKind="component" />
+    )}`;
   } else {
     title = 'Ask question';
   }

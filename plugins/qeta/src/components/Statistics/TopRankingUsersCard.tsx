@@ -17,7 +17,7 @@ import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from '../../utils/hooks';
 import { TrophyIcon } from './TrophyIcon';
 import { useStyles } from './styles';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { UserLink } from '../Links/Links';
 
 type RankingIcon = {
   iconsByRanking: Map<number, ReactNode>;
@@ -67,9 +67,9 @@ export const RankingRow = (props: {
   unit: string;
 }) => {
   const classes = useStyles();
+  const userRef = props.userRef;
 
   const ordinalPosition = props?.position ? getOrdinal(props?.position) : '';
-  const userRef = props?.userRef;
 
   const userIcon = props.rankingIcon?.userRankingIcon
     ? props.rankingIcon?.userRankingIcon
@@ -99,7 +99,7 @@ export const RankingRow = (props: {
               style={{ marginRight: '10px', fontWeight: 400 }}
               variant="subtitle1"
             >{`${ordinalPosition}`}</Typography>
-            <EntityRefLink entityRef={userRef ?? ''} hideIcon />
+            <UserLink entityRef={userRef ?? ''} />
           </div>
         }
       />

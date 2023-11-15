@@ -4,9 +4,10 @@ import React, { useEffect } from 'react';
 import { useStyles } from '../../utils/hooks';
 import { AnswerResponse, QuestionResponse } from '../../api';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
-import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { UserEntity } from '@backstage/catalog-model';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
+import { AuthorLink, UpdatedByLink } from '../Links/Links';
 
 export const AuthorBox = (props: {
   entity: QuestionResponse | AnswerResponse;
@@ -64,7 +65,7 @@ export const AuthorBox = (props: {
           <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0 }}>
             <Typography className="qetaAuthorBoxUpdated" variant="caption">
               Updated <RelativeTimeWithTooltip value={entity.updated} /> by{' '}
-              <EntityRefLink entityRef={entity.updatedBy} hideIcon />
+              <UpdatedByLink entity={entity} />
             </Typography>
           </Grid>
         )}
@@ -79,11 +80,7 @@ export const AuthorBox = (props: {
           </Avatar>
         </Grid>
         <Grid item xs={10} className={styles.authorLink}>
-          {name === 'Anonymous' ? (
-            name
-          ) : (
-            <EntityRefLink entityRef={entity.author} hideIcon />
-          )}
+          <AuthorLink entity={entity} />
         </Grid>
       </Grid>
     </Box>

@@ -24,7 +24,7 @@ import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 import { Answer } from '@drodil/backstage-plugin-qeta-common';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { UpdatedByLink } from '../Links/Links';
 
 export const QuestionPage = () => {
   const { id } = useParams();
@@ -54,7 +54,7 @@ export const QuestionPage = () => {
             Updated{' '}
             <Box fontWeight="fontWeightMedium" display="inline" sx={{ mr: 2 }}>
               <RelativeTimeWithTooltip value={q.updated} /> by{' '}
-              <EntityRefLink entityRef={q.author} hideIcon />
+              <UpdatedByLink entity={q} />
             </Box>
           </React.Fragment>
         )}

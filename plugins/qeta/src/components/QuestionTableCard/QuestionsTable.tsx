@@ -1,11 +1,6 @@
 import React from 'react';
 import { useQetaApi } from '../../utils/hooks';
-import {
-  Link,
-  LinkButton,
-  Progress,
-  WarningPanel,
-} from '@backstage/core-components';
+import { LinkButton, Progress, WarningPanel } from '@backstage/core-components';
 import {
   Button,
   ButtonGroup,
@@ -20,10 +15,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { questionRouteRef } from '../../routes';
-import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { QuestionTableRow } from './QuestionTableRow';
 
 type QuickFilterType = 'latest' | 'favorites' | 'most_viewed';
 
@@ -32,7 +24,6 @@ export const QuestionsTable = (props: {
   rowsPerPage?: number;
   quickFilter?: QuickFilterType;
 }) => {
-  const questionRoute = useRouteRef(questionRouteRef);
   const [page, setPage] = React.useState(1);
   const [questionsPerPage, setQuestionsPerPage] = React.useState(
     props.rowsPerPage ?? 10,
@@ -166,32 +157,9 @@ export const QuestionsTable = (props: {
           </TableHead>
           <TableBody>
             {loading ? <Progress /> : null}
-            {response.questions.map(q => {
-              return (
-                <TableRow key={q.id}>
-                  <TableCell>
-                    <Link to={questionRoute({ id: q.id.toString(10) })}>
-                      {q.title}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    {q.author === 'anonymous' ? (
-                      'Anonymous'
-                    ) : (
-                      <EntityRefLink entityRef={q.author} hideIcon />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <RelativeTimeWithTooltip value={q.created} />
-                  </TableCell>
-                  <TableCell>
-                    <RelativeTimeWithTooltip
-                      value={q.updated ? q.updated : q.created}
-                    />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {response.questions.map(q => (
+              <QuestionTableRow question={q} />
+            ))}
           </TableBody>
         </Table>
         <TablePagination

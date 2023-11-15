@@ -14,8 +14,8 @@ import { FilterKey, filterKeys, FilterPanel } from './FilterPanel';
 import { QuestionList } from './QuestionList';
 import FilterList from '@material-ui/icons/FilterList';
 import { useSearchParams } from 'react-router-dom';
-import { formatEntityName } from '../../utils/utils';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 export interface QuestionsContainerProps {
   tags?: string[];
@@ -151,10 +151,13 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   };
 
   let shownTitle = title;
+  let link = undefined;
   if (author) {
-    shownTitle = `Questions by ${formatEntityName(author)}`;
+    shownTitle = `Questions by `;
+    link = <EntityRefLink entityRef={author} hideIcon defaultKind="user" />;
   } else if (entity) {
-    shownTitle = `Questions about ${formatEntityName(entity)}`;
+    shownTitle = `Questions about `;
+    link = <EntityRefLink entityRef={entity} />;
   } else if (tags) {
     shownTitle = `Questions tagged with [${tags.join(', ')}]`;
   } else if (favorite) {
@@ -170,6 +173,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
           style={{ marginBottom: '1.5rem' }}
         >
           {shownTitle}
+          {link}
         </Typography>
       )}
       <Grid container justifyContent="space-between">

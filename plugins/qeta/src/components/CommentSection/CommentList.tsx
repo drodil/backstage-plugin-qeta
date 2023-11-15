@@ -5,7 +5,7 @@ import { Link, MarkdownContent } from '@backstage/core-components';
 import { useStyles } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { AuthorLink } from '../Links/Links';
 
 export const CommentList = (props: {
   onCommentDelete: (
@@ -44,11 +44,7 @@ export const CommentList = (props: {
                 className={`${styles.markdownContent} inline`}
               />
               {' – '}
-              <EntityRefLink
-                entityRef={c.author}
-                hideIcon
-                className="qetaUserBtn"
-              />
+              <AuthorLink entity={c} />
               <Typography variant="caption" className="qetaCommentTime">
                 <RelativeTimeWithTooltip value={c.created} />
               </Typography>
