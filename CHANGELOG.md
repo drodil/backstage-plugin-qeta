@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.3](https://github.com/drodil/backstage-plugin-qeta/compare/v1.16.2...v1.16.3) (2023-11-15)
+
+
+### Bug Fixes
+
+* add missing lodash types ([f98470d](https://github.com/drodil/backstage-plugin-qeta/commit/f98470db9837669ea40766c5613eaf53832b1f90))
+* same button order for question page ([d8007df](https://github.com/drodil/backstage-plugin-qeta/commit/d8007dfc47552c95e7d2e7b0c09de9e4875281f3))
+* set anonymous to false for old questions ([c91a90d](https://github.com/drodil/backstage-plugin-qeta/commit/c91a90d8df1e2bc28cda07956d2f451239445548))
+* yarn lock ([bb5c4d1](https://github.com/drodil/backstage-plugin-qeta/commit/bb5c4d125c658ef6e485ee798eec7fc67fb29984))
+
 ### [1.16.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.16.1...v1.16.2) (2023-10-16)
 
 ### [1.16.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.16.0...v1.16.1) (2023-10-16)
