@@ -21,8 +21,9 @@ import {
 } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { questionRouteRef, userRouteRef } from '../../routes';
+import { questionRouteRef } from '../../routes';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 type QuickFilterType = 'latest' | 'favorites' | 'most_viewed';
 
@@ -32,7 +33,6 @@ export const QuestionsTable = (props: {
   quickFilter?: QuickFilterType;
 }) => {
   const questionRoute = useRouteRef(questionRouteRef);
-  const userRoute = useRouteRef(userRouteRef);
   const [page, setPage] = React.useState(1);
   const [questionsPerPage, setQuestionsPerPage] = React.useState(
     props.rowsPerPage ?? 10,
@@ -178,7 +178,7 @@ export const QuestionsTable = (props: {
                     {q.author === 'anonymous' ? (
                       'Anonymous'
                     ) : (
-                      <Link to={`${userRoute()}/${q.author}`}>{q.author}</Link>
+                      <EntityRefLink entityRef={q.author} hideIcon />
                     )}
                   </TableCell>
                   <TableCell>
