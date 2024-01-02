@@ -39,16 +39,16 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.19.9",
-    "@backstage/backend-plugin-api": "^0.6.7",
+    "@backstage/backend-common": "^0.20.0",
+    "@backstage/backend-plugin-api": "^0.6.8",
     "@backstage/catalog-model": "^1.4.3",
     "@backstage/config": "^1.1.1",
     "@backstage/errors": "^1.2.3",
-    "@backstage/plugin-auth-node": "^0.4.1",
-    "@backstage/plugin-events-node": "^0.2.16",
-    "@backstage/plugin-permission-common": "^0.7.10",
-    "@backstage/plugin-permission-node": "^0.7.18",
-    "@backstage/plugin-search-common": "^1.2.8",
+    "@backstage/plugin-auth-node": "^0.4.2",
+    "@backstage/plugin-events-node": "^0.2.17",
+    "@backstage/plugin-permission-common": "^0.7.11",
+    "@backstage/plugin-permission-node": "^0.7.19",
+    "@backstage/plugin-search-common": "^1.2.9",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",
     "@types/express": "*",
     "@types/multiparty": "^0.0.33",
@@ -66,8 +66,8 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.2.8",
-    "@backstage/cli": "^0.24.0",
+    "@backstage/backend-test-utils": "^0.2.9",
+    "@backstage/cli": "^0.25.0",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^9.0.4",
     "supertest": "^6.2.4"
