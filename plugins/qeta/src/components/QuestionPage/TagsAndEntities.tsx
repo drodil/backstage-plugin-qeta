@@ -1,21 +1,16 @@
 import { QuestionResponse } from '../../api';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
-import {
-  Entity,
-  getCompoundEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { compact } from 'lodash';
-import { Chip, Tooltip } from '@material-ui/core';
-import { getEntityTitle } from '../../utils/utils';
+import { Chip } from '@material-ui/core';
 import { tagRouteRef } from '../../routes';
+import { EntityChip } from './EntityChip';
 
 export const TagsAndEntities = (props: { question: QuestionResponse }) => {
   const { question } = props;
   const catalogApi = useApi(catalogApiRef);
-  const entityRoute = useRouteRef(entityRouteRef);
   const tagRoute = useRouteRef(tagRouteRef);
   const [entities, setEntities] = React.useState<Entity[]>([]);
   useEffect(() => {
@@ -53,24 +48,7 @@ export const TagsAndEntities = (props: { question: QuestionResponse }) => {
         ))}
       {entities &&
         entities.map((component, i) => (
-          <Tooltip
-            key={i}
-            title={
-              component.metadata.description?.slice(0, 50) ??
-              stringifyEntityRef(component)
-            }
-            arrow
-          >
-            <Chip
-              label={getEntityTitle(component)}
-              size="small"
-              variant="outlined"
-              className="qetaEntityChip"
-              component="a"
-              href={entityRoute(getCompoundEntityRef(component))}
-              clickable
-            />
-          </Tooltip>
+          <EntityChip entity={component} key={i} />
         ))}
     </>
   );

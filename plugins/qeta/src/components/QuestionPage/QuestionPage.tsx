@@ -11,7 +11,6 @@ import {
 import {
   Content,
   ContentHeader,
-  Link,
   WarningPanel,
 } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
@@ -23,16 +22,13 @@ import { AnswerCard } from './AnswerCard';
 import { Skeleton } from '@material-ui/lab';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
-import { formatEntityName } from '../../utils/utils';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { userRouteRef } from '../../routes';
 import { Answer } from '@drodil/backstage-plugin-qeta-common';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
+import { UpdatedByLink } from '../Links/Links';
 
 export const QuestionPage = () => {
   const { id } = useParams();
   const styles = useStyles();
-  const userRoute = useRouteRef(userRouteRef);
   const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
   const [answerSort, setAnswerSort] = React.useState<string>('default');
 
@@ -58,9 +54,7 @@ export const QuestionPage = () => {
             Updated{' '}
             <Box fontWeight="fontWeightMedium" display="inline" sx={{ mr: 2 }}>
               <RelativeTimeWithTooltip value={q.updated} /> by{' '}
-              <Link to={`${userRoute()}/${q.author}`}>
-                {formatEntityName(q.updatedBy)}
-              </Link>
+              <UpdatedByLink entity={q} />
             </Box>
           </React.Fragment>
         )}

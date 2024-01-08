@@ -1,25 +1,19 @@
 import { Avatar, Box, Grid, Typography } from '@material-ui/core';
-import { Link } from '@backstage/core-components';
 import { formatEntityName } from '../../utils/utils';
 import React, { useEffect } from 'react';
 import { useStyles } from '../../utils/hooks';
 import { AnswerResponse, QuestionResponse } from '../../api';
-import {
-  identityApiRef,
-  useApi,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { UserEntity } from '@backstage/catalog-model';
-import { userRouteRef } from '../../routes';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
+import { AuthorLink, UpdatedByLink } from '../Links/Links';
 
 export const AuthorBox = (props: {
   entity: QuestionResponse | AnswerResponse;
 }) => {
   const { entity } = props;
   const catalogApi = useApi(catalogApiRef);
-  const userRoute = useRouteRef(userRouteRef);
   const identityApi = useApi(identityApiRef);
   const [user, setUser] = React.useState<UserEntity | null>(null);
   const [currentUser, setCurrentUser] = React.useState<string | null>(null);
@@ -67,13 +61,11 @@ export const AuthorBox = (props: {
             Posted <RelativeTimeWithTooltip value={entity.created} />
           </Typography>
         </Grid>
-        {entity.updated && (
+        {entity.updated && entity.updatedBy && (
           <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0 }}>
             <Typography className="qetaAuthorBoxUpdated" variant="caption">
               Updated <RelativeTimeWithTooltip value={entity.updated} /> by{' '}
-              <Link to={`${userRoute()}/${entity.updatedBy}`}>
-                {formatEntityName(entity.updatedBy)}
-              </Link>
+              <UpdatedByLink entity={entity} />
             </Typography>
           </Grid>
         )}
@@ -88,16 +80,7 @@ export const AuthorBox = (props: {
           </Avatar>
         </Grid>
         <Grid item xs={10} className={styles.authorLink}>
-          {name === 'Anonymous' ? (
-            name
-          ) : (
-            <Link
-              className="qetaUserBtn"
-              to={`${userRoute()}/${entity.author}`}
-            >
-              {name}
-            </Link>
-          )}
+          <AuthorLink entity={entity} />
         </Grid>
       </Grid>
     </Box>

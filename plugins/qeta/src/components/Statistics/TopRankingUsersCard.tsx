@@ -1,7 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react';
 import {
   CardTab,
-  Link,
   Progress,
   TabbedCard,
   WarningPanel,
@@ -18,8 +17,7 @@ import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from '../../utils/hooks';
 import { TrophyIcon } from './TrophyIcon';
 import { useStyles } from './styles';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { userRouteRef } from '../../routes';
+import { UserLink } from '../Links/Links';
 
 type RankingIcon = {
   iconsByRanking: Map<number, ReactNode>;
@@ -69,11 +67,9 @@ export const RankingRow = (props: {
   unit: string;
 }) => {
   const classes = useStyles();
+  const userRef = props.userRef;
 
   const ordinalPosition = props?.position ? getOrdinal(props?.position) : '';
-  const name = props?.userRef?.split('/')[1];
-  const userRef = props?.userRef;
-  const userRoute = useRouteRef(userRouteRef);
 
   const userIcon = props.rankingIcon?.userRankingIcon
     ? props.rankingIcon?.userRankingIcon
@@ -103,10 +99,7 @@ export const RankingRow = (props: {
               style={{ marginRight: '10px', fontWeight: 400 }}
               variant="subtitle1"
             >{`${ordinalPosition}`}</Typography>
-            <Link
-              to={`${userRoute()}/${userRef}`}
-              variant="subtitle1"
-            >{`${name}`}</Link>
+            <UserLink entityRef={userRef ?? ''} />
           </div>
         }
       />

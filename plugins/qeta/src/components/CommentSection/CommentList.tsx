@@ -2,11 +2,10 @@ import { AnswerResponse, qetaApiRef, QuestionResponse } from '../../api';
 import { Box, Divider, Typography } from '@material-ui/core';
 import React from 'react';
 import { Link, MarkdownContent } from '@backstage/core-components';
-import { formatEntityName } from '../../utils/utils';
 import { useStyles } from '../../utils/hooks';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { userRouteRef } from '../../routes';
+import { useApi } from '@backstage/core-plugin-api';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
+import { AuthorLink } from '../Links/Links';
 
 export const CommentList = (props: {
   onCommentDelete: (
@@ -20,7 +19,6 @@ export const CommentList = (props: {
   const entity = answer ?? question;
   const styles = useStyles();
   const qetaApi = useApi(qetaApiRef);
-  const userRoute = useRouteRef(userRouteRef);
 
   const deleteComment = (id: number) => {
     if (answer) {
@@ -37,7 +35,6 @@ export const CommentList = (props: {
   return (
     <>
       {entity.comments?.map(c => {
-        const name = formatEntityName(c.author);
         return (
           <>
             <Box key={c.id} className="qetaCommentBox">
@@ -47,9 +44,7 @@ export const CommentList = (props: {
                 className={`${styles.markdownContent} inline`}
               />
               {' – '}
-              <Link to={`${userRoute()}/${c.author}`} className="qetaUserBtn">
-                {name}
-              </Link>{' '}
+              <AuthorLink entity={c} />
               <Typography variant="caption" className="qetaCommentTime">
                 <RelativeTimeWithTooltip value={c.created} />
               </Typography>
