@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.17.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.16.5...v1.17.0) (2024-01-08)
+
+
+### Features
+
+* allow copying link to questions and answers ([93b21f2](https://github.com/drodil/backstage-plugin-qeta/commit/93b21f2929d08320ba99737de02eeb51ce8e89ce)), closes [#104](https://github.com/drodil/backstage-plugin-qeta/issues/104)
+
+
+### Bug Fixes
+
+* handle search string ending with colon ([5e0248f](https://github.com/drodil/backstage-plugin-qeta/commit/5e0248fed6883269adc9c1e5d63fd222b48fedfc)), closes [#110](https://github.com/drodil/backstage-plugin-qeta/issues/110)
+
 ### [1.16.5](https://github.com/drodil/backstage-plugin-qeta/compare/v1.16.4...v1.16.5) (2024-01-08)
 
 ### [1.16.4](https://github.com/drodil/backstage-plugin-qeta/compare/v1.16.3...v1.16.4) (2023-11-15)
