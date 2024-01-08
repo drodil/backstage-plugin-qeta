@@ -74,6 +74,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   };
 
   const onSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onPageChange(1);
     setSearchQuery(event.target.value);
   };
 
