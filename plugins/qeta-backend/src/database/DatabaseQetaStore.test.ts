@@ -180,6 +180,17 @@ describe.each(databases.eachSupportedId())(
         expect(noQuestions?.questions.length).toEqual(0);
       });
 
+      it('should fetch list of questions with special characters in searchQuery', async () => {
+        await insertQuestion({
+          ...question,
+          content: 'Cannot read config file:',
+        });
+        const ret = await storage.getQuestions('user1', {
+          searchQuery: 'Cannot read config file:',
+        });
+        expect(ret?.questions.length).toEqual(1);
+      });
+
       it('should fetch questions with specific component', async () => {
         const q1 = await storage.postQuestion(
           'user1',

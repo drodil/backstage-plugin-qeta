@@ -119,8 +119,8 @@ export class DatabaseQetaStore implements QetaStore {
     if (options.searchQuery) {
       if (this.db.client.config.client === 'pg') {
         query.whereRaw(
-          `(to_tsvector('english', questions.title || ' ' || questions.content) @@ websearch_to_tsquery('english', ?)
-          or to_tsvector('english', questions.title || ' ' || questions.content) @@ to_tsquery('english',?))`,
+          `(to_tsvector('english', questions.title || ' ' || questions.content) @@ websearch_to_tsquery('english', quote_literal(?))
+          or to_tsvector('english', questions.title || ' ' || questions.content) @@ to_tsquery('english',quote_literal(?)))`,
           [
             `${options.searchQuery}`,
             `${options.searchQuery.replaceAll(/\s/g, '+')}:*`,
