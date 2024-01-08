@@ -1,7 +1,7 @@
 import { AnswerResponse, QuestionResponse } from '../../api';
 import { Box, Card, CardContent, Grid, Typography } from '@material-ui/core';
 import { Link, MarkdownContent } from '@backstage/core-components';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { VoteButtons } from './VoteButtons';
 import { useStyles } from '../../utils/hooks';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
@@ -11,6 +11,7 @@ import { TagsAndEntities } from './TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { editQuestionRouteRef } from '../../routes';
+import { LinkButton } from './LinkButton';
 
 export const QuestionCard = (props: { question: QuestionResponse }) => {
   const { question } = props;
@@ -24,6 +25,16 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
     setQuestionEntity(q);
   };
 
+  const highlightedAnswer = window.location.hash.slice(1) ?? undefined;
+  useEffect(() => {
+    if (highlightedAnswer) {
+      const element = document.querySelector(`#${highlightedAnswer}`);
+      if (element) {
+        element.scrollIntoView();
+      }
+    }
+  }, [highlightedAnswer]);
+
   return (
     <>
       <Card
@@ -34,6 +45,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
           <div className={styles.questionCardVote}>
             <VoteButtons entity={questionEntity} />
             <FavoriteButton entity={questionEntity} />
+            <LinkButton entity={questionEntity} />
           </div>
           <div className={styles.questionCardContent}>
             <Typography variant="body1" gutterBottom>

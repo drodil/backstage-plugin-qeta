@@ -8,6 +8,7 @@ import { DeleteModal } from '../DeleteModal/DeleteModal';
 import { AnswerForm } from './AnswerForm';
 import { AuthorBox } from './AuthorBox';
 import { CommentSection } from '../CommentSection/CommentSection';
+import { LinkButton } from './LinkButton';
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;
@@ -22,6 +23,8 @@ export const AnswerCard = (props: {
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
+  const highlightedAnswer =
+    window.location.hash.slice(1) === `answer_${answer.id}`;
 
   const onAnswerEdit = (a: AnswerResponse) => {
     setEditMode(false);
@@ -37,12 +40,15 @@ export const AnswerCard = (props: {
   return (
     <>
       <Card
-        id={`a${answer.id}`}
-        className={`qetaAnswerCard ${styles.questionCard}`}
+        id={`answer_${answer.id}`}
+        className={`qetaAnswerCard ${styles.questionCard} ${
+          highlightedAnswer ? styles.highlight : ''
+        }`}
       >
         <CardContent>
           <div className={styles.questionCardVote}>
             <VoteButtons entity={answerEntity} question={question} />
+            <LinkButton entity={answerEntity} />
           </div>
           <div className={styles.questionCardContent}>
             {editMode ? (

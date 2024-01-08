@@ -194,6 +194,17 @@ export const useStyles = makeStyles(theme => {
       overflow: 'hidden',
       whiteSpace: 'nowrap',
     },
+    highlight: {
+      animation: '$highlight 2s',
+    },
+    '@keyframes highlight': {
+      '0%': {
+        boxShadow: `0px 0px 0px 3px ${theme.palette.secondary.light}`,
+      },
+      '100%': {
+        boxShadow: 'none',
+      },
+    },
   };
 });
 

@@ -56,7 +56,7 @@ export class QetaCollatorFactory implements DocumentCollatorFactory {
         yield {
           title: `Answer for ${question.title}`,
           text: answer.content,
-          location: `/qeta/questions/${question.id}`,
+          location: `/qeta/questions/${question.id}#answer_${answer.id}`,
           docType: 'qeta',
           author: answer.author,
           score: answer.score,

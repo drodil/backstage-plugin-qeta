@@ -166,12 +166,12 @@ export const QuestionPage = () => {
         </Box>
         {allQuestions.sort(sortAnswers).map(a => {
           return (
-            <>
+            <React.Fragment key={a.id}>
               <Divider className={styles.questionDivider} />
               <Box key={a.id} sx={{ mb: 1 }}>
                 <AnswerCard answer={a} question={question} />
               </Box>
-            </>
+            </React.Fragment>
           );
         })}
         <Divider className={styles.questionDivider} />
