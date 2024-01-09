@@ -1,7 +1,6 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import bodyParser from 'body-parser';
-import { Logger } from 'winston';
 import { errorHandler } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -16,11 +15,12 @@ import { tagsRoutes } from './routes/tags';
 import { attachmentsRoutes } from './routes/attachments';
 import { answersRoutes } from './routes/answers';
 import { EventBroker } from '@backstage/plugin-events-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface RouterOptions {
   identity: IdentityApi;
   database: QetaStore;
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   permissions?: PermissionEvaluator;
   eventBroker?: EventBroker;

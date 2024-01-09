@@ -1,19 +1,19 @@
-import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { Readable } from 'stream';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { DatabaseQetaStore } from '../../database';
 import { QetaDocument } from '@drodil/backstage-plugin-qeta-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export type QetaCollatorFactoryOptions = {
-  logger: Logger;
+  logger: LoggerService;
   database: PluginDatabaseManager;
 };
 
 export class QetaCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'qeta';
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly database: PluginDatabaseManager;
 
   private constructor(_config: Config, options: QetaCollatorFactoryOptions) {

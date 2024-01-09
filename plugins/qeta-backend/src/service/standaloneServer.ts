@@ -19,17 +19,17 @@ import {
   loadBackendConfig,
 } from '@backstage/backend-common';
 import { Server } from 'http';
-import { Logger } from 'winston';
 import { createRouter } from './router';
 import { DatabaseQetaStore } from '../database';
 import Knex from 'knex';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { createCatalogMockRouter } from './CatalogMockRouter';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 const getRandomMarvelCharacter = () => {

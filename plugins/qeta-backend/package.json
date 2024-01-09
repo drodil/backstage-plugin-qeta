@@ -62,15 +62,11 @@
     "knex": "^3.0.0",
     "multiparty": "^4.2.3",
     "uuid": "^9.0.1",
-    "winston": "^3.10.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.2.9",
     "@backstage/cli": "^0.25.0",
-    "@types/supertest": "^2.0.12",
-    "@types/uuid": "^9.0.4",
-    "supertest": "^6.2.4"
+    "@types/uuid": "^9.0.4"
   },
   "files": [
     "dist",
