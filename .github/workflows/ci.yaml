@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [16.x, 18.x]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -25,19 +25,20 @@ jobs:
           cache: 'yarn'
       - run: yarn install --immutable
       - run: yarn lint:all
+      - run: yarn prettier:check
       - run: yarn tsc
       - run: yarn build
 
   tests:
     name: Tests
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [16.x]
-
+        node-version: [16.x, 18.x]
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
