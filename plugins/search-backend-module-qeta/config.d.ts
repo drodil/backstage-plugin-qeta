@@ -4,7 +4,7 @@ export interface Config {
   search?: {
     collators?: {
       /**
-       * Configuration options for `@backstage/plugin-search-backend-module-explore`
+       * Configuration options for `@drodil/backstage-plugin-search-backend-module-qeta`
        */
       qeta?: {
         /**
