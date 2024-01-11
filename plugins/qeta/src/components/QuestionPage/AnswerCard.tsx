@@ -2,8 +2,15 @@ import {
   AnswerResponse,
   QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Box, Card, CardContent, Grid, Typography } from '@material-ui/core';
-import { Link, MarkdownContent } from '@backstage/core-components';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+} from '@material-ui/core';
+import { MarkdownContent } from '@backstage/core-components';
 import React from 'react';
 import { VoteButtons } from './VoteButtons';
 import { useStyles } from '../../utils/hooks';
@@ -12,6 +19,8 @@ import { AnswerForm } from './AnswerForm';
 import { AuthorBox } from './AuthorBox';
 import { CommentSection } from '../CommentSection/CommentSection';
 import { LinkButton } from './LinkButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;
@@ -53,7 +62,7 @@ export const AnswerCard = (props: {
             <VoteButtons entity={answerEntity} question={question} />
             <LinkButton entity={answerEntity} />
           </div>
-          <div className={styles.questionCardContent}>
+          <div className={styles.answerCardContent}>
             {editMode ? (
               <AnswerForm
                 question={question}
@@ -61,16 +70,18 @@ export const AnswerCard = (props: {
                 id={answerEntity.id}
               />
             ) : (
-              <>
-                <Typography variant="body1" gutterBottom>
-                  <MarkdownContent
-                    className={`qetaAndwerCardAnswerContent ${styles.markdownContent}`}
-                    content={answerEntity.content}
-                    dialect="gfm"
-                  />
-                </Typography>
-                <Grid container justifyContent="space-around">
-                  <Grid item xs={9}>
+              <Grid container>
+                <Grid item xs={12}>
+                  <Typography variant="body1" gutterBottom>
+                    <MarkdownContent
+                      className={`qetaAndwerCardAnswerContent ${styles.markdownContent}`}
+                      content={answerEntity.content}
+                      dialect="gfm"
+                    />
+                  </Typography>
+                </Grid>
+                <Grid item container justifyContent="space-around">
+                  <Grid item xs={9} style={{ alignSelf: 'flex-end' }}>
                     {(answerEntity.own ||
                       answerEntity.canDelete ||
                       answerEntity.canEdit) && (
@@ -80,14 +91,16 @@ export const AnswerCard = (props: {
                         {!answerEntity.correct &&
                           (answerEntity.own || answerEntity.canDelete) && (
                             <>
-                              <Link
-                                underline="none"
-                                to="#"
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                color="secondary"
                                 onClick={handleDeleteModalOpen}
-                                className="qetaAnswerCardDeleteBtn"
+                                className={`${styles.marginRight} qetaAnswerCardDeleteBtn`}
+                                startIcon={<DeleteIcon />}
                               >
                                 Delete
-                              </Link>
+                              </Button>
                               <DeleteModal
                                 open={deleteModalOpen}
                                 onClose={handleDeleteModalClose}
@@ -97,23 +110,24 @@ export const AnswerCard = (props: {
                             </>
                           )}
                         {(answerEntity.own || answerEntity.canEdit) && (
-                          <Link
-                            underline="none"
-                            to="#"
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            startIcon={<EditIcon />}
                             onClick={() => setEditMode(true)}
                             className="qetaAnswerCardEditBtn"
                           >
                             Edit
-                          </Link>
+                          </Button>
                         )}
                       </Box>
                     )}
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={3} className={styles.noPadding}>
                     <AuthorBox entity={answerEntity} />
                   </Grid>
                 </Grid>
-              </>
+              </Grid>
             )}
           </div>
         </CardContent>

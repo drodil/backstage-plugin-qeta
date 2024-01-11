@@ -2,12 +2,21 @@ import {
   AnswerResponse,
   QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Box, Card, CardContent, Grid, Typography } from '@material-ui/core';
-import { Link, MarkdownContent } from '@backstage/core-components';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+} from '@material-ui/core';
+import { MarkdownContent } from '@backstage/core-components';
 import React, { useEffect } from 'react';
 import { VoteButtons } from './VoteButtons';
 import { useStyles } from '../../utils/hooks';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import { FavoriteButton } from './FavoriteButton';
 import { AuthorBox } from './AuthorBox';
 import { TagsAndEntities } from './TagsAndEntities';
@@ -58,52 +67,55 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
                 className={styles.markdownContent}
               />
             </Typography>
-            <Box className={styles.questionCardMetadata}>
-              <Grid container spacing={0}>
-                <Grid item>
-                  <TagsAndEntities question={questionEntity} />
-                </Grid>
-              </Grid>
-              <Grid container justifyContent="space-around">
-                <Grid item xs={9}>
-                  {(question.own || question.canEdit || question.canDelete) && (
-                    <Box className={styles.questionCardActions}>
-                      {(question.own || question.canDelete) && (
-                        <>
-                          <Link
-                            underline="none"
-                            to="#"
-                            onClick={handleDeleteModalOpen}
-                            className="qetaQuestionCardDeleteBtn"
-                          >
-                            Delete
-                          </Link>
-                          <DeleteModal
-                            open={deleteModalOpen}
-                            onClose={handleDeleteModalClose}
-                            entity={questionEntity}
-                          />
-                        </>
-                      )}
-                      {(question.own || question.canEdit) && (
-                        <Link
-                          underline="none"
-                          to={editQuestionRoute({
-                            id: question.id.toString(10),
-                          })}
-                          className="qetaQuestionCardEditBtn"
+            <Grid
+              container
+              item
+              justifyContent="space-around"
+              className={styles.questionCardMetadata}
+            >
+              <Grid item xs={9} style={{ alignSelf: 'flex-end' }}>
+                <TagsAndEntities question={questionEntity} />
+                {(question.own || question.canEdit || question.canDelete) && (
+                  <Box className={styles.questionCardActions}>
+                    {(question.own || question.canDelete) && (
+                      <>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          color="secondary"
+                          onClick={handleDeleteModalOpen}
+                          className={`${styles.marginRight} qetaQuestionCardDeleteBtn`}
+                          startIcon={<DeleteIcon />}
                         >
-                          Edit
-                        </Link>
-                      )}
-                    </Box>
-                  )}
-                </Grid>
-                <Grid item xs={3}>
-                  <AuthorBox entity={questionEntity} />
-                </Grid>
+                          Delete
+                        </Button>
+                        <DeleteModal
+                          open={deleteModalOpen}
+                          onClose={handleDeleteModalClose}
+                          entity={questionEntity}
+                        />
+                      </>
+                    )}
+                    {(question.own || question.canEdit) && (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<EditIcon />}
+                        href={editQuestionRoute({
+                          id: question.id.toString(10),
+                        })}
+                        className="qetaQuestionCardEditBtn"
+                      >
+                        Edit
+                      </Button>
+                    )}
+                  </Box>
+                )}
               </Grid>
-            </Box>
+              <Grid item xs={3} className={styles.noPadding}>
+                <AuthorBox entity={questionEntity} />
+              </Grid>
+            </Grid>
           </div>
         </CardContent>
       </Card>

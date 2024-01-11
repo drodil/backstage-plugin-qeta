@@ -83,7 +83,9 @@ export const AuthorBox = (props: {
           </Avatar>
         </Grid>
         <Grid item xs={10} className={styles.authorLink}>
-          <AuthorLink entity={entity} />
+          <Box style={{ paddingLeft: '5px' }}>
+            <AuthorLink entity={entity} />
+          </Box>
         </Grid>
       </Grid>
     </Box>

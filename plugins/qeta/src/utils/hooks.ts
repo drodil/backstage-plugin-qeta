@@ -109,6 +109,7 @@ export const useStyles = makeStyles(theme => {
     },
     questionCard: {
       marginBottom: theme.spacing(1),
+      position: 'relative',
     },
     questionCardVote: {
       textAlign: 'center',
@@ -118,6 +119,11 @@ export const useStyles = makeStyles(theme => {
       verticalAlign: 'top',
     },
     questionCardContent: {
+      display: 'inline-block',
+      width: 'calc(100% - 70px)',
+      minHeight: '160px',
+    },
+    answerCardContent: {
       display: 'inline-block',
       width: 'calc(100% - 70px)',
     },
@@ -159,7 +165,6 @@ export const useStyles = makeStyles(theme => {
       padding: theme.spacing(3),
     },
     questionCardMetadata: {
-      width: '100%',
       marginTop: theme.spacing(3),
     },
     marginRight: {
@@ -170,6 +175,9 @@ export const useStyles = makeStyles(theme => {
       '& a': {
         marginRight: theme.spacing(1),
       },
+    },
+    noPadding: {
+      padding: `0 !important`,
     },
     menuIcon: {
       minWidth: '26px',

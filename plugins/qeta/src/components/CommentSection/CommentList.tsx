@@ -48,7 +48,7 @@ export const CommentList = (props: {
                 className={`${styles.markdownContent} inline`}
               />
               {' – '}
-              <AuthorLink entity={c} />
+              <AuthorLink entity={c} />{' '}
               <Typography variant="caption" className="qetaCommentTime">
                 <RelativeTimeWithTooltip value={c.created} />
               </Typography>
