@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.18.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.1...v1.18.2) (2024-01-11)
+
+
+### Bug Fixes
+
+* reference to explore plugin in config ([1c6e1a7](https://github.com/drodil/backstage-plugin-qeta/commit/1c6e1a781901acbd7f76325d863b9f47e8492366))
+* standard version to bump search module ([05634ef](https://github.com/drodil/backstage-plugin-qeta/commit/05634efbb2a36fd488ddb646be4600f1285c6c27))
+
 ### [1.18.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.0...v1.18.1) (2024-01-11)
 
 
