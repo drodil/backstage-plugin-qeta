@@ -1,5 +1,5 @@
 {
-  "name": "@drodil/plugin-search-backend-module-qeta",
+  "name": "@drodil/backstage-plugin-search-backend-module-qeta",
   "description": "The qeta backend module for the search plugin.",
   "keywords": [
     "backstage",

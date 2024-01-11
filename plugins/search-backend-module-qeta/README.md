@@ -9,7 +9,7 @@ Add the module package as a dependency:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @drodil/plugin-search-backend-module-qeta
+yarn add --cwd packages/backend @drodil/backstage-plugin-search-backend-module-qeta
 ```
 
 Add the collator to your backend instance, along with the search plugin itself:

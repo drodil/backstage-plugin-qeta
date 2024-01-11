@@ -3732,9 +3732,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@drodil/plugin-search-backend-module-qeta@workspace:plugins/search-backend-module-qeta":
+"@drodil/backstage-plugin-search-backend-module-qeta@workspace:plugins/search-backend-module-qeta":
   version: 0.0.0-use.local
-  resolution: "@drodil/plugin-search-backend-module-qeta@workspace:plugins/search-backend-module-qeta"
+  resolution: "@drodil/backstage-plugin-search-backend-module-qeta@workspace:plugins/search-backend-module-qeta"
   dependencies:
     "@backstage/backend-common": ^0.20.0
     "@backstage/backend-plugin-api": ^0.6.8
