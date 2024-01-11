@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.18.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.17.0...v1.18.0) (2024-01-11)
+
+
+### Features
+
+* introduce new search backend module for q&a ([1dc0809](https://github.com/drodil/backstage-plugin-qeta/commit/1dc0809a7c59cf822975f157ca14ba65986b8969)), closes [#106](https://github.com/drodil/backstage-plugin-qeta/issues/106)
+
+
+### Bug Fixes
+
+* force correct answer color ([1f48626](https://github.com/drodil/backstage-plugin-qeta/commit/1f48626aae70924db18f7f85a7ac6b0956eb77fc))
+
 ## [1.17.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.16.5...v1.17.0) (2024-01-08)
 
 
