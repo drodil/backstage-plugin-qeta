@@ -159,7 +159,9 @@ export const VoteButtons = (props: {
                         : 'qetaCorrectAnswer'
                     }
                     style={{
-                      color: correct ? theme.palette.success.main : undefined,
+                      color: correct
+                        ? `${theme.palette.success.main} !important`
+                        : undefined,
                     }}
                   />
                 </IconButton>
