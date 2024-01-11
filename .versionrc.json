@@ -2,7 +2,8 @@
   "packageFiles": [
     "plugins/qeta/package.json",
     "plugins/qeta-backend/package.json",
-    "plugins/qeta-common/package.json"
+    "plugins/qeta-common/package.json",
+    "plugins/search-backend-module-qeta/package.json"
   ],
   "bumpFiles": [
     {
@@ -15,6 +16,10 @@
     },
     {
       "filename": "plugins/qeta-common/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "plugins/search-backend-module-qeta/package.json",
       "type": "json"
     }
   ]
