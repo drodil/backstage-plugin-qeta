@@ -1,0 +1,1 @@
+export { DefaultQetaCollatorFactory } from './DefaultQetaCollatorFactory';

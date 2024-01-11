@@ -1,4 +1,7 @@
-import { AnswerResponse, qetaApiRef, QuestionResponse } from '../../api';
+import {
+  AnswerResponse,
+  QuestionResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 import { Backdrop, Box, Button, Modal, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Delete from '@material-ui/icons/Delete';
@@ -6,6 +9,7 @@ import React from 'react';
 import { useBasePath, useStyles } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
+import { qetaApiRef } from '../../api';
 
 export const DeleteModal = (props: {
   entity: QuestionResponse | AnswerResponse;

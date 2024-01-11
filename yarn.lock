@@ -3304,6 +3304,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/plugin-search-backend-node@npm:^1.2.12":
+  version: 1.2.12
+  resolution: "@backstage/plugin-search-backend-node@npm:1.2.12"
+  dependencies:
+    "@backstage/backend-common": ^0.20.0
+    "@backstage/backend-plugin-api": ^0.6.8
+    "@backstage/backend-tasks": ^0.5.13
+    "@backstage/config": ^1.1.1
+    "@backstage/errors": ^1.2.3
+    "@backstage/plugin-permission-common": ^0.7.11
+    "@backstage/plugin-search-common": ^1.2.9
+    "@types/lunr": ^2.3.3
+    lodash: ^4.17.21
+    lunr: ^2.3.9
+    ndjson: ^2.0.0
+    uuid: ^8.3.2
+    winston: ^3.2.1
+  checksum: d3951c98c565f7558d84485a937a80ef8a6a64cb211f16227a99a358a0010e47a986811902505a08c1ab4916bc08b63f8e54a42015b03859b5aa5347cb8a5e97
+  languageName: node
+  linkType: hard
+
 "@backstage/plugin-search-common@npm:^1.2.9":
   version: 1.2.9
   resolution: "@backstage/plugin-search-common@npm:1.2.9"
@@ -3665,6 +3686,7 @@ __metadata:
     "@backstage/cli": ^0.25.0
     "@backstage/plugin-permission-common": ^0.7.11
     "@backstage/plugin-search-common": ^1.2.9
+    ajv: ^8.12.0
   peerDependencies:
     "@backstage/catalog-model": ^1.4.3
   languageName: unknown
@@ -3706,6 +3728,27 @@ __metadata:
     "@backstage/catalog-client": ^1.5.1
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@drodil/plugin-search-backend-module-qeta@workspace:plugins/search-backend-module-qeta":
+  version: 0.0.0-use.local
+  resolution: "@drodil/plugin-search-backend-module-qeta@workspace:plugins/search-backend-module-qeta"
+  dependencies:
+    "@backstage/backend-common": ^0.20.0
+    "@backstage/backend-plugin-api": ^0.6.8
+    "@backstage/backend-tasks": ^0.5.13
+    "@backstage/backend-test-utils": ^0.2.9
+    "@backstage/cli": ^0.25.0
+    "@backstage/config": ^1.1.1
+    "@backstage/core-plugin-api": ^1.8.1
+    "@backstage/errors": ^1.2.3
+    "@backstage/plugin-search-backend-node": ^1.2.12
+    "@backstage/plugin-search-common": ^1.2.9
+    "@drodil/backstage-plugin-qeta-common": "workspace:^"
+    msw: ^1.2.1
+  peerDependencies:
     react-router-dom: ^6.3.0
   languageName: unknown
   linkType: soft
@@ -7543,6 +7586,13 @@ __metadata:
   version: 5.1.1
   resolution: "@types/lru-cache@npm:5.1.1"
   checksum: e1d6c0085f61b16ec5b3073ec76ad1be4844ea036561c3f145fc19f71f084b58a6eb600b14128aa95809d057d28f1d147c910186ae51219f58366ffd2ff2e118
+  languageName: node
+  linkType: hard
+
+"@types/lunr@npm:^2.3.3":
+  version: 2.3.7
+  resolution: "@types/lunr@npm:2.3.7"
+  checksum: 188a18f035e042f4c23e807ae752bfdb0076a0446ff8285b3c10572008fb00282dfeebdbbd566bfcf65dbb073daf552477a0ccbf426ebaa5ce88c0088a860924
   languageName: node
   linkType: hard
 
@@ -17367,6 +17417,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lunr@npm:^2.3.9":
+  version: 2.3.9
+  resolution: "lunr@npm:2.3.9"
+  checksum: 176719e24fcce7d3cf1baccce9dd5633cd8bdc1f41ebe6a180112e5ee99d80373fe2454f5d4624d437e5a8319698ca6837b9950566e15d2cae5f2a543a3db4b8
+  languageName: node
+  linkType: hard
+
 "luxon@npm:^3.0.0, luxon@npm:^3.2.1":
   version: 3.3.0
   resolution: "luxon@npm:3.3.0"
@@ -18463,7 +18520,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^1.0.0":
+"msw@npm:^1.0.0, msw@npm:^1.2.1":
   version: 1.3.2
   resolution: "msw@npm:1.3.2"
   dependencies:

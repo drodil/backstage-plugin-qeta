@@ -1,4 +1,7 @@
-import { AnswerResponse, qetaApiRef, QuestionResponse } from '../../api';
+import {
+  AnswerResponse,
+  QuestionResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 import { Box, Divider, Typography } from '@material-ui/core';
 import React from 'react';
 import { Link, MarkdownContent } from '@backstage/core-components';
@@ -6,6 +9,7 @@ import { useStyles } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { AuthorLink } from '../Links/Links';
+import { qetaApiRef } from '../../api';
 
 export const CommentList = (props: {
   onCommentDelete: (

@@ -1,10 +1,10 @@
 {
-  "name": "@drodil/backstage-plugin-qeta-common",
-  "description": "Backstage.io Q&A plugin common",
+  "name": "@drodil/plugin-search-backend-module-qeta",
+  "description": "The qeta backend module for the search plugin.",
   "keywords": [
     "backstage",
     "plugin",
-    "frontend",
+    "search",
     "backstage.io"
   ],
   "version": "1.17.0",
@@ -26,7 +26,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "common-library"
+    "role": "backend-plugin-module"
   },
   "scripts": {
     "start": "backstage-cli package start",
@@ -39,17 +39,27 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/plugin-permission-common": "^0.7.11",
+    "@backstage/backend-common": "^0.20.0",
+    "@backstage/backend-plugin-api": "^0.6.8",
+    "@backstage/backend-tasks": "^0.5.13",
+    "@backstage/config": "^1.1.1",
+    "@backstage/core-plugin-api": "^1.8.1",
+    "@backstage/errors": "^1.2.3",
+    "@backstage/plugin-search-backend-node": "^1.2.12",
     "@backstage/plugin-search-common": "^1.2.9",
-    "ajv": "^8.12.0"
-  },
-  "peerDependencies": {
-    "@backstage/catalog-model": "^1.4.3"
+    "@drodil/backstage-plugin-qeta-common": "workspace:^"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.25.0"
+    "@backstage/backend-test-utils": "^0.2.9",
+    "@backstage/cli": "^0.25.0",
+    "msw": "^1.2.1"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts",
+  "peerDependencies": {
+    "react-router-dom": "^6.3.0"
+  }
 }

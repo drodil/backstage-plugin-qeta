@@ -1,9 +1,10 @@
-import { qetaApiRef, QuestionResponse } from '../../api';
+import { QuestionResponse } from '@drodil/backstage-plugin-qeta-common';
 import { IconButton, Tooltip } from '@material-ui/core';
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import { qetaApiRef } from '../../api';
 
 export const FavoriteButton = (props: { entity: QuestionResponse }) => {
   const [entity, setEntity] = React.useState<QuestionResponse>(props.entity);

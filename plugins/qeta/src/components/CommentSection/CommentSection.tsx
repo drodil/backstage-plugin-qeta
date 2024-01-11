@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { Box, Button, Grid, TextField } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { AnswerResponse, qetaApiRef, QuestionResponse } from '../../api';
+import {
+  AnswerResponse,
+  QuestionResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 import { Controller, useForm } from 'react-hook-form';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
+import { qetaApiRef } from '../../api';
 
 export const CommentSection = (props: {
   onCommentPost: (question: QuestionResponse, answer?: AnswerResponse) => void;

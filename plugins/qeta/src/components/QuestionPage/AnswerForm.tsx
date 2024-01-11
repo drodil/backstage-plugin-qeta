@@ -5,15 +5,15 @@ import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   AnswerRequest,
   AnswerResponse,
-  qetaApiRef,
+  qetaCreateAnswerPermission,
   QuestionResponse,
-} from '../../api';
+} from '@drodil/backstage-plugin-qeta-common';
 import { useStyles } from '../../utils/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { qetaCreateAnswerPermission } from '@drodil/backstage-plugin-qeta-common';
 import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymouslyCheckbox';
+import { qetaApiRef } from '../../api';
 
 const getDefaultValues = (questionId: number) => {
   return { questionId, answer: '' };

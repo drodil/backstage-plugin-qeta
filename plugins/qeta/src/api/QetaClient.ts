@@ -7,21 +7,18 @@ import {
 } from '@backstage/core-plugin-api';
 import { CustomErrorBase } from '@backstage/errors';
 import {
+  Answer,
   AnswerRequest,
   AnswerResponseBody,
   AttachmentResponseBody,
+  Question,
   QuestionRequest,
   QuestionResponseBody,
   QuestionsResponse,
   QuestionsResponseBody,
-  TagResponse,
-} from './types';
-
-import {
-  Answer,
-  Question,
   StatisticResponse,
   StatisticsRequestParameters,
+  TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import omitBy from 'lodash/omitBy';
 import isEmpty from 'lodash/isEmpty';

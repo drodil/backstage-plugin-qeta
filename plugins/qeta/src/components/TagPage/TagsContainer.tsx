@@ -9,7 +9,7 @@ import {
 import React from 'react';
 import { useQetaApi } from '../../utils/hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
-import { TagResponse } from '../../api';
+import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
 

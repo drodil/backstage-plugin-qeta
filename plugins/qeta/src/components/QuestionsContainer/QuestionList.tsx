@@ -13,7 +13,7 @@ import {
 import React from 'react';
 import { QuestionListItem } from './QuestionListItem';
 import { Pagination } from '@material-ui/lab';
-import { QuestionsResponse } from '../../api';
+import { QuestionsResponse } from '@drodil/backstage-plugin-qeta-common';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 
 export const QuestionList = (props: {

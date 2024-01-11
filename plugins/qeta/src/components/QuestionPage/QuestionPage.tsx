@@ -16,13 +16,16 @@ import {
 import { useParams } from 'react-router-dom';
 import { useQetaApi, useStyles } from '../../utils/hooks';
 import { QuestionCard } from './QuestionCard';
-import { AnswerResponse, QuestionResponse } from '../../api';
+import {
+  Answer,
+  AnswerResponse,
+  QuestionResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 import { AnswerForm } from './AnswerForm';
 import { AnswerCard } from './AnswerCard';
 import { Skeleton } from '@material-ui/lab';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
-import { Answer } from '@drodil/backstage-plugin-qeta-common';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { UpdatedByLink } from '../Links/Links';
 

@@ -1,4 +1,7 @@
-import { AnswerResponse, qetaApiRef, QuestionResponse } from '../../api';
+import {
+  AnswerResponse,
+  QuestionResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 import {
   Box,
   IconButton,
@@ -11,6 +14,7 @@ import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
 import React from 'react';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { qetaApiRef } from '../../api';
 
 export const VoteButtons = (props: {
   entity: QuestionResponse | AnswerResponse;

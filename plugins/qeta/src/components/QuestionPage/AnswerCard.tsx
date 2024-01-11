@@ -1,4 +1,7 @@
-import { AnswerResponse, QuestionResponse } from '../../api';
+import {
+  AnswerResponse,
+  QuestionResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 import { Box, Card, CardContent, Grid, Typography } from '@material-ui/core';
 import { Link, MarkdownContent } from '@backstage/core-components';
 import React from 'react';

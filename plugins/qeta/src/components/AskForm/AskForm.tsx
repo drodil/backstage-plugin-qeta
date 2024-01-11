@@ -10,11 +10,9 @@ import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  QetaApi,
-  qetaApiRef,
   QuestionRequest,
   QuestionResponse,
-} from '../../api';
+} from '@drodil/backstage-plugin-qeta-common';
 import { useStyles } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -26,6 +24,7 @@ import { QuestionForm } from './types';
 import { EntitiesInput } from './EntitiesInput';
 import { questionRouteRef } from '../../routes';
 import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymouslyCheckbox';
+import { QetaApi, qetaApiRef } from '../../api';
 
 const formToRequest = (
   form: QuestionForm,

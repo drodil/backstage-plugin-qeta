@@ -11,6 +11,7 @@ export type QetaCollatorFactoryOptions = {
   database: PluginDatabaseManager;
 };
 
+/** @deprecated use 'search-backend-module-qeta' collator instead for new backend system */
 export class QetaCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'qeta';
   private readonly logger: LoggerService;

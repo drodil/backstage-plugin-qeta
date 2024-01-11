@@ -1,4 +1,3 @@
-import { QuestionResponse } from '../../api';
 import {
   Card,
   CardContent,
@@ -15,6 +14,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { questionRouteRef, userRouteRef } from '../../routes';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
+import { QuestionResponse } from '@drodil/backstage-plugin-qeta-common';
 
 export interface QuestionListItemProps {
   question: QuestionResponse;

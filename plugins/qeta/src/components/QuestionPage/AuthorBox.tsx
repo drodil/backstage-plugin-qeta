@@ -2,7 +2,10 @@ import { Avatar, Box, Grid, Typography } from '@material-ui/core';
 import { formatEntityName } from '../../utils/utils';
 import React, { useEffect } from 'react';
 import { useStyles } from '../../utils/hooks';
-import { AnswerResponse, QuestionResponse } from '../../api';
+import {
+  AnswerResponse,
+  QuestionResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { UserEntity } from '@backstage/catalog-model';

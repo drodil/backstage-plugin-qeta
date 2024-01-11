@@ -1,4 +1,4 @@
-import { QuestionResponse } from '../../api';
+import { QuestionResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
