@@ -63,9 +63,9 @@
   },
   "peerDependencies": {
     "@backstage/catalog-client": "^1.5.1",
-    "react": "^16.13.1 || ^17.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0",
-    "react-router-dom": "^6.3.0"
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "resolutions": {
     "react-markdown": "8.0.7"
