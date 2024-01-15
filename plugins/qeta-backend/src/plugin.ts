@@ -22,8 +22,9 @@ export const qetaPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         identity: coreServices.identity,
         database: coreServices.database,
+        tokenManager: coreServices.tokenManager,
       },
-      async init({ config, httpRouter, identity, database }) {
+      async init({ config, httpRouter, identity, database, tokenManager }) {
         const qetaStore = await DatabaseQetaStore.create({
           database,
         });
@@ -34,6 +35,7 @@ export const qetaPlugin = createBackendPlugin({
             logger,
             identity,
             database: qetaStore,
+            tokenManager,
           }),
         );
       },
