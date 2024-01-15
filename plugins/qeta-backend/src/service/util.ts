@@ -12,28 +12,41 @@ import { MaybeAnswer, MaybeQuestion } from '../database/QetaStore';
 export const getUsername = async (
   req: Request<unknown>,
   options: RouterOptions,
+  allowServiceToken?: boolean,
 ): Promise<string> => {
-  const user = await options.identity.getIdentity({ request: req });
-
-  const allowAnonymous = options.config.getOptionalBoolean(
-    'qeta.allowAnonymous',
-  );
   const allowMetadataInput = options.config.getOptionalBoolean(
     'qeta.allowMetadataInput',
   );
 
-  if (!user) {
-    if (allowAnonymous) {
-      return 'user:default/guest';
-    }
-    throw new AuthenticationError(`Missing token in 'authorization' header`);
-  } else if (allowMetadataInput && req.body.user) {
+  if (allowMetadataInput && req.body.user) {
     return req.body.user;
   } else if (allowMetadataInput && req.get('x-qeta-user')) {
     return req.get('x-qeta-user')!;
-  } else {
+  }
+
+  const user = await options.identity.getIdentity({ request: req });
+  if (user) {
     return user.identity.userEntityRef;
   }
+
+  if (allowServiceToken && options.tokenManager) {
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.header('authorization'),
+    );
+    if (token) {
+      await options.tokenManager.authenticate(token);
+      return '';
+    }
+  }
+
+  const allowAnonymous = options.config.getOptionalBoolean(
+    'qeta.allowAnonymous',
+  );
+  if (allowAnonymous) {
+    return 'user:default/guest';
+  }
+
+  throw new AuthenticationError(`Missing token in 'authorization' header`);
 };
 
 export const isModerator = async (

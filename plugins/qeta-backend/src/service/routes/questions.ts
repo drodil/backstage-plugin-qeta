@@ -49,7 +49,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
   // GET /questions
   router.get(`/questions/list/:type`, async (request, response) => {
     // Validation
-    const username = await getUsername(request, options);
+    const username = await getUsername(request, options, true);
     await checkPermissions(request, qetaReadPermission, options);
     const validateQuery = ajv.compile(QuestionsQuerySchema);
     if (!validateQuery(request.query)) {

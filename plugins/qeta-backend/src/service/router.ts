@@ -15,13 +15,17 @@ import { tagsRoutes } from './routes/tags';
 import { attachmentsRoutes } from './routes/attachments';
 import { answersRoutes } from './routes/answers';
 import { EventBroker } from '@backstage/plugin-events-node';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  TokenManagerService,
+} from '@backstage/backend-plugin-api';
 
 export interface RouterOptions {
   identity: IdentityApi;
   database: QetaStore;
   logger: LoggerService;
   config: Config;
+  tokenManager?: TokenManagerService;
   permissions?: PermissionEvaluator;
   eventBroker?: EventBroker;
 }
