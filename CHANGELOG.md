@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.18.4](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.3...v1.18.4) (2024-01-15)
+
+
+### Bug Fixes
+
+* add token manager as deps to new backend plugin ([599cef0](https://github.com/drodil/backstage-plugin-qeta/commit/599cef0e85646cf8a16c7a2b0fcff2653f0c5052))
+
 ### [1.18.3](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.2...v1.18.3) (2024-01-15)
 
 
