@@ -44,6 +44,10 @@ export default async function createPlugin({
 }
 ```
 
+> [!IMPORTANT]  
+> If you are using the `@drodil/backstage-plugin-search-backend-module-qeta` for search collator, please pass also
+> `TokenManager` to the `createRouter` method.
+
 Now add this plugin to your packages/backend/src/index.ts:
 
 ```ts
@@ -68,6 +72,9 @@ In your `packages/backend/src/index.ts` make the following changes:
 ```
 
 ### Integration with `@backstage/plugin-search`
+
+> [!WARNING]  
+> This is going to be deprecated. Please use the `@drodil/backstage-plugin-search-backend-module-qeta` instead
 
 **packages/backend/src/index.ts**
 

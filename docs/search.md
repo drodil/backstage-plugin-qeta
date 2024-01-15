@@ -1,5 +1,8 @@
 # Integration with `@backstage/plugin-search`
 
+> [!WARNING]  
+> This is going to be deprecated. Please use the `@drodil/backstage-plugin-search-backend-module-qeta` instead
+
 Enable questions indexing in the search engine by the following changes. See
 [setup](setup.md) first to integrate the plugin with backstage instance.
 
