@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.18.3](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.2...v1.18.3) (2024-01-15)
+
+
+### Bug Fixes
+
+* allow service-to-service auth with new search collator ([158bbde](https://github.com/drodil/backstage-plugin-qeta/commit/158bbde3d8f81ef00e393fba8dff5284b185a1f4))
+
 ### [1.18.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.1...v1.18.2) (2024-01-11)
 
 
