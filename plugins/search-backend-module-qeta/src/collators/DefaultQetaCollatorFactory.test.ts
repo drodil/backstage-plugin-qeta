@@ -55,7 +55,7 @@ describe('DefaultQetaCollatorFactory', () => {
     getExternalBaseUrl: jest.fn(),
   };
   const mockTokenManager: jest.Mocked<TokenManager> = {
-    getToken: jest.fn().mockResolvedValue({ token: '' }),
+    getToken: jest.fn().mockResolvedValue({ token: 'test_token' }),
     authenticate: jest.fn(),
   };
   const options = {
@@ -72,6 +72,7 @@ describe('DefaultQetaCollatorFactory', () => {
   describe('getCollator', () => {
     let factory: DefaultQetaCollatorFactory;
     let collator: Readable;
+    let lastRequest: any = null;
 
     const worker = setupServer();
     setupRequestMockHandlers(worker);
@@ -79,12 +80,15 @@ describe('DefaultQetaCollatorFactory', () => {
     beforeEach(async () => {
       factory = DefaultQetaCollatorFactory.fromConfig(config, options);
       collator = await factory.getCollator();
+      lastRequest = null;
 
       worker.use(
         rest.get(
           'http://test-backend/api/qeta/questions',
-          (_: any, res: any, ctx: any) =>
-            res(ctx.status(200), ctx.json(mockQuestions)),
+          (req: any, res: any, ctx: any) => {
+            lastRequest = req;
+            return res(ctx.status(200), ctx.json(mockQuestions));
+          },
         ),
       );
     });
@@ -103,6 +107,9 @@ describe('DefaultQetaCollatorFactory', () => {
         mockQuestions.questions.length * mockComments.length +
         mockAnswers.length * mockComments.length;
       expect(documents).toHaveLength(totalDocuments);
+      expect(lastRequest.headers.get('authorization')).toEqual(
+        'Bearer test_token',
+      );
     });
 
     it('non-authenticated backend', async () => {
@@ -122,6 +129,7 @@ describe('DefaultQetaCollatorFactory', () => {
         mockQuestions.questions.length * mockComments.length +
         mockAnswers.length * mockComments.length;
       expect(documents).toHaveLength(totalDocuments);
+      expect(lastRequest.headers.get('authorization')).toEqual(null);
     });
   });
 });

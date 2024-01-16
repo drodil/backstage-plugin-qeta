@@ -52,10 +52,9 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
     const params = new URLSearchParams();
     params.append('includeAnswers', 'true');
     params.append('includeComments', 'true');
-    const response = await fetch(
-      `${baseUrl}/questions?${params.toString()}`,
+    const response = await fetch(`${baseUrl}/questions?${params.toString()}`, {
       headers,
-    );
+    });
     const data = (await response.json()) as QuestionsResponseBody;
 
     if ('errors' in data) {
