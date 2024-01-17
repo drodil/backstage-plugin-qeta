@@ -57,17 +57,14 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
     });
     const data = (await response.json()) as QuestionsResponseBody;
 
-    if ('errors' in data) {
+    if (!data || 'errors' in data) {
       this.logger.error(
-        `Error while fetching questions from qeta: ${JSON.stringify(
-          data.errors,
-        )}`,
+        `Error while fetching questions from qeta: ${JSON.stringify(data)}`,
       );
       return;
     }
 
-    const questions = data.questions;
-
+    const questions = data.questions ?? [];
     this.logger.info(`Indexing ${questions.length} questions`);
 
     for (const question of questions) {
