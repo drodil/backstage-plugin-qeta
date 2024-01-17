@@ -38,14 +38,19 @@ export const getUsername = async (
       req.header('authorization'),
     );
     if (token) {
-      await options.tokenManager.authenticate(token);
-      return '';
+      try {
+        await options.tokenManager.authenticate(token);
+        return '';
+      } catch (e) {
+        // NOOP
+      }
     }
   }
 
   const allowAnonymous = options.config.getOptionalBoolean(
     'qeta.allowAnonymous',
   );
+
   if (allowAnonymous) {
     return 'user:default/guest';
   }
