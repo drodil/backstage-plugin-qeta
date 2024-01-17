@@ -56,6 +56,8 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
       const params = new URLSearchParams();
       params.append('includeAnswers', 'true');
       params.append('includeComments', 'true');
+      params.append('orderBy', 'created');
+      params.append('order', 'asc');
       params.append('limit', '50');
       params.append('offset', indexedQuestions.toString(10));
       const response = await fetch(
