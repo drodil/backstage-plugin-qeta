@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.18.7](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.6...v1.18.7) (2024-01-17)
+
+
+### Bug Fixes
+
+* add ordering of questions to collator ([6dab457](https://github.com/drodil/backstage-plugin-qeta/commit/6dab457a8c51389b14a268bdfa51183d594925fd))
+
 ### [1.18.6](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.5...v1.18.6) (2024-01-17)
 
 
