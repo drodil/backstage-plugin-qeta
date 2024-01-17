@@ -7,6 +7,6 @@ export const tagsRoutes = (router: Router, options: RouterOptions) => {
   // GET /tags
   router.get('/tags', async (_request, response) => {
     const tags = await database.getTags();
-    response.send(tags);
+    response.json(tags);
   });
 };

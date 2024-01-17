@@ -65,7 +65,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
     // Response
     response.status(201);
-    response.send(answer);
+    response.json(answer);
   });
 
   // POST /questions/:id/answers/:answerId
@@ -103,7 +103,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
     // Response
     response.status(201);
-    response.send(answer);
+    response.json(answer);
   });
 
   // POST /questions/:id/answers/:answerId/comments
@@ -159,7 +159,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
       // Response
       response.status(201);
-      response.send(answer);
+      response.json(answer);
     },
   );
 
@@ -188,7 +188,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
       // Response
       response.status(201);
-      response.send(answer);
+      response.json(answer);
     },
   );
 
@@ -212,7 +212,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     mapAdditionalFields(username, answer, options, moderator);
 
     // Response
-    response.send(answer);
+    response.json(answer);
   });
 
   // DELETE /questions/:id/answers/:answerId
@@ -295,7 +295,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       });
     }
     // Response
-    response.send(answer);
+    response.json(answer);
   };
 
   // GET /questions/:id/answers/:answerId/upvote

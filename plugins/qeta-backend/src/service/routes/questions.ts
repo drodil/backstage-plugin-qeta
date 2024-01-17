@@ -43,7 +43,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     const questions = await database.getQuestions(username, request.query);
 
     // Response
-    response.send(questions);
+    response.json(questions);
   });
 
   // GET /questions
@@ -79,7 +79,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     });
 
     // Response
-    response.send(questions);
+    response.json(questions);
   });
 
   // GET /questions/:id
@@ -105,7 +105,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     );
 
     // Response
-    response.send(question);
+    response.json(question);
   });
 
   // POST /questions/:id/comments
@@ -153,7 +153,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     }
 
     // Response
-    response.send(question);
+    response.json(question);
   });
 
   // DELETE /questions/:id/comments/:commentId
@@ -183,7 +183,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       );
 
       // Response
-      response.send(question);
+      response.json(question);
     },
   );
 
@@ -221,7 +221,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     if (!validateRequestBody(request.body)) {
       response
         .status(400)
-        .send({ errors: validateRequestBody.errors, type: 'body' });
+        .json({ errors: validateRequestBody.errors, type: 'body' });
       return;
     }
 
@@ -255,7 +255,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
 
     // Response
     response.status(201);
-    response.send(question);
+    response.json(question);
   });
 
   // POST /questions/:id
@@ -265,7 +265,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     if (!validateRequestBody(request.body)) {
       response
         .status(400)
-        .send({ errors: validateRequestBody.errors, type: 'body' });
+        .json({ errors: validateRequestBody.errors, type: 'body' });
       return;
     }
 
@@ -305,7 +305,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
 
     // Response
     response.status(200);
-    response.send(question);
+    response.json(question);
   });
 
   // DELETE /questions/:id
@@ -383,7 +383,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     }
 
     // Response
-    response.send(question);
+    response.json(question);
   };
 
   // GET /questions/:id/upvote
@@ -419,7 +419,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     mapAdditionalFields(username, question, options, moderator);
 
     // Response
-    response.send(question);
+    response.json(question);
   });
 
   // GET /questions/:id/unfavorite
@@ -445,6 +445,6 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     mapAdditionalFields(username, question, options, moderator);
 
     // Response
-    response.send(question);
+    response.json(question);
   });
 };
