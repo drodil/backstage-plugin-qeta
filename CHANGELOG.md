@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.18.6](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.5...v1.18.6) (2024-01-17)
+
+
+### Bug Fixes
+
+* anonymous allow fix for authentication ([ae9948a](https://github.com/drodil/backstage-plugin-qeta/commit/ae9948aeb178d0f60819cbcc34dd1e546b609cba))
+* authentication + paginate search collator ([d69ad12](https://github.com/drodil/backstage-plugin-qeta/commit/d69ad128ba29536793aa0d0d07f60233662eb8f0))
+* check for undefined questions response ([060c7e5](https://github.com/drodil/backstage-plugin-qeta/commit/060c7e5a45ad8c2c8ca2ed95ed28ffbbcb71c276))
+* use correct json response from routes ([5ca8149](https://github.com/drodil/backstage-plugin-qeta/commit/5ca8149bd3c8da9fb1bc7cfd0a0a68185b8c7563))
+
 ### [1.18.5](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.4...v1.18.5) (2024-01-16)
 
 
