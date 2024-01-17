@@ -39,81 +39,93 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
 
   async *execute(): AsyncGenerator<QetaDocument> {
     this.logger.info('Executing QetaCollator');
-    let headers = {};
-
-    if (this.tokenManager) {
-      const { token } = await this.tokenManager.getToken();
-      headers = {
-        Authorization: `Bearer ${token}`,
-      };
-    }
+    let totalQuestions = Number.MAX_VALUE;
+    let indexedQuestions = 0;
     const baseUrl = await this.discovery.getBaseUrl('qeta');
 
-    const params = new URLSearchParams();
-    params.append('includeAnswers', 'true');
-    params.append('includeComments', 'true');
-    const response = await fetch(`${baseUrl}/questions?${params.toString()}`, {
-      headers,
-    });
-    const data = (await response.json()) as QuestionsResponseBody;
+    while (totalQuestions > indexedQuestions) {
+      let headers = {};
 
-    if (!data || 'errors' in data || !('questions' in data)) {
-      this.logger.error(
-        `Error while fetching questions from qeta: ${JSON.stringify(data)}`,
+      if (this.tokenManager) {
+        const { token } = await this.tokenManager.getToken();
+        headers = {
+          Authorization: `Bearer ${token}`,
+        };
+      }
+
+      const params = new URLSearchParams();
+      params.append('includeAnswers', 'true');
+      params.append('includeComments', 'true');
+      params.append('limit', '50');
+      params.append('offset', indexedQuestions.toString(10));
+      const response = await fetch(
+        `${baseUrl}/questions?${params.toString()}`,
+        {
+          headers,
+        },
       );
-      return;
-    }
+      const data = (await response.json()) as QuestionsResponseBody;
 
-    const questions = data.questions;
-    this.logger.info(`Indexing ${questions.length} questions`);
+      if (!data || 'errors' in data || !('questions' in data)) {
+        this.logger.error(
+          `Error while fetching questions from qeta: ${JSON.stringify(data)}`,
+        );
+        return;
+      }
 
-    for (const question of questions) {
-      yield {
-        title: question.title,
-        text: question.content,
-        location: `/qeta/questions/${question.id}`,
-        docType: 'qeta',
-        author: question.author,
-        score: question.score,
-        answerCount: question.answersCount,
-        views: question.views,
-        tags: question.tags,
-      };
+      const questions = data.questions;
+      this.logger.info(`Indexing ${questions.length} questions`);
+      totalQuestions = data.total;
+      indexedQuestions += questions.length;
 
-      for (const answer of question.answers ?? []) {
+      for (const question of questions) {
         yield {
-          title: `Answer for ${question.title}`,
-          text: answer.content,
-          location: `/qeta/questions/${question.id}#answer_${answer.id}`,
+          title: question.title,
+          text: question.content,
+          location: `/qeta/questions/${question.id}`,
           docType: 'qeta',
-          author: answer.author,
-          score: answer.score,
+          author: question.author,
+          score: question.score,
+          answerCount: question.answersCount,
+          views: question.views,
           tags: question.tags,
         };
 
-        for (const comment of answer.comments ?? []) {
+        for (const answer of question.answers ?? []) {
           yield {
-            title: `Comment for ${question.title}`,
-            text: comment.content,
+            title: `Answer for ${question.title}`,
+            text: answer.content,
             location: `/qeta/questions/${question.id}#answer_${answer.id}`,
             docType: 'qeta',
-            author: comment.author,
+            author: answer.author,
             score: answer.score,
             tags: question.tags,
           };
-        }
-      }
 
-      for (const comment of question.comments ?? []) {
-        yield {
-          title: `Comment for ${question.title}`,
-          text: comment.content,
-          location: `/qeta/questions/${question.id}`,
-          docType: 'qeta',
-          author: comment.author,
-          score: question.score,
-          tags: question.tags,
-        };
+          for (const comment of answer.comments ?? []) {
+            yield {
+              title: `Comment for ${question.title}`,
+              text: comment.content,
+              location: `/qeta/questions/${question.id}#answer_${answer.id}`,
+              docType: 'qeta',
+              author: comment.author,
+              score: answer.score,
+              tags: question.tags,
+            };
+          }
+        }
+
+        for (const comment of question.comments ?? []) {
+          yield {
+            title: `Comment for ${question.title}`,
+            text: comment.content,
+            location: `/qeta/questions/${question.id}`,
+            docType: 'qeta',
+            author: comment.author,
+            score: question.score,
+            tags: question.tags,
+          };
+        }
       }
     }
   }

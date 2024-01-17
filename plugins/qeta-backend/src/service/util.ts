@@ -24,9 +24,13 @@ export const getUsername = async (
     return req.get('x-qeta-user')!;
   }
 
-  const user = await options.identity.getIdentity({ request: req });
-  if (user) {
-    return user.identity.userEntityRef;
+  try {
+    const user = await options.identity.getIdentity({ request: req });
+    if (user) {
+      return user.identity.userEntityRef;
+    }
+  } catch (e) {
+    // NOOP
   }
 
   if (allowServiceToken && options.tokenManager) {
@@ -46,7 +50,9 @@ export const getUsername = async (
     return 'user:default/guest';
   }
 
-  throw new AuthenticationError(`Missing token in 'authorization' header`);
+  throw new AuthenticationError(
+    `Missing or invalid token in 'authorization' header`,
+  );
 };
 
 export const isModerator = async (

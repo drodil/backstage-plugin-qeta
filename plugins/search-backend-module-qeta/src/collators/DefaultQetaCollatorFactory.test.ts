@@ -46,6 +46,7 @@ const mockQuestions = {
       comments: mockComments,
     },
   ],
+  total: 1,
 };
 
 describe('DefaultQetaCollatorFactory', () => {
