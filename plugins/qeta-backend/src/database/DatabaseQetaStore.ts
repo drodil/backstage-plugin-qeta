@@ -5,6 +5,7 @@ import {
 import { Knex } from 'knex';
 import {
   AttachmentParameters,
+  EntityResponse,
   MaybeAnswer,
   MaybeQuestion,
   QetaStore,
@@ -647,6 +648,31 @@ export class DatabaseQetaStore implements QetaStore {
       return {
         tag: tag.tag,
         questionsCount: this.mapToInteger(tag.questionsCount),
+      };
+    });
+  }
+
+  async getEntities(): Promise<EntityResponse[]> {
+    const entityRef = this.db.ref('entities.id');
+    const questionsCount = this.db('question_entities')
+      .where('question_entities.entityId', entityRef)
+      .count('*')
+      .as('questionsCount');
+
+    const entities = await this.db('entities')
+      .leftJoin(
+        'question_entities',
+        'entities.id',
+        'question_entities.entityId',
+      )
+      .orderBy('questionsCount', 'desc')
+      .select('entity_ref', questionsCount)
+      .groupBy('entities.id');
+
+    return entities.map(entity => {
+      return {
+        entityRef: entity.entity_ref,
+        questionsCount: this.mapToInteger(entity.questionsCount),
       };
     });
   }

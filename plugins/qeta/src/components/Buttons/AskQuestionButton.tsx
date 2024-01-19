@@ -7,11 +7,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef } from '../../routes';
 
 export const AskQuestionButton = (props: { entity?: string }) => {
-  const params = new URLSearchParams(window.location.search);
   const askRoute = useRouteRef(askRouteRef);
-  if (params.get('entity')) {
-    return null;
-  }
   return (
     <RequirePermission
       permission={qetaCreateQuestionPermission}

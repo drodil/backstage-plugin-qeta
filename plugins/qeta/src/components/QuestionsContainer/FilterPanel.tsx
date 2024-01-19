@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Checkbox,
@@ -9,8 +9,14 @@ import {
   Grid,
   Radio,
   RadioGroup,
+  TextField,
 } from '@material-ui/core';
-import { useStyles } from '../../utils/hooks';
+import { useQetaApi, useStyles } from '../../utils/hooks';
+import { Autocomplete } from '@material-ui/lab';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { useApi } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { getEntityTitle } from '../../utils/utils';
 
 const radioSelect = (value: string, label: string) => {
   return (
@@ -28,6 +34,7 @@ export const filterKeys = [
   'noAnswers',
   'noCorrectAnswer',
   'noVotes',
+  'entity',
 ] as const;
 export type FilterKey = (typeof filterKeys)[number];
 
@@ -39,8 +46,46 @@ export interface FilterPanelProps {
 export const FilterPanel = (props: FilterPanelProps) => {
   const { onChange, filters } = props;
   const styles = useStyles();
+  const { value: refs } = useQetaApi(api => api.getEntities(), []);
+  const catalogApi = useApi(catalogApiRef);
+  const [availableEntities, setAvailableEntities] = React.useState<
+    Entity[] | null
+  >(null);
+  const [selectedEntity, setSelectedEntity] = React.useState<
+    Entity | undefined
+  >(undefined);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (refs && refs?.length > 0) {
+      catalogApi
+        .getEntitiesByRefs({
+          entityRefs: refs.map(e => e.entityRef),
+          fields: [
+            'kind',
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+          ],
+        })
+        .then(resp => {
+          const filtered = resp.items.filter(i => i !== undefined) as Entity[];
+          setAvailableEntities(filtered);
+        });
+    }
+  }, [catalogApi, refs]);
+
+  useEffect(() => {
+    if (filters.entity && availableEntities) {
+      const value = availableEntities.find(
+        e => stringifyEntityRef(e) === filters.entity,
+      );
+      setSelectedEntity(value);
+    }
+  }, [availableEntities, filters]);
+
+  const handleChange = (event: {
+    target: { value: string; type?: string; name: string; checked?: boolean };
+  }) => {
     let value = event.target.value;
     if (event.target.type === 'checkbox') {
       value = event.target.checked ? 'true' : 'false';
@@ -51,7 +96,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
   return (
     <Box className={`qetaFilterPanel ${styles.filterPanel}`}>
       <Grid container spacing={4}>
-        <Grid item>
+        <Grid item md={3} xs={4}>
           <FormGroup>
             <FormControlLabel
               control={
@@ -88,7 +133,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
             />
           </FormGroup>
         </Grid>
-        <Grid item>
+        <Grid item md={2} xs={4}>
           <FormControl>
             <FormLabel id="qeta-filter-order-by">Order by</FormLabel>
             <RadioGroup
@@ -104,7 +149,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
             </RadioGroup>
           </FormControl>
         </Grid>
-        <Grid item>
+        <Grid item md={2} xs={4}>
           <FormControl>
             <FormLabel id="qeta-filter-order">Order</FormLabel>
             <RadioGroup
@@ -118,6 +163,39 @@ export const FilterPanel = (props: FilterPanelProps) => {
             </RadioGroup>
           </FormControl>
         </Grid>
+        {availableEntities && availableEntities.length > 0 && (
+          <Grid item md={4} xs={8}>
+            <FormLabel id="qeta-filter-entity">Filters</FormLabel>
+            <Autocomplete
+              multiple={false}
+              className="qetaAskFormEntities"
+              value={selectedEntity}
+              id="entities-select"
+              options={availableEntities}
+              getOptionLabel={getEntityTitle}
+              getOptionSelected={(o, v) =>
+                stringifyEntityRef(o) === stringifyEntityRef(v)
+              }
+              onChange={(_e, newValue) => {
+                handleChange({
+                  target: {
+                    name: 'entity',
+                    value: newValue ? stringifyEntityRef(newValue) : '',
+                  },
+                });
+              }}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  margin="normal"
+                  label="Entity"
+                  placeholder="Type or select entity"
+                />
+              )}
+            />
+          </Grid>
+        )}
       </Grid>
     </Box>
   );

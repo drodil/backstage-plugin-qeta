@@ -3,6 +3,7 @@ import {
   AnswerResponse,
   AnswerResponseBody,
   AttachmentResponseBody,
+  EntityResponse,
   QuestionRequest,
   QuestionResponse,
   QuestionsResponse,
@@ -44,6 +45,8 @@ export interface QetaApi {
   getQuestion(id: string | undefined): Promise<QuestionResponse>;
 
   getTags(): Promise<TagResponse[]>;
+
+  getEntities(): Promise<EntityResponse[]>;
 
   getMostUpvotedQuestions({
     author,

@@ -11,7 +11,6 @@ import { qetaPermissions } from '@drodil/backstage-plugin-qeta-common';
 import { QetaStore } from '../database/QetaStore';
 import { statisticRoutes } from './routes/statistics';
 import { questionsRoutes } from './routes/questions';
-import { tagsRoutes } from './routes/tags';
 import { attachmentsRoutes } from './routes/attachments';
 import { answersRoutes } from './routes/answers';
 import { EventBroker } from '@backstage/plugin-events-node';
@@ -19,6 +18,7 @@ import {
   LoggerService,
   TokenManagerService,
 } from '@backstage/backend-plugin-api';
+import { helperRoutes } from './routes/helpers';
 
 export interface RouterOptions {
   identity: IdentityApi;
@@ -51,7 +51,7 @@ export async function createRouter(
 
   questionsRoutes(router, options);
   answersRoutes(router, options);
-  tagsRoutes(router, options);
+  helperRoutes(router, options);
   attachmentsRoutes(router, options);
   statisticRoutes(router, options);
 

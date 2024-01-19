@@ -52,6 +52,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     noCorrectAnswer: 'false',
     noVotes: 'false',
     searchQuery: '',
+    entity: entity ?? '',
   });
 
   const onPageChange = (value: number) => {
@@ -68,7 +69,11 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     setFilters({ ...filters, ...{ [key]: value } });
     setSearchParams(prev => {
       const newValue = prev;
-      newValue.set(key, value);
+      if (value.length > 0) {
+        newValue.set(key, value);
+      } else {
+        newValue.delete(key);
+      }
       return newValue;
     });
   };
@@ -127,7 +132,6 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         offset: (page - 1) * questionsPerPage,
         includeEntities: true,
         tags,
-        entity,
         author,
         favorite,
         ...filters,

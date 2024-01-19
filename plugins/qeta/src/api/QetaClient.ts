@@ -11,6 +11,7 @@ import {
   AnswerRequest,
   AnswerResponseBody,
   AttachmentResponseBody,
+  EntityResponse,
   Question,
   QuestionRequest,
   QuestionResponseBody,
@@ -184,6 +185,13 @@ export class QetaClient implements QetaApi {
       `${await this.getBaseUrl()}/tags`,
     );
     return (await response.json()) as TagResponse[];
+  }
+
+  async getEntities(): Promise<EntityResponse[]> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/entities`,
+    );
+    return (await response.json()) as EntityResponse[];
   }
 
   async voteQuestionUp(id: number): Promise<Question> {

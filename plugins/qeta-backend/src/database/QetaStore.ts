@@ -48,6 +48,11 @@ export interface TagResponse {
   questionsCount: number;
 }
 
+export interface EntityResponse {
+  entityRef: string;
+  questionsCount: number;
+}
+
 export interface AttachmentParameters {
   uuid: string;
   locationType: string;
@@ -322,6 +327,8 @@ export interface QetaStore {
    * Returns all used tags for questions
    */
   getTags(): Promise<TagResponse[]>;
+
+  getEntities(): Promise<EntityResponse[]>;
 
   postAttachment({
     uuid,

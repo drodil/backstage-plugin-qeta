@@ -130,6 +130,11 @@ export interface TagResponse {
   questionsCount: number;
 }
 
+export interface EntityResponse {
+  entityRef: string;
+  questionsCount: number;
+}
+
 export type AttachmentResponseBody = Attachment | ErrorResponse;
 
 export type QuestionResponse = Question;
