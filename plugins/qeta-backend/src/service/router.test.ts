@@ -133,6 +133,7 @@ describe('createRouter', () => {
     markAnswerCorrect: jest.fn(),
     markAnswerIncorrect: jest.fn(),
     getTags: jest.fn(),
+    getEntities: jest.fn(),
     updateQuestion: jest.fn(),
     updateAnswer: jest.fn(),
     favoriteQuestion: jest.fn(),

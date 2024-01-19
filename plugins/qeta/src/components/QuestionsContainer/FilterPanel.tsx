@@ -168,7 +168,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
             <FormLabel id="qeta-filter-entity">Filters</FormLabel>
             <Autocomplete
               multiple={false}
-              className="qetaAskFormEntities"
+              className="qetaEntityFilter"
               value={selectedEntity}
               id="entities-select"
               options={availableEntities}
