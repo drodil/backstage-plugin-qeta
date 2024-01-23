@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.20.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.19.2...v1.20.0) (2024-01-23)
+
+
+### Features
+
+* add tag filter to filter panel ([df2eea7](https://github.com/drodil/backstage-plugin-qeta/commit/df2eea7de90eced3bb50cf1b2b79c03e45864d88)), closes [#117](https://github.com/drodil/backstage-plugin-qeta/issues/117)
+
+
+### Bug Fixes
+
+* couple of routing fixes for filters ([77752e1](https://github.com/drodil/backstage-plugin-qeta/commit/77752e12dd3956f2808898e1aa26210bc8ecbe2b))
+* routing between main and component pages ([afc087c](https://github.com/drodil/backstage-plugin-qeta/commit/afc087c73d3de79e568225e6c017f50a6640a34a))
+
 ### [1.19.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.19.1...v1.19.2) (2024-01-23)
 
 
