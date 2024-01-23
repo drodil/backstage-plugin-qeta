@@ -11,11 +11,11 @@ export const AskPage = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const entity = searchParams.get('entity') ?? undefined;
-  const home = searchParams.get('home') === 'true' ? true : false;
+  const entityPage = searchParams.get('entityPage') === 'true';
   let title;
   if (id) {
     title = 'Edit question';
-  } else if (entity && !home) {
+  } else if (entity) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const representation = useEntityPresentation(entity);
     title = `Ask a question about ${representation.primaryTitle}`;
@@ -26,12 +26,12 @@ export const AskPage = () => {
   return (
     <Content className="qetaAskPage">
       <ContentHeader title={title}>
-        <BackToQuestionsButton home={home} />
+        <BackToQuestionsButton entityPage={entityPage} />
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>
           <InfoCard>
-            <AskForm id={id} entity={entity} home={home} />
+            <AskForm id={id} entity={entity} entityPage={entityPage} />
           </InfoCard>
         </Grid>
       </Grid>

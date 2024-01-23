@@ -9,11 +9,19 @@ import { useEntityQueryParameter } from '../../utils/hooks';
 export const NoQuestionsCard = (props: {
   showNoQuestionsBtn?: boolean;
   entity?: string;
-  home?: boolean;
+  entityPage?: boolean;
 }) => {
-  const { showNoQuestionsBtn, entity, home = false } = props;
+  const { showNoQuestionsBtn, entity, entityPage } = props;
   const askRoute = useRouteRef(askRouteRef);
   const entityRef = useEntityQueryParameter(entity);
+
+  const queryParams = new URLSearchParams();
+  if (entityRef) {
+    queryParams.set('entity', entityRef);
+  }
+  if (entityPage) {
+    queryParams.set('entityPage', 'true');
+  }
 
   return (
     <Card style={{ marginTop: '2rem' }}>
@@ -32,7 +40,7 @@ export const NoQuestionsCard = (props: {
               <LinkButton
                 to={
                   entityRef
-                    ? `${askRoute()}?entity=${entityRef}&home=${home}`
+                    ? `${askRoute()}?${queryParams.toString()}`
                     : `${askRoute()}`
                 }
                 startIcon={<HelpOutline />}

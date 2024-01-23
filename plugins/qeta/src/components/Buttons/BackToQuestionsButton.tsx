@@ -8,7 +8,7 @@ import { parseEntityRef } from '@backstage/catalog-model';
 import { useSearchParams } from 'react-router-dom';
 import { qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
 
-export const BackToQuestionsButton = (props: { home?: boolean }) => {
+export const BackToQuestionsButton = (props: { entityPage?: boolean }) => {
   const styles = useStyles();
   const entityRoute = useRouteRef(entityRouteRef);
   const rootRoute = useRouteRef(qetaRouteRef);
@@ -18,7 +18,7 @@ export const BackToQuestionsButton = (props: { home?: boolean }) => {
   const entity = searchParams.get('entity');
   if (entity) {
     const entityRef = parseEntityRef(entity);
-    if (!props.home) {
+    if (props.entityPage) {
       to = `${entityRoute(entityRef)}/qeta`;
     } else {
       to = `${rootRoute()}?entity=${entity}`;

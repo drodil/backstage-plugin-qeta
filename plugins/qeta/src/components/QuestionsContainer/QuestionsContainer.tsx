@@ -27,7 +27,6 @@ export interface QuestionsContainerProps {
   favorite?: boolean;
   showAskButton?: boolean;
   showNoQuestionsBtn?: boolean;
-  home?: boolean;
 }
 export const QuestionsContainer = (props: QuestionsContainerProps) => {
   const {
@@ -40,7 +39,6 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     favorite,
     showAskButton,
     showNoQuestionsBtn,
-    home,
   } = props;
   const [page, setPage] = React.useState(1);
   const [questionsPerPage, setQuestionsPerPage] = React.useState(10);
@@ -208,7 +206,10 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         </Grid>
         {showAskButton && (
           <Grid item>
-            <AskQuestionButton entity={entity ?? filters.entity} />
+            <AskQuestionButton
+              entity={entity ?? filters.entity}
+              entityPage={entity !== undefined}
+            />
           </Grid>
         )}
       </Grid>
@@ -254,7 +255,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         page={page}
         pageSize={questionsPerPage}
         showNoQuestionsBtn={showNoQuestionsBtn}
-        home={home}
+        entityPage={entity !== undefined}
       />
     </Box>
   );

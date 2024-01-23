@@ -80,9 +80,9 @@ export const AskForm = (props: {
   id?: string;
   entity?: string;
   onPost?: (question: QuestionResponse) => void;
-  home?: boolean;
+  entityPage?: boolean;
 }) => {
-  const { id, entity, onPost, home = false } = props;
+  const { id, entity, onPost, entityPage } = props;
   const questionRoute = useRouteRef(questionRouteRef);
   const navigate = useNavigate();
   const analytics = useAnalytics();
@@ -112,6 +112,15 @@ export const AskForm = (props: {
 
   const postQuestion = (data: QuestionForm) => {
     setPosting(true);
+
+    const queryParams = new URLSearchParams();
+    if (entity) {
+      queryParams.set('entity', entity);
+    }
+    if (entityPage) {
+      queryParams.set('entityPage', 'true');
+    }
+
     if (id) {
       qetaApi
         .updateQuestion(id, formToRequest(data, images))
@@ -128,7 +137,7 @@ export const AskForm = (props: {
             navigate(
               `${questionRoute({
                 id: q.id.toString(10),
-              })}?entity=${entity}&home=${home}`,
+              })}?${queryParams.toString()}`,
             );
           } else {
             navigate(questionRoute({ id: q.id.toString(10) }));
@@ -153,7 +162,7 @@ export const AskForm = (props: {
           navigate(
             `${questionRoute({
               id: q.id.toString(10),
-            })}?entity=${entity}&home=${home}`,
+            })}?${queryParams.toString()}`,
           );
         } else {
           navigate(questionRoute({ id: q.id.toString(10) }));

@@ -25,7 +25,7 @@ export const QuestionList = (props: {
   pageSize: number;
   entity?: string;
   showNoQuestionsBtn?: boolean;
-  home?: boolean;
+  entityPage?: boolean;
 }) => {
   const {
     loading,
@@ -36,7 +36,7 @@ export const QuestionList = (props: {
     page,
     onPageSizeChange,
     showNoQuestionsBtn = true,
-    home,
+    entityPage,
   } = props;
   const styles = useStyles();
 
@@ -70,7 +70,7 @@ export const QuestionList = (props: {
       <NoQuestionsCard
         showNoQuestionsBtn={showNoQuestionsBtn}
         entity={entity}
-        home={home}
+        entityPage={entityPage}
       />
     );
   }

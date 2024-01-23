@@ -127,7 +127,9 @@ export const QuestionPage = () => {
           // @ts-ignore
           description={getDescription(question)}
         >
-          <BackToQuestionsButton home={searchParams.get('home') === 'true'} />
+          <BackToQuestionsButton
+            entityPage={searchParams.get('entityPage') === 'true'}
+          />
           <AskQuestionButton />
         </ContentHeader>
         <QuestionCard question={question} />

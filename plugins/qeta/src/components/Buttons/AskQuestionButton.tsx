@@ -9,17 +9,17 @@ import { askRouteRef } from '@drodil/backstage-plugin-qeta-react';
 export const AskQuestionButton = (props: {
   entity?: string;
   tag?: string;
-  home?: boolean;
+  entityPage?: boolean;
 }) => {
-  const { entity, home, tag } = props;
+  const { entity, entityPage, tag } = props;
   const askRoute = useRouteRef(askRouteRef);
 
   const params = new URLSearchParams();
   if (entity) {
     params.set('entity', entity);
   }
-  if (home) {
-    params.set('home', home ? 'true' : 'false');
+  if (entityPage) {
+    params.set('entityPage', 'true');
   }
   if (tag) {
     params.set('tag', tag);
@@ -32,11 +32,7 @@ export const AskQuestionButton = (props: {
     >
       <LinkButton
         variant="contained"
-        to={
-          params.values.length > 0
-            ? `${askRoute()}?${params.toString()}`
-            : askRoute()
-        }
+        to={entity || tag ? `${askRoute()}?${params.toString()}` : askRoute()}
         color="primary"
         className="qetaAskQuestionBtn"
         startIcon={<HelpOutline />}

@@ -139,9 +139,9 @@ export const HomePageContent = () => {
           <Grid item xs={12} lg={9} xl={10}>
             <ContentHeader title="All questions">
               <MoreMenu />
-              <AskQuestionButton entity={entityRef} home />
+              <AskQuestionButton entity={entityRef} />
             </ContentHeader>
-            <QuestionsContainer home />
+            <QuestionsContainer />
           </Grid>
           <Grid item lg={3} xl={2}>
             <QuestionHighlightList
