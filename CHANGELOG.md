@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.19.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.19.0...v1.19.1) (2024-01-23)
+
+
+### Bug Fixes
+
+* add missing tsc command to react ([f749714](https://github.com/drodil/backstage-plugin-qeta/commit/f749714d5af7d08f2e92aa2147e629b14a274787))
+
 ## [1.19.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.8...v1.19.0) (2024-01-23)
 
 
