@@ -4,12 +4,6 @@ export const qetaRouteRef = createRouteRef({
   id: 'qeta',
 });
 
-export const entityRoute = createSubRouteRef({
-  id: 'qeta.entity',
-  parent: qetaRouteRef,
-  path: '/questions?entity=:entity',
-});
-
 export const askRouteRef = createSubRouteRef({
   id: 'qeta.ask',
   parent: qetaRouteRef,
