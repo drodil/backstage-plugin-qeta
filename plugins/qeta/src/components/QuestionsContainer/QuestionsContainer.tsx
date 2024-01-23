@@ -65,11 +65,17 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   };
 
   const onFilterChange = (key: FilterKey, value: string) => {
-    onPageChange(1);
+    if (filters[key] === value) {
+      return;
+    }
+
+    setPage(1);
     setFilters({ ...filters, ...{ [key]: value } });
     setSearchParams(prev => {
       const newValue = prev;
-      if (value.length > 0) {
+      if (value === 'false') {
+        newValue.delete(key);
+      } else if (value.length > 0) {
         newValue.set(key, value);
       } else {
         newValue.delete(key);
@@ -107,7 +113,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         } else if (key === 'questionsPerPage') {
           const qpp = Number.parseInt(value, 10);
           if (qpp > 0) setQuestionsPerPage(qpp);
-        } else if (key in filterKeys) {
+        } else if (filterKeys.includes(key as FilterKey)) {
           filtersApplied = true;
           filters[key as FilterKey] = value;
         }
@@ -197,7 +203,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         </Grid>
         {showAskButton && (
           <Grid item>
-            <AskQuestionButton entity={entity} />
+            <AskQuestionButton entity={entity ?? filters.entity} />
           </Grid>
         )}
       </Grid>

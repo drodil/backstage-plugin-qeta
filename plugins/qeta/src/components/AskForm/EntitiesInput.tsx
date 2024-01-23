@@ -74,7 +74,6 @@ export const EntitiesInput = (props: {
       render={({ field: { onChange, value } }) => (
         <Autocomplete
           multiple
-          hidden={!!entityRef}
           className="qetaAskFormEntities"
           value={value}
           groupBy={entityKinds.length > 1 ? option => option.kind : undefined}

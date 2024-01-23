@@ -80,8 +80,13 @@ export const FilterPanel = (props: FilterPanelProps) => {
         e => stringifyEntityRef(e) === filters.entity,
       );
       setSelectedEntity(value);
+      if (!value) {
+        onChange('entity', '');
+      }
+    } else {
+      setSelectedEntity(undefined);
     }
-  }, [availableEntities, filters]);
+  }, [availableEntities, filters, onChange]);
 
   const handleChange = (event: {
     target: { value: string; type?: string; name: string; checked?: boolean };
@@ -166,34 +171,39 @@ export const FilterPanel = (props: FilterPanelProps) => {
         {availableEntities && availableEntities.length > 0 && (
           <Grid item md={4} xs={8}>
             <FormLabel id="qeta-filter-entity">Filters</FormLabel>
-            <Autocomplete
-              multiple={false}
-              className="qetaEntityFilter"
-              value={selectedEntity}
-              id="entities-select"
-              options={availableEntities}
-              getOptionLabel={getEntityTitle}
-              getOptionSelected={(o, v) =>
-                stringifyEntityRef(o) === stringifyEntityRef(v)
-              }
-              onChange={(_e, newValue) => {
-                handleChange({
-                  target: {
-                    name: 'entity',
-                    value: newValue ? stringifyEntityRef(newValue) : '',
-                  },
-                });
-              }}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  margin="normal"
-                  label="Entity"
-                  placeholder="Type or select entity"
-                />
-              )}
-            />
+            {(!filters.entity || selectedEntity) && (
+              <Autocomplete
+                multiple={false}
+                className="qetaEntityFilter"
+                value={selectedEntity ?? null}
+                id="entities-select"
+                options={availableEntities}
+                getOptionLabel={getEntityTitle}
+                getOptionSelected={(o, v) => {
+                  if (!o || !v) {
+                    return false;
+                  }
+                  return stringifyEntityRef(o) === stringifyEntityRef(v);
+                }}
+                onChange={(_e, newValue) => {
+                  handleChange({
+                    target: {
+                      name: 'entity',
+                      value: newValue ? stringifyEntityRef(newValue) : '',
+                    },
+                  });
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    margin="normal"
+                    label="Entity"
+                    placeholder="Type or select entity"
+                  />
+                )}
+              />
+            )}
           </Grid>
         )}
       </Grid>

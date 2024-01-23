@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Container,
   Grid,
@@ -14,7 +14,7 @@ import {
   Header,
   Page,
 } from '@backstage/core-components';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useSearchParams } from 'react-router-dom';
 import { AskPage } from '../AskPage';
 import { QuestionPage } from '../QuestionPage/QuestionPage';
 import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
@@ -124,6 +124,14 @@ const MoreMenu = () => {
 };
 
 export const HomePageContent = () => {
+  const [searchParams] = useSearchParams();
+  const [entityRef, setEntityRef] = React.useState<string | undefined>(
+    undefined,
+  );
+  useEffect(() => {
+    setEntityRef(searchParams.get('entity') ?? undefined);
+  }, [searchParams, setEntityRef]);
+
   return (
     <Content className="qetaHomePage">
       <Container maxWidth="lg">
@@ -131,7 +139,7 @@ export const HomePageContent = () => {
           <Grid item xs={12} lg={9} xl={10}>
             <ContentHeader title="All questions">
               <MoreMenu />
-              <AskQuestionButton />
+              <AskQuestionButton entity={entityRef} home />
             </ContentHeader>
             <QuestionsContainer />
           </Grid>
