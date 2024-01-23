@@ -55,6 +55,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     noVotes: 'false',
     searchQuery: '',
     entity: entity ?? '',
+    tag: '',
   });
 
   const onPageChange = (value: number) => {
@@ -134,16 +135,18 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     loading,
     error,
   } = useQetaApi(
-    api =>
-      api.getQuestions({
+    api => {
+      const { tag: _tag, ...questionFilters } = filters;
+      return api.getQuestions({
         limit: questionsPerPage,
         offset: (page - 1) * questionsPerPage,
         includeEntities: true,
-        tags,
         author,
         favorite,
-        ...filters,
-      }),
+        tags: tags ?? [filters.tag],
+        ...questionFilters,
+      });
+    },
     [page, filters, questionsPerPage],
   );
 
@@ -232,7 +235,12 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
       </Grid>
       {(showFilters ?? true) && (
         <Collapse in={showFilterPanel}>
-          <FilterPanel onChange={onFilterChange} filters={filters} />
+          <FilterPanel
+            onChange={onFilterChange}
+            filters={filters}
+            showEntityFilter={!entity}
+            showTagFilter={!tags}
+          />
         </Collapse>
       )}
 

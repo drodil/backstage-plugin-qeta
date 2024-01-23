@@ -35,18 +35,22 @@ export const filterKeys = [
   'noCorrectAnswer',
   'noVotes',
   'entity',
+  'tag',
 ] as const;
 export type FilterKey = (typeof filterKeys)[number];
 
 export interface FilterPanelProps {
   onChange: (key: FilterKey, value: string) => void;
   filters: Record<FilterKey, string>;
+  showEntityFilter: boolean;
+  showTagFilter: boolean;
 }
 
 export const FilterPanel = (props: FilterPanelProps) => {
-  const { onChange, filters } = props;
+  const { onChange, filters, showEntityFilter, showTagFilter } = props;
   const styles = useStyles();
   const { value: refs } = useQetaApi(api => api.getEntities(), []);
+  const { value: tags } = useQetaApi(api => api.getTags(), []);
   const catalogApi = useApi(catalogApiRef);
   const [availableEntities, setAvailableEntities] = React.useState<
     Entity[] | null
@@ -54,9 +58,25 @@ export const FilterPanel = (props: FilterPanelProps) => {
   const [selectedEntity, setSelectedEntity] = React.useState<
     Entity | undefined
   >(undefined);
+  const [availableTags, setAvailableTags] = React.useState<string[] | null>(
+    null,
+  );
 
   useEffect(() => {
-    if (filters.entity || (refs && refs?.length > 0)) {
+    if ((tags && tags.length > 0) || filters.tag) {
+      const ts = (tags ?? []).map(t => t.tag);
+      if (filters.tag) {
+        ts.push(filters.tag);
+      }
+      setAvailableTags([...new Set(ts)]);
+    }
+  }, [tags, filters.tag]);
+
+  useEffect(() => {
+    if (
+      (filters.entity || (refs && refs?.length > 0)) &&
+      !Array.isArray(filters.entity)
+    ) {
       catalogApi
         .getEntitiesByRefs({
           entityRefs: [...(refs ?? []).map(e => e.entityRef), filters.entity],
@@ -89,7 +109,12 @@ export const FilterPanel = (props: FilterPanelProps) => {
   }, [availableEntities, filters.entity, onChange]);
 
   const handleChange = (event: {
-    target: { value: string; type?: string; name: string; checked?: boolean };
+    target: {
+      value: string;
+      type?: string;
+      name: string;
+      checked?: boolean;
+    };
   }) => {
     let value = event.target.value;
     if (event.target.type === 'checkbox') {
@@ -168,44 +193,75 @@ export const FilterPanel = (props: FilterPanelProps) => {
             </RadioGroup>
           </FormControl>
         </Grid>
-        {availableEntities && availableEntities.length > 0 && (
-          <Grid item md={4} xs={8}>
-            <FormLabel id="qeta-filter-entity">Filters</FormLabel>
-            {(!filters.entity || selectedEntity) && (
-              <Autocomplete
-                multiple={false}
-                className="qetaEntityFilter"
-                value={selectedEntity ?? null}
-                id="entities-select"
-                options={availableEntities}
-                getOptionLabel={getEntityTitle}
-                getOptionSelected={(o, v) => {
-                  if (!o || !v) {
-                    return false;
-                  }
-                  return stringifyEntityRef(o) === stringifyEntityRef(v);
-                }}
-                onChange={(_e, newValue) => {
-                  handleChange({
-                    target: {
-                      name: 'entity',
-                      value: newValue ? stringifyEntityRef(newValue) : '',
-                    },
-                  });
-                }}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    margin="normal"
-                    label="Entity"
-                    placeholder="Type or select entity"
+        {((availableEntities && availableEntities.length > 0) ||
+          (availableTags && availableTags.length > 0)) &&
+          (showEntityFilter || showTagFilter) && (
+            <Grid item md={4} xs={8}>
+              <FormLabel id="qeta-filter-entity">Filters</FormLabel>
+              {showEntityFilter &&
+                availableEntities &&
+                availableEntities.length > 0 &&
+                (!filters.entity || selectedEntity) && (
+                  <Autocomplete
+                    multiple={false}
+                    className="qetaEntityFilter"
+                    value={selectedEntity ?? null}
+                    id="entities-select"
+                    options={availableEntities}
+                    getOptionLabel={getEntityTitle}
+                    getOptionSelected={(o, v) => {
+                      if (!o || !v) {
+                        return false;
+                      }
+                      return stringifyEntityRef(o) === stringifyEntityRef(v);
+                    }}
+                    onChange={(_e, newValue) => {
+                      handleChange({
+                        target: {
+                          name: 'entity',
+                          value: newValue ? stringifyEntityRef(newValue) : '',
+                        },
+                      });
+                    }}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        margin="normal"
+                        label="Entity"
+                        placeholder="Type or select entity"
+                      />
+                    )}
                   />
                 )}
-              />
-            )}
-          </Grid>
-        )}
+              {showTagFilter && availableTags && availableTags.length > 0 && (
+                <Autocomplete
+                  multiple={false}
+                  className="qetaTagFilter"
+                  value={filters.tag}
+                  id="tags-select"
+                  options={availableTags}
+                  onChange={(_e, newValue) => {
+                    handleChange({
+                      target: {
+                        name: 'tag',
+                        value: newValue ?? '',
+                      },
+                    });
+                  }}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      margin="normal"
+                      label="Tag"
+                      placeholder="Type or select tag"
+                    />
+                  )}
+                />
+              )}
+            </Grid>
+          )}
       </Grid>
     </Box>
   );
