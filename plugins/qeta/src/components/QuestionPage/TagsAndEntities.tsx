@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { compact } from 'lodash';
 import { Chip } from '@material-ui/core';
-import { tagRouteRef } from '../../routes';
+import { tagRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { EntityChip } from './EntityChip';
 
 export const TagsAndEntities = (props: { question: QuestionResponse }) => {

@@ -1,53 +1,59 @@
 import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
 
-export const rootRouteRef = createRouteRef({
+export const qetaRouteRef = createRouteRef({
   id: 'qeta',
+});
+
+export const entityRoute = createSubRouteRef({
+  id: 'qeta.entity',
+  parent: qetaRouteRef,
+  path: '/questions?entity=:entity',
 });
 
 export const askRouteRef = createSubRouteRef({
   id: 'qeta.ask',
-  parent: rootRouteRef,
+  parent: qetaRouteRef,
   path: '/ask',
 });
 
 export const favoriteQuestionsRouteRef = createSubRouteRef({
   id: 'qeta.favoriteQuestions',
-  parent: rootRouteRef,
+  parent: qetaRouteRef,
   path: '/questions/favorite',
 });
 
 export const statisticsRouteRef = createSubRouteRef({
   id: 'qeta.statistics',
-  parent: rootRouteRef,
+  parent: qetaRouteRef,
   path: '/statistics',
 });
 
 export const questionRouteRef = createSubRouteRef({
   id: 'qeta.question',
-  parent: rootRouteRef,
+  parent: qetaRouteRef,
   path: '/questions/:id',
 });
 
 export const userRouteRef = createSubRouteRef({
   id: 'qeta.user',
-  parent: rootRouteRef,
+  parent: qetaRouteRef,
   path: '/users/*',
 });
 
 export const editQuestionRouteRef = createSubRouteRef({
   id: 'qeta.editQuestion',
-  parent: rootRouteRef,
+  parent: qetaRouteRef,
   path: '/questions/:id/edit',
 });
 
 export const tagsRouteRef = createSubRouteRef({
   id: 'qeta.tags',
-  parent: rootRouteRef,
+  parent: qetaRouteRef,
   path: '/tags',
 });
 
 export const tagRouteRef = createSubRouteRef({
   id: 'qeta.tag',
-  parent: rootRouteRef,
+  parent: qetaRouteRef,
   path: '/tags/:tag',
 });

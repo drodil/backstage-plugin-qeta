@@ -22,7 +22,7 @@ import { compact } from 'lodash';
 import { TagInput } from './TagInput';
 import { QuestionForm } from './types';
 import { EntitiesInput } from './EntitiesInput';
-import { questionRouteRef } from '../../routes';
+import { questionRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymouslyCheckbox';
 import { QetaApi, qetaApiRef } from '../../api';
 

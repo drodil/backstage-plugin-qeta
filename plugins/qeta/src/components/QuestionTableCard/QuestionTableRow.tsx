@@ -4,7 +4,7 @@ import { Link } from '@backstage/core-components';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { questionRouteRef } from '../../routes';
+import { questionRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { AuthorLink } from '../Links/Links';
 
 export const QuestionTableRow = (props: { question: Question }) => {

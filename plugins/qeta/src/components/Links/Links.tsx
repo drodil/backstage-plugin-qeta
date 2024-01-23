@@ -5,7 +5,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { userRouteRef } from '../../routes';
+import { userRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { Link, LinkProps } from '@backstage/core-components';
 

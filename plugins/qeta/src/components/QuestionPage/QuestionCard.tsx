@@ -22,7 +22,7 @@ import { AuthorBox } from './AuthorBox';
 import { TagsAndEntities } from './TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { editQuestionRouteRef } from '../../routes';
+import { editQuestionRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { LinkButton } from './LinkButton';
 
 export const QuestionCard = (props: { question: QuestionResponse }) => {

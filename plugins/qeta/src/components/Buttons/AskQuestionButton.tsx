@@ -4,7 +4,7 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { qetaCreateQuestionPermission } from '@drodil/backstage-plugin-qeta-common';
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { askRouteRef } from '../../routes';
+import { askRouteRef } from '@drodil/backstage-plugin-qeta-react';
 
 export const AskQuestionButton = (props: { entity?: string }) => {
   const askRoute = useRouteRef(askRouteRef);

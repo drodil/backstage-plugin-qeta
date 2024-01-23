@@ -11,7 +11,10 @@ import DOMPurify from 'dompurify';
 import { removeMarkdownFormatting, truncate } from '../../utils/utils';
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { questionRouteRef, userRouteRef } from '../../routes';
+import {
+  questionRouteRef,
+  userRouteRef,
+} from '@drodil/backstage-plugin-qeta-react';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { QuestionResponse } from '@drodil/backstage-plugin-qeta-common';

@@ -40,7 +40,7 @@ import {
   tagRouteRef,
   tagsRouteRef,
   userRouteRef,
-} from '../../routes';
+} from '@drodil/backstage-plugin-qeta-react';
 
 const MoreMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);

@@ -11,7 +11,7 @@ import { useQetaApi } from '../../utils/hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { tagRouteRef } from '../../routes';
+import { tagRouteRef } from '@drodil/backstage-plugin-qeta-react';
 
 export const TagsContainer = () => {
   const [searchQuery, setSearchQuery] = React.useState('');

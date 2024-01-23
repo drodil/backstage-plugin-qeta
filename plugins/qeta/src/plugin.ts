@@ -6,13 +6,13 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home-react';
-import { rootRouteRef } from './routes';
 import { qetaApiRef, QetaClient } from './api';
+import { qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
 
 export const qetaPlugin = createPlugin({
   id: 'qeta',
   routes: {
-    root: rootRouteRef,
+    root: qetaRouteRef,
   },
   apis: [
     createApiFactory({
@@ -28,7 +28,7 @@ export const QetaPage = qetaPlugin.provide(
   createRoutableExtension({
     name: 'QetaPage',
     component: () => import('./components/HomePage').then(m => m.HomePage),
-    mountPoint: rootRouteRef,
+    mountPoint: qetaRouteRef,
   }),
 );
 

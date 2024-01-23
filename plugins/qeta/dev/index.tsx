@@ -8,7 +8,7 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import { rootRouteRef } from '../src/routes';
+import { qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { CatalogClient } from '@backstage/catalog-client';
 import { TablePage } from './TablePage';
@@ -41,7 +41,7 @@ export const CatalogEntityPage: () => JSX.Element = fakeCatalogPlugin.provide(
 const qetaDevPlugin = createPlugin({
   id: 'qetaDev',
   routes: {
-    root: rootRouteRef,
+    root: qetaRouteRef,
   },
   externalRoutes: {},
 });

@@ -10,7 +10,7 @@ import React from 'react';
 import { useQetaApi, useStyles } from '../../utils/hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { questionRouteRef } from '../../routes';
+import { questionRouteRef } from '@drodil/backstage-plugin-qeta-react';
 
 export const QuestionHighlightList = (props: {
   type: string;
