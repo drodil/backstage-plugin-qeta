@@ -1,5 +1,5 @@
 import { useStyles } from '../../utils/hooks';
-import { LinkButton, Progress, WarningPanel } from '@backstage/core-components';
+import { Progress, WarningPanel } from '@backstage/core-components';
 import {
   Box,
   Divider,
@@ -8,13 +8,12 @@ import {
   MenuItem,
   Select,
   Tooltip,
-  Typography,
 } from '@material-ui/core';
 import React from 'react';
 import { QuestionListItem } from './QuestionListItem';
 import { Pagination } from '@material-ui/lab';
 import { QuestionsResponse } from '@drodil/backstage-plugin-qeta-common';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import { NoQuestionsCard } from './NoQuestionsCard';
 
 export const QuestionList = (props: {
   loading: boolean;
@@ -66,28 +65,10 @@ export const QuestionList = (props: {
 
   if (!response.questions || response.questions.length === 0) {
     return (
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        direction="column"
-      >
-        <Grid item>
-          <Typography variant="h6">No questions found</Typography>
-        </Grid>
-        {showNoQuestionsBtn && (
-          <Grid item>
-            <LinkButton
-              to={entity ? `/qeta/ask?entity=${entity}` : '/qeta/ask'}
-              startIcon={<HelpOutline />}
-              color="primary"
-              variant="outlined"
-            >
-              Go ahead and ask one!
-            </LinkButton>
-          </Grid>
-        )}
-      </Grid>
+      <NoQuestionsCard
+        showNoQuestionsBtn={showNoQuestionsBtn}
+        entity={entity}
+      />
     );
   }
 
