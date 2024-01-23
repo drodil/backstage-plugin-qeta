@@ -80,8 +80,9 @@ export const AskForm = (props: {
   id?: string;
   entity?: string;
   onPost?: (question: QuestionResponse) => void;
+  home?: boolean;
 }) => {
-  const { id, entity, onPost } = props;
+  const { id, entity, onPost, home = false } = props;
   const questionRoute = useRouteRef(questionRouteRef);
   const navigate = useNavigate();
   const analytics = useAnalytics();
@@ -125,7 +126,9 @@ export const AskForm = (props: {
             onPost(q);
           } else if (entity) {
             navigate(
-              `${questionRoute({ id: q.id.toString(10) })}?entity=${entity}`,
+              `${questionRoute({
+                id: q.id.toString(10),
+              })}?entity=${entity}&home=${home}`,
             );
           } else {
             navigate(questionRoute({ id: q.id.toString(10) }));
@@ -148,7 +151,9 @@ export const AskForm = (props: {
         reset();
         if (entity) {
           navigate(
-            `${questionRoute({ id: q.id.toString(10) })}?entity=${entity}`,
+            `${questionRoute({
+              id: q.id.toString(10),
+            })}?entity=${entity}&home=${home}`,
           );
         } else {
           navigate(questionRoute({ id: q.id.toString(10) }));

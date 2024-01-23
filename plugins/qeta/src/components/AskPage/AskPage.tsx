@@ -31,7 +31,7 @@ export const AskPage = () => {
       <Grid container spacing={3} direction="column">
         <Grid item>
           <InfoCard>
-            <AskForm id={id} entity={entity} />
+            <AskForm id={id} entity={entity} home={home} />
           </InfoCard>
         </Grid>
       </Grid>

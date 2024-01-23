@@ -10,6 +10,8 @@ import { makeStyles } from '@material-ui/core';
 import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { trimEnd } from 'lodash';
+import { useSearchParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
 
 export function useQetaApi<T>(
   f: (api: QetaApi) => Promise<T>,
@@ -42,6 +44,17 @@ export function useIdentityApi<T>(
   return useAsync(async () => {
     return await f(identityApi);
   }, deps);
+}
+
+export function useEntityQueryParameter(entity?: string) {
+  const [searchParams] = useSearchParams();
+  const [entityRef, setEntityRef] = React.useState<string | undefined>(entity);
+
+  useEffect(() => {
+    setEntityRef(searchParams.get('entity') ?? undefined);
+  }, [searchParams, setEntityRef]);
+
+  return entityRef;
 }
 
 export const useStyles = makeStyles(theme => {

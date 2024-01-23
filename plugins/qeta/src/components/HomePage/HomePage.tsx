@@ -141,7 +141,7 @@ export const HomePageContent = () => {
               <MoreMenu />
               <AskQuestionButton entity={entityRef} home />
             </ContentHeader>
-            <QuestionsContainer />
+            <QuestionsContainer home />
           </Grid>
           <Grid item lg={3} xl={2}>
             <QuestionHighlightList

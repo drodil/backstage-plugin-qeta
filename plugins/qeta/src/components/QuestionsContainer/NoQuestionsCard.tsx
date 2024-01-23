@@ -2,12 +2,18 @@ import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 import { LinkButton } from '@backstage/core-components';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import React from 'react';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { askRouteRef } from '@drodil/backstage-plugin-qeta-react';
+import { useEntityQueryParameter } from '../../utils/hooks';
 
 export const NoQuestionsCard = (props: {
   showNoQuestionsBtn?: boolean;
   entity?: string;
+  home?: boolean;
 }) => {
-  const { showNoQuestionsBtn, entity } = props;
+  const { showNoQuestionsBtn, entity, home = false } = props;
+  const askRoute = useRouteRef(askRouteRef);
+  const entityRef = useEntityQueryParameter(entity);
 
   return (
     <Card style={{ marginTop: '2rem' }}>
@@ -24,7 +30,11 @@ export const NoQuestionsCard = (props: {
           {showNoQuestionsBtn && (
             <Grid item>
               <LinkButton
-                to={entity ? `/qeta/ask?entity=${entity}` : '/qeta/ask'}
+                to={
+                  entityRef
+                    ? `${askRoute()}?entity=${entityRef}&home=${home}`
+                    : `${askRoute()}`
+                }
                 startIcon={<HelpOutline />}
                 color="primary"
                 variant="outlined"

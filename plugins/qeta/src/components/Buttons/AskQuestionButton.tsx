@@ -10,6 +10,7 @@ export const AskQuestionButton = (props: {
   entity?: string;
   home?: boolean;
 }) => {
+  const { entity, home = false } = props;
   const askRoute = useRouteRef(askRouteRef);
   return (
     <RequirePermission
@@ -18,11 +19,7 @@ export const AskQuestionButton = (props: {
     >
       <LinkButton
         variant="contained"
-        to={
-          props.entity
-            ? `${askRoute()}?entity=${props.entity}&home=${props.home}`
-            : askRoute()
-        }
+        to={entity ? `${askRoute()}?entity=${entity}&home=${home}` : askRoute()}
         color="primary"
         className="qetaAskQuestionBtn"
         startIcon={<HelpOutline />}

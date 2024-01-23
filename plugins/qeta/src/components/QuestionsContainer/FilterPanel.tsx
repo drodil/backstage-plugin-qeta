@@ -56,10 +56,10 @@ export const FilterPanel = (props: FilterPanelProps) => {
   >(undefined);
 
   useEffect(() => {
-    if (refs && refs?.length > 0) {
+    if (filters.entity || (refs && refs?.length > 0)) {
       catalogApi
         .getEntitiesByRefs({
-          entityRefs: refs.map(e => e.entityRef),
+          entityRefs: [...(refs ?? []).map(e => e.entityRef), filters.entity],
           fields: [
             'kind',
             'metadata.name',
@@ -72,7 +72,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
           setAvailableEntities(filtered);
         });
     }
-  }, [catalogApi, refs]);
+  }, [filters.entity, catalogApi, refs]);
 
   useEffect(() => {
     if (filters.entity && availableEntities) {
@@ -86,7 +86,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
     } else {
       setSelectedEntity(undefined);
     }
-  }, [availableEntities, filters, onChange]);
+  }, [availableEntities, filters.entity, onChange]);
 
   const handleChange = (event: {
     target: { value: string; type?: string; name: string; checked?: boolean };

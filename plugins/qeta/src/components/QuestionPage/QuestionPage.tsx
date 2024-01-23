@@ -13,7 +13,7 @@ import {
   ContentHeader,
   WarningPanel,
 } from '@backstage/core-components';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useQetaApi, useStyles } from '../../utils/hooks';
 import { QuestionCard } from './QuestionCard';
 import {
@@ -34,6 +34,7 @@ export const QuestionPage = () => {
   const styles = useStyles();
   const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
   const [answerSort, setAnswerSort] = React.useState<string>('default');
+  const [searchParams] = useSearchParams();
 
   const {
     value: question,
@@ -126,7 +127,7 @@ export const QuestionPage = () => {
           // @ts-ignore
           description={getDescription(question)}
         >
-          <BackToQuestionsButton />
+          <BackToQuestionsButton home={searchParams.get('home') === 'true'} />
           <AskQuestionButton />
         </ContentHeader>
         <QuestionCard question={question} />
