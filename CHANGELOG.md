@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.19.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.8...v1.19.0) (2024-01-23)
+
+
+### Features
+
+* add entity filter to the list view ([b39b3c4](https://github.com/drodil/backstage-plugin-qeta/commit/b39b3c4273212c94d3fc6e8587333cee2c06b493)), closes [#116](https://github.com/drodil/backstage-plugin-qeta/issues/116)
+* move no questions to own component ([68000ba](https://github.com/drodil/backstage-plugin-qeta/commit/68000bae57c9ea8308561e8243c394485fa46c4d))
+* separate routes to react plugin ([66d498f](https://github.com/drodil/backstage-plugin-qeta/commit/66d498fa8a842551927787959a2040b692228708))
+
+
+### Bug Fixes
+
+* add missing func to router test ([b95b8f9](https://github.com/drodil/backstage-plugin-qeta/commit/b95b8f9cc5a91686887ae97335315c942a46cb5a))
+* change moderators to be optional config ([2b6e8e5](https://github.com/drodil/backstage-plugin-qeta/commit/2b6e8e5316f773087be628bd4aba5bb5938ae950))
+* remove unnecessary path to entity with query ([e883da1](https://github.com/drodil/backstage-plugin-qeta/commit/e883da18072fa78b3476a3d0157a7bca1480addb))
+
 ### [1.18.8](https://github.com/drodil/backstage-plugin-qeta/compare/v1.18.7...v1.18.8) (2024-01-17)
 
 
