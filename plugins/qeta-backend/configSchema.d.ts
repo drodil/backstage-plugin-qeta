@@ -62,7 +62,7 @@ export interface Config {
      *
      * @visibility backend
      */
-    moderators: string[];
+    moderators?: string[];
     /**
      * Configuration about images attachments storage
      *
