@@ -286,10 +286,13 @@ export const useBasePath = () => {
 export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
+  const [name, setName] = React.useState<string | null>(null);
   const [user, setUser] = React.useState<UserEntity | null>(null);
   const [initials, setInitials] = React.useState<string | null>(null);
   const [currentUser, setCurrentUser] = React.useState<string | null>(null);
   const anonymous = entity.anonymous ?? false;
+  const { primaryTitle: userName } = useEntityPresentation(entity.author);
+
   useEffect(() => {
     if (!anonymous) {
       catalogApi
@@ -305,15 +308,16 @@ export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
     });
   }, [identityApi]);
 
-  const { primaryTitle: userName } = useEntityPresentation(entity.author);
-
-  let name = userName;
-  if (entity.author === currentUser) {
-    name = 'You';
-    if (anonymous) {
-      name += ' (anonymous)';
+  useEffect(() => {
+    let displayName = userName;
+    if (entity.author === currentUser) {
+      displayName = 'You';
+      if (anonymous) {
+        displayName += ' (anonymous)';
+      }
     }
-  }
+    setName(displayName);
+  }, [entity.author, anonymous, currentUser, userName]);
 
   useEffect(() => {
     const init = (name ?? '')
