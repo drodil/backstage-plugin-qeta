@@ -8,10 +8,18 @@ import {
 } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import { CatalogApi } from '@backstage/catalog-client';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  useEntityPresentation,
+} from '@backstage/plugin-catalog-react';
 import { trimEnd } from 'lodash';
 import { useSearchParams } from 'react-router-dom';
 import React, { useEffect } from 'react';
+import { UserEntity } from '@backstage/catalog-model';
+import {
+  AnswerResponse,
+  QuestionResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 
 export function useQetaApi<T>(
   f: (api: QetaApi) => Promise<T>,
@@ -136,6 +144,29 @@ export const useStyles = makeStyles(theme => {
       width: 'calc(100% - 70px)',
       minHeight: '160px',
     },
+    questionListItemStats: {
+      width: '80px',
+      textAlign: 'right',
+      marginRight: '26px',
+      display: 'inline-block',
+      verticalAlign: 'top',
+      paddingTop: '10px',
+    },
+    questionListItemContent: {
+      display: 'inline-block',
+      width: 'calc(100% - 120px)',
+    },
+    questionListItemAuthor: {
+      display: 'inline',
+      float: 'right',
+    },
+    questionListItemAvatar: {
+      display: 'inline-flex',
+      marginRight: '0.25rem',
+      fontSize: '1rem',
+      maxWidth: '1rem',
+      maxHeight: '1rem',
+    },
     answerCardContent: {
       display: 'inline-block',
       width: 'calc(100% - 70px)',
@@ -250,4 +281,49 @@ export const useBasePath = () => {
   const url = useBaseUrl() ?? '/';
   const { pathname } = new URL(url, base);
   return trimEnd(pathname, '/');
+};
+
+export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
+  const catalogApi = useApi(catalogApiRef);
+  const identityApi = useApi(identityApiRef);
+  const [user, setUser] = React.useState<UserEntity | null>(null);
+  const [initials, setInitials] = React.useState<string | null>(null);
+  const [currentUser, setCurrentUser] = React.useState<string | null>(null);
+  const anonymous = entity.anonymous ?? false;
+  useEffect(() => {
+    if (!anonymous) {
+      catalogApi
+        .getEntityByRef(entity.author)
+        .catch(_ => setUser(null))
+        .then(data => (data ? setUser(data as UserEntity) : setUser(null)));
+    }
+  }, [catalogApi, entity, anonymous]);
+
+  useEffect(() => {
+    identityApi.getBackstageIdentity().then(res => {
+      setCurrentUser(res.userEntityRef ?? 'user:default/guest');
+    });
+  }, [identityApi]);
+
+  const { primaryTitle: userName } = useEntityPresentation(entity.author);
+
+  let name = userName;
+  if (entity.author === currentUser) {
+    name = 'You';
+    if (anonymous) {
+      name += ' (anonymous)';
+    }
+  }
+
+  useEffect(() => {
+    const init = (name ?? '')
+      .split(' ')
+      .map(p => p[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+    setInitials(init);
+  }, [name]);
+
+  return { name, initials, user };
 };
