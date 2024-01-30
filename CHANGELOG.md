@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.21.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.20.0...v1.21.0) (2024-01-30)
+
+
+### Features
+
+* update question list UI ([f694751](https://github.com/drodil/backstage-plugin-qeta/commit/f69475162e81867eca3649bb2923fc72bee0c618))
+
+
+### Bug Fixes
+
+* scoll to top of question list on page change ([62633c8](https://github.com/drodil/backstage-plugin-qeta/commit/62633c89171e3ce6b4f51ec76c2241c2dd9d4522)), closes [#119](https://github.com/drodil/backstage-plugin-qeta/issues/119)
+
 ## [1.20.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.19.2...v1.20.0) (2024-01-23)
 
 
