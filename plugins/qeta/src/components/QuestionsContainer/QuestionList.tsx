@@ -9,7 +9,7 @@ import {
   Select,
   Tooltip,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { QuestionListItem } from './QuestionListItem';
 import { Pagination } from '@material-ui/lab';
 import { QuestionsResponse } from '@drodil/backstage-plugin-qeta-common';
@@ -39,21 +39,35 @@ export const QuestionList = (props: {
     entityPage,
   } = props;
   const styles = useStyles();
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const [initialLoad, setInitialLoad] = useState(true);
+
+  useEffect(() => {
+    if (!initialLoad) {
+      setInitialLoad(false);
+    }
+  }, [initialLoad, loading]);
 
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
     value: number,
   ) => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView();
+    }
     onPageChange(value);
   };
 
   const handlePageSizeChange = (
     event: React.ChangeEvent<{ value: unknown }>,
   ) => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView();
+    }
     onPageSizeChange(Number.parseInt(event.target.value as string, 10));
   };
 
-  if (loading) {
+  if (loading && initialLoad) {
     return <Progress />;
   }
 
@@ -65,7 +79,7 @@ export const QuestionList = (props: {
     );
   }
 
-  if (!response.questions || response.questions.length === 0) {
+  if (initialLoad && (!response.questions || response.questions.length === 0)) {
     return (
       <NoQuestionsCard
         showNoQuestionsBtn={showNoQuestionsBtn}
@@ -81,51 +95,53 @@ export const QuestionList = (props: {
       : Math.ceil(response.total / props.pageSize);
 
   return (
-    <Box sx={{ mt: 2 }} className="qetaQuestionList">
-      <Grid container spacing={2} className="qetaQuestionListGrid">
-        {response.questions.map(question => {
-          return (
-            <Grid item xs={12} key={question.id}>
-              <QuestionListItem question={question} entity={entity} />
-              <Divider />
-            </Grid>
-          );
-        })}
-      </Grid>
-      <Grid
-        container
-        spacing={0}
-        className={`qetaQuestionListPaginationGrid ${styles.questionListPagination}`}
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Tooltip title="Questions per page" arrow>
-          <FormControl variant="filled">
-            <Select
-              value={props.pageSize}
-              onChange={handlePageSizeChange}
-              className={`qetaQuestionListPaginationSizeSelect ${styles.questionsPerPage}`}
-              inputProps={{ className: styles.questionsPerPageInput }}
-            >
-              <MenuItem value={5}>5</MenuItem>
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-              <MenuItem value={100}>100</MenuItem>
-            </Select>
-          </FormControl>
-        </Tooltip>
-        <Pagination
-          page={page}
-          onChange={handlePageChange}
-          count={pageCount}
-          size="large"
-          variant="outlined"
-          className="qetaQuestionListPagination"
-          showFirstButton
-          showLastButton
-        />
-      </Grid>
-    </Box>
+    <div ref={listRef}>
+      <Box sx={{ mt: 2 }} className="qetaQuestionList">
+        <Grid container spacing={2} className="qetaQuestionListGrid">
+          {response.questions.map(question => {
+            return (
+              <Grid item xs={12} key={question.id}>
+                <QuestionListItem question={question} entity={entity} />
+                <Divider />
+              </Grid>
+            );
+          })}
+        </Grid>
+        <Grid
+          container
+          spacing={0}
+          className={`qetaQuestionListPaginationGrid ${styles.questionListPagination}`}
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Tooltip title="Questions per page" arrow>
+            <FormControl variant="filled">
+              <Select
+                value={props.pageSize}
+                onChange={handlePageSizeChange}
+                className={`qetaQuestionListPaginationSizeSelect ${styles.questionsPerPage}`}
+                inputProps={{ className: styles.questionsPerPageInput }}
+              >
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
+          </Tooltip>
+          <Pagination
+            page={page}
+            onChange={handlePageChange}
+            count={pageCount}
+            size="large"
+            variant="outlined"
+            className="qetaQuestionListPagination"
+            showFirstButton
+            showLastButton
+          />
+        </Grid>
+      </Box>
+    </div>
   );
 };
