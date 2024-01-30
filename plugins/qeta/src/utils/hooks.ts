@@ -286,7 +286,7 @@ export const useBasePath = () => {
 export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
-  const [name, setName] = React.useState<string | null>(null);
+  const [name, setName] = React.useState<string | undefined>(undefined);
   const [user, setUser] = React.useState<UserEntity | null>(null);
   const [initials, setInitials] = React.useState<string | null>(null);
   const [currentUser, setCurrentUser] = React.useState<string | null>(null);
