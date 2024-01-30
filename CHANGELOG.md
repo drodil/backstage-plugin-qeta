@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.21.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.21.0...v1.21.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* move name setting to effect hook ([25dddf3](https://github.com/drodil/backstage-plugin-qeta/commit/25dddf33a154b2a74b2a7b3fb456cbd3b9a45fca))
+* undefined default for name ([94a1148](https://github.com/drodil/backstage-plugin-qeta/commit/94a1148336cfd6a57419dfa7211473cbc0a07c32))
+
 ## [1.21.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.20.0...v1.21.0) (2024-01-30)
 
 
