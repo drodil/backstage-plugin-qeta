@@ -89,7 +89,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
 
   const onSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onPageChange(1);
-    analytics.captureEvent('qeta-search', event.target.value ?? '');
+    analytics.captureEvent('search', event.target.value ?? '');
     setSearchQuery(event.target.value);
   };
 
