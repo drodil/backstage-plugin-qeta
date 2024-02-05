@@ -16,6 +16,7 @@ import FilterList from '@material-ui/icons/FilterList';
 import { useSearchParams } from 'react-router-dom';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
 export interface QuestionsContainerProps {
   tags?: string[];
@@ -40,6 +41,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     showAskButton,
     showNoQuestionsBtn,
   } = props;
+  const analytics = useAnalytics();
   const [page, setPage] = React.useState(1);
   const [questionsPerPage, setQuestionsPerPage] = React.useState(10);
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
@@ -87,6 +89,9 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
 
   const onSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onPageChange(1);
+    if (event.target.value) {
+      analytics.captureEvent('qeta_search', event.target.value);
+    }
     setSearchQuery(event.target.value);
   };
 
