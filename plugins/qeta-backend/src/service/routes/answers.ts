@@ -34,10 +34,17 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
+    const questionId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(questionId)) {
+      response
+        .status(400)
+        .send({ errors: 'Invalid question id', type: 'body' });
+      return;
+    }
+
     const username = await getUsername(request, options);
     const moderator = await isModerator(request, options);
     const created = await getCreated(request, options);
-    const questionId = Number.parseInt(request.params.id, 10);
     // Act
     const answer = await database.answerQuestion(
       username,
@@ -84,11 +91,18 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     const globalEdit =
       options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
 
+    const questionId = Number.parseInt(request.params.id, 10);
+    const answerId = Number.parseInt(request.params.answerId, 10);
+    if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+      response.status(400).send({ errors: 'Invalid id', type: 'body' });
+      return;
+    }
+
     // Act
     const answer = await database.updateAnswer(
       username,
-      Number.parseInt(request.params.id, 10),
-      Number.parseInt(request.params.answerId, 10),
+      questionId,
+      answerId,
       request.body.answer,
       request.body.images,
       moderator || globalEdit,
@@ -119,10 +133,16 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         return;
       }
 
+      const questionId = Number.parseInt(request.params.id, 10);
+      const answerId = Number.parseInt(request.params.answerId, 10);
+      if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+        response.status(400).send({ errors: 'Invalid id', type: 'body' });
+        return;
+      }
+
       const username = await getUsername(request, options);
       const moderator = await isModerator(request, options);
       const created = await getCreated(request, options);
-      const answerId = Number.parseInt(request.params.answerId, 10);
       // Act
       const answer = await database.commentAnswer(
         answerId,
@@ -139,7 +159,6 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       mapAdditionalFields(username, answer, options, moderator);
 
       if (eventBroker) {
-        const questionId = Number.parseInt(request.params.id, 10);
         const question = await database.getQuestion(
           username,
           questionId,
@@ -170,11 +189,22 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       // Validation
       const username = await getUsername(request, options);
       const moderator = await isModerator(request, options);
+      const questionId = Number.parseInt(request.params.id, 10);
+      const answerId = Number.parseInt(request.params.answerId, 10);
+      const commentId = Number.parseInt(request.params.commentId, 10);
+      if (
+        Number.isNaN(questionId) ||
+        Number.isNaN(answerId) ||
+        Number.isNaN(commentId)
+      ) {
+        response.status(400).send({ errors: 'Invalid id', type: 'body' });
+        return;
+      }
 
       // Act
       const answer = await database.deleteAnswerComment(
-        Number.parseInt(request.params.answerId, 10),
-        Number.parseInt(request.params.commentId, 10),
+        answerId,
+        commentId,
         username,
         moderator,
       );
@@ -199,10 +229,14 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     const username = await getUsername(request, options);
     const moderator = await isModerator(request, options);
     await checkPermissions(request, qetaReadPermission, options);
-    const answer = await database.getAnswer(
-      Number.parseInt(request.params.answerId, 10),
-      username,
-    );
+    const questionId = Number.parseInt(request.params.id, 10);
+    const answerId = Number.parseInt(request.params.answerId, 10);
+    if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+      response.status(400).send({ errors: 'Invalid id', type: 'body' });
+      return;
+    }
+
+    const answer = await database.getAnswer(answerId, username);
 
     if (answer === null) {
       response.sendStatus(404);
@@ -222,10 +256,14 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       // Validation
       const moderator = await isModerator(request, options);
       const username = await getUsername(request, options);
+      const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
+      if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+        response.status(400).send({ errors: 'Invalid id', type: 'body' });
+        return;
+      }
 
       if (eventBroker) {
-        const questionId = Number.parseInt(request.params.id, 10);
         const question = await database.getQuestion(
           username,
           questionId,
@@ -261,11 +299,16 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     score: number,
   ) => {
     // Validation
+    const questionId = Number.parseInt(request.params.id, 10);
+    const answerId = Number.parseInt(request.params.answerId, 10);
+    if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+      response.status(400).send({ errors: 'Invalid id', type: 'body' });
+      return;
+    }
 
     // Act
     const username = await getUsername(request, options);
     const moderator = await isModerator(request, options);
-    const answerId = Number.parseInt(request.params.answerId, 10);
     const voted = await database.voteAnswer(username, answerId, score);
 
     if (!voted) {
@@ -281,7 +324,6 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     }
 
     if (eventBroker) {
-      const questionId = Number.parseInt(request.params.id, 10);
       const question = await database.getQuestion(username, questionId, false);
       await eventBroker.publish({
         topic: 'qeta',
@@ -324,6 +366,11 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
       const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
+      if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+        response.status(400).send({ errors: 'Invalid id', type: 'body' });
+        return;
+      }
+
       const marked = await database.markAnswerCorrect(
         username,
         questionId,
@@ -362,6 +409,11 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
       const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
+      if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+        response.status(400).send({ errors: 'Invalid id', type: 'body' });
+        return;
+      }
+
       const marked = await database.markAnswerIncorrect(
         username,
         questionId,
