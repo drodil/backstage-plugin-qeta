@@ -90,26 +90,26 @@ export const attachmentsRoutes = (router: Router, options: RouterOptions) => {
     const { uuid } = request.params;
 
     const attachment = await database.getAttachment(uuid);
-
-    if (attachment) {
-      let imageBuffer: Buffer;
-      if (attachment.locationType === 'database') {
-        imageBuffer = attachment.binaryImage;
-      } else {
-        imageBuffer = await fs.promises.readFile(attachment.path);
-      }
-
-      if (!imageBuffer) {
-        response.status(500).send('Attachment buffer is undefined');
-      }
-
-      response.writeHead(200, {
-        'Content-Type': attachment.mimeType,
-        'Content-Length': imageBuffer ? imageBuffer.byteLength : '',
-      });
-
-      return response.end(imageBuffer);
+    if (!attachment) {
+      return response.status(404).send('Attachment not found');
     }
-    return response.status(404).send('Attachment not found');
+
+    let imageBuffer: Buffer;
+    if (attachment.locationType === 'database') {
+      imageBuffer = attachment.binaryImage;
+    } else {
+      imageBuffer = await fs.promises.readFile(attachment.path);
+    }
+
+    if (!imageBuffer) {
+      response.status(500).send('Attachment buffer is undefined');
+    }
+
+    response.writeHead(200, {
+      'Content-Type': attachment.mimeType,
+      'Content-Length': imageBuffer ? imageBuffer.byteLength : '',
+    });
+
+    return response.end(imageBuffer);
   });
 };
