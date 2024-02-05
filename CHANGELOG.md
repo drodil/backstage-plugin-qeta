@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.22.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.21.1...v1.22.0) (2024-02-05)
+
+
+### Features
+
+* add analytics events to search ([5d817bf](https://github.com/drodil/backstage-plugin-qeta/commit/5d817bf9e1730139a7cee9b0e9fc38a04b2e00b8))
+
+
+### Bug Fixes
+
+* prettier ([32b3195](https://github.com/drodil/backstage-plugin-qeta/commit/32b3195b7724fc16bc49b5b481e178cd67bdb71f))
+* validate router id parameters to be numbers ([f897010](https://github.com/drodil/backstage-plugin-qeta/commit/f8970102c439b705cab0abf89055c36112ac7c10))
+
 ### [1.21.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.21.0...v1.21.1) (2024-01-30)
 
 
