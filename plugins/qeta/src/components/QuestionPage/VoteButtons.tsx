@@ -5,9 +5,11 @@ import {
 import {
   Box,
   IconButton,
+  Theme,
   Tooltip,
   Typography,
-  useTheme,
+  createStyles,
+  makeStyles,
 } from '@material-ui/core';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
@@ -15,6 +17,17 @@ import Check from '@material-ui/icons/Check';
 import React from 'react';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    qetaCorrectAnswerSelected: {
+      color: theme.palette.success.main,
+    },
+    qetaCorrectAnswer: {
+      color: theme.palette.grey[500],
+    },
+  }),
+);
 
 export const VoteButtons = (props: {
   entity: QuestionResponse | AnswerResponse;
@@ -29,9 +42,10 @@ export const VoteButtons = (props: {
     props.entity,
   );
   const qetaApi = useApi(qetaApiRef);
-  const theme = useTheme();
+
   const isQuestion = 'title' in entity;
   const own = props.entity.own ?? false;
+  const classes = useStyles();
 
   const voteUp = () => {
     if (isQuestion) {
@@ -155,14 +169,9 @@ export const VoteButtons = (props: {
                   <Check
                     className={
                       correct
-                        ? 'qetaCorrectAnswerSelected'
-                        : 'qetaCorrectAnswer'
+                        ? classes.qetaCorrectAnswerSelected
+                        : classes.qetaCorrectAnswer
                     }
-                    style={{
-                      color: correct
-                        ? `${theme.palette.success.main} !important`
-                        : undefined,
-                    }}
                   />
                 </IconButton>
               </span>
