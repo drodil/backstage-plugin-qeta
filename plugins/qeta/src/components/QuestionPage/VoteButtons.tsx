@@ -10,7 +10,6 @@ import {
   Typography,
   createStyles,
   makeStyles,
-  useTheme,
 } from '@material-ui/core';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
@@ -43,7 +42,7 @@ export const VoteButtons = (props: {
     props.entity,
   );
   const qetaApi = useApi(qetaApiRef);
-  const theme = useTheme();
+
   const isQuestion = 'title' in entity;
   const own = props.entity.own ?? false;
   const classes = useStyles();
