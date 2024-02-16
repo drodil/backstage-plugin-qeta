@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.22.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.22.0...v1.22.1) (2024-02-16)
+
+
+### Bug Fixes
+
+* selected correct answer color ([dca5329](https://github.com/drodil/backstage-plugin-qeta/commit/dca5329bb8a289064514cb5c9d3780c58a368422))
+
 ## [1.22.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.21.1...v1.22.0) (2024-02-05)
 
 
