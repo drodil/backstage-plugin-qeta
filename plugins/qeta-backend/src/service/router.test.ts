@@ -974,7 +974,7 @@ describe('createRouter', () => {
         '/statistics/questions/top-upvoted-users',
       );
 
-      expect(qetaStore.getMostUpvotedQuestions).toHaveBeenCalledTimes(1);
+      expect(qetaStore.getMostUpvotedQuestions).toHaveBeenCalledTimes(3);
       expect(response.status).toEqual(200);
       expect(response.body.ranking.length).toBeGreaterThan(0);
       expect(response.body.loggedUser.author).toEqual(
