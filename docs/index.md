@@ -12,3 +12,4 @@
 - [Integration with Backstage catalog](catalog.md)
 - [Integration with permissions](permissions.md)
 - [Integration with homepage](home.md)
+- [Integration with signals](signals.md)
