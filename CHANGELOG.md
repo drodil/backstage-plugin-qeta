@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.23.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.23.0...v1.23.1) (2024-02-22)
+
+
+### Bug Fixes
+
+* make sure author is user entity before using entity presentation ([dcd0b6e](https://github.com/drodil/backstage-plugin-qeta/commit/dcd0b6e04b350ea2ea25d160e86223631d6e3c40))
+
 ## [1.23.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.22.1...v1.23.0) (2024-02-22)
 
 
