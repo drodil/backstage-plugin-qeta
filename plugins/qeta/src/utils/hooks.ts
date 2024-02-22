@@ -291,7 +291,12 @@ export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
   const [initials, setInitials] = React.useState<string | null>(null);
   const [currentUser, setCurrentUser] = React.useState<string | null>(null);
   const anonymous = entity.anonymous ?? false;
-  const { primaryTitle: userName } = useEntityPresentation(entity.author);
+  let author = entity.author;
+  if (!author.startsWith('user:')) {
+    author = `user:${author}`;
+  }
+
+  const { primaryTitle: userName } = useEntityPresentation(author);
 
   useEffect(() => {
     if (!anonymous) {
