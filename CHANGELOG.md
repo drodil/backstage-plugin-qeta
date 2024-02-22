@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.23.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.22.1...v1.23.0) (2024-02-22)
+
+
+### Features
+
+* add support for real time stats with signals ([672877b](https://github.com/drodil/backstage-plugin-qeta/commit/672877b81bfc8e0fe89b5b48d01638c1b0ea9e28))
+
+
+### Bug Fixes
+
+* add support for signals in new backend system ([2f2e6d5](https://github.com/drodil/backstage-plugin-qeta/commit/2f2e6d5ffb3e54ca612d3d21772345bc7518a35f))
+* failing test due to backstage update ([4943cf9](https://github.com/drodil/backstage-plugin-qeta/commit/4943cf950beb10ba5b2f94ac945895246e9bf240))
+
 ### [1.22.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.22.0...v1.22.1) (2024-02-16)
 
 
