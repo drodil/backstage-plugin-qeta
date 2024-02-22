@@ -69,6 +69,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         },
         metadata: { action: 'post_answer' },
       });
+      signalQuestionStats(signalService, question);
     }
 
     // Response
@@ -280,6 +281,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
           },
           metadata: { action: 'delete_answer' },
         });
+        signalQuestionStats(signalService, question);
       }
 
       // Act
