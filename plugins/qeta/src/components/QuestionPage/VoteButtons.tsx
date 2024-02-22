@@ -1,22 +1,24 @@
 import {
   AnswerResponse,
+  QetaSignal,
   QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   Box,
+  createStyles,
   IconButton,
+  makeStyles,
   Theme,
   Tooltip,
   Typography,
-  createStyles,
-  makeStyles,
 } from '@material-ui/core';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
+import { useSignal } from '@backstage/plugin-signals-react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,19 +35,34 @@ export const VoteButtons = (props: {
   entity: QuestionResponse | AnswerResponse;
   question?: QuestionResponse;
 }) => {
-  const [ownVote, setOwnVote] = React.useState(props.entity.ownVote ?? 0);
-  const analytics = useAnalytics();
-  const isCorrectAnswer =
-    'questionId' in props.entity ? props.entity.correct : false;
-  const [correct, setCorrect] = React.useState(isCorrectAnswer);
   const [entity, setEntity] = React.useState<QuestionResponse | AnswerResponse>(
     props.entity,
   );
+  const [ownVote, setOwnVote] = React.useState(props.entity.ownVote ?? 0);
+  const [correctAnswer, setCorrectAnswer] = useState(
+    'questionId' in props.entity ? props.entity.correct : false,
+  );
+  const [score, setScore] = useState(entity.score);
+  const analytics = useAnalytics();
   const qetaApi = useApi(qetaApiRef);
 
   const isQuestion = 'title' in entity;
   const own = props.entity.own ?? false;
   const classes = useStyles();
+
+  const { lastSignal } = useSignal<QetaSignal>(
+    isQuestion ? `qeta:question_${entity.id}` : `qeta:answer_${entity.id}`,
+  );
+
+  useEffect(() => {
+    if (
+      lastSignal?.type === 'question_stats' ||
+      lastSignal?.type === 'answer_stats'
+    ) {
+      setCorrectAnswer(lastSignal.correctAnswer);
+      setScore(lastSignal.score);
+    }
+  }, [lastSignal]);
 
   const voteUp = () => {
     if (isQuestion) {
@@ -79,11 +96,13 @@ export const VoteButtons = (props: {
     }
   };
 
-  let correctTooltip = correct
+  let correctTooltip = correctAnswer
     ? 'Mark answer as incorrect'
     : 'Mark answer as correct';
   if (!props.question?.own) {
-    correctTooltip = correct ? 'This answer has been marked as correct' : '';
+    correctTooltip = correctAnswer
+      ? 'This answer has been marked as correct'
+      : '';
   }
 
   let voteUpTooltip = isQuestion
@@ -106,17 +125,17 @@ export const VoteButtons = (props: {
     if (!('questionId' in entity)) {
       return;
     }
-    if (correct) {
+    if (correctAnswer) {
       qetaApi
         .markAnswerIncorrect(entity.questionId, entity.id)
         .then(response => {
           if (response) {
-            setCorrect(false);
+            setCorrectAnswer(false);
           }
         });
     } else {
       qetaApi.markAnswerCorrect(entity.questionId, entity.id).then(response => {
-        setCorrect(response);
+        setCorrectAnswer(response);
       });
     }
   };
@@ -137,7 +156,7 @@ export const VoteButtons = (props: {
           </IconButton>
         </span>
       </Tooltip>
-      <Typography variant="h6">{entity.score}</Typography>
+      <Typography variant="h6">{score}</Typography>
       <Tooltip title={voteDownTooltip}>
         <span>
           <IconButton
@@ -153,7 +172,7 @@ export const VoteButtons = (props: {
         </span>
       </Tooltip>
       {'correct' in props.entity &&
-        (props.question?.own || props.question?.canEdit || correct) && (
+        (props.question?.own || props.question?.canEdit || correctAnswer) && (
           <Box>
             <Tooltip title={correctTooltip}>
               <span>
@@ -168,7 +187,7 @@ export const VoteButtons = (props: {
                 >
                   <Check
                     className={
-                      correct
+                      correctAnswer
                         ? classes.qetaCorrectAnswerSelected
                         : classes.qetaCorrectAnswer
                     }

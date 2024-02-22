@@ -19,6 +19,7 @@ import {
   TokenManagerService,
 } from '@backstage/backend-plugin-api';
 import { helperRoutes } from './routes/helpers';
+import { SignalService } from '@backstage/plugin-signals-node';
 
 export interface RouterOptions {
   identity: IdentityApi;
@@ -28,6 +29,7 @@ export interface RouterOptions {
   tokenManager?: TokenManagerService;
   permissions?: PermissionEvaluator;
   eventBroker?: EventBroker;
+  signalService?: SignalService;
 }
 
 export async function createRouter(

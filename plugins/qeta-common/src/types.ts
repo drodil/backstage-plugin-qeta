@@ -139,3 +139,19 @@ export type AttachmentResponseBody = Attachment | ErrorResponse;
 
 export type QuestionResponse = Question;
 export type AnswerResponse = Answer;
+
+export type QetaQuestionStatsSignal = {
+  type: 'question_stats';
+  views: number;
+  score: number;
+  answersCount: number;
+  correctAnswer: boolean;
+};
+
+export type QetaAnswerStatsSignal = {
+  type: 'answer_stats';
+  score: number;
+  correctAnswer: boolean;
+};
+
+export type QetaSignal = QetaQuestionStatsSignal | QetaAnswerStatsSignal;

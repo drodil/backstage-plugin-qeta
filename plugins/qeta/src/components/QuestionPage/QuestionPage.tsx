@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Container,
@@ -19,6 +19,7 @@ import { QuestionCard } from './QuestionCard';
 import {
   Answer,
   AnswerResponse,
+  QetaSignal,
   QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { AnswerForm } from './AnswerForm';
@@ -28,6 +29,7 @@ import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { UpdatedByLink } from '../Links/Links';
+import { useSignal } from '@backstage/plugin-signals-react';
 
 export const QuestionPage = () => {
   const { id } = useParams();
@@ -36,11 +38,30 @@ export const QuestionPage = () => {
   const [answerSort, setAnswerSort] = React.useState<string>('default');
   const [searchParams] = useSearchParams();
 
+  const [answersCount, setAnswersCount] = useState(0);
+  const [views, setViews] = useState(0);
+
+  const { lastSignal } = useSignal<QetaSignal>(`qeta:question_${id}`);
+
   const {
     value: question,
     loading,
     error,
   } = useQetaApi(api => api.getQuestion(id), [id]);
+
+  useEffect(() => {
+    if (question) {
+      setAnswersCount(question.answersCount);
+      setViews(question.views);
+    }
+  }, [question]);
+
+  useEffect(() => {
+    if (lastSignal?.type === 'question_stats') {
+      setAnswersCount(lastSignal.answersCount);
+      setViews(lastSignal.views);
+    }
+  }, [lastSignal]);
 
   const onAnswerPost = (answer: AnswerResponse) => {
     setNewAnswers(newAnswers.concat([answer]));
@@ -64,7 +85,7 @@ export const QuestionPage = () => {
         )}
         Viewed{' '}
         <Box fontWeight="fontWeightMedium" display="inline">
-          {q.views} times
+          {views} times
         </Box>
       </span>
     );
@@ -118,7 +139,7 @@ export const QuestionPage = () => {
     return ret;
   };
 
-  const allQuestions = (question.answers ?? []).concat(newAnswers);
+  const allAnswers = (question.answers ?? []).concat(newAnswers);
   return (
     <Content>
       <Container maxWidth="lg">
@@ -137,10 +158,10 @@ export const QuestionPage = () => {
           <Grid container justifyContent="space-between" alignItems="center">
             <Grid item>
               <Typography variant="h6">
-                {question.answersCount + newAnswers.length} answers
+                {answersCount + newAnswers.length} answers
               </Typography>
             </Grid>
-            {allQuestions.length > 1 && (
+            {allAnswers.length > 1 && (
               <Grid item>
                 <FormControl>
                   <Select
@@ -170,7 +191,7 @@ export const QuestionPage = () => {
             )}
           </Grid>
         </Box>
-        {allQuestions.sort(sortAnswers).map(a => {
+        {allAnswers.sort(sortAnswers).map(a => {
           return (
             <React.Fragment key={a.id}>
               <Divider className={styles.questionDivider} />

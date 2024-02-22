@@ -15,12 +15,13 @@ import {
   qetaReadPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Response } from 'express-serve-static-core';
+import { signalAnswerStats, signalQuestionStats } from './util';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const answersRoutes = (router: Router, options: RouterOptions) => {
-  const { database, eventBroker } = options;
+  const { database, eventBroker, signalService } = options;
 
   // POST /questions/:id/answers
   router.post(`/questions/:id/answers`, async (request, response) => {
@@ -59,7 +60,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
     if (eventBroker) {
       const question = await database.getQuestion(username, questionId, false);
-      await eventBroker.publish({
+      eventBroker.publish({
         topic: 'qeta',
         eventPayload: {
           answer,
@@ -164,7 +165,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
           questionId,
           false,
         );
-        await eventBroker.publish({
+        eventBroker.publish({
           topic: 'qeta',
           eventPayload: {
             question,
@@ -270,7 +271,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
           false,
         );
         const answer = await database.getAnswer(answerId, username);
-        await eventBroker.publish({
+        eventBroker.publish({
           topic: 'qeta',
           eventPayload: {
             question,
@@ -319,13 +320,17 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     const answer = await database.getAnswer(answerId, username);
 
     mapAdditionalFields(username, answer, options, moderator);
-    if (answer) {
-      answer.ownVote = score;
+
+    if (answer === null) {
+      response.sendStatus(404);
+      return;
     }
+
+    answer.ownVote = score;
 
     if (eventBroker) {
       const question = await database.getQuestion(username, questionId, false);
-      await eventBroker.publish({
+      eventBroker.publish({
         topic: 'qeta',
         eventPayload: {
           question,
@@ -336,6 +341,9 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         metadata: { action: 'vote_answer' },
       });
     }
+
+    signalAnswerStats(signalService, answer);
+
     // Response
     response.json(answer);
   };
@@ -378,23 +386,30 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         moderator || globalEdit,
       );
 
-      if (eventBroker) {
+      if (eventBroker || signalService) {
         const question = await database.getQuestion(
           username,
           questionId,
           false,
         );
         const answer = await database.getAnswer(answerId, username);
-        await eventBroker.publish({
-          topic: 'qeta',
-          eventPayload: {
-            question,
-            answer,
-            author: username,
-          },
-          metadata: { action: 'correct_answer' },
-        });
+
+        if (eventBroker) {
+          eventBroker.publish({
+            topic: 'qeta',
+            eventPayload: {
+              question,
+              answer,
+              author: username,
+            },
+            metadata: { action: 'correct_answer' },
+          });
+        }
+
+        signalQuestionStats(signalService, question);
+        signalAnswerStats(signalService, answer);
       }
+
       response.sendStatus(marked ? 200 : 404);
     },
   );
@@ -427,7 +442,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
           false,
         );
         const answer = await database.getAnswer(answerId, username);
-        await eventBroker.publish({
+        eventBroker.publish({
           topic: 'qeta',
           eventPayload: {
             question,

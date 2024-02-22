@@ -3513,6 +3513,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/plugin-signals-node@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@backstage/plugin-signals-node@npm:0.0.1"
+  dependencies:
+    "@backstage/backend-common": ^0.21.0
+    "@backstage/backend-plugin-api": ^0.6.10
+    "@backstage/config": ^1.1.1
+    "@backstage/plugin-auth-node": ^0.4.4
+    "@backstage/plugin-events-node": ^0.2.19
+    "@backstage/types": ^1.1.1
+    express: ^4.17.1
+    uuid: ^8.0.0
+    ws: ^8.14.2
+  checksum: 5a5e299635890636783fb0d2abbe9398cbc497bf48403f9d0e66ad8518fc405bcca95f438440c7c5c83f1f77b9b76d7641c3044e40632a5fe45ab1c72e66243e
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-signals-react@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@backstage/plugin-signals-react@npm:0.0.1"
+  dependencies:
+    "@backstage/core-plugin-api": ^1.9.0
+    "@backstage/types": ^1.1.1
+    "@material-ui/core": ^4.12.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  checksum: 5cb7a92df6bbd611ee99e9ddd220c0abfce49af0ac1a256af24fefc37f4b31fbea8e6108932a4d8effb1652bb1e526aa37e9c66ebdda73b2aab31911f125e963
+  languageName: node
+  linkType: hard
+
 "@backstage/release-manifests@npm:^0.0.11":
   version: 0.0.11
   resolution: "@backstage/release-manifests@npm:0.0.11"
@@ -3863,6 +3893,7 @@ __metadata:
     "@backstage/plugin-permission-common": ^0.7.12
     "@backstage/plugin-permission-node": ^0.7.21
     "@backstage/plugin-search-common": ^1.2.10
+    "@backstage/plugin-signals-node": ^0.0.1
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@types/express": "*"
     "@types/multiparty": ^0.0.33
@@ -3927,6 +3958,7 @@ __metadata:
     "@backstage/plugin-home": ^0.6.2
     "@backstage/plugin-home-react": ^0.1.8
     "@backstage/plugin-permission-react": ^0.4.20
+    "@backstage/plugin-signals-react": ^0.0.1
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@drodil/backstage-plugin-qeta-react": "workspace:^"
     "@material-ui/core": ^4.12.2
@@ -26086,6 +26118,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 53e991bbf928faf5dc6efac9b8eb9ab6497c69feeb94f963d648b7a3530a720b19ec2e0ec037344257e05a4f35bd9ad04d9de6f289615ffb133282031b18c61c
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.14.2":
+  version: 8.16.0
+  resolution: "ws@npm:8.16.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: feb3eecd2bae82fa8a8beef800290ce437d8b8063bdc69712725f21aef77c49cb2ff45c6e5e7fce622248f9c7abaee506bae0a9064067ffd6935460c7357321b
   languageName: node
   linkType: hard
 

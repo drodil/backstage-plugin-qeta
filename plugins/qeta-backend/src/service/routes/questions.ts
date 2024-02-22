@@ -20,12 +20,13 @@ import {
   QuestionsQuerySchema,
 } from '../types';
 import { Response } from 'express-serve-static-core';
+import { signalQuestionStats } from './util';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const questionsRoutes = (router: Router, options: RouterOptions) => {
-  const { database, eventBroker, config } = options;
+  const { database, eventBroker, config, signalService } = options;
   // GET /questions
   router.get(`/questions`, async (request, response) => {
     // Validation
@@ -112,6 +113,8 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       mapAdditionalFields(username, a, options, moderator),
     );
 
+    signalQuestionStats(signalService, question);
+
     // Response
     response.json(question);
   });
@@ -157,7 +160,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     );
 
     if (eventBroker) {
-      await eventBroker.publish({
+      eventBroker.publish({
         topic: 'qeta',
         eventPayload: {
           question,
@@ -266,7 +269,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     );
 
     if (eventBroker) {
-      await eventBroker.publish({
+      eventBroker.publish({
         topic: 'qeta',
         eventPayload: {
           question,
@@ -324,7 +327,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     }
 
     if (eventBroker) {
-      await eventBroker.publish({
+      eventBroker.publish({
         topic: 'qeta',
         eventPayload: {
           question,
@@ -354,7 +357,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
 
     if (eventBroker) {
       const question = database.getQuestion(username, questionId, false);
-      await eventBroker.publish({
+      eventBroker.publish({
         topic: 'qeta',
         eventPayload: {
           question,
@@ -401,13 +404,16 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
 
     const question = await database.getQuestion(username, questionId, false);
 
-    mapAdditionalFields(username, question, options, moderator);
-    if (question) {
-      question.ownVote = score;
+    if (question === null) {
+      response.sendStatus(404);
+      return;
     }
 
+    mapAdditionalFields(username, question, options, moderator);
+    question.ownVote = score;
+
     if (eventBroker) {
-      await eventBroker.publish({
+      eventBroker.publish({
         topic: 'qeta',
         eventPayload: {
           question,
@@ -417,6 +423,8 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
         metadata: { action: 'vote_question' },
       });
     }
+
+    signalQuestionStats(signalService, question);
 
     // Response
     response.json(question);

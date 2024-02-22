@@ -7,7 +7,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { removeMarkdownFormatting, truncate } from '../../utils/utils';
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
@@ -17,8 +17,12 @@ import {
   userRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
-import { QuestionResponse } from '@drodil/backstage-plugin-qeta-common';
+import {
+  QetaSignal,
+  QuestionResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 import { useEntityAuthor, useStyles } from '../../utils/hooks';
+import { useSignal } from '@backstage/plugin-signals-react';
 
 export interface QuestionListItemProps {
   question: QuestionResponse;
@@ -27,6 +31,22 @@ export interface QuestionListItemProps {
 
 export const QuestionListItem = (props: QuestionListItemProps) => {
   const { question, entity } = props;
+
+  const [correctAnswer, setCorrectAnswer] = useState(question.correctAnswer);
+  const [answersCount, setAnswersCount] = useState(question.answersCount);
+  const [score, setScore] = useState(question.score);
+  const [views, setViews] = useState(question.views);
+
+  const { lastSignal } = useSignal<QetaSignal>(`qeta:question_${question.id}`);
+
+  useEffect(() => {
+    if (lastSignal?.type === 'question_stats') {
+      setCorrectAnswer(lastSignal.correctAnswer);
+      setAnswersCount(lastSignal.answersCount);
+      setScore(lastSignal.score);
+      setViews(lastSignal.views);
+    }
+  }, [lastSignal]);
 
   const questionRoute = useRouteRef(questionRouteRef);
   const userRoute = useRouteRef(userRouteRef);
@@ -43,30 +63,28 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
             variant="caption"
             className="qetaQuestionListItemScore"
           >
-            {question.score} score
+            {score} score
           </Typography>
           <Typography
             variant="caption"
             display="block"
             className={`qetaQuestionListItemAnswers ${
-              question.correctAnswer
+              correctAnswer
                 ? 'qetaQuestionListItemCorrectAnswer'
                 : 'quetaQuestionListItemNoCorrectAnswer'
             }`}
             style={{
-              color: question.correctAnswer
-                ? theme.palette.success.main
-                : undefined,
+              color: correctAnswer ? theme.palette.success.main : undefined,
             }}
           >
-            {question.answersCount} answers
+            {answersCount} answers
           </Typography>
           <Typography
             display="block"
             variant="caption"
             className="qetaQuestionListItemViews"
           >
-            {question.views} views
+            {views} views
           </Typography>
         </Box>
         <Box className={styles.questionListItemContent}>

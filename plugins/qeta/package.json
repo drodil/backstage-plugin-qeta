@@ -48,6 +48,7 @@
     "@backstage/plugin-catalog-react": "^1.10.0",
     "@backstage/plugin-home-react": "^0.1.8",
     "@backstage/plugin-permission-react": "^0.4.20",
+    "@backstage/plugin-signals-react": "^0.0.1",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",
     "@drodil/backstage-plugin-qeta-react": "workspace:^",
     "@material-ui/core": "^4.12.2",
