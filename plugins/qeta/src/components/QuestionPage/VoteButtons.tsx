@@ -55,6 +55,12 @@ export const VoteButtons = (props: {
   );
 
   useEffect(() => {
+    if (entity) {
+      setScore(entity.score);
+    }
+  }, [entity]);
+
+  useEffect(() => {
     if (
       lastSignal?.type === 'question_stats' ||
       lastSignal?.type === 'answer_stats'
