@@ -39,18 +39,18 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.21.0",
-    "@backstage/backend-plugin-api": "^0.6.10",
-    "@backstage/backend-tasks": "^0.5.15",
+    "@backstage/backend-common": "^0.21.3",
+    "@backstage/backend-plugin-api": "^0.6.13",
+    "@backstage/backend-tasks": "^0.5.18",
     "@backstage/config": "^1.1.1",
     "@backstage/core-plugin-api": "^1.9.0",
     "@backstage/errors": "^1.2.3",
-    "@backstage/plugin-search-backend-node": "^1.2.14",
+    "@backstage/plugin-search-backend-node": "^1.2.17",
     "@backstage/plugin-search-common": "^1.2.10",
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.3.0",
+    "@backstage/backend-test-utils": "^0.3.3",
     "@backstage/cli": "^0.25.2",
     "msw": "^1.2.1"
   },
