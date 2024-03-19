@@ -171,10 +171,11 @@ type Props = {
   title?: string;
   subtitle?: string;
   headerElements?: JSX.Element[];
+  themeId?: string;
 };
 
 export const HomePage = (props: Props) => (
-  <Page themeId="tool">
+  <Page themeId={props.themeId ?? 'tool'}>
     <Header title={props.title ?? 'Q&A'} subtitle={props.subtitle}>
       {props.headerElements}
     </Header>
