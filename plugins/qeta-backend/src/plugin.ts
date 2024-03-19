@@ -5,7 +5,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
 import { DatabaseQetaStore } from './database/DatabaseQetaStore';
-import { signalService } from '@backstage/plugin-signals-node';
+import { signalsServiceRef } from '@backstage/plugin-signals-node';
 
 const logger = getRootLogger();
 
@@ -24,7 +24,7 @@ export const qetaPlugin = createBackendPlugin({
         identity: coreServices.identity,
         database: coreServices.database,
         tokenManager: coreServices.tokenManager,
-        signals: signalService,
+        signals: signalsServiceRef,
       },
       async init({
         config,
@@ -45,7 +45,7 @@ export const qetaPlugin = createBackendPlugin({
             identity,
             database: qetaStore,
             tokenManager,
-            signalService: signals,
+            signals: signals,
           }),
         );
       },

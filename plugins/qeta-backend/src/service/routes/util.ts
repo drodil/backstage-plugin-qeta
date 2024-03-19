@@ -3,17 +3,17 @@ import {
   QetaSignal,
   Question,
 } from '@drodil/backstage-plugin-qeta-common';
-import { SignalService } from '@backstage/plugin-signals-node';
+import { SignalsService } from '@backstage/plugin-signals-node';
 
 export const signalQuestionStats = (
-  signalService?: SignalService,
+  signalService?: SignalsService,
   question?: Question | null,
 ) => {
   if (!signalService || !question) {
     return;
   }
   signalService.publish<QetaSignal>({
-    recipients: null,
+    recipients: { type: 'broadcast' },
     channel: `qeta:question_${question.id}`,
     message: {
       type: 'question_stats',
@@ -26,14 +26,14 @@ export const signalQuestionStats = (
 };
 
 export const signalAnswerStats = async (
-  signalService?: SignalService,
+  signalService?: SignalsService,
   answer?: Answer | null,
 ) => {
   if (!signalService || !answer) {
     return;
   }
   signalService.publish<QetaSignal>({
-    recipients: null,
+    recipients: { type: 'broadcast' },
     channel: `qeta:answer_${answer.id}`,
     message: {
       type: 'answer_stats',

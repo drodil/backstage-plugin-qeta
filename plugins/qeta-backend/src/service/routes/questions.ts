@@ -26,7 +26,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const questionsRoutes = (router: Router, options: RouterOptions) => {
-  const { database, eventBroker, config, signalService } = options;
+  const { database, eventBroker, config, signals } = options;
   // GET /questions
   router.get(`/questions`, async (request, response) => {
     // Validation
@@ -113,7 +113,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       mapAdditionalFields(username, a, options, moderator),
     );
 
-    signalQuestionStats(signalService, question);
+    signalQuestionStats(signals, question);
 
     // Response
     response.json(question);
@@ -424,7 +424,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       });
     }
 
-    signalQuestionStats(signalService, question);
+    signalQuestionStats(signals, question);
 
     // Response
     response.json(question);

@@ -21,7 +21,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const answersRoutes = (router: Router, options: RouterOptions) => {
-  const { database, eventBroker, signalService } = options;
+  const { database, eventBroker, signals } = options;
 
   // POST /questions/:id/answers
   router.post(`/questions/:id/answers`, async (request, response) => {
@@ -69,7 +69,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         },
         metadata: { action: 'post_answer' },
       });
-      signalQuestionStats(signalService, question);
+      signalQuestionStats(signals, question);
     }
 
     // Response
@@ -281,7 +281,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
           },
           metadata: { action: 'delete_answer' },
         });
-        signalQuestionStats(signalService, question);
+        signalQuestionStats(signals, question);
       }
 
       // Act
@@ -344,7 +344,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       });
     }
 
-    signalAnswerStats(signalService, answer);
+    signalAnswerStats(signals, answer);
 
     // Response
     response.json(answer);
@@ -388,7 +388,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         moderator || globalEdit,
       );
 
-      if (eventBroker || signalService) {
+      if (eventBroker || signals) {
         const question = await database.getQuestion(
           username,
           questionId,
@@ -408,8 +408,8 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
           });
         }
 
-        signalQuestionStats(signalService, question);
-        signalAnswerStats(signalService, answer);
+        signalQuestionStats(signals, question);
+        signalAnswerStats(signals, answer);
       }
 
       response.sendStatus(marked ? 200 : 404);
