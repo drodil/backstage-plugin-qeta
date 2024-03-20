@@ -5,6 +5,7 @@ import React, { useEffect, useMemo } from 'react';
 import { qetaApiRef } from '../../api';
 import { QuestionForm } from './types';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 
 export const TagInput = (props: { control: Control<QuestionForm> }) => {
   const { control } = props;
@@ -45,7 +46,7 @@ export const TagInput = (props: { control: Control<QuestionForm> }) => {
   return (
     <Controller
       control={control}
-      render={({ field: { onChange, value } }) => (
+      render={({ field: { onChange, value }, fieldState: { error } }) => (
         <Autocomplete
           multiple
           id="tags-select"
@@ -54,7 +55,12 @@ export const TagInput = (props: { control: Control<QuestionForm> }) => {
           options={availableTags ?? []}
           freeSolo={allowCreation}
           onChange={(_e, newValue) => {
-            if (!value || value.length < maximumTags) {
+            const tags = filterTags(newValue);
+            if (
+              tags &&
+              tags.length <= maximumTags &&
+              tags.length === newValue.length
+            ) {
               onChange(newValue);
             }
           }}
@@ -66,6 +72,7 @@ export const TagInput = (props: { control: Control<QuestionForm> }) => {
               label="Tags"
               placeholder="Type or select tags"
               helperText={`Add up to ${maximumTags} tags to categorize your question`}
+              error={error !== undefined}
             />
           )}
         />

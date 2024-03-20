@@ -10,13 +10,14 @@ import {
 
 import React, { useEffect } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
-import { FilterKey, filterKeys, FilterPanel } from './FilterPanel';
+import { FilterKey, filterKeys, FilterPanel, Filters } from './FilterPanel';
 import { QuestionList } from './QuestionList';
 import FilterList from '@material-ui/icons/FilterList';
 import { useSearchParams } from 'react-router-dom';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useAnalytics } from '@backstage/core-plugin-api';
+import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 
 export interface QuestionsContainerProps {
   tags?: string[];
@@ -29,6 +30,7 @@ export interface QuestionsContainerProps {
   showAskButton?: boolean;
   showNoQuestionsBtn?: boolean;
 }
+
 export const QuestionsContainer = (props: QuestionsContainerProps) => {
   const {
     tags,
@@ -47,7 +49,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [filters, setFilters] = React.useState({
+  const [filters, setFilters] = React.useState<Filters>({
     order: 'desc',
     orderBy: 'created',
     noAnswers: 'false',
@@ -55,7 +57,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     noVotes: 'false',
     searchQuery: '',
     entity: entity ?? '',
-    tag: '',
+    tags: [],
   });
 
   const onPageChange = (value: number) => {
@@ -67,7 +69,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     });
   };
 
-  const onFilterChange = (key: FilterKey, value: string) => {
+  const onFilterChange = (key: FilterKey, value: string | string[]) => {
     if (filters[key] === value) {
       return;
     }
@@ -76,8 +78,14 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     setFilters({ ...filters, ...{ [key]: value } });
     setSearchParams(prev => {
       const newValue = prev;
-      if (value === 'false') {
+      if (!value || value === 'false') {
         newValue.delete(key);
+      } else if (Array.isArray(value)) {
+        if (value.length === 0) {
+          newValue.delete(key);
+        } else {
+          newValue.set(key, value.join(','));
+        }
       } else if (value.length > 0) {
         newValue.set(key, value);
       } else {
@@ -121,7 +129,11 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
           if (qpp > 0) setQuestionsPerPage(qpp);
         } else if (filterKeys.includes(key as FilterKey)) {
           filtersApplied = true;
-          filters[key as FilterKey] = value;
+          if (key === 'tags') {
+            filters.tags = filterTags(value) ?? [];
+          } else {
+            (filters as any)[key] = value;
+          }
         }
       } catch (_e) {
         // NOOP
@@ -139,15 +151,13 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     error,
   } = useQetaApi(
     api => {
-      const { tag: _tag, ...questionFilters } = filters;
       return api.getQuestions({
         limit: questionsPerPage,
         offset: (page - 1) * questionsPerPage,
         includeEntities: true,
         author,
         favorite,
-        tags: tags ?? [filters.tag],
-        ...questionFilters,
+        ...filters,
       });
     },
     [page, filters, questionsPerPage],
@@ -214,6 +224,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
             <AskQuestionButton
               entity={entity ?? filters.entity}
               entityPage={entity !== undefined}
+              tags={tags}
             />
           </Grid>
         )}
@@ -245,7 +256,6 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
             onChange={onFilterChange}
             filters={filters}
             showEntityFilter={!entity}
-            showTagFilter={!tags}
           />
         </Collapse>
       )}

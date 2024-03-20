@@ -14,6 +14,7 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { TablePage } from './TablePage';
 import { HomePage } from './HomePage';
 import { StatisticsPage } from './StatisticsPage';
+import { TagPage } from './TagPage';
 
 const fakeCatalogPlugin = createPlugin({
   id: 'catalog',
@@ -63,6 +64,11 @@ createDevApp()
     element: <CatalogEntityPage />,
     title: 'Component',
     path: '/catalog/default/component/artist-web',
+  })
+  .addPage({
+    element: <TagPage />,
+    title: 'Tag container',
+    path: '/tag-container',
   })
   .addPage({
     element: <TablePage />,

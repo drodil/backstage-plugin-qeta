@@ -37,11 +37,19 @@ const formToRequest = (
   };
 };
 
-const getDefaultValues = (): QuestionForm => {
+export type AskFormProps = {
+  id?: string;
+  entity?: string;
+  tags?: string[];
+  onPost?: (question: QuestionResponse) => void;
+  entityPage?: boolean;
+};
+
+const getDefaultValues = (props: AskFormProps): QuestionForm => {
   return {
     title: '',
     content: '',
-    tags: [],
+    tags: props.tags ?? [],
     entities: [],
   };
 };
@@ -52,7 +60,7 @@ const getValues = async (
   id?: string,
 ): Promise<QuestionForm> => {
   if (!id) {
-    return getDefaultValues();
+    return getDefaultValues({});
   }
 
   const question = await api.getQuestion(id);
@@ -76,19 +84,14 @@ const getValues = async (
   };
 };
 
-export const AskForm = (props: {
-  id?: string;
-  entity?: string;
-  onPost?: (question: QuestionResponse) => void;
-  entityPage?: boolean;
-}) => {
+export const AskForm = (props: AskFormProps) => {
   const { id, entity, onPost, entityPage } = props;
   const questionRoute = useRouteRef(questionRouteRef);
   const navigate = useNavigate();
   const analytics = useAnalytics();
   const [entityRef, setEntityRef] = React.useState(entity);
   const [posting, setPosting] = React.useState(false);
-  const [values, setValues] = React.useState(getDefaultValues());
+  const [values, setValues] = React.useState(getDefaultValues(props));
   const [error, setError] = React.useState(false);
 
   const [images, setImages] = React.useState<number[]>([]);
@@ -107,7 +110,7 @@ export const AskForm = (props: {
     formState: { errors },
   } = useForm<QuestionForm>({
     values,
-    defaultValues: getDefaultValues(),
+    defaultValues: getDefaultValues(props),
   });
 
   const postQuestion = (data: QuestionForm) => {

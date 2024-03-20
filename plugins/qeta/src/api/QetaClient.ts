@@ -585,6 +585,9 @@ export class QetaClient implements QetaApi {
         if (!v) {
           return [k, ''];
         }
+        if (Array.isArray(v)) {
+          return [k, v.join(',')];
+        }
         return [k, `${v}`];
       }),
     );

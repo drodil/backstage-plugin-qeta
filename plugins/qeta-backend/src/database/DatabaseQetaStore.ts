@@ -16,6 +16,7 @@ import {
 import {
   Answer,
   Attachment,
+  filterTags,
   Question,
   Statistic,
   StatisticsRequestParameters,
@@ -135,14 +136,17 @@ export class DatabaseQetaStore implements QetaStore {
       }
     }
 
-    if (options.tags) {
-      query.leftJoin(
-        'question_tags',
-        'questions.id',
-        'question_tags.questionId',
-      );
-      query.leftJoin('tags', 'question_tags.tagId', 'tags.id');
-      query.whereIn('tags.tag', options.tags);
+    const tags = filterTags(options.tags);
+    if (tags) {
+      tags.forEach((t, i) => {
+        query.innerJoin(
+          `question_tags AS qt${i}`,
+          'questions.id',
+          `qt${i}.questionId`,
+        );
+        query.innerJoin(`tags AS t${i}`, `qt${i}.tagId`, `t${i}.id`);
+        query.where(`t${i}.tag`, '=', t);
+      });
     }
 
     if (options.entity) {
@@ -193,6 +197,7 @@ export class DatabaseQetaStore implements QetaStore {
       );
     }
 
+    console.log(query.toString());
     const totalQuery = query.clone();
 
     if (options.random) {
@@ -1114,7 +1119,7 @@ export class DatabaseQetaStore implements QetaStore {
     tagsInput?: string[],
     removeOld?: boolean,
   ) {
-    const tags = tagsInput?.filter(Boolean);
+    const tags = filterTags(tagsInput);
     if (removeOld) {
       await this.db('question_tags')
         .where('questionId', '=', questionId)

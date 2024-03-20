@@ -35,19 +35,35 @@ export const filterKeys = [
   'noCorrectAnswer',
   'noVotes',
   'entity',
-  'tag',
+  'tags',
 ] as const;
 export type FilterKey = (typeof filterKeys)[number];
 
+export type Filters = {
+  order: string;
+  orderBy: string;
+  noAnswers: string;
+  noCorrectAnswer: string;
+  noVotes: string;
+  searchQuery: string;
+  entity: string;
+  tags: string[];
+};
+
 export interface FilterPanelProps {
-  onChange: (key: FilterKey, value: string) => void;
-  filters: Record<FilterKey, string>;
-  showEntityFilter: boolean;
-  showTagFilter: boolean;
+  onChange: (key: FilterKey, value: string | string[]) => void;
+  filters: Filters;
+  showEntityFilter?: boolean;
+  showTagFilter?: boolean;
 }
 
 export const FilterPanel = (props: FilterPanelProps) => {
-  const { onChange, filters, showEntityFilter, showTagFilter } = props;
+  const {
+    onChange,
+    filters,
+    showEntityFilter = true,
+    showTagFilter = true,
+  } = props;
   const styles = useStyles();
   const { value: refs } = useQetaApi(api => api.getEntities(), []);
   const { value: tags } = useQetaApi(api => api.getTags(), []);
@@ -63,14 +79,14 @@ export const FilterPanel = (props: FilterPanelProps) => {
   );
 
   useEffect(() => {
-    if ((tags && tags.length > 0) || filters.tag) {
+    if ((tags && tags.length > 0) || filters.tags) {
       const ts = (tags ?? []).map(t => t.tag);
-      if (filters.tag) {
-        ts.push(filters.tag);
+      if (filters.tags) {
+        ts.push(...filters.tags);
       }
       setAvailableTags([...new Set(ts)]);
     }
-  }, [tags, filters.tag]);
+  }, [tags, filters.tags]);
 
   useEffect(() => {
     if (
@@ -110,7 +126,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
 
   const handleChange = (event: {
     target: {
-      value: string;
+      value: string | string[];
       type?: string;
       name: string;
       checked?: boolean;
@@ -236,16 +252,16 @@ export const FilterPanel = (props: FilterPanelProps) => {
                 )}
               {showTagFilter && availableTags && availableTags.length > 0 && (
                 <Autocomplete
-                  multiple={false}
+                  multiple
                   className="qetaTagFilter"
-                  value={filters.tag}
+                  value={filters.tags}
                   id="tags-select"
                   options={availableTags}
                   onChange={(_e, newValue) => {
                     handleChange({
                       target: {
-                        name: 'tag',
-                        value: newValue ?? '',
+                        name: 'tags',
+                        value: newValue,
                       },
                     });
                   }}

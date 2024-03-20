@@ -3,7 +3,7 @@ import { JSONSchemaType } from 'ajv';
 export interface QuestionsQuery {
   limit?: number;
   offset?: number;
-  tags?: string[];
+  tags?: string;
   entity?: string;
   author?: string;
   orderBy?: 'views' | 'score' | 'answersCount' | 'created' | 'updated';
@@ -47,7 +47,7 @@ export const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     noAnswers: { type: 'boolean', nullable: true },
     favorite: { type: 'boolean', nullable: true },
     noVotes: { type: 'boolean', nullable: true },
-    tags: { type: 'array', items: { type: 'string' }, nullable: true },
+    tags: { type: 'string', nullable: true },
     entity: { type: 'string', nullable: true },
     includeAnswers: { type: 'boolean', nullable: true },
     includeVotes: { type: 'boolean', nullable: true },

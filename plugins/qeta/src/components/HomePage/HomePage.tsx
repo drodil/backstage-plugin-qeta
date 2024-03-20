@@ -41,6 +41,7 @@ import {
   tagsRouteRef,
   userRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
+import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 
 const MoreMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -128,8 +129,10 @@ export const HomePageContent = () => {
   const [entityRef, setEntityRef] = React.useState<string | undefined>(
     undefined,
   );
+  const [tags, setTags] = React.useState<string[] | undefined>(undefined);
   useEffect(() => {
     setEntityRef(searchParams.get('entity') ?? undefined);
+    setTags(filterTags(searchParams.get('tags')));
   }, [searchParams, setEntityRef]);
 
   return (
@@ -139,9 +142,9 @@ export const HomePageContent = () => {
           <Grid item xs={12} lg={9} xl={10}>
             <ContentHeader title="All questions">
               <MoreMenu />
-              <AskQuestionButton entity={entityRef} />
+              <AskQuestionButton entity={entityRef} tags={tags} />
             </ContentHeader>
-            <QuestionsContainer />
+            <QuestionsContainer entity={entityRef} tags={tags} />
           </Grid>
           <Grid item lg={3} xl={2}>
             <QuestionHighlightList

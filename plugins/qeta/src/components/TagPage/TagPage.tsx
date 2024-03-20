@@ -14,7 +14,7 @@ export const TagPage = () => {
       <Container maxWidth="lg">
         <ContentHeader title={tag ? `Questions tagged [${tag}]` : 'Tags'}>
           <BackToQuestionsButton />
-          <AskQuestionButton />
+          <AskQuestionButton tags={tag ? [tag] : undefined} />
         </ContentHeader>
         {tag ? <QuestionsContainer tags={[tag ?? '']} /> : <TagsContainer />}
       </Container>
