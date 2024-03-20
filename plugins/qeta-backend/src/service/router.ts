@@ -3,8 +3,6 @@ import Router from 'express-promise-router';
 import bodyParser from 'body-parser';
 import { errorHandler } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { IdentityApi } from '@backstage/plugin-auth-node';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { qetaPermissions } from '@drodil/backstage-plugin-qeta-common';
 
@@ -13,22 +11,26 @@ import { statisticRoutes } from './routes/statistics';
 import { questionsRoutes } from './routes/questions';
 import { attachmentsRoutes } from './routes/attachments';
 import { answersRoutes } from './routes/answers';
-import { EventBroker } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import {
+  DiscoveryService,
+  HttpAuthService,
   LoggerService,
-  TokenManagerService,
+  PermissionsService,
+  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { helperRoutes } from './routes/helpers';
 import { SignalsService } from '@backstage/plugin-signals-node';
 
 export interface RouterOptions {
-  identity: IdentityApi;
   database: QetaStore;
   logger: LoggerService;
   config: Config;
-  tokenManager?: TokenManagerService;
-  permissions?: PermissionEvaluator;
-  eventBroker?: EventBroker;
+  discovery: DiscoveryService;
+  httpAuth: HttpAuthService;
+  userInfo: UserInfoService;
+  permissions?: PermissionsService;
+  events?: EventsService;
   signals?: SignalsService;
 }
 
@@ -38,7 +40,11 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
   router.use(bodyParser.urlencoded({ extended: true }));
-  const { logger } = options;
+  const { logger, httpAuth } = options;
+  const routeOptions = {
+    ...options,
+    httpAuth,
+  };
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     permissions: qetaPermissions,
@@ -51,11 +57,11 @@ export async function createRouter(
 
   router.use(permissionIntegrationRouter);
 
-  questionsRoutes(router, options);
-  answersRoutes(router, options);
-  helperRoutes(router, options);
-  attachmentsRoutes(router, options);
-  statisticRoutes(router, options);
+  questionsRoutes(router, routeOptions);
+  answersRoutes(router, routeOptions);
+  helperRoutes(router, routeOptions);
+  attachmentsRoutes(router, routeOptions);
+  statisticRoutes(router, routeOptions);
 
   router.use(errorHandler());
   return router;

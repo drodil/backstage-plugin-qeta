@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-export * from './service/router';
-export * from './database';
-export * from './search';
-export {
-  qetaPlugin,
-  qetaPlugin as plugin,
-  qetaPlugin as default,
-} from './plugin';
+export { qetaPlugin as default } from './plugin';

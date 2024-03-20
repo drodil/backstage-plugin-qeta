@@ -29,7 +29,7 @@
     "role": "backend-plugin"
   },
   "scripts": {
-    "start": "LEGACY_BACKEND_START=1 backstage-cli package start",
+    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
@@ -68,8 +68,14 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-defaults": "^0.2.16",
     "@backstage/backend-test-utils": "^0.3.6",
     "@backstage/cli": "^0.26.2",
+    "@backstage/plugin-auth-backend": "^0.22.3",
+    "@backstage/plugin-auth-backend-module-guest-provider": "^0.1.2",
+    "@backstage/plugin-catalog-backend": "^1.21.0",
+    "@backstage/plugin-events-backend": "^0.3.2",
+    "@backstage/plugin-signals-backend": "^0.1.2",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^9.0.4",
     "supertest": "^6.2.4"
