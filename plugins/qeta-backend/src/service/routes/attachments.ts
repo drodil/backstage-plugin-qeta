@@ -4,9 +4,11 @@ import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import multiparty from 'multiparty';
 import FilesystemStoreEngine from '../upload/filesystem';
 import DatabaseStoreEngine from '../upload/database';
+import S3StoreEngine from '../upload/s3';
 import fs from 'fs';
 import FileType from 'file-type';
 import { File } from '../types';
+import { S3 } from 'aws-sdk';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
 const DEFAULT_MIME_TYPES = [
@@ -35,6 +37,7 @@ export const attachmentsRoutes = (router: Router, options: RouterOptions) => {
     const form = new multiparty.Form();
     const fileSystemEngine = FilesystemStoreEngine(options);
     const databaseEngine = DatabaseStoreEngine(options);
+    const s3Engine = S3StoreEngine(options);
 
     form.parse(request, async (err, _fields, files) => {
       if (err) {
@@ -78,6 +81,9 @@ export const attachmentsRoutes = (router: Router, options: RouterOptions) => {
       if (storageType === 'database') {
         attachment = await databaseEngine.handleFile(file);
         response.json(attachment);
+      } if (storageType === 's3') {
+        attachment = await s3Engine.handleFile(file);
+        response.json(attachment);
       } else {
         attachment = await fileSystemEngine.handleFile(file);
         response.json(attachment);
@@ -97,6 +103,19 @@ export const attachmentsRoutes = (router: Router, options: RouterOptions) => {
     let imageBuffer: Buffer;
     if (attachment.locationType === 'database') {
       imageBuffer = attachment.binaryImage;
+    } else if (attachment.locationType === 's3') {
+      const bucket = config.getString('qeta.storage.bucket');
+      const accessKeyID = config.getString('qeta.storage.accessKeyID');
+      const secretAccessKey = config.getString('qeta.storage.secretAccessKey');
+      const s3 = new S3({
+        accessKeyId: accessKeyID,
+        secretAccessKey: secretAccessKey,
+      });
+      const object = await s3.getObject({
+        Bucket: bucket,
+        Key: attachment.path,
+      }).promise()
+      imageBuffer = object.Body as Buffer;
     } else {
       imageBuffer = await fs.promises.readFile(attachment.path);
     }

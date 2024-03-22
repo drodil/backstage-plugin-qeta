@@ -67,6 +67,7 @@
   },
   "packageManager": "yarn@3.5.1",
   "dependencies": {
-    "@octokit/rest": "19.0.8"
+    "@octokit/rest": "19.0.8",
+    "aws-sdk": "^2.1583.0"
   }
 }
