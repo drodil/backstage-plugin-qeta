@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.24.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.23.3...v1.24.0) (2024-03-25)
+
+
+### Features
+
+* add s3 as storage backend ([f34fd30](https://github.com/drodil/backstage-plugin-qeta/commit/f34fd30f679aeeb34740c6739c17696719192b9f))
+* allow defining theme id for the home page ([2299139](https://github.com/drodil/backstage-plugin-qeta/commit/2299139f728dab45f12a0d0731c518a38f619069)), closes [#129](https://github.com/drodil/backstage-plugin-qeta/issues/129)
+* allow filtering with multiple tags ([e08c851](https://github.com/drodil/backstage-plugin-qeta/commit/e08c851b47e466c825f8eda48c4367bd115cbffa))
+
+
+### Bug Fixes
+
+* change s3 config to optional and check on runtime ([c71794f](https://github.com/drodil/backstage-plugin-qeta/commit/c71794fe4c67e39ff7d5282143088c89ef12297a))
+
 ### [1.23.3](https://github.com/drodil/backstage-plugin-qeta/compare/v1.23.2...v1.23.3) (2024-02-27)
 
 
