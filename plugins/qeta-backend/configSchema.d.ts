@@ -69,10 +69,13 @@ export interface Config {
      * @visibility backend
      */
     storage?: {
-      type?: 'database' | 'filesystem';
+      type?: 'database' | 'filesystem' | 's3';
       folder?: string;
       maxSizeImage?: number;
       allowedMimeTypes?: string[];
+      bucket?: string;
+      accessKeyId?: string;
+      secretAccessKey?: string;
     };
   };
 }
