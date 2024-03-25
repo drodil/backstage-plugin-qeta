@@ -81,7 +81,8 @@ export const attachmentsRoutes = (router: Router, options: RouterOptions) => {
       if (storageType === 'database') {
         attachment = await databaseEngine.handleFile(file);
         response.json(attachment);
-      } if (storageType === 's3') {
+      }
+      if (storageType === 's3') {
         attachment = await s3Engine.handleFile(file);
         response.json(attachment);
       } else {
@@ -104,17 +105,29 @@ export const attachmentsRoutes = (router: Router, options: RouterOptions) => {
     if (attachment.locationType === 'database') {
       imageBuffer = attachment.binaryImage;
     } else if (attachment.locationType === 's3') {
-      const bucket = config.getString('qeta.storage.bucket');
-      const accessKeyID = config.getString('qeta.storage.accessKeyID');
-      const secretAccessKey = config.getString('qeta.storage.secretAccessKey');
-      const s3 = new S3({
-        accessKeyId: accessKeyID,
-        secretAccessKey: secretAccessKey,
-      });
-      const object = await s3.getObject({
-        Bucket: bucket,
-        Key: attachment.path,
-      }).promise()
+      const bucket = config.getOptionalString('qeta.storage.bucket');
+      const accessKeyId = config.getOptionalString('qeta.storage.accessKeyId');
+      const secretAccessKey = config.getOptionalString(
+        'qeta.storage.secretAccessKey',
+      );
+      if (!bucket) {
+        throw new Error('Bucket name is required for S3 storage');
+      }
+      const s3 =
+        accessKeyId && secretAccessKey
+          ? new S3({
+              credentials: {
+                accessKeyId,
+                secretAccessKey,
+              },
+            })
+          : new S3();
+      const object = await s3
+        .getObject({
+          Bucket: bucket,
+          Key: attachment.path,
+        })
+        .promise();
       imageBuffer = object.Body as Buffer;
     } else {
       imageBuffer = await fs.promises.readFile(attachment.path);

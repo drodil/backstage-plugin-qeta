@@ -36,8 +36,11 @@ The configuration values are:
 - tags.allowedTags, string array, list of allowed tags to be attached to questions. Only used if `tags.allowCreation` is set to `false`.
 - tags.max, integer, maximum number of tags to be attached to a question. Default is `5`.
 - moderators, string array, list of moderator groups or users who can edit, delete questions/answers/comments and mark answers correct for any question
-- storage.type, string, what kind of storage is used to upload images used in questions. Default is `database`
+- storage.type, string, what kind of storage is used to upload images used in questions. Default is `database`. Available values are 'filesystem', 'database' and 's3'.
 - storage.maxSizeImage, number, the maximum allowed size of upload files in bytes. Default is `2500000`
 - storage.folder, string, what folder is used to storage temporarily images to convert and send to frontend. Default is `/tmp/backstage-qeta-images`
 - storage.allowedMimeTypes, string[], A list of allowed upload formats. Default: `png,jpg,jpeg,gif`
 - storage.disabled, boolean, If for some specific scenario you want to disable the upload of images. Default `false`
+- storage.bucket, string, bucket ARN for S3 storage, required for S3 storage
+- storage.accessKeyId, string, access key ID for S3 storage, optional
+- storage.secretAccessKey, string, secret access key for S3 storage, optional

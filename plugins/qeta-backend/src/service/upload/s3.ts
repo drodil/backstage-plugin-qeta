@@ -18,32 +18,44 @@ class S3StoreEngine {
   qetaUrl: string;
   folder: string;
 
-  bucket: string;
-  accessKeyID: string;
-  secretAccessKey: string;
-
+  bucket?: string;
+  accessKeyId?: string;
+  secretAccessKey?: string;
 
   constructor(opts: Options) {
     this.config = opts.config;
     this.database = opts.database;
     this.backendBaseUrl = this.config.getString('backend.baseUrl');
     this.qetaUrl = `${this.backendBaseUrl}/api/qeta/attachments`;
-    this.bucket = this.config.getString('qeta.storage.bucket');
-    this.accessKeyID = this.config.getString('qeta.storage.accessKeyID');
-    this.secretAccessKey = this.config.getString('qeta.storage.secretAccessKey');
+    this.bucket = this.config.getOptionalString('qeta.storage.bucket');
+    this.accessKeyId = this.config.getOptionalString(
+      'qeta.storage.accessKeyId',
+    );
+    this.secretAccessKey = this.config.getOptionalString(
+      'qeta.storage.secretAccessKey',
+    );
     this.folder =
       this.config.getOptionalString('qeta.storage.folder') ||
       '/backstage-qeta-images';
   }
 
   newClient = (): S3 => {
-    return new S3({
-      accessKeyId: this.accessKeyID,
-      secretAccessKey: this.secretAccessKey,
-    });
-  }
+    if (this.accessKeyId && this.secretAccessKey) {
+      return new S3({
+        credentials: {
+          accessKeyId: this.accessKeyId,
+          secretAccessKey: this.secretAccessKey,
+        },
+      });
+    }
+
+    return new S3();
+  };
 
   handleFile = async (file: File): Promise<Attachment> => {
+    if (!this.bucket) {
+      throw new Error('Bucket name is required for S3 storage');
+    }
     const imageUuid = uuidv4();
     const filename = `image-${imageUuid}-${Date.now()}.${file.ext}`;
     const newPath = `${this.folder}/${filename}`;
@@ -53,7 +65,7 @@ class S3StoreEngine {
       Bucket: this.bucket,
       Key: newPath,
       Body: fs.createReadStream(file.path),
-    }
+    };
 
     await client.upload(uploadArgs).promise();
 
