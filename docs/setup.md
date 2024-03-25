@@ -137,3 +137,41 @@ Then add it to your entity page:
 ## Importing content from another system
 
 You can use the backend API to import content via the question, answer, and comment endpoints. If you set `allowMetadataInput` to `true` in your config, you can also pass in the `created` and `user` fields in to preserve this metadata from another system. For POST requests, you can pass these as keys in the JSON payload. For GET requests, you can pass the username with a `x-qeta-user` header.
+
+To import content, you most probably want to create a script for this. Here's a simple example of how you can do this:
+
+```python
+import requests
+
+r = requests.get('https://my-old-system.com/questions', auth=('user', 'pass'))
+questions = r.json()
+
+for question in questions:
+    # Modify the data to fit the Qeta schema
+    question_data = {
+        'title': question['title'],
+        'content': question['body'],
+        'tags': question['tags'],
+        'user': question['owner'].get('displayName', 'user:default/guest'),
+        'created': question['creation_date'],
+    }
+    q = requests.post('http://localhost:7000/qeta/questions', json=question_data, auth=('user', 'pass'))
+
+    a = requests.get(f'https://my-old-system.com/questions/{question["id"]}/answers', auth=('user', 'pass'))
+    answers = a.json()
+
+    for answer in answers:
+        # Modify the data to fit the Qeta schema
+        answer_data = {
+            'answer': answer['body'],
+            'user': answer['owner'].get('displayName', 'user:default/guest'),
+            'created': answer['creation_date'],
+        }
+        requests.post(f'http://localhost:7000/qeta/questions/{q.json()["id"]}/answers', json=answer_data, auth=('user', 'pass'))
+```
+
+Of course, you have to remember to modify the data depending on the source system. For example the user field references to the Backstage entity references so some modification is required and there are other fields that probably need changes.
+
+Additionally, this example does not migrate comments and attachments which might need additional mapping.
+
+If you come up with a script to migrate data from some external system, feel free to contribute it to this repository under `scripts` directory.
