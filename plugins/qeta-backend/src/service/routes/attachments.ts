@@ -8,7 +8,11 @@ import S3StoreEngine from '../upload/s3';
 import fs from 'fs';
 import FileType from 'file-type';
 import { File } from '../types';
-import { S3Client, GetObjectCommand, GetObjectCommandOutput } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  GetObjectCommand,
+  GetObjectCommandOutput,
+} from '@aws-sdk/client-s3';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
 const DEFAULT_MIME_TYPES = [
@@ -117,21 +121,22 @@ export const attachmentsRoutes = (router: Router, options: RouterOptions) => {
       const s3 =
         accessKeyId && secretAccessKey && region
           ? new S3Client({
-            credentials: {
-              accessKeyId,
-              secretAccessKey,
-            },
-            region,
-          })
+              credentials: {
+                accessKeyId,
+                secretAccessKey,
+              },
+              region,
+            })
           : new S3Client();
-      const object: GetObjectCommandOutput = await s3
-        .send(new GetObjectCommand({
+      const object: GetObjectCommandOutput = await s3.send(
+        new GetObjectCommand({
           Bucket: bucket,
           Key: attachment.path,
-        }));
+        }),
+      );
 
       if (object.Body) {
-        const bytes = await object.Body.transformToByteArray()
+        const bytes = await object.Body.transformToByteArray();
         imageBuffer = Buffer.from(bytes);
       }
     } else {
