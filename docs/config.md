@@ -44,3 +44,4 @@ The configuration values are:
 - storage.bucket, string, bucket ARN for S3 storage, required for S3 storage
 - storage.accessKeyId, string, access key ID for S3 storage, optional
 - storage.secretAccessKey, string, secret access key for S3 storage, optional
+- storage.region, string, region for S3 storage, optional
