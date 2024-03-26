@@ -5,5 +5,8 @@
  * @packageDocumentation
  */
 
-export { searchModuleQetaCollator } from './module';
+export {
+  searchModuleQetaCollator,
+  searchModuleQetaCollator as default,
+} from './module';
 export * from './collators';
