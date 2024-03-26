@@ -76,6 +76,7 @@ export interface Config {
       bucket?: string;
       accessKeyId?: string;
       secretAccessKey?: string;
+      region?: string;
     };
   };
 }

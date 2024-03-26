@@ -8,7 +8,7 @@ import S3StoreEngine from '../upload/s3';
 import fs from 'fs';
 import FileType from 'file-type';
 import { File } from '../types';
-import { S3 } from 'aws-sdk';
+import { S3Client, GetObjectCommand, GetObjectCommandOutput } from "@aws-sdk/client-s3";
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
 const DEFAULT_MIME_TYPES = [
@@ -101,7 +101,7 @@ export const attachmentsRoutes = (router: Router, options: RouterOptions) => {
       return response.status(404).send('Attachment not found');
     }
 
-    let imageBuffer: Buffer;
+    let imageBuffer: Buffer | undefined;
     if (attachment.locationType === 'database') {
       imageBuffer = attachment.binaryImage;
     } else if (attachment.locationType === 's3') {
@@ -110,25 +110,30 @@ export const attachmentsRoutes = (router: Router, options: RouterOptions) => {
       const secretAccessKey = config.getOptionalString(
         'qeta.storage.secretAccessKey',
       );
+      const region = config.getOptionalString('qeta.storage.region');
       if (!bucket) {
         throw new Error('Bucket name is required for S3 storage');
       }
       const s3 =
-        accessKeyId && secretAccessKey
-          ? new S3({
-              credentials: {
-                accessKeyId,
-                secretAccessKey,
-              },
-            })
-          : new S3();
-      const object = await s3
-        .getObject({
+        accessKeyId && secretAccessKey && region
+          ? new S3Client({
+            credentials: {
+              accessKeyId,
+              secretAccessKey,
+            },
+            region,
+          })
+          : new S3Client();
+      const object: GetObjectCommandOutput = await s3
+        .send(new GetObjectCommand({
           Bucket: bucket,
           Key: attachment.path,
-        })
-        .promise();
-      imageBuffer = object.Body as Buffer;
+        }));
+
+      if (object.Body) {
+        const bytes = await object.Body.transformToByteArray()
+        imageBuffer = Buffer.from(bytes);
+      }
     } else {
       imageBuffer = await fs.promises.readFile(attachment.path);
     }

@@ -4,7 +4,7 @@ import { Config } from '@backstage/config';
 import { QetaStore } from '../../database/QetaStore';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
-import { S3 } from 'aws-sdk';
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 type Options = {
   config: Config;
@@ -21,6 +21,7 @@ class S3StoreEngine {
   bucket?: string;
   accessKeyId?: string;
   secretAccessKey?: string;
+  region?: string;
 
   constructor(opts: Options) {
     this.config = opts.config;
@@ -37,19 +38,20 @@ class S3StoreEngine {
     this.folder =
       this.config.getOptionalString('qeta.storage.folder') ||
       '/backstage-qeta-images';
+    this.region = this.config.getOptionalString('qeta.storage.region');
   }
 
-  newClient = (): S3 => {
-    if (this.accessKeyId && this.secretAccessKey) {
-      return new S3({
+  newClient = (): S3Client => {
+    if (this.accessKeyId && this.secretAccessKey && this.region) {
+      return new S3Client({
         credentials: {
           accessKeyId: this.accessKeyId,
           secretAccessKey: this.secretAccessKey,
         },
+        region: this.region,
       });
     }
-
-    return new S3();
+    return new S3Client({});
   };
 
   handleFile = async (file: File): Promise<Attachment> => {
@@ -67,7 +69,7 @@ class S3StoreEngine {
       Body: fs.createReadStream(file.path),
     };
 
-    await client.upload(uploadArgs).promise();
+    await client.send(new PutObjectCommand(uploadArgs));
 
     const attachment = await this.database.postAttachment({
       uuid: imageUuid,
