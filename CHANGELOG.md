@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.1](https://github.com/drodil/backstage-plugin-qeta/compare/v1.24.0...v1.24.1) (2024-03-26)
+
+
+### Bug Fixes
+
+* add default exports for module and backend ([5d449a0](https://github.com/drodil/backstage-plugin-qeta/commit/5d449a075a795e3ef00895a3cf4bf2b26588672e))
+
 ## [1.24.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.23.3...v1.24.0) (2024-03-25)
 
 
