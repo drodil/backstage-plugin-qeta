@@ -197,7 +197,6 @@ export class DatabaseQetaStore implements QetaStore {
       );
     }
 
-    console.log(query.toString());
     const totalQuery = query.clone();
 
     if (options.random) {

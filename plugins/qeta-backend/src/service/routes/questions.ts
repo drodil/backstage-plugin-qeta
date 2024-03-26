@@ -40,8 +40,6 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
-    console.log(request.query.tags);
-
     // Act
     const questions = await database.getQuestions(username, request.query);
 
