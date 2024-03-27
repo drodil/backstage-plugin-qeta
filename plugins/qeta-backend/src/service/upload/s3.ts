@@ -4,7 +4,8 @@ import { Config } from '@backstage/config';
 import { QetaStore } from '../../database/QetaStore';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { getS3Client } from '../util';
 
 type Options = {
   config: Config;
@@ -19,9 +20,6 @@ class S3StoreEngine {
   folder: string;
 
   bucket?: string;
-  accessKeyId?: string;
-  secretAccessKey?: string;
-  region?: string;
 
   constructor(opts: Options) {
     this.config = opts.config;
@@ -29,30 +27,10 @@ class S3StoreEngine {
     this.backendBaseUrl = this.config.getString('backend.baseUrl');
     this.qetaUrl = `${this.backendBaseUrl}/api/qeta/attachments`;
     this.bucket = this.config.getOptionalString('qeta.storage.bucket');
-    this.accessKeyId = this.config.getOptionalString(
-      'qeta.storage.accessKeyId',
-    );
-    this.secretAccessKey = this.config.getOptionalString(
-      'qeta.storage.secretAccessKey',
-    );
     this.folder =
       this.config.getOptionalString('qeta.storage.folder') ||
       '/backstage-qeta-images';
-    this.region = this.config.getOptionalString('qeta.storage.region');
   }
-
-  newClient = (): S3Client => {
-    if (this.accessKeyId && this.secretAccessKey && this.region) {
-      return new S3Client({
-        credentials: {
-          accessKeyId: this.accessKeyId,
-          secretAccessKey: this.secretAccessKey,
-        },
-        region: this.region,
-      });
-    }
-    return new S3Client({});
-  };
 
   handleFile = async (file: File): Promise<Attachment> => {
     if (!this.bucket) {
@@ -62,7 +40,7 @@ class S3StoreEngine {
     const filename = `image-${imageUuid}-${Date.now()}.${file.ext}`;
     const newPath = `${this.folder}/${filename}`;
     const imageURI = `${this.qetaUrl}/${imageUuid}`;
-    const client = this.newClient();
+    const client = getS3Client(this.config);
     const uploadArgs = {
       Bucket: this.bucket,
       Key: newPath,

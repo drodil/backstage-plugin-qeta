@@ -8,11 +8,8 @@ import S3StoreEngine from '../upload/s3';
 import fs from 'fs';
 import FileType from 'file-type';
 import { File } from '../types';
-import {
-  S3Client,
-  GetObjectCommand,
-  GetObjectCommandOutput,
-} from '@aws-sdk/client-s3';
+import { GetObjectCommand, GetObjectCommandOutput } from '@aws-sdk/client-s3';
+import { getS3Client } from '../util';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
 const DEFAULT_MIME_TYPES = [
@@ -110,24 +107,10 @@ export const attachmentsRoutes = (router: Router, options: RouterOptions) => {
       imageBuffer = attachment.binaryImage;
     } else if (attachment.locationType === 's3') {
       const bucket = config.getOptionalString('qeta.storage.bucket');
-      const accessKeyId = config.getOptionalString('qeta.storage.accessKeyId');
-      const secretAccessKey = config.getOptionalString(
-        'qeta.storage.secretAccessKey',
-      );
-      const region = config.getOptionalString('qeta.storage.region');
       if (!bucket) {
         throw new Error('Bucket name is required for S3 storage');
       }
-      const s3 =
-        accessKeyId && secretAccessKey && region
-          ? new S3Client({
-              credentials: {
-                accessKeyId,
-                secretAccessKey,
-              },
-              region,
-            })
-          : new S3Client();
+      const s3 = getS3Client(config);
       const object: GetObjectCommandOutput = await s3.send(
         new GetObjectCommand({
           Bucket: bucket,

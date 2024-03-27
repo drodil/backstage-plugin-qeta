@@ -8,6 +8,8 @@ import {
 } from '@backstage/plugin-permission-common';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { MaybeAnswer, MaybeQuestion } from '../database/QetaStore';
+import { Config } from '@backstage/config';
+import { S3Client } from '@aws-sdk/client-s3';
 
 export const getUsername = async (
   req: Request<unknown>,
@@ -148,4 +150,22 @@ export const stringDateTime = (dayString: string) => {
   );
 
   return formattedDate;
+};
+
+export const getS3Client = (config: Config) => {
+  const accessKeyId = config.getOptionalString('qeta.storage.accessKeyId');
+  const secretAccessKey = config.getOptionalString(
+    'qeta.storage.secretAccessKey',
+  );
+  const region = config.getOptionalString('qeta.storage.region');
+  if (accessKeyId && secretAccessKey) {
+    return new S3Client({
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+      region,
+    });
+  }
+  return new S3Client({ region });
 };
