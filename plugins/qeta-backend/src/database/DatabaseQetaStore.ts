@@ -358,14 +358,10 @@ export class DatabaseQetaStore implements QetaStore {
     question_id: number,
     id: number,
     user_ref: string,
-    moderator?: boolean,
   ): Promise<MaybeQuestion> {
     const query = this.db('question_comments')
       .where('id', '=', id)
       .where('questionId', '=', question_id);
-    if (!moderator) {
-      query.where('author', '=', user_ref);
-    }
     await query.delete();
     return this.getQuestion(user_ref, question_id, false);
   }
@@ -391,15 +387,10 @@ export class DatabaseQetaStore implements QetaStore {
     answer_id: number,
     id: number,
     user_ref: string,
-    moderator?: boolean,
   ): Promise<MaybeAnswer> {
     const query = this.db('answer_comments')
       .where('id', '=', id)
       .where('answerId', '=', answer_id);
-
-    if (!moderator) {
-      query.where('author', '=', user_ref);
-    }
     await query.delete();
     return this.getAnswer(answer_id, user_ref);
   }
@@ -412,12 +403,8 @@ export class DatabaseQetaStore implements QetaStore {
     tags?: string[],
     entities?: string[],
     images?: number[],
-    moderator?: boolean,
   ): Promise<MaybeQuestion> {
     const query = this.db('questions').where('questions.id', '=', id);
-    if (!moderator) {
-      query.where('questions.author', '=', user_ref);
-    }
     const rows = await query.update({
       title,
       content,
@@ -443,15 +430,8 @@ export class DatabaseQetaStore implements QetaStore {
     return await this.getQuestion(user_ref, id, false);
   }
 
-  async deleteQuestion(
-    user_ref: string,
-    id: number,
-    moderator?: boolean,
-  ): Promise<boolean> {
+  async deleteQuestion(id: number): Promise<boolean> {
     const query = this.db('questions').where('id', '=', id);
-    if (!moderator) {
-      query.where('author', '=', user_ref);
-    }
     return !!(await query.delete());
   }
 
@@ -490,14 +470,10 @@ export class DatabaseQetaStore implements QetaStore {
     answerId: number,
     answer: string,
     images?: number[],
-    moderator?: boolean,
   ): Promise<MaybeAnswer> {
     const query = this.db('answers')
       .where('answers.id', '=', answerId)
       .where('answers.questionId', '=', questionId);
-    if (!moderator) {
-      query.where('answers.author', '=', user_ref);
-    }
 
     const rows = await query.update({
       content: answer,
@@ -620,16 +596,8 @@ export class DatabaseQetaStore implements QetaStore {
     return this.mapAnswer(answers[0], user_ref, true, true);
   }
 
-  async deleteAnswer(
-    user_ref: string,
-    id: number,
-    moderator?: boolean,
-  ): Promise<boolean> {
+  async deleteAnswer(id: number): Promise<boolean> {
     const query = this.db('answers').where('id', '=', id);
-    if (!moderator) {
-      query.where('author', '=', user_ref);
-    }
-
     return !!(await query.delete());
   }
 
@@ -714,33 +682,17 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   async markAnswerCorrect(
-    user_ref: string,
     questionId: number,
     answerId: number,
-    moderator?: boolean,
   ): Promise<boolean> {
-    return await this.markAnswer(
-      user_ref,
-      questionId,
-      answerId,
-      true,
-      moderator,
-    );
+    return await this.markAnswer(questionId, answerId, true);
   }
 
   async markAnswerIncorrect(
-    user_ref: string,
     questionId: number,
     answerId: number,
-    moderator?: boolean,
   ): Promise<boolean> {
-    return await this.markAnswer(
-      user_ref,
-      questionId,
-      answerId,
-      false,
-      moderator,
-    );
+    return await this.markAnswer(questionId, answerId, false);
   }
 
   async getTags(): Promise<TagResponse[]> {
@@ -1380,11 +1332,9 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   private async markAnswer(
-    user_ref: string,
     questionId: number,
     answerId: number,
     correct: boolean,
-    moderator?: boolean,
   ): Promise<boolean> {
     // There can be only one correct answer
     if (correct) {
@@ -1402,17 +1352,6 @@ export class DatabaseQetaStore implements QetaStore {
       .ignore()
       .where('answers.id', '=', answerId)
       .where('questionId', '=', questionId);
-    if (!moderator) {
-      // Need to do with subquery as missing join functionality for update in knex.
-      // See: https://github.com/knex/knex/issues/2796
-      // eslint-disable-next-line
-      query.whereIn('questionId', function () {
-        this.from('questions')
-          .select('id')
-          .where('id', '=', questionId)
-          .where('author', '=', user_ref);
-      });
-    }
 
     const ret = await query.update({ correct }, ['id']);
     return ret !== undefined && ret?.length > 0;
