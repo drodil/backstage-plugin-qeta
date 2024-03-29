@@ -4,7 +4,11 @@ import bodyParser from 'body-parser';
 import { errorHandler } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-import { qetaPermissions } from '@drodil/backstage-plugin-qeta-common';
+import {
+  qetaPermissions,
+  Question,
+  QUESTION_RESOURCE_TYPE,
+} from '@drodil/backstage-plugin-qeta-common';
 
 import { QetaStore } from '../database/QetaStore';
 import { statisticRoutes } from './routes/statistics';
@@ -21,6 +25,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { helperRoutes } from './routes/helpers';
 import { SignalsService } from '@backstage/plugin-signals-node';
+import { questionRules } from './questionRules';
 
 export interface RouterOptions {
   database: QetaStore;
@@ -48,6 +53,24 @@ export async function createRouter(
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     permissions: qetaPermissions,
+    resources: [
+      {
+        getResources: async resourceRefs => {
+          return await Promise.all(
+            resourceRefs.map(async ref => {
+              const question = await options.database.getQuestion(
+                '',
+                Number.parseInt(ref, 10),
+                false,
+              );
+              return question === null ? undefined : (question as Question);
+            }),
+          );
+        },
+        resourceType: QUESTION_RESOURCE_TYPE,
+        rules: Object.values(questionRules),
+      },
+    ],
   });
 
   router.get('/health', (_, response) => {
