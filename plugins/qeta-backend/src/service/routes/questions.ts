@@ -223,7 +223,7 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     let tags = request.body.tags;
     if (Array.isArray(tags)) {
       if (!allowTagCreation) {
-        tags = tags.filter(tag => !allowedTags?.includes(tag));
+        tags = tags.filter(tag => allowedTags?.includes(tag));
       }
       tags = tags.slice(0, maxTags);
     }
