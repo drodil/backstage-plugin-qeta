@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.4](https://github.com/drodil/backstage-plugin-qeta/compare/v1.24.3...v1.24.4) (2024-03-30)
+
+
+### Bug Fixes
+
+* allowed tags filtering + allow underscore separator for tags ([cc3a4fe](https://github.com/drodil/backstage-plugin-qeta/commit/cc3a4feb7a6ee4510a312b1ff4522d88b3f1f57d)), closes [#139](https://github.com/drodil/backstage-plugin-qeta/issues/139)
+* s3 to use region even without access keys ([a83cec5](https://github.com/drodil/backstage-plugin-qeta/commit/a83cec5a2ace97897880c07d14442d78ee975081))
+
 ### [1.24.3](https://github.com/drodil/backstage-plugin-qeta/compare/v1.24.2...v1.24.3) (2024-03-26)
 
 ### [1.24.2](https://github.com/drodil/backstage-plugin-qeta/compare/v1.24.1...v1.24.2) (2024-03-26)
