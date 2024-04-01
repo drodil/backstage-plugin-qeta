@@ -57,7 +57,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     noVotes: 'false',
     searchQuery: '',
     entity: entity ?? '',
-    tags: [],
+    tags: tags ?? [],
   });
 
   const onPageChange = (value: number) => {
