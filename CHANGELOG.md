@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.5](https://github.com/drodil/backstage-plugin-qeta/compare/v1.24.4...v1.24.5) (2024-04-01)
+
+
+### Bug Fixes
+
+* pre-filter questions list with selected tag from tags page ([dda9a9e](https://github.com/drodil/backstage-plugin-qeta/commit/dda9a9eb03394da26057d9ffd33005ec8afdcf56))
+
 ### [1.24.4](https://github.com/drodil/backstage-plugin-qeta/compare/v1.24.3...v1.24.4) (2024-03-30)
 
 
