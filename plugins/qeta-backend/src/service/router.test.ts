@@ -1,4 +1,5 @@
 /*
+/*
  * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,20 +27,17 @@ import {
   Question,
   Statistic,
 } from '@drodil/backstage-plugin-qeta-common';
-import {
-  BackstageIdentityResponse,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
 import { ConfigReader } from '@backstage/config';
 import {
   AuthorizeResult,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mostUpvotedQuestions: Statistic[] = [
   {
     total: 5,
-    author: 'user:default/captain_america',
+    author: 'user:default/mock',
     position: 1,
   },
   {
@@ -57,7 +55,7 @@ const mostUpvotedQuestions: Statistic[] = [
 const mostUpvotedAnswers: Statistic[] = [
   {
     total: 9,
-    author: 'user:default/iron_man',
+    author: 'user:default/mock',
     position: 1,
   },
   {
@@ -147,21 +145,6 @@ describe('createRouter', () => {
     getTotalQuestions: jest.fn(),
   };
 
-  const getIdentityMock = jest
-    .fn<Promise<BackstageIdentityResponse | undefined>, any>()
-    .mockResolvedValue({
-      identity: {
-        userEntityRef: 'user:default/test',
-        type: 'user',
-        ownershipEntityRefs: [],
-      },
-      token: '5b18ce34-0aa0-4f28-acfc-18a78abdf66d',
-    });
-
-  const identityApi: jest.Mocked<IdentityApi> = {
-    getIdentity: getIdentityMock,
-  };
-
   const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
     jest.fn();
   const mockedPermissionQuery: jest.MockedFunction<
@@ -183,8 +166,10 @@ describe('createRouter', () => {
     ]);
     const router = await createRouter({
       logger: getVoidLogger(),
+      httpAuth: mockServices.httpAuth(),
+      userInfo: mockServices.userInfo(),
+      discovery: mockServices.discovery(),
       database: qetaStore,
-      identity: identityApi,
       config,
       permissions: permissionEvaluator,
     });
@@ -195,14 +180,6 @@ describe('createRouter', () => {
     app = await buildApp();
     jest.restoreAllMocks();
     mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
-    getIdentityMock.mockResolvedValue({
-      token: 'a',
-      identity: {
-        type: 'user',
-        ownershipEntityRefs: [],
-        userEntityRef: 'user',
-      },
-    });
   });
 
   describe('GET /health', () => {
@@ -232,7 +209,10 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1');
 
-      expect(qetaStore.getQuestion).toHaveBeenCalledWith('user', 1);
+      expect(qetaStore.getQuestion).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         ...question,
@@ -244,12 +224,6 @@ describe('createRouter', () => {
       qetaStore.getQuestion.mockResolvedValue(null);
       const response = await request(app).get('/questions/1');
       expect(response.status).toEqual(404);
-    });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get('/questions/1');
-      expect(response.status).toEqual(401);
     });
 
     it('forbidden', async () => {
@@ -274,7 +248,7 @@ describe('createRouter', () => {
         });
 
       expect(qetaStore.postQuestion).toHaveBeenCalledWith(
-        'user',
+        'user:default/mock',
         'title',
         'content',
         question.created,
@@ -338,18 +312,6 @@ describe('createRouter', () => {
       });
     });
 
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app)
-        .post('/questions')
-        .send({
-          title: 'title',
-          content: 'content',
-          tags: ['java'],
-        });
-      expect(response.status).toEqual(401);
-    });
-
     it('forbidden', async () => {
       mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
       const response = await request(app)
@@ -375,12 +337,6 @@ describe('createRouter', () => {
       const response = await request(app).delete('/questions/1');
       expect(response.status).toEqual(404);
     });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).delete('/questions/1');
-      expect(response.status).toEqual(401);
-    });
   });
 
   describe('POST /questions/:id/comments', () => {
@@ -395,7 +351,7 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(qetaStore.commentQuestion).toHaveBeenCalledWith(
         1,
-        'user',
+        'user:default/mock',
         'content',
         question.created,
       );
@@ -444,14 +400,6 @@ describe('createRouter', () => {
         type: 'body',
       });
     });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).post(`/questions/1/comments`).send({
-        content: 'comment',
-      });
-      expect(response.status).toEqual(401);
-    });
   });
 
   describe('POST /questions/:id/answers', () => {
@@ -463,7 +411,7 @@ describe('createRouter', () => {
       });
 
       expect(qetaStore.answerQuestion).toHaveBeenCalledWith(
-        'user',
+        'user:default/mock',
         1,
         'content',
         answer.created,
@@ -518,14 +466,6 @@ describe('createRouter', () => {
       });
     });
 
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).post('/questions/1/answers').send({
-        answer: 'answer',
-      });
-      expect(response.status).toEqual(401);
-    });
-
     it('forbidden', async () => {
       mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
       const response = await request(app).post('/questions/1/answers').send({
@@ -547,12 +487,6 @@ describe('createRouter', () => {
       const response = await request(app).delete('/questions/1/answers/2');
       expect(response.status).toEqual(404);
     });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).delete('/questions/1/answers/2');
-      expect(response.status).toEqual(401);
-    });
   });
 
   describe('GET /questions/:id/upvote', () => {
@@ -562,7 +496,11 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/upvote');
 
-      expect(qetaStore.voteQuestion).toHaveBeenCalledWith('user', 1, 1);
+      expect(qetaStore.voteQuestion).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+        1,
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         ...question,
@@ -575,14 +513,12 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/upvote');
 
-      expect(qetaStore.voteQuestion).toHaveBeenCalledWith('user', 1, 1);
+      expect(qetaStore.voteQuestion).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+        1,
+      );
       expect(response.status).toEqual(404);
-    });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get('/questions/1/upvote');
-      expect(response.status).toEqual(401);
     });
   });
 
@@ -593,7 +529,11 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/downvote');
 
-      expect(qetaStore.voteQuestion).toHaveBeenCalledWith('user', 1, -1);
+      expect(qetaStore.voteQuestion).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+        -1,
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         ...question,
@@ -606,14 +546,12 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/downvote');
 
-      expect(qetaStore.voteQuestion).toHaveBeenCalledWith('user', 1, -1);
+      expect(qetaStore.voteQuestion).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+        -1,
+      );
       expect(response.status).toEqual(404);
-    });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get('/questions/1/downvote');
-      expect(response.status).toEqual(401);
     });
   });
 
@@ -624,7 +562,10 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/favorite');
 
-      expect(qetaStore.favoriteQuestion).toHaveBeenCalledWith('user', 1);
+      expect(qetaStore.favoriteQuestion).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         ...question,
@@ -637,14 +578,11 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/favorite');
 
-      expect(qetaStore.favoriteQuestion).toHaveBeenCalledWith('user', 1);
+      expect(qetaStore.favoriteQuestion).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+      );
       expect(response.status).toEqual(404);
-    });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get('/questions/1/favorite');
-      expect(response.status).toEqual(401);
     });
   });
 
@@ -655,7 +593,10 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/unfavorite');
 
-      expect(qetaStore.unfavoriteQuestion).toHaveBeenCalledWith('user', 1);
+      expect(qetaStore.unfavoriteQuestion).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         ...question,
@@ -668,14 +609,11 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/unfavorite');
 
-      expect(qetaStore.unfavoriteQuestion).toHaveBeenCalledWith('user', 1);
+      expect(qetaStore.unfavoriteQuestion).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+      );
       expect(response.status).toEqual(404);
-    });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get('/questions/1/unfavorite');
-      expect(response.status).toEqual(401);
     });
   });
 
@@ -686,7 +624,11 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/answers/2/upvote');
 
-      expect(qetaStore.voteAnswer).toHaveBeenCalledWith('user', 2, 1);
+      expect(qetaStore.voteAnswer).toHaveBeenCalledWith(
+        'user:default/mock',
+        2,
+        1,
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         ...answer,
@@ -699,14 +641,12 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/answers/2/upvote');
 
-      expect(qetaStore.voteAnswer).toHaveBeenCalledWith('user', 2, 1);
+      expect(qetaStore.voteAnswer).toHaveBeenCalledWith(
+        'user:default/mock',
+        2,
+        1,
+      );
       expect(response.status).toEqual(404);
-    });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get('/questions/1/answers/2/upvote');
-      expect(response.status).toEqual(401);
     });
   });
 
@@ -719,7 +659,11 @@ describe('createRouter', () => {
         '/questions/1/answers/2/downvote',
       );
 
-      expect(qetaStore.voteAnswer).toHaveBeenCalledWith('user', 2, -1);
+      expect(qetaStore.voteAnswer).toHaveBeenCalledWith(
+        'user:default/mock',
+        2,
+        -1,
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         ...answer,
@@ -734,16 +678,12 @@ describe('createRouter', () => {
         '/questions/1/answers/2/downvote',
       );
 
-      expect(qetaStore.voteAnswer).toHaveBeenCalledWith('user', 2, -1);
-      expect(response.status).toEqual(404);
-    });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get(
-        '/questions/1/answers/2/downvote',
+      expect(qetaStore.voteAnswer).toHaveBeenCalledWith(
+        'user:default/mock',
+        2,
+        -1,
       );
-      expect(response.status).toEqual(401);
+      expect(response.status).toEqual(404);
     });
   });
 
@@ -754,7 +694,7 @@ describe('createRouter', () => {
       const response = await request(app).get('/questions/1/answers/2/correct');
 
       expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith(
-        'user',
+        'user:default/mock',
         1,
         2,
         false,
@@ -768,7 +708,7 @@ describe('createRouter', () => {
       const response = await request(app).get('/questions/1/answers/2/correct');
 
       expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith(
-        'user',
+        'user:default/mock',
         1,
         2,
         false,
@@ -791,12 +731,6 @@ describe('createRouter', () => {
       );
       expect(response.status).toEqual(404);
     });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get('/questions/1/answers/2/correct');
-      expect(response.status).toEqual(401);
-    });
   });
 
   describe('GET /questions/:id/answers/:answerId/incorrect', () => {
@@ -808,7 +742,7 @@ describe('createRouter', () => {
       );
 
       expect(qetaStore.markAnswerIncorrect).toHaveBeenCalledWith(
-        'user',
+        'user:default/mock',
         1,
         2,
         false,
@@ -824,20 +758,12 @@ describe('createRouter', () => {
       );
 
       expect(qetaStore.markAnswerIncorrect).toHaveBeenCalledWith(
-        'user',
+        'user:default/mock',
         1,
         2,
         false,
       );
       expect(response.status).toEqual(404);
-    });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app).get(
-        '/questions/1/answers/2/incorrect',
-      );
-      expect(response.status).toEqual(401);
     });
   });
 
@@ -855,7 +781,7 @@ describe('createRouter', () => {
       expect(response.status).toEqual(201);
       expect(qetaStore.commentAnswer).toHaveBeenCalledWith(
         1,
-        'user',
+        'user:default/mock',
         'content',
         answer.created,
       );
@@ -906,16 +832,6 @@ describe('createRouter', () => {
         type: 'body',
       });
     });
-
-    it('unauthorized', async () => {
-      getIdentityMock.mockResolvedValue(undefined);
-      const response = await request(app)
-        .post(`/questions/1/answers/1/comments`)
-        .send({
-          content: 'comment',
-        });
-      expect(response.status).toEqual(401);
-    });
   });
 
   describe('GET /statistics/questions/top-upvoted-users', () => {
@@ -924,15 +840,6 @@ describe('createRouter', () => {
     });
 
     it('returns the users with the best voted questions', async () => {
-      getIdentityMock.mockResolvedValueOnce({
-        identity: {
-          userEntityRef: 'user:default/thor',
-          type: 'user',
-          ownershipEntityRefs: [],
-        },
-        token: 'dummy',
-      });
-
       qetaStore.getMostUpvotedQuestions.mockResolvedValueOnce(
         mostUpvotedQuestions,
       );
@@ -957,15 +864,6 @@ describe('createRouter', () => {
     });
 
     it('ensure that the position of the logged user is equal to the ranking', async () => {
-      getIdentityMock.mockResolvedValueOnce({
-        identity: {
-          userEntityRef: 'user:default/captain_america',
-          type: 'user',
-          ownershipEntityRefs: [],
-        },
-        token: 'dummy',
-      });
-
       qetaStore.getMostUpvotedQuestions.mockResolvedValueOnce(
         mostUpvotedQuestions,
       );
@@ -977,10 +875,8 @@ describe('createRouter', () => {
       expect(qetaStore.getMostUpvotedQuestions).toHaveBeenCalledTimes(3);
       expect(response.status).toEqual(200);
       expect(response.body.ranking.length).toBeGreaterThan(0);
-      expect(response.body.loggedUser.author).toEqual(
-        'user:default/captain_america',
-      );
-      expect(response.body.loggedUser.position).toEqual(1);
+      expect(response.body.loggedUser.author).toEqual('user:default/mock');
+      expect(response.body.loggedUser.position).toEqual(0);
       expect(response.body.loggedUser.total).toEqual(5);
     });
   });
@@ -991,15 +887,6 @@ describe('createRouter', () => {
     });
 
     it('returns the users with the best voted answers', async () => {
-      getIdentityMock.mockResolvedValueOnce({
-        identity: {
-          userEntityRef: 'user:default/thanos',
-          type: 'user',
-          ownershipEntityRefs: [],
-        },
-        token: 'dummy',
-      });
-
       qetaStore.getMostUpvotedAnswers.mockResolvedValueOnce(mostUpvotedAnswers);
 
       qetaStore.getMostUpvotedAnswers.mockResolvedValueOnce([
@@ -1022,15 +909,6 @@ describe('createRouter', () => {
     });
 
     it('ensure that the position of the logged user is equal to the ranking', async () => {
-      getIdentityMock.mockResolvedValueOnce({
-        identity: {
-          userEntityRef: 'user:default/iron_man',
-          type: 'user',
-          ownershipEntityRefs: [],
-        },
-        token: 'dummy',
-      });
-
       qetaStore.getMostUpvotedAnswers.mockResolvedValueOnce(mostUpvotedAnswers);
 
       const response = await request(app).get(
@@ -1040,7 +918,7 @@ describe('createRouter', () => {
       expect(qetaStore.getMostUpvotedAnswers).toHaveBeenCalledTimes(1);
       expect(response.status).toEqual(200);
       expect(response.body.ranking.length).toBeGreaterThan(0);
-      expect(response.body.loggedUser.author).toEqual('user:default/iron_man');
+      expect(response.body.loggedUser.author).toEqual('user:default/mock');
       expect(response.body.loggedUser.position).toEqual(1);
       expect(response.body.loggedUser.total).toEqual(9);
     });
@@ -1052,15 +930,6 @@ describe('createRouter', () => {
     });
 
     it('returns the users with the best voted correct answers', async () => {
-      getIdentityMock.mockResolvedValueOnce({
-        identity: {
-          userEntityRef: 'user:default/peter_parker',
-          type: 'user',
-          ownershipEntityRefs: [],
-        },
-        token: 'dummy',
-      });
-
       qetaStore.getMostUpvotedCorrectAnswers.mockResolvedValueOnce(
         mostUpvotedAnswers,
       );
@@ -1085,15 +954,6 @@ describe('createRouter', () => {
     });
 
     it('ensure that the position of the logged user is equal to the ranking', async () => {
-      getIdentityMock.mockResolvedValueOnce({
-        identity: {
-          userEntityRef: 'user:default/iron_man',
-          type: 'user',
-          ownershipEntityRefs: [],
-        },
-        token: 'dummy',
-      });
-
       qetaStore.getMostUpvotedCorrectAnswers.mockResolvedValueOnce(
         mostUpvotedAnswers,
       );
@@ -1105,7 +965,7 @@ describe('createRouter', () => {
       expect(qetaStore.getMostUpvotedCorrectAnswers).toHaveBeenCalledTimes(1);
       expect(response.status).toEqual(200);
       expect(response.body.ranking.length).toBeGreaterThan(0);
-      expect(response.body.loggedUser.author).toEqual('user:default/iron_man');
+      expect(response.body.loggedUser.author).toEqual('user:default/mock');
       expect(response.body.loggedUser.position).toEqual(1);
       expect(response.body.loggedUser.total).toEqual(9);
     });

@@ -6,6 +6,7 @@ import {
 import { createRouter } from './service/router';
 import { DatabaseQetaStore } from './database/DatabaseQetaStore';
 import { signalsServiceRef } from '@backstage/plugin-signals-node';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 const logger = getRootLogger();
 
@@ -21,17 +22,23 @@ export const qetaPlugin = createBackendPlugin({
       deps: {
         config: coreServices.rootConfig,
         httpRouter: coreServices.httpRouter,
-        identity: coreServices.identity,
         database: coreServices.database,
-        tokenManager: coreServices.tokenManager,
+        events: eventsServiceRef,
+        discovery: coreServices.discovery,
+        permissions: coreServices.permissions,
+        httpAuth: coreServices.httpAuth,
+        userInfo: coreServices.userInfo,
         signals: signalsServiceRef,
       },
       async init({
         config,
         httpRouter,
-        identity,
         database,
-        tokenManager,
+        events,
+        discovery,
+        permissions,
+        httpAuth,
+        userInfo,
         signals,
       }) {
         const qetaStore = await DatabaseQetaStore.create({
@@ -42,9 +49,12 @@ export const qetaPlugin = createBackendPlugin({
           await createRouter({
             config,
             logger,
-            identity,
+            events,
             database: qetaStore,
-            tokenManager,
+            discovery,
+            permissions,
+            httpAuth,
+            userInfo,
             signals: signals,
           }),
         );

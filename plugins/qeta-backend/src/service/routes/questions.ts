@@ -26,7 +26,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const questionsRoutes = (router: Router, options: RouterOptions) => {
-  const { database, eventBroker, config, signals } = options;
+  const { database, events, config, signals } = options;
   // GET /questions
   router.get(`/questions`, async (request, response) => {
     // Validation
@@ -159,8 +159,8 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       mapAdditionalFields(username, a, options, moderator),
     );
 
-    if (eventBroker) {
-      eventBroker.publish({
+    if (events) {
+      events.publish({
         topic: 'qeta',
         eventPayload: {
           question,
@@ -268,8 +268,8 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       request.body.anonymous || username === 'user:default/guest',
     );
 
-    if (eventBroker) {
-      eventBroker.publish({
+    if (events) {
+      events.publish({
         topic: 'qeta',
         eventPayload: {
           question,
@@ -326,8 +326,8 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
-    if (eventBroker) {
-      eventBroker.publish({
+    if (events) {
+      events.publish({
         topic: 'qeta',
         eventPayload: {
           question,
@@ -355,9 +355,9 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       return;
     }
 
-    if (eventBroker) {
+    if (events) {
       const question = database.getQuestion(username, questionId, false);
-      eventBroker.publish({
+      events.publish({
         topic: 'qeta',
         eventPayload: {
           question,
@@ -412,8 +412,8 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     mapAdditionalFields(username, question, options, moderator);
     question.ownVote = score;
 
-    if (eventBroker) {
-      eventBroker.publish({
+    if (events) {
+      events.publish({
         topic: 'qeta',
         eventPayload: {
           question,

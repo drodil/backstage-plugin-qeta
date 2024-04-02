@@ -1,11 +1,18 @@
 # Support for events backend
 
-Q&A plugin publishes messages through Backstage Event system utilizing `EventBroker`.
+Q&A plugin publishes messages through Backstage Event system utilizing `EventsService`.
 To set up the event broker in your application, follow the steps described in
 https://github.com/backstage/backstage/tree/master/plugins/events-backend.
 
-Once you have the `EventBroker` instance, pass it to the Q&A plugin `createRouter` method
-in options.
+```ts
+import { createBackend } from '@backstage/backend-defaults';
+
+const backend = createBackend();
+backend.add(import('@backstage/events-backend'));
+backend.add(import('@drodil/backstage-plugin-qeta-backend'));
+
+backend.start();
+```
 
 Events are published in topic `qeta`. The following events are published:
 

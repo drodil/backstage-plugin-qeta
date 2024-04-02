@@ -6,7 +6,6 @@ import {
   AuthorizeResult,
   BasicPermission,
 } from '@backstage/plugin-permission-common';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { MaybeAnswer, MaybeQuestion } from '../database/QetaStore';
 import { Config } from '@backstage/config';
 import { S3Client } from '@aws-sdk/client-s3';
@@ -27,25 +26,26 @@ export const getUsername = async (
   }
 
   try {
-    const user = await options.identity.getIdentity({ request: req });
-    if (user) {
-      return user.identity.userEntityRef;
+    const credentials = await options.httpAuth.credentials(req, {
+      allow: ['user'],
+    });
+    if (credentials) {
+      return credentials.principal.userEntityRef;
     }
-  } catch (e) {
+  } catch (_) {
     // NOOP
   }
 
-  if (allowServiceToken && options.tokenManager) {
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
-    if (token) {
-      try {
-        await options.tokenManager.authenticate(token);
-        return '';
-      } catch (e) {
-        // NOOP
+  if (allowServiceToken) {
+    try {
+      const credentials = await options.httpAuth.credentials(req, {
+        allow: ['service'],
+      });
+      if (credentials) {
+        return credentials.principal.subject;
       }
+    } catch (_) {
+      // NOOP
     }
   }
 
@@ -66,15 +66,26 @@ export const isModerator = async (
   req: Request<unknown>,
   options: RouterOptions,
 ): Promise<boolean> => {
-  const user = await options.identity.getIdentity({ request: req });
-  const username = await getUsername(req, options);
+  try {
+    const credentials = await options.httpAuth.credentials(req, {
+      allow: ['user'],
+    });
+    if (!credentials) {
+      return false;
+    }
 
-  const ownership: string[] = user?.identity.ownershipEntityRefs ?? [];
-  ownership.push(username);
+    const username = credentials.principal.userEntityRef;
+    const user = await options.userInfo.getUserInfo(credentials);
 
-  const moderators =
-    options.config.getOptionalStringArray('qeta.moderators') ?? [];
-  return moderators.some(m => ownership.includes(m));
+    const ownership: string[] = user?.ownershipEntityRefs ?? [];
+    ownership.push(username);
+
+    const moderators =
+      options.config.getOptionalStringArray('qeta.moderators') ?? [];
+    return moderators.some(m => ownership.includes(m));
+  } catch (_) {
+    return false;
+  }
 };
 
 export const getCreated = async (
@@ -101,12 +112,14 @@ export const checkPermissions = async (
     return;
   }
 
-  const token =
-    getBearerTokenFromAuthorizationHeader(request.header('authorization')) ||
-    (request.cookies?.token as string | undefined);
+  const credentials = await options.httpAuth.credentials(request);
+  if (!credentials) {
+    throw new NotAllowedError('Unauthorized');
+  }
+
   const decision = (
     await options.permissions.authorize([{ permission }], {
-      token,
+      credentials,
     })
   )[0];
 

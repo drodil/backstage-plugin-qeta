@@ -21,7 +21,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const answersRoutes = (router: Router, options: RouterOptions) => {
-  const { database, eventBroker, signals } = options;
+  const { database, events, signals } = options;
 
   // POST /questions/:id/answers
   router.post(`/questions/:id/answers`, async (request, response) => {
@@ -58,9 +58,9 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
     mapAdditionalFields(username, answer, options, moderator);
 
-    if (eventBroker) {
+    if (events) {
       const question = await database.getQuestion(username, questionId, false);
-      eventBroker.publish({
+      events.publish({
         topic: 'qeta',
         eventPayload: {
           answer,
@@ -160,13 +160,13 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
       mapAdditionalFields(username, answer, options, moderator);
 
-      if (eventBroker) {
+      if (events) {
         const question = await database.getQuestion(
           username,
           questionId,
           false,
         );
-        eventBroker.publish({
+        events.publish({
           topic: 'qeta',
           eventPayload: {
             question,
@@ -265,14 +265,14 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         return;
       }
 
-      if (eventBroker) {
+      if (events) {
         const question = await database.getQuestion(
           username,
           questionId,
           false,
         );
         const answer = await database.getAnswer(answerId, username);
-        eventBroker.publish({
+        events.publish({
           topic: 'qeta',
           eventPayload: {
             question,
@@ -330,9 +330,9 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
 
     answer.ownVote = score;
 
-    if (eventBroker) {
+    if (events) {
       const question = await database.getQuestion(username, questionId, false);
-      eventBroker.publish({
+      events.publish({
         topic: 'qeta',
         eventPayload: {
           question,
@@ -388,7 +388,7 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         moderator || globalEdit,
       );
 
-      if (eventBroker || signals) {
+      if (events || signals) {
         const question = await database.getQuestion(
           username,
           questionId,
@@ -396,8 +396,8 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         );
         const answer = await database.getAnswer(answerId, username);
 
-        if (eventBroker) {
-          eventBroker.publish({
+        if (events) {
+          events.publish({
             topic: 'qeta',
             eventPayload: {
               question,
@@ -437,14 +437,14 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         answerId,
         moderator || globalEdit,
       );
-      if (eventBroker) {
+      if (events) {
         const question = await database.getQuestion(
           username,
           questionId,
           false,
         );
         const answer = await database.getAnswer(answerId, username);
-        eventBroker.publish({
+        events.publish({
           topic: 'qeta',
           eventPayload: {
             question,

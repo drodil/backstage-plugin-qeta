@@ -13,33 +13,14 @@ The default permissions are hard-coded. These include:
 
 ## Set up
 
-In packages/backend/src/plugins/qeta.ts, add the permissions from your PluginEnvironment to createRouter call:
-
 ```ts
-import {
-  createRouter,
-  DatabaseQetaStore,
-} from '@drodil/backstage-plugin-qeta-backend';
-import { PluginEnvironment } from '../types';
+import { createBackend } from '@backstage/backend-defaults';
 
-export default async function createPlugin({
-  logger,
-  database,
-  identity,
-  config,
-  permissions,
-}: PluginEnvironment) {
-  const db = await DatabaseQetaStore.create({
-    database: database,
-  });
-  return createRouter({
-    logger,
-    database: db,
-    identity,
-    config,
-    permissions,
-  });
-}
+const backend = createBackend();
+backend.add(import('@backstage/permissions-backend'));
+backend.add(import('@drodil/backstage-plugin-qeta-backend'));
+
+backend.start();
 ```
 
 Now handle the permissions in your own PermissionPolicy. See details from

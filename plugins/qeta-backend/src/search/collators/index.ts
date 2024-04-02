@@ -1,1 +1,0 @@
-export { QetaCollatorFactory } from './QetaCollatorFactory';

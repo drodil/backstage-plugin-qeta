@@ -25,6 +25,9 @@ within Backstage. This plugin provides:
 
 Find [installation instructions](./docs/index.md#installation) in our documentation.
 
+**IMPORTANT**: From version 2.0.0 forward, this plugin only works with the new backend system. If you are still
+using the old backend system, please use version 1.24.5.
+
 ## Examples
 
 Questions list:
