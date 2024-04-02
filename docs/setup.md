@@ -8,55 +8,17 @@ Add the plugin to your backend app:
 cd packages/backend && yarn add @drodil/backstage-plugin-qeta-backend
 ```
 
-Create new file to packages/backend/src/plugins/qeta.ts:
-
-```ts
-import {
-  createRouter,
-  DatabaseQetaStore,
-} from '@drodil/backstage-plugin-qeta-backend';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin({
-  logger,
-  database,
-  identity,
-  config,
-}: PluginEnvironment) {
-  const db = await DatabaseQetaStore.create({
-    database: database,
-  });
-  return createRouter({
-    logger,
-    database: db,
-    identity,
-    config,
-  });
-}
-```
-
-Now add this plugin to your packages/backend/src/index.ts:
-
-```ts
-import qeta from './plugins/qeta';
-const qetaEnv = useHotMemoize(module, () => createEnv('qeta'));
-apiRouter.use('/qeta', await qeta(qetaEnv));
-```
-
-## New Backend System
-
-The qeta backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
-
 In your `packages/backend/src/index.ts` make the following changes:
 
-```diff
-  import { createBackend } from '@backstage/backend-defaults';
-+ import { qetaPlugin } from '@drodil/backstage-plugin-qeta-backend';
-  const backend = createBackend();
-  // ... other feature additions
-+ backend.add(qetaPlugin());
-  backend.start();
+```ts
+import { createBackend } from '@backstage/backend-defaults';
+const backend = createBackend();
+// ... other plugins
+backend.add(import('@drodil/backstage-plugin-qeta-backend'));
+backend.start();
 ```
+
+For additional features, see [permissions](permissions.md), [events](events.md), [signals](signals.md), and [search](search.md).
 
 ## Frontend
 

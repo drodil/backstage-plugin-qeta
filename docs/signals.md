@@ -5,26 +5,14 @@ plugin. It provides real time updates to frontend from the backend.
 
 At the moment, only question and answer statistics are updated in real time.
 
-To integrate with signals, install `signals-backend` and pass the signal service
-to the `createRouter` method in options.
+To integrate with signals, install `signals-backend` and add it to the backend:
 
 ```ts
-export default async function createPlugin({
-  logger,
-  database,
-  identity,
-  config,
-  signalService,
-}: PluginEnvironment) {
-  const db = await DatabaseQetaStore.create({
-    database: database,
-  });
-  return createRouter({
-    logger,
-    database: db,
-    identity,
-    config,
-    signalService,
-  });
-}
+import { createBackend } from '@backstage/backend-defaults';
+
+const backend = createBackend();
+backend.add(import('@backstage/signals-backend'));
+backend.add(import('@drodil/backstage-plugin-qeta-backend'));
+
+backend.start();
 ```
