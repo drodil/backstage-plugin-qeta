@@ -476,7 +476,7 @@ export class QetaClient implements QetaApi {
       body: formData,
     };
 
-    const response = await fetch(qetaUrl, requestOptions);
+    const response = await this.fetchApi.fetch(qetaUrl, requestOptions);
     return (await response.json()) as AttachmentResponseBody;
   }
 
