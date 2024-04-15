@@ -39,6 +39,7 @@ export const QuestionHighlightList = (props: {
         className="qetaQuestionHighlightListList"
         subheader={
           <ListSubheader
+            disableSticky
             component="div"
             id="nested-list-subheader"
             color="primary"
