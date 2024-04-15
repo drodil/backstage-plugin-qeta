@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.0.0...v2.0.1) (2024-04-15)
+
+
+### Bug Fixes
+
+* remove stickiness from highlight list headers ([0d863ab](https://github.com/drodil/backstage-plugin-qeta/commit/0d863ab1641ea0af0c5c19a838c76d045fea019e))
+* use fetch api to upload attachments ([8cb301d](https://github.com/drodil/backstage-plugin-qeta/commit/8cb301d98e2e243cabefaa7bdd29e8d592e12e06))
+
 ## [2.0.0](https://github.com/drodil/backstage-plugin-qeta/compare/v1.24.5...v2.0.0) (2024-04-02)
 
 
