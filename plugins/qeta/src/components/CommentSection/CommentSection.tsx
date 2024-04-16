@@ -3,6 +3,7 @@ import { Box, Button, Grid, TextField } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import {
   AnswerResponse,
+  qetaCreateCommentPermission,
   QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Controller, useForm } from 'react-hook-form';
@@ -11,6 +12,7 @@ import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../utils/hooks';
 import { confirmNavigationIfEdited } from '../../utils/utils';
+import { RequirePermission } from '@backstage/plugin-permission-react';
 
 export const CommentSection = (props: {
   onCommentPost: (question: QuestionResponse, answer?: AnswerResponse) => void;
@@ -70,64 +72,69 @@ export const CommentSection = (props: {
         answer={answer}
         onCommentDelete={onCommentDelete}
       />
-      {!formVisible && (
-        <Link
-          underline="none"
-          to="#"
-          className="qetaAddCommentBtn"
-          onClick={() => setFormVisible(true)}
-        >
-          {t('commentSection.addComment')}
-        </Link>
-      )}
-      {formVisible && (
-        <form
-          onSubmit={handleSubmit(postComment)}
-          onChange={() => {
-            setEdited(true);
-          }}
-          className="qetaCommentForm"
-        >
-          <Grid container>
-            <Grid item xs={11}>
-              <Controller
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: true,
-                }}
-                render={({ field: { onChange, value } }) => (
-                  <TextField
-                    id="comment"
-                    multiline
-                    minRows={2}
-                    fullWidth
-                    className="qetaCommentInput"
-                    value={value}
-                    placeholder={t('commentSection.input.placeholder')}
-                    onChange={onChange}
-                    variant="outlined"
-                    error={'content' in errors}
-                  />
-                )}
-                name="content"
-              />
+      <RequirePermission
+        permission={qetaCreateCommentPermission}
+        errorPage={<></>}
+      >
+        {!formVisible && (
+          <Link
+            underline="none"
+            to="#"
+            className="qetaAddCommentBtn"
+            onClick={() => setFormVisible(true)}
+          >
+            {t('commentSection.addComment')}
+          </Link>
+        )}
+        {formVisible && (
+          <form
+            onSubmit={handleSubmit(postComment)}
+            onChange={() => {
+              setEdited(true);
+            }}
+            className="qetaCommentForm"
+          >
+            <Grid container>
+              <Grid item xs={11}>
+                <Controller
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: true,
+                  }}
+                  render={({ field: { onChange, value } }) => (
+                    <TextField
+                      id="comment"
+                      multiline
+                      minRows={2}
+                      fullWidth
+                      className="qetaCommentInput"
+                      value={value}
+                      placeholder={t('commentSection.input.placeholder')}
+                      onChange={onChange}
+                      variant="outlined"
+                      error={'content' in errors}
+                    />
+                  )}
+                  name="content"
+                />
+              </Grid>
+              <Grid item xs={1}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  className="qetaCommentBtn"
+                  type="submit"
+                  color="primary"
+                  disabled={posting}
+                >
+                  {t('commentSection.post')}
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={1}>
-              <Button
-                variant="contained"
-                size="small"
-                className="qetaCommentBtn"
-                type="submit"
-                color="primary"
-                disabled={posting}
-              >
-                {t('commentSection.post')}
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      )}
+          </form>
+        )}
+      </RequirePermission>
     </Box>
   );
 };

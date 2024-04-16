@@ -10,6 +10,7 @@ import {
   AttachmentParameters,
   EntityResponse,
   MaybeAnswer,
+  MaybeComment,
   MaybeQuestion,
   QetaStore,
   Questions,
@@ -19,6 +20,7 @@ import {
 import {
   Answer,
   Attachment,
+  Comment,
   filterTags,
   Question,
   Statistic,
@@ -26,6 +28,14 @@ import {
   UserTagsResponse,
   Vote,
 } from '@drodil/backstage-plugin-qeta-common';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { QetaFilter, QetaFilters } from '../service/util';
+import {
+  isAndCriteria,
+  isNotCriteria,
+  isOrCriteria,
+} from '@backstage/plugin-permission-node';
+import { compact } from 'lodash';
 
 const migrationsDir = resolvePackagePath(
   '@drodil/backstage-plugin-qeta-backend',
@@ -90,6 +100,76 @@ export type RawCommentEntity = {
   updatedBy: string;
 };
 
+function isQetaFilter(filter: any): filter is QetaFilter {
+  return filter.hasOwnProperty('property');
+}
+
+function parseFilter(
+  filter: PermissionCriteria<QetaFilters>,
+  query: Knex.QueryBuilder,
+  db: Knex,
+  isQuestion: boolean = true,
+  negate: boolean = false,
+): Knex.QueryBuilder {
+  if (isNotCriteria(filter)) {
+    return parseFilter(filter.not, query, db, isQuestion, !negate);
+  }
+
+  if (isQetaFilter(filter)) {
+    const values: string[] = compact(filter.values) ?? [];
+
+    if (filter.property === 'tags') {
+      const questionIds = db('tags')
+        .leftJoin('question_tags', 'tags.id', 'question_tags.tagId')
+        .where('tags.tag', 'in', values)
+        .select('question_tags.questionId');
+      query.whereIn(
+        isQuestion ? 'questions.id' : 'answers.questionId',
+        questionIds,
+      );
+      return query;
+    }
+
+    if (filter.property === 'entityRefs') {
+      const questionIds = db('entities')
+        .leftJoin(
+          'question_entities',
+          'entities.id',
+          'question_entities.entityId',
+        )
+        .where('entities.entity_ref', 'in', values)
+        .select('question_entities.questionId');
+      query.whereIn(
+        isQuestion ? 'questions.id' : 'answers.questionId',
+        questionIds,
+      );
+      return query;
+    }
+
+    if (values.length === 0) {
+      return query.whereNull(filter.property);
+    }
+
+    return query.whereIn(filter.property, values);
+  }
+
+  return query[negate ? 'andWhereNot' : 'andWhere'](function filterFunction() {
+    if (isOrCriteria(filter)) {
+      for (const subFilter of filter.anyOf ?? []) {
+        this.orWhere(subQuery =>
+          parseFilter(subFilter, subQuery, db, isQuestion, false),
+        );
+      }
+    } else if (isAndCriteria(filter)) {
+      for (const subFilter of filter.allOf ?? []) {
+        this.andWhere(subQuery =>
+          parseFilter(subFilter, subQuery, db, isQuestion, false),
+        );
+      }
+    }
+  });
+}
+
 export class DatabaseQetaStore implements QetaStore {
   private constructor(private readonly db: Knex) {}
 
@@ -115,6 +195,7 @@ export class DatabaseQetaStore implements QetaStore {
   async getQuestions(
     user_ref: string,
     options: QuestionsOptions,
+    filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Questions> {
     const query = this.getQuestionBaseQuery(user_ref);
 
@@ -126,7 +207,15 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.author) {
-      query.where('questions.author', '=', options.author);
+      if (Array.isArray(options.author)) {
+        query.whereIn('questions.author', options.author);
+      } else {
+        query.where('questions.author', '=', options.author);
+      }
+    }
+
+    if (filters) {
+      parseFilter(filters, query, this.db);
     }
 
     if (options.searchQuery) {
@@ -497,6 +586,7 @@ export class DatabaseQetaStore implements QetaStore {
   async getAnswers(
     user_ref: string,
     options: AnswersOptions,
+    filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Answers> {
     const query = this.getAnswerBaseQuery();
     if (options.fromDate && options.toDate) {
@@ -508,6 +598,10 @@ export class DatabaseQetaStore implements QetaStore {
 
     if (options.author) {
       query.where('answers.author', '=', options.author);
+    }
+
+    if (filters) {
+      parseFilter(filters, query, this.db, false);
     }
 
     const tags = filterTags(options.tags);
@@ -594,6 +688,26 @@ export class DatabaseQetaStore implements QetaStore {
   async getAnswer(answerId: number, user_ref: string): Promise<MaybeAnswer> {
     const answers = await this.getAnswerBaseQuery().where('id', '=', answerId);
     return this.mapAnswer(answers[0], user_ref, true, true);
+  }
+
+  async getQuestionComment(commentId: number): Promise<MaybeComment> {
+    const comments = await this.db<RawCommentEntity>('question_comments') // nosonar
+      .where('question_comments.id', '=', commentId)
+      .select();
+    if (comments.length === 0) {
+      return null;
+    }
+    return await this.mapComment(comments[0]);
+  }
+
+  async getAnswerComment(commentId: number): Promise<MaybeComment> {
+    const comments = await this.db<RawCommentEntity>('answer_comments') // nosonar
+      .where('answer_comments.id', '=', commentId)
+      .select();
+    if (comments.length === 0) {
+      return null;
+    }
+    return await this.mapComment(comments[0]);
   }
 
   async deleteAnswer(id: number): Promise<boolean> {
@@ -1048,6 +1162,17 @@ export class DatabaseQetaStore implements QetaStore {
       trend: this.mapToInteger(val.trend),
       comments: additionalInfo[4],
       anonymous: val.anonymous,
+    };
+  }
+
+  private async mapComment(val: RawCommentEntity): Promise<Comment> {
+    return {
+      id: val.id,
+      author: val.author,
+      content: val.content,
+      created: val.created,
+      updated: val.updated,
+      updatedBy: val.updatedBy,
     };
   }
 

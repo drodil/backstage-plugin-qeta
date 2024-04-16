@@ -44,6 +44,9 @@ auth:
   providers:
     guest: {}
 
+permission:
+  enabled: true
+
 catalog:
   orphanStrategy: delete
   processingInterval: { minutes: 1 }
@@ -61,6 +64,7 @@ qeta:
   allowAnonymous: true
   allowMetadataInput: false
   #allowGlobalEdits: true
+  permissions: true
   entities:
     max: 2
   tags:

@@ -1,9 +1,12 @@
 import { QuestionsOptions } from '../../database/QetaStore';
 import {
   authorize,
+  authorizeConditional,
   getCreated,
   getUsername,
   mapAdditionalFields,
+  QetaFilters,
+  transformConditions,
 } from '../util';
 import Ajv from 'ajv';
 import { Request, Router } from 'express';
@@ -24,6 +27,10 @@ import {
 } from '../types';
 import { Response } from 'express-serve-static-core';
 import { signalQuestionStats, validateDateRange } from './util';
+import {
+  AuthorizeResult,
+  PermissionCriteria,
+} from '@backstage/plugin-permission-common';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -34,7 +41,6 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
   router.get(`/questions`, async (request, response) => {
     // Validation
     const username = await getUsername(request, options, true);
-    // TODO: Get Query from permission decision
     const validateQuery = ajv.compile(QuestionsQuerySchema);
     if (!validateQuery(request.query)) {
       response
@@ -52,11 +58,23 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    // Act
-    const questions = await database.getQuestions(username, request.query);
+    const decision = await authorizeConditional(
+      request,
+      qetaReadQuestionPermission,
+      options,
+    );
 
-    // Response
-    response.json(questions);
+    // Act
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      const filter: PermissionCriteria<QetaFilters> = transformConditions(
+        decision.conditions,
+      );
+      response.json(
+        await database.getQuestions(username, request.query, filter),
+      );
+    } else {
+      response.json(await database.getQuestions(username, request.query));
+    }
   });
 
   // GET /questions
@@ -86,14 +104,32 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       optionOverride.orderBy = 'trend';
     }
 
-    // Act
-    const questions = await database.getQuestions(username, {
-      ...request.query,
-      ...optionOverride,
-    });
+    const decision = await authorizeConditional(
+      request,
+      qetaReadQuestionPermission,
+      options,
+    );
 
-    // Response
-    response.json(questions);
+    // Act
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      const filter: PermissionCriteria<QetaFilters> = transformConditions(
+        decision.conditions,
+      );
+      response.json(
+        await database.getQuestions(
+          username,
+          { ...request.query, ...optionOverride },
+          filter,
+        ),
+      );
+    } else {
+      response.json(
+        await database.getQuestions(username, {
+          ...request.query,
+          ...optionOverride,
+        }),
+      );
+    }
   });
 
   // GET /questions/:id
@@ -108,12 +144,6 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
         .send({ errors: 'Invalid question id', type: 'body' });
       return;
     }
-    await authorize(
-      request,
-      qetaReadQuestionPermission,
-      options,
-      request.params.id,
-    );
 
     const question = await database.getQuestion(
       username,
@@ -124,6 +154,8 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
+
+    await authorize(request, qetaReadQuestionPermission, options, question);
 
     await mapAdditionalFields(request, question, options);
     await Promise.all(
@@ -159,15 +191,17 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
         .send({ errors: validateRequestBody.errors, type: 'body' });
       return;
     }
-    await authorize(
-      request,
-      qetaReadQuestionPermission,
-      options,
-      request.params.id,
+
+    let question = await database.getQuestion(
+      username,
+      Number.parseInt(request.params.id, 10),
+      false,
     );
+
+    await authorize(request, qetaReadQuestionPermission, options, question);
     await authorize(request, qetaCreateCommentPermission, options);
 
-    const question = await database.commentQuestion(
+    question = await database.commentQuestion(
       questionId,
       username,
       request.body.content,
@@ -218,8 +252,6 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
     async (request, response) => {
       // Validation
       // Act
-      const username = await getUsername(request, options);
-
       const questionId = Number.parseInt(request.params.id, 10);
       const commentId = Number.parseInt(request.params.commentId, 10);
       if (Number.isNaN(questionId) || Number.isNaN(commentId)) {
@@ -227,21 +259,19 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      await authorize(
-        request,
-        qetaDeleteQuestionPermission,
-        options,
-        request.params.id,
+      const username = await getUsername(request, options);
+      let question = await database.getQuestion(
+        username,
+        Number.parseInt(request.params.id, 10),
+        false,
       );
+      const comment = await database.getQuestionComment(commentId);
 
-      await authorize(
-        request,
-        qetaDeleteCommentPermission,
-        options,
-        request.params.commentId,
-      );
+      await authorize(request, qetaDeleteQuestionPermission, options, question);
 
-      const question = await database.deleteQuestionComment(
+      await authorize(request, qetaDeleteCommentPermission, options, comment);
+
+      question = await database.deleteQuestionComment(
         questionId,
         commentId,
         username,
@@ -365,19 +395,20 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await authorize(
-      request,
-      qetaEditQuestionPermission,
-      options,
-      request.params.id,
+    const username = await getUsername(request, options);
+    let question = await database.getQuestion(
+      username,
+      Number.parseInt(request.params.id, 10),
+      false,
     );
+
+    await authorize(request, qetaEditQuestionPermission, options, question);
 
     const tags = getTags(request);
     const entities = getEntities(request);
-    const username = await getUsername(request, options);
 
     // Act
-    const question = await database.updateQuestion(
+    question = await database.updateQuestion(
       questionId,
       username,
       request.body.title,
@@ -411,7 +442,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
   // DELETE /questions/:id
   router.delete('/questions/:id', async (request, response) => {
     // Validation
-    const username = await getUsername(request, options);
+
     const questionId = Number.parseInt(request.params.id, 10);
     if (Number.isNaN(questionId)) {
       response
@@ -419,15 +450,15 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
         .send({ errors: 'Invalid question id', type: 'body' });
       return;
     }
-    await authorize(
-      request,
-      qetaDeleteQuestionPermission,
-      options,
-      request.params.id,
+    const username = await getUsername(request, options);
+    const question = await database.getQuestion(
+      username,
+      Number.parseInt(request.params.id, 10),
+      false,
     );
+    await authorize(request, qetaDeleteQuestionPermission, options, question);
 
     if (events) {
-      const question = database.getQuestion(username, questionId, false);
       events.publish({
         topic: 'qeta',
         eventPayload: {
@@ -459,25 +490,20 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await authorize(
-      request,
-      qetaReadQuestionPermission,
-      options,
-      request.params.id,
-    );
-
     // Act
     const username = await getUsername(request, options);
-    const voted = await database.voteQuestion(username, questionId, score);
+    const question = await database.getQuestion(username, questionId, false);
 
-    if (!voted) {
+    if (question === null) {
       response.sendStatus(404);
       return;
     }
 
-    const question = await database.getQuestion(username, questionId, false);
+    await authorize(request, qetaReadQuestionPermission, options, question);
 
-    if (question === null) {
+    const voted = await database.voteQuestion(username, questionId, score);
+
+    if (!voted) {
       response.sendStatus(404);
       return;
     }
@@ -515,7 +541,6 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
 
   // GET /questions/:id/favorite
   router.get(`/questions/:id/favorite`, async (request, response) => {
-    const username = await getUsername(request, options);
     const questionId = Number.parseInt(request.params.id, 10);
     if (Number.isNaN(questionId)) {
       response
@@ -523,12 +548,15 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
         .send({ errors: 'Invalid question id', type: 'body' });
       return;
     }
-    await authorize(
-      request,
-      qetaReadQuestionPermission,
-      options,
-      request.params.id,
+
+    const username = await getUsername(request, options);
+    let question = await database.getQuestion(
+      username,
+      Number.parseInt(request.params.id, 10),
+      false,
     );
+
+    await authorize(request, qetaReadQuestionPermission, options, question);
 
     const favorited = await database.favoriteQuestion(username, questionId);
 
@@ -537,7 +565,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const question = await database.getQuestion(
+    question = await database.getQuestion(
       username,
       Number.parseInt(request.params.id, 10),
       false,
@@ -551,7 +579,6 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
 
   // GET /questions/:id/unfavorite
   router.get(`/questions/:id/unfavorite`, async (request, response) => {
-    const username = await getUsername(request, options);
     const questionId = Number.parseInt(request.params.id, 10);
     if (Number.isNaN(questionId)) {
       response
@@ -559,12 +586,15 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
         .send({ errors: 'Invalid question id', type: 'body' });
       return;
     }
-    await authorize(
-      request,
-      qetaReadQuestionPermission,
-      options,
-      request.params.id,
+
+    const username = await getUsername(request, options);
+    let question = await database.getQuestion(
+      username,
+      Number.parseInt(request.params.id, 10),
+      false,
     );
+
+    await authorize(request, qetaReadQuestionPermission, options, question);
 
     const unfavorited = await database.unfavoriteQuestion(username, questionId);
 
@@ -573,7 +603,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const question = await database.getQuestion(
+    question = await database.getQuestion(
       username,
       Number.parseInt(request.params.id, 10),
       false,

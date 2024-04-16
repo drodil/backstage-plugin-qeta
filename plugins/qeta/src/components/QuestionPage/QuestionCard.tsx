@@ -80,9 +80,9 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
             >
               <Grid item xs={9} style={{ alignSelf: 'flex-end' }}>
                 <TagsAndEntities question={questionEntity} />
-                {(question.own || question.canEdit || question.canDelete) && (
+                {(question.canEdit || question.canDelete) && (
                   <Box className={styles.questionCardActions}>
-                    {(question.own || question.canDelete) && (
+                    {question.canDelete && (
                       <>
                         <Button
                           variant="outlined"
@@ -101,7 +101,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
                         />
                       </>
                     )}
-                    {(question.own || question.canEdit) && (
+                    {question.canEdit && (
                       <Button
                         variant="outlined"
                         size="small"

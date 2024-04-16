@@ -1,4 +1,9 @@
-import { createPermission } from '@backstage/plugin-permission-common';
+import {
+  BasicPermission,
+  createPermission,
+  isPermission,
+  ResourcePermission,
+} from '@backstage/plugin-permission-common';
 
 export const qetaCreateQuestionPermission = createPermission({
   name: 'qeta.create.question',
@@ -85,3 +90,9 @@ export const qetaPermissions = [
   qetaEditCommentPermission,
   qetaDeleteCommentPermission,
 ];
+
+export const isQetaPermission = (
+  permission: BasicPermission | ResourcePermission,
+) => {
+  return qetaPermissions.some(p => isPermission(permission, p));
+};

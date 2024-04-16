@@ -55,8 +55,18 @@ export interface Question extends QuestionAnswerEntity {
   trend?: number;
 }
 
-export type QuestionAnswerCommentFilter = {
-  property: 'author' | 'id';
+export type AnswerFilter = {
+  property: 'answers.author' | 'answers.id' | 'tags' | 'entityRefs';
+  values: Array<string | undefined>;
+};
+
+export type QuestionFilter = {
+  property: 'questions.author' | 'questions.id' | 'tags' | 'entityRefs';
+  values: Array<string | undefined>;
+};
+
+export type CommentFilter = {
+  property: 'comments.author' | 'comments.id';
   values: Array<string | undefined>;
 };
 

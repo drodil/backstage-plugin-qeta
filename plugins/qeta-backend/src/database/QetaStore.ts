@@ -5,16 +5,28 @@ import type {
   UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
+  Comment,
   Statistic,
   StatisticsRequestParameters,
 } from '@drodil/backstage-plugin-qeta-common';
+import { QetaFilters } from '../service/util';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
-export function isQuestion(entity: Question | Answer): entity is Question {
+export function isQuestion(
+  entity: Question | Answer | Comment,
+): entity is Question {
   return 'answers' in entity;
+}
+
+export function isAnswer(
+  entity: Question | Answer | Comment,
+): entity is Answer {
+  return !('answers' in entity);
 }
 
 export type MaybeAnswer = Answer | null;
 export type MaybeQuestion = Question | null;
+export type MaybeComment = Comment | null;
 
 export interface Questions {
   questions: Question[];
@@ -29,7 +41,7 @@ export interface Answers {
 export interface QuestionsOptions {
   limit?: number;
   offset?: number;
-  author?: string;
+  author?: string | string[];
   orderBy?:
     | 'views'
     | 'score'
@@ -104,8 +116,13 @@ export interface QetaStore {
    * Fetch all stored questions with options
    * @param user_ref user name requesting question
    * @param options Search options
+   * @param filters Permission filters
    */
-  getQuestions(user_ref: string, options: QuestionsOptions): Promise<Questions>;
+  getQuestions(
+    user_ref: string,
+    options: QuestionsOptions,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<Questions>;
 
   /**
    * Fetch single question by id
@@ -261,14 +278,22 @@ export interface QetaStore {
    * Fetch all stored answers with options
    * @param user_ref user name requesting question
    * @param options Search options
+   * @param filters Permission filters
    */
-  getAnswers(user_ref: string, options: AnswersOptions): Promise<Answers>;
+  getAnswers(
+    user_ref: string,
+    options: AnswersOptions,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<Answers>;
 
   /** Get answer by id
    * @param answerId answer id
    * @param user_ref user name of the user getting answer
    */
   getAnswer(answerId: number, user_ref: string): Promise<MaybeAnswer>;
+
+  getQuestionComment(commentId: number): Promise<MaybeComment>;
+  getAnswerComment(commentId: number): Promise<MaybeComment>;
 
   /**
    * Delete answer. Only the user who created the answer can delete it.

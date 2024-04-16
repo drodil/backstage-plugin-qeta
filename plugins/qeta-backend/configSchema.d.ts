@@ -13,6 +13,18 @@ export interface Config {
      */
     allowMetadataInput?: boolean;
     /**
+     * Allow all users to edit other users questions and answers in case permission framework is not in use.
+     *
+     * @visibility backend
+     */
+    allowGlobalEdits?: boolean;
+    /**
+     * Use permissions framework to control access to questions and answers.
+     *
+     * @visibility backend
+     */
+    permissions?: boolean;
+    /**
      * Entities configuration for questions.
      *
      * @visibility frontend
@@ -51,6 +63,12 @@ export interface Config {
        */
       max?: number;
     };
+    /**
+     * List of users/groups that can moderate questions and answers in case permission framework is not in use.
+     *
+     * @visibility backend
+     */
+    moderators?: string[];
     /**
      * Configuration about images attachments storage
      *

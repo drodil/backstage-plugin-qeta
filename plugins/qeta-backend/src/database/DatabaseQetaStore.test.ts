@@ -367,33 +367,6 @@ describe.each(databases.eachSupportedId())(
         expect(ret?.updated).toBeDefined();
       });
 
-      it('should update not update someone elses question', async () => {
-        const id1 = await storage.postQuestion(
-          'user1',
-          'title',
-          'content',
-          new Date(),
-          ['java', 'xml', ''],
-          [
-            'component:default/comp1',
-            'component:default/comp2',
-            'invalidComponent',
-            '',
-          ],
-        );
-
-        const ret = await storage.updateQuestion(
-          id1.id,
-          'user3',
-          'title2',
-          'content2',
-          ['java'],
-          ['component:default/comp2'],
-        );
-
-        expect(ret?.id).toEqual(undefined);
-      });
-
       it('should delete question', async () => {
         const id1 = await storage.postQuestion(
           'user1',
@@ -404,11 +377,7 @@ describe.each(databases.eachSupportedId())(
         let ret1 = await storage.getQuestion('user', id1.id);
         expect(ret1?.title).toEqual('title');
 
-        // should not allow delete other users question
-        let deleted = await storage.deleteQuestion('user2', id1.id);
-        expect(deleted).toBeFalsy();
-
-        deleted = await storage.deleteQuestion('user1', id1.id);
+        const deleted = await storage.deleteQuestion(id1.id);
         expect(deleted).toBeTruthy();
 
         ret1 = await storage.getQuestion('user', id1.id);
@@ -451,7 +420,7 @@ describe.each(databases.eachSupportedId())(
           questionId: id,
           ...answer,
         });
-        let marked = await storage.markAnswerCorrect('user', id, answerId);
+        let marked = await storage.markAnswerCorrect(id, answerId);
         expect(marked).toBeTruthy();
 
         const ret = await storage.getQuestion('user', id);
@@ -460,17 +429,17 @@ describe.each(databases.eachSupportedId())(
         expect(answers?.at(0)?.correct).toBeTruthy();
 
         // should not allow setting correct with wrong user
-        marked = await storage.markAnswerCorrect('wrong_user', id, answerId);
+        marked = await storage.markAnswerCorrect(id, answerId);
         expect(marked).toBeFalsy();
 
         // should not allow setting two answers correct for one question
-        marked = await storage.markAnswerCorrect('user', id, anotherAnswerId);
+        marked = await storage.markAnswerCorrect(id, anotherAnswerId);
         expect(marked).toBeFalsy();
 
-        marked = await storage.markAnswerIncorrect('user', id, answerId);
+        marked = await storage.markAnswerIncorrect(id, answerId);
         expect(marked).toBeTruthy();
 
-        marked = await storage.markAnswerCorrect('user', id, anotherAnswerId);
+        marked = await storage.markAnswerCorrect(id, anotherAnswerId);
         expect(marked).toBeTruthy();
       });
 

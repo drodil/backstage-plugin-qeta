@@ -86,6 +86,7 @@
     "@backstage/plugin-catalog-backend": "^1.25.0",
     "@backstage/plugin-events-backend": "^0.3.10",
     "@backstage/plugin-notifications-backend": "^0.3.4",
+    "@backstage/plugin-permission-backend": "^0.5.48",
     "@backstage/plugin-signals-backend": "^0.1.9",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^9.0.4",

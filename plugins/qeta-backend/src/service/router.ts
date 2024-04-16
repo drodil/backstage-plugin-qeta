@@ -3,6 +3,10 @@ import Router from 'express-promise-router';
 import bodyParser from 'body-parser';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import {
+  Answer,
+  ANSWER_RESOURCE_TYPE,
+  Comment,
+  COMMENT_RESOURCE_TYPE,
   qetaPermissions,
   Question,
   QUESTION_RESOURCE_TYPE,
@@ -15,7 +19,7 @@ import { helperRoutes } from './routes/helpers';
 import { RouterOptions } from './types';
 import { NotificationManager } from './NotificationManager';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { questionRules } from './questionRules';
+import { answerRules, commentRules, questionRules } from './questionRules';
 
 export async function createRouter(
   options: RouterOptions,
@@ -52,6 +56,39 @@ export async function createRouter(
         },
         resourceType: QUESTION_RESOURCE_TYPE,
         rules: Object.values(questionRules),
+      },
+      {
+        getResources: async resourceRefs => {
+          return await Promise.all(
+            resourceRefs.map(async ref => {
+              const answer = await options.database.getAnswer(
+                Number.parseInt(ref, 10),
+                '',
+              );
+              return answer === null ? undefined : (answer as Answer);
+            }),
+          );
+        },
+        resourceType: ANSWER_RESOURCE_TYPE,
+        rules: Object.values(answerRules),
+      },
+      {
+        getResources: async resourceRefs => {
+          return await Promise.all(
+            resourceRefs.map(async ref => {
+              const comment =
+                (await options.database.getAnswerComment(
+                  Number.parseInt(ref, 10),
+                )) ??
+                (await options.database.getQuestionComment(
+                  Number.parseInt(ref, 10),
+                ));
+              return comment === null ? undefined : (comment as Comment);
+            }),
+          );
+        },
+        resourceType: COMMENT_RESOURCE_TYPE,
+        rules: Object.values(commentRules),
       },
     ],
   });
