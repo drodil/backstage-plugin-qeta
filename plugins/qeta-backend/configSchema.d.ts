@@ -13,12 +13,6 @@ export interface Config {
      */
     allowMetadataInput?: boolean;
     /**
-     * Allow all users to edit other users questions and answers
-     *
-     * @visibility backend
-     */
-    allowGlobalEdits?: boolean;
-    /**
      * Entities configuration for questions.
      *
      * @visibility frontend
@@ -57,12 +51,6 @@ export interface Config {
        */
       max?: number;
     };
-    /**
-     * List of users/groups that can moderate questions and answers
-     *
-     * @visibility backend
-     */
-    moderators?: string[];
     /**
      * Configuration about images attachments storage
      *
