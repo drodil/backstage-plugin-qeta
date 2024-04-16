@@ -1,5 +1,9 @@
 import { Request } from 'express';
-import { AuthenticationError, NotAllowedError } from '@backstage/errors';
+import {
+  AuthenticationError,
+  NotAllowedError,
+  NotFoundError,
+} from '@backstage/errors';
 import { RouterOptions } from './router';
 import { format, subDays } from 'date-fns';
 import {
@@ -12,6 +16,7 @@ import { isQuestion, MaybeAnswer, MaybeQuestion } from '../database/QetaStore';
 import { Config } from '@backstage/config';
 import { S3Client } from '@aws-sdk/client-s3';
 import {
+  Answer,
   Comment,
   qetaDeleteAnswerPermission,
   qetaDeleteCommentPermission,
@@ -20,6 +25,7 @@ import {
   qetaEditCommentPermission,
   qetaEditQuestionPermission,
   qetaReadCommentPermission,
+  Question,
 } from '@drodil/backstage-plugin-qeta-common';
 import { compact } from 'lodash';
 
@@ -90,14 +96,40 @@ export const getCreated = async (
   return new Date();
 };
 
+const authorizeWithoutPermissions = async (
+  request: Request<unknown>,
+  permission: Permission,
+  options: RouterOptions,
+  resource?: Question | Answer | Comment | null,
+): Promise<DefinitivePolicyDecision | null> => {
+  const username = await getUsername(request, options);
+  if (!isResourcePermission(permission)) {
+    return { result: AuthorizeResult.ALLOW };
+  }
+
+  if (!resource) {
+    throw new NotFoundError('Resource not found');
+  }
+
+  if (username === resource.author) {
+    return { result: AuthorizeResult.ALLOW };
+  }
+  return { result: AuthorizeResult.DENY };
+};
+
 export const authorize = async (
   request: Request<unknown>,
   permission: Permission,
   options: RouterOptions,
-  resourceRef?: string,
+  resource?: Question | Answer | Comment | null,
 ): Promise<DefinitivePolicyDecision | null> => {
   if (!options.permissions) {
-    return null;
+    return await authorizeWithoutPermissions(
+      request,
+      permission,
+      options,
+      resource,
+    );
   }
 
   const credentials = await options.httpAuth.credentials(request);
@@ -107,16 +139,18 @@ export const authorize = async (
 
   let decision: DefinitivePolicyDecision = { result: AuthorizeResult.DENY };
   if (isResourcePermission(permission)) {
-    if (resourceRef) {
-      decision = (
-        await options.permissions.authorize(
-          [{ permission, resourceRef: resourceRef }],
-          {
-            credentials,
-          },
-        )
-      )[0];
+    if (!resource) {
+      throw new NotFoundError('Resource not found');
     }
+
+    decision = (
+      await options.permissions.authorize(
+        [{ permission, resourceRef: resource.id.toString(10) }],
+        {
+          credentials,
+        },
+      )
+    )[0];
   } else {
     decision = (
       await options.permissions.authorize([{ permission }], {
@@ -135,10 +169,10 @@ const authorizeBoolean = async (
   request: Request<unknown>,
   permission: Permission,
   options: RouterOptions,
-  resourceRef?: string,
+  resource?: Question | Answer | Comment | null,
 ): Promise<boolean> => {
   try {
-    await authorize(request, permission, options, resourceRef);
+    await authorize(request, permission, options, resource);
     return true;
   } catch (e) {
     return false;
@@ -160,7 +194,7 @@ export const mapAdditionalFields = async (
     request,
     isQuestion(resp) ? qetaEditQuestionPermission : qetaEditAnswerPermission,
     options,
-    resp.id.toString(10),
+    resp,
   );
   resp.canDelete = await authorizeBoolean(
     request,
@@ -168,17 +202,17 @@ export const mapAdditionalFields = async (
       ? qetaDeleteQuestionPermission
       : qetaDeleteAnswerPermission,
     options,
-    resp.id.toString(10),
+    resp,
   );
   const comments: (Comment | null)[] = await Promise.all(
     (resp.comments ?? []).map(async (c: Comment): Promise<Comment | null> => {
       if (
-        !authorizeBoolean(
+        !(await authorizeBoolean(
           request,
           qetaReadCommentPermission,
           options,
-          c.id.toString(10),
-        )
+          c,
+        ))
       ) {
         return null;
       }
@@ -190,13 +224,13 @@ export const mapAdditionalFields = async (
           request,
           qetaEditCommentPermission,
           options,
-          resp.id.toString(10),
+          c,
         ),
         canDelete: await authorizeBoolean(
           request,
           qetaDeleteCommentPermission,
           options,
-          resp.id.toString(10),
+          c,
         ),
       };
     }),

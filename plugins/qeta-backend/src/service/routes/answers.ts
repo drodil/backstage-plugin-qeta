@@ -46,17 +46,12 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         .send({ errors: 'Invalid question id', type: 'body' });
       return;
     }
+    const username = await getUsername(request, options);
+    const question = await database.getQuestion(username, questionId, false);
 
-    await authorize(
-      request,
-      qetaReadQuestionPermission,
-      options,
-      request.params.id,
-    );
-
+    await authorize(request, qetaReadQuestionPermission, options, question);
     await authorize(request, qetaCreateAnswerPermission, options);
 
-    const username = await getUsername(request, options);
     const created = await getCreated(request, options);
     // Act
     const answer = await database.answerQuestion(
@@ -71,7 +66,6 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     await mapAdditionalFields(request, answer, options);
 
     if (events) {
-      const question = await database.getQuestion(username, questionId, false);
       events.publish({
         topic: 'qeta',
         eventPayload: {
@@ -108,21 +102,14 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       response.status(400).send({ errors: 'Invalid id', type: 'body' });
       return;
     }
-    await authorize(
-      request,
-      qetaReadQuestionPermission,
-      options,
-      request.params.id,
-    );
-    await authorize(
-      request,
-      qetaEditAnswerPermission,
-      options,
-      request.params.answerId,
-    );
+
+    const question = await database.getQuestion(username, questionId, false);
+    let answer = await database.getAnswer(answerId, username);
+    await authorize(request, qetaReadQuestionPermission, options, question);
+    await authorize(request, qetaEditAnswerPermission, options, answer);
 
     // Act
-    const answer = await database.updateAnswer(
+    answer = await database.updateAnswer(
       username,
       questionId,
       answerId,
@@ -161,24 +148,18 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         response.status(400).send({ errors: 'Invalid id', type: 'body' });
         return;
       }
-      await authorize(
-        request,
-        qetaReadQuestionPermission,
-        options,
-        request.params.id,
-      );
-      await authorize(
-        request,
-        qetaReadAnswerPermission,
-        options,
-        request.params.answerId,
-      );
-      await authorize(request, qetaCreateCommentPermission, options);
 
       const username = await getUsername(request, options);
+      const question = await database.getQuestion(username, questionId, false);
+      let answer = await database.getAnswer(answerId, username);
+
+      await authorize(request, qetaReadQuestionPermission, options, question);
+      await authorize(request, qetaReadAnswerPermission, options, answer);
+      await authorize(request, qetaCreateCommentPermission, options);
+
       const created = await getCreated(request, options);
       // Act
-      const answer = await database.commentAnswer(
+      answer = await database.commentAnswer(
         answerId,
         username,
         request.body.content,
@@ -193,11 +174,6 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       await mapAdditionalFields(request, answer, options);
 
       if (events) {
-        const question = await database.getQuestion(
-          username,
-          questionId,
-          false,
-        );
         events.publish({
           topic: 'qeta',
           eventPayload: {
@@ -221,7 +197,6 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     `/questions/:id/answers/:answerId/comments/:commentId`,
     async (request, response) => {
       // Validation
-      const username = await getUsername(request, options);
       const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
       const commentId = Number.parseInt(request.params.commentId, 10);
@@ -233,27 +208,18 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         response.status(400).send({ errors: 'Invalid id', type: 'body' });
         return;
       }
-      await authorize(
-        request,
-        qetaReadQuestionPermission,
-        options,
-        request.params.id,
-      );
-      await authorize(
-        request,
-        qetaReadAnswerPermission,
-        options,
-        request.params.answerId,
-      );
-      await authorize(
-        request,
-        qetaDeleteCommentPermission,
-        options,
-        request.params.commentId,
-      );
+
+      const username = await getUsername(request, options);
+      const question = await database.getQuestion(username, questionId, false);
+      let answer = await database.getAnswer(answerId, username);
+      const comment = await database.getAnswerComment(commentId);
+
+      await authorize(request, qetaReadQuestionPermission, options, question);
+      await authorize(request, qetaReadAnswerPermission, options, answer);
+      await authorize(request, qetaDeleteCommentPermission, options, comment);
 
       // Act
-      const answer = await database.deleteAnswerComment(
+      answer = await database.deleteAnswerComment(
         answerId,
         commentId,
         username,
@@ -283,20 +249,13 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       response.status(400).send({ errors: 'Invalid id', type: 'body' });
       return;
     }
-    await authorize(
-      request,
-      qetaReadQuestionPermission,
-      options,
-      request.params.id,
-    );
-    await authorize(
-      request,
-      qetaEditAnswerPermission,
-      options,
-      request.params.answerId,
-    );
+    const question = await database.getQuestion(username, questionId, false);
+    let answer = await database.getAnswer(answerId, username);
 
-    const answer = await database.getAnswer(answerId, username);
+    await authorize(request, qetaReadQuestionPermission, options, question);
+    await authorize(request, qetaEditAnswerPermission, options, answer);
+
+    answer = await database.getAnswer(answerId, username);
 
     if (answer === null) {
       response.sendStatus(404);
@@ -322,26 +281,13 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         return;
       }
 
-      await authorize(
-        request,
-        qetaReadQuestionPermission,
-        options,
-        request.params.id,
-      );
-      await authorize(
-        request,
-        qetaDeleteAnswerPermission,
-        options,
-        request.params.answerId,
-      );
+      const question = await database.getQuestion(username, questionId, false);
+      const answer = await database.getAnswer(answerId, username);
+
+      await authorize(request, qetaReadQuestionPermission, options, question);
+      await authorize(request, qetaDeleteAnswerPermission, options, answer);
 
       if (events) {
-        const question = await database.getQuestion(
-          username,
-          questionId,
-          false,
-        );
-        const answer = await database.getAnswer(answerId, username);
         events.publish({
           topic: 'qeta',
           eventPayload: {
@@ -455,29 +401,15 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         return;
       }
 
-      await authorize(
-        request,
-        qetaEditQuestionPermission,
-        options,
-        request.params.id,
-      );
-      await authorize(
-        request,
-        qetaReadAnswerPermission,
-        options,
-        request.params.answerId,
-      );
+      const question = await database.getQuestion(username, questionId, false);
+      const answer = await database.getAnswer(answerId, username);
+
+      await authorize(request, qetaEditQuestionPermission, options, question);
+      await authorize(request, qetaReadAnswerPermission, options, answer);
 
       const marked = await database.markAnswerCorrect(questionId, answerId);
 
       if (events || signals) {
-        const question = await database.getQuestion(
-          username,
-          questionId,
-          false,
-        );
-        const answer = await database.getAnswer(answerId, username);
-
         if (events) {
           events.publish({
             topic: 'qeta',
@@ -509,29 +441,15 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         response.status(400).send({ errors: 'Invalid id', type: 'body' });
         return;
       }
+      const question = await database.getQuestion(username, questionId, false);
+      const answer = await database.getAnswer(answerId, username);
 
-      await authorize(
-        request,
-        qetaEditQuestionPermission,
-        options,
-        request.params.id,
-      );
+      await authorize(request, qetaEditQuestionPermission, options, question);
 
-      await authorize(
-        request,
-        qetaReadAnswerPermission,
-        options,
-        request.params.answerId,
-      );
+      await authorize(request, qetaReadAnswerPermission, options, answer);
 
       const marked = await database.markAnswerIncorrect(questionId, answerId);
       if (events) {
-        const question = await database.getQuestion(
-          username,
-          questionId,
-          false,
-        );
-        const answer = await database.getAnswer(answerId, username);
         events.publish({
           topic: 'qeta',
           eventPayload: {

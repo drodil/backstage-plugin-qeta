@@ -7,6 +7,7 @@ import {
   AttachmentParameters,
   EntityResponse,
   MaybeAnswer,
+  MaybeComment,
   MaybeQuestion,
   QetaStore,
   Questions,
@@ -16,6 +17,7 @@ import {
 import {
   Answer,
   Attachment,
+  Comment,
   filterTags,
   Question,
   Statistic,
@@ -488,6 +490,26 @@ export class DatabaseQetaStore implements QetaStore {
     return this.mapAnswer(answers[0], user_ref, true, true);
   }
 
+  async getQuestionComment(commentId: number): Promise<MaybeComment> {
+    const comments = await this.db<RawCommentEntity>('question_comments') // nosonar
+      .where('question_comments.id', '=', commentId)
+      .select();
+    if (comments.length === 0) {
+      return null;
+    }
+    return await this.mapComment(comments[0]);
+  }
+
+  async getAnswerComment(commentId: number): Promise<MaybeComment> {
+    const comments = await this.db<RawCommentEntity>('answer_comments') // nosonar
+      .where('answer_comments.id', '=', commentId)
+      .select();
+    if (comments.length === 0) {
+      return null;
+    }
+    return await this.mapComment(comments[0]);
+  }
+
   async deleteAnswer(id: number): Promise<boolean> {
     const query = this.db('answers').where('id', '=', id);
     return !!(await query.delete());
@@ -887,6 +909,17 @@ export class DatabaseQetaStore implements QetaStore {
       trend: this.mapToInteger(val.trend),
       comments: additionalInfo[4],
       anonymous: val.anonymous,
+    };
+  }
+
+  private async mapComment(val: RawCommentEntity): Promise<Comment> {
+    return {
+      id: val.id,
+      author: val.author,
+      content: val.content,
+      created: val.created,
+      updated: val.updated,
+      updatedBy: val.updatedBy,
     };
   }
 
