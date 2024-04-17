@@ -39,6 +39,11 @@ backend:
   reading:
     allow:
       - host: localhost
+auth:
+  environment: development
+  providers:
+    guest: {}
+
 qeta:
   storage:
     type: database
