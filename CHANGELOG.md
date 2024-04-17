@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.0.1...v2.1.0) (2024-04-17)
+
+
+### Features
+
+* add notifications support ([fb378fe](https://github.com/drodil/backstage-plugin-qeta/commit/fb378fe9a895ef3d2f557ac778b196081c4eda38))
+
+
+### Bug Fixes
+
+* test fixes ([13ba94a](https://github.com/drodil/backstage-plugin-qeta/commit/13ba94af02cf9924783f7fce6bcfe7ca957b338b))
+* typescript issues ([d4ff99f](https://github.com/drodil/backstage-plugin-qeta/commit/d4ff99fdbe56301fa9bcce81cb3025df89c3b395))
+
 ### [2.0.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.0.0...v2.0.1) (2024-04-15)
 
 
