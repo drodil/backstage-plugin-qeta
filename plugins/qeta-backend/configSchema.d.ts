@@ -77,6 +77,7 @@ export interface Config {
       accessKeyId?: string;
       secretAccessKey?: string;
       region?: string;
+      sessionToken?: string;
     };
   };
 }

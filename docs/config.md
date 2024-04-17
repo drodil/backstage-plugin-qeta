@@ -45,3 +45,4 @@ The configuration values are:
 - storage.accessKeyId, string, access key ID for S3 storage, optional
 - storage.secretAccessKey, string, secret access key for S3 storage, optional
 - storage.region, string, region for S3 storage, optional
+- storage.sessionToken, string, AWS session token, optional
