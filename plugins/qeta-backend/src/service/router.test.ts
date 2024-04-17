@@ -405,6 +405,7 @@ describe('createRouter', () => {
   describe('POST /questions/:id/answers', () => {
     it('posts answer', async () => {
       qetaStore.answerQuestion.mockResolvedValue(answer);
+      qetaStore.getQuestion.mockResolvedValue(question);
       mockSystemDate(answer.created);
       const response = await request(app).post('/questions/1/answers').send({
         answer: 'content',
@@ -427,6 +428,7 @@ describe('createRouter', () => {
 
     it('allows user and created to be specified if allowMetadataInput is true', async () => {
       qetaStore.answerQuestion.mockResolvedValue(answer);
+      qetaStore.getQuestion.mockResolvedValue(question);
       app = await buildApp({ qeta: { allowMetadataInput: true } });
 
       const testDate = new Date('1999-01-01T00:00:00.000Z');
