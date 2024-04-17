@@ -1,6 +1,5 @@
 import { Request } from 'express';
 import { AuthenticationError, NotAllowedError } from '@backstage/errors';
-import { RouterOptions } from './router';
 import { format, subDays } from 'date-fns';
 import {
   AuthorizeResult,
@@ -9,10 +8,11 @@ import {
 import { MaybeAnswer, MaybeQuestion } from '../database/QetaStore';
 import { Config } from '@backstage/config';
 import { S3Client } from '@aws-sdk/client-s3';
+import { RouteOptions } from './types';
 
 export const getUsername = async (
   req: Request<unknown>,
-  options: RouterOptions,
+  options: RouteOptions,
   allowServiceToken?: boolean,
 ): Promise<string> => {
   const allowMetadataInput = options.config.getOptionalBoolean(
@@ -64,7 +64,7 @@ export const getUsername = async (
 
 export const isModerator = async (
   req: Request<unknown>,
-  options: RouterOptions,
+  options: RouteOptions,
 ): Promise<boolean> => {
   try {
     const credentials = await options.httpAuth.credentials(req, {
@@ -82,7 +82,7 @@ export const isModerator = async (
 
     const moderators =
       options.config.getOptionalStringArray('qeta.moderators') ?? [];
-    return moderators.some(m => ownership.includes(m));
+    return moderators.some((m: string) => ownership.includes(m));
   } catch (_) {
     return false;
   }
@@ -90,7 +90,7 @@ export const isModerator = async (
 
 export const getCreated = async (
   req: Request<unknown>,
-  options: RouterOptions,
+  options: RouteOptions,
 ): Promise<Date> => {
   const allowMetadataInput = options.config.getOptionalBoolean(
     'qeta.allowMetadataInput',
@@ -106,7 +106,7 @@ export const getCreated = async (
 export const checkPermissions = async (
   request: Request<unknown>,
   permission: BasicPermission,
-  options: RouterOptions,
+  options: RouteOptions,
 ): Promise<void> => {
   if (!options.permissions) {
     return;
@@ -131,7 +131,7 @@ export const checkPermissions = async (
 export const mapAdditionalFields = (
   username: string,
   resp: MaybeQuestion | MaybeAnswer,
-  options: RouterOptions,
+  options: RouteOptions,
   moderator?: boolean,
 ) => {
   if (!resp) {
