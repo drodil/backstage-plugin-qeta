@@ -1,4 +1,3 @@
-import { RouterOptions } from '../router';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import {
@@ -8,7 +7,7 @@ import {
   isModerator,
   mapAdditionalFields,
 } from '../util';
-import { CommentSchema, PostAnswerSchema } from '../types';
+import { CommentSchema, PostAnswerSchema, RouteOptions } from '../types';
 import { Request, Router } from 'express';
 import {
   qetaCreateAnswerPermission,
@@ -20,8 +19,8 @@ import { signalAnswerStats, signalQuestionStats } from './util';
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
-export const answersRoutes = (router: Router, options: RouterOptions) => {
-  const { database, events, signals } = options;
+export const answersRoutes = (router: Router, options: RouteOptions) => {
+  const { database, events, signals, notificationMgr } = options;
 
   // POST /questions/:id/answers
   router.post(`/questions/:id/answers`, async (request, response) => {
@@ -46,6 +45,12 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
     const username = await getUsername(request, options);
     const moderator = await isModerator(request, options);
     const created = await getCreated(request, options);
+    const question = await database.getQuestion(username, questionId, false);
+    if (!question) {
+      response.status(404).send({ errors: 'Question not found', type: 'body' });
+      return;
+    }
+
     // Act
     const answer = await database.answerQuestion(
       username,
@@ -56,10 +61,17 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       request.body.anonymous || username === 'user:default/guest',
     );
 
+    if (!answer) {
+      response
+        .status(400)
+        .send({ errors: 'Failed to answer question', type: 'body' });
+      return;
+    }
+
+    notificationMgr.onNewAnswer(username, question, answer);
     mapAdditionalFields(username, answer, options, moderator);
 
     if (events) {
-      const question = await database.getQuestion(username, questionId, false);
       events.publish({
         topic: 'qeta',
         eventPayload: {
@@ -146,6 +158,15 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
       const moderator = await isModerator(request, options);
       const created = await getCreated(request, options);
       // Act
+      const question = await database.getQuestion(username, questionId, false);
+
+      if (!question) {
+        response
+          .status(404)
+          .send({ errors: 'Question not found', type: 'body' });
+        return;
+      }
+
       const answer = await database.commentAnswer(
         answerId,
         username,
@@ -158,14 +179,15 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         return;
       }
 
+      notificationMgr.onAnswerComment(
+        username,
+        question,
+        answer,
+        request.body.content,
+      );
       mapAdditionalFields(username, answer, options, moderator);
 
       if (events) {
-        const question = await database.getQuestion(
-          username,
-          questionId,
-          false,
-        );
         events.publish({
           topic: 'qeta',
           eventPayload: {
@@ -381,6 +403,16 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         return;
       }
 
+      const question = await database.getQuestion(username, questionId, false);
+      const answer = await database.getAnswer(answerId, username);
+
+      if (!question || !answer) {
+        response
+          .status(404)
+          .send({ errors: 'Question or answer not found', type: 'body' });
+        return;
+      }
+
       const marked = await database.markAnswerCorrect(
         username,
         questionId,
@@ -388,31 +420,31 @@ export const answersRoutes = (router: Router, options: RouterOptions) => {
         moderator || globalEdit,
       );
 
-      if (events || signals) {
-        const question = await database.getQuestion(
-          username,
-          questionId,
-          false,
-        );
-        const answer = await database.getAnswer(answerId, username);
+      if (!marked) {
+        response
+          .status(404)
+          .send({ errors: 'Failed to mark answer correct', type: 'body' });
+        return;
+      }
 
-        if (events) {
-          events.publish({
-            topic: 'qeta',
-            eventPayload: {
-              question,
-              answer,
-              author: username,
-            },
-            metadata: { action: 'correct_answer' },
-          });
-        }
+      notificationMgr.onCorrectAnswer(username, question, answer);
+
+      if (events || signals) {
+        events?.publish({
+          topic: 'qeta',
+          eventPayload: {
+            question,
+            answer,
+            author: username,
+          },
+          metadata: { action: 'correct_answer' },
+        });
 
         signalQuestionStats(signals, question);
         signalAnswerStats(signals, answer);
       }
 
-      response.sendStatus(marked ? 200 : 404);
+      response.sendStatus(200);
     },
   );
 

@@ -1,4 +1,3 @@
-import { RouterOptions } from '../router';
 import { QuestionsOptions } from '../../database/QetaStore';
 import {
   checkPermissions,
@@ -18,6 +17,7 @@ import {
   CommentSchema,
   PostQuestionSchema,
   QuestionsQuerySchema,
+  RouteOptions,
 } from '../types';
 import { Response } from 'express-serve-static-core';
 import { signalQuestionStats } from './util';
@@ -25,8 +25,8 @@ import { signalQuestionStats } from './util';
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
-export const questionsRoutes = (router: Router, options: RouterOptions) => {
-  const { database, events, config, signals } = options;
+export const questionsRoutes = (router: Router, options: RouteOptions) => {
+  const { database, events, config, signals, notificationMgr } = options;
   // GET /questions
   router.get(`/questions`, async (request, response) => {
     // Validation
@@ -150,13 +150,21 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
     );
 
     if (question === null) {
-      response.sendStatus(404);
+      response
+        .status(400)
+        .send({ errors: 'Failed to comment question', type: 'body' });
       return;
     }
 
     mapAdditionalFields(username, question, options, moderator);
     question.answers?.map(a =>
       mapAdditionalFields(username, a, options, moderator),
+    );
+
+    notificationMgr.onNewQuestionComment(
+      username,
+      question,
+      request.body.content,
     );
 
     if (events) {
@@ -199,7 +207,9 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       );
 
       if (question === null) {
-        response.sendStatus(404);
+        response
+          .status(400)
+          .send({ errors: 'Failed to delete question comment', type: 'body' });
         return;
       }
 
@@ -267,6 +277,15 @@ export const questionsRoutes = (router: Router, options: RouterOptions) => {
       request.body.images,
       request.body.anonymous || username === 'user:default/guest',
     );
+
+    if (!question) {
+      response
+        .status(400)
+        .send({ errors: 'Failed to post question', type: 'body' });
+      return;
+    }
+
+    notificationMgr.onNewQuestion(question);
 
     if (events) {
       events.publish({

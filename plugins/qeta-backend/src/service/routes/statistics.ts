@@ -5,9 +5,9 @@ import {
   StatisticResponse,
   StatisticsOptions,
 } from '@drodil/backstage-plugin-qeta-common';
-import { RouterOptions } from '../router';
+import { RouteOptions } from '../types';
 
-export const statisticRoutes = (router: Router, options: RouterOptions) => {
+export const statisticRoutes = (router: Router, options: RouteOptions) => {
   const { database } = options;
 
   // GET /statistics/questions/top-upvoted-users?period=x&limit=x

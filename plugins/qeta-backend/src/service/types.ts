@@ -1,4 +1,34 @@
 import { JSONSchemaType } from 'ajv';
+import { QetaStore } from '../database/QetaStore';
+import {
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+  PermissionsService,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
+import { EventsService } from '@backstage/plugin-events-node';
+import { SignalsService } from '@backstage/plugin-signals-node';
+import { NotificationService } from '@backstage/plugin-notifications-node';
+import { NotificationManager } from './NotificationManager';
+
+export interface RouterOptions {
+  database: QetaStore;
+  logger: LoggerService;
+  config: Config;
+  discovery: DiscoveryService;
+  httpAuth: HttpAuthService;
+  userInfo: UserInfoService;
+  permissions?: PermissionsService;
+  events?: EventsService;
+  signals?: SignalsService;
+  notifications?: NotificationService;
+}
+
+export interface RouteOptions extends RouterOptions {
+  notificationMgr: NotificationManager;
+}
 
 export interface QuestionsQuery {
   limit?: number;

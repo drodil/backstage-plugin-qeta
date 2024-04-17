@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { RouterOptions } from '../router';
+import { RouteOptions } from '../types';
 
-export const helperRoutes = (router: Router, options: RouterOptions) => {
+export const helperRoutes = (router: Router, options: RouteOptions) => {
   const { database } = options;
 
   // GET /tags

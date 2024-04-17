@@ -2,36 +2,24 @@ import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { QetaPage } from '../src/plugin';
 import {
-  createApiFactory,
   createPlugin,
   createRoutableExtension,
-  discoveryApiRef,
-  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
-import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
-import { CatalogClient } from '@backstage/catalog-client';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { TablePage } from './TablePage';
 import { HomePage } from './HomePage';
 import { StatisticsPage } from './StatisticsPage';
 import { TagPage } from './TagPage';
+import {
+  NotificationsPage,
+  notificationsPlugin,
+  NotificationsSidebarItem,
+} from '@backstage/plugin-notifications';
+import { catalogPlugin } from '@backstage/plugin-catalog';
+import { signalsPlugin } from '@backstage/plugin-signals';
 
-const fakeCatalogPlugin = createPlugin({
-  id: 'catalog',
-  routes: {
-    catalogEntity: entityRouteRef,
-  },
-  apis: [
-    createApiFactory({
-      api: catalogApiRef,
-      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
-      factory: ({ discoveryApi, fetchApi }) =>
-        new CatalogClient({ discoveryApi, fetchApi }),
-    }),
-  ],
-});
-
-export const CatalogEntityPage: () => JSX.Element = fakeCatalogPlugin.provide(
+export const CatalogEntityPage: () => JSX.Element = catalogPlugin.provide(
   createRoutableExtension({
     name: 'CatalogEntityPage',
     component: () => import('./ComponentPage').then(m => m.ComponentPage),
@@ -48,8 +36,10 @@ const qetaDevPlugin = createPlugin({
 });
 
 createDevApp()
-  .registerPlugin(fakeCatalogPlugin)
+  .registerPlugin(catalogPlugin)
   .registerPlugin(qetaDevPlugin)
+  .registerPlugin(notificationsPlugin)
+  .registerPlugin(signalsPlugin)
   .addPage({
     element: (
       <QetaPage
@@ -63,7 +53,7 @@ createDevApp()
   .addPage({
     element: <CatalogEntityPage />,
     title: 'Component',
-    path: '/catalog/default/component/artist-web',
+    path: '/catalog/default/component/test-component',
   })
   .addPage({
     element: <TagPage />,
@@ -85,4 +75,6 @@ createDevApp()
     title: 'Statistics Components',
     path: '/statistics',
   })
+  .addPage({ element: <NotificationsPage />, path: '/notifications' })
+  .addSidebarItem(<NotificationsSidebarItem />)
   .render();

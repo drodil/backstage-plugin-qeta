@@ -9,7 +9,7 @@ export const ComponentPage = () => {
       <Content>
         <Container>
           <QuestionsContainer
-            entity="component:default/artist-web"
+            entity="component:default/test-component"
             showTitle
             showAskButton
           />

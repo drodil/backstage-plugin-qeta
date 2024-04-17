@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { RouterOptions } from '../router';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import multiparty from 'multiparty';
 import FilesystemStoreEngine from '../upload/filesystem';
@@ -7,7 +6,7 @@ import DatabaseStoreEngine from '../upload/database';
 import S3StoreEngine from '../upload/s3';
 import fs from 'fs';
 import FileType from 'file-type';
-import { File } from '../types';
+import { File, RouteOptions } from '../types';
 import { GetObjectCommand, GetObjectCommandOutput } from '@aws-sdk/client-s3';
 import { getS3Client } from '../util';
 
@@ -19,7 +18,7 @@ const DEFAULT_MIME_TYPES = [
   'image/gif',
 ];
 
-export const attachmentsRoutes = (router: Router, options: RouterOptions) => {
+export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
   const { database, config } = options;
 
   // POST /attachments

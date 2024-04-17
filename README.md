@@ -20,6 +20,7 @@ within Backstage. This plugin provides:
 - Integration with the [`@backstage/plugin-permission-common`](https://github.com/backstage/backstage/tree/master/plugins/permission-common) plugin
 - Integration with the [`@backstage/plugin-home`](https://github.com/backstage/backstage/tree/master/plugins/home) plugin
 - Integration with the [`@backstage/plugin-signals`](https://github.com/backstage/backstage/tree/master/plugins/signals) plugin
+- Integration with the [`@backstage/plugin-notifications`](https://github.com/backstage/backstage/tree/master/plugins/notifications) plugin
 
 ## Setup
 
