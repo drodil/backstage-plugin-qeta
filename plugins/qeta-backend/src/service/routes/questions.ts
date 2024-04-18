@@ -285,7 +285,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    notificationMgr.onNewQuestion(question);
+    notificationMgr.onNewQuestion(username, question);
 
     if (events) {
       events.publish({

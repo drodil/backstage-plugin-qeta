@@ -8,7 +8,7 @@ export class NotificationManager {
     private readonly notifications?: NotificationService,
   ) {}
 
-  async onNewQuestion(question: Question) {
+  async onNewQuestion(username: string, question: Question) {
     if (
       !this.notifications ||
       !question.entities ||
@@ -22,7 +22,9 @@ export class NotificationManager {
         recipients: { type: 'entity', entityRef: question.entities },
         payload: {
           title: `New question about your entity`,
-          description: `${question.title}`,
+          description: this.formatDescription(
+            `${username} asked a question about your entity: ${question.title}`,
+          ),
           link: `/qeta/questions/${question.id}`,
           topic: 'New question',
         },
@@ -46,7 +48,9 @@ export class NotificationManager {
         recipients: { type: 'entity', entityRef: question.author },
         payload: {
           title: `New comment on your question`,
-          description: `${comment}`,
+          description: this.formatDescription(
+            `${username} commented on your question: ${comment}`,
+          ),
           link: `/qeta/questions/${question.id}`,
           topic: 'New question comment',
           scope: `question:comment:${question.id}`,
@@ -70,7 +74,9 @@ export class NotificationManager {
           recipients: { type: 'entity', entityRef: question.author },
           payload: {
             title: `New answer on your question`,
-            description: `${answer.content}`,
+            description: this.formatDescription(
+              `${username} answered your question: ${answer.content}`,
+            ),
             link: `/qeta/questions/${question.id}#answer_${answer.id}`,
             topic: 'New answer on your question',
             scope: `question:answer:${question.id}:author`,
@@ -83,7 +89,9 @@ export class NotificationManager {
           recipients: { type: 'entity', entityRef: question.entities },
           payload: {
             title: `New answer on question about your entity`,
-            description: `${answer.content}`,
+            description: this.formatDescription(
+              `${username} answered a question about your entity: ${answer.content}`,
+            ),
             link: `/qeta/questions/${question.id}#answer_${answer.id}`,
             topic: 'New answer on entity question',
             scope: `question:answer:${question.id}:entity`,
@@ -110,7 +118,9 @@ export class NotificationManager {
         recipients: { type: 'entity', entityRef: answer.author },
         payload: {
           title: `New comment on your answer`,
-          description: `${comment}`,
+          description: this.formatDescription(
+            `${username} commented your answer: ${comment}`,
+          ),
           link: `/qeta/questions/${question.id}#answer_${answer.id}`,
           topic: 'New answer comment',
           scope: `answer:comment:${answer.id}`,
@@ -134,7 +144,9 @@ export class NotificationManager {
           recipients: { type: 'entity', entityRef: answer.author },
           payload: {
             title: `Correct answer on question`,
-            description: `${answer.content}`,
+            description: this.formatDescription(
+              `${username} marked your answer as correct: ${answer.content}`,
+            ),
             link: `/qeta/questions/${question.id}#answer_${answer.id}`,
             topic: 'Correct answer on question',
             scope: `question:correct:${question.id}:answer`,
@@ -147,7 +159,9 @@ export class NotificationManager {
           recipients: { type: 'entity', entityRef: question.entities },
           payload: {
             title: `Correct answer on question about your entity`,
-            description: `${answer.content}`,
+            description: this.formatDescription(
+              `${username} marked answer correct on question about your entity: ${answer.content}`,
+            ),
             link: `/qeta/questions/${question.id}#answer_${answer.id}`,
             topic: 'Correct answer on entity question',
             scope: `question:correct:${question.id}:entity`,
@@ -157,5 +171,11 @@ export class NotificationManager {
     } catch (e) {
       this.logger.error(`Failed to send notification for correct answer: ${e}`);
     }
+  }
+
+  private formatDescription(description: string) {
+    return description.length >= 103
+      ? `${description.slice(0, 100)}...`
+      : description;
   }
 }
