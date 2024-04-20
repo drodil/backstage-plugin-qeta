@@ -171,7 +171,7 @@ export const getS3Client = (config: Config) => {
     'qeta.storage.secretAccessKey',
   );
   const region = config.getOptionalString('qeta.storage.region');
-  const sessionToken = config.getOptionalString('qeta.storage.sessionToken')
+  const sessionToken = config.getOptionalString('qeta.storage.sessionToken');
   if (accessKeyId && secretAccessKey) {
     return new S3Client({
       credentials: {
