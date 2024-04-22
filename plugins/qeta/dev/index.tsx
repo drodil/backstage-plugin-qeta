@@ -45,6 +45,9 @@ createDevApp()
       <QetaPage
         title="Questions and answers"
         subtitle="We have answers to everything!"
+        headerType="See @ GitHub"
+        headerTypeLink="https://github.com/drodil/backstage-plugin-qeta"
+        headerTooltip="This is very cool plugin"
       />
     ),
     title: 'Root Page',

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import {
   Container,
   Grid,
@@ -173,25 +173,49 @@ export const HomePageContent = () => {
 type Props = {
   title?: string;
   subtitle?: string;
-  headerElements?: JSX.Element[];
+  headerElements?: ReactNode[];
   themeId?: string;
+  headerTooltip?: string;
+  headerType?: string;
+  headerTypeLink?: string;
 };
 
-export const HomePage = (props: Props) => (
-  <Page themeId={props.themeId ?? 'tool'}>
-    <Header title={props.title ?? 'Q&A'} subtitle={props.subtitle}>
-      {props.headerElements}
-    </Header>
-    <Routes>
-      <Route path="/" element={<HomePageContent />} />
-      <Route path={askRouteRef.path} element={<AskPage />} />
-      <Route path={favoriteQuestionsRouteRef.path} element={<FavoritePage />} />
-      <Route path={editQuestionRouteRef.path} element={<AskPage />} />
-      <Route path={questionRouteRef.path} element={<QuestionPage />} />
-      <Route path={tagsRouteRef.path} element={<TagPage />} />
-      <Route path={tagRouteRef.path} element={<TagPage />} />
-      <Route path={userRouteRef.path} element={<UserPage />} />
-      <Route path={statisticsRouteRef.path} element={<StatisticsPage />} />
-    </Routes>
-  </Page>
-);
+export const HomePage = (props?: Props) => {
+  const {
+    title = 'Q&A',
+    subtitle,
+    headerElements,
+    themeId = 'tool',
+    headerTooltip,
+    headerType,
+    headerTypeLink,
+  } = props ?? {};
+
+  return (
+    <Page themeId={themeId}>
+      <Header
+        title={title}
+        subtitle={subtitle}
+        type={headerType}
+        typeLink={headerTypeLink}
+        tooltip={headerTooltip}
+      >
+        {headerElements}
+      </Header>
+      <Routes>
+        <Route path="/" element={<HomePageContent />} />
+        <Route path={askRouteRef.path} element={<AskPage />} />
+        <Route
+          path={favoriteQuestionsRouteRef.path}
+          element={<FavoritePage />}
+        />
+        <Route path={editQuestionRouteRef.path} element={<AskPage />} />
+        <Route path={questionRouteRef.path} element={<QuestionPage />} />
+        <Route path={tagsRouteRef.path} element={<TagPage />} />
+        <Route path={tagRouteRef.path} element={<TagPage />} />
+        <Route path={userRouteRef.path} element={<UserPage />} />
+        <Route path={statisticsRouteRef.path} element={<StatisticsPage />} />
+      </Routes>
+    </Page>
+  );
+};
