@@ -3856,9 +3856,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/cli@npm:^0.26.3":
-  version: 0.26.3
-  resolution: "@backstage/cli@npm:0.26.3"
+"@backstage/cli@npm:^0.26.4":
+  version: 0.26.4
+  resolution: "@backstage/cli@npm:0.26.4"
   dependencies:
     "@backstage/catalog-model": ^1.4.5
     "@backstage/cli-common": ^0.1.13
@@ -3950,6 +3950,7 @@ __metadata:
     react-dev-utils: ^12.0.0-next.60
     react-refresh: ^0.14.0
     recursive-readdir: ^2.2.2
+    replace-in-file: ^7.1.0
     rollup: ^4.0.0
     rollup-plugin-dts: ^6.1.0
     rollup-plugin-esbuild: ^6.1.1
@@ -3986,7 +3987,7 @@ __metadata:
       optional: true
   bin:
     backstage-cli: bin/backstage-cli
-  checksum: dd4c1bb747058755a7a8a321c634a117c6162b7694500a68b2f29fd1eb0df3177bb32db2102c9ba8889cb19e13736ae166b1e8d2480dfdf6acc77422e52a0d84
+  checksum: 0ae97290d34a201a06631f49ecd7003d074d2749d87441a2122c5446f18b17f2d528ac68622fc21cbb157ed2816a14253824a85c65a28ecde96bc61d152f9d34
   languageName: node
   linkType: hard
 
@@ -5408,7 +5409,7 @@ __metadata:
     "@backstage/backend-plugin-api": ^0.6.17
     "@backstage/backend-test-utils": ^0.3.7
     "@backstage/catalog-model": ^1.4.5
-    "@backstage/cli": ^0.26.3
+    "@backstage/cli": ^0.26.4
     "@backstage/config": ^1.2.0
     "@backstage/errors": ^1.2.4
     "@backstage/plugin-auth-backend": ^0.22.4
@@ -5449,7 +5450,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@drodil/backstage-plugin-qeta-common@workspace:plugins/qeta-common"
   dependencies:
-    "@backstage/cli": ^0.26.3
+    "@backstage/cli": ^0.26.4
     "@backstage/plugin-permission-common": ^0.7.13
     "@backstage/plugin-search-common": ^1.2.11
     ajv: ^8.12.0
@@ -5462,7 +5463,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@drodil/backstage-plugin-qeta-react@workspace:plugins/qeta-react"
   dependencies:
-    "@backstage/cli": ^0.26.3
+    "@backstage/cli": ^0.26.4
     "@backstage/core-plugin-api": ^1.9.2
     "@backstage/test-utils": ^1.5.4
     "@material-ui/core": ^4.12.2
@@ -5479,7 +5480,7 @@ __metadata:
   dependencies:
     "@backstage/catalog-client": ^1.6.4
     "@backstage/catalog-model": ^1.4.5
-    "@backstage/cli": ^0.26.3
+    "@backstage/cli": ^0.26.4
     "@backstage/config": ^1.2.0
     "@backstage/core-components": ^0.14.4
     "@backstage/core-plugin-api": ^1.9.2
@@ -5526,7 +5527,7 @@ __metadata:
     "@backstage/backend-plugin-api": ^0.6.17
     "@backstage/backend-tasks": ^0.5.22
     "@backstage/backend-test-utils": ^0.3.7
-    "@backstage/cli": ^0.26.3
+    "@backstage/cli": ^0.26.4
     "@backstage/config": ^1.2.0
     "@backstage/core-plugin-api": ^1.9.2
     "@backstage/errors": ^1.2.4
@@ -17657,7 +17658,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^8.0.0, glob@npm:^8.0.1, glob@npm:^8.0.3":
+"glob@npm:^8.0.0, glob@npm:^8.0.1, glob@npm:^8.0.3, glob@npm:^8.1.0":
   version: 8.1.0
   resolution: "glob@npm:8.1.0"
   dependencies:
@@ -25855,6 +25856,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"replace-in-file@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "replace-in-file@npm:7.1.0"
+  dependencies:
+    chalk: ^4.1.2
+    glob: ^8.1.0
+    yargs: ^17.7.2
+  bin:
+    replace-in-file: bin/cli.js
+  checksum: 2ed61bd0cf0752b18775b52342ad36f4ee6c806f7eca0b0d085c23bafe0cb4828e4ec8f59058bde6b67d2ed5ac51e1681284f586089b58b966e2489712830db0
+  languageName: node
+  linkType: hard
+
 "request@npm:^2.88.0":
   version: 2.88.2
   resolution: "request@npm:2.88.2"
@@ -26268,7 +26282,7 @@ __metadata:
   resolution: "root@workspace:."
   dependencies:
     "@aws-sdk/client-s3": ^3.540.0
-    "@backstage/cli": ^0.26.3
+    "@backstage/cli": ^0.26.4
     "@commitlint/cli": ^17.7.1
     "@commitlint/config-conventional": ^17.7.0
     "@octokit/rest": 19.0.8
