@@ -10,8 +10,9 @@ export const NoQuestionsCard = (props: {
   showNoQuestionsBtn?: boolean;
   entity?: string;
   entityPage?: boolean;
+  tags?: string[];
 }) => {
-  const { showNoQuestionsBtn, entity, entityPage } = props;
+  const { showNoQuestionsBtn, entity, entityPage, tags } = props;
   const askRoute = useRouteRef(askRouteRef);
   const entityRef = useEntityQueryParameter(entity);
 
@@ -21,6 +22,9 @@ export const NoQuestionsCard = (props: {
   }
   if (entityPage) {
     queryParams.set('entityPage', 'true');
+  }
+  if (tags && tags.length > 0) {
+    queryParams.set('tags', tags.join(','));
   }
 
   return (
@@ -39,7 +43,7 @@ export const NoQuestionsCard = (props: {
             <Grid item>
               <LinkButton
                 to={
-                  entityRef
+                  entityRef || tags
                     ? `${askRoute()}?${queryParams.toString()}`
                     : `${askRoute()}`
                 }

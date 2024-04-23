@@ -24,6 +24,7 @@ export const QuestionList = (props: {
   page: number;
   pageSize: number;
   entity?: string;
+  tags?: string[];
   showNoQuestionsBtn?: boolean;
   entityPage?: boolean;
 }) => {
@@ -37,6 +38,7 @@ export const QuestionList = (props: {
     onPageSizeChange,
     showNoQuestionsBtn = true,
     entityPage,
+    tags,
   } = props;
   const styles = useStyles();
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -85,6 +87,7 @@ export const QuestionList = (props: {
         showNoQuestionsBtn={showNoQuestionsBtn}
         entity={entity}
         entityPage={entityPage}
+        tags={tags}
       />
     );
   }

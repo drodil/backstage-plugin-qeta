@@ -271,6 +271,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         pageSize={questionsPerPage}
         showNoQuestionsBtn={showNoQuestionsBtn}
         entityPage={entity !== undefined}
+        tags={tags}
       />
     </Box>
   );
