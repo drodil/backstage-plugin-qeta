@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.1.1...v2.2.0) (2024-04-23)
+
+
+### Features
+
+* Add support for aws session token ([091abf5](https://github.com/drodil/backstage-plugin-qeta/commit/091abf54519f4b210da91cff8cb5600648011593))
+* allow defining more properties to HomePage ([56f9691](https://github.com/drodil/backstage-plugin-qeta/commit/56f969183f2a8a61cd1222a6809c0ebaeb3f71bb))
+
+
+### Bug Fixes
+
+* no questions button to include tags ([0430733](https://github.com/drodil/backstage-plugin-qeta/commit/0430733b19bbf5f4def244ca5fcd7bc3e8d43b46))
+
 ### [2.1.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.1.0...v2.1.1) (2024-04-18)
 
 
