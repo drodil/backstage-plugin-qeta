@@ -15,7 +15,9 @@ export const UserLink = (props: {
 }) => {
   const { entityRef, linkProps } = props;
   const userRoute = useRouteRef(userRouteRef);
-  const { primaryTitle: userName } = useEntityPresentation(entityRef);
+  const { primaryTitle: userName } = useEntityPresentation(
+    entityRef.startsWith('user:') ? entityRef : `user:${entityRef}`,
+  );
   if (entityRef === 'anonymous') {
     return <>Anonymous</>;
   }
