@@ -4116,6 +4116,57 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/core-components@npm:^0.14.5":
+  version: 0.14.5
+  resolution: "@backstage/core-components@npm:0.14.5"
+  dependencies:
+    "@backstage/config": ^1.2.0
+    "@backstage/core-plugin-api": ^1.9.2
+    "@backstage/errors": ^1.2.4
+    "@backstage/theme": ^0.5.3
+    "@backstage/version-bridge": ^1.0.8
+    "@date-io/core": ^1.3.13
+    "@material-table/core": ^3.1.0
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": 4.0.0-alpha.61
+    "@react-hookz/web": ^24.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    "@types/react-sparklines": ^1.7.0
+    "@types/react-text-truncate": ^0.14.0
+    ansi-regex: ^6.0.1
+    classnames: ^2.2.6
+    d3-selection: ^3.0.0
+    d3-shape: ^3.0.0
+    d3-zoom: ^3.0.0
+    dagre: ^0.8.5
+    linkify-react: 4.1.3
+    linkifyjs: 4.1.3
+    lodash: ^4.17.21
+    pluralize: ^8.0.0
+    qs: ^6.9.4
+    rc-progress: 3.5.1
+    react-helmet: 6.1.0
+    react-hook-form: ^7.12.2
+    react-idle-timer: 5.7.2
+    react-markdown: ^8.0.0
+    react-sparklines: ^1.7.0
+    react-syntax-highlighter: ^15.4.5
+    react-text-truncate: ^0.19.0
+    react-use: ^17.3.2
+    react-virtualized-auto-sizer: ^1.0.11
+    react-window: ^1.8.6
+    remark-gfm: ^3.0.1
+    zen-observable: ^0.10.0
+    zod: ^3.22.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: 092a898dc4a11bd278e6b0d9e3bb53bebef63a7a87a606a0f7aad2dc214886b0583e23a2c6a592a6ffa50e542aeceec5ea9eb59ea10975cdd8ca0971e205bdad
+  languageName: node
+  linkType: hard
+
 "@backstage/core-plugin-api@npm:^1.9.2":
   version: 1.9.2
   resolution: "@backstage/core-plugin-api@npm:1.9.2"
@@ -5482,7 +5533,7 @@ __metadata:
     "@backstage/catalog-model": ^1.4.5
     "@backstage/cli": ^0.26.4
     "@backstage/config": ^1.2.0
-    "@backstage/core-components": ^0.14.4
+    "@backstage/core-components": ^0.14.5
     "@backstage/core-plugin-api": ^1.9.2
     "@backstage/dev-utils": ^1.0.31
     "@backstage/errors": ^1.2.4
