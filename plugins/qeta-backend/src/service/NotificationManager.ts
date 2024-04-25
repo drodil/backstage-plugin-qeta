@@ -56,6 +56,24 @@ export class NotificationManager {
           scope: `question:comment:${question.id}`,
         },
       });
+
+      const commenters = new Set<string>(
+        question.comments?.map(c => c.author).filter(a => a !== username),
+      );
+      if (commenters.size > 0) {
+        await this.notifications.send({
+          recipients: { type: 'entity', entityRef: Array.from(commenters) },
+          payload: {
+            title: `New comment on question you commented`,
+            description: this.formatDescription(
+              `${username} commented on a question you commented: ${comment}`,
+            ),
+            link: `/qeta/questions/${question.id}`,
+            topic: 'New question comment',
+            scope: `question:comment:${question.id}`,
+          },
+        });
+      }
     } catch (e) {
       this.logger.error(
         `Failed to send notification for new question comment: ${e}`,
@@ -126,6 +144,24 @@ export class NotificationManager {
           scope: `answer:comment:${answer.id}`,
         },
       });
+
+      const commenters = new Set<string>(
+        answer.comments?.map(c => c.author).filter(a => a !== username),
+      );
+      if (commenters.size > 0) {
+        await this.notifications.send({
+          recipients: { type: 'entity', entityRef: Array.from(commenters) },
+          payload: {
+            title: `New comment on answer you commented`,
+            description: this.formatDescription(
+              `${username} commented on an answer you commented: ${comment}`,
+            ),
+            link: `/qeta/questions/${question.id}#answer_${answer.id}`,
+            topic: 'New answer comment',
+            scope: `answer:comment:${answer.id}`,
+          },
+        });
+      }
     } catch (e) {
       this.logger.error(
         `Failed to send notification for new answer comment: ${e}`,
