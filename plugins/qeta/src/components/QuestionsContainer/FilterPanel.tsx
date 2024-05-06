@@ -89,13 +89,22 @@ export const FilterPanel = (props: FilterPanelProps) => {
   }, [tags, filters.tags]);
 
   useEffect(() => {
-    if (
-      (filters.entity || (refs && refs?.length > 0)) &&
-      !Array.isArray(filters.entity)
-    ) {
+    const entityRefs: string[] = [];
+    if (filters.entity && !Array.isArray(filters.entity)) {
+      entityRefs.push(filters.entity);
+    }
+    if (refs && refs?.length > 0) {
+      refs?.forEach(ref => {
+        // ignore currently selected entity if exist in refs
+        if (ref.entityRef !== filters.entity) {
+          entityRefs.push(ref.entityRef);
+        }
+      });
+    }
+    if (entityRefs.length > 0) {
       catalogApi
         .getEntitiesByRefs({
-          entityRefs: [...(refs ?? []).map(e => e.entityRef), filters.entity],
+          entityRefs,
           fields: [
             'kind',
             'metadata.name',
