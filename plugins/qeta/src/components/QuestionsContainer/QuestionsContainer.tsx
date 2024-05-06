@@ -252,11 +252,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
       </Grid>
       {(showFilters ?? true) && (
         <Collapse in={showFilterPanel}>
-          <FilterPanel
-            onChange={onFilterChange}
-            filters={filters}
-            showEntityFilter={!entity}
-          />
+          <FilterPanel onChange={onFilterChange} filters={filters} />
         </Collapse>
       )}
 
