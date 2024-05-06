@@ -216,8 +216,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
               <FormLabel id="qeta-filter-entity">Filters</FormLabel>
               {showEntityFilter &&
                 availableEntities &&
-                availableEntities.length > 0 &&
-                (!filters.entity || selectedEntity) && (
+                availableEntities.length > 0 && (
                   <Autocomplete
                     multiple={false}
                     className="qetaEntityFilter"
