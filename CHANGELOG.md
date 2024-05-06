@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.2.1...v2.3.0) (2024-05-06)
+
+
+### Features
+
+* also send notification to other commenters of q/a ([222fc25](https://github.com/drodil/backstage-plugin-qeta/commit/222fc25f0200c5c4d823e86a1abbe6efb90a3c18))
+
+
+### Bug Fixes
+
+* fixes issue [#154](https://github.com/drodil/backstage-plugin-qeta/issues/154), showing entity filter dropdown after entity is selected ([310747d](https://github.com/drodil/backstage-plugin-qeta/commit/310747dd5d8d4d0b3bc6a1bbd0127e1eaa75166a))
+* removing duplicate entity refs when selected entity exist ([e7db2b9](https://github.com/drodil/backstage-plugin-qeta/commit/e7db2b9cbac94d24282ef5c302e6fa98639eba83))
+
 ### [2.2.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.2.0...v2.2.1) (2024-04-24)
 
 
