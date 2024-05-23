@@ -1,0 +1,95 @@
+kind: secret
+name: artifactory_access_token
+get:
+  path: artifactory-token?scope=artifactory-dv
+---
+kind: pipeline
+type: docker
+name: publish-packages
+depends_on:
+  - backstage-test
+
+trigger:
+  event:
+    - push
+  branch:
+    - main
+
+steps:
+  - name: setup-and-check
+    image: node:18-alpine
+    environment:
+      ACCESS_TOKEN:
+        from_secret: artifactory_access_token
+    commands:
+      - apk add -q --no-cache curl jq
+      - |
+        # retrieve artifactory's generated npm config
+        curl --location --silent --header "Authorization: Bearer $${ACCESS_TOKEN}" "https://nytimes.pe.jfrog.io/artifactory/api/npm/dv-backstage-plugins-npm-local/auth/nyt" > .npmrc
+        # this returns something like:
+        # @nyt:registry=https://nytimes.pe.jfrog.io/artifactory/api/npm/dv-backstage-plugins-npm-local/
+        # //nytimes.pe.jfrog.io/artifactory/api/npm/dv-backstage-plugins-npm-local/:_password=base64encoded($jwt)
+        # //nytimes.pe.jfrog.io/artifactory/api/npm/dv-backstage-plugins-npm-local/:username=vault-artifactory-internal-prd
+        # //nytimes.pe.jfrog.io/artifactory/api/npm/dv-backstage-plugins-npm-local/:email=ENTER_YOUR_EMAIL_HERE
+        # //nytimes.pe.jfrog.io/artifactory/api/npm/dv-backstage-plugins-npm-local/:always-auth=true
+      - |
+        for dir in ./plugins/*/; do
+          if [ -d "$dir" ]; then
+            cd "$dir"
+            PLUGIN_VERSION=$(cat package.json | jq '.version')
+            EXISTS=$(npm view "@nyt/$(basename "$dir")" versions --json | jq "any(.[]; select(. == $PLUGIN_VERSION))")
+            if [ "$EXISTS" = "false" ]; then
+              echo "need to publish version"
+              exit 0
+            fi
+            cd -
+          fi
+        done
+        echo "every package's version is already published"
+        exit 78
+
+  - name: install-dependencies
+    image: node:18-alpine
+    commands:
+      - mv yarn.lock.dist yarn.lock
+      - yarn -v
+      - node -v
+      - yarn cache clean
+      - yarn install --check-cache
+
+  - name: publish-release-artifact
+    image: node:18-alpine
+    commands:
+      - yarn tsc
+      - apk add -q --no-cache jq
+      - |
+        for dir in plugins/*/; do
+          if [ -d "$dir" ]; then
+            cd "$dir"
+            PLUGIN_VERSION=$(cat package.json | jq '.version')
+            EXISTS=$(npm view "@nyt/$(basename "$dir")" versions --json | jq "any(.[]; select(. == $PLUGIN_VERSION))")
+            if [ "$EXISTS" == "false" ]; then
+              npm run build
+              npm publish
+            fi
+            cd -
+          fi
+        done
+
+  - name: slack
+    image: plugins/slack
+    settings:
+      webhook:
+        from_secret: slack_webhook
+      channel: dv-dev-foundations-notifications
+      username: nytimes/nebula-backstage-plugins (publish)
+      template: >
+        {{#success build.status}}
+          :rocket: <{{build.link}}{{build.number}}|> ({{truncate build.commit 8}}) ${DRONE_TAG} publish succeeded!
+        {{else}}
+          :mega: <{{build.link}}|{{build.number}}> ({{truncate build.commit 8}}) ${DRONE_TAG} publish failed!
+        {{/success}}
+    when:
+      status:
+        - success
+        - failure
