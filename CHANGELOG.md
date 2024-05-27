@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.3.2](https://github.com/drodil/backstage-plugin-qeta/compare/v2.3.1...v2.3.2) (2024-05-27)
+
+
+### Bug Fixes
+
+* image download broken after migrate to new backend system with default auth policy ([7bdb52a](https://github.com/drodil/backstage-plugin-qeta/commit/7bdb52a2f702750ed5b19f57fcea92ec2a285a42))
+
 ### [2.3.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.3.0...v2.3.1) (2024-05-15)
 
 ## [2.3.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.2.1...v2.3.0) (2024-05-06)
