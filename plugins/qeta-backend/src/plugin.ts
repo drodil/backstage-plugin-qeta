@@ -62,6 +62,11 @@ export const qetaPlugin = createBackendPlugin({
             notifications,
           }),
         );
+        // Allowing attachments download
+        httpRouter.addAuthPolicy({
+          allow: 'unauthenticated',
+          path: '/attachments',
+        });
       },
     });
   },
