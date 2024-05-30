@@ -257,6 +257,9 @@ export const useStyles = makeStyles(theme => {
         boxShadow: 'none',
       },
     },
+    dateFilter: {
+      minWidth: '200px',
+    },
   };
 });
 

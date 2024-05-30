@@ -18,6 +18,7 @@ import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
+import { getFiltersWithDateRange } from '../../utils/utils';
 
 export interface QuestionsContainerProps {
   tags?: string[];
@@ -58,6 +59,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     searchQuery: '',
     entity: entity ?? '',
     tags: tags ?? [],
+    dateRange: '',
   });
 
   const onPageChange = (value: number) => {
@@ -157,7 +159,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
         includeEntities: true,
         author,
         favorite,
-        ...filters,
+        ...getFiltersWithDateRange(filters),
       });
     },
     [page, filters, questionsPerPage],

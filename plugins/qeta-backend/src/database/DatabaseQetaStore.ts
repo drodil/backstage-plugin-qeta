@@ -33,8 +33,8 @@ export type RawQuestionEntity = {
   author: string;
   title: string;
   content: string;
-  created: Date;
-  updated: Date;
+  created: Date | string;
+  updated: Date | string;
   updatedBy: string;
   score: number | string;
   views: number | string;
@@ -113,6 +113,13 @@ export class DatabaseQetaStore implements QetaStore {
     options: QuestionsOptions,
   ): Promise<Questions> {
     const query = this.getQuestionBaseQuery(user_ref);
+
+    if (options.fromDate && options.toDate) {
+      query.whereBetween('questions.created', [
+        `${options.fromDate} 00:00:00.000+00`,
+        `${options.toDate} 23:59:59.999+00`,
+      ]);
+    }
 
     if (options.author) {
       query.where('questions.author', '=', options.author);
@@ -920,8 +927,8 @@ export class DatabaseQetaStore implements QetaStore {
         val.anonymous && val.author !== user_ref ? 'anonymous' : val.author,
       title: val.title,
       content: val.content,
-      created: val.created,
-      updated: val.updated,
+      created: val.created as Date,
+      updated: val.updated as Date,
       updatedBy: val.updatedBy,
       score: this.mapToInteger(val.score),
       views: this.mapToInteger(val.views),
