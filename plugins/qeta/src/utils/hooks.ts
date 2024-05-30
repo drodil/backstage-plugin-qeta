@@ -259,6 +259,8 @@ export const useStyles = makeStyles(theme => {
     },
     dateFilter: {
       minWidth: '200px',
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
     },
   };
 });

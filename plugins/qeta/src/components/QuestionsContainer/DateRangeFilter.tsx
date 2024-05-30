@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, MenuItem, TextField, Typography } from '@material-ui/core';
+import {
+  Box,
+  MenuItem,
+  TextField,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from '@material-ui/core';
 import { useStyles } from '../../utils/hooks';
 import { formatDate } from '../../utils/utils';
 
@@ -24,6 +31,9 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
   const [validation, setValidation] = useState<DateRangeValidation>({
     isValid: true,
   });
+  const isSmallScreen = useMediaQuery<Theme>(theme =>
+    theme.breakpoints.down('sm'),
+  );
 
   const localDate = formatDate(new Date());
 
@@ -65,7 +75,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
   }, [fromDate, toDate, onChange]);
 
   return (
-    <Box display="flex" gridGap="16px" marginTop="24px">
+    <Box display={isSmallScreen ? 'block' : 'flex'} gridGap="16px">
       <TextField
         id="outlined-select-currency"
         select
@@ -85,7 +95,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
       </TextField>
       {dateRangeOption === 'custom' && (
         <Box display="flex" flexDirection="column">
-          <Box display="flex" gridGap="12px">
+          <Box display={isSmallScreen ? 'block' : 'flex'} gridGap="12px">
             <TextField
               variant="outlined"
               label="From Date"

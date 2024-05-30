@@ -291,7 +291,9 @@ export const FilterPanel = (props: FilterPanelProps) => {
             </Grid>
           )}
       </Grid>
-      <Divider />
+      <Box marginY="24px">
+        <Divider />
+      </Box>
       <DateRangeFilter value={filters.dateRange} onChange={onChange} />
     </Box>
   );
