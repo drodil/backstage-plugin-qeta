@@ -155,6 +155,26 @@ describe.each(databases.eachSupportedId())(
         expect(ret?.questions.length).toEqual(2);
       });
 
+      it('should fetch questions within fromDate and toDate DateRange', async () => {
+        await insertQuestion({
+          ...question,
+          title: 'title2',
+          content: 'content',
+          created: '2024-05-08 20:51:55.715+05:30',
+        });
+        await insertQuestion({
+          ...question,
+          title: 'title2',
+          created: '2024-04-02 13:08:32.821+05:30',
+        });
+        const ret = await storage.getQuestions('user', {
+          fromDate: '2024-04-02',
+          toDate: '2024-04-02',
+        });
+
+        expect(ret?.questions.length).toEqual(1);
+      });
+
       it('should fetch list of random questions', async () => {
         await insertQuestion(question);
         await insertQuestion({ ...question, title: 'title2' });

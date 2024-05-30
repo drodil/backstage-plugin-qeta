@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import {
   Box,
   Checkbox,
+  Divider,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -17,6 +18,7 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { getEntityTitle } from '../../utils/utils';
+import { DateRangeFilter } from './DateRangeFilter';
 
 const radioSelect = (value: string, label: string) => {
   return (
@@ -36,6 +38,7 @@ export const filterKeys = [
   'noVotes',
   'entity',
   'tags',
+  'dateRange',
 ] as const;
 export type FilterKey = (typeof filterKeys)[number];
 
@@ -48,6 +51,7 @@ export type Filters = {
   searchQuery: string;
   entity: string;
   tags: string[];
+  dateRange?: string;
 };
 
 export interface FilterPanelProps {
@@ -287,6 +291,10 @@ export const FilterPanel = (props: FilterPanelProps) => {
             </Grid>
           )}
       </Grid>
+      <Box marginY="24px">
+        <Divider />
+      </Box>
+      <DateRangeFilter value={filters.dateRange} onChange={onChange} />
     </Box>
   );
 };

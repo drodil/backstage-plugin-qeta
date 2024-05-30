@@ -41,6 +41,8 @@ export interface QuestionsOptions {
   includeTrend?: boolean;
   random?: boolean;
   searchQuery?: string;
+  fromDate?: string;
+  toDate?: string;
 }
 
 export interface TagResponse {

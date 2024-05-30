@@ -201,6 +201,59 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ questions: [], total: 0 });
     });
+    it('returns 400 error when date range is invalid', async () => {
+      qetaStore.getQuestions.mockResolvedValue({
+        questions: [],
+        total: 0,
+      });
+      const response = await request(app).get(
+        '/questions?fromDate=2024-05-10&toDate=2024-05-04',
+      );
+      expect(response.status).toEqual(400);
+      expect(response.body).toEqual({
+        error: 'From Date should be less than To Date',
+        isValid: false,
+      });
+    });
+    it('returns 400 error when fromDate provided but not toDate', async () => {
+      qetaStore.getQuestions.mockResolvedValue({
+        questions: [],
+        total: 0,
+      });
+      const response = await request(app).get('/questions?fromDate=2024-05-10');
+      expect(response.status).toEqual(400);
+      expect(response.body).toEqual({
+        error: 'Please enter to date in format YYYY-MM-DD',
+        isValid: false,
+        field: 'toDate',
+      });
+    });
+    it('returns 400 error when toDate provided but not fromDate', async () => {
+      qetaStore.getQuestions.mockResolvedValue({
+        questions: [],
+        total: 0,
+      });
+      const response = await request(app).get('/questions?toDate=2024-05-10');
+      expect(response.status).toEqual(400);
+      expect(response.body).toEqual({
+        error: 'Please enter from date in format YYYY-MM-DD',
+        isValid: false,
+        field: 'fromDate',
+      });
+    });
+    it('returns 400 error when fromDate is invalid', async () => {
+      qetaStore.getQuestions.mockResolvedValue({
+        questions: [],
+        total: 0,
+      });
+      const response = await request(app).get(
+        '/questions?fromDate=2024-22-10&toDate=2024-05-10',
+      );
+      expect(response.status).toEqual(400);
+      expect(response.body.errors[0].message).toEqual(
+        'must match format "date"',
+      );
+    });
   });
 
   describe('GET /questions/:id', () => {

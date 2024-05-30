@@ -48,6 +48,8 @@ export interface QuestionsQuery {
   includeTrend?: boolean;
   includeComments?: boolean;
   searchQuery?: string;
+  fromDate?: string;
+  toDate?: string;
 }
 
 export interface PostQuestion {
@@ -85,6 +87,8 @@ export const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     includeTrend: { type: 'boolean', nullable: true },
     includeComments: { type: 'boolean', nullable: true },
     searchQuery: { type: 'string', nullable: true },
+    fromDate: { type: 'string', nullable: true, format: 'date' },
+    toDate: { type: 'string', nullable: true, format: 'date' },
   },
   required: [],
   additionalProperties: false,
