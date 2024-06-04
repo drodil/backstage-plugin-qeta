@@ -19,7 +19,11 @@ export class NotificationManager {
 
     try {
       await this.notifications.send({
-        recipients: { type: 'entity', entityRef: question.entities },
+        recipients: {
+          type: 'entity',
+          entityRef: question.entities,
+          excludeEntityRef: username,
+        },
         payload: {
           title: `New question about your entity`,
           description: this.formatDescription(
@@ -45,7 +49,11 @@ export class NotificationManager {
 
     try {
       await this.notifications.send({
-        recipients: { type: 'entity', entityRef: question.author },
+        recipients: {
+          type: 'entity',
+          entityRef: question.author,
+          excludeEntityRef: username,
+        },
         payload: {
           title: `New comment on your question`,
           description: this.formatDescription(
@@ -62,7 +70,11 @@ export class NotificationManager {
       );
       if (commenters.size > 0) {
         await this.notifications.send({
-          recipients: { type: 'entity', entityRef: Array.from(commenters) },
+          recipients: {
+            type: 'entity',
+            entityRef: Array.from(commenters),
+            excludeEntityRef: username,
+          },
           payload: {
             title: `New comment on question you commented`,
             description: this.formatDescription(
@@ -89,7 +101,11 @@ export class NotificationManager {
     try {
       if (question.author !== username) {
         await this.notifications.send({
-          recipients: { type: 'entity', entityRef: question.author },
+          recipients: {
+            type: 'entity',
+            entityRef: question.author,
+            excludeEntityRef: username,
+          },
           payload: {
             title: `New answer on your question`,
             description: this.formatDescription(
@@ -104,7 +120,11 @@ export class NotificationManager {
 
       if (question.entities && question.entities.length > 0) {
         await this.notifications.send({
-          recipients: { type: 'entity', entityRef: question.entities },
+          recipients: {
+            type: 'entity',
+            entityRef: question.entities,
+            excludeEntityRef: username,
+          },
           payload: {
             title: `New answer on question about your entity`,
             description: this.formatDescription(
@@ -133,7 +153,11 @@ export class NotificationManager {
 
     try {
       await this.notifications.send({
-        recipients: { type: 'entity', entityRef: answer.author },
+        recipients: {
+          type: 'entity',
+          entityRef: answer.author,
+          excludeEntityRef: username,
+        },
         payload: {
           title: `New comment on your answer`,
           description: this.formatDescription(
@@ -150,7 +174,11 @@ export class NotificationManager {
       );
       if (commenters.size > 0) {
         await this.notifications.send({
-          recipients: { type: 'entity', entityRef: Array.from(commenters) },
+          recipients: {
+            type: 'entity',
+            entityRef: Array.from(commenters),
+            excludeEntityRef: username,
+          },
           payload: {
             title: `New comment on answer you commented`,
             description: this.formatDescription(
@@ -177,7 +205,11 @@ export class NotificationManager {
     try {
       if (answer.author !== username) {
         await this.notifications.send({
-          recipients: { type: 'entity', entityRef: answer.author },
+          recipients: {
+            type: 'entity',
+            entityRef: answer.author,
+            excludeEntityRef: username,
+          },
           payload: {
             title: `Correct answer on question`,
             description: this.formatDescription(
@@ -192,7 +224,11 @@ export class NotificationManager {
 
       if (question.entities && question.entities.length > 0) {
         await this.notifications.send({
-          recipients: { type: 'entity', entityRef: question.entities },
+          recipients: {
+            type: 'entity',
+            entityRef: question.entities,
+            excludeEntityRef: username,
+          },
           payload: {
             title: `Correct answer on question about your entity`,
             description: this.formatDescription(
