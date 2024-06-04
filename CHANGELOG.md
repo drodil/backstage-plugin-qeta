@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.3.2...v2.4.0) (2024-06-04)
+
+
+### Features
+
+* date range filter added to Questions Filters ([88e24ef](https://github.com/drodil/backstage-plugin-qeta/commit/88e24effcd91cac3535efb18fa0ade8cc679d966))
+
+
+### Bug Fixes
+
+* styling for date range filter ([0c2e0e7](https://github.com/drodil/backstage-plugin-qeta/commit/0c2e0e7b504d77e00bf4802437ab55f2812d6e9f))
+
 ### [2.3.2](https://github.com/drodil/backstage-plugin-qeta/compare/v2.3.1...v2.3.2) (2024-05-27)
 
 
