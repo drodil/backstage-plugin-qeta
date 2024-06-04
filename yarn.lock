@@ -3860,9 +3860,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/cli@npm:^0.26.5":
-  version: 0.26.5
-  resolution: "@backstage/cli@npm:0.26.5"
+"@backstage/cli@npm:^0.26.6":
+  version: 0.26.6
+  resolution: "@backstage/cli@npm:0.26.6"
   dependencies:
     "@backstage/catalog-model": ^1.5.0
     "@backstage/cli-common": ^0.1.13
@@ -3991,7 +3991,7 @@ __metadata:
       optional: true
   bin:
     backstage-cli: bin/backstage-cli
-  checksum: 9cf4ff219347becd11ed3060083fa42b6c11b98dcb05c6db5ae6527624cfa30304344968e245ccce855979c7926908ecf921a1e137fb68173b2aab025433f5ab
+  checksum: 8006e935cc1b6b11a7da8b0b963bc90ab565ada8920cc7b20940eeca8ca1e7aa083aad38aa7a37296552b90bdfb73a58e0fc925f08c6eae9e2df384208b2c37a
   languageName: node
   linkType: hard
 
@@ -4947,6 +4947,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/plugin-search-backend-node@npm:^1.2.23":
+  version: 1.2.23
+  resolution: "@backstage/plugin-search-backend-node@npm:1.2.23"
+  dependencies:
+    "@backstage/backend-common": ^0.22.0
+    "@backstage/backend-plugin-api": ^0.6.18
+    "@backstage/backend-tasks": ^0.5.23
+    "@backstage/config": ^1.2.0
+    "@backstage/errors": ^1.2.4
+    "@backstage/plugin-permission-common": ^0.7.13
+    "@backstage/plugin-search-common": ^1.2.11
+    "@types/lunr": ^2.3.3
+    lodash: ^4.17.21
+    lunr: ^2.3.9
+    ndjson: ^2.0.0
+    uuid: ^9.0.0
+  checksum: ab00468f5ae8dd43876863b7de5526045027df3a977d53034c60391fbc4bbc3960eace8e7324672381de62a06a99f8c27aa5c3f4953d9df733e392611e6a51eb
+  languageName: node
+  linkType: hard
+
 "@backstage/plugin-search-common@npm:^1.2.11":
   version: 1.2.11
   resolution: "@backstage/plugin-search-common@npm:1.2.11"
@@ -5413,7 +5433,7 @@ __metadata:
     "@backstage/backend-plugin-api": ^0.6.18
     "@backstage/backend-test-utils": ^0.3.8
     "@backstage/catalog-model": ^1.5.0
-    "@backstage/cli": ^0.26.5
+    "@backstage/cli": ^0.26.6
     "@backstage/config": ^1.2.0
     "@backstage/errors": ^1.2.4
     "@backstage/plugin-auth-backend": ^0.22.5
@@ -5454,7 +5474,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@drodil/backstage-plugin-qeta-common@workspace:plugins/qeta-common"
   dependencies:
-    "@backstage/cli": ^0.26.5
+    "@backstage/cli": ^0.26.6
     "@backstage/plugin-permission-common": ^0.7.13
     "@backstage/plugin-search-common": ^1.2.11
     ajv: ^8.12.0
@@ -5467,7 +5487,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@drodil/backstage-plugin-qeta-react@workspace:plugins/qeta-react"
   dependencies:
-    "@backstage/cli": ^0.26.5
+    "@backstage/cli": ^0.26.6
     "@backstage/core-plugin-api": ^1.9.2
     "@backstage/test-utils": ^1.5.5
     "@material-ui/core": ^4.12.2
@@ -5484,7 +5504,7 @@ __metadata:
   dependencies:
     "@backstage/catalog-client": ^1.6.5
     "@backstage/catalog-model": ^1.5.0
-    "@backstage/cli": ^0.26.5
+    "@backstage/cli": ^0.26.6
     "@backstage/config": ^1.2.0
     "@backstage/core-components": ^0.14.7
     "@backstage/core-plugin-api": ^1.9.2
@@ -5531,11 +5551,11 @@ __metadata:
     "@backstage/backend-plugin-api": ^0.6.18
     "@backstage/backend-tasks": ^0.5.23
     "@backstage/backend-test-utils": ^0.3.8
-    "@backstage/cli": ^0.26.5
+    "@backstage/cli": ^0.26.6
     "@backstage/config": ^1.2.0
     "@backstage/core-plugin-api": ^1.9.2
     "@backstage/errors": ^1.2.4
-    "@backstage/plugin-search-backend-node": ^1.2.22
+    "@backstage/plugin-search-backend-node": ^1.2.23
     "@backstage/plugin-search-common": ^1.2.11
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     msw: ^1.2.1
@@ -26298,7 +26318,7 @@ __metadata:
   resolution: "root@workspace:."
   dependencies:
     "@aws-sdk/client-s3": ^3.540.0
-    "@backstage/cli": ^0.26.5
+    "@backstage/cli": ^0.26.6
     "@commitlint/cli": ^17.7.1
     "@commitlint/config-conventional": ^17.7.0
     "@octokit/rest": 19.0.8
