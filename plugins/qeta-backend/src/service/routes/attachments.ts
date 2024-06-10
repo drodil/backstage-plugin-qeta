@@ -78,17 +78,19 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
         size: fileBuffer.byteLength || 0,
       };
 
-      if (storageType === 'database') {
-        attachment = await databaseEngine.handleFile(file);
-        response.json(attachment);
+      switch (storageType) {
+        case 's3':
+          attachment = await s3Engine.handleFile(file);
+          break;
+        case 'filesystem':
+          attachment = await fileSystemEngine.handleFile(file);
+          break;
+        case 'database':
+        default:
+          attachment = await databaseEngine.handleFile(file);
+          break;
       }
-      if (storageType === 's3') {
-        attachment = await s3Engine.handleFile(file);
-        response.json(attachment);
-      } else {
-        attachment = await fileSystemEngine.handleFile(file);
-        response.json(attachment);
-      }
+      response.json(attachment);
     });
   });
 
@@ -101,10 +103,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       return response.status(404).send('Attachment not found');
     }
 
-    let imageBuffer: Buffer | undefined;
-    if (attachment.locationType === 'database') {
-      imageBuffer = attachment.binaryImage;
-    } else if (attachment.locationType === 's3') {
+    const getS3ImageBuffer = async () => {
       const bucket = config.getOptionalString('qeta.storage.bucket');
       if (!bucket) {
         throw new Error('Bucket name is required for S3 storage');
@@ -117,12 +116,25 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
         }),
       );
 
-      if (object.Body) {
-        const bytes = await object.Body.transformToByteArray();
-        imageBuffer = Buffer.from(bytes);
+      if (!object.Body) {
+        return undefined;
       }
-    } else {
-      imageBuffer = await fs.promises.readFile(attachment.path);
+      const bytes = await object.Body.transformToByteArray();
+      return Buffer.from(bytes);
+    };
+
+    let imageBuffer: Buffer | undefined;
+    switch (attachment.locationType) {
+      case 's3':
+        imageBuffer = await getS3ImageBuffer();
+        break;
+      case 'filesystem':
+        imageBuffer = await fs.promises.readFile(attachment.path);
+        break;
+      default:
+      case 'database':
+        imageBuffer = attachment.binaryImage;
+        break;
     }
 
     if (!imageBuffer) {
