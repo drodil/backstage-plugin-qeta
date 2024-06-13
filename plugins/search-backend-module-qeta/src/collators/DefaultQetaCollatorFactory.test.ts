@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  getVoidLogger,
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
@@ -51,18 +50,16 @@ const mockQuestions = {
 
 describe('DefaultQetaCollatorFactory', () => {
   const config = new ConfigReader({});
-  const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
+  const mockDiscovery = mockServices.discovery.mock({
     getBaseUrl: jest.fn().mockResolvedValue('http://test-backend/api/qeta'),
-    getExternalBaseUrl: jest.fn(),
-  };
-  const mockTokenManager: jest.Mocked<TokenManager> = {
-    getToken: jest.fn().mockResolvedValue({ token: 'test_token' }),
-    authenticate: jest.fn(),
-  };
+  });
+  const mockAuth = mockServices.auth.mock({
+    getPluginRequestToken: jest.fn().mockResolvedValue({ token: 'test_token' }),
+  });
   const options = {
-    discovery: mockDiscoveryApi,
+    discovery: mockDiscovery,
     logger,
-    tokenManager: mockTokenManager,
+    auth: mockAuth,
   };
 
   it('has expected type', () => {
@@ -101,7 +98,7 @@ describe('DefaultQetaCollatorFactory', () => {
     it('runs against mock tools', async () => {
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
-      expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('qeta');
+      expect(mockDiscovery.getBaseUrl).toHaveBeenCalledWith('qeta');
       const totalDocuments =
         mockQuestions.questions.length +
         mockQuestions.questions.length * mockAnswers.length +
@@ -115,7 +112,7 @@ describe('DefaultQetaCollatorFactory', () => {
 
     it('non-authenticated backend', async () => {
       factory = DefaultQetaCollatorFactory.fromConfig(config, {
-        discovery: mockDiscoveryApi,
+        discovery: mockDiscovery,
         logger,
       });
       collator = await factory.getCollator();
@@ -123,7 +120,7 @@ describe('DefaultQetaCollatorFactory', () => {
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
-      expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('qeta');
+      expect(mockDiscovery.getBaseUrl).toHaveBeenCalledWith('qeta');
       const totalDocuments =
         mockQuestions.questions.length +
         mockQuestions.questions.length * mockAnswers.length +

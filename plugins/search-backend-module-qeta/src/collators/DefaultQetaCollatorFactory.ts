@@ -1,32 +1,32 @@
 import { Config } from '@backstage/config';
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
 import { Readable } from 'stream';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import {
   QetaDocument,
   QuestionsResponseBody,
 } from '@drodil/backstage-plugin-qeta-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 export type QetaCollatorFactoryOptions = {
   logger: LoggerService;
-  discovery: PluginEndpointDiscovery;
-  tokenManager?: TokenManager;
+  discovery: DiscoveryService;
+  auth?: AuthService;
 };
 
 export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'qeta';
   private readonly logger: LoggerService;
-  private readonly discovery: PluginEndpointDiscovery;
-  private readonly tokenManager?: TokenManager;
+  private readonly discovery: DiscoveryService;
+  private readonly auth?: AuthService;
 
   private constructor(_config: Config, options: QetaCollatorFactoryOptions) {
     this.logger = options.logger;
     this.discovery = options.discovery;
-    this.tokenManager = options.tokenManager;
+    this.auth = options.auth;
   }
 
   static fromConfig(config: Config, options: QetaCollatorFactoryOptions) {
@@ -46,8 +46,11 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
     while (totalQuestions > indexedQuestions) {
       let headers = {};
 
-      if (this.tokenManager) {
-        const { token } = await this.tokenManager.getToken();
+      if (this.auth) {
+        const { token } = await this.auth.getPluginRequestToken({
+          onBehalfOf: await this.auth.getOwnServiceCredentials(),
+          targetPluginId: 'qeta',
+        });
         headers = {
           Authorization: `Bearer ${token}`,
         };

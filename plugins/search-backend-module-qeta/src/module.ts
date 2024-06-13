@@ -15,7 +15,7 @@ export const searchModuleQetaCollator = createBackendModule({
         config: coreServices.rootConfig,
         logger: coreServices.logger,
         discovery: coreServices.discovery,
-        tokenManager: coreServices.tokenManager,
+        auth: coreServices.auth,
         scheduler: coreServices.scheduler,
         indexRegistry: searchIndexRegistryExtensionPoint,
       },
@@ -23,7 +23,7 @@ export const searchModuleQetaCollator = createBackendModule({
         config,
         logger,
         discovery,
-        tokenManager,
+        auth,
         scheduler,
         indexRegistry,
       }) {
@@ -33,7 +33,7 @@ export const searchModuleQetaCollator = createBackendModule({
           ),
           factory: DefaultQetaCollatorFactory.fromConfig(config, {
             discovery,
-            tokenManager,
+            auth,
             logger,
           }),
         });
