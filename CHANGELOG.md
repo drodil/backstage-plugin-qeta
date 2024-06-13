@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.4.0...v2.4.1) (2024-06-13)
+
+
+### Bug Fixes
+
+* attachments response for different engines ([50b6af6](https://github.com/drodil/backstage-plugin-qeta/commit/50b6af61d27aba6eaf5148b0f9fbeb6cfb252360)), closes [#163](https://github.com/drodil/backstage-plugin-qeta/issues/163)
+* exclude current user from notification recipients ([4939f55](https://github.com/drodil/backstage-plugin-qeta/commit/4939f55980a294933c88bbdd5069a5698f399a66))
+* migrate search collator to new backend ([fb199bc](https://github.com/drodil/backstage-plugin-qeta/commit/fb199bcf04b7996d7c6266e2cf1f003f9369ebe2)), closes [#167](https://github.com/drodil/backstage-plugin-qeta/issues/167)
+
 ## [2.4.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.3.2...v2.4.0) (2024-06-04)
 
 
