@@ -27,7 +27,7 @@
     "prettier:fix": "prettier --write .",
     "backstage:bump": "backstage-cli versions:bump",
     "bump": "yarn run standard-version --no-verify --releaseCommitMessageFormat 'v{{currentTag}}'",
-    "fix": "backstage-cli repo fix"
+    "fix": "backstage-cli repo fix --publish"
   },
   "workspaces": {
     "packages": [
@@ -39,7 +39,7 @@
     "@types/react-dom": "^17"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.26.6",
+    "@backstage/cli": "^0.26.7",
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
     "@spotify/prettier-config": "^15.0.0",
@@ -63,6 +63,9 @@
     ],
     "*.{json,md}": [
       "prettier --write"
+    ],
+    "package.json": [
+      "yarn fix"
     ]
   },
   "packageManager": "yarn@3.5.1",
