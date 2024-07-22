@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.5.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.4.2...v2.5.0) (2024-07-22)
+
+
+### Features
+
+* show users answers in the user page ([60dcea2](https://github.com/drodil/backstage-plugin-qeta/commit/60dcea2540eaefddee3f83935c884e68becd3b33)), closes [#174](https://github.com/drodil/backstage-plugin-qeta/issues/174)
+
+
+### Bug Fixes
+
+* allow marking correct answers with service token ([e63d607](https://github.com/drodil/backstage-plugin-qeta/commit/e63d607eb530d00c03c87f3f078e577b077a14bd)), closes [#172](https://github.com/drodil/backstage-plugin-qeta/issues/172)
+
 ### [2.4.2](https://github.com/drodil/backstage-plugin-qeta/compare/v2.4.1...v2.4.2) (2024-06-19)
 
 ### [2.4.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.4.0...v2.4.1) (2024-06-13)
