@@ -68,10 +68,15 @@ export const isModerator = async (
 ): Promise<boolean> => {
   try {
     const credentials = await options.httpAuth.credentials(req, {
-      allow: ['user'],
+      allow: ['user', 'service'],
     });
     if (!credentials) {
       return false;
+    }
+
+    // Service tokens are always moderators
+    if (credentials.principal.type === 'service') {
+      return true;
     }
 
     const username = credentials.principal.userEntityRef;

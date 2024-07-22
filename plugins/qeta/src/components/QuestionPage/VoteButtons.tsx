@@ -141,7 +141,9 @@ export const VoteButtons = (props: {
         });
     } else {
       qetaApi.markAnswerCorrect(entity.questionId, entity.id).then(response => {
-        setCorrectAnswer(response);
+        if (response) {
+          setCorrectAnswer(true);
+        }
       });
     }
   };

@@ -209,6 +209,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
               {!answerFilters && radioSelect('views', 'Views')}
               {radioSelect('score', 'Score')}
               {!answerFilters && radioSelect('answersCount', 'Answers')}
+              {radioSelect('updated', 'Updated')}
             </RadioGroup>
           </FormControl>
         </Grid>

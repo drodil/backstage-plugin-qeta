@@ -52,6 +52,24 @@ export interface QuestionsQuery {
   toDate?: string;
 }
 
+export interface AnswersQuery {
+  limit?: number;
+  offset?: number;
+  tags?: string;
+  entity?: string;
+  author?: string;
+  orderBy?: 'score' | 'created' | 'updated';
+  order?: 'desc' | 'asc';
+  noCorrectAnswer?: boolean;
+  noVotes?: boolean;
+  includeVotes?: boolean;
+  includeEntities?: boolean;
+  includeComments?: boolean;
+  searchQuery?: string;
+  fromDate?: string;
+  toDate?: string;
+}
+
 export interface PostQuestion {
   title: string;
   content: string;
@@ -85,6 +103,33 @@ export const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     includeVotes: { type: 'boolean', nullable: true },
     includeEntities: { type: 'boolean', nullable: true },
     includeTrend: { type: 'boolean', nullable: true },
+    includeComments: { type: 'boolean', nullable: true },
+    searchQuery: { type: 'string', nullable: true },
+    fromDate: { type: 'string', nullable: true, format: 'date' },
+    toDate: { type: 'string', nullable: true, format: 'date' },
+  },
+  required: [],
+  additionalProperties: false,
+};
+
+export const AnswersQuerySchema: JSONSchemaType<AnswersQuery> = {
+  type: 'object',
+  properties: {
+    limit: { type: 'integer', nullable: true },
+    offset: { type: 'integer', nullable: true },
+    author: { type: 'string', nullable: true },
+    orderBy: {
+      type: 'string',
+      enum: ['score', 'created', 'updated'],
+      nullable: true,
+    },
+    order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
+    noCorrectAnswer: { type: 'boolean', nullable: true },
+    noVotes: { type: 'boolean', nullable: true },
+    tags: { type: 'string', nullable: true },
+    entity: { type: 'string', nullable: true },
+    includeVotes: { type: 'boolean', nullable: true },
+    includeEntities: { type: 'boolean', nullable: true },
     includeComments: { type: 'boolean', nullable: true },
     searchQuery: { type: 'string', nullable: true },
     fromDate: { type: 'string', nullable: true, format: 'date' },

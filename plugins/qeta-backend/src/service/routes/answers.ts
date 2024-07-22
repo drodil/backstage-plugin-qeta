@@ -8,9 +8,9 @@ import {
   mapAdditionalFields,
 } from '../util';
 import {
+  AnswersQuerySchema,
   CommentSchema,
   PostAnswerSchema,
-  QuestionsQuerySchema,
   RouteOptions,
 } from '../types';
 import { Request, Router } from 'express';
@@ -35,7 +35,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     // Validation
     const username = await getUsername(request, options, true);
     await checkPermissions(request, qetaReadPermission, options);
-    const validateQuery = ajv.compile(QuestionsQuerySchema);
+    const validateQuery = ajv.compile(AnswersQuerySchema);
     if (!validateQuery(request.query)) {
       response
         .status(400)
@@ -369,9 +369,18 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     // Act
-    const username = await getUsername(request, options);
+    const username = await getUsername(request, options, true);
     const moderator = await isModerator(request, options);
-    const voted = await database.voteAnswer(username, answerId, score);
+    let voteScore = score;
+    if (moderator && request.query.score) {
+      voteScore = Number.parseInt(request.query.score as string, 10);
+      if (Number.isNaN(voteScore)) {
+        response.status(400).send({ errors: 'Invalid score', type: 'body' });
+        return;
+      }
+    }
+
+    const voted = await database.voteAnswer(username, answerId, voteScore);
 
     if (!voted) {
       response.sendStatus(404);
@@ -429,7 +438,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
   router.get(
     `/questions/:id/answers/:answerId/correct`,
     async (request, response) => {
-      const username = await getUsername(request, options);
+      const username = await getUsername(request, options, true);
       const moderator = await isModerator(request, options);
       const globalEdit =
         options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
@@ -467,18 +476,19 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       notificationMgr.onCorrectAnswer(username, question, answer);
 
       if (events || signals) {
+        const updated = await database.getAnswer(answerId, username);
         events?.publish({
           topic: 'qeta',
           eventPayload: {
             question,
-            answer,
+            answer: updated,
             author: username,
           },
           metadata: { action: 'correct_answer' },
         });
 
         signalQuestionStats(signals, question);
-        signalAnswerStats(signals, answer);
+        signalAnswerStats(signals, updated);
       }
 
       response.sendStatus(200);
@@ -489,7 +499,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
   router.get(
     `/questions/:id/answers/:answerId/incorrect`,
     async (request, response) => {
-      const username = await getUsername(request, options);
+      const username = await getUsername(request, options, true);
       const moderator = await isModerator(request, options);
       const globalEdit =
         options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
