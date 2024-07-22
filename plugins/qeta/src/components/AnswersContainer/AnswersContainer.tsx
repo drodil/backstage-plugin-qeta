@@ -48,7 +48,6 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
     dateRange: '',
     noCorrectAnswer: 'false',
     entity: entity ?? '',
-    noAnswers: 'false',
     tags: tags ?? [],
     noVotes: 'false',
   });

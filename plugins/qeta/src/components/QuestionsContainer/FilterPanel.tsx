@@ -45,7 +45,7 @@ export type FilterKey = (typeof filterKeys)[number];
 export type Filters = {
   order: string;
   orderBy: string;
-  noAnswers: string;
+  noAnswers?: string;
   noCorrectAnswer: string;
   noVotes: string;
   searchQuery: string;

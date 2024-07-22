@@ -21,7 +21,7 @@ export type GetQuestionsOptions = {
   orderBy: string;
   tags?: string[];
   noVotes: string;
-  noAnswers: string;
+  noAnswers?: string;
   searchQuery: string;
   limit: number;
   favorite?: boolean;
