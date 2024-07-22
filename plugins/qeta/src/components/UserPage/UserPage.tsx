@@ -1,26 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Content, ContentHeader } from '@backstage/core-components';
-import { useParams } from 'react-router-dom';
-import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { QuestionsContainer } from '../QuestionsContainer';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
-import { Container } from '@material-ui/core';
+import { Box, Container, Tab } from '@material-ui/core';
 import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
+import { TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { AnswersContainer } from '../AnswersContainer';
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
   const presentation = useEntityPresentation(identity);
+  const [tab, setTab] = useState('questions');
+  const [_searchParams, setSearchParams] = useSearchParams();
+
+  const handleChange = (_event: React.ChangeEvent<{}>, newValue: string) => {
+    setSearchParams({});
+    setTab(newValue);
+  };
   return (
     <Content>
       <Container maxWidth="lg">
-        <ContentHeader title={`Questions by ${presentation.primaryTitle}`}>
+        <ContentHeader title={`${presentation.primaryTitle}`}>
           <BackToQuestionsButton />
           <AskQuestionButton />
         </ContentHeader>
-        <QuestionsContainer
-          author={identity ?? ''}
-          showNoQuestionsBtn={false}
-        />
+        <TabContext value={tab}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <TabList onChange={handleChange} aria-label="Profile">
+              <Tab label="Questions" value="questions" />
+              <Tab label="Answers" value="answers" />
+            </TabList>
+          </Box>
+          <TabPanel value="questions">
+            <QuestionsContainer
+              author={identity ?? ''}
+              showNoQuestionsBtn={false}
+            />
+          </TabPanel>
+          <TabPanel value="answers">
+            <AnswersContainer author={identity ?? ''} title="Answers" />
+          </TabPanel>
+        </TabContext>
       </Container>
     </Content>
   );

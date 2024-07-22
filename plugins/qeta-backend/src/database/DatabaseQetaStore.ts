@@ -4,6 +4,8 @@ import {
 } from '@backstage/backend-common';
 import { Knex } from 'knex';
 import {
+  Answers,
+  AnswersOptions,
   AttachmentParameters,
   EntityResponse,
   MaybeAnswer,
@@ -514,6 +516,103 @@ export class DatabaseQetaStore implements QetaStore {
     return this.getAnswer(answerId, user_ref);
   }
 
+  async getAnswers(
+    user_ref: string,
+    options: AnswersOptions,
+  ): Promise<Answers> {
+    const query = this.getAnswerBaseQuery();
+    if (options.fromDate && options.toDate) {
+      query.whereBetween('answers.created', [
+        `${options.fromDate} 00:00:00.000+00`,
+        `${options.toDate} 23:59:59.999+00`,
+      ]);
+    }
+
+    if (options.author) {
+      query.where('answers.author', '=', options.author);
+    }
+
+    const tags = filterTags(options.tags);
+    if (tags) {
+      tags.forEach((t, i) => {
+        query.innerJoin(
+          `question_tags AS at${i}`,
+          'answers.questionId',
+          `at${i}.questionId`,
+        );
+        query.innerJoin(`tags AS t${i}`, `at${i}.tagId`, `t${i}.id`);
+        query.where(`t${i}.tag`, '=', t);
+      });
+    }
+
+    if (options.entity) {
+      query.leftJoin(
+        'question_entities',
+        'answers.questionId',
+        'question_entities.questionId',
+      );
+      query.leftJoin('entities', 'question_entities.entityId', 'entities.id');
+      query.where('entities.entity_ref', '=', options.entity);
+    }
+
+    if (options.noCorrectAnswer) {
+      query.where('correct', '=', false);
+    }
+
+    if (options.noVotes) {
+      query.whereNull('answer_votes.answerId');
+    }
+
+    if (options.searchQuery) {
+      if (this.db.client.config.client === 'pg') {
+        query.whereRaw(
+          `(to_tsvector('english', answers.content) @@ websearch_to_tsquery('english', quote_literal(?))
+          or to_tsvector('english', answers.content) @@ to_tsquery('english',quote_literal(?)))`,
+          [
+            `${options.searchQuery}`,
+            `${options.searchQuery.replaceAll(/\s/g, '+')}:*`,
+          ],
+        );
+      } else {
+        query.whereRaw(`LOWER(answers.content) LIKE LOWER(?)`, [
+          `%${options.searchQuery}%`,
+        ]);
+      }
+    }
+
+    const totalQuery = query.clone();
+
+    if (options.orderBy) {
+      query.orderBy(options.orderBy, options.order ? options.order : 'desc');
+    } else {
+      query.orderBy('created', 'desc');
+    }
+
+    if (options.limit) {
+      query.limit(options.limit);
+    }
+
+    if (options.offset) {
+      query.offset(options.offset);
+    }
+
+    const results = await Promise.all([
+      query,
+      this.db(totalQuery.as('totalQuery')).count('* as CNT').first(),
+    ]);
+    const rows = results[0] as RawAnswerEntity[];
+    const total = this.mapToInteger((results[1] as any)?.CNT);
+
+    return {
+      answers: await Promise.all(
+        rows.map(async val => {
+          return this.mapAnswer(val, user_ref, true, true, true);
+        }),
+      ),
+      total,
+    };
+  }
+
   async getAnswer(answerId: number, user_ref: string): Promise<MaybeAnswer> {
     const answers = await this.getAnswerBaseQuery().where('id', '=', answerId);
     return this.mapAnswer(answers[0], user_ref, true, true);
@@ -950,10 +1049,14 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     addVotes?: boolean,
     addComments?: boolean,
+    addQuestion?: boolean,
   ): Promise<Answer> {
     const additionalInfo = await Promise.all([
       addVotes ? this.getAnswerVotes(val.id) : undefined,
       addComments ? this.getAnswerComments(val.id) : undefined,
+      addQuestion
+        ? this.getQuestion(user_ref, val.questionId, false)
+        : undefined,
     ]);
     return {
       id: val.id,
@@ -969,6 +1072,7 @@ export class DatabaseQetaStore implements QetaStore {
       votes: additionalInfo[0],
       comments: additionalInfo[1],
       anonymous: val.anonymous,
+      question: additionalInfo[2] ?? undefined,
     };
   }
 

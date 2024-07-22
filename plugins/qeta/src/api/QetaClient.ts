@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { QetaApi } from './QetaApi';
+import { GetAnswersOptions, GetQuestionsOptions, QetaApi } from './QetaApi';
 import {
   createApiRef,
   DiscoveryApi,
@@ -10,6 +10,8 @@ import {
   Answer,
   AnswerRequest,
   AnswerResponseBody,
+  AnswersResponse,
+  AnswersResponseBody,
   AttachmentResponseBody,
   EntityResponse,
   Question,
@@ -51,21 +53,7 @@ export class QetaClient implements QetaApi {
     return this.discoveryApi.getBaseUrl('qeta');
   }
 
-  async getQuestions(options: {
-    noCorrectAnswer: string;
-    offset: number;
-    includeEntities: boolean;
-    author: string | undefined;
-    orderBy: string;
-    tags: string[] | undefined;
-    noVotes: string;
-    noAnswers: string;
-    searchQuery: string;
-    limit: number;
-    favorite: undefined | boolean;
-    entity: string | undefined;
-    order: string;
-  }): Promise<QuestionsResponse> {
+  async getQuestions(options: GetQuestionsOptions): Promise<QuestionsResponse> {
     const query = this.getQueryParameters(options).toString();
 
     let url = `${await this.getBaseUrl()}/questions`;
@@ -438,6 +426,27 @@ export class QetaClient implements QetaApi {
       },
     );
     const data = (await response.json()) as AnswerResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async getAnswers(options: GetAnswersOptions): Promise<AnswersResponse> {
+    const query = this.getQueryParameters(options).toString();
+
+    let url = `${await this.getBaseUrl()}/answers`;
+    if (query) {
+      url += `?${query}`;
+    }
+
+    const response = await this.fetchApi.fetch(url);
+    if (response.status === 403) {
+      return { answers: [], total: 0 };
+    }
+    const data = (await response.json()) as AnswersResponseBody;
 
     if ('errors' in data) {
       throw new QetaError('Failed to fetch', data.errors);

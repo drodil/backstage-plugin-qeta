@@ -58,6 +58,7 @@ export interface Question extends QuestionAnswerEntity {
 export interface Answer extends QuestionAnswerEntity {
   questionId: number;
   correct: boolean;
+  question?: Question;
 }
 
 export interface Vote {
@@ -121,6 +122,13 @@ export interface AnswerRequest {
   answer: string;
   images?: number[];
   anonymous?: boolean;
+}
+
+export type AnswersResponseBody = AnswersResponse | ErrorResponse;
+
+export interface AnswersResponse {
+  answers: Answer[];
+  total: number;
 }
 
 export type AnswerResponseBody = Answer | ErrorResponse;

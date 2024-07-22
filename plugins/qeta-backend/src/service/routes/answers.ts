@@ -7,20 +7,57 @@ import {
   isModerator,
   mapAdditionalFields,
 } from '../util';
-import { CommentSchema, PostAnswerSchema, RouteOptions } from '../types';
+import {
+  CommentSchema,
+  PostAnswerSchema,
+  QuestionsQuerySchema,
+  RouteOptions,
+} from '../types';
 import { Request, Router } from 'express';
 import {
   qetaCreateAnswerPermission,
   qetaReadPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Response } from 'express-serve-static-core';
-import { signalAnswerStats, signalQuestionStats } from './util';
+import {
+  signalAnswerStats,
+  signalQuestionStats,
+  validateDateRange,
+} from './util';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const answersRoutes = (router: Router, options: RouteOptions) => {
   const { database, events, signals, notificationMgr } = options;
+
+  router.get(`/answers`, async (request, response) => {
+    // Validation
+    const username = await getUsername(request, options, true);
+    await checkPermissions(request, qetaReadPermission, options);
+    const validateQuery = ajv.compile(QuestionsQuerySchema);
+    if (!validateQuery(request.query)) {
+      response
+        .status(400)
+        .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+
+    const validDate = validateDateRange(
+      request.query.fromDate as string,
+      request.query.toDate as string,
+    );
+    if (!validDate?.isValid) {
+      response.status(400).send(validDate);
+      return;
+    }
+
+    // Act
+    const answers = await database.getAnswers(username, request.query);
+
+    // Response
+    response.json(answers);
+  });
 
   // POST /questions/:id/answers
   router.post(`/questions/:id/answers`, async (request, response) => {

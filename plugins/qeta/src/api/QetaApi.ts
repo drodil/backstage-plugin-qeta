@@ -2,6 +2,7 @@ import {
   AnswerRequest,
   AnswerResponse,
   AnswerResponseBody,
+  AnswersResponse,
   AttachmentResponseBody,
   EntityResponse,
   QuestionRequest,
@@ -26,6 +27,21 @@ export type GetQuestionsOptions = {
   favorite?: boolean;
   entity?: string;
   order: string;
+  fromDate?: string;
+  toDate?: string;
+};
+
+export type GetAnswersOptions = {
+  noCorrectAnswer: string;
+  noVotes: string;
+  offset: number;
+  author?: string;
+  orderBy: string;
+  searchQuery: string;
+  limit: number;
+  order: string;
+  fromDate?: string;
+  toDate?: string;
 };
 
 export interface QetaApi {
@@ -120,6 +136,8 @@ export interface QetaApi {
   ): Promise<QuestionResponse>;
 
   updateAnswer(id: number, answer: AnswerRequest): Promise<AnswerResponseBody>;
+
+  getAnswers(options: GetAnswersOptions): Promise<AnswersResponse>;
 
   getAnswer(
     questionId: string | number | undefined,

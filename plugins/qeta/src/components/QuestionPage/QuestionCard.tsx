@@ -40,9 +40,13 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
   const highlightedAnswer = window.location.hash.slice(1) ?? undefined;
   useEffect(() => {
     if (highlightedAnswer) {
-      const element = document.querySelector(`#${highlightedAnswer}`);
-      if (element) {
-        element.scrollIntoView();
+      try {
+        const element = document.querySelector(`#${highlightedAnswer}`);
+        if (element) {
+          element.scrollIntoView();
+        }
+      } catch (e) {
+        // NOOP
       }
     }
   }, [highlightedAnswer]);

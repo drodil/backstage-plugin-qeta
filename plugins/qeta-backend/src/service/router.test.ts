@@ -137,6 +137,7 @@ describe('createRouter', () => {
     favoriteQuestion: jest.fn(),
     unfavoriteQuestion: jest.fn(),
     postAttachment: jest.fn(),
+    getAnswers: jest.fn(),
     getAttachment: jest.fn(),
     getMostUpvotedAnswers: jest.fn(),
     getTotalAnswers: jest.fn(),

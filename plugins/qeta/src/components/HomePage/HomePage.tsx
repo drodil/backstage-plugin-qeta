@@ -26,7 +26,6 @@ import { useIdentityApi, useStyles } from '../../utils/hooks';
 import Whatshot from '@material-ui/icons/Whatshot';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import StarIcon from '@material-ui/icons/Star';
-import AccountBox from '@material-ui/icons/AccountBox';
 import { FavoritePage } from '../FavoritePage/FavoritePage';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { StatisticsPage, TrophyIcon } from '../Statistics';
@@ -42,6 +41,7 @@ import {
   userRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
+import AccountBox from '@material-ui/icons/AccountBox';
 
 const MoreMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -93,20 +93,20 @@ const MoreMenu = () => {
         }}
         onClose={handleMenuClose}
       >
+        {user && !loadingUser && !userError && (
+          <MenuItem component="a" href={`${userRoute()}/${user.userEntityRef}`}>
+            <ListItemIcon className={styles.menuIcon}>
+              <AccountBox fontSize="small" />
+            </ListItemIcon>
+            Profile
+          </MenuItem>
+        )}
         <MenuItem component="a" href={tagsRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <LoyaltyOutlined fontSize="small" />
           </ListItemIcon>
           Tags
         </MenuItem>
-        {user && !loadingUser && !userError && (
-          <MenuItem component="a" href={`${userRoute()}/${user.userEntityRef}`}>
-            <ListItemIcon className={styles.menuIcon}>
-              <AccountBox fontSize="small" />
-            </ListItemIcon>
-            My questions
-          </MenuItem>
-        )}
         <MenuItem component="a" href={favoritesRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <StarIcon fontSize="small" />

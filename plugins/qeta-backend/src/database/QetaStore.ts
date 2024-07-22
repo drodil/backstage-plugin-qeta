@@ -16,6 +16,11 @@ export interface Questions {
   total: number;
 }
 
+export interface Answers {
+  answers: Answer[];
+  total: number;
+}
+
 export interface QuestionsOptions {
   limit?: number;
   offset?: number;
@@ -37,9 +42,29 @@ export interface QuestionsOptions {
   includeAnswers?: boolean;
   includeVotes?: boolean;
   includeEntities?: boolean;
-
   includeTrend?: boolean;
   random?: boolean;
+  searchQuery?: string;
+  fromDate?: string;
+  toDate?: string;
+}
+
+export interface AnswersOptions {
+  limit?: number;
+  offset?: number;
+  author?: string;
+  noCorrectAnswer?: boolean;
+  noVotes?: boolean;
+  orderBy?:
+    | 'views'
+    | 'score'
+    | 'answersCount'
+    | 'created'
+    | 'updated'
+    | 'trend';
+  order?: 'desc' | 'asc';
+  tags?: string[];
+  entity?: string;
   searchQuery?: string;
   fromDate?: string;
   toDate?: string;
@@ -240,6 +265,13 @@ export interface QetaStore {
     images?: number[],
     moderator?: boolean,
   ): Promise<MaybeAnswer>;
+
+  /**
+   * Fetch all stored answers with options
+   * @param user_ref user name requesting question
+   * @param options Search options
+   */
+  getAnswers(user_ref: string, options: AnswersOptions): Promise<Answers>;
 
   /** Get answer by id
    * @param answerId answer id

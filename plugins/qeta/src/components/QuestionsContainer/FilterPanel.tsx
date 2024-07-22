@@ -49,8 +49,8 @@ export type Filters = {
   noCorrectAnswer: string;
   noVotes: string;
   searchQuery: string;
-  entity: string;
-  tags: string[];
+  entity?: string;
+  tags?: string[];
   dateRange?: string;
 };
 
@@ -59,6 +59,7 @@ export interface FilterPanelProps {
   filters: Filters;
   showEntityFilter?: boolean;
   showTagFilter?: boolean;
+  answerFilters?: boolean;
 }
 
 export const FilterPanel = (props: FilterPanelProps) => {
@@ -67,6 +68,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
     filters,
     showEntityFilter = true,
     showTagFilter = true,
+    answerFilters = false,
   } = props;
   const styles = useStyles();
   const { value: refs } = useQetaApi(api => api.getEntities(), []);
@@ -157,17 +159,19 @@ export const FilterPanel = (props: FilterPanelProps) => {
       <Grid container spacing={4}>
         <Grid item md={3} xs={4}>
           <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  name="noAnswers"
-                  onChange={handleChange}
-                  checked={filters.noAnswers === 'true'}
-                />
-              }
-              label="No answers"
-            />
+            {!answerFilters && (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    size="small"
+                    name="noAnswers"
+                    onChange={handleChange}
+                    checked={filters.noAnswers === 'true'}
+                  />
+                }
+                label="No answers"
+              />
+            )}
             <FormControlLabel
               control={
                 <Checkbox
@@ -202,9 +206,9 @@ export const FilterPanel = (props: FilterPanelProps) => {
               onChange={handleChange}
             >
               {radioSelect('created', 'Created')}
-              {radioSelect('views', 'Views')}
+              {!answerFilters && radioSelect('views', 'Views')}
               {radioSelect('score', 'Score')}
-              {radioSelect('answersCount', 'Answers')}
+              {!answerFilters && radioSelect('answersCount', 'Answers')}
             </RadioGroup>
           </FormControl>
         </Grid>
