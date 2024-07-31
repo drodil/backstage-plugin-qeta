@@ -20,6 +20,7 @@ import {
   AnswerResponse,
   QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
+import DataLoader from 'dataloader';
 
 export function useQetaApi<T>(
   f: (api: QetaApi) => Promise<T>,
@@ -288,6 +289,29 @@ export const useBasePath = () => {
   return trimEnd(pathname, '/');
 };
 
+const userCache: Map<string, UserEntity> = new Map();
+const dataLoader = new DataLoader(
+  async (entityRefs: readonly string[]) => {
+    const catalogApi = useApi(catalogApiRef);
+    const { items } = await catalogApi.getEntitiesByRefs({
+      entityRefs: entityRefs as string[],
+    });
+
+    entityRefs.forEach((entityRef, index) => {
+      userCache.set(entityRef, items[index] as UserEntity);
+    });
+    return items;
+  },
+  {
+    name: 'EntityAuthorLoader',
+    cacheMap: new Map(),
+    maxBatchSize: 100,
+    batchScheduleFn: callback => {
+      setTimeout(callback, 50);
+    },
+  },
+);
+
 export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
@@ -304,13 +328,28 @@ export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
   const { primaryTitle: userName } = useEntityPresentation(author);
 
   useEffect(() => {
-    if (!anonymous) {
-      catalogApi
-        .getEntityByRef(entity.author)
-        .catch(_ => setUser(null))
-        .then(data => (data ? setUser(data as UserEntity) : setUser(null)));
+    if (anonymous) {
+      return;
     }
-  }, [catalogApi, entity, anonymous]);
+
+    if (userCache.get(author)) {
+      setUser(userCache.get(author) as UserEntity);
+      return;
+    }
+
+    dataLoader
+      .load(author)
+      .then(data => {
+        if (data) {
+          setUser(data as UserEntity);
+        } else {
+          setUser(null);
+        }
+      })
+      .catch(() => {
+        setUser(null);
+      });
+  }, [catalogApi, author, anonymous]);
 
   useEffect(() => {
     identityApi.getBackstageIdentity().then(res => {
