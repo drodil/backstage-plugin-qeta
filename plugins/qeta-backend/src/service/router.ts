@@ -46,6 +46,6 @@ export async function createRouter(
   attachmentsRoutes(router, routeOptions);
   statisticRoutes(router, routeOptions);
 
-  router.use(MiddlewareFactory.create({ config, logger }).error);
+  router.use(MiddlewareFactory.create({ config, logger }).error());
   return router;
 }
