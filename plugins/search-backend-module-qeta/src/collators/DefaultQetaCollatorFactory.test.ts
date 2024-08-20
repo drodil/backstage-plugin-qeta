@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { DefaultQetaCollatorFactory } from './DefaultQetaCollatorFactory';
-
-const logger = getVoidLogger();
 
 const mockComments = [{ content: 'comment' }];
 const mockAnswers = [
@@ -58,7 +55,7 @@ describe('DefaultQetaCollatorFactory', () => {
   });
   const options = {
     discovery: mockDiscovery,
-    logger,
+    logger: mockServices.logger.mock(),
     auth: mockAuth,
   };
 
@@ -73,7 +70,7 @@ describe('DefaultQetaCollatorFactory', () => {
     let lastRequest: any = null;
 
     const worker = setupServer();
-    setupRequestMockHandlers(worker);
+    registerMswTestHooks(worker);
 
     beforeEach(async () => {
       factory = DefaultQetaCollatorFactory.fromConfig(config, options);
@@ -113,7 +110,7 @@ describe('DefaultQetaCollatorFactory', () => {
     it('non-authenticated backend', async () => {
       factory = DefaultQetaCollatorFactory.fromConfig(config, {
         discovery: mockDiscovery,
-        logger,
+        logger: mockServices.logger.mock(),
       });
       collator = await factory.getCollator();
 
