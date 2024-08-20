@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 
@@ -166,7 +165,7 @@ describe('createRouter', () => {
       { context: 'qeta', data: qetaConfig || {} },
     ]);
     const router = await createRouter({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       httpAuth: mockServices.httpAuth(),
       userInfo: mockServices.userInfo(),
       discovery: mockServices.discovery(),

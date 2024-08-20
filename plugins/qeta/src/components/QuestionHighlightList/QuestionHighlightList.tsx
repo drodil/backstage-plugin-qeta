@@ -16,7 +16,7 @@ export const QuestionHighlightList = (props: {
   type: string;
   title: string;
   noQuestionsLabel: string;
-  icon?: JSX.Element;
+  icon?: React.ReactNode;
 }) => {
   const {
     value: response,

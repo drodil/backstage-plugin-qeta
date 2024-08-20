@@ -1,7 +1,6 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import bodyParser from 'body-parser';
-import { errorHandler } from '@backstage/backend-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { qetaPermissions } from '@drodil/backstage-plugin-qeta-common';
 import { statisticRoutes } from './routes/statistics';
@@ -11,6 +10,7 @@ import { answersRoutes } from './routes/answers';
 import { helperRoutes } from './routes/helpers';
 import { RouterOptions } from './types';
 import { NotificationManager } from './NotificationManager';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
 export async function createRouter(
   options: RouterOptions,
@@ -18,7 +18,7 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
   router.use(bodyParser.urlencoded({ extended: true }));
-  const { logger, httpAuth } = options;
+  const { config, logger, httpAuth } = options;
   const notificationMgr = new NotificationManager(
     logger,
     options.notifications,
@@ -46,6 +46,6 @@ export async function createRouter(
   attachmentsRoutes(router, routeOptions);
   statisticRoutes(router, routeOptions);
 
-  router.use(errorHandler());
+  router.use(MiddlewareFactory.create({ config, logger }).error);
   return router;
 }

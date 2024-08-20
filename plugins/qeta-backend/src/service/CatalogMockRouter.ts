@@ -1,6 +1,5 @@
 import express from 'express';
 import Router from 'express-promise-router';
-import { errorHandler } from '@backstage/backend-common';
 // @eslint-ignore
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
@@ -102,6 +101,5 @@ export const createCatalogMockRouter = async (): Promise<express.Router> => {
     });
   });
 
-  router.use(errorHandler());
   return router;
 };

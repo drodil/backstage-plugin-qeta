@@ -1,7 +1,8 @@
 import {
-  PluginDatabaseManager,
+  DatabaseService,
   resolvePackagePath,
-} from '@backstage/backend-common';
+} from '@backstage/backend-plugin-api';
+
 import { Knex } from 'knex';
 import {
   Answers,
@@ -95,7 +96,7 @@ export class DatabaseQetaStore implements QetaStore {
     database,
     skipMigrations,
   }: {
-    database: PluginDatabaseManager;
+    database: DatabaseService;
     skipMigrations?: boolean;
   }): Promise<DatabaseQetaStore> {
     const client = await database.getClient();
