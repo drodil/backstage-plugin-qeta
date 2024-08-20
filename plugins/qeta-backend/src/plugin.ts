@@ -1,4 +1,3 @@
-import { getRootLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -8,8 +7,6 @@ import { DatabaseQetaStore } from './database/DatabaseQetaStore';
 import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { notificationService } from '@backstage/plugin-notifications-node';
-
-const logger = getRootLogger();
 
 /**
  * Qeta backend plugin
@@ -21,6 +18,7 @@ export const qetaPlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
+        logger: coreServices.logger,
         config: coreServices.rootConfig,
         httpRouter: coreServices.httpRouter,
         database: coreServices.database,
@@ -33,6 +31,7 @@ export const qetaPlugin = createBackendPlugin({
         notifications: notificationService,
       },
       async init({
+        logger,
         config,
         httpRouter,
         database,
