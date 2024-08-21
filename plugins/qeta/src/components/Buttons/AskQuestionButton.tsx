@@ -5,6 +5,7 @@ import { qetaCreateQuestionPermission } from '@drodil/backstage-plugin-qeta-comm
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef } from '@drodil/backstage-plugin-qeta-react';
+import { useTranslation } from '../../utils/hooks';
 
 export const AskQuestionButton = (props: {
   entity?: string;
@@ -13,6 +14,7 @@ export const AskQuestionButton = (props: {
 }) => {
   const { entity, entityPage, tags } = props;
   const askRoute = useRouteRef(askRouteRef);
+  const { t } = useTranslation();
 
   const params = new URLSearchParams();
   if (entity) {
@@ -37,7 +39,7 @@ export const AskQuestionButton = (props: {
         className="qetaAskQuestionBtn"
         startIcon={<HelpOutline />}
       >
-        Ask question
+        {t('askQuestionButton.title')}
       </LinkButton>
     </RequirePermission>
   );

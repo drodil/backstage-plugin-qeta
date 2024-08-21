@@ -8,6 +8,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { userRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { Link, LinkProps } from '@backstage/core-components';
+import { useTranslation } from '../../utils/hooks';
 
 export const UserLink = (props: {
   entityRef: string;
@@ -15,11 +16,12 @@ export const UserLink = (props: {
 }) => {
   const { entityRef, linkProps } = props;
   const userRoute = useRouteRef(userRouteRef);
+  const { t } = useTranslation();
   const { primaryTitle: userName } = useEntityPresentation(
     entityRef.startsWith('user:') ? entityRef : `user:${entityRef}`,
   );
   if (entityRef === 'anonymous') {
-    return <>Anonymous</>;
+    return <>{t('userLink.anonymous')}</>;
   }
   return (
     <Link to={`${userRoute()}/${entityRef}`} {...linkProps}>

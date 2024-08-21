@@ -7,7 +7,7 @@ import {
   ListSubheader,
 } from '@material-ui/core';
 import React from 'react';
-import { useQetaApi, useStyles } from '../../utils/hooks';
+import { useQetaApi, useStyles, useTranslation } from '../../utils/hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { questionRouteRef } from '@drodil/backstage-plugin-qeta-react';
@@ -24,6 +24,7 @@ export const QuestionHighlightList = (props: {
     error,
   } = useQetaApi(api => api.getQuestionsList(props.type), []);
   const classes = useStyles();
+  const { t } = useTranslation();
   const questionRoute = useRouteRef(questionRouteRef);
 
   const questions = response?.questions ?? [];
@@ -56,7 +57,7 @@ export const QuestionHighlightList = (props: {
         )}
         {error && (
           <ListItem>
-            <ListItemText>Failed to load questions</ListItemText>
+            <ListItemText>{t('homePage.highlights.loadError')}</ListItemText>
           </ListItem>
         )}
         {!error && questions.length === 0 && (

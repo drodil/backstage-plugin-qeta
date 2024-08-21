@@ -13,7 +13,7 @@ import {
   QuestionRequest,
   QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useTranslation } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -96,6 +96,7 @@ export const AskForm = (props: AskFormProps) => {
 
   const [images, setImages] = React.useState<number[]>([]);
   const [searchParams, _setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
 
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -212,7 +213,7 @@ export const AskForm = (props: AskFormProps) => {
 
   return (
     <form onSubmit={handleSubmit(postQuestion)} className="qetaAskForm">
-      {error && <Alert severity="error">Could not post question</Alert>}
+      {error && <Alert severity="error">{t('askForm.errorPosting')}</Alert>}
       <TextField
         label="Title"
         className="qetaAskFormTitle"
@@ -221,7 +222,7 @@ export const AskForm = (props: AskFormProps) => {
         error={'title' in errors}
         margin="normal"
         variant="outlined"
-        helperText="Write good title for your question that people can understand"
+        helperText={t('askForm.titleInput.helperText')}
         {
           // @ts-ignore
           ...register('title', { required: true, maxLength: 255 })
@@ -238,7 +239,7 @@ export const AskForm = (props: AskFormProps) => {
             onChange={onChange}
             height={400}
             error={'content' in errors}
-            placeholder="Your question"
+            placeholder={t('askForm.contentInput.placeholder')}
             config={configApi}
             onImageUpload={(imageId: number) => {
               setImages(prevImages => [...prevImages, imageId]);
@@ -250,7 +251,10 @@ export const AskForm = (props: AskFormProps) => {
       <TagInput control={control} />
       <EntitiesInput control={control} entityRef={entityRef} />
       {allowAnonymouns && !id && (
-        <AskAnonymouslyCheckbox control={control} label="Ask anonymously" />
+        <AskAnonymouslyCheckbox
+          control={control}
+          label={t('anonymousCheckbox.askAnonymously')}
+        />
       )}
       <Button
         color="primary"
@@ -259,7 +263,9 @@ export const AskForm = (props: AskFormProps) => {
         disabled={posting}
         className={`qetaAskFormSubmitBtn ${styles.postButton}`}
       >
-        {id ? 'Save' : 'Post'}
+        {id
+          ? t('askForm.submit.existingQuestion')
+          : t('askForm.submit.newQuestion')}
       </Button>
     </form>
   );

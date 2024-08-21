@@ -19,6 +19,7 @@ import React, { useEffect, useState } from 'react';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useSignal } from '@backstage/plugin-signals-react';
+import { useTranslation } from '../../utils/hooks';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,6 +46,7 @@ export const VoteButtons = (props: {
   const [score, setScore] = useState(entity.score);
   const analytics = useAnalytics();
   const qetaApi = useApi(qetaApiRef);
+  const { t } = useTranslation();
 
   const isQuestion = 'title' in entity;
   const own = props.entity.own ?? false;
@@ -102,27 +104,25 @@ export const VoteButtons = (props: {
     }
   };
 
-  let correctTooltip = correctAnswer
-    ? 'Mark answer as incorrect'
-    : 'Mark answer as correct';
+  let correctTooltip: string = correctAnswer
+    ? t('voteButtons.answer.markIncorrect')
+    : t('voteButtons.answer.markCorrect');
   if (!props.question?.own) {
-    correctTooltip = correctAnswer
-      ? 'This answer has been marked as correct'
-      : '';
+    correctTooltip = correctAnswer ? t('voteButtons.answer.marked') : '';
   }
 
-  let voteUpTooltip = isQuestion
-    ? 'This question is good'
-    : 'This answer is good';
+  let voteUpTooltip: string = isQuestion
+    ? t('voteButtons.question.good')
+    : t('voteButtons.answer.good');
   if (own) {
     voteUpTooltip = isQuestion
-      ? 'You cannot vote your own question'
-      : 'You cannot vote your own answer';
+      ? t('voteButtons.question.own')
+      : t('voteButtons.answer.own');
   }
 
-  let voteDownTooltip = isQuestion
-    ? 'This question is not good'
-    : 'This answer is not good';
+  let voteDownTooltip: string = isQuestion
+    ? t('voteButtons.question.bad')
+    : t('voteButtons.answer.bad');
   if (own) {
     voteDownTooltip = voteUpTooltip;
   }

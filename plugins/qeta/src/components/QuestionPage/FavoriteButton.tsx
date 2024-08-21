@@ -5,10 +5,12 @@ import { useApi } from '@backstage/core-plugin-api';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import { qetaApiRef } from '../../api';
+import { useTranslation } from '../../utils/hooks';
 
 export const FavoriteButton = (props: { entity: QuestionResponse }) => {
   const [entity, setEntity] = React.useState<QuestionResponse>(props.entity);
   const qetaApi = useApi(qetaApiRef);
+  const { t } = useTranslation();
 
   const favoriteQuestion = () => {
     qetaApi.favoriteQuestion(entity.id).then(response => {
@@ -25,7 +27,7 @@ export const FavoriteButton = (props: { entity: QuestionResponse }) => {
   return (
     <React.Fragment>
       {entity.favorite ? (
-        <Tooltip title="Remove this question from favorites">
+        <Tooltip title={t('favorite.remove')}>
           <IconButton
             aria-label="unfavorite"
             size="small"
@@ -36,7 +38,7 @@ export const FavoriteButton = (props: { entity: QuestionResponse }) => {
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Mark this question as favorite">
+        <Tooltip title={t('favorite.add')}>
           <IconButton
             aria-label="favorite"
             size="small"

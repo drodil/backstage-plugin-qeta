@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
-import { useQetaApi } from '../../utils/hooks';
+import { useQetaApi, useTranslation } from '../../utils/hooks';
 import { TrophyIcon } from './TrophyIcon';
 import { useStyles } from './styles';
 import { UserLink } from '../Links/Links';
@@ -161,6 +161,7 @@ export const TopRankingUsers = (props: {
   hideTitle?: boolean;
   limit?: number;
 }) => {
+  const { t } = useTranslation();
   const {
     value: topStatistics,
     loading,
@@ -173,35 +174,35 @@ export const TopRankingUsers = (props: {
 
   const tabData = [
     {
-      title: 'Most questions',
-      description: 'People who have posted most questions',
+      title: t('statistics.mostQuestions.title'),
+      description: t('statistics.mostQuestions.description'),
       unit: 'questions',
     },
     {
-      title: 'Most answers',
-      description: 'People who have answered most questions',
+      title: t('statistics.mostAnswers.title'),
+      description: t('statistics.mostAnswers.description'),
       unit: 'answers',
     },
     {
-      title: 'Top Upvoted Questions',
-      description: 'People who have the highest rated questions',
+      title: t('statistics.topVotedQuestions.title'),
+      description: t('statistics.topVotedQuestions.description'),
       unit: 'votes',
     },
     {
-      title: 'Top Upvoted Answers',
-      description: 'People who have the highest rated answers',
+      title: t('statistics.topVotedAnswers.title'),
+      description: t('statistics.topVotedAnswers.description'),
       unit: 'votes',
     },
     {
-      title: 'Top Upvoted Correct Answers',
-      description: 'People who have the highest rated correct answers',
+      title: t('statistics.topVotedCorrectAnswers.title'),
+      description: t('statistics.topVotedCorrectAnswers.description'),
       unit: 'votes',
     },
   ];
 
   if ((error || topStatistics === undefined) && !loading) {
     return (
-      <WarningPanel severity="error" title="Could not load statistics.">
+      <WarningPanel severity="error" title={t('statistics.errorLoading')}>
         {error?.message}
       </WarningPanel>
     );
@@ -229,10 +230,12 @@ export const TopRankingUsers = (props: {
       );
     });
   } else {
-    content = [<CardTab>No statistics available</CardTab>];
+    content = [<CardTab>{t('statistics.notAvailable')}</CardTab>];
   }
 
   return (
-    <TabbedCard title={props.title || 'Ranking Q&A 🏆'}>{content}</TabbedCard>
+    <TabbedCard title={props.title || t('statistics.ranking')}>
+      {content}
+    </TabbedCard>
   );
 };

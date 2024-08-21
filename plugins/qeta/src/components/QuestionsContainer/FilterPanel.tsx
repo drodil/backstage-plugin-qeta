@@ -12,7 +12,7 @@ import {
   RadioGroup,
   TextField,
 } from '@material-ui/core';
-import { useQetaApi, useStyles } from '../../utils/hooks';
+import { useQetaApi, useStyles, useTranslation } from '../../utils/hooks';
 import { Autocomplete } from '@material-ui/lab';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
@@ -74,6 +74,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
   const { value: refs } = useQetaApi(api => api.getEntities(), []);
   const { value: tags } = useQetaApi(api => api.getTags(), []);
   const catalogApi = useApi(catalogApiRef);
+  const { t } = useTranslation();
   const [availableEntities, setAvailableEntities] = React.useState<
     Entity[] | null
   >(null);
@@ -86,7 +87,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
 
   useEffect(() => {
     if ((tags && tags.length > 0) || filters.tags) {
-      const ts = (tags ?? []).map(t => t.tag);
+      const ts = (tags ?? []).map(tag => tag.tag);
       if (filters.tags) {
         ts.push(...filters.tags);
       }
@@ -169,7 +170,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
                     checked={filters.noAnswers === 'true'}
                   />
                 }
-                label="No answers"
+                label={t('filterPanel.noAnswers.label')}
               />
             )}
             <FormControlLabel
@@ -181,7 +182,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
                   onChange={handleChange}
                 />
               }
-              label="No correct answers"
+              label={t('filterPanel.noCorrectAnswers.label')}
             />
             <FormControlLabel
               control={
@@ -192,38 +193,44 @@ export const FilterPanel = (props: FilterPanelProps) => {
                   onChange={handleChange}
                 />
               }
-              label="No votes"
+              label={t('filterPanel.noVotes.label')}
             />
           </FormGroup>
         </Grid>
         <Grid item md={2} xs={4}>
           <FormControl>
-            <FormLabel id="qeta-filter-order-by">Order by</FormLabel>
+            <FormLabel id="qeta-filter-order-by">
+              {t('filterPanel.orderBy.label')}
+            </FormLabel>
             <RadioGroup
               aria-labelledby="qeta-filter-order-by"
               name="orderBy"
               value={filters.orderBy}
               onChange={handleChange}
             >
-              {radioSelect('created', 'Created')}
-              {!answerFilters && radioSelect('views', 'Views')}
-              {radioSelect('score', 'Score')}
-              {!answerFilters && radioSelect('answersCount', 'Answers')}
-              {radioSelect('updated', 'Updated')}
+              {radioSelect('created', t('filterPanel.orderBy.created'))}
+              {!answerFilters &&
+                radioSelect('views', t('filterPanel.orderBy.views'))}
+              {radioSelect('score', t('filterPanel.orderBy.score'))}
+              {!answerFilters &&
+                radioSelect('answersCount', t('filterPanel.orderBy.answers'))}
+              {radioSelect('updated', t('filterPanel.orderBy.updated'))}
             </RadioGroup>
           </FormControl>
         </Grid>
         <Grid item md={2} xs={4}>
           <FormControl>
-            <FormLabel id="qeta-filter-order">Order</FormLabel>
+            <FormLabel id="qeta-filter-order">
+              {t('filterPanel.order.label')}
+            </FormLabel>
             <RadioGroup
               aria-labelledby="qeta-filter-order"
               name="order"
               value={filters.order}
               onChange={handleChange}
             >
-              {radioSelect('desc', 'Descending')}
-              {radioSelect('asc', 'Ascending')}
+              {radioSelect('desc', t('filterPanel.order.desc'))}
+              {radioSelect('asc', t('filterPanel.order.asc'))}
             </RadioGroup>
           </FormControl>
         </Grid>
@@ -231,7 +238,9 @@ export const FilterPanel = (props: FilterPanelProps) => {
           (availableTags && availableTags.length > 0)) &&
           (showEntityFilter || showTagFilter) && (
             <Grid item md={4} xs={8}>
-              <FormLabel id="qeta-filter-entity">Filters</FormLabel>
+              <FormLabel id="qeta-filter-entity">
+                {t('filterPanel.filters.label')}
+              </FormLabel>
               {showEntityFilter &&
                 availableEntities &&
                 availableEntities.length > 0 && (
@@ -261,8 +270,10 @@ export const FilterPanel = (props: FilterPanelProps) => {
                         {...params}
                         variant="outlined"
                         margin="normal"
-                        label="Entity"
-                        placeholder="Type or select entity"
+                        label={t('filterPanel.filters.entity.label')}
+                        placeholder={t(
+                          'filterPanel.filters.entity.placeholder',
+                        )}
                       />
                     )}
                   />
@@ -287,8 +298,8 @@ export const FilterPanel = (props: FilterPanelProps) => {
                       {...params}
                       variant="outlined"
                       margin="normal"
-                      label="Tag"
-                      placeholder="Type or select tag"
+                      label={t('filterPanel.filters.tag.label')}
+                      placeholder={t('filterPanel.filters.tag.placeholder')}
                     />
                   )}
                 />

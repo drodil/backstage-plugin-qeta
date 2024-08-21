@@ -22,7 +22,7 @@ import { TagPage } from '../TagPage/TagPage';
 import { UserPage } from '../UserPage/UserPage';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 import { QuestionHighlightList } from '../QuestionHighlightList/QuestionHighlightList';
-import { useIdentityApi, useStyles } from '../../utils/hooks';
+import { useIdentityApi, useStyles, useTranslation } from '../../utils/hooks';
 import Whatshot from '@material-ui/icons/Whatshot';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import StarIcon from '@material-ui/icons/Star';
@@ -51,6 +51,7 @@ const MoreMenu = () => {
   const userRoute = useRouteRef(userRouteRef);
   const open = Boolean(anchorEl);
   const styles = useStyles();
+  const { t } = useTranslation();
   const {
     value: user,
     loading: loadingUser,
@@ -67,7 +68,7 @@ const MoreMenu = () => {
 
   return (
     <>
-      <Tooltip arrow title="More">
+      <Tooltip arrow title={t('homePage.moreMenu.title')}>
         <IconButton
           aria-label="more"
           aria-controls="long-menu"
@@ -98,26 +99,26 @@ const MoreMenu = () => {
             <ListItemIcon className={styles.menuIcon}>
               <AccountBox fontSize="small" />
             </ListItemIcon>
-            Profile
+            {t('homePage.moreMenu.profile')}
           </MenuItem>
         )}
         <MenuItem component="a" href={tagsRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <LoyaltyOutlined fontSize="small" />
           </ListItemIcon>
-          Tags
+          {t('homePage.moreMenu.tags')}
         </MenuItem>
         <MenuItem component="a" href={favoritesRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <StarIcon fontSize="small" />
           </ListItemIcon>
-          Favorite questions
+          {t('homePage.moreMenu.favoriteQuestions')}
         </MenuItem>
         <MenuItem component="a" href={statisticsRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <TrophyIcon />
           </ListItemIcon>
-          Statistics
+          {t('homePage.moreMenu.statistics')}
         </MenuItem>
       </Menu>
     </>
@@ -130,6 +131,7 @@ export const HomePageContent = () => {
     undefined,
   );
   const [tags, setTags] = React.useState<string[] | undefined>(undefined);
+  const { t } = useTranslation();
   useEffect(() => {
     setEntityRef(searchParams.get('entity') ?? undefined);
     setTags(filterTags(searchParams.get('tags')));
@@ -140,7 +142,7 @@ export const HomePageContent = () => {
       <Container maxWidth="lg">
         <Grid container spacing={3}>
           <Grid item xs={12} lg={9} xl={10}>
-            <ContentHeader title="All questions">
+            <ContentHeader title={t('homePage.title')}>
               <MoreMenu />
               <AskQuestionButton entity={entityRef} tags={tags} />
             </ContentHeader>
@@ -149,19 +151,23 @@ export const HomePageContent = () => {
           <Grid item lg={3} xl={2}>
             <QuestionHighlightList
               type="hot"
-              title="Hot questions"
-              noQuestionsLabel="No questions"
+              title={t('homePage.highlights.hot.title')}
+              noQuestionsLabel={t('homePage.highlights.hot.noQuestionsLabel')}
               icon={<Whatshot fontSize="small" />}
             />
             <QuestionHighlightList
               type="unanswered"
-              title="Unanswered questions"
-              noQuestionsLabel="No unanswered questions"
+              title={t('homePage.highlights.unanswered.title')}
+              noQuestionsLabel={t(
+                'homePage.highlights.unanswered.noQuestionsLabel',
+              )}
             />
             <QuestionHighlightList
               type="incorrect"
-              title="Questions without correct answer"
-              noQuestionsLabel="No questions without correct answers"
+              title={t('homePage.highlights.incorrect.title')}
+              noQuestionsLabel={t(
+                'homePage.highlights.incorrect.noQuestionsLabel',
+              )}
             />
           </Grid>
         </Grid>

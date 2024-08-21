@@ -4,7 +4,7 @@ import HelpOutline from '@material-ui/icons/HelpOutline';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef } from '@drodil/backstage-plugin-qeta-react';
-import { useEntityQueryParameter } from '../../utils/hooks';
+import { useEntityQueryParameter, useTranslation } from '../../utils/hooks';
 
 export const NoQuestionsCard = (props: {
   showNoQuestionsBtn?: boolean;
@@ -14,6 +14,7 @@ export const NoQuestionsCard = (props: {
 }) => {
   const { showNoQuestionsBtn, entity, entityPage, tags } = props;
   const askRoute = useRouteRef(askRouteRef);
+  const { t } = useTranslation();
   const entityRef = useEntityQueryParameter(entity);
 
   const queryParams = new URLSearchParams();
@@ -37,7 +38,9 @@ export const NoQuestionsCard = (props: {
           direction="column"
         >
           <Grid item>
-            <Typography variant="h6">No questions found</Typography>
+            <Typography variant="h6">
+              {t('questionsContainer.noQuestions')}
+            </Typography>
           </Grid>
           {showNoQuestionsBtn && (
             <Grid item>
@@ -51,7 +54,7 @@ export const NoQuestionsCard = (props: {
                 color="primary"
                 variant="outlined"
               >
-                Go ahead and ask one!
+                {t('questionsContainer.askOneButton')}
               </LinkButton>
             </Grid>
           )}

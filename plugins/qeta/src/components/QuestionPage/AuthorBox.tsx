@@ -1,6 +1,6 @@
 import { Avatar, Box, Grid, Typography } from '@material-ui/core';
 import React from 'react';
-import { useEntityAuthor, useStyles } from '../../utils/hooks';
+import { useEntityAuthor, useStyles, useTranslation } from '../../utils/hooks';
 import {
   AnswerResponse,
   QuestionResponse,
@@ -13,6 +13,7 @@ export const AuthorBox = (props: {
 }) => {
   const { entity } = props;
   const styles = useStyles();
+  const { t } = useTranslation();
   const { name, initials, user } = useEntityAuthor(entity);
 
   return (
@@ -20,14 +21,16 @@ export const AuthorBox = (props: {
       <Grid container alignItems="center">
         <Grid item xs={12} style={{ paddingBottom: 0 }}>
           <Typography className="qetaAuthorBoxCreated" variant="caption">
-            Posted <RelativeTimeWithTooltip value={entity.created} />
+            {t('authorBox.postedAtTime')}{' '}
+            <RelativeTimeWithTooltip value={entity.created} />
           </Typography>
         </Grid>
         {entity.updated && entity.updatedBy && (
           <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0 }}>
             <Typography className="qetaAuthorBoxUpdated" variant="caption">
-              Updated <RelativeTimeWithTooltip value={entity.updated} /> by{' '}
-              <UpdatedByLink entity={entity} />
+              {t('authorBox.updatedAtTime')}{' '}
+              <RelativeTimeWithTooltip value={entity.updated} />{' '}
+              {t('authorBox.updatedBy')} <UpdatedByLink entity={entity} />
             </Typography>
           </Grid>
         )}

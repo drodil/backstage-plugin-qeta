@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQetaApi } from '../../utils/hooks';
+import { useQetaApi, useTranslation } from '../../utils/hooks';
 import { LinkButton, Progress, WarningPanel } from '@backstage/core-components';
 import {
   Button,
@@ -32,6 +32,7 @@ export const QuestionsTable = (props: {
     props.quickFilter ?? 'latest',
   );
   const [refresh, setRefresh] = React.useState(0);
+  const { t } = useTranslation();
   const [filters, setFilters] = React.useState({
     order: 'desc',
     orderBy: 'created',
@@ -95,7 +96,7 @@ export const QuestionsTable = (props: {
 
   if (error || response === undefined) {
     return (
-      <WarningPanel severity="error" title="Could not load questions.">
+      <WarningPanel severity="error" title={t('questionsTable.errorLoading')}>
         {error?.message}
       </WarningPanel>
     );
@@ -112,7 +113,7 @@ export const QuestionsTable = (props: {
       >
         <Grid item>
           {props.hideTitle === true ? null : (
-            <Typography variant="h5">Q&A</Typography>
+            <Typography variant="h5">{t('pluginName')}</Typography>
           )}
         </Grid>
         <Grid item>
@@ -121,19 +122,19 @@ export const QuestionsTable = (props: {
               color={quickFilter === 'latest' ? 'primary' : undefined}
               onClick={() => handleQuickFilterChange('latest')}
             >
-              Latest
+              {t('questionsTable.latest')}
             </Button>
             <Button
               color={quickFilter === 'favorites' ? 'primary' : undefined}
               onClick={() => handleQuickFilterChange('favorites')}
             >
-              Favorites
+              {t('questionsTable.favorites')}
             </Button>
             <Button
               color={quickFilter === 'most_viewed' ? 'primary' : undefined}
               onClick={() => handleQuickFilterChange('most_viewed')}
             >
-              Most viewed
+              {t('questionsTable.mostViewed')}
             </Button>
           </ButtonGroup>
           <LinkButton
@@ -149,10 +150,10 @@ export const QuestionsTable = (props: {
         <Table className="qetaQuestionsTable">
           <TableHead>
             <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Author</TableCell>
-              <TableCell>Asked</TableCell>
-              <TableCell>Last updated</TableCell>
+              <TableCell>{t('questionsTable.cells.title')}</TableCell>
+              <TableCell>{t('questionsTable.cells.author')}</TableCell>
+              <TableCell>{t('questionsTable.cells.asked')}</TableCell>
+              <TableCell>{t('questionsTable.cells.updated')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

@@ -21,7 +21,7 @@ import {
   QetaSignal,
   QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useEntityAuthor, useStyles } from '../../utils/hooks';
+import { useEntityAuthor, useStyles, useTranslation } from '../../utils/hooks';
 import { useSignal } from '@backstage/plugin-signals-react';
 
 export interface QuestionListItemProps {
@@ -36,6 +36,7 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
   const [answersCount, setAnswersCount] = useState(question.answersCount);
   const [score, setScore] = useState(question.score);
   const [views, setViews] = useState(question.views);
+  const { t } = useTranslation();
 
   const { lastSignal } = useSignal<QetaSignal>(`qeta:question_${question.id}`);
 
@@ -63,7 +64,7 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
             variant="caption"
             className="qetaQuestionListItemScore"
           >
-            {score} score
+            {t('common.score', { score: score.toString(10) })}
           </Typography>
           <Typography
             variant="caption"
@@ -77,14 +78,18 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
               color: correctAnswer ? theme.palette.success.main : undefined,
             }}
           >
-            {answersCount} answers
+            {t('common.answers', {
+              count: answersCount,
+            })}
           </Typography>
           <Typography
             display="block"
             variant="caption"
             className="qetaQuestionListItemViews"
           >
-            {views} views
+            {t('common.viewsShort', {
+              count: views,
+            })}
           </Typography>
         </Box>
         <Box className={styles.questionListItemContent}>
@@ -128,7 +133,7 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
               {initials}
             </Avatar>
             {question.author === 'anonymous' ? (
-              'Anonymous'
+              t('common.anonymousAuthor')
             ) : (
               <Link to={`${userRoute()}/${question.author}`}>{name}</Link>
             )}{' '}
@@ -142,7 +147,7 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
               }
               className="qetaQuestionListItemQuestionBtn"
             >
-              {'asked '}
+              {t('authorBox.askedAtTime')}{' '}
               <RelativeTimeWithTooltip value={question.created} />
             </Link>
           </Typography>

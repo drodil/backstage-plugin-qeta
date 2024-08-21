@@ -5,11 +5,13 @@ import {
   AnswerResponse,
   QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
+import { useTranslation } from '../../utils/hooks';
 
 export const LinkButton = (props: {
   entity: QuestionResponse | AnswerResponse;
 }) => {
   const isQuestion = 'title' in props.entity;
+  const { t } = useTranslation();
   const copyToClipboard = () => {
     const url = new URL(window.location.href);
     if (!isQuestion) {
@@ -19,13 +21,9 @@ export const LinkButton = (props: {
   };
 
   return (
-    <Tooltip
-      title={`Copy link to this ${
-        isQuestion ? 'question' : 'answer'
-      } to clipboard`}
-    >
+    <Tooltip title={isQuestion ? t('link.question') : t('link.answer')}>
       <IconButton
-        aria-label="copy link to clipboard"
+        aria-label={t('link.aria')}
         size="small"
         onClick={copyToClipboard}
       >

@@ -7,7 +7,7 @@ import {
   Typography,
   useMediaQuery,
 } from '@material-ui/core';
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useTranslation } from '../../utils/hooks';
 import { formatDate } from '../../utils/utils';
 
 export interface DateRangeFilterProps {
@@ -26,6 +26,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
   const [dateRangeOption, setDateRangeOption] = useState<string | undefined>(
     value,
   );
+  const { t } = useTranslation();
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [validation, setValidation] = useState<DateRangeValidation>({
@@ -67,19 +68,18 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
       } else {
         setValidation({
           isValid: false,
-          message:
-            "Date range invalid, 'To Date' should be greater than 'From Date'",
+          message: t('datePicker.invalidRange'),
         });
       }
     }
-  }, [fromDate, toDate, onChange]);
+  }, [t, fromDate, toDate, onChange]);
 
   return (
     <Box display={isSmallScreen ? 'block' : 'flex'} gridGap="16px">
       <TextField
         id="outlined-select-currency"
         select
-        label="Date Range"
+        label={t('datePicker.range.label')}
         value={dateRangeOption || 'select'}
         className={styles.dateFilter}
         onChange={_e => {
@@ -88,18 +88,18 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
         variant="outlined"
         defaultValue="None"
       >
-        <MenuItem value="select">Select</MenuItem>
-        <MenuItem value="7-days">Last 7 Days</MenuItem>
-        <MenuItem value="30-days">Last 30 Days</MenuItem>
-        <MenuItem value="custom">Custom</MenuItem>
+        <MenuItem value="select">{t('datePicker.range.default')}</MenuItem>
+        <MenuItem value="7-days">{t('datePicker.range.last7days')}</MenuItem>
+        <MenuItem value="30-days">{t('datePicker.range.last30days')}</MenuItem>
+        <MenuItem value="custom">{t('datePicker.range.custom')}</MenuItem>
       </TextField>
       {dateRangeOption === 'custom' && (
         <Box display="flex" flexDirection="column">
           <Box display={isSmallScreen ? 'block' : 'flex'} gridGap="12px">
             <TextField
               variant="outlined"
-              label="From Date"
-              id="From-date"
+              label={t('datePicker.from')}
+              id="from-date"
               type="date"
               value={fromDate}
               className={styles.dateFilter}
@@ -112,7 +112,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
             />
             <TextField
               variant="outlined"
-              label="To Date"
+              label={t('datePicker.to')}
               id="to-date"
               type="date"
               value={toDate}

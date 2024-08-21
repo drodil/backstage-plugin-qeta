@@ -7,6 +7,7 @@ import { TextField } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { useTranslation } from '../../utils/hooks';
 
 export const EntitiesInput = (props: {
   control: Control<QuestionForm>;
@@ -18,6 +19,7 @@ export const EntitiesInput = (props: {
   const [availableEntities, setAvailableEntities] = React.useState<
     Entity[] | null
   >([]);
+  const { t } = useTranslation();
 
   const entityKinds: string[] = useMemo(() => {
     let kinds = configApi.getOptionalStringArray('qeta.entityKinds');
@@ -93,9 +95,11 @@ export const EntitiesInput = (props: {
               {...params}
               variant="outlined"
               margin="normal"
-              label="Entities"
-              placeholder="Type or select entities"
-              helperText={`Add up to ${max} entities this question relates to`}
+              label={t('entitiesInput.label')}
+              placeholder={t('entitiesInput.placeholder')}
+              helperText={t('entitiesInput.helperText', {
+                max: max.toString(10),
+              })}
             />
           )}
         />

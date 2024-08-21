@@ -9,6 +9,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
+import { useTranslation } from '../../utils/hooks';
 
 export const CommentSection = (props: {
   onCommentPost: (question: QuestionResponse, answer?: AnswerResponse) => void;
@@ -24,6 +25,7 @@ export const CommentSection = (props: {
   const qetaApi = useApi(qetaApiRef);
   const [posting, setPosting] = React.useState(false);
   const [formVisible, setFormVisible] = useState(false);
+  const { t } = useTranslation();
   const {
     handleSubmit,
     control,
@@ -67,7 +69,7 @@ export const CommentSection = (props: {
           className="qetaAddCommentBtn"
           onClick={() => setFormVisible(true)}
         >
-          Add comment
+          {t('commentSection.addComment')}
         </Link>
       )}
       {formVisible && (
@@ -88,7 +90,7 @@ export const CommentSection = (props: {
                     fullWidth
                     className="qetaCommentInput"
                     value={value}
-                    placeholder="Your commment"
+                    placeholder={t('commentSection.input.placeholder')}
                     onChange={onChange}
                     variant="outlined"
                     error={'content' in errors}
@@ -106,7 +108,7 @@ export const CommentSection = (props: {
                 color="primary"
                 disabled={posting}
               >
-                Post
+                {t('commentSection.post')}
               </Button>
             </Grid>
           </Grid>

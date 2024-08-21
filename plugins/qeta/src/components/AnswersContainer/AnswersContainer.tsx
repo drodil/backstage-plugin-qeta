@@ -1,4 +1,4 @@
-import { useQetaApi } from '../../utils/hooks';
+import { useQetaApi, useTranslation } from '../../utils/hooks';
 import {
   Box,
   Button,
@@ -51,6 +51,7 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
     tags: tags ?? [],
     noVotes: 'false',
   });
+  const { t } = useTranslation();
 
   const onPageChange = (value: number) => {
     setPage(value);
@@ -172,13 +173,15 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
   let shownTitle = title;
   let link = undefined;
   if (author) {
-    shownTitle = `Answers by `;
+    shownTitle = `${t('answerContainer.title.answersBy')} `;
     link = <EntityRefLink entityRef={author} hideIcon defaultKind="user" />;
   } else if (entity) {
-    shownTitle = `Answers about `;
+    shownTitle = `${t('answerContainer.title.answersAbout')} `;
     link = <EntityRefLink entityRef={entity} />;
   } else if (tags) {
-    shownTitle = `Answers tagged with [${tags.join(', ')}]`;
+    shownTitle = t('answerContainer.title.answersTagged', {
+      tags: tags.join(', '),
+    });
   }
 
   return (
@@ -189,8 +192,7 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
           className="qetaAnswersContainerTitle"
           style={{ marginBottom: '1.5rem' }}
         >
-          {shownTitle}
-          {link}
+          {shownTitle} {link}
         </Typography>
       )}
       <Grid container justifyContent="space-between">
@@ -199,10 +201,10 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
             id="search-bar"
             fullWidth
             onChange={onSearchQueryChange}
-            label="Search for answers"
+            label={t('answerContainer.search.label')}
             className="qetaAnswersContainerSearchInput"
             variant="outlined"
-            placeholder="Search..."
+            placeholder={t('answerContainer.search.placeholder')}
             size="small"
             style={{ marginBottom: '5px' }}
           />
@@ -210,12 +212,9 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
       </Grid>
       <Grid container justifyContent="space-between">
         <Grid item>
-          <Typography
-            variant="h6"
-            className="qetaAnswersContainerAnswerCount"
-          >{`${response?.total ?? 0} ${
-            response?.total === 1 ? 'answer' : 'answers'
-          }`}</Typography>
+          <Typography variant="h6" className="qetaAnswersContainerAnswerCount">
+            {t('common.answers', { count: response?.total ?? 0 })}
+          </Typography>
         </Grid>
         {(showFilters ?? true) && (
           <Grid item>
@@ -224,7 +223,7 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
               className="qetaAnswerContainerFilterPanelBtn"
               startIcon={<FilterList />}
             >
-              Filter
+              {t('filterPanel.filterButton')}
             </Button>
           </Grid>
         )}

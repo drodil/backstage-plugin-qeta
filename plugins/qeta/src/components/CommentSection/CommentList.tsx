@@ -5,7 +5,7 @@ import {
 import { Box, Divider, Typography } from '@material-ui/core';
 import React from 'react';
 import { Link, MarkdownContent } from '@backstage/core-components';
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useTranslation } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { AuthorLink } from '../Links/Links';
@@ -23,6 +23,7 @@ export const CommentList = (props: {
   const entity = answer ?? question;
   const styles = useStyles();
   const qetaApi = useApi(qetaApiRef);
+  const { t } = useTranslation();
 
   const deleteComment = (id: number) => {
     if (answer) {
@@ -61,7 +62,7 @@ export const CommentList = (props: {
                     className="qetaCommentDeleteBtn"
                     onClick={() => deleteComment(c.id)}
                   >
-                    delete
+                    {t('commentList.deleteLink')}
                   </Link>
                 </>
               )}

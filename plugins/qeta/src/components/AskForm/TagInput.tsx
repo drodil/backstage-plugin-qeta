@@ -6,11 +6,13 @@ import { qetaApiRef } from '../../api';
 import { QuestionForm } from './types';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
+import { useTranslation } from '../../utils/hooks';
 
 export const TagInput = (props: { control: Control<QuestionForm> }) => {
   const { control } = props;
   const qetaApi = useApi(qetaApiRef);
   const config = useApi(configApiRef);
+  const { t } = useTranslation();
   const allowCreation = useMemo(
     () => config.getOptionalBoolean('qeta.tags.allowCreation') ?? true,
     [config],
@@ -69,9 +71,11 @@ export const TagInput = (props: { control: Control<QuestionForm> }) => {
               {...params}
               variant="outlined"
               margin="normal"
-              label="Tags"
-              placeholder="Type or select tags"
-              helperText={`Add up to ${maximumTags} tags to categorize your question`}
+              label={t('tagsInput.label')}
+              placeholder={t('tagsInput.placeholder')}
+              helperText={t('tagsInput.helperText', {
+                max: maximumTags.toString(10),
+              })}
               error={error !== undefined}
             />
           )}

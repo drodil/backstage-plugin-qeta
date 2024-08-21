@@ -21,6 +21,8 @@ import {
   QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import DataLoader from 'dataloader';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../translation';
 
 export function useQetaApi<T>(
   f: (api: QetaApi) => Promise<T>,
@@ -379,4 +381,8 @@ export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
   }, [name]);
 
   return { name, initials, user };
+};
+
+export const useTranslation = () => {
+  return useTranslationRef(qetaTranslationRef);
 };

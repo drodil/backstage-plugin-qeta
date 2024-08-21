@@ -8,7 +8,7 @@ import {
   qetaCreateAnswerPermission,
   QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useTranslation } from '../../utils/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { RequirePermission } from '@backstage/plugin-permission-react';
@@ -33,6 +33,7 @@ export const AnswerForm = (props: {
   const styles = useStyles();
   const configApi = useApi(configApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
+  const { t } = useTranslation();
 
   const {
     handleSubmit,
@@ -108,7 +109,7 @@ export const AnswerForm = (props: {
       <form onSubmit={handleSubmit(postAnswer)} className="qetaAnswerForm">
         <Typography variant="h6">Your answer</Typography>
         {error && (
-          <WarningPanel severity="error" title="Could not post answer" />
+          <WarningPanel severity="error" title={t('answerForm.errorPosting')} />
         )}
         <Controller
           control={control}
@@ -123,6 +124,7 @@ export const AnswerForm = (props: {
               height={200}
               error={'answer' in errors}
               config={configApi}
+              placeholder={t('answerForm.contentInput.placeholder')}
               onImageUpload={(imageId: number) => {
                 setImages(prevImages => [...prevImages, imageId]);
               }}
@@ -133,7 +135,7 @@ export const AnswerForm = (props: {
         {allowAnonymouns && !id && (
           <AskAnonymouslyCheckbox
             control={control}
-            label="Answer anonymously"
+            label={t('anonymousCheckbox.answerAnonymously')}
           />
         )}
         <Button
@@ -142,7 +144,9 @@ export const AnswerForm = (props: {
           color="primary"
           className={`qetaAnswerFormPostBtn ${styles.postButton}`}
         >
-          {id ? 'Save' : 'Post'}
+          {id
+            ? t('answerForm.submit.existingAnswer')
+            : t('answerForm.submit.newAnswer')}
         </Button>
       </form>
     </RequirePermission>

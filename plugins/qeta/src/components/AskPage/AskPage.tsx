@@ -7,6 +7,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
+import { useTranslation } from '../../utils/hooks';
 
 export const AskPage = () => {
   const { id } = useParams();
@@ -14,15 +15,18 @@ export const AskPage = () => {
   const entity = searchParams.get('entity') ?? undefined;
   const entityPage = searchParams.get('entityPage') === 'true';
   const tags = filterTags(searchParams.get('tags'));
+  const { t } = useTranslation();
   let title;
   if (id) {
-    title = 'Edit question';
+    title = t('askPage.title.existingQuestion');
   } else if (entity) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const representation = useEntityPresentation(entity);
-    title = `Ask a question about ${representation.primaryTitle}`;
+    title = t('askPage.title.entityQuestion', {
+      entity: representation.primaryTitle,
+    });
   } else {
-    title = 'Ask question';
+    title = t('askPage.title.newQuestion');
   }
 
   return (

@@ -13,7 +13,7 @@ import {
 import { MarkdownContent } from '@backstage/core-components';
 import React, { useEffect } from 'react';
 import { VoteButtons } from './VoteButtons';
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useTranslation } from '../../utils/hooks';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
@@ -33,6 +33,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
   const [questionEntity, setQuestionEntity] = React.useState(question);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
+  const { t } = useTranslation();
   const onCommentAction = (q: QuestionResponse, _?: AnswerResponse) => {
     setQuestionEntity(q);
   };
@@ -91,7 +92,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
                           className={`${styles.marginRight} qetaQuestionCardDeleteBtn`}
                           startIcon={<DeleteIcon />}
                         >
-                          Delete
+                          {t('deleteModal.deleteButton')}
                         </Button>
                         <DeleteModal
                           open={deleteModalOpen}
@@ -110,7 +111,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
                         })}
                         className="qetaQuestionCardEditBtn"
                       >
-                        Edit
+                        {t('questionPage.editButton')}
                       </Button>
                     )}
                   </Box>

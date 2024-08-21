@@ -6,7 +6,7 @@ import { Backdrop, Box, Button, Modal, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Delete from '@material-ui/icons/Delete';
 import React from 'react';
-import { useBasePath, useStyles } from '../../utils/hooks';
+import { useBasePath, useStyles, useTranslation } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
@@ -23,11 +23,12 @@ export const DeleteModal = (props: {
   const { entity, open, question, onClose } = props;
   const styles = useStyles();
   const [error, setError] = React.useState(false);
+  const { t } = useTranslation();
   const isQuestion = 'title' in entity;
 
   const title = isQuestion
-    ? 'Are you sure you want to delete this question?'
-    : 'Are you sure you want to delete this answer?';
+    ? t('deleteModal.title.question')
+    : t('deleteModal.title.answer');
 
   const handleDelete = () => {
     if (isQuestion) {
@@ -71,7 +72,9 @@ export const DeleteModal = (props: {
       }}
     >
       <Box className={`qetaDeleteModalContent ${styles.deleteModal}`}>
-        {error && <Alert severity="error">Failed to delete</Alert>}
+        {error && (
+          <Alert severity="error">{t('deleteModal.errorDeleting')}</Alert>
+        )}
         <Typography
           id="modal-modal-title"
           className="qetaDeleteModalTitle"
@@ -86,10 +89,10 @@ export const DeleteModal = (props: {
           startIcon={<Delete />}
           color="secondary"
         >
-          Delete
+          {t('deleteModal.deleteButton')}
         </Button>
         <Button onClick={onClose} className="qetaDeleteModalCancelBtn">
-          Cancel
+          {t('deleteModal.cancelButton')}
         </Button>
       </Box>
     </Modal>

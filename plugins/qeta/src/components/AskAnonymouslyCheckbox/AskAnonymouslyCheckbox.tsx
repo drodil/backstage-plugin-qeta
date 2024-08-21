@@ -1,12 +1,14 @@
 import { Control, Controller } from 'react-hook-form';
 import { Box, Checkbox, FormControlLabel, Tooltip } from '@material-ui/core';
 import React from 'react';
+import { useTranslation } from '../../utils/hooks';
 
 export const AskAnonymouslyCheckbox = (props: {
   control: Control<any>;
   label: string;
 }) => {
   const { control, label } = props;
+  const { t } = useTranslation();
   return (
     <Box style={{ marginLeft: '0.2rem' }}>
       <Controller
@@ -14,7 +16,7 @@ export const AskAnonymouslyCheckbox = (props: {
         render={({ field: { onChange, value } }) => (
           <FormControlLabel
             control={
-              <Tooltip title="By enabling this, other users won't be able to see you as an author">
+              <Tooltip title={t('anonymousCheckbox.tooltip')}>
                 <Checkbox
                   onChange={onChange}
                   value={value}

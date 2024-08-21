@@ -13,7 +13,7 @@ import {
 import { MarkdownContent } from '@backstage/core-components';
 import React from 'react';
 import { VoteButtons } from './VoteButtons';
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useTranslation } from '../../utils/hooks';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
 import { AnswerForm } from './AnswerForm';
 import { AuthorBox } from './AuthorBox';
@@ -31,6 +31,7 @@ export const AnswerCard = (props: {
 
   const [editMode, setEditMode] = React.useState(false);
   const [answerEntity, setAnswerEntity] = React.useState(answer);
+  const { t } = useTranslation();
 
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
@@ -99,7 +100,7 @@ export const AnswerCard = (props: {
                                 className={`${styles.marginRight} qetaAnswerCardDeleteBtn`}
                                 startIcon={<DeleteIcon />}
                               >
-                                Delete
+                                {t('deleteModal.deleteButton')}
                               </Button>
                               <DeleteModal
                                 open={deleteModalOpen}
@@ -117,7 +118,7 @@ export const AnswerCard = (props: {
                             onClick={() => setEditMode(true)}
                             className="qetaAnswerCardEditBtn"
                           >
-                            Edit
+                            {t('questionPage.editButton')}
                           </Button>
                         )}
                       </Box>

@@ -1,4 +1,4 @@
-import { useQetaApi } from '../../utils/hooks';
+import { useQetaApi, useTranslation } from '../../utils/hooks';
 import {
   Box,
   Button,
@@ -50,6 +50,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = React.useState('');
+  const { t } = useTranslation();
   const [filters, setFilters] = React.useState<Filters>({
     order: 'desc',
     orderBy: 'created',
@@ -184,15 +185,17 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
   let shownTitle = title;
   let link = undefined;
   if (author) {
-    shownTitle = `Questions by `;
+    shownTitle = t('questionsContainer.title.questionsBy');
     link = <EntityRefLink entityRef={author} hideIcon defaultKind="user" />;
   } else if (entity) {
-    shownTitle = `Questions about `;
+    shownTitle = t('questionsContainer.title.questionsAbout');
     link = <EntityRefLink entityRef={entity} />;
   } else if (tags) {
-    shownTitle = `Questions tagged with [${tags.join(', ')}]`;
+    shownTitle = t('questionsContainer.title.questionsTagged', {
+      tags: tags.join(', '),
+    });
   } else if (favorite) {
-    shownTitle = 'Your favorite questions';
+    shownTitle = t('questionsContainer.title.favorite');
   }
 
   return (
@@ -203,8 +206,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
           className="qetaQuestionsContainerTitle"
           style={{ marginBottom: '1.5rem' }}
         >
-          {shownTitle}
-          {link}
+          {shownTitle} {link}
         </Typography>
       )}
       <Grid container justifyContent="space-between">
@@ -213,10 +215,10 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
             id="search-bar"
             fullWidth
             onChange={onSearchQueryChange}
-            label="Search for questions"
+            label={t('questionsContainer.search.label')}
             className="qetaQuestionsContainerSearchInput"
             variant="outlined"
-            placeholder="Search..."
+            placeholder={t('questionsContainer.search.placeholder')}
             size="small"
             style={{ marginBottom: '5px' }}
           />
@@ -236,9 +238,9 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
           <Typography
             variant="h6"
             className="qetaQuestionsContainerQuestionCount"
-          >{`${response?.total ?? 0} ${
-            response?.total === 1 ? 'question' : 'questions'
-          }`}</Typography>
+          >
+            {t('common.questions', { count: response?.total ?? 0 })}
+          </Typography>
         </Grid>
         {(showFilters ?? true) && (
           <Grid item>
@@ -247,7 +249,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
               className="qetaQuestionsContainerFilterPanelBtn"
               startIcon={<FilterList />}
             >
-              Filter
+              {t('filterPanel.filterButton')}
             </Button>
           </Grid>
         )}

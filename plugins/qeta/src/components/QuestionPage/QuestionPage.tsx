@@ -14,7 +14,7 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useQetaApi, useStyles } from '../../utils/hooks';
+import { useQetaApi, useStyles, useTranslation } from '../../utils/hooks';
 import { QuestionCard } from './QuestionCard';
 import {
   Answer,
@@ -34,6 +34,7 @@ import { useSignal } from '@backstage/plugin-signals-react';
 export const QuestionPage = () => {
   const { id } = useParams();
   const styles = useStyles();
+  const { t } = useTranslation();
   const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
   const [answerSort, setAnswerSort] = React.useState<string>('default');
   const [searchParams] = useSearchParams();
@@ -70,22 +71,21 @@ export const QuestionPage = () => {
   const getDescription = (q: QuestionResponse) => {
     return (
       <span>
-        Asked{' '}
+        {t('authorBox.postedAtTime')}{' '}
         <Box fontWeight="fontWeightMedium" display="inline" sx={{ mr: 2 }}>
           <RelativeTimeWithTooltip value={q.created} />
         </Box>
         {q.updated && (
           <React.Fragment>
-            Updated{' '}
+            {t('authorBox.updatedAtTime')}{' '}
             <Box fontWeight="fontWeightMedium" display="inline" sx={{ mr: 2 }}>
-              <RelativeTimeWithTooltip value={q.updated} /> by{' '}
-              <UpdatedByLink entity={q} />
+              <RelativeTimeWithTooltip value={q.updated} />{' '}
+              {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
             </Box>
           </React.Fragment>
         )}
-        Viewed{' '}
         <Box fontWeight="fontWeightMedium" display="inline">
-          {views} times
+          {t('common.views', { count: views })}
         </Box>
       </span>
     );
@@ -97,7 +97,7 @@ export const QuestionPage = () => {
 
   if (error || question === undefined) {
     return (
-      <WarningPanel severity="error" title="Could not load question.">
+      <WarningPanel severity="error" title={t('questionPage.errorLoading')}>
         {error?.message}
       </WarningPanel>
     );
@@ -158,7 +158,9 @@ export const QuestionPage = () => {
           <Grid container justifyContent="space-between" alignItems="center">
             <Grid item>
               <Typography variant="h6">
-                {answersCount + newAnswers.length} answers
+                {t('common.answers', {
+                  count: answersCount + newAnswers.length,
+                })}
               </Typography>
             </Grid>
             {allAnswers.length > 1 && (
@@ -166,7 +168,7 @@ export const QuestionPage = () => {
                 <FormControl>
                   <Select
                     native
-                    label="Sort answers"
+                    label={t('questionPage.sortAnswers.label')}
                     value={answerSort}
                     onChange={val => setAnswerSort(val.target.value as string)}
                     inputProps={{
@@ -174,17 +176,39 @@ export const QuestionPage = () => {
                       id: 'sort-answers',
                     }}
                   >
-                    <option value="default">Default</option>
-                    <option value="created_desc">Created (desc)</option>
-                    <option value="created_asc">Created (asc)</option>
-                    <option value="score_desc">Score (desc)</option>
-                    <option value="score_asc">Score (asc)</option>
-                    <option value="comments_desc">Comments (desc)</option>
-                    <option value="comments_asc">Comments (asc)</option>
-                    <option value="author_desc">Author (desc)</option>
-                    <option value="author_asc">Author (asc)</option>
-                    <option value="updated_desc">Updated (desc)</option>
-                    <option value="updated_asc">Updated (asc)</option>
+                    <option value="default">
+                      {t('questionPage.sortAnswers.default')}
+                    </option>
+                    <option value="created_desc">
+                      {t('questionPage.sortAnswers.createdDesc')}
+                    </option>
+                    <option value="created_asc">
+                      {t('questionPage.sortAnswers.createdAsc')}
+                    </option>
+                    <option value="score_desc">
+                      {t('questionPage.sortAnswers.scoreDesc')}
+                    </option>
+                    <option value="score_asc">
+                      {t('questionPage.sortAnswers.scoreAsc')}
+                    </option>
+                    <option value="comments_desc">
+                      {t('questionPage.sortAnswers.commentsDesc')}
+                    </option>
+                    <option value="comments_asc">
+                      {t('questionPage.sortAnswers.commentsAsc')}
+                    </option>
+                    <option value="author_desc">
+                      {t('questionPage.sortAnswers.authorDesc')}
+                    </option>
+                    <option value="author_asc">
+                      {t('questionPage.sortAnswers.authorAsc')}
+                    </option>
+                    <option value="updated_desc">
+                      {t('questionPage.sortAnswers.updatedDesc')}
+                    </option>
+                    <option value="updated_asc">
+                      {t('questionPage.sortAnswers.updatedAsc')}
+                    </option>
                   </Select>
                 </FormControl>
               </Grid>

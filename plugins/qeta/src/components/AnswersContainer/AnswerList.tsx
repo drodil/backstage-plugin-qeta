@@ -1,4 +1,4 @@
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useTranslation } from '../../utils/hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import {
   Box,
@@ -41,6 +41,7 @@ export const AnswerList = (props: {
   const styles = useStyles();
   const listRef = useRef<HTMLDivElement | null>(null);
   const [initialLoad, setInitialLoad] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!initialLoad) {
@@ -73,7 +74,7 @@ export const AnswerList = (props: {
 
   if (error || response === undefined) {
     return (
-      <WarningPanel severity="error" title="Could not load answers.">
+      <WarningPanel severity="error" title={t('answerList.errorLoading')}>
         {error?.message}
       </WarningPanel>
     );
@@ -90,7 +91,7 @@ export const AnswerList = (props: {
             direction="column"
           >
             <Grid item>
-              <Typography variant="h6">No answers found</Typography>
+              <Typography variant="h6">{t('answerList.noAnswers')}</Typography>
             </Grid>
           </Grid>
         </CardContent>
@@ -123,7 +124,7 @@ export const AnswerList = (props: {
           alignItems="center"
           justifyContent="space-between"
         >
-          <Tooltip title="Answers per page" arrow>
+          <Tooltip title={t('answerList.limitSelect')} arrow>
             <FormControl variant="filled">
               <Select
                 value={props.pageSize}

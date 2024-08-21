@@ -1,4 +1,4 @@
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useTranslation } from '../../utils/hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import {
   Box,
@@ -43,6 +43,7 @@ export const QuestionList = (props: {
   const styles = useStyles();
   const listRef = useRef<HTMLDivElement | null>(null);
   const [initialLoad, setInitialLoad] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!initialLoad) {
@@ -75,7 +76,7 @@ export const QuestionList = (props: {
 
   if (error || response === undefined) {
     return (
-      <WarningPanel severity="error" title="Could not load questions.">
+      <WarningPanel severity="error" title={t('questionList.errorLoading')}>
         {error?.message}
       </WarningPanel>
     );
@@ -117,7 +118,7 @@ export const QuestionList = (props: {
           alignItems="center"
           justifyContent="space-between"
         >
-          <Tooltip title="Questions per page" arrow>
+          <Tooltip title={t('questionList.questionsPerPage')} arrow>
             <FormControl variant="filled">
               <Select
                 value={props.pageSize}

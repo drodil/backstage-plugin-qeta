@@ -1,7 +1,7 @@
 import { LinkButton } from '@backstage/core-components';
 import HomeOutlined from '@material-ui/icons/HomeOutlined';
 import React from 'react';
-import { useStyles } from '../../utils/hooks';
+import { useStyles, useTranslation } from '../../utils/hooks';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { parseEntityRef } from '@backstage/catalog-model';
@@ -12,6 +12,7 @@ export const BackToQuestionsButton = (props: { entityPage?: boolean }) => {
   const styles = useStyles();
   const entityRoute = useRouteRef(entityRouteRef);
   const rootRoute = useRouteRef(qetaRouteRef);
+  const { t } = useTranslation();
 
   let to = rootRoute();
   const [searchParams] = useSearchParams();
@@ -31,7 +32,7 @@ export const BackToQuestionsButton = (props: { entityPage?: boolean }) => {
       to={to}
       startIcon={<HomeOutlined />}
     >
-      Back to questions
+      {t('backToQuestionsButton.title')}
     </LinkButton>
   );
 };

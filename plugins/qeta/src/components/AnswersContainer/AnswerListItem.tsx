@@ -10,7 +10,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { AnswerResponse } from '@drodil/backstage-plugin-qeta-common';
-import { useEntityAuthor, useStyles } from '../../utils/hooks';
+import { useEntityAuthor, useStyles, useTranslation } from '../../utils/hooks';
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
 
 export interface AnswerListItemProps {
@@ -25,6 +25,7 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
   const userRoute = useRouteRef(userRouteRef);
   const styles = useStyles();
   const { name, initials, user } = useEntityAuthor(answer);
+  const { t } = useTranslation();
 
   const getAnswerLink = () => {
     return entity
@@ -45,7 +46,7 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
             variant="caption"
             className="qetaQuestionListItemScore"
           >
-            {answer.score} score
+            {t('common.score', { score: answer.score.toString(10) })}
           </Typography>
         </Box>
         <Box className={styles.questionListItemContent}>
@@ -54,7 +55,9 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
               to={getAnswerLink()}
               className="qetaAnswerListItemQuestionBtn"
             >
-              Q: {answer.question?.title}
+              {t('answer.questionTitle', {
+                question: answer.question?.title ?? '',
+              })}
             </Link>
           </Typography>
           <Typography
@@ -83,7 +86,7 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
               {initials}
             </Avatar>
             {answer.author === 'anonymous' ? (
-              'Anonymous'
+              t('common.anonymousAuthor')
             ) : (
               <Link to={`${userRoute()}/${answer.author}`}>{name}</Link>
             )}{' '}
@@ -91,7 +94,7 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
               to={getAnswerLink()}
               className="qetaQuestionListItemQuestionBtn"
             >
-              {'answered '}
+              {`${t('answer.answeredTime')} `}
               <RelativeTimeWithTooltip value={answer.created} />
             </Link>
           </Typography>
