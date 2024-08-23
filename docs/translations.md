@@ -14,8 +14,8 @@ const fi = createTranslationMessages({
   ref: qetaTranslationRef,
   full: false,
   translations: {
-    'toolsPage.title': 'Työkalut',
-    'welcomePage.introText': 'Käytä työkaluja helposti',
+    'answerList.errorLoading': 'Vastauksia ei voitu ladata',
+    'answerList.noAnswers': 'Ei vastauksia',
   },
 });
 
