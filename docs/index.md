@@ -14,3 +14,4 @@
 - [Integration with homepage](home.md)
 - [Integration with signals](signals.md)
 - [Integration with notifications](notifications.md)
+- [Integration with translations](translations.md)

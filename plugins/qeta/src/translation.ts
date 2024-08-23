@@ -1,4 +1,7 @@
-import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
+import {
+  createTranslationRef,
+  createTranslationResource,
+} from '@backstage/core-plugin-api/alpha';
 
 /** @alpha */
 export const qetaTranslationRef = createTranslationRef({
@@ -314,5 +317,12 @@ export const qetaTranslationRef = createTranslationRef({
       questions: 'Questions',
       answers: 'Answers',
     },
+  },
+});
+
+export const qetaTranslations = createTranslationResource({
+  ref: qetaTranslationRef,
+  translations: {
+    fi: () => import('./locale/fi'),
   },
 });
