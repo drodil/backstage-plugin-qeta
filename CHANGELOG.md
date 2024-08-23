@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.6.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.5.3...v2.6.0) (2024-08-23)
+
+
+### Features
+
+* add i18n support for translations ([dd3a449](https://github.com/drodil/backstage-plugin-qeta/commit/dd3a449cdf4d303be7755fdaf1fd4ad1b5f653d7)), closes [#137](https://github.com/drodil/backstage-plugin-qeta/issues/137)
+
+
+### Bug Fixes
+
+* docs to have real translation keys ([b3792b4](https://github.com/drodil/backstage-plugin-qeta/commit/b3792b4832d71672ece302a0428ffd5aaea5c89a))
+* remove deprecated functionalities ([0670663](https://github.com/drodil/backstage-plugin-qeta/commit/0670663d016d100a0abf1f12556de3f318bc3a62))
+* use error call for router ([331caaf](https://github.com/drodil/backstage-plugin-qeta/commit/331caaf4486bb84cefa728c03df149bbe5ee4935))
+
 ### [2.5.3](https://github.com/drodil/backstage-plugin-qeta/compare/v2.5.2...v2.5.3) (2024-08-20)
 
 
