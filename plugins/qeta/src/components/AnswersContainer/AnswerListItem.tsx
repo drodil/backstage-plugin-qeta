@@ -2,14 +2,17 @@ import { Avatar, Box, Card, CardContent, Typography } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import React from 'react';
 import DOMPurify from 'dompurify';
-import { removeMarkdownFormatting, truncate } from '../../utils/utils';
+import {
+  AnswerResponse,
+  removeMarkdownFormatting,
+  truncate,
+} from '@drodil/backstage-plugin-qeta-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   questionRouteRef,
   userRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
-import { AnswerResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useEntityAuthor, useStyles, useTranslation } from '../../utils/hooks';
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
 

@@ -1,5 +1,10 @@
 import { NotificationService } from '@backstage/plugin-notifications-node';
-import type { Answer, Question } from '@drodil/backstage-plugin-qeta-common';
+import {
+  Answer,
+  Question,
+  removeMarkdownFormatting,
+  truncate,
+} from '@drodil/backstage-plugin-qeta-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 export class NotificationManager {
@@ -246,8 +251,6 @@ export class NotificationManager {
   }
 
   private formatDescription(description: string) {
-    return description.length >= 103
-      ? `${description.slice(0, 100)}...`
-      : description;
+    return truncate(removeMarkdownFormatting(description), 150);
   }
 }

@@ -9,7 +9,12 @@ import {
 import { Link } from '@backstage/core-components';
 import React, { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
-import { removeMarkdownFormatting, truncate } from '../../utils/utils';
+import {
+  QetaSignal,
+  QuestionResponse,
+  removeMarkdownFormatting,
+  truncate,
+} from '@drodil/backstage-plugin-qeta-common';
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -17,10 +22,6 @@ import {
   userRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
-import {
-  QetaSignal,
-  QuestionResponse,
-} from '@drodil/backstage-plugin-qeta-common';
 import { useEntityAuthor, useStyles, useTranslation } from '../../utils/hooks';
 import { useSignal } from '@backstage/plugin-signals-react';
 
