@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Grid, TextField } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import {
@@ -10,6 +10,7 @@ import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../utils/hooks';
+import { confirmNavigationIfEdited } from '../../utils/utils';
 
 export const CommentSection = (props: {
   onCommentPost: (question: QuestionResponse, answer?: AnswerResponse) => void;
@@ -25,6 +26,7 @@ export const CommentSection = (props: {
   const qetaApi = useApi(qetaApiRef);
   const [posting, setPosting] = React.useState(false);
   const [formVisible, setFormVisible] = useState(false);
+  const [edited, setEdited] = React.useState(false);
   const { t } = useTranslation();
   const {
     handleSubmit,
@@ -55,6 +57,10 @@ export const CommentSection = (props: {
     });
   };
 
+  useEffect(() => {
+    confirmNavigationIfEdited(edited);
+  }, [edited]);
+
   return (
     <Box marginLeft={9} className="qetaCommentSection">
       <CommentList
@@ -73,7 +79,13 @@ export const CommentSection = (props: {
         </Link>
       )}
       {formVisible && (
-        <form onSubmit={handleSubmit(postComment)} className="qetaCommentForm">
+        <form
+          onSubmit={handleSubmit(postComment)}
+          onChange={() => {
+            setEdited(true);
+          }}
+          className="qetaCommentForm"
+        >
           <Grid container>
             <Grid item xs={11}>
               <Controller

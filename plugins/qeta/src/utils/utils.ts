@@ -70,3 +70,18 @@ export const getFiltersWithDateRange = (filters: Filters) => {
   }
   return filters;
 };
+
+export const confirmNavigationIfEdited = (edited: boolean) => {
+  const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+    if (edited) {
+      event.preventDefault();
+      event.returnValue = ''; // Included for legacy support, e.g. Chrome/Edge < 119
+    }
+  };
+
+  window.addEventListener('beforeunload', handleBeforeUnload);
+
+  return () => {
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+  };
+};
