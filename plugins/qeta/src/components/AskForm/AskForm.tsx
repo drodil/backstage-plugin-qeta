@@ -25,6 +25,7 @@ import { EntitiesInput } from './EntitiesInput';
 import { questionRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymouslyCheckbox';
 import { QetaApi, qetaApiRef } from '../../api';
+import { confirmNavigationIfEdited } from '../../utils/utils';
 
 const formToRequest = (
   form: QuestionForm,
@@ -93,6 +94,7 @@ export const AskForm = (props: AskFormProps) => {
   const [posting, setPosting] = React.useState(false);
   const [values, setValues] = React.useState(getDefaultValues(props));
   const [error, setError] = React.useState(false);
+  const [edited, setEdited] = React.useState(false);
 
   const [images, setImages] = React.useState<number[]>([]);
   const [searchParams, _setSearchParams] = useSearchParams();
@@ -211,8 +213,18 @@ export const AskForm = (props: AskFormProps) => {
     reset(values);
   }, [values, reset]);
 
+  useEffect(() => {
+    confirmNavigationIfEdited(edited);
+  }, [edited]);
+
   return (
-    <form onSubmit={handleSubmit(postQuestion)} className="qetaAskForm">
+    <form
+      onSubmit={handleSubmit(postQuestion)}
+      onChange={() => {
+        setEdited(true);
+      }}
+      className="qetaAskForm"
+    >
       {error && <Alert severity="error">{t('askForm.errorPosting')}</Alert>}
       <TextField
         label="Title"

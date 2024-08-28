@@ -14,6 +14,7 @@ import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymouslyCheckbox';
 import { qetaApiRef } from '../../api';
+import { confirmNavigationIfEdited } from '../../utils/utils';
 
 const getDefaultValues = (questionId: number) => {
   return { questionId, answer: '' };
@@ -29,6 +30,7 @@ export const AnswerForm = (props: {
   const analytics = useAnalytics();
   const [error, setError] = React.useState(false);
   const [images, setImages] = React.useState<number[]>([]);
+  const [edited, setEdited] = React.useState(false);
   const qetaApi = useApi(qetaApiRef);
   const styles = useStyles();
   const configApi = useApi(configApiRef);
@@ -101,12 +103,22 @@ export const AnswerForm = (props: {
     reset(values);
   }, [values, reset]);
 
+  useEffect(() => {
+    confirmNavigationIfEdited(edited);
+  }, [edited]);
+
   return (
     <RequirePermission
       permission={qetaCreateAnswerPermission}
       errorPage={<></>}
     >
-      <form onSubmit={handleSubmit(postAnswer)} className="qetaAnswerForm">
+      <form
+        onSubmit={handleSubmit(postAnswer)}
+        onChange={() => {
+          setEdited(true);
+        }}
+        className="qetaAnswerForm"
+      >
         <Typography variant="h6">Your answer</Typography>
         {error && (
           <WarningPanel severity="error" title={t('answerForm.errorPosting')} />
