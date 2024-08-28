@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.7.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.6.0...v2.7.0) (2024-08-28)
+
+
+### Features
+
+* prevent user from navigating away by accident ([13a492d](https://github.com/drodil/backstage-plugin-qeta/commit/13a492d84e3becc1f2e39554fe2b70a38791f18e))
+
+
+### Bug Fixes
+
+* order catalog entities request ([bfedc0a](https://github.com/drodil/backstage-plugin-qeta/commit/bfedc0a958bb26f561fb15e4732851213fe10f07))
+* remove markdown from notification description ([ed26060](https://github.com/drodil/backstage-plugin-qeta/commit/ed26060ec3f98855a37a60fc0f3890bd1341fcb9))
+
 ## [2.6.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.5.3...v2.6.0) (2024-08-23)
 
 
