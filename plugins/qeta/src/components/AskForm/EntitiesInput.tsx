@@ -51,6 +51,7 @@ export const EntitiesInput = (props: {
     if (entityKinds && entityKinds.length > 0) {
       catalogApi
         .getEntities({
+          order: { field: 'kind', order: 'asc' },
           filter: { kind: entityKinds },
           fields: [
             'kind',
