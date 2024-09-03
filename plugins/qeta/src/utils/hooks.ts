@@ -292,27 +292,34 @@ export const useBasePath = () => {
 };
 
 const userCache: Map<string, UserEntity> = new Map();
-const dataLoader = new DataLoader(
-  async (entityRefs: readonly string[]) => {
-    const catalogApi = useApi(catalogApiRef);
-    const { items } = await catalogApi.getEntitiesByRefs({
-      entityRefs: entityRefs as string[],
-    });
+const dataLoaderFactory = (catalogApi: CatalogApi) =>
+  new DataLoader(
+    async (entityRefs: readonly string[]) => {
+      const { items } = await catalogApi.getEntitiesByRefs({
+        fields: [
+          'kind',
+          'metadata.name',
+          'metadata.namespace',
+          'spec.profile.displayName',
+          'spec.profile.picture',
+        ],
+        entityRefs: entityRefs as string[],
+      });
 
-    entityRefs.forEach((entityRef, index) => {
-      userCache.set(entityRef, items[index] as UserEntity);
-    });
-    return items;
-  },
-  {
-    name: 'EntityAuthorLoader',
-    cacheMap: new Map(),
-    maxBatchSize: 100,
-    batchScheduleFn: callback => {
-      setTimeout(callback, 50);
+      entityRefs.forEach((entityRef, index) => {
+        userCache.set(entityRef, items[index] as UserEntity);
+      });
+      return items;
     },
-  },
-);
+    {
+      name: 'EntityAuthorLoader',
+      cacheMap: new Map(),
+      maxBatchSize: 100,
+      batchScheduleFn: callback => {
+        setTimeout(callback, 50);
+      },
+    },
+  );
 
 export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
   const catalogApi = useApi(catalogApiRef);
@@ -339,7 +346,7 @@ export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
       return;
     }
 
-    dataLoader
+    dataLoaderFactory(catalogApi)
       .load(author)
       .then(data => {
         if (data) {
