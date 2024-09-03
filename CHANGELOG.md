@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.7.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.7.0...v2.7.1) (2024-09-03)
+
+
+### Bug Fixes
+
+* unmounting the navigation confirm ([c12dc66](https://github.com/drodil/backstage-plugin-qeta/commit/c12dc664062bddc948d4f27e602861cb26790044))
+* user profile image loading ([7bc0284](https://github.com/drodil/backstage-plugin-qeta/commit/7bc02843365cb474a5c9061f3252a5e099b2b794))
+
 ## [2.7.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.6.0...v2.7.0) (2024-08-28)
 
 
