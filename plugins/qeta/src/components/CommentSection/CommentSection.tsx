@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Grid, TextField } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import {
@@ -43,6 +43,7 @@ export const CommentSection = (props: {
         analytics.captureEvent('comment', 'answer');
         reset();
         setPosting(false);
+        setEdited(false);
         onCommentPost(question, a);
       });
       return;
@@ -53,12 +54,13 @@ export const CommentSection = (props: {
       analytics.captureEvent('comment', 'question');
       reset();
       setPosting(false);
+      setEdited(false);
       onCommentPost(q);
     });
   };
 
   useEffect(() => {
-    confirmNavigationIfEdited(edited);
+    return confirmNavigationIfEdited(edited);
   }, [edited]);
 
   return (

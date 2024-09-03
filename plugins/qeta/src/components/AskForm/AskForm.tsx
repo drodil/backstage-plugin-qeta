@@ -135,6 +135,7 @@ export const AskForm = (props: AskFormProps) => {
             setError(true);
             return;
           }
+          setEdited(false);
           reset();
           analytics.captureEvent('edit', 'question');
           if (onPost) {
@@ -162,6 +163,7 @@ export const AskForm = (props: AskFormProps) => {
           setError(true);
           return;
         }
+        setEdited(false);
         analytics.captureEvent('post', 'question');
         reset();
         if (entity) {
@@ -214,7 +216,7 @@ export const AskForm = (props: AskFormProps) => {
   }, [values, reset]);
 
   useEffect(() => {
-    confirmNavigationIfEdited(edited);
+    return confirmNavigationIfEdited(edited);
   }, [edited]);
 
   return (

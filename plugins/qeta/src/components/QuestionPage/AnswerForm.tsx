@@ -60,6 +60,7 @@ export const AnswerForm = (props: {
             setError(true);
             return;
           }
+          setEdited(false);
           analytics.captureEvent('edit', 'answer');
           reset();
           onPost(a);
@@ -80,6 +81,7 @@ export const AnswerForm = (props: {
           setError(true);
           return;
         }
+        setEdited(false);
         analytics.captureEvent('post', 'answer');
         reset();
         onPost(a);
@@ -104,7 +106,7 @@ export const AnswerForm = (props: {
   }, [values, reset]);
 
   useEffect(() => {
-    confirmNavigationIfEdited(edited);
+    return confirmNavigationIfEdited(edited);
   }, [edited]);
 
   return (
