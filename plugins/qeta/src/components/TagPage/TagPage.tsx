@@ -7,6 +7,7 @@ import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { Container } from '@material-ui/core';
 import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 import { useTranslation } from '../../utils/hooks';
+import { TagFollowButton } from '../Buttons/TagFollowButton';
 
 export const TagPage = () => {
   const { tag } = useParams();
@@ -21,6 +22,7 @@ export const TagPage = () => {
               : t('tagPage.defaultTitle')
           }
         >
+          {tag && <TagFollowButton tag={tag} />}
           <BackToQuestionsButton />
           <AskQuestionButton tags={tag ? [tag] : undefined} />
         </ContentHeader>

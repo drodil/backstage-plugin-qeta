@@ -14,7 +14,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { trimEnd } from 'lodash';
 import { useSearchParams } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { UserEntity } from '@backstage/catalog-model';
 import {
   AnswerResponse,
@@ -198,13 +198,16 @@ export const useStyles = makeStyles(theme => {
     questionsPerPage: {
       marginRight: theme.spacing(3),
     },
-    questionHighlightList: {
+    questionHighlightListContainer: {
       width: '100%',
       border: `1px solid ${theme.palette.action.selected}`,
       borderRadius: theme.shape.borderRadius,
       '&:not(:first-child)': {
         marginTop: theme.spacing(2),
       },
+    },
+    questionHighlightList: {
+      paddingBottom: '0px',
     },
     filterPanel: {
       border: `1px solid ${theme.palette.action.selected}`,
@@ -388,6 +391,41 @@ export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
   }, [name]);
 
   return { name, initials, user };
+};
+
+export const useTagsFollow = () => {
+  const [tags, setTags] = React.useState<string[]>([]);
+  const qetaApi = useApi(qetaApiRef);
+
+  useEffect(() => {
+    qetaApi.getFollowedTags().then(res => {
+      setTags(res.tags);
+    });
+  }, [qetaApi]);
+
+  const followTag = useCallback(
+    (tag: string) => {
+      qetaApi.followTag(tag).then(() => {
+        setTags(prev => [...prev, tag]);
+      });
+    },
+    [qetaApi],
+  );
+
+  const unfollowTag = useCallback(
+    (tag: string) => {
+      qetaApi.unfollowTag(tag).then(() => {
+        setTags(prev => prev.filter(t => t !== tag));
+      });
+    },
+    [qetaApi],
+  );
+
+  const isFollowingTag = useCallback(
+    (tag: string) => tags.includes(tag),
+    [tags],
+  );
+  return { tags, followTag, unfollowTag, isFollowingTag };
 };
 
 export const useTranslation = () => {

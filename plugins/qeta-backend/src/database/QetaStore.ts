@@ -2,6 +2,7 @@ import type {
   Answer,
   Attachment,
   Question,
+  UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   Statistic,
@@ -361,6 +362,16 @@ export interface QetaStore {
    * Returns all used tags for questions
    */
   getTags(): Promise<TagResponse[]>;
+
+  /**
+   * Gets all tags user is following
+   * @param user_ref
+   */
+  getUserTags(user_ref: string): Promise<UserTagsResponse>;
+  getUsersForTags(tags?: string[]): Promise<string[]>;
+
+  followTag(user_ref: string, tag: string): Promise<boolean>;
+  unfollowTag(user_ref: string, tag: string): Promise<boolean>;
 
   getEntities(): Promise<EntityResponse[]>;
 

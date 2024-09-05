@@ -22,6 +22,7 @@ import {
   StatisticResponse,
   StatisticsRequestParameters,
   TagResponse,
+  UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import omitBy from 'lodash/omitBy';
 import isEmpty from 'lodash/isEmpty';
@@ -472,6 +473,33 @@ export class QetaClient implements QetaApi {
     }
 
     return data;
+  }
+
+  async getFollowedTags(): Promise<UserTagsResponse> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/tags/followed`,
+    );
+    return (await response.json()) as UserTagsResponse;
+  }
+
+  async followTag(tag: string): Promise<boolean> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/tags/follow/${tag}`,
+      {
+        method: 'PUT',
+      },
+    );
+    return response.ok;
+  }
+
+  async unfollowTag(tag: string): Promise<boolean> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/tags/follow/${tag}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    return response.ok;
   }
 
   async postAttachment(file: Blob): Promise<AttachmentResponseBody> {

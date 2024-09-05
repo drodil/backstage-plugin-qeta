@@ -19,6 +19,7 @@ import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { getFiltersWithDateRange } from '../../utils/utils';
+import { TagFollowButton } from '../Buttons/TagFollowButton';
 
 export interface QuestionsContainerProps {
   tags?: string[];
@@ -194,6 +195,9 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     shownTitle = t('questionsContainer.title.questionsTagged', {
       tags: tags.join(', '),
     });
+    if (tags.length === 1) {
+      link = <TagFollowButton tag={tags[0]} />;
+    }
   } else if (favorite) {
     shownTitle = t('questionsContainer.title.favorite');
   }
@@ -259,7 +263,6 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
           <FilterPanel onChange={onFilterChange} filters={filters} />
         </Collapse>
       )}
-
       <QuestionList
         loading={loading}
         error={error}

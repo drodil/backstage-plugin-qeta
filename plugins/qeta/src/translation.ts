@@ -129,6 +129,7 @@ export const qetaTranslationRef = createTranslationRef({
         statistics: 'Statistics',
       },
       title: 'All questions',
+      followedTags: 'Followed tags',
       highlights: {
         loadError: 'Failed to load questions',
         hot: {
@@ -316,6 +317,12 @@ export const qetaTranslationRef = createTranslationRef({
       profileTab: 'Profile',
       questions: 'Questions',
       answers: 'Answers',
+    },
+    tagButton: {
+      follow: 'Follow tag',
+      unfollow: 'Unfollow tag',
+      tooltip:
+        'By following a tag, you will get notified when ever a new question with that tag is posted',
     },
   },
 });

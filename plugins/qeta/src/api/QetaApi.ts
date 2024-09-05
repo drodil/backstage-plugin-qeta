@@ -11,6 +11,7 @@ import {
   StatisticResponse,
   StatisticsRequestParameters,
   TagResponse,
+  UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export type GetQuestionsOptions = {
@@ -143,4 +144,8 @@ export interface QetaApi {
     questionId: string | number | undefined,
     id: string | number | undefined,
   ): Promise<AnswerResponseBody>;
+
+  getFollowedTags(): Promise<UserTagsResponse>;
+  followTag(tag: string): Promise<boolean>;
+  unfollowTag(tag: string): Promise<boolean>;
 }

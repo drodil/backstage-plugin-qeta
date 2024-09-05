@@ -105,7 +105,8 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    notificationMgr.onNewAnswer(username, question, answer);
+    const followingUsers = await database.getUsersForTags(question.tags);
+    notificationMgr.onNewAnswer(username, question, answer, followingUsers);
     mapAdditionalFields(username, answer, options, moderator);
 
     if (events) {
@@ -216,11 +217,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
+      const followingUsers = await database.getUsersForTags(question.tags);
       notificationMgr.onAnswerComment(
         username,
         question,
         answer,
         request.body.content,
+        followingUsers,
       );
       mapAdditionalFields(username, answer, options, moderator);
 

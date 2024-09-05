@@ -66,6 +66,9 @@ describe.each(databases.eachSupportedId())(
       (await knex<InsertAnswerType>('answers').insert(data).returning('id'))[0]
         .id ?? -1;
 
+    const insertTag = async (tag: string) =>
+      (await knex('tags').insert({ tag }).returning('id'))[0].id ?? -1;
+
     const voteQuestion = (questionId: number, user: string) =>
       knex('question_votes').insert({
         questionId,
@@ -97,6 +100,7 @@ describe.each(databases.eachSupportedId())(
       await knex('tags').del();
       await knex('question_comments').del();
       await knex('answer_comments').del();
+      await knex('user_tags').del();
     });
 
     describe('questions and answers database', () => {
@@ -468,6 +472,20 @@ describe.each(databases.eachSupportedId())(
 
         marked = await storage.markAnswerCorrect('user', id, anotherAnswerId);
         expect(marked).toBeTruthy();
+      });
+
+      it('should allow following and unfollowing tag', async () => {
+        await insertTag('tag1');
+        const followed = await storage.followTag('user', 'tag1');
+        expect(followed).toBeTruthy();
+        const tags = await storage.getUserTags('user');
+        expect(tags).toEqual({ tags: ['tag1'], count: 1 });
+        const users = await storage.getUsersForTags(['tag1']);
+        expect(users).toEqual(['user']);
+        const unfollowed = await storage.unfollowTag('user', 'tag1');
+        expect(unfollowed).toBeTruthy();
+        const tags2 = await storage.getUserTags('user');
+        expect(tags2).toEqual({ tags: [], count: 0 });
       });
     });
   },

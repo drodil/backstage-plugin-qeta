@@ -23,6 +23,7 @@ import {
   Question,
   Statistic,
   StatisticsRequestParameters,
+  UserTagsResponse,
   Vote,
 } from '@drodil/backstage-plugin-qeta-common';
 
@@ -761,6 +762,59 @@ export class DatabaseQetaStore implements QetaStore {
         questionsCount: this.mapToInteger(tag.questionsCount),
       };
     });
+  }
+
+  async getUserTags(user_ref: string): Promise<UserTagsResponse> {
+    const tags = await this.db('user_tags')
+      .where('userRef', user_ref)
+      .leftJoin('tags', 'user_tags.tagId', 'tags.id')
+      .select('tags.tag');
+
+    return {
+      tags: tags.map(tag => tag.tag),
+      count: tags.length,
+    };
+  }
+
+  async getUsersForTags(tags?: string[]): Promise<string[]> {
+    if (!tags || tags.length === 0) {
+      return [];
+    }
+
+    const users = await this.db('user_tags')
+      .leftJoin('tags', 'user_tags.tagId', 'tags.id')
+      .whereIn('tags.tag', tags)
+      .select('userRef');
+    return users.map(user => user.userRef);
+  }
+
+  async followTag(user_ref: string, tag: string): Promise<boolean> {
+    const tagId = await this.db('tags').where('tag', tag).select('id').first();
+    if (!tagId) {
+      return false;
+    }
+    await this.db
+      .insert(
+        {
+          userRef: user_ref,
+          tagId: tagId.id,
+        },
+        ['tagId'],
+      )
+      .into('user_tags');
+    return true;
+  }
+
+  async unfollowTag(user_ref: string, tag: string): Promise<boolean> {
+    const tagId = await this.db('tags').where('tag', tag).select('id').first();
+    if (!tagId) {
+      return false;
+    }
+    await this.db('user_tags')
+      .where('userRef', user_ref)
+      .where('tagId', tagId.id)
+      .delete();
+    return true;
   }
 
   async getEntities(): Promise<EntityResponse[]> {

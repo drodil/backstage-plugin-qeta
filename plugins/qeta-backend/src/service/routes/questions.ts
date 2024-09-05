@@ -170,10 +170,12 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       mapAdditionalFields(username, a, options, moderator),
     );
 
+    const followingUsers = await database.getUsersForTags(question.tags);
     notificationMgr.onNewQuestionComment(
       username,
       question,
       request.body.content,
+      followingUsers,
     );
 
     if (events) {
@@ -294,7 +296,8 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    notificationMgr.onNewQuestion(username, question);
+    const followingUsers = await database.getUsersForTags(tags);
+    notificationMgr.onNewQuestion(username, question, followingUsers);
 
     if (events) {
       events.publish({

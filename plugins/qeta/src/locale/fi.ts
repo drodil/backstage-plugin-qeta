@@ -76,6 +76,7 @@ const fi = createTranslationMessages({
     'homePage.moreMenu.favoriteQuestions': 'Suosikkikysymykset',
     'homePage.moreMenu.statistics': 'Statistiikka',
     'homePage.title': 'Kaikki kysymykset',
+    'homePage.followedTags': 'Seuratut tägit',
     'homePage.highlights.loadError': 'Kysymyksiä ei voitu ladata',
     'homePage.highlights.hot.title': 'Kuumat kysymykset',
     'homePage.highlights.hot.noQuestionsLabel': 'Ei kysymyksiä',
@@ -189,6 +190,10 @@ const fi = createTranslationMessages({
     'userPage.profileTab': 'Profiili',
     'userPage.questions': 'Kysymykset',
     'userPage.answers': 'Vastaukset',
+    'tagButton.follow': 'Seuraa tägiä',
+    'tagButton.unfollow': 'Lopeta tägin seuraaminen',
+    'tagButton.tooltip':
+      'Seuraamalla tägiä saat ilmoituksia uusista kysymyksistä',
   },
 });
 

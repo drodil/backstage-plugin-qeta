@@ -31,13 +31,13 @@ export const QuestionHighlightList = (props: {
 
   return (
     <Box
-      className={`qetaQuestionHighlightList ${classes.questionHighlightList}`}
+      className={`qetaQuestionHighlightList ${classes.questionHighlightListContainer}`}
       display={{ md: 'none', lg: 'block' }}
     >
       <List
         component="nav"
         aria-labelledby="nested-list-subheader"
-        className="qetaQuestionHighlightListList"
+        className={`qetaQuestionHighlightListList ${classes.questionHighlightList}`}
         subheader={
           <ListSubheader
             disableSticky

@@ -143,6 +143,10 @@ describe('createRouter', () => {
     getMostUpvotedQuestions: jest.fn(),
     getMostUpvotedCorrectAnswers: jest.fn(),
     getTotalQuestions: jest.fn(),
+    followTag: jest.fn(),
+    unfollowTag: jest.fn(),
+    getUserTags: jest.fn(),
+    getUsersForTags: jest.fn(),
   };
 
   const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =

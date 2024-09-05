@@ -163,3 +163,8 @@ export type QetaAnswerStatsSignal = {
 };
 
 export type QetaSignal = QetaQuestionStatsSignal | QetaAnswerStatsSignal;
+
+export interface UserTagsResponse {
+  tags: string[];
+  count: number;
+}
