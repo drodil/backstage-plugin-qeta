@@ -91,6 +91,7 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
           docType: 'qeta',
           author: question.author,
           score: question.score,
+          entityRefs: question.entities,
           answerCount: question.answersCount,
           views: question.views,
           tags: question.tags,
@@ -98,13 +99,17 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
 
         for (const answer of question.answers ?? []) {
           yield {
-            title: `Answer for ${question.title}`,
+            title: `${
+              answer.correct ? 'Correct answer' : 'Answer'
+            } for question ${question.title}`,
             text: answer.content,
             location: `/qeta/questions/${question.id}#answer_${answer.id}`,
             docType: 'qeta',
+            entityRefs: question.entities,
             author: answer.author,
             score: answer.score,
             tags: question.tags,
+            correctAnswer: answer.correct,
           };
 
           for (const comment of answer.comments ?? []) {
@@ -116,6 +121,7 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
               author: comment.author,
               score: answer.score,
               tags: question.tags,
+              entityRefs: question.entities,
             };
           }
         }
@@ -129,6 +135,7 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
             author: comment.author,
             score: question.score,
             tags: question.tags,
+            entityRefs: question.entities,
           };
         }
       }

@@ -86,9 +86,11 @@ export interface QetaDocument extends IndexableDocument {
   docType: string;
   author: string;
   score: number;
+  entityRefs?: string[];
   answerCount?: number;
   views?: number;
   tags?: string[];
+  correctAnswer?: boolean;
 }
 
 interface CustomError {
