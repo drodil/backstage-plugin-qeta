@@ -1,0 +1,52 @@
+{
+  "name": "@drodil/backstage-plugin-scaffolder-backend-module-qeta",
+  "description": "The qeta backend module for the scaffolder plugin.",
+  "keywords": [
+    "backstage",
+    "plugin",
+    "scaffolder",
+    "backstage.io"
+  ],
+  "version": "2.7.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "prepublishOnly": "yarn tsc && yarn build",
+  "license": "MIT",
+  "homepage": "https://github.com/drodil/backstage-plugin-qeta",
+  "bugs": {
+    "url": "https://github.com/drodil/backstage-plugin-qeta/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "scaffolder",
+    "pluginPackage": "@backstage/plugin-scaffolder-backend"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "tsc": "tsc"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.24.0",
+    "@backstage/backend-plugin-api": "^0.8.0",
+    "@backstage/plugin-scaffolder-node": "^0.4.10",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "^0.5.0",
+    "@backstage/cli": "^0.27.0"
+  },
+  "files": [
+    "dist"
+  ]
+}

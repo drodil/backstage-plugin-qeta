@@ -212,3 +212,30 @@ jobs:
       - run: yarn tsc
       - run: yarn build
       - run: yarn npm publish
+
+  scaffolder-backend-publish:
+    name: Publish scaffolder backend module
+    runs-on: ubuntu-latest
+    needs: [tagged-release]
+    defaults:
+      run:
+        working-directory: ./plugins/scaffolder-backend-module-qeta
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create yarnrc.yml
+        run: |
+          echo "npmAuthToken: ${{ secrets.NPM_TOKEN }}" >> ~/.yarnrc.yml
+          echo "npmAlwaysAuth: true" >> ~/.yarnrc.yml
+          echo "npmPublishRegistry: https://registry.npmjs.org" >> ~/.yarnrc.yml
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+      - run: git pull
+      - run: yarn
+      - run: yarn tsc
+      - run: yarn build
+      - run: yarn npm publish

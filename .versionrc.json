@@ -4,7 +4,8 @@
     "plugins/qeta-backend/package.json",
     "plugins/qeta-common/package.json",
     "plugins/qeta-react/package.json",
-    "plugins/search-backend-module-qeta/package.json"
+    "plugins/search-backend-module-qeta/package.json",
+    "plugins/scaffolder-backend-module-qeta/package.json"
   ],
   "bumpFiles": [
     {
@@ -25,6 +26,10 @@
     },
     {
       "filename": "plugins/search-backend-module-qeta/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "plugins/scaffolder-backend-module-qeta/package.json",
       "type": "json"
     }
   ]
