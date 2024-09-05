@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.8.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.7.1...v2.8.0) (2024-09-05)
+
+
+### Features
+
+* add more fields to collated search documents ([57c35ea](https://github.com/drodil/backstage-plugin-qeta/commit/57c35eabc48377d12745ab356f0ebd3ca8b0fb29))
+* add scaffolder module for tag following ([a57d012](https://github.com/drodil/backstage-plugin-qeta/commit/a57d01231c137ae7708fb7db5c5859b150eea03b))
+* allow users to follow tags ([7afc790](https://github.com/drodil/backstage-plugin-qeta/commit/7afc7902c00479fb282d368a29140dcc3032922f))
+
 ### [2.7.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.7.0...v2.7.1) (2024-09-03)
 
 
