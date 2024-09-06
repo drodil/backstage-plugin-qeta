@@ -40,7 +40,7 @@
     "@backstage/backend-common": "^0.24.0",
     "@backstage/backend-plugin-api": "^0.8.0",
     "@backstage/plugin-scaffolder-node": "^0.4.10",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^2.7.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "^0.5.0",
