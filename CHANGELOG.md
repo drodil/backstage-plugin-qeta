@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.8.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.8.0...v2.8.1) (2024-09-06)
+
+
+### Bug Fixes
+
+* add node-fetch types ([128572e](https://github.com/drodil/backstage-plugin-qeta/commit/128572ee3cd285387a897af1d31989dde8583bd1))
+* node-fetch downgrade ([65669c0](https://github.com/drodil/backstage-plugin-qeta/commit/65669c02f687fcf5fb499168dd9ba35505ec8ac5))
+
 ## [2.8.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.7.1...v2.8.0) (2024-09-05)
 
 
