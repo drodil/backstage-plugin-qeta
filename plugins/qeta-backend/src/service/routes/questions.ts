@@ -81,8 +81,6 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
   router.get(`/questions/list/:type`, async (request, response) => {
     // Validation
     const username = await getUsername(request, options, true);
-    await authorize(request, qetaReadQuestionPermission, options);
-    // TODO: Get Query from permission decision
     const validateQuery = ajv.compile(QuestionsQuerySchema);
     if (!validateQuery(request.query)) {
       response
