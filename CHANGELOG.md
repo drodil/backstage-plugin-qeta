@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.9.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.8.1...v2.9.0) (2024-09-12)
+
+
+### Features
+
+* change to permission framework ([a33963d](https://github.com/drodil/backstage-plugin-qeta/commit/a33963d7cedecdfa87c721968d675e31ff6fd43d))
+* support old permissions if permission service not available ([3b2686b](https://github.com/drodil/backstage-plugin-qeta/commit/3b2686bde14f436b11dcfafff3557b99e9f37d63))
+
+
+### Bug Fixes
+
+* add missing margin to follow tags button ([32479fc](https://github.com/drodil/backstage-plugin-qeta/commit/32479fc0d3040cf7a01ff23909df227bc8e50bf9))
+* lists with permissions framework ([3d7771c](https://github.com/drodil/backstage-plugin-qeta/commit/3d7771c69d5eb1eb4b736e0be20e1776fdf49eee))
+* tags break in followed tags list ([dab563b](https://github.com/drodil/backstage-plugin-qeta/commit/dab563b7628352459dcb14fc4727f0202b17d38f))
+
 ### [2.8.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.8.0...v2.8.1) (2024-09-06)
 
 
