@@ -42,7 +42,7 @@ export const FollowedTagsList = () => {
         }
       >
         <Divider />
-        <ListItem>
+        <ListItem style={{ display: 'block' }}>
           {tags.tags.map(tag => (
             <Chip
               key={tag}
