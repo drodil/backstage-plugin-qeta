@@ -5200,6 +5200,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/plugin-permission-backend@npm:^0.5.48":
+  version: 0.5.48
+  resolution: "@backstage/plugin-permission-backend@npm:0.5.48"
+  dependencies:
+    "@backstage/backend-common": ^0.24.1
+    "@backstage/backend-plugin-api": ^0.8.1
+    "@backstage/config": ^1.2.0
+    "@backstage/errors": ^1.2.4
+    "@backstage/plugin-auth-node": ^0.5.1
+    "@backstage/plugin-permission-common": ^0.8.1
+    "@backstage/plugin-permission-node": ^0.8.2
+    "@types/express": "*"
+    dataloader: ^2.0.0
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    lodash: ^4.17.21
+    node-fetch: ^2.7.0
+    yn: ^4.0.0
+    zod: ^3.22.4
+  checksum: c6a00218c26acf7d0a0b200aa0c9469c265098b6e14b3ecb901ddffa3e3d584352fe867806fa0e305275d540b8eb8fe9cc872b5804671a4c399334b93baaded6
+  languageName: node
+  linkType: hard
+
 "@backstage/plugin-permission-common@npm:^0.8.1":
   version: 0.8.1
   resolution: "@backstage/plugin-permission-common@npm:0.8.1"
@@ -5231,6 +5254,25 @@ __metadata:
     zod: ^3.22.4
     zod-to-json-schema: ^3.20.4
   checksum: 57e9edf46fb4ea64d8597ea88dfbde452caf6d7f6120583ac316d4daa860b34c4b4e29f48f2948aa4c0e4d32779b2f0daf64fbe945ac78c4dd113721bf340a76
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-permission-node@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "@backstage/plugin-permission-node@npm:0.8.2"
+  dependencies:
+    "@backstage/backend-common": ^0.24.1
+    "@backstage/backend-plugin-api": ^0.8.1
+    "@backstage/config": ^1.2.0
+    "@backstage/errors": ^1.2.4
+    "@backstage/plugin-auth-node": ^0.5.1
+    "@backstage/plugin-permission-common": ^0.8.1
+    "@types/express": ^4.17.6
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    zod: ^3.22.4
+    zod-to-json-schema: ^3.20.4
+  checksum: 3af9ea151e6fa2bcbe4c48a1062191118fa8efd31bf1f40c45165e48b165facc0308abd63365d32e1908cd91632c8a97bd5ed844e322da8bd534adde7c50779b
   languageName: node
   linkType: hard
 
@@ -5802,6 +5844,7 @@ __metadata:
     "@backstage/plugin-events-node": ^0.3.9
     "@backstage/plugin-notifications-backend": ^0.3.4
     "@backstage/plugin-notifications-node": ^0.2.4
+    "@backstage/plugin-permission-backend": ^0.5.48
     "@backstage/plugin-permission-common": ^0.8.1
     "@backstage/plugin-permission-node": ^0.8.1
     "@backstage/plugin-search-common": ^1.2.14
@@ -5821,10 +5864,12 @@ __metadata:
     express-promise-router: ^4.1.0
     file-type: 16.5.4
     knex: ^3.0.0
+    lodash: ^4.17.21
     multiparty: ^4.2.3
     supertest: ^6.2.4
     uuid: ^9.0.1
     yn: ^4.0.0
+    zod: ^3.22.4
   languageName: unknown
   linkType: soft
 

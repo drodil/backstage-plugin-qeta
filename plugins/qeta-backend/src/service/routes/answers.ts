@@ -1,11 +1,13 @@
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import {
-  checkPermissions,
+  authorize,
+  authorizeConditional,
   getCreated,
   getUsername,
-  isModerator,
   mapAdditionalFields,
+  QetaFilters,
+  transformConditions,
 } from '../util';
 import {
   AnswersQuerySchema,
@@ -16,7 +18,13 @@ import {
 import { Request, Router } from 'express';
 import {
   qetaCreateAnswerPermission,
-  qetaReadPermission,
+  qetaCreateCommentPermission,
+  qetaDeleteAnswerPermission,
+  qetaDeleteCommentPermission,
+  qetaEditAnswerPermission,
+  qetaEditQuestionPermission,
+  qetaReadAnswerPermission,
+  qetaReadQuestionPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Response } from 'express-serve-static-core';
 import {
@@ -24,6 +32,10 @@ import {
   signalQuestionStats,
   validateDateRange,
 } from './util';
+import {
+  AuthorizeResult,
+  PermissionCriteria,
+} from '@backstage/plugin-permission-common';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -34,7 +46,6 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
   router.get(`/answers`, async (request, response) => {
     // Validation
     const username = await getUsername(request, options, true);
-    await checkPermissions(request, qetaReadPermission, options);
     const validateQuery = ajv.compile(AnswersQuerySchema);
     if (!validateQuery(request.query)) {
       response
@@ -52,17 +63,25 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    // Act
-    const answers = await database.getAnswers(username, request.query);
+    const decision = await authorizeConditional(
+      request,
+      qetaReadAnswerPermission,
+      options,
+    );
 
-    // Response
-    response.json(answers);
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      const filter: PermissionCriteria<QetaFilters> = transformConditions(
+        decision.conditions,
+      );
+      await database.getAnswers(username, request.query, filter);
+    } else {
+      response.json(await database.getAnswers(username, request.query));
+    }
   });
 
   // POST /questions/:id/answers
   router.post(`/questions/:id/answers`, async (request, response) => {
     // Validation
-    await checkPermissions(request, qetaCreateAnswerPermission, options);
     const validateRequestBody = ajv.compile(PostAnswerSchema);
     if (!validateRequestBody(request.body)) {
       response
@@ -78,15 +97,17 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         .send({ errors: 'Invalid question id', type: 'body' });
       return;
     }
-
     const username = await getUsername(request, options);
-    const moderator = await isModerator(request, options);
-    const created = await getCreated(request, options);
     const question = await database.getQuestion(username, questionId, false);
     if (!question) {
       response.status(404).send({ errors: 'Question not found', type: 'body' });
       return;
     }
+
+    await authorize(request, qetaReadQuestionPermission, options, question);
+    await authorize(request, qetaCreateAnswerPermission, options);
+
+    const created = await getCreated(request, options);
 
     // Act
     const answer = await database.answerQuestion(
@@ -107,7 +128,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
     const followingUsers = await database.getUsersForTags(question.tags);
     notificationMgr.onNewAnswer(username, question, answer, followingUsers);
-    mapAdditionalFields(username, answer, options, moderator);
+    await mapAdditionalFields(request, answer, options);
 
     if (events) {
       events.publish({
@@ -139,9 +160,6 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const username = await getUsername(request, options);
-    const moderator = await isModerator(request, options);
-    const globalEdit =
-      options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
 
     const questionId = Number.parseInt(request.params.id, 10);
     const answerId = Number.parseInt(request.params.answerId, 10);
@@ -150,14 +168,18 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    const question = await database.getQuestion(username, questionId, false);
+    let answer = await database.getAnswer(answerId, username);
+    await authorize(request, qetaReadQuestionPermission, options, question);
+    await authorize(request, qetaEditAnswerPermission, options, answer);
+
     // Act
-    const answer = await database.updateAnswer(
+    answer = await database.updateAnswer(
       username,
       questionId,
       answerId,
       request.body.answer,
       request.body.images,
-      moderator || globalEdit,
     );
 
     if (!answer) {
@@ -165,7 +187,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    mapAdditionalFields(username, answer, options, moderator);
+    await mapAdditionalFields(request, answer, options);
 
     // Response
     response.status(201);
@@ -193,9 +215,6 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
 
       const username = await getUsername(request, options);
-      const moderator = await isModerator(request, options);
-      const created = await getCreated(request, options);
-      // Act
       const question = await database.getQuestion(username, questionId, false);
 
       if (!question) {
@@ -204,8 +223,15 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
           .send({ errors: 'Question not found', type: 'body' });
         return;
       }
+      let answer = await database.getAnswer(answerId, username);
 
-      const answer = await database.commentAnswer(
+      await authorize(request, qetaReadQuestionPermission, options, question);
+      await authorize(request, qetaReadAnswerPermission, options, answer);
+      await authorize(request, qetaCreateCommentPermission, options);
+
+      const created = await getCreated(request, options);
+      // Act
+      answer = await database.commentAnswer(
         answerId,
         username,
         request.body.content,
@@ -225,7 +251,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         request.body.content,
         followingUsers,
       );
-      mapAdditionalFields(username, answer, options, moderator);
+      await mapAdditionalFields(request, answer, options);
 
       if (events) {
         events.publish({
@@ -251,8 +277,6 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     `/questions/:id/answers/:answerId/comments/:commentId`,
     async (request, response) => {
       // Validation
-      const username = await getUsername(request, options);
-      const moderator = await isModerator(request, options);
       const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
       const commentId = Number.parseInt(request.params.commentId, 10);
@@ -265,12 +289,20 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
+      const username = await getUsername(request, options);
+      const question = await database.getQuestion(username, questionId, false);
+      let answer = await database.getAnswer(answerId, username);
+      const comment = await database.getAnswerComment(commentId);
+
+      await authorize(request, qetaReadQuestionPermission, options, question);
+      await authorize(request, qetaReadAnswerPermission, options, answer);
+      await authorize(request, qetaDeleteCommentPermission, options, comment);
+
       // Act
-      const answer = await database.deleteAnswerComment(
+      answer = await database.deleteAnswerComment(
         answerId,
         commentId,
         username,
-        moderator,
       );
 
       if (!answer) {
@@ -278,7 +310,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      mapAdditionalFields(username, answer, options, moderator);
+      await mapAdditionalFields(request, answer, options);
 
       // Response
       response.status(201);
@@ -291,23 +323,26 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     // Validation
     // Act
     const username = await getUsername(request, options);
-    const moderator = await isModerator(request, options);
-    await checkPermissions(request, qetaReadPermission, options);
     const questionId = Number.parseInt(request.params.id, 10);
     const answerId = Number.parseInt(request.params.answerId, 10);
     if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
       response.status(400).send({ errors: 'Invalid id', type: 'body' });
       return;
     }
+    const question = await database.getQuestion(username, questionId, false);
+    let answer = await database.getAnswer(answerId, username);
 
-    const answer = await database.getAnswer(answerId, username);
+    await authorize(request, qetaReadQuestionPermission, options, question);
+    await authorize(request, qetaEditAnswerPermission, options, answer);
+
+    answer = await database.getAnswer(answerId, username);
 
     if (answer === null) {
       response.sendStatus(404);
       return;
     }
 
-    mapAdditionalFields(username, answer, options, moderator);
+    await mapAdditionalFields(request, answer, options);
 
     // Response
     response.json(answer);
@@ -318,7 +353,6 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     '/questions/:id/answers/:answerId',
     async (request, response) => {
       // Validation
-      const moderator = await isModerator(request, options);
       const username = await getUsername(request, options);
       const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
@@ -327,13 +361,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
+      const question = await database.getQuestion(username, questionId, false);
+      const answer = await database.getAnswer(answerId, username);
+
+      await authorize(request, qetaReadQuestionPermission, options, question);
+      await authorize(request, qetaDeleteAnswerPermission, options, answer);
+
       if (events) {
-        const question = await database.getQuestion(
-          username,
-          questionId,
-          false,
-        );
-        const answer = await database.getAnswer(answerId, username);
         events.publish({
           topic: 'qeta',
           eventPayload: {
@@ -347,11 +381,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
 
       // Act
-      const deleted = await database.deleteAnswer(
-        username,
-        answerId,
-        moderator,
-      );
+      const deleted = await database.deleteAnswer(answerId);
 
       // Response
       response.sendStatus(deleted ? 200 : 404);
@@ -371,38 +401,30 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    // Act
-    const username = await getUsername(request, options, true);
-    const moderator = await isModerator(request, options);
-    let voteScore = score;
-    if (moderator && request.query.score) {
-      voteScore = Number.parseInt(request.query.score as string, 10);
-      if (Number.isNaN(voteScore)) {
-        response.status(400).send({ errors: 'Invalid score', type: 'body' });
-        return;
-      }
+    const username = await getUsername(request, options);
+    const question = await database.getQuestion(username, questionId, false);
+    const answer = await database.getAnswer(answerId, username);
+
+    if (answer === null || question === null) {
+      response.sendStatus(404);
+      return;
     }
 
-    const voted = await database.voteAnswer(username, answerId, voteScore);
+    await authorize(request, qetaReadQuestionPermission, options, question);
+    await authorize(request, qetaReadAnswerPermission, options, answer);
+
+    // Act
+    const voted = await database.voteAnswer(username, answerId, score);
 
     if (!voted) {
       response.sendStatus(404);
       return;
     }
 
-    const answer = await database.getAnswer(answerId, username);
-
-    mapAdditionalFields(username, answer, options, moderator);
-
-    if (answer === null) {
-      response.sendStatus(404);
-      return;
-    }
-
+    await mapAdditionalFields(request, answer, options);
     answer.ownVote = score;
 
     if (events) {
-      const question = await database.getQuestion(username, questionId, false);
       events.publish({
         topic: 'qeta',
         eventPayload: {
@@ -441,10 +463,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
   router.get(
     `/questions/:id/answers/:answerId/correct`,
     async (request, response) => {
-      const username = await getUsername(request, options, true);
-      const moderator = await isModerator(request, options);
-      const globalEdit =
-        options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
+      const username = await getUsername(request, options);
       const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
       if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
@@ -462,18 +481,33 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      const marked = await database.markAnswerCorrect(
-        username,
-        questionId,
-        answerId,
-        moderator || globalEdit,
-      );
+      await authorize(request, qetaEditQuestionPermission, options, question);
+      await authorize(request, qetaReadAnswerPermission, options, answer);
+
+      const marked = await database.markAnswerCorrect(questionId, answerId);
 
       if (!marked) {
         response
           .status(404)
           .send({ errors: 'Failed to mark answer correct', type: 'body' });
         return;
+      }
+
+      if (events || signals) {
+        if (events) {
+          events.publish({
+            topic: 'qeta',
+            eventPayload: {
+              question,
+              answer,
+              author: username,
+            },
+            metadata: { action: 'correct_answer' },
+          });
+        }
+
+        signalQuestionStats(signals, question);
+        signalAnswerStats(signals, answer);
       }
 
       notificationMgr.onCorrectAnswer(username, question, answer);
@@ -502,30 +536,21 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
   router.get(
     `/questions/:id/answers/:answerId/incorrect`,
     async (request, response) => {
-      const username = await getUsername(request, options, true);
-      const moderator = await isModerator(request, options);
-      const globalEdit =
-        options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
+      const username = await getUsername(request, options);
       const questionId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
       if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
         response.status(400).send({ errors: 'Invalid id', type: 'body' });
         return;
       }
+      const question = await database.getQuestion(username, questionId, false);
+      const answer = await database.getAnswer(answerId, username);
 
-      const marked = await database.markAnswerIncorrect(
-        username,
-        questionId,
-        answerId,
-        moderator || globalEdit,
-      );
+      await authorize(request, qetaEditQuestionPermission, options, question);
+      await authorize(request, qetaReadAnswerPermission, options, answer);
+
+      const marked = await database.markAnswerIncorrect(questionId, answerId);
       if (events) {
-        const question = await database.getQuestion(
-          username,
-          questionId,
-          false,
-        );
-        const answer = await database.getAnswer(answerId, username);
         events.publish({
           topic: 'qeta',
           eventPayload: {

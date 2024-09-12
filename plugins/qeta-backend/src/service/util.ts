@@ -1,18 +1,46 @@
 import { Request } from 'express';
-import { AuthenticationError, NotAllowedError } from '@backstage/errors';
+import {
+  AuthenticationError,
+  NotAllowedError,
+  NotFoundError,
+} from '@backstage/errors';
 import { format, subDays } from 'date-fns';
 import {
   AuthorizeResult,
-  BasicPermission,
+  DefinitivePolicyDecision,
+  isCreatePermission,
+  isReadPermission,
+  isResourcePermission,
+  isUpdatePermission,
+  Permission,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { MaybeAnswer, MaybeQuestion } from '../database/QetaStore';
+import { isQuestion, MaybeAnswer, MaybeQuestion } from '../database/QetaStore';
 import { Config } from '@backstage/config';
 import { S3Client } from '@aws-sdk/client-s3';
-import { RouteOptions } from './types';
+import { RouteOptions, RouterOptions } from './types';
+import {
+  Answer,
+  Comment,
+  qetaDeleteAnswerPermission,
+  qetaDeleteCommentPermission,
+  qetaDeleteQuestionPermission,
+  qetaEditAnswerPermission,
+  qetaEditCommentPermission,
+  qetaEditQuestionPermission,
+  qetaReadCommentPermission,
+  Question,
+} from '@drodil/backstage-plugin-qeta-common';
+import { compact } from 'lodash';
+import {
+  ConditionTransformer,
+  createConditionTransformer,
+} from '@backstage/plugin-permission-node';
+import { rules } from './questionRules';
 
 export const getUsername = async (
   req: Request<unknown>,
-  options: RouteOptions,
+  options: RouterOptions,
   allowServiceToken?: boolean,
 ): Promise<string> => {
   const allowMetadataInput = options.config.getOptionalBoolean(
@@ -62,9 +90,24 @@ export const getUsername = async (
   );
 };
 
-export const isModerator = async (
+export const getCreated = async (
   req: Request<unknown>,
   options: RouteOptions,
+): Promise<Date> => {
+  const allowMetadataInput = options.config.getOptionalBoolean(
+    'qeta.allowMetadataInput',
+  );
+
+  if (allowMetadataInput && req.body.created) {
+    return new Date(req.body.created);
+  }
+
+  return new Date();
+};
+
+export const isModerator = async (
+  req: Request<unknown>,
+  options: RouterOptions,
 ): Promise<boolean> => {
   try {
     const credentials = await options.httpAuth.credentials(req, {
@@ -93,28 +136,56 @@ export const isModerator = async (
   }
 };
 
-export const getCreated = async (
-  req: Request<unknown>,
-  options: RouteOptions,
-): Promise<Date> => {
-  const allowMetadataInput = options.config.getOptionalBoolean(
-    'qeta.allowMetadataInput',
-  );
-
-  if (allowMetadataInput && req.body.created) {
-    return new Date(req.body.created);
+const authorizeWithoutPermissions = async (
+  request: Request<unknown>,
+  permission: Permission,
+  options: RouterOptions,
+  resource?: Question | Answer | Comment | null,
+): Promise<DefinitivePolicyDecision> => {
+  const readPermission = isReadPermission(permission);
+  const createPermission = isCreatePermission(permission);
+  if (readPermission || createPermission) {
+    return { result: AuthorizeResult.ALLOW };
   }
 
-  return new Date();
+  if (!resource) {
+    throw new NotFoundError('Resource not found');
+  }
+
+  const moderator = await isModerator(request, options);
+
+  if (moderator) {
+    return { result: AuthorizeResult.ALLOW };
+  }
+
+  const globalEdit =
+    options.config.getOptionalBoolean('qeta.allowGlobalEdits') ?? false;
+  const editPermission = isUpdatePermission(permission);
+
+  if (globalEdit && editPermission) {
+    return { result: AuthorizeResult.ALLOW };
+  }
+
+  const username = await getUsername(request, options);
+  if (username === resource.author) {
+    return { result: AuthorizeResult.ALLOW };
+  }
+  return { result: AuthorizeResult.DENY };
 };
 
-export const checkPermissions = async (
+export const authorize = async (
   request: Request<unknown>,
-  permission: BasicPermission,
-  options: RouteOptions,
-): Promise<void> => {
+  permission: Permission,
+  options: RouterOptions,
+  resource?: Question | Answer | Comment | null,
+): Promise<DefinitivePolicyDecision> => {
   if (!options.permissions) {
-    return;
+    return await authorizeWithoutPermissions(
+      request,
+      permission,
+      options,
+      resource,
+    );
   }
 
   const credentials = await options.httpAuth.credentials(request);
@@ -122,52 +193,161 @@ export const checkPermissions = async (
     throw new NotAllowedError('Unauthorized');
   }
 
-  const decision = (
-    await options.permissions.authorize([{ permission }], {
-      credentials,
-    })
-  )[0];
+  let decision: DefinitivePolicyDecision = { result: AuthorizeResult.DENY };
+  if (isResourcePermission(permission)) {
+    if (!resource) {
+      throw new NotFoundError('Resource not found');
+    }
+
+    decision = (
+      await options.permissions.authorize(
+        [{ permission, resourceRef: resource.id.toString(10) }],
+        {
+          credentials,
+        },
+      )
+    )[0];
+  } else {
+    decision = (
+      await options.permissions.authorize([{ permission }], {
+        credentials,
+      })
+    )[0];
+  }
 
   if (decision.result === AuthorizeResult.DENY) {
     throw new NotAllowedError('Unauthorized');
   }
+  return decision;
 };
 
-export const mapAdditionalFields = (
-  username: string,
+export type QetaFilter = {
+  property:
+    | 'questions.id'
+    | 'questions.author'
+    | 'tags'
+    | 'entityRefs'
+    | 'answers.id'
+    | 'answers.author'
+    | 'comments.id'
+    | 'comments.author';
+  values: Array<string | undefined>;
+};
+
+export type QetaFilters =
+  | { anyOf: QetaFilter[] }
+  | { allOf: QetaFilter[] }
+  | { not: QetaFilter }
+  | QetaFilter;
+
+export const transformConditions: ConditionTransformer<QetaFilters> =
+  createConditionTransformer(Object.values(rules));
+
+export const authorizeConditional = async (
+  request: Request<unknown>,
+  permission: Permission,
+  options: RouterOptions,
+): Promise<PolicyDecision> => {
+  if (!options.permissions) {
+    return await authorizeWithoutPermissions(request, permission, options);
+  }
+
+  const credentials = await options.httpAuth.credentials(request);
+  if (!credentials) {
+    throw new NotAllowedError('Unauthorized');
+  }
+
+  let decision: PolicyDecision = { result: AuthorizeResult.DENY };
+  if (isResourcePermission(permission)) {
+    decision = (
+      await options.permissions.authorizeConditional([{ permission }], {
+        credentials,
+      })
+    )[0];
+  }
+
+  if (decision.result === AuthorizeResult.DENY) {
+    throw new NotAllowedError('Unauthorized');
+  }
+  return decision;
+};
+
+export const authorizeBoolean = async (
+  request: Request<unknown>,
+  permission: Permission,
+  options: RouterOptions,
+  resource?: Question | Answer | Comment | null,
+): Promise<boolean> => {
+  try {
+    const res = await authorize(request, permission, options, resource);
+    return res.result === AuthorizeResult.ALLOW;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const mapAdditionalFields = async (
+  request: Request<unknown>,
   resp: MaybeQuestion | MaybeAnswer,
-  options: RouteOptions,
-  moderator?: boolean,
+  options: RouterOptions,
 ) => {
   if (!resp) {
     return;
   }
+  const username = await getUsername(request, options);
   resp.ownVote = resp.votes?.find(v => v.author === username)?.score;
   resp.own = resp.author === username;
-  resp.canEdit =
-    moderator ||
-    options.config.getOptionalBoolean('qeta.allowGlobalEdits') ||
-    resp.author === username;
-  resp.canDelete = moderator || resp.author === username;
-  resp.comments = resp.comments?.map(c => {
-    return {
-      ...c,
-      own: c.author === username,
-      canEdit: moderator || c.author === username,
-      canDelete: moderator || c.author === username,
-    };
-  });
+  resp.canEdit = await authorizeBoolean(
+    request,
+    isQuestion(resp) ? qetaEditQuestionPermission : qetaEditAnswerPermission,
+    options,
+    resp,
+  );
+  resp.canDelete = await authorizeBoolean(
+    request,
+    isQuestion(resp)
+      ? qetaDeleteQuestionPermission
+      : qetaDeleteAnswerPermission,
+    options,
+    resp,
+  );
+  const comments: (Comment | null)[] = await Promise.all(
+    (resp.comments ?? []).map(async (c: Comment): Promise<Comment | null> => {
+      if (
+        !(await authorizeBoolean(
+          request,
+          qetaReadCommentPermission,
+          options,
+          c,
+        ))
+      ) {
+        return null;
+      }
+
+      return {
+        ...c,
+        own: c.author === username,
+        canEdit: await authorizeBoolean(
+          request,
+          qetaEditCommentPermission,
+          options,
+          c,
+        ),
+        canDelete: await authorizeBoolean(
+          request,
+          qetaDeleteCommentPermission,
+          options,
+          c,
+        ),
+      };
+    }),
+  );
+  resp.comments = compact(comments);
 };
 
 export const stringDateTime = (dayString: string) => {
   const dateTimePeriod = Number(dayString.toString().slice(0, -1));
-
-  const formattedDate = format(
-    subDays(new Date(), dateTimePeriod),
-    'yyyy-MM-dd',
-  );
-
-  return formattedDate;
+  return format(subDays(new Date(), dateTimePeriod), 'yyyy-MM-dd');
 };
 
 export const getS3Client = (config: Config) => {

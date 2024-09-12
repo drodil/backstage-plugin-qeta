@@ -15,3 +15,5 @@
  */
 
 export { qetaPlugin as default } from './plugin';
+export * from './conditionExports';
+export * from './service/questionRules';

@@ -46,6 +46,9 @@ export const qetaPlugin = createBackendPlugin({
         const qetaStore = await DatabaseQetaStore.create({
           database,
         });
+        const permissionEnabled =
+          (config.getOptionalBoolean('permission.enabled') ?? false) &&
+          (config.getOptionalBoolean('qeta.permissions') ?? false);
 
         httpRouter.use(
           await createRouter({
@@ -54,7 +57,7 @@ export const qetaPlugin = createBackendPlugin({
             events,
             database: qetaStore,
             discovery,
-            permissions,
+            permissions: permissionEnabled ? permissions : undefined,
             httpAuth,
             userInfo,
             signals,

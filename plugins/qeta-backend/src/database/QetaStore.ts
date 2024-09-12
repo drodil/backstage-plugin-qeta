@@ -5,12 +5,28 @@ import type {
   UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
+  Comment,
   Statistic,
   StatisticsRequestParameters,
 } from '@drodil/backstage-plugin-qeta-common';
+import { QetaFilters } from '../service/util';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+
+export function isQuestion(
+  entity: Question | Answer | Comment,
+): entity is Question {
+  return 'answers' in entity;
+}
+
+export function isAnswer(
+  entity: Question | Answer | Comment,
+): entity is Answer {
+  return !('answers' in entity);
+}
 
 export type MaybeAnswer = Answer | null;
 export type MaybeQuestion = Question | null;
+export type MaybeComment = Comment | null;
 
 export interface Questions {
   questions: Question[];
@@ -25,7 +41,7 @@ export interface Answers {
 export interface QuestionsOptions {
   limit?: number;
   offset?: number;
-  author?: string;
+  author?: string | string[];
   orderBy?:
     | 'views'
     | 'score'
@@ -100,8 +116,13 @@ export interface QetaStore {
    * Fetch all stored questions with options
    * @param user_ref user name requesting question
    * @param options Search options
+   * @param filters Permission filters
    */
-  getQuestions(user_ref: string, options: QuestionsOptions): Promise<Questions>;
+  getQuestions(
+    user_ref: string,
+    options: QuestionsOptions,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<Questions>;
 
   /**
    * Fetch single question by id
@@ -166,13 +187,11 @@ export interface QetaStore {
    * @param question_id question id
    * @param id comment id
    * @param user_ref username
-   * @param moderator if the current user is the moderator
    */
   deleteQuestionComment(
     question_id: number,
     id: number,
     user_ref: string,
-    moderator?: boolean,
   ): Promise<MaybeQuestion>;
 
   /**
@@ -183,7 +202,6 @@ export interface QetaStore {
    * @param content new content
    * @param tags new tags
    * @param components new components
-   * @param moderator if the current user is the moderator
    */
   updateQuestion(
     id: number,
@@ -193,20 +211,13 @@ export interface QetaStore {
     tags?: string[],
     components?: string[],
     images?: number[],
-    moderator?: boolean,
   ): Promise<MaybeQuestion>;
 
   /**
    * Delete question. Only the user who created the question can delete it.
-   * @param user_ref user name of the user deleting question
    * @param id question id
-   * @param moderator if the current user is the moderator
    */
-  deleteQuestion(
-    user_ref: string,
-    id: number,
-    moderator?: boolean,
-  ): Promise<boolean>;
+  deleteQuestion(id: number): Promise<boolean>;
 
   /**
    * Answer question
@@ -241,13 +252,11 @@ export interface QetaStore {
    * @param answer_id answer id
    * @param id comment id
    * @param user_ref username
-   * @param moderator if the current user is moderator
    */
   deleteAnswerComment(
     answer_id: number,
     id: number,
     user_ref: string,
-    moderator?: boolean,
   ): Promise<MaybeAnswer>;
 
   /**
@@ -256,7 +265,6 @@ export interface QetaStore {
    * @param questionId question id
    * @param answerId answer id
    * @param answer answer content
-   * @param moderator if the current user is moderator
    */
   updateAnswer(
     user_ref: string,
@@ -264,15 +272,19 @@ export interface QetaStore {
     answerId: number,
     answer: string,
     images?: number[],
-    moderator?: boolean,
   ): Promise<MaybeAnswer>;
 
   /**
    * Fetch all stored answers with options
    * @param user_ref user name requesting question
    * @param options Search options
+   * @param filters Permission filters
    */
-  getAnswers(user_ref: string, options: AnswersOptions): Promise<Answers>;
+  getAnswers(
+    user_ref: string,
+    options: AnswersOptions,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<Answers>;
 
   /** Get answer by id
    * @param answerId answer id
@@ -280,17 +292,14 @@ export interface QetaStore {
    */
   getAnswer(answerId: number, user_ref: string): Promise<MaybeAnswer>;
 
+  getQuestionComment(commentId: number): Promise<MaybeComment>;
+  getAnswerComment(commentId: number): Promise<MaybeComment>;
+
   /**
    * Delete answer. Only the user who created the answer can delete it.
-   * @param user_ref user name of the user deleting answer
    * @param id answer id
-   * @param moderator if the current user is moderator
    */
-  deleteAnswer(
-    user_ref: string,
-    id: number,
-    moderator?: boolean,
-  ): Promise<boolean>;
+  deleteAnswer(id: number): Promise<boolean>;
 
   /**
    * Vote question with given score
@@ -318,31 +327,17 @@ export interface QetaStore {
 
   /**
    * Mark answer correct for question. Only user who created the question can mark answer correct
-   * @param user_ref user name of the user marking the answer correct
    * @param questionId question id
    * @param answerId answer id
-   * @param moderator if the current user is moderator
    */
-  markAnswerCorrect(
-    user_ref: string,
-    questionId: number,
-    answerId: number,
-    moderator?: boolean,
-  ): Promise<boolean>;
+  markAnswerCorrect(questionId: number, answerId: number): Promise<boolean>;
 
   /**
    * Mark answer incorrect for question. Only user who created the question can mark answer incorrect
-   * @param user_ref user name of the user marking the answer incorrect
    * @param questionId question id
    * @param answerId answer id
-   * @param moderator if the current user is moderator
    */
-  markAnswerIncorrect(
-    user_ref: string,
-    questionId: number,
-    answerId: number,
-    moderator?: boolean,
-  ): Promise<boolean>;
+  markAnswerIncorrect(questionId: number, answerId: number): Promise<boolean>;
 
   /**
    * Mark question favorite for user

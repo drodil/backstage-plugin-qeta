@@ -147,6 +147,8 @@ describe('createRouter', () => {
     unfollowTag: jest.fn(),
     getUserTags: jest.fn(),
     getUsersForTags: jest.fn(),
+    getAnswerComment: jest.fn(),
+    getQuestionComment: jest.fn(),
   };
 
   const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
@@ -184,6 +186,9 @@ describe('createRouter', () => {
     app = await buildApp();
     jest.restoreAllMocks();
     mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
+    mockedPermissionQuery.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
   });
 
   describe('GET /health', () => {
@@ -284,6 +289,7 @@ describe('createRouter', () => {
     });
 
     it('forbidden', async () => {
+      qetaStore.getQuestion.mockResolvedValue(question);
       mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
       const response = await request(app).get('/questions/1');
       expect(response.status).toEqual(403);
@@ -536,8 +542,12 @@ describe('createRouter', () => {
 
   describe('DELETE /questions/:id/answers/:answerId', () => {
     it('deletes answer', async () => {
+      qetaStore.getAnswer.mockResolvedValue(answer);
+      qetaStore.getQuestion.mockResolvedValue(question);
       qetaStore.deleteAnswer.mockResolvedValue(true);
-      const response = await request(app).delete('/questions/1/answers/2');
+      const response = await request(app).delete(
+        `/questions/${question.id}/answers/${answer.id}`,
+      );
       expect(response.status).toEqual(200);
     });
 
@@ -553,14 +563,16 @@ describe('createRouter', () => {
       qetaStore.voteQuestion.mockResolvedValue(true);
       qetaStore.getQuestion.mockResolvedValue(question);
 
-      const response = await request(app).get('/questions/1/upvote');
+      const response = await request(app).get(
+        `/questions/${question.id}/upvote`,
+      );
 
+      expect(response.status).toEqual(200);
       expect(qetaStore.voteQuestion).toHaveBeenCalledWith(
         'user:default/mock',
         1,
         1,
       );
-      expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         ...question,
         created: '2022-01-01T00:00:00.000Z',
@@ -752,12 +764,7 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/answers/2/correct');
 
-      expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith(
-        'user:default/mock',
-        1,
-        2,
-        false,
-      );
+      expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith(1, 2);
       expect(response.status).toEqual(200);
     });
 
@@ -766,12 +773,7 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/questions/1/answers/2/correct');
 
-      expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith(
-        'user:default/mock',
-        1,
-        2,
-        false,
-      );
+      expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith(1, 2);
       expect(response.status).toEqual(404);
     });
 
@@ -782,12 +784,7 @@ describe('createRouter', () => {
       const response = await request(app)
         .get('/questions/1/answers/2/correct')
         .set('x-qeta-user', 'another-user');
-      expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith(
-        'another-user',
-        1,
-        2,
-        false,
-      );
+      expect(qetaStore.markAnswerCorrect).toHaveBeenCalledWith(1, 2);
       expect(response.status).toEqual(404);
     });
   });
@@ -800,12 +797,7 @@ describe('createRouter', () => {
         '/questions/1/answers/2/incorrect',
       );
 
-      expect(qetaStore.markAnswerIncorrect).toHaveBeenCalledWith(
-        'user:default/mock',
-        1,
-        2,
-        false,
-      );
+      expect(qetaStore.markAnswerIncorrect).toHaveBeenCalledWith(1, 2);
       expect(response.status).toEqual(200);
     });
 
@@ -816,12 +808,7 @@ describe('createRouter', () => {
         '/questions/1/answers/2/incorrect',
       );
 
-      expect(qetaStore.markAnswerIncorrect).toHaveBeenCalledWith(
-        'user:default/mock',
-        1,
-        2,
-        false,
-      );
+      expect(qetaStore.markAnswerIncorrect).toHaveBeenCalledWith(1, 2);
       expect(response.status).toEqual(404);
     });
   });
