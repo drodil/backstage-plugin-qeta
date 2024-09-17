@@ -68,7 +68,7 @@
       "yarn fix"
     ]
   },
-  "packageManager": "yarn@3.5.1",
+  "packageManager": "yarn@4.5.0",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.540.0",
     "@octokit/rest": "19.0.8"
