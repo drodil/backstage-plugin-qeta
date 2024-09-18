@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.9.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.9.0...v2.9.1) (2024-09-18)
+
+
+### Bug Fixes
+
+* force compression level to fix cache key generation ([8ad1944](https://github.com/drodil/backstage-plugin-qeta/commit/8ad1944849b34de7f89af497313b1e4361a1acc4))
+* lock file ([c6da53e](https://github.com/drodil/backstage-plugin-qeta/commit/c6da53ea8f69031cefbc0c23bdeb5f1016eaa6b5))
+* lock file cache key wants to update ([ac68f7a](https://github.com/drodil/backstage-plugin-qeta/commit/ac68f7a59a79efcc6538446d2620c51a8e237f99))
+* remove yarn cache from use node ([4363a2e](https://github.com/drodil/backstage-plugin-qeta/commit/4363a2e6fcb8f5047b6b15c95ba44209e543e1d3))
+* utils test ([f82f870](https://github.com/drodil/backstage-plugin-qeta/commit/f82f870c604a5a48844db05cbb07eb7ddb7f7ef5))
+
 ## [2.9.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.8.1...v2.9.0) (2024-09-12)
 
 
