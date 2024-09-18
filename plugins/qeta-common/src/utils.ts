@@ -4,11 +4,8 @@ export const truncate = (str: string, n: number): string => {
 
 // Covers many common but not all cases of markdown formatting
 export const removeMarkdownFormatting = (text: string): string => {
-  // Remove horizontal rules
-  let fixed = text.replace(/^(-\s*?|\*\s*?|_\s*?){3,}\s*/gm, '');
-
   // Remove HTML tags
-  fixed = fixed.replace(/<[^>]*>/g, '');
+  let fixed = text.replace(/<[^>]*>/g, '');
 
   // Handle code blocks defined with a language
   fixed = fixed.replace(/```[\s\S]*?```/g, match => {
