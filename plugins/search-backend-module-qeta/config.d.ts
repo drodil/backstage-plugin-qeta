@@ -1,4 +1,4 @@
-import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
 
 export interface Config {
   search?: {

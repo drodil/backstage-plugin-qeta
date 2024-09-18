@@ -41,7 +41,7 @@ class FilesystemStoreEngine {
       console.debug(`Successfully rename ${file.path} to ${newPath}`);
     });
 
-    const attachment = await this.database.postAttachment({
+    return await this.database.postAttachment({
       uuid: imageUuid,
       locationType: 'filesystem',
       locationUri: imageURI,
@@ -49,8 +49,6 @@ class FilesystemStoreEngine {
       path: newPath,
       mimeType: file.mimeType,
     });
-
-    return attachment;
   };
 }
 

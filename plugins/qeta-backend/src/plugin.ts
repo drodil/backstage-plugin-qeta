@@ -3,7 +3,7 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
-import { DatabaseQetaStore } from './database/DatabaseQetaStore';
+import { DatabaseQetaStore } from './database';
 import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { notificationService } from '@backstage/plugin-notifications-node';

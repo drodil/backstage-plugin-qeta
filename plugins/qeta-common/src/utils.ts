@@ -8,7 +8,7 @@ export const removeMarkdownFormatting = (text: string): string => {
   let fixed = text.replace(/^(-\s*?|\*\s*?|_\s*?){3,}\s*/gm, '');
 
   // Remove HTML tags
-  fixed = text.replace(/<[^>]*>/g, '');
+  fixed = fixed.replace(/<[^>]*>/g, '');
 
   // Handle code blocks defined with a language
   fixed = fixed.replace(/```[\s\S]*?```/g, match => {

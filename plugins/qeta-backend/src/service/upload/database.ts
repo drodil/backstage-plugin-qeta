@@ -25,7 +25,7 @@ class DatabaseStoreEngine {
     const imageUuid = uuidv4();
     const locationUri = `${this.qetaUrl}/${imageUuid}`;
 
-    const attachment = await this.database.postAttachment({
+    return await this.database.postAttachment({
       uuid: imageUuid,
       locationType: 'database',
       locationUri: locationUri,
@@ -33,8 +33,6 @@ class DatabaseStoreEngine {
       mimeType: file.mimeType,
       binaryImage: file.buffer,
     });
-
-    return attachment;
   };
 }
 

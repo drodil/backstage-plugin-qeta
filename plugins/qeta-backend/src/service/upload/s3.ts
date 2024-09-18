@@ -49,7 +49,7 @@ class S3StoreEngine {
 
     await client.send(new PutObjectCommand(uploadArgs));
 
-    const attachment = await this.database.postAttachment({
+    return await this.database.postAttachment({
       uuid: imageUuid,
       locationType: 's3',
       locationUri: imageURI,
@@ -59,8 +59,6 @@ class S3StoreEngine {
       binaryImage: Buffer.from('0'),
       creator: '', // required to run locally on sqlite, otherwise it complains about null.
     });
-
-    return attachment;
   };
 }
 

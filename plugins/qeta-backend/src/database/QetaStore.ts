@@ -155,8 +155,11 @@ export interface QetaStore {
    * @param user_ref user name of the user posting question
    * @param title question title
    * @param content question content
+   * @param created
    * @param tags optional tags for the question
    * @param components optional entity refs of catalog components for the question
+   * @param images
+   * @param anonymous
    */
   postQuestion(
     user_ref: string,
@@ -174,6 +177,7 @@ export interface QetaStore {
    * @param question_id question id
    * @param user_ref user
    * @param content comment content
+   * @param created
    */
   commentQuestion(
     question_id: number,
@@ -202,6 +206,7 @@ export interface QetaStore {
    * @param content new content
    * @param tags new tags
    * @param components new components
+   * @param images
    */
   updateQuestion(
     id: number,
@@ -224,6 +229,9 @@ export interface QetaStore {
    * @param user_ref user name of the user answering question
    * @param questionId question id
    * @param answer answer content
+   * @param created
+   * @param images
+   * @param anonymous
    */
   answerQuestion(
     user_ref: string,
@@ -265,6 +273,7 @@ export interface QetaStore {
    * @param questionId question id
    * @param answerId answer id
    * @param answer answer content
+   * @param images
    */
   updateAnswer(
     user_ref: string,

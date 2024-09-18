@@ -1107,11 +1107,7 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   async getAttachment(uuid: string): Promise<Attachment | undefined> {
-    const attachment = await this.db<Attachment>('attachments')
-      .where('uuid', '=', uuid)
-      .first();
-
-    return attachment;
+    return this.db<Attachment>('attachments').where('uuid', '=', uuid).first();
   }
 
   /**

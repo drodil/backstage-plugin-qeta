@@ -4,7 +4,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 import { readScheduleConfigOptions } from './collators/config';
-import { DefaultQetaCollatorFactory } from './collators/DefaultQetaCollatorFactory';
+import { DefaultQetaCollatorFactory } from './collators';
 
 export const searchModuleQetaCollator = createBackendModule({
   pluginId: 'search',
