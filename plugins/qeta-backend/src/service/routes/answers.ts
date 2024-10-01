@@ -126,8 +126,16 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const followingUsers = await database.getUsersForTags(question.tags);
-    notificationMgr.onNewAnswer(username, question, answer, followingUsers);
+    const followingUsers = await Promise.all([
+      database.getUsersForTags(question.tags),
+      database.getUsersForEntities(question.entities),
+    ]);
+    notificationMgr.onNewAnswer(
+      username,
+      question,
+      answer,
+      followingUsers.flat(),
+    );
     await mapAdditionalFields(request, answer, options);
 
     if (events) {

@@ -194,6 +194,10 @@ const fi = createTranslationMessages({
     'tagButton.unfollow': 'Lopeta tägin seuraaminen',
     'tagButton.tooltip':
       'Seuraamalla tägiä saat ilmoituksia uusista kysymyksistä',
+    'entityButton.follow': 'Seuraa entiteettiä',
+    'entityButton.unfollow': 'Lopeta entiteetin seuraaminen',
+    'entityButton.tooltip':
+      'Seuraamalla entiteettiä saat ilmoituksia uusista kysymyksistä',
   },
 });
 

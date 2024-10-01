@@ -45,11 +45,11 @@ export class NotificationManager {
         await this.notifications.send({
           recipients: {
             type: 'entity',
-            entityRef: followingUsers,
+            entityRef: [...new Set(followingUsers)],
             excludeEntityRef: username,
           },
           payload: {
-            title: `New question for tag you follow`,
+            title: `New question for tag/entity you follow`,
             description: this.formatDescription(
               `${username} asked a question: ${question.title}`,
             ),
@@ -119,11 +119,11 @@ export class NotificationManager {
         await this.notifications.send({
           recipients: {
             type: 'entity',
-            entityRef: followingUsers,
+            entityRef: [...new Set(followingUsers)],
             excludeEntityRef: username,
           },
           payload: {
-            title: `New comment for tag you follow`,
+            title: `New comment for tag/entity you follow`,
             description: this.formatDescription(
               `${username} commented on a question: ${comment}`,
             ),
@@ -192,11 +192,11 @@ export class NotificationManager {
         await this.notifications.send({
           recipients: {
             type: 'entity',
-            entityRef: followingUsers,
+            entityRef: [...new Set(followingUsers)],
             excludeEntityRef: username,
           },
           payload: {
-            title: `New answer for tag you follow`,
+            title: `New answer for tag/entity you follow`,
             description: this.formatDescription(
               `${username} answered a question: ${answer.content}`,
             ),
@@ -271,7 +271,7 @@ export class NotificationManager {
             excludeEntityRef: username,
           },
           payload: {
-            title: `New comment for tag you follow`,
+            title: `New comment for tag/entity you follow`,
             description: this.formatDescription(
               `${username} commented an answer: ${comment}`,
             ),

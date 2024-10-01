@@ -20,6 +20,7 @@ import { useAnalytics } from '@backstage/core-plugin-api';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { getFiltersWithDateRange } from '../../utils/utils';
 import { TagFollowButton } from '../Buttons/TagFollowButton';
+import { EntityFollowButton } from '../Buttons/EntityFollowButton';
 
 export interface QuestionsContainerProps {
   tags?: string[];
@@ -185,18 +186,20 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
 
   let shownTitle = title;
   let link = undefined;
+  let btn = undefined;
   if (author) {
     shownTitle = t('questionsContainer.title.questionsBy');
     link = <EntityRefLink entityRef={author} hideIcon defaultKind="user" />;
   } else if (entity) {
     shownTitle = t('questionsContainer.title.questionsAbout');
     link = <EntityRefLink entityRef={entity} />;
+    btn = <EntityFollowButton entityRef={entity} />;
   } else if (tags) {
     shownTitle = t('questionsContainer.title.questionsTagged', {
       tags: tags.join(', '),
     });
     if (tags.length === 1) {
-      link = <TagFollowButton tag={tags[0]} />;
+      btn = <TagFollowButton tag={tags[0]} />;
     }
   } else if (favorite) {
     shownTitle = t('questionsContainer.title.favorite');
@@ -210,7 +213,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
           className="qetaQuestionsContainerTitle"
           style={{ marginBottom: '1.5rem' }}
         >
-          {shownTitle} {link}
+          {shownTitle} {link} {btn}
         </Typography>
       )}
       <Grid container justifyContent="space-between">

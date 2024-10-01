@@ -456,6 +456,19 @@ describe.each(databases.eachSupportedId())(
         const tags2 = await storage.getUserTags('user');
         expect(tags2).toEqual({ tags: [], count: 0 });
       });
+
+      it('should allow following and unfollowing entity', async () => {
+        const followed = await storage.followEntity('user', 'component');
+        expect(followed).toBeTruthy();
+        const tags = await storage.getUserEntities('user');
+        expect(tags).toEqual({ entityRefs: ['component'], count: 1 });
+        const users = await storage.getUsersForEntities(['component']);
+        expect(users).toEqual(['user']);
+        const unfollowed = await storage.unfollowEntity('user', 'component');
+        expect(unfollowed).toBeTruthy();
+        const tags2 = await storage.getUserEntities('user');
+        expect(tags2).toEqual({ entityRefs: [], count: 0 });
+      });
     });
   },
 );

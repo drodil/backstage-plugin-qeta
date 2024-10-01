@@ -1,13 +1,12 @@
-import type {
+import {
   Answer,
   Attachment,
-  Question,
-  UserTagsResponse,
-} from '@drodil/backstage-plugin-qeta-common';
-import {
   Comment,
+  Question,
   Statistic,
   StatisticsRequestParameters,
+  UserEntitiesResponse,
+  UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -376,6 +375,12 @@ export interface QetaStore {
 
   followTag(user_ref: string, tag: string): Promise<boolean>;
   unfollowTag(user_ref: string, tag: string): Promise<boolean>;
+
+  getUserEntities(user_ref: string): Promise<UserEntitiesResponse>;
+  getUsersForEntities(entityRefs?: string[]): Promise<string[]>;
+
+  followEntity(user_ref: string, entityRef: string): Promise<boolean>;
+  unfollowEntity(user_ref: string, entityRef: string): Promise<boolean>;
 
   getEntities(): Promise<EntityResponse[]>;
 

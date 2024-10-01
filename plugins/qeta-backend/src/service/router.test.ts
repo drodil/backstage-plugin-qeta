@@ -147,6 +147,10 @@ describe('createRouter', () => {
     unfollowTag: jest.fn(),
     getUserTags: jest.fn(),
     getUsersForTags: jest.fn(),
+    followEntity: jest.fn(),
+    unfollowEntity: jest.fn(),
+    getUserEntities: jest.fn(),
+    getUsersForEntities: jest.fn(),
     getAnswerComment: jest.fn(),
     getQuestionComment: jest.fn(),
   };

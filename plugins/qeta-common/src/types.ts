@@ -185,3 +185,8 @@ export interface UserTagsResponse {
   tags: string[];
   count: number;
 }
+
+export interface UserEntitiesResponse {
+  entityRefs: string[];
+  count: number;
+}

@@ -11,6 +11,7 @@ import {
   StatisticResponse,
   StatisticsRequestParameters,
   TagResponse,
+  UserEntitiesResponse,
   UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
@@ -148,4 +149,8 @@ export interface QetaApi {
   getFollowedTags(): Promise<UserTagsResponse>;
   followTag(tag: string): Promise<boolean>;
   unfollowTag(tag: string): Promise<boolean>;
+
+  getFollowedEntities(): Promise<UserEntitiesResponse>;
+  followEntity(entityRef: string): Promise<boolean>;
+  unfollowEntity(entityRef: string): Promise<boolean>;
 }

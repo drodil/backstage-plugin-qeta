@@ -22,6 +22,7 @@ import {
   StatisticResponse,
   StatisticsRequestParameters,
   TagResponse,
+  UserEntitiesResponse,
   UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import omitBy from 'lodash/omitBy';
@@ -495,6 +496,33 @@ export class QetaClient implements QetaApi {
   async unfollowTag(tag: string): Promise<boolean> {
     const response = await this.fetchApi.fetch(
       `${await this.getBaseUrl()}/tags/follow/${tag}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    return response.ok;
+  }
+
+  async getFollowedEntities(): Promise<UserEntitiesResponse> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/entities/followed`,
+    );
+    return (await response.json()) as UserEntitiesResponse;
+  }
+
+  async followEntity(entityRef: string): Promise<boolean> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/entities/follow/${entityRef}`,
+      {
+        method: 'PUT',
+      },
+    );
+    return response.ok;
+  }
+
+  async unfollowEntity(entityRef: string): Promise<boolean> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/entities/follow/${entityRef}`,
       {
         method: 'DELETE',
       },

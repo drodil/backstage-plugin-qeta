@@ -324,6 +324,12 @@ export const qetaTranslationRef = createTranslationRef({
       tooltip:
         'By following a tag, you will get notified when ever a new question with that tag is posted',
     },
+    entityButton: {
+      follow: 'Follow entity',
+      unfollow: 'Unfollow entity',
+      tooltip:
+        'By following an entity, you will get notified when ever a new question for that entity is posted',
+    },
   },
 });
 

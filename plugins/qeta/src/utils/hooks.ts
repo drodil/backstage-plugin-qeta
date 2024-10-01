@@ -395,11 +395,13 @@ export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
 
 export const useTagsFollow = () => {
   const [tags, setTags] = React.useState<string[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const qetaApi = useApi(qetaApiRef);
 
   useEffect(() => {
     qetaApi.getFollowedTags().then(res => {
       setTags(res.tags);
+      setLoading(false);
     });
   }, [qetaApi]);
 
@@ -425,7 +427,44 @@ export const useTagsFollow = () => {
     (tag: string) => tags.includes(tag),
     [tags],
   );
-  return { tags, followTag, unfollowTag, isFollowingTag };
+  return { tags, followTag, unfollowTag, isFollowingTag, loading };
+};
+
+export const useEntityFollow = () => {
+  const [entities, setEntities] = React.useState<string[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const qetaApi = useApi(qetaApiRef);
+
+  useEffect(() => {
+    qetaApi.getFollowedEntities().then(res => {
+      setEntities(res.entityRefs);
+      setLoading(false);
+    });
+  }, [qetaApi]);
+
+  const followEntity = useCallback(
+    (entityRef: string) => {
+      qetaApi.followEntity(entityRef).then(() => {
+        setEntities(prev => [...prev, entityRef]);
+      });
+    },
+    [qetaApi],
+  );
+
+  const unfollowEntity = useCallback(
+    (entityRef: string) => {
+      qetaApi.unfollowEntity(entityRef).then(() => {
+        setEntities(prev => prev.filter(t => t !== entityRef));
+      });
+    },
+    [qetaApi],
+  );
+
+  const isFollowingEntity = useCallback(
+    (entityRef: string) => entities.includes(entityRef),
+    [entities],
+  );
+  return { entities, followEntity, unfollowEntity, isFollowingEntity, loading };
 };
 
 export const useTranslation = () => {

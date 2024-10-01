@@ -220,12 +220,15 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       ),
     );
 
-    const followingUsers = await database.getUsersForTags(question.tags);
+    const followingUsers = await Promise.all([
+      database.getUsersForTags(question.tags),
+      database.getUsersForEntities(question.entities),
+    ]);
     notificationMgr.onNewQuestionComment(
       username,
       question,
       request.body.content,
-      followingUsers,
+      followingUsers.flat(),
     );
 
     if (events) {
@@ -356,8 +359,11 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const followingUsers = await database.getUsersForTags(tags);
-    notificationMgr.onNewQuestion(username, question, followingUsers);
+    const followingUsers = await Promise.all([
+      database.getUsersForTags(tags),
+      database.getUsersForEntities(entities),
+    ]);
+    notificationMgr.onNewQuestion(username, question, followingUsers.flat());
 
     if (events) {
       events.publish({

@@ -7,6 +7,9 @@ export const TagFollowButton = (props: { tag: string }) => {
   const styles = useStyles();
   const { t } = useTranslation();
   const tags = useTagsFollow();
+  if (tags.loading) {
+    return null;
+  }
   return (
     <Tooltip title={t('tagButton.tooltip')}>
       <Button
