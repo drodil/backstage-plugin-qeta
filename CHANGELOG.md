@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.10.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.9.1...v2.10.0) (2024-10-01)
+
+
+### Features
+
+* add followed entities list to home page ([9042e9a](https://github.com/drodil/backstage-plugin-qeta/commit/9042e9ab5571534bb47339bea0151ddb9e39892e))
+* allow following also entities ([031c576](https://github.com/drodil/backstage-plugin-qeta/commit/031c576a1e26e3dc9fe5183bceefb67aab7569a3))
+
 ### [2.9.1](https://github.com/drodil/backstage-plugin-qeta/compare/v2.9.0...v2.9.1) (2024-09-18)
 
 
