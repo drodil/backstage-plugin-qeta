@@ -190,12 +190,12 @@ const fi = createTranslationMessages({
     'userPage.profileTab': 'Profiili',
     'userPage.questions': 'Kysymykset',
     'userPage.answers': 'Vastaukset',
-    'tagButton.follow': 'Seuraa tägiä',
-    'tagButton.unfollow': 'Lopeta tägin seuraaminen',
+    'tagButton.follow': 'Seuraa',
+    'tagButton.unfollow': 'Lopeta seuraaminen',
     'tagButton.tooltip':
       'Seuraamalla tägiä saat ilmoituksia uusista kysymyksistä',
-    'entityButton.follow': 'Seuraa entiteettiä',
-    'entityButton.unfollow': 'Lopeta entiteetin seuraaminen',
+    'entityButton.follow': 'Seuraa',
+    'entityButton.unfollow': 'Lopeta seuraaminen',
     'entityButton.tooltip':
       'Seuraamalla entiteettiä saat ilmoituksia uusista kysymyksistä',
   },
