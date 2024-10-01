@@ -77,6 +77,7 @@ const fi = createTranslationMessages({
     'homePage.moreMenu.statistics': 'Statistiikka',
     'homePage.title': 'Kaikki kysymykset',
     'homePage.followedTags': 'Seuratut tägit',
+    'homePage.followedEntities': 'Seuratut entiteetit',
     'homePage.highlights.loadError': 'Kysymyksiä ei voitu ladata',
     'homePage.highlights.hot.title': 'Kuumat kysymykset',
     'homePage.highlights.hot.noQuestionsLabel': 'Ei kysymyksiä',

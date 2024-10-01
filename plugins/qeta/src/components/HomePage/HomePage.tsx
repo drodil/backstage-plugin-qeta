@@ -43,6 +43,7 @@ import {
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import AccountBox from '@material-ui/icons/AccountBox';
 import { FollowedTagsList } from './FollowedTagsList';
+import { FollowedEntitiesList } from './FollowedEntitiesList';
 
 const MoreMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -171,6 +172,7 @@ export const HomePageContent = () => {
               )}
             />
             <FollowedTagsList />
+            <FollowedEntitiesList />
           </Grid>
         </Grid>
       </Container>

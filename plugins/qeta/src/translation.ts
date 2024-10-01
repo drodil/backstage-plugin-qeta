@@ -130,6 +130,7 @@ export const qetaTranslationRef = createTranslationRef({
       },
       title: 'All questions',
       followedTags: 'Followed tags',
+      followedEntities: 'Followed entities',
       highlights: {
         loadError: 'Failed to load questions',
         hot: {
