@@ -42,9 +42,9 @@ export const qetaDeleteQuestionPermission = createPermission({
 
 export const ANSWER_RESOURCE_TYPE = 'answer';
 export const qetaReadAnswerPermission = createPermission({
-  name: 'qeta.read.question',
+  name: 'qeta.read.answer',
   attributes: { action: 'read' },
-  resourceType: QUESTION_RESOURCE_TYPE,
+  resourceType: ANSWER_RESOURCE_TYPE,
 });
 export const qetaEditAnswerPermission = createPermission({
   name: 'qeta.edit.answer',
