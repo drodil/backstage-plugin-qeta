@@ -22,6 +22,12 @@ export const statisticsRouteRef = createSubRouteRef({
   path: '/statistics',
 });
 
+export const questionsRouteRef = createSubRouteRef({
+  id: 'qeta.questions',
+  parent: qetaRouteRef,
+  path: '/questions',
+});
+
 export const questionRouteRef = createSubRouteRef({
   id: 'qeta.question',
   parent: qetaRouteRef,

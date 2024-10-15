@@ -1,20 +1,20 @@
 import { LinkButton } from '@backstage/core-components';
-import HomeOutlined from '@material-ui/icons/HomeOutlined';
 import React from 'react';
 import { useStyles, useTranslation } from '../../utils/hooks';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { useSearchParams } from 'react-router-dom';
-import { qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
+import { questionsRouteRef } from '@drodil/backstage-plugin-qeta-react';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
 
 export const BackToQuestionsButton = (props: { entityPage?: boolean }) => {
   const styles = useStyles();
   const entityRoute = useRouteRef(entityRouteRef);
-  const rootRoute = useRouteRef(qetaRouteRef);
+  const questionsRoute = useRouteRef(questionsRouteRef);
   const { t } = useTranslation();
 
-  let to = rootRoute();
+  let to = questionsRoute();
   const [searchParams] = useSearchParams();
   const entity = searchParams.get('entity');
   if (entity) {
@@ -22,7 +22,7 @@ export const BackToQuestionsButton = (props: { entityPage?: boolean }) => {
     if (props.entityPage) {
       to = `${entityRoute(entityRef)}/qeta`;
     } else {
-      to = `${rootRoute()}?entity=${entity}`;
+      to = `${questionsRoute()}?entity=${entity}`;
     }
   }
 
@@ -30,7 +30,7 @@ export const BackToQuestionsButton = (props: { entityPage?: boolean }) => {
     <LinkButton
       className={`${styles.marginRight} qetaBackToQuestionsBtn`}
       to={to}
-      startIcon={<HomeOutlined />}
+      startIcon={<ChevronLeft />}
     >
       {t('backToQuestionsButton.title')}
     </LinkButton>

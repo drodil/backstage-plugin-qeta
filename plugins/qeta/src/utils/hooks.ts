@@ -70,6 +70,20 @@ export function useEntityQueryParameter(entity?: string) {
 
 export const useStyles = makeStyles(theme => {
   return {
+    selectedMenuItem: {
+      color: theme.palette.primary.contrastText,
+      backgroundColor: theme.palette.primary.light,
+      borderRadius: theme.shape.borderRadius,
+      '&:hover': {
+        backgroundColor: theme.palette.primary.dark,
+      },
+      '& svg': {
+        color: theme.palette.primary.contrastText,
+      },
+    },
+    nonSelectedMenuItem: {
+      backgroundColor: 'initial',
+    },
     markdownEditor: {
       backgroundColor: 'initial',
       color: theme.palette.text.primary,
@@ -146,6 +160,9 @@ export const useStyles = makeStyles(theme => {
       display: 'inline-block',
       width: 'calc(100% - 70px)',
       minHeight: '160px',
+    },
+    questionListItem: {
+      padding: '0.7rem',
     },
     questionListItemStats: {
       width: '80px',

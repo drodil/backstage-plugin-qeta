@@ -100,6 +100,8 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
     } else if (type === 'hot') {
       optionOverride.includeTrend = true;
       optionOverride.orderBy = 'trend';
+    } else if (type === 'own') {
+      optionOverride.author = username;
     }
 
     const decision = await authorizeConditional(

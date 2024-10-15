@@ -1,0 +1,1 @@
+export { QetaPage } from './QetaPage';

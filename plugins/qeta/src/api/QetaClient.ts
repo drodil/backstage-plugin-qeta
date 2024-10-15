@@ -76,8 +76,11 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async getQuestionsList(type: string): Promise<QuestionsResponse> {
-    const query = new URLSearchParams({ limit: '7' }).toString();
+  async getQuestionsList(
+    type: string,
+    options?: GetQuestionsOptions,
+  ): Promise<QuestionsResponse> {
+    const query = this.getQueryParameters(options).toString();
 
     let url = `${await this.getBaseUrl()}/questions/list/${type}`;
     if (query) {
@@ -644,7 +647,10 @@ export class QetaClient implements QetaApi {
     return response;
   }
 
-  private getQueryParameters(params: any): URLSearchParams {
+  private getQueryParameters(params?: any): URLSearchParams {
+    if (!params) {
+      return new URLSearchParams();
+    }
     const asStrings = Object.fromEntries(
       Object.entries(params).map(([k, v]) => {
         if (!v) {

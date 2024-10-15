@@ -42,6 +42,7 @@ export interface QuestionsQuery {
   noAnswers?: boolean;
   favorite?: boolean;
   noVotes?: boolean;
+  random?: boolean;
   includeAnswers?: boolean;
   includeVotes?: boolean;
   includeEntities?: boolean;
@@ -97,6 +98,7 @@ export const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     noAnswers: { type: 'boolean', nullable: true },
     favorite: { type: 'boolean', nullable: true },
     noVotes: { type: 'boolean', nullable: true },
+    random: { type: 'boolean', nullable: true },
     tags: { type: 'string', nullable: true },
     entity: { type: 'string', nullable: true },
     includeAnswers: { type: 'boolean', nullable: true },

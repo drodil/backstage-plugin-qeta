@@ -1,14 +1,23 @@
-import { Box, Divider, List, ListItem, ListSubheader } from '@material-ui/core';
+import {
+  Box,
+  Chip,
+  Divider,
+  List,
+  ListItem,
+  ListSubheader,
+} from '@material-ui/core';
 import React from 'react';
-import { useEntityFollow, useStyles, useTranslation } from '../../utils/hooks';
-import { EntityChip } from '../QuestionPage/EntityChip';
+import { useStyles, useTagsFollow, useTranslation } from '../../utils/hooks';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { tagRouteRef } from '@drodil/backstage-plugin-qeta-react';
 
-export const FollowedEntitiesList = () => {
+export const FollowedTagsList = () => {
   const classes = useStyles();
-  const entities = useEntityFollow();
+  const tags = useTagsFollow();
+  const tagRoute = useRouteRef(tagRouteRef);
   const { t } = useTranslation();
 
-  if (entities.entities.length === 0 || entities.loading) {
+  if (tags.tags.length === 0 || tags.loading) {
     return null;
   }
 
@@ -28,14 +37,22 @@ export const FollowedEntitiesList = () => {
             id="nested-list-subheader"
             color="primary"
           >
-            {t('homePage.followedEntities')}
+            {t('rightMenu.followedTags')}
           </ListSubheader>
         }
       >
         <Divider />
         <ListItem style={{ display: 'block' }}>
-          {entities.entities.map(entity => (
-            <EntityChip key={entity} entity={entity} />
+          {tags.tags.map(tag => (
+            <Chip
+              key={tag}
+              label={tag}
+              size="small"
+              className="qetaTagChip"
+              component="a"
+              href={tagRoute({ tag: tag })}
+              clickable
+            />
           ))}
         </ListItem>
       </List>

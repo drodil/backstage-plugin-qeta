@@ -7,9 +7,9 @@ export const useStyles = makeStyles(theme => {
       color: theme.palette.text.primary,
       borderRadius: '50%',
       boxSizing: 'border-box',
-      padding: '1rem',
-      height: 100,
-      width: 100,
+      padding: '0.5rem',
+      height: 50,
+      width: 50,
     },
     votesText: {
       display: 'grid',

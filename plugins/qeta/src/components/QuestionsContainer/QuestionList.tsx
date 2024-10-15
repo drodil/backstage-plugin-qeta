@@ -2,6 +2,7 @@ import { useStyles, useTranslation } from '../../utils/hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import {
   Box,
+  Card,
   Divider,
   FormControl,
   Grid,
@@ -101,16 +102,18 @@ export const QuestionList = (props: {
   return (
     <div ref={listRef}>
       <Box sx={{ mt: 2 }} className="qetaQuestionList">
-        <Grid container spacing={2} className="qetaQuestionListGrid">
-          {response.questions.map(question => {
-            return (
-              <Grid item xs={12} key={question.id}>
-                <QuestionListItem question={question} entity={entity} />
-                <Divider />
-              </Grid>
-            );
-          })}
-        </Grid>
+        <Card>
+          <Grid container spacing={2}>
+            {response.questions.map(question => {
+              return (
+                <Grid item xs={12} key={question.id}>
+                  <QuestionListItem question={question} entity={entity} />
+                  <Divider />
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Card>
         <Grid
           container
           spacing={0}

@@ -16,32 +16,33 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 
 export type GetQuestionsOptions = {
-  noCorrectAnswer: string;
-  offset: number;
-  includeEntities: boolean;
+  noCorrectAnswer?: string;
+  offset?: number;
+  includeEntities?: boolean;
   author?: string;
-  orderBy: string;
+  orderBy?: string;
   tags?: string[];
-  noVotes: string;
+  noVotes?: string;
   noAnswers?: string;
-  searchQuery: string;
-  limit: number;
+  searchQuery?: string;
+  random?: string;
+  limit?: number;
   favorite?: boolean;
   entity?: string;
-  order: string;
+  order?: string;
   fromDate?: string;
   toDate?: string;
 };
 
 export type GetAnswersOptions = {
-  noCorrectAnswer: string;
-  noVotes: string;
-  offset: number;
+  noCorrectAnswer?: string;
+  noVotes?: string;
+  offset?: number;
   author?: string;
-  orderBy: string;
-  searchQuery: string;
-  limit: number;
-  order: string;
+  orderBy?: string;
+  searchQuery?: string;
+  limit?: number;
+  order?: string;
   fromDate?: string;
   toDate?: string;
 };
@@ -49,7 +50,10 @@ export type GetAnswersOptions = {
 export interface QetaApi {
   getQuestions(options: GetQuestionsOptions): Promise<QuestionsResponse>;
 
-  getQuestionsList(type: string): Promise<QuestionsResponse>;
+  getQuestionsList(
+    type: string,
+    options?: GetQuestionsOptions,
+  ): Promise<QuestionsResponse>;
 
   postQuestion(question: QuestionRequest): Promise<QuestionResponse>;
 

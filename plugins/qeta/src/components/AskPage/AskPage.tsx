@@ -1,10 +1,9 @@
-import { Content, ContentHeader, InfoCard } from '@backstage/core-components';
+import { ContentHeader, InfoCard } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 
 import { AskForm } from '../AskForm/AskForm';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslation } from '../../utils/hooks';
@@ -30,10 +29,8 @@ export const AskPage = () => {
   }
 
   return (
-    <Content className="qetaAskPage">
-      <ContentHeader title={title}>
-        <BackToQuestionsButton entityPage={entityPage} />
-      </ContentHeader>
+    <>
+      <ContentHeader title={title} />
       <Grid container spacing={3} direction="column">
         <Grid item>
           <InfoCard>
@@ -46,6 +43,6 @@ export const AskPage = () => {
           </InfoCard>
         </Grid>
       </Grid>
-    </Content>
+    </>
   );
 };

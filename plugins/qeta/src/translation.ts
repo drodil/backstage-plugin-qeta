@@ -96,7 +96,7 @@ export const qetaTranslationRef = createTranslationRef({
       title: 'Ask question',
     },
     backToQuestionsButton: {
-      title: 'Back to questions',
+      title: 'Back',
     },
     commentList: {
       deleteLink: 'delete',
@@ -120,32 +120,42 @@ export const qetaTranslationRef = createTranslationRef({
     favoritePage: {
       title: 'Your favorite questions',
     },
+    leftMenu: {
+      home: 'Home',
+      questions: 'Questions',
+      profile: 'Profile',
+      tags: 'Tags',
+      favoriteQuestions: 'Favorite questions',
+      statistics: 'Statistics',
+    },
     homePage: {
-      moreMenu: {
-        title: 'More',
-        profile: 'Profile',
-        tags: 'Tags',
-        favoriteQuestions: 'Favorite questions',
-        statistics: 'Statistics',
-      },
-      title: 'All questions',
-      followedTags: 'Followed tags',
+      title: 'Home',
+    },
+    rightMenu: {
       followedEntities: 'Followed entities',
-      highlights: {
-        loadError: 'Failed to load questions',
-        hot: {
-          title: 'Hot questions',
-          noQuestionsLabel: 'No questions',
-        },
-        unanswered: {
-          title: 'Unanswered questions',
-          noQuestionsLabel: 'No unanswered questions',
-        },
-        incorrect: {
-          title: 'Questions without correct answer',
-          noQuestionsLabel: 'No questions without correct answers',
-        },
+      followedTags: 'Followed tags',
+    },
+    highlights: {
+      loadError: 'Failed to load questions',
+      own: {
+        title: 'Your latest questions',
+        noQuestionsLabel: 'No questions',
       },
+      hot: {
+        title: 'Hot questions',
+        noQuestionsLabel: 'No questions',
+      },
+      unanswered: {
+        title: 'Unanswered questions',
+        noQuestionsLabel: 'No unanswered questions',
+      },
+      incorrect: {
+        title: 'Questions without correct answer',
+        noQuestionsLabel: 'No questions without correct answers',
+      },
+    },
+    questionsPage: {
+      title: 'All questions',
     },
     userLink: {
       anonymous: 'Anonymous',

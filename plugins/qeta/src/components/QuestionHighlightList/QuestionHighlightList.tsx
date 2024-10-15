@@ -22,7 +22,7 @@ export const QuestionHighlightList = (props: {
     value: response,
     loading,
     error,
-  } = useQetaApi(api => api.getQuestionsList(props.type), []);
+  } = useQetaApi(api => api.getQuestionsList(props.type, { limit: 5 }), []);
   const classes = useStyles();
   const { t } = useTranslation();
   const questionRoute = useRouteRef(questionRouteRef);
@@ -57,7 +57,7 @@ export const QuestionHighlightList = (props: {
         )}
         {error && (
           <ListItem>
-            <ListItemText>{t('homePage.highlights.loadError')}</ListItemText>
+            <ListItemText>{t('highlights.loadError')}</ListItemText>
           </ListItem>
         )}
         {!error && questions.length === 0 && (

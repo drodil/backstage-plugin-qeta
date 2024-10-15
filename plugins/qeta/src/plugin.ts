@@ -27,7 +27,7 @@ export const qetaPlugin = createPlugin({
 export const QetaPage = qetaPlugin.provide(
   createRoutableExtension({
     name: 'QetaPage',
-    component: () => import('./components/HomePage').then(m => m.HomePage),
+    component: () => import('./components/QetaPage').then(m => m.QetaPage),
     mountPoint: qetaRouteRef,
   }),
 );

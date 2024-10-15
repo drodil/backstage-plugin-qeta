@@ -98,8 +98,9 @@ export const RankingRow = (props: {
             <Typography
               style={{ marginRight: '10px', fontWeight: 400 }}
               variant="subtitle1"
-            >{`${ordinalPosition}`}</Typography>
-            <UserLink entityRef={userRef ?? ''} />
+            >
+              {`${ordinalPosition}`} <UserLink entityRef={userRef ?? ''} />
+            </Typography>
           </div>
         }
       />

@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Container,
   Divider,
   FormControl,
   Grid,
   Select,
   Typography,
 } from '@material-ui/core';
-import {
-  Content,
-  ContentHeader,
-  WarningPanel,
-} from '@backstage/core-components';
+import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useQetaApi, useStyles, useTranslation } from '../../utils/hooks';
 import { QuestionCard } from './QuestionCard';
@@ -141,93 +136,91 @@ export const QuestionPage = () => {
 
   const allAnswers = (question.answers ?? []).concat(newAnswers);
   return (
-    <Content>
-      <Container maxWidth="lg">
-        <ContentHeader
-          title={question.title}
-          // @ts-ignore
-          description={getDescription(question)}
-        >
-          <BackToQuestionsButton
-            entityPage={searchParams.get('entityPage') === 'true'}
-          />
-          <AskQuestionButton />
-        </ContentHeader>
-        <QuestionCard question={question} />
-        <Box sx={{ mt: 3, mb: 2 }}>
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Grid item>
-              <Typography variant="h6">
-                {t('common.answers', {
-                  count: answersCount + newAnswers.length,
-                })}
-              </Typography>
-            </Grid>
-            {allAnswers.length > 1 && (
-              <Grid item>
-                <FormControl>
-                  <Select
-                    native
-                    label={t('questionPage.sortAnswers.label')}
-                    value={answerSort}
-                    onChange={val => setAnswerSort(val.target.value as string)}
-                    inputProps={{
-                      name: 'sortAnswers',
-                      id: 'sort-answers',
-                    }}
-                  >
-                    <option value="default">
-                      {t('questionPage.sortAnswers.default')}
-                    </option>
-                    <option value="created_desc">
-                      {t('questionPage.sortAnswers.createdDesc')}
-                    </option>
-                    <option value="created_asc">
-                      {t('questionPage.sortAnswers.createdAsc')}
-                    </option>
-                    <option value="score_desc">
-                      {t('questionPage.sortAnswers.scoreDesc')}
-                    </option>
-                    <option value="score_asc">
-                      {t('questionPage.sortAnswers.scoreAsc')}
-                    </option>
-                    <option value="comments_desc">
-                      {t('questionPage.sortAnswers.commentsDesc')}
-                    </option>
-                    <option value="comments_asc">
-                      {t('questionPage.sortAnswers.commentsAsc')}
-                    </option>
-                    <option value="author_desc">
-                      {t('questionPage.sortAnswers.authorDesc')}
-                    </option>
-                    <option value="author_asc">
-                      {t('questionPage.sortAnswers.authorAsc')}
-                    </option>
-                    <option value="updated_desc">
-                      {t('questionPage.sortAnswers.updatedDesc')}
-                    </option>
-                    <option value="updated_asc">
-                      {t('questionPage.sortAnswers.updatedAsc')}
-                    </option>
-                  </Select>
-                </FormControl>
-              </Grid>
-            )}
+    <>
+      <ContentHeader
+        title={question.title}
+        // @ts-ignore
+        description={getDescription(question)}
+      >
+        <BackToQuestionsButton
+          entityPage={searchParams.get('entityPage') === 'true'}
+        />
+        <AskQuestionButton />
+      </ContentHeader>
+      <QuestionCard question={question} />
+      <Box sx={{ mt: 3, mb: 2 }}>
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Grid item>
+            <Typography variant="h6">
+              {t('common.answers', {
+                count: answersCount + newAnswers.length,
+              })}
+            </Typography>
           </Grid>
-        </Box>
-        {allAnswers.sort(sortAnswers).map(a => {
-          return (
-            <React.Fragment key={a.id}>
-              <Divider className={styles.questionDivider} />
-              <Box key={a.id} sx={{ mb: 1 }}>
-                <AnswerCard answer={a} question={question} />
-              </Box>
-            </React.Fragment>
-          );
-        })}
-        <Divider className={styles.questionDivider} />
-        <AnswerForm question={question} onPost={onAnswerPost} />
-      </Container>
-    </Content>
+          {allAnswers.length > 1 && (
+            <Grid item>
+              <FormControl>
+                <Select
+                  native
+                  label={t('questionPage.sortAnswers.label')}
+                  value={answerSort}
+                  onChange={val => setAnswerSort(val.target.value as string)}
+                  inputProps={{
+                    name: 'sortAnswers',
+                    id: 'sort-answers',
+                  }}
+                >
+                  <option value="default">
+                    {t('questionPage.sortAnswers.default')}
+                  </option>
+                  <option value="created_desc">
+                    {t('questionPage.sortAnswers.createdDesc')}
+                  </option>
+                  <option value="created_asc">
+                    {t('questionPage.sortAnswers.createdAsc')}
+                  </option>
+                  <option value="score_desc">
+                    {t('questionPage.sortAnswers.scoreDesc')}
+                  </option>
+                  <option value="score_asc">
+                    {t('questionPage.sortAnswers.scoreAsc')}
+                  </option>
+                  <option value="comments_desc">
+                    {t('questionPage.sortAnswers.commentsDesc')}
+                  </option>
+                  <option value="comments_asc">
+                    {t('questionPage.sortAnswers.commentsAsc')}
+                  </option>
+                  <option value="author_desc">
+                    {t('questionPage.sortAnswers.authorDesc')}
+                  </option>
+                  <option value="author_asc">
+                    {t('questionPage.sortAnswers.authorAsc')}
+                  </option>
+                  <option value="updated_desc">
+                    {t('questionPage.sortAnswers.updatedDesc')}
+                  </option>
+                  <option value="updated_asc">
+                    {t('questionPage.sortAnswers.updatedAsc')}
+                  </option>
+                </Select>
+              </FormControl>
+            </Grid>
+          )}
+        </Grid>
+      </Box>
+      {allAnswers.sort(sortAnswers).map(a => {
+        return (
+          <React.Fragment key={a.id}>
+            <Divider className={styles.questionDivider} />
+            <Box key={a.id} sx={{ mb: 1 }}>
+              <AnswerCard answer={a} question={question} />
+            </Box>
+          </React.Fragment>
+        );
+      })}
+      <Divider className={styles.questionDivider} />
+      <AnswerForm question={question} onPost={onAnswerPost} />
+    </>
   );
 };
