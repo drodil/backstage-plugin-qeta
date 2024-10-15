@@ -89,11 +89,11 @@ export const qetaTranslationRef = createTranslationRef({
       title: {
         existingQuestion: 'Edit question',
         entityQuestion: 'Ask a question about {{entity}}',
-        newQuestion: 'Ask question',
+        newQuestion: 'Ask a question',
       },
     },
     askQuestionButton: {
-      title: 'Ask question',
+      title: 'Ask a question',
     },
     backToQuestionsButton: {
       title: 'Back',
