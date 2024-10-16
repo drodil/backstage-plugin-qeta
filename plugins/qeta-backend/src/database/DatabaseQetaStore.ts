@@ -1182,6 +1182,7 @@ export class DatabaseQetaStore implements QetaStore {
       id: val.id,
       author:
         val.anonymous && val.author !== user_ref ? 'anonymous' : val.author,
+      own: val.author === user_ref,
       title: val.title,
       content: val.content,
       created: val.created as Date,

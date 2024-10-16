@@ -1,6 +1,8 @@
 import React from 'react';
 import { useStyles, useTagsFollow, useTranslation } from '../../utils/hooks';
-import { Button, Tooltip } from '@material-ui/core';
+import { IconButton, Tooltip } from '@material-ui/core';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 export const TagFollowButton = (props: { tag: string }) => {
   const { tag } = props;
@@ -12,7 +14,7 @@ export const TagFollowButton = (props: { tag: string }) => {
   }
   return (
     <Tooltip title={t('tagButton.tooltip')}>
-      <Button
+      <IconButton
         className={`${styles.marginRight} qetaFollowTagBtn`}
         color={tags.isFollowingTag(tag) ? 'secondary' : 'primary'}
         onClick={() => {
@@ -23,10 +25,8 @@ export const TagFollowButton = (props: { tag: string }) => {
           }
         }}
       >
-        {tags.isFollowingTag(tag)
-          ? t('tagButton.unfollow')
-          : t('tagButton.follow')}
-      </Button>
+        {tags.isFollowingTag(tag) ? <VisibilityOff /> : <Visibility />}
+      </IconButton>
     </Tooltip>
   );
 };

@@ -125,7 +125,7 @@ export const qetaTranslationRef = createTranslationRef({
       questions: 'Questions',
       profile: 'Profile',
       tags: 'Tags',
-      favoriteQuestions: 'Favorite questions',
+      favoriteQuestions: 'Favorites',
       statistics: 'Statistics',
     },
     homePage: {

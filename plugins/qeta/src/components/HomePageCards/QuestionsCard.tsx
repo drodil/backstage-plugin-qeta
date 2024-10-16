@@ -22,7 +22,7 @@ export const QuestionsCard = (props: {
 
   return (
     <Card>
-      <CardHeader title={props.title} />
+      <CardHeader style={{ paddingBottom: '8px' }} title={props.title} />
       <Grid container spacing={2}>
         {questions.map(question => {
           return (

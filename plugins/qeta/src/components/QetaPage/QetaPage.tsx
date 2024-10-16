@@ -6,9 +6,6 @@ import { AskPage } from '../AskPage';
 import { QuestionPage } from '../QuestionPage/QuestionPage';
 import { TagPage } from '../TagPage/TagPage';
 import { UserPage } from '../UserPage/UserPage';
-import { QuestionHighlightList } from '../QuestionHighlightList/QuestionHighlightList';
-import { useTranslation } from '../../utils/hooks';
-import Whatshot from '@material-ui/icons/Whatshot';
 import { FavoritePage } from '../FavoritePage/FavoritePage';
 import { StatisticsPage } from '../Statistics';
 import {
@@ -22,11 +19,10 @@ import {
   tagsRouteRef,
   userRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
-import { FollowedTagsList } from './FollowedTagsList';
-import { FollowedEntitiesList } from './FollowedEntitiesList';
 import { LeftMenu } from '../LeftMenu/LeftMenu';
 import { QuestionsPage } from '../QuestionsPage/QuestionsPage';
 import { HomePage } from '../HomePage/HomePage';
+import { useStyles } from '../../utils/hooks';
 
 type Props = {
   title?: string;
@@ -48,7 +44,7 @@ export const QetaPage = (props?: Props) => {
     headerType,
     headerTypeLink,
   } = props ?? {};
-  const { t } = useTranslation();
+  const styles = useStyles();
 
   return (
     <Page themeId={themeId}>
@@ -63,11 +59,16 @@ export const QetaPage = (props?: Props) => {
       </Header>
       <Content className="qetaHomePage">
         <Container maxWidth="xl">
-          <Grid container spacing={4}>
-            <Grid item md={3} lg={2} xl={2}>
+          <Grid container spacing={4} justifyContent="flex-start">
+            <Grid item md={12} lg={2} className={styles.noPadding}>
               <LeftMenu />
             </Grid>
-            <Grid item md={9} lg={7} xl={8}>
+            <Grid
+              item
+              md={12}
+              lg={10}
+              style={{ paddingLeft: '0', paddingRight: '0' }}
+            >
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route
@@ -92,26 +93,6 @@ export const QetaPage = (props?: Props) => {
                   element={<StatisticsPage />}
                 />
               </Routes>
-            </Grid>
-            <Grid item lg={3} xl={2}>
-              <QuestionHighlightList
-                type="hot"
-                title={t('highlights.hot.title')}
-                noQuestionsLabel={t('highlights.hot.noQuestionsLabel')}
-                icon={<Whatshot fontSize="small" />}
-              />
-              <QuestionHighlightList
-                type="unanswered"
-                title={t('highlights.unanswered.title')}
-                noQuestionsLabel={t('highlights.unanswered.noQuestionsLabel')}
-              />
-              <QuestionHighlightList
-                type="incorrect"
-                title={t('highlights.incorrect.title')}
-                noQuestionsLabel={t('highlights.incorrect.noQuestionsLabel')}
-              />
-              <FollowedTagsList />
-              <FollowedEntitiesList />
             </Grid>
           </Grid>
         </Container>

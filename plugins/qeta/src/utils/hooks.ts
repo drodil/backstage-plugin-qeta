@@ -70,6 +70,11 @@ export function useEntityQueryParameter(entity?: string) {
 
 export const useStyles = makeStyles(theme => {
   return {
+    leftMenu: {
+      position: 'sticky',
+      top: '0',
+      width: '180px',
+    },
     selectedMenuItem: {
       color: theme.palette.primary.contrastText,
       backgroundColor: theme.palette.primary.light,
@@ -152,36 +157,36 @@ export const useStyles = makeStyles(theme => {
     questionCardVote: {
       textAlign: 'center',
       width: '32px',
-      marginRight: '26px',
+      marginRight: '20px',
+      marginLeft: '5px',
+      marginTop: '10px',
       display: 'inline-block',
       verticalAlign: 'top',
     },
     questionCardContent: {
-      display: 'inline-block',
-      width: 'calc(100% - 70px)',
       minHeight: '160px',
     },
     questionListItem: {
       padding: '0.7rem',
+      paddingBottom: '1.4rem',
     },
     questionListItemStats: {
-      width: '80px',
+      width: '70px',
       textAlign: 'right',
-      marginRight: '26px',
+      marginRight: '5px',
       display: 'inline-block',
       verticalAlign: 'top',
-      paddingTop: '10px',
     },
     questionListItemContent: {
       display: 'inline-block',
-      width: 'calc(100% - 120px)',
+      width: 'calc(100% - 80px)',
     },
     questionListItemAuthor: {
       display: 'inline',
       float: 'right',
     },
     questionListItemAvatar: {
-      display: 'inline-flex',
+      display: 'inline-flex !important',
       marginRight: '0.25rem',
       fontSize: '1rem',
       maxWidth: '1rem',
@@ -217,6 +222,7 @@ export const useStyles = makeStyles(theme => {
     },
     questionHighlightListContainer: {
       width: '100%',
+      backgroundColor: theme.palette.background.paper,
       border: `1px solid ${theme.palette.action.selected}`,
       borderRadius: theme.shape.borderRadius,
       '&:not(:first-child)': {
@@ -225,6 +231,10 @@ export const useStyles = makeStyles(theme => {
     },
     questionHighlightList: {
       paddingBottom: '0px',
+      '& p': {
+        marginTop: '0',
+        marginBottom: '0',
+      },
     },
     filterPanel: {
       border: `1px solid ${theme.palette.action.selected}`,

@@ -11,18 +11,23 @@ import { useQetaApi, useStyles, useTranslation } from '../../utils/hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { questionRouteRef } from '@drodil/backstage-plugin-qeta-react';
+import { GetQuestionsOptions } from '../../api/QetaApi';
 
 export const QuestionHighlightList = (props: {
   type: string;
   title: string;
   noQuestionsLabel: string;
   icon?: React.ReactNode;
+  options?: GetQuestionsOptions;
 }) => {
   const {
     value: response,
     loading,
     error,
-  } = useQetaApi(api => api.getQuestionsList(props.type, { limit: 5 }), []);
+  } = useQetaApi(
+    api => api.getQuestionsList(props.type, { limit: 5, ...props.options }),
+    [],
+  );
   const classes = useStyles();
   const { t } = useTranslation();
   const questionRoute = useRouteRef(questionRouteRef);
@@ -41,7 +46,7 @@ export const QuestionHighlightList = (props: {
         subheader={
           <ListSubheader
             disableSticky
-            component="div"
+            component="p"
             id="nested-list-subheader"
             color="primary"
           >
@@ -51,17 +56,17 @@ export const QuestionHighlightList = (props: {
         }
       >
         {loading && (
-          <ListItem>
+          <ListItem className="qetaQuestionHighlightListListItem" dense>
             <Skeleton variant="rect" />
           </ListItem>
         )}
         {error && (
-          <ListItem>
+          <ListItem className="qetaQuestionHighlightListListItem" dense>
             <ListItemText>{t('highlights.loadError')}</ListItemText>
           </ListItem>
         )}
         {!error && questions.length === 0 && (
-          <ListItem>
+          <ListItem className="qetaQuestionHighlightListListItem" dense>
             <ListItemText>{props.noQuestionsLabel}</ListItemText>
           </ListItem>
         )}

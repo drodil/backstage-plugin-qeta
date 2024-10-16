@@ -29,6 +29,10 @@ const useStyles = makeStyles((theme: Theme) =>
     qetaCorrectAnswer: {
       color: theme.palette.grey[500],
     },
+    voteButtonContainer: {
+      borderWidth: '1px',
+      borderColor: 'white',
+    },
   }),
 );
 
@@ -151,7 +155,7 @@ export const VoteButtons = (props: {
   return (
     <React.Fragment>
       <Tooltip title={voteUpTooltip}>
-        <span>
+        <span className={classes.voteButtonContainer}>
           <IconButton
             aria-label="vote up"
             color={ownVote > 0 ? 'primary' : 'default'}

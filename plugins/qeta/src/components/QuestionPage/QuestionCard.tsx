@@ -59,69 +59,75 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
         className={`qetaQuestionCard ${styles.questionCard}`}
       >
         <CardContent>
-          <div className={styles.questionCardVote}>
-            <VoteButtons entity={questionEntity} />
-            <FavoriteButton entity={questionEntity} />
-            <LinkButton entity={questionEntity} />
-          </div>
-          <div className={styles.questionCardContent}>
-            <Typography variant="body1" gutterBottom>
-              <MarkdownContent
-                content={questionEntity.content}
-                dialect="gfm"
-                className={styles.markdownContent}
-              />
-            </Typography>
-            <Grid
-              container
-              item
-              justifyContent="space-around"
-              className={styles.questionCardMetadata}
-            >
-              <Grid item xs={9} style={{ alignSelf: 'flex-end' }}>
-                <TagsAndEntities question={questionEntity} />
-                {(question.canEdit || question.canDelete) && (
-                  <Box className={styles.questionCardActions}>
-                    {question.canDelete && (
-                      <>
+          <Grid container spacing={0} justifyContent="flex-start">
+            <Grid container item xs={1} justifyContent="center">
+              <div className={styles.questionCardVote}>
+                <VoteButtons entity={questionEntity} />
+                <FavoriteButton entity={questionEntity} />
+                <LinkButton entity={questionEntity} />
+              </div>
+            </Grid>
+            <Grid item xs={11} className={styles.questionCardContent}>
+              <Typography variant="body1" gutterBottom>
+                <MarkdownContent
+                  content={questionEntity.content}
+                  dialect="gfm"
+                  className={styles.markdownContent}
+                />
+              </Typography>
+              <Grid
+                container
+                item
+                spacing={1}
+                justifyContent="space-between"
+                alignItems="flex-end"
+                className={styles.questionCardMetadata}
+              >
+                <Grid item xs={9} style={{ alignSelf: 'flex-end' }}>
+                  <TagsAndEntities question={questionEntity} />
+                  {(question.canEdit || question.canDelete) && (
+                    <Box className={styles.questionCardActions}>
+                      {question.canDelete && (
+                        <>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            color="secondary"
+                            onClick={handleDeleteModalOpen}
+                            className={`${styles.marginRight} qetaQuestionCardDeleteBtn`}
+                            startIcon={<DeleteIcon />}
+                          >
+                            {t('deleteModal.deleteButton')}
+                          </Button>
+                          <DeleteModal
+                            open={deleteModalOpen}
+                            onClose={handleDeleteModalClose}
+                            entity={questionEntity}
+                          />
+                        </>
+                      )}
+                      {question.canEdit && (
                         <Button
                           variant="outlined"
                           size="small"
-                          color="secondary"
-                          onClick={handleDeleteModalOpen}
-                          className={`${styles.marginRight} qetaQuestionCardDeleteBtn`}
-                          startIcon={<DeleteIcon />}
+                          startIcon={<EditIcon />}
+                          href={editQuestionRoute({
+                            id: question.id.toString(10),
+                          })}
+                          className="qetaQuestionCardEditBtn"
                         >
-                          {t('deleteModal.deleteButton')}
+                          {t('questionPage.editButton')}
                         </Button>
-                        <DeleteModal
-                          open={deleteModalOpen}
-                          onClose={handleDeleteModalClose}
-                          entity={questionEntity}
-                        />
-                      </>
-                    )}
-                    {question.canEdit && (
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<EditIcon />}
-                        href={editQuestionRoute({
-                          id: question.id.toString(10),
-                        })}
-                        className="qetaQuestionCardEditBtn"
-                      >
-                        {t('questionPage.editButton')}
-                      </Button>
-                    )}
-                  </Box>
-                )}
-              </Grid>
-              <Grid item xs={3} className={styles.noPadding}>
-                <AuthorBox entity={questionEntity} />
+                      )}
+                    </Box>
+                  )}
+                </Grid>
+                <Grid item xs={3} className={styles.noPadding}>
+                  <AuthorBox entity={questionEntity} />
+                </Grid>
               </Grid>
             </Grid>
-          </div>
+          </Grid>
         </CardContent>
       </Card>
       <CommentSection

@@ -64,7 +64,7 @@ export const LeftMenu = () => {
   };
 
   return (
-    <MenuList id="left-menu">
+    <MenuList id="left-menu" className={styles.leftMenu}>
       <CustomMenuItem route={rootRoute()}>
         <ListItemIcon className={styles.menuIcon}>
           <Home fontSize="small" />

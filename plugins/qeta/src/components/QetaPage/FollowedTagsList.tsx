@@ -33,7 +33,7 @@ export const FollowedTagsList = () => {
         subheader={
           <ListSubheader
             disableSticky
-            component="div"
+            component="p"
             id="nested-list-subheader"
             color="primary"
           >
