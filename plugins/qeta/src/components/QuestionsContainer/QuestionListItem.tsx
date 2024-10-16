@@ -30,7 +30,6 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
 
   const [correctAnswer, setCorrectAnswer] = useState(question.correctAnswer);
   const [answersCount, setAnswersCount] = useState(question.answersCount);
-  const [score, setScore] = useState(question.score);
   const [views, setViews] = useState(question.views);
   const { t } = useTranslation();
 
@@ -40,7 +39,6 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
     if (lastSignal?.type === 'question_stats') {
       setCorrectAnswer(lastSignal.correctAnswer);
       setAnswersCount(lastSignal.answersCount);
-      setScore(lastSignal.score);
       setViews(lastSignal.views);
     }
   }, [lastSignal]);
