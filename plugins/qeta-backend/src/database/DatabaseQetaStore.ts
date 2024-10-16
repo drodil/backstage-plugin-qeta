@@ -1174,7 +1174,7 @@ export class DatabaseQetaStore implements QetaStore {
       addAnswers
         ? this.getQuestionAnswers(val.id, user_ref, addVotes, addComments)
         : undefined,
-      addVotes ? this.getQuestionVotes(val.id) : undefined,
+      addVotes !== false ? this.getQuestionVotes(val.id) : undefined,
       addEntities ? this.getQuestionEntities(val.id) : undefined,
       addComments ? this.getQuestionComments(val.id) : undefined,
     ]);
@@ -1199,6 +1199,7 @@ export class DatabaseQetaStore implements QetaStore {
       entities: additionalInfo[3],
       trend: this.mapToInteger(val.trend),
       comments: additionalInfo[4],
+      ownVote: additionalInfo[2]?.find(v => v.author === user_ref)?.score,
       anonymous: val.anonymous,
     };
   }

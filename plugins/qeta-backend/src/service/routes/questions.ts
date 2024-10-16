@@ -514,14 +514,19 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await mapAdditionalFields(request, question, options);
-    question.ownVote = score;
+    const resp = await database.getQuestion(username, questionId, false);
+    if (resp === null) {
+      response.sendStatus(404);
+      return;
+    }
+    await mapAdditionalFields(request, resp, options);
+    resp.ownVote = score;
 
     if (events) {
       events.publish({
         topic: 'qeta',
         eventPayload: {
-          question,
+          question: resp,
           author: username,
           score,
         },
@@ -529,10 +534,10 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       });
     }
 
-    signalQuestionStats(signals, question);
+    signalQuestionStats(signals, resp);
 
     // Response
-    response.json(question);
+    response.json(resp);
   };
 
   // GET /questions/:id/upvote

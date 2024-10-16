@@ -429,15 +429,21 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await mapAdditionalFields(request, answer, options);
-    answer.ownVote = score;
+    const resp = await database.getAnswer(answerId, username);
+    if (resp === null) {
+      response.sendStatus(404);
+      return;
+    }
+
+    await mapAdditionalFields(request, resp, options);
+    resp.ownVote = score;
 
     if (events) {
       events.publish({
         topic: 'qeta',
         eventPayload: {
           question,
-          answer,
+          answer: resp,
           author: username,
           score,
         },
@@ -445,10 +451,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       });
     }
 
-    signalAnswerStats(signals, answer);
+    signalAnswerStats(signals, resp);
 
     // Response
-    response.json(answer);
+    response.json(resp);
   };
 
   // GET /questions/:id/answers/:answerId/upvote
