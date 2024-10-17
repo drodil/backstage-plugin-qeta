@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.11.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.10.3...v2.11.0) (2024-10-17)
+
+
+### Features
+
+* modify UI to have left menu for features ([498747e](https://github.com/drodil/backstage-plugin-qeta/commit/498747e2366739c410fe169e901263e6018b7554))
+* more ui tuning for questions ([edcda4b](https://github.com/drodil/backstage-plugin-qeta/commit/edcda4be182458d2af08bcaf0e25aedb28d2bfaa))
+
+
+### Bug Fixes
+
+* missing a from ask question ([aecdafc](https://github.com/drodil/backstage-plugin-qeta/commit/aecdafc50f198c892feafc4900e760cca0390ebf))
+* unnecessary score in question list item ([570cdec](https://github.com/drodil/backstage-plugin-qeta/commit/570cdec3cdcc111141cc091340d4c374b6d428d0))
+* voting to return right value for user ([62051eb](https://github.com/drodil/backstage-plugin-qeta/commit/62051eb7dd6bc050e115c5378f70f430d9d73279))
+
 ### [2.10.3](https://github.com/drodil/backstage-plugin-qeta/compare/v2.10.2...v2.10.3) (2024-10-15)
 
 ### [2.10.2](https://github.com/drodil/backstage-plugin-qeta/compare/v2.10.1...v2.10.2) (2024-10-04)
