@@ -18,10 +18,10 @@ export class StatsCollector {
       'qeta.statsCollector.schedule',
     )
       ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
-          config.getConfig('qeta.statsCollector.schedule'),
+          config.getConfig('qeta.stats.schedule'),
         )
       : {
-          frequency: { cron: '0 0 * * *' },
+          frequency: { cron: '15 */12 * * *' },
           timeout: { hours: 1 },
           initialDelay: { minutes: 5 },
           scope: 'global',
@@ -51,7 +51,7 @@ export class StatsCollector {
     }
 
     const historyDays =
-      config.getOptionalNumber('qeta.statsCollector.historyDays') ?? 30;
+      config.getOptionalNumber('qeta.stats.historyDays') ?? 30;
     await database.cleanStats(historyDays);
   };
 }

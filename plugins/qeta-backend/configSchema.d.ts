@@ -88,11 +88,11 @@ export interface Config {
       sessionToken?: string;
     };
     /**
-     * Stats collector config
+     * Stats config
      */
-    statsCollector?: {
+    stats?: {
       /**
-       * Schedule to run the stats collector, defaults to once a day
+       * Schedule to run the stats collector, defaults to 2 times a day
        */
       schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
       /**
