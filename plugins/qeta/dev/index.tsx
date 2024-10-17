@@ -18,6 +18,19 @@ import {
 } from '@backstage/plugin-notifications';
 import { catalogPlugin } from '@backstage/plugin-catalog';
 import { signalsPlugin } from '@backstage/plugin-signals';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
+import Box from '@material-ui/core/Box';
+
+const IntroElement = () => (
+  <Box marginBottom={4}>
+    <Alert severity="info">
+      <AlertTitle>Introduction Element</AlertTitle>
+      This component lives in introElement area. This component is displayed as
+      Alert, but can contain any ReactNode component.
+    </Alert>
+  </Box>
+);
 
 export const CatalogEntityPage: () => JSX.Element = catalogPlugin.provide(
   createRoutableExtension({
@@ -48,6 +61,7 @@ createDevApp()
         headerType="See @ GitHub"
         headerTypeLink="https://github.com/drodil/backstage-plugin-qeta"
         headerTooltip="This is very cool plugin"
+        introElement={<IntroElement />}
       />
     ),
     title: 'Root Page',

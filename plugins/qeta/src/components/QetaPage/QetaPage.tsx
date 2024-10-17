@@ -32,6 +32,7 @@ type Props = {
   headerTooltip?: string;
   headerType?: string;
   headerTypeLink?: string;
+  introElement?: ReactNode;
 };
 
 export const QetaPage = (props?: Props) => {
@@ -43,6 +44,7 @@ export const QetaPage = (props?: Props) => {
     headerTooltip,
     headerType,
     headerTypeLink,
+    introElement,
   } = props ?? {};
   const styles = useStyles();
 
@@ -58,6 +60,7 @@ export const QetaPage = (props?: Props) => {
         {headerElements}
       </Header>
       <Content className="qetaHomePage">
+        {introElement}
         <Container maxWidth="xl">
           <Grid container spacing={4} justifyContent="flex-start">
             <Grid item md={12} lg={2} className={styles.noPadding}>
