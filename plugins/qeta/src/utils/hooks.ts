@@ -1,6 +1,7 @@
 import { QetaApi, qetaApiRef } from '../api';
 import useAsync from 'react-use/lib/useAsync';
 import {
+  appThemeApiRef,
   configApiRef,
   IdentityApi,
   identityApiRef,
@@ -14,7 +15,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { trimEnd } from 'lodash';
 import { useSearchParams } from 'react-router-dom';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { UserEntity } from '@backstage/catalog-model';
 import {
   AnswerResponse,
@@ -66,6 +67,13 @@ export function useEntityQueryParameter(entity?: string) {
   }, [searchParams, setEntityRef]);
 
   return entityRef;
+}
+
+export function useIsDarkTheme() {
+  const appThemeApi = useApi(appThemeApiRef);
+  const themes = appThemeApi.getInstalledThemes();
+  const theme = useMemo(() => appThemeApi.getActiveThemeId(), [appThemeApi]);
+  return themes.find(t => t.id === theme)?.variant === 'dark';
 }
 
 export const useStyles = makeStyles(theme => {

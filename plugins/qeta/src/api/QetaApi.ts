@@ -11,6 +11,7 @@ import {
   QuestionsResponse,
   StatisticResponse,
   StatisticsRequestParameters,
+  StatisticsResponse,
   TagResponse,
   UserEntitiesResponse,
   UserTagsResponse,
@@ -160,4 +161,6 @@ export interface QetaApi {
   unfollowEntity(entityRef: string): Promise<boolean>;
 
   getUserImpact(): Promise<ImpactResponse>;
+  getGlobalStats(): Promise<StatisticsResponse>;
+  getUserStats(userRef: string): Promise<StatisticsResponse>;
 }

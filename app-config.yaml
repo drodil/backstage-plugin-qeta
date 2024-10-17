@@ -80,7 +80,7 @@ qeta:
     - Resource
     - Group
     - System
-  statsCollector:
+  stats:
     schedule:
       frequency: { minutes: 1 }
       initialDelay: { seconds: 30 }

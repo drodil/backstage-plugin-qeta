@@ -16,6 +16,17 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     return response.status(200).json({ impact: userImpact });
   });
 
+  router.get('/statistics/global', async (_req, response) => {
+    const globalStats = await database.getGlobalStats();
+    return response.status(200).json({ statistics: globalStats });
+  });
+
+  router.get('/statistics/user/:userRef(*)', async (req, response) => {
+    const userRef = req.params.userRef;
+    const userStats = await database.getUserStats(userRef);
+    return response.status(200).json({ statistics: userStats });
+  });
+
   // GET /statistics/questions/top-upvoted-users?period=x&limit=x
   router.get(
     '/statistics/questions/top-upvoted-users',

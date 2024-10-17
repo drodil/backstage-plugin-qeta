@@ -22,10 +22,12 @@ import {
   Attachment,
   Comment,
   filterTags,
+  GlobalStat,
   Question,
   Statistic,
   StatisticsRequestParameters,
   UserEntitiesResponse,
+  UserStat,
   UserTagsResponse,
   Vote,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -1217,6 +1219,17 @@ export class DatabaseQetaStore implements QetaStore {
       })
       .onConflict(['date'])
       .merge();
+  }
+
+  async getGlobalStats(): Promise<GlobalStat[]> {
+    return this.db('global_stats').select('*').orderBy('date', 'desc');
+  }
+
+  async getUserStats(user_ref: string): Promise<UserStat[]> {
+    return this.db('user_stats')
+      .where('userRef', user_ref)
+      .select('*')
+      .orderBy('date', 'desc');
   }
 
   async cleanStats(days: number): Promise<void> {

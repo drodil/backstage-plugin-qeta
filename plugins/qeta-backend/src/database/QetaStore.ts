@@ -2,10 +2,12 @@ import {
   Answer,
   Attachment,
   Comment,
+  GlobalStat,
   Question,
   Statistic,
   StatisticsRequestParameters,
   UserEntitiesResponse,
+  UserStat,
   UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { QetaFilters } from '../service/util';
@@ -422,4 +424,6 @@ export interface QetaStore {
   getUsers(): Promise<string[]>;
   getTotalViews(user_ref: string): Promise<number>;
   cleanStats(days: number): Promise<void>;
+  getGlobalStats(): Promise<GlobalStat[]>;
+  getUserStats(user_ref: string): Promise<UserStat[]>;
 }

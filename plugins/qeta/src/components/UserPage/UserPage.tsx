@@ -8,11 +8,12 @@ import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { AnswersContainer } from '../AnswersContainer';
 import { useTranslation } from '../../utils/hooks';
+import { UserStatsCard } from './UserStatsCard';
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
   const presentation = useEntityPresentation(identity);
-  const [tab, setTab] = useState('questions');
+  const [tab, setTab] = useState('statistics');
   const { t } = useTranslation();
   const [_searchParams, setSearchParams] = useSearchParams();
 
@@ -31,10 +32,14 @@ export const UserPage = () => {
             onChange={handleChange}
             aria-label={t('userPage.profileTab')}
           >
+            <Tab label={t('userPage.statistics')} value="statistics" />
             <Tab label={t('userPage.questions')} value="questions" />
             <Tab label={t('userPage.answers')} value="answers" />
           </TabList>
         </Box>
+        <TabPanel value="statistics">
+          <UserStatsCard userRef={identity ?? ''} />
+        </TabPanel>
         <TabPanel value="questions">
           <QuestionsContainer
             author={identity ?? ''}

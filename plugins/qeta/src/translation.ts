@@ -331,8 +331,12 @@ export const qetaTranslationRef = createTranslationRef({
     },
     userPage: {
       profileTab: 'Profile',
+      statistics: 'Statistics',
       questions: 'Questions',
       answers: 'Answers',
+    },
+    stats: {
+      noStats: 'No statistics available. Check back later!',
     },
     tagButton: {
       follow: 'Follow',

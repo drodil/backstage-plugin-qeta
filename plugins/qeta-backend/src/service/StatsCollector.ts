@@ -14,8 +14,8 @@ export class StatsCollector {
     logger: LoggerService,
     database: QetaStore,
   ): Promise<void> => {
-    const schedule: SchedulerServiceTaskScheduleDefinition = config?.has(
-      'qeta.statsCollector.schedule',
+    const schedule: SchedulerServiceTaskScheduleDefinition = config.has(
+      'qeta.stats.schedule',
     )
       ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
           config.getConfig('qeta.stats.schedule'),

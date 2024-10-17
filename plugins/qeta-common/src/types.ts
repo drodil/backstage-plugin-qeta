@@ -12,6 +12,22 @@ export interface Statistic {
   position?: number;
 }
 
+export interface Stat {
+  date: Date;
+  totalViews: number;
+  totalQuestions: number;
+  totalAnswers: number;
+  totalComments: number;
+  totalVotes: number;
+}
+
+export interface GlobalStat extends Stat {
+  totalTags: number;
+  totalUsers: number;
+}
+
+export interface UserStat extends Stat {}
+
 export interface StatisticsOptions {
   limit?: number;
   period?: string;
@@ -193,4 +209,8 @@ export interface UserEntitiesResponse {
 
 export interface ImpactResponse {
   impact: number;
+}
+
+export interface StatisticsResponse {
+  statistics: Stat[];
 }

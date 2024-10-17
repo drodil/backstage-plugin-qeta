@@ -22,6 +22,7 @@ import {
   QuestionsResponseBody,
   StatisticResponse,
   StatisticsRequestParameters,
+  StatisticsResponse,
   TagResponse,
   UserEntitiesResponse,
   UserTagsResponse,
@@ -654,6 +655,20 @@ export class QetaClient implements QetaApi {
     );
 
     return (await response.json()) as ImpactResponse;
+  }
+
+  async getGlobalStats(): Promise<StatisticsResponse> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/statistics/global`,
+    );
+    return (await response.json()) as StatisticsResponse;
+  }
+
+  async getUserStats(userRef: string): Promise<StatisticsResponse> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/statistics/user/${userRef}`,
+    );
+    return (await response.json()) as StatisticsResponse;
   }
 
   private getQueryParameters(params?: any): URLSearchParams {
