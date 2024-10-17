@@ -47,15 +47,15 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/core-plugin-api": "^1.10.0",
+    "@backstage/core-plugin-api": "backstage:^",
     "@material-ui/core": "^4.12.2"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.28.0",
-    "@backstage/test-utils": "^1.7.0",
+    "@backstage/cli": "backstage:^",
+    "@backstage/test-utils": "backstage:^",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3"
   },
