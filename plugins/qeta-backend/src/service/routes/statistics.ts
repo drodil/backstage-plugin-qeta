@@ -10,6 +10,12 @@ import { RouteOptions } from '../types';
 export const statisticRoutes = (router: Router, options: RouteOptions) => {
   const { database } = options;
 
+  router.get('/statistics/user/impact', async (request, response) => {
+    const userRef = await getUsername(request, options);
+    const userImpact = await database.getTotalViews(userRef);
+    return response.status(200).json({ impact: userImpact });
+  });
+
   // GET /statistics/questions/top-upvoted-users?period=x&limit=x
   router.get(
     '/statistics/questions/top-upvoted-users',

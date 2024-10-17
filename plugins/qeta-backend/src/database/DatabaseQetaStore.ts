@@ -101,6 +101,12 @@ export type RawCommentEntity = {
   updatedBy: string;
 };
 
+export type RawUserImpact = {
+  userRef: string;
+  impact: number;
+  date: Date;
+};
+
 function isQetaFilter(filter: any): filter is QetaFilter {
   return filter.hasOwnProperty('property');
 }
@@ -1149,6 +1155,84 @@ export class DatabaseQetaStore implements QetaStore {
 
   async getAttachment(uuid: string): Promise<Attachment | undefined> {
     return this.db<Attachment>('attachments').where('uuid', '=', uuid).first();
+  }
+
+  async getUsers(): Promise<string[]> {
+    const questionUsers = await this.db('questions').select('author');
+    const answerUsers = await this.db('answers').select('author');
+    const allUsers = [...questionUsers, answerUsers]
+      .map(user => user.author)
+      .filter(Boolean);
+    return [...new Set(allUsers)];
+  }
+
+  async getTotalViews(user_ref: string): Promise<number> {
+    const questionViews = await this.db('question_views')
+      .innerJoin('questions', 'question_views.questionId', 'questions.id')
+      .where('questions.author', user_ref)
+      .count('* as total');
+    const answerViews = await this.db('question_views')
+      .innerJoin('answers', 'question_views.questionId', 'answers.questionId')
+      .innerJoin('questions', 'question_views.questionId', 'questions.id')
+      .where('answers.author', user_ref)
+      .whereNot('questions.author', user_ref)
+      .count('* as total');
+    return Number(questionViews[0].total) + Number(answerViews[0].total);
+  }
+
+  async saveUserStats(user_ref: string): Promise<void> {
+    await this.db('user_stats')
+      .insert({
+        userRef: user_ref,
+        totalQuestions: await this.getCount('questions', user_ref),
+        totalAnswers: await this.getCount('answers', user_ref),
+        totalViews: await this.getTotalViews(user_ref),
+        totalComments:
+          (await this.getCount('question_comments', user_ref)) +
+          (await this.getCount('answer_comments', user_ref)),
+        totalVotes:
+          (await this.getCount('question_votes', user_ref)) +
+          (await this.getCount('answer_votes', user_ref)),
+        date: new Date(),
+      })
+      .onConflict(['userRef', 'date'])
+      .merge();
+  }
+
+  async saveGlobalStats(): Promise<void> {
+    await this.db('global_stats')
+      .insert({
+        totalQuestions: await this.getCount('questions'),
+        totalAnswers: await this.getCount('answers'),
+        totalUsers: (await this.getUsers()).length,
+        totalTags: await this.getCount('tags'),
+        totalViews: await this.getCount('question_views'),
+        totalComments:
+          (await this.getCount('question_comments')) +
+          (await this.getCount('answer_comments')),
+        totalVotes:
+          (await this.getCount('question_votes')) +
+          (await this.getCount('answer_votes')),
+        date: new Date(),
+      })
+      .onConflict(['date'])
+      .merge();
+  }
+
+  async cleanStats(days: number): Promise<void> {
+    const now = new Date();
+    now.setDate(now.getDate() - days);
+    await this.db('user_stats').where('date', '<=', now).delete();
+    await this.db('global_stats').where('date', '<=', now).delete();
+  }
+
+  private async getCount(table: string, user_ref?: string): Promise<number> {
+    const query = this.db(table);
+    if (user_ref) {
+      query.where('author', user_ref);
+    }
+    const result = await query.count('* as total').first();
+    return this.mapToInteger(result?.total);
   }
 
   /**

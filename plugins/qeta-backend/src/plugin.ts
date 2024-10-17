@@ -7,6 +7,7 @@ import { DatabaseQetaStore } from './database';
 import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { notificationService } from '@backstage/plugin-notifications-node';
+import { StatsCollector } from './service/StatsCollector';
 
 /**
  * Qeta backend plugin
@@ -27,6 +28,7 @@ export const qetaPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
         httpAuth: coreServices.httpAuth,
         userInfo: coreServices.userInfo,
+        scheduler: coreServices.scheduler,
         signals: signalsServiceRef,
         notifications: notificationService,
       },
@@ -40,6 +42,7 @@ export const qetaPlugin = createBackendPlugin({
         permissions,
         httpAuth,
         userInfo,
+        scheduler,
         signals,
         notifications,
       }) {
@@ -69,6 +72,13 @@ export const qetaPlugin = createBackendPlugin({
           allow: 'unauthenticated',
           path: '/attachments',
         });
+
+        await StatsCollector.initStatsCollector(
+          config,
+          scheduler,
+          logger,
+          qetaStore,
+        );
       },
     });
   },

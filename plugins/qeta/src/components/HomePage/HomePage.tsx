@@ -6,6 +6,7 @@ import { QuestionsCard } from '../HomePageCards/QuestionsCard';
 import { Grid } from '@material-ui/core';
 import { FollowedTagsList } from '../QetaPage/FollowedTagsList';
 import { FollowedEntitiesList } from '../QetaPage/FollowedEntitiesList';
+import { ImpactCard } from '../HomePageCards/ImpactCard';
 
 export const HomePage = () => {
   const { t } = useTranslation();
@@ -41,6 +42,7 @@ export const HomePage = () => {
         </Grid>
       </Grid>
       <Grid item lg={3} xl={2}>
+        <ImpactCard />
         <FollowedTagsList />
         <FollowedEntitiesList />
       </Grid>

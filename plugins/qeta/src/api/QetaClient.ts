@@ -14,6 +14,7 @@ import {
   AnswersResponseBody,
   AttachmentResponseBody,
   EntityResponse,
+  ImpactResponse,
   Question,
   QuestionRequest,
   QuestionResponseBody,
@@ -645,6 +646,14 @@ export class QetaClient implements QetaApi {
     ]);
 
     return response;
+  }
+
+  async getUserImpact(): Promise<ImpactResponse> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/statistics/user/impact`,
+    );
+
+    return (await response.json()) as ImpactResponse;
   }
 
   private getQueryParameters(params?: any): URLSearchParams {

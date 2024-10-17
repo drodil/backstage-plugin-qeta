@@ -5,6 +5,7 @@ import {
   AnswersResponse,
   AttachmentResponseBody,
   EntityResponse,
+  ImpactResponse,
   QuestionRequest,
   QuestionResponse,
   QuestionsResponse,
@@ -157,4 +158,6 @@ export interface QetaApi {
   getFollowedEntities(): Promise<UserEntitiesResponse>;
   followEntity(entityRef: string): Promise<boolean>;
   unfollowEntity(entityRef: string): Promise<boolean>;
+
+  getUserImpact(): Promise<ImpactResponse>;
 }

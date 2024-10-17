@@ -131,6 +131,11 @@ export const qetaTranslationRef = createTranslationRef({
     homePage: {
       title: 'Home',
     },
+    impactCard: {
+      title: 'Your impact',
+      views: 'views',
+      contributions: 'Your contributions have made a difference',
+    },
     rightMenu: {
       followedEntities: 'Followed entities',
       followedTags: 'Followed tags',

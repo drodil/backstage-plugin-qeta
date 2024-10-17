@@ -190,3 +190,7 @@ export interface UserEntitiesResponse {
   entityRefs: string[];
   count: number;
 }
+
+export interface ImpactResponse {
+  impact: number;
+}

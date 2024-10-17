@@ -1,3 +1,5 @@
+import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
+
 export interface Config {
   qeta?: {
     /**
@@ -84,6 +86,19 @@ export interface Config {
       secretAccessKey?: string;
       region?: string;
       sessionToken?: string;
+    };
+    /**
+     * Stats collector config
+     */
+    statsCollector?: {
+      /**
+       * Schedule to run the stats collector, defaults to once a day
+       */
+      schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+      /**
+       * Number of days to keep the stats, defaults to 30
+       */
+      historyDays?: number;
     };
   };
 }
