@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.12.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.11.0...v2.12.0) (2024-10-17)
+
+
+### Features
+
+* add stats collector job for global and users stats ([fcc9946](https://github.com/drodil/backstage-plugin-qeta/commit/fcc994627cd6ef41d43ccaf98cbea39e01ad6561))
+
+
+### Bug Fixes
+
+* missing funcs in router test ([482160c](https://github.com/drodil/backstage-plugin-qeta/commit/482160ccf2ff04bf67fb95119b977fa1a5afa5d2))
+
 ## [2.11.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.10.3...v2.11.0) (2024-10-17)
 
 
