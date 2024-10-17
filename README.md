@@ -32,21 +32,31 @@ using the old backend system, please use version 1.24.5.
 
 ## Examples
 
-Questions list:
+Questions page;
 
-![Questions list](./docs/images/question_list.png)
+![Questions list](./docs/images/questions.png)
 
 Posting question:
 
-![Questions list](./docs/images/question_posting.png)
+![Questions post](./docs/images/askQuestion.png)
 
 Answering question:
 
-![Questions list](./docs/images/question_answer.png)
+![Questions answer](./docs/images/questionPage.png)
+
+Home page:
+![Home page](./docs/images/homePage.png)
+
+Profile page:
+
+![Profile page](./docs/images/profilePage.png)
+
+Stats page:
+![Stats page](./docs/images/statisticsPage.png)
 
 Tags page:
 
-![Tags page](./docs/images/tags_page.png)
+![Tags page](./docs/images/tagsPage.png)
 
 ## Contributing
 

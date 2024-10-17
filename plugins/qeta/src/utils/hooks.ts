@@ -73,7 +73,7 @@ export function useIsDarkTheme() {
   const appThemeApi = useApi(appThemeApiRef);
   const themes = appThemeApi.getInstalledThemes();
   const theme = useMemo(() => appThemeApi.getActiveThemeId(), [appThemeApi]);
-  return themes.find(t => t.id === theme)?.variant === 'dark';
+  return Boolean(themes.find(t => t.id === theme)?.variant === 'dark');
 }
 
 export const useStyles = makeStyles(theme => {

@@ -61,7 +61,7 @@ export const StatsChart = (props: { data: GlobalStat[] | UserStat[] }) => {
         {globalStats && (
           <Bar name="Total users" dataKey="totalUsers" fill="#ff0000" />
         )}
-        <Bar name="Total votes" dataKey="totalVotes" fill="#224422" />
+        <Bar name="Total votes" dataKey="totalVotes" fill="#d88884" />
         {globalStats && (
           <Bar name="Total tags" dataKey="totalTags" fill="#ff00ff" />
         )}
