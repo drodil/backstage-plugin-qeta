@@ -153,7 +153,7 @@ describe('createRouter', () => {
     getUsersForEntities: jest.fn(),
     getAnswerComment: jest.fn(),
     getQuestionComment: jest.fn(),
-  };
+  } as unknown as jest.Mocked<QetaStore>;
 
   const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
     jest.fn();
