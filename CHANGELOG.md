@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.13.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.12.0...v2.13.0) (2024-10-17)
+
+
+### Features
+
+* show user and global stats in the UI ([dbf5c96](https://github.com/drodil/backstage-plugin-qeta/commit/dbf5c96fffd076fd75a43e2209e86f7a0e9a3fb7))
+
 ## [2.12.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.11.0...v2.12.0) (2024-10-17)
 
 
