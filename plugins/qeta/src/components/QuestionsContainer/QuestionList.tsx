@@ -103,7 +103,7 @@ export const QuestionList = (props: {
     <div ref={listRef}>
       <Box sx={{ mt: 2 }} className="qetaQuestionList">
         <Card>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} style={{ paddingTop: '1rem' }}>
             {response.questions.map(question => {
               return (
                 <Grid item xs={12} key={question.id}>
