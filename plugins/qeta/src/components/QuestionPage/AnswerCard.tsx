@@ -10,7 +10,6 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import { MarkdownContent } from '@backstage/core-components';
 import React from 'react';
 import { VoteButtons } from './VoteButtons';
 import { useStyles, useTranslation } from '../../utils/hooks';
@@ -21,6 +20,7 @@ import { CommentSection } from '../CommentSection/CommentSection';
 import { LinkButton } from './LinkButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;
@@ -76,10 +76,9 @@ export const AnswerCard = (props: {
               ) : (
                 <>
                   <Typography variant="body1" gutterBottom>
-                    <MarkdownContent
+                    <MarkdownRenderer
                       className={`qetaAndwerCardAnswerContent ${styles.markdownContent}`}
                       content={answerEntity.content}
-                      dialect="gfm"
                     />
                   </Typography>
                   <Grid

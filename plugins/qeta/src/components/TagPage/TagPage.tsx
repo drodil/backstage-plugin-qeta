@@ -15,7 +15,7 @@ export const TagPage = () => {
   const { tag } = useParams();
   const { t } = useTranslation();
   return (
-    <Grid container>
+    <Grid container spacing={4}>
       <Grid item md={12} lg={9} xl={10}>
         <ContentHeader
           title={

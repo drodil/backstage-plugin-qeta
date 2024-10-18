@@ -3,7 +3,6 @@ import React from 'react';
 import ReactMde from 'react-mde';
 
 import { Config } from '@backstage/config';
-import { MarkdownContent } from '@backstage/core-components';
 import 'react-mde/lib/styles/css/react-mde.css';
 import 'react-mde/lib/styles/css/react-mde-editor.css';
 import 'react-mde/lib/styles/css/react-mde-toolbar.css';
@@ -11,6 +10,7 @@ import { useStyles } from '../../utils/hooks';
 import FileType from 'file-type';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
+import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 
 export const MarkdownEditor = (props: {
   config: Config;
@@ -78,9 +78,8 @@ export const MarkdownEditor = (props: {
       }}
       generateMarkdownPreview={content =>
         Promise.resolve(
-          <MarkdownContent
+          <MarkdownRenderer
             content={content}
-            dialect="gfm"
             className={`qetaMarkdownEditorPreview ${styles.markdownContent}`}
           />,
         )

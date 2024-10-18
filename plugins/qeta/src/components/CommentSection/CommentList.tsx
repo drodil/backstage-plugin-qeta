@@ -4,12 +4,13 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { Box, Divider, Typography } from '@material-ui/core';
 import React from 'react';
-import { Link, MarkdownContent } from '@backstage/core-components';
+import { Link } from '@backstage/core-components';
 import { useStyles, useTranslation } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { AuthorLink } from '../Links/Links';
 import { qetaApiRef } from '../../api';
+import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 
 export const CommentList = (props: {
   onCommentDelete: (
@@ -43,8 +44,7 @@ export const CommentList = (props: {
         return (
           <>
             <Box key={c.id} className="qetaCommentBox">
-              <MarkdownContent
-                dialect="gfm"
+              <MarkdownRenderer
                 content={c.content}
                 className={`${styles.markdownContent} inline`}
               />

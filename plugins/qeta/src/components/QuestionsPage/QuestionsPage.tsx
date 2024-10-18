@@ -25,7 +25,7 @@ export const QuestionsPage = () => {
   }, [searchParams, setEntityRef]);
 
   return (
-    <Grid container>
+    <Grid container spacing={4}>
       <Grid item md={12} lg={9} xl={10}>
         <ContentHeader title={t('questionsPage.title')}>
           <AskQuestionButton entity={entityRef} tags={tags} />

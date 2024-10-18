@@ -17,7 +17,7 @@ export const HomePage = () => {
   } = useIdentityApi(api => api.getBackstageIdentity(), []);
 
   return (
-    <Grid container>
+    <Grid container spacing={4}>
       <Grid item md={12} lg={9} xl={10}>
         <ContentHeader title={t('homePage.title')}>
           <AskQuestionButton />

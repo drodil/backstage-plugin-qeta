@@ -10,7 +10,6 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import { MarkdownContent } from '@backstage/core-components';
 import React, { useEffect } from 'react';
 import { VoteButtons } from './VoteButtons';
 import { useStyles, useTranslation } from '../../utils/hooks';
@@ -24,6 +23,7 @@ import { CommentSection } from '../CommentSection/CommentSection';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { editQuestionRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { LinkButton } from './LinkButton';
+import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 
 export const QuestionCard = (props: { question: QuestionResponse }) => {
   const { question } = props;
@@ -69,9 +69,8 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
             </Grid>
             <Grid item xs={11} className={styles.questionCardContent}>
               <Typography variant="body1" gutterBottom>
-                <MarkdownContent
+                <MarkdownRenderer
                   content={questionEntity.content}
-                  dialect="gfm"
                   className={styles.markdownContent}
                 />
               </Typography>
