@@ -1182,7 +1182,7 @@ export class DatabaseQetaStore implements QetaStore {
     return Number(questionViews[0].total) + Number(answerViews[0].total);
   }
 
-  async saveUserStats(user_ref: string): Promise<void> {
+  async saveUserStats(user_ref: string, date: Date): Promise<void> {
     await this.db('user_stats')
       .insert({
         userRef: user_ref,
@@ -1195,13 +1195,13 @@ export class DatabaseQetaStore implements QetaStore {
         totalVotes:
           (await this.getCount('question_votes', user_ref)) +
           (await this.getCount('answer_votes', user_ref)),
-        date: new Date(),
+        date,
       })
       .onConflict(['userRef', 'date'])
       .merge();
   }
 
-  async saveGlobalStats(): Promise<void> {
+  async saveGlobalStats(date: Date): Promise<void> {
     await this.db('global_stats')
       .insert({
         totalQuestions: await this.getCount('questions'),
@@ -1215,7 +1215,7 @@ export class DatabaseQetaStore implements QetaStore {
         totalVotes:
           (await this.getCount('question_votes')) +
           (await this.getCount('answer_votes')),
-        date: new Date(),
+        date,
       })
       .onConflict(['date'])
       .merge();
@@ -1232,8 +1232,8 @@ export class DatabaseQetaStore implements QetaStore {
       .orderBy('date', 'desc');
   }
 
-  async cleanStats(days: number): Promise<void> {
-    const now = new Date();
+  async cleanStats(days: number, date: Date): Promise<void> {
+    const now = new Date(date);
     now.setDate(now.getDate() - days);
     await this.db('user_stats').where('date', '<=', now).delete();
     await this.db('global_stats').where('date', '<=', now).delete();

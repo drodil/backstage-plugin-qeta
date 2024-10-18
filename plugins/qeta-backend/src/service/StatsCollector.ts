@@ -21,7 +21,7 @@ export class StatsCollector {
           config.getConfig('qeta.stats.schedule'),
         )
       : {
-          frequency: { cron: '15 */12 * * *' },
+          frequency: { cron: '0 5,11,17,23 * * *' },
           timeout: { hours: 1 },
           initialDelay: { minutes: 5 },
           scope: 'global',
@@ -42,16 +42,17 @@ export class StatsCollector {
     database: QetaStore,
   ) => {
     logger.info('Starting to collect Q&A stats');
-    await database.saveGlobalStats();
+    const now = new Date();
+    await database.saveGlobalStats(now);
 
     const users = await database.getUsers();
     for (const user of users) {
       logger.info(`Collecting stats for ${user}`);
-      await database.saveUserStats(user);
+      await database.saveUserStats(user, now);
     }
 
     const historyDays =
       config.getOptionalNumber('qeta.stats.historyDays') ?? 30;
-    await database.cleanStats(historyDays);
+    await database.cleanStats(historyDays, now);
   };
 }

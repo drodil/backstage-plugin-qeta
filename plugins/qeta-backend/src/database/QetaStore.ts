@@ -419,11 +419,11 @@ export interface QetaStore {
     author,
     options,
   }: StatisticsRequestParameters): Promise<Statistic[]>;
-  saveGlobalStats(): Promise<void>;
-  saveUserStats(user_ref: string): Promise<void>;
+  saveGlobalStats(date: Date): Promise<void>;
+  saveUserStats(user_ref: string, date: Date): Promise<void>;
   getUsers(): Promise<string[]>;
   getTotalViews(user_ref: string): Promise<number>;
-  cleanStats(days: number): Promise<void>;
+  cleanStats(days: number, date: Date): Promise<void>;
   getGlobalStats(): Promise<GlobalStat[]>;
   getUserStats(user_ref: string): Promise<UserStat[]>;
 }

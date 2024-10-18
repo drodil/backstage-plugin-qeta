@@ -92,7 +92,7 @@ export interface Config {
      */
     stats?: {
       /**
-       * Schedule to run the stats collector, defaults to 2 times a day
+       * Schedule to run the stats collector, defaults to 4 times a day
        */
       schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
       /**
