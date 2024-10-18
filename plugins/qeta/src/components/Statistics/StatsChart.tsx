@@ -25,7 +25,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { useIsDarkTheme, useTranslation } from '../../utils/hooks';
-import TimeLineIcon from '@material-ui/icons/TimeLine';
+import ShowChartIcon from '@material-ui/icons/ShowChart';
 import BarChartIcon from '@material-ui/icons/BarChart';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -270,7 +270,7 @@ export const StatsChart = (props: { data: GlobalStat[] | UserStat[] }) => {
             setChart('line');
           }}
         >
-          <TimeLineIcon />
+          <ShowChartIcon />
         </IconButton>
         <IconButton
           aria-label="Bar chart"
