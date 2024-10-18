@@ -1,4 +1,4 @@
-import { Avatar, Box, Card, CardContent, Typography } from '@material-ui/core';
+import { Avatar, Grid, Typography } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import React from 'react';
 import DOMPurify from 'dompurify';
@@ -15,6 +15,7 @@ import {
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { useEntityAuthor, useStyles, useTranslation } from '../../utils/hooks';
 import { TagsAndEntities } from '../QuestionPage/TagsAndEntities';
+import { VoteButtons } from '../QuestionPage/VoteButtons';
 
 export interface AnswerListItemProps {
   answer: AnswerResponse;
@@ -41,68 +42,75 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
   };
 
   return (
-    <Card className="qetaQuestionListItem">
-      <CardContent>
-        <Box className={styles.questionListItemStats}>
-          <Typography
-            display="block"
-            variant="caption"
-            className="qetaQuestionListItemScore"
-          >
-            {t('common.score', { score: answer.score.toString(10) })}
-          </Typography>
-        </Box>
-        <Box className={styles.questionListItemContent}>
-          <Typography variant="h5" component="div">
-            <Link
-              to={getAnswerLink()}
-              className="qetaAnswerListItemQuestionBtn"
+    <Grid
+      container
+      spacing={0}
+      className={styles.questionListItem}
+      justifyContent="flex-start"
+    >
+      <Grid container item xs={1} justifyContent="center">
+        <div className={styles.questionCardVote}>
+          <VoteButtons entity={answer} />
+        </div>
+      </Grid>
+      <Grid item xs={11} className={styles.questionListItemContent}>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Typography variant="h5" component="div">
+              <Link
+                to={getAnswerLink()}
+                className="qetaAnswerListItemQuestionBtn"
+              >
+                {t('answer.questionTitle', {
+                  question: answer.question?.title ?? '',
+                })}
+              </Link>
+            </Typography>
+            <Typography
+              variant="caption"
+              noWrap
+              component="div"
+              className="qetaQuestionListItemContent"
+              style={{ marginBottom: '5px' }}
             >
-              {t('answer.questionTitle', {
-                question: answer.question?.title ?? '',
-              })}
-            </Link>
-          </Typography>
-          <Typography
-            variant="caption"
-            noWrap
-            component="div"
-            className="qetaQuestionListItemContent"
-            style={{ marginBottom: '5px' }}
-          >
-            {DOMPurify.sanitize(
-              truncate(removeMarkdownFormatting(answer.content), 150),
-            )}
-          </Typography>
-          {answer.question && <TagsAndEntities question={answer.question} />}
-          <Typography
-            variant="caption"
-            display="inline"
-            className={`${styles.questionListItemAuthor} qetaAnswerListItemAuthor`}
-          >
-            <Avatar
-              src={user?.spec?.profile?.picture}
-              className={styles.questionListItemAvatar}
-              alt={name}
-              variant="rounded"
-            >
-              {initials}
-            </Avatar>
-            {answer.author === 'anonymous' ? (
-              t('common.anonymousAuthor')
-            ) : (
-              <Link to={`${userRoute()}/${answer.author}`}>{name}</Link>
-            )}{' '}
-            <Link
-              to={getAnswerLink()}
-              className="qetaQuestionListItemQuestionBtn"
-            >
-              {`${t('answer.answeredTime')} `}
-              <RelativeTimeWithTooltip value={answer.created} />
-            </Link>
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
+              {DOMPurify.sanitize(
+                truncate(removeMarkdownFormatting(answer.content), 150),
+              )}
+            </Typography>
+            <Grid item xs={12}>
+              {answer.question && (
+                <TagsAndEntities question={answer.question} />
+              )}
+              <Typography
+                variant="caption"
+                display="inline"
+                className={`${styles.questionListItemAuthor} qetaAnswerListItemAuthor`}
+              >
+                <Avatar
+                  src={user?.spec?.profile?.picture}
+                  className={styles.questionListItemAvatar}
+                  alt={name}
+                  variant="rounded"
+                >
+                  {initials}
+                </Avatar>
+                {answer.author === 'anonymous' ? (
+                  t('common.anonymousAuthor')
+                ) : (
+                  <Link to={`${userRoute()}/${answer.author}`}>{name}</Link>
+                )}{' '}
+                <Link
+                  to={getAnswerLink()}
+                  className="qetaQuestionListItemQuestionBtn"
+                >
+                  {`${t('answer.answeredTime')} `}
+                  <RelativeTimeWithTooltip value={answer.created} />
+                </Link>
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };

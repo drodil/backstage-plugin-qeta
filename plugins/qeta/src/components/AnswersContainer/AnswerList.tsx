@@ -107,7 +107,7 @@ export const AnswerList = (props: {
   return (
     <div ref={listRef}>
       <Box sx={{ mt: 2 }} className="qetaAnswerList">
-        <Grid container spacing={2} className="qetaAnswerListGrid">
+        <Card>
           {response.answers.map(answer => {
             return (
               <Grid item xs={12} key={answer.id}>
@@ -116,7 +116,7 @@ export const AnswerList = (props: {
               </Grid>
             );
           })}
-        </Grid>
+        </Card>
         <Grid
           container
           spacing={0}
