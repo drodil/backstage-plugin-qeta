@@ -209,6 +209,7 @@ export interface UserEntitiesResponse {
 
 export interface ImpactResponse {
   impact: number;
+  lastWeekImpact: number;
 }
 
 export interface StatisticsResponse {

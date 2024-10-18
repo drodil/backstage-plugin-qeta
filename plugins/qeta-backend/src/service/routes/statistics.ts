@@ -34,7 +34,10 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   router.get('/statistics/user/impact', async (request, response) => {
     const userRef = await getUsername(request, options);
     const userImpact = await database.getTotalViews(userRef);
-    return response.status(200).json({ impact: userImpact });
+    const userImpactWeek = await database.getTotalViews(userRef, 7);
+    return response
+      .status(200)
+      .json({ impact: userImpact, lastWeekImpact: userImpactWeek });
   });
 
   router.get('/statistics/global', async (_req, response) => {

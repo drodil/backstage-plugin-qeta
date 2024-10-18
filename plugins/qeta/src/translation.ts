@@ -134,7 +134,7 @@ export const qetaTranslationRef = createTranslationRef({
     impactCard: {
       title: 'Your impact',
       views: 'views',
-      contributions: 'Your contributions have made a difference',
+      contributions: 'Your contributions helped {{lastWeek}} people this week',
     },
     rightMenu: {
       followedEntities: 'Followed entities',

@@ -29,7 +29,9 @@ export const ImpactCard = () => {
             </Typography>
           </Typography>
           <Typography variant="body2">
-            {t('impactCard.contributions')}
+            {t('impactCard.contributions', {
+              lastWeek: response.lastWeekImpact.toString(10),
+            })}
           </Typography>
         </CardContent>
       </Card>

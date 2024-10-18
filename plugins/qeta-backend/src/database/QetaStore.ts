@@ -423,7 +423,7 @@ export interface QetaStore {
   saveGlobalStats(date: Date): Promise<void>;
   saveUserStats(user_ref: string, date: Date): Promise<void>;
   getUsers(): Promise<string[]>;
-  getTotalViews(user_ref: string): Promise<number>;
+  getTotalViews(user_ref: string, lastDays?: number): Promise<number>;
   cleanStats(days: number, date: Date): Promise<void>;
   getGlobalStats(): Promise<GlobalStat[]>;
   getUserStats(user_ref: string): Promise<UserStat[]>;

@@ -1168,17 +1168,31 @@ export class DatabaseQetaStore implements QetaStore {
     return [...new Set(allUsers)];
   }
 
-  async getTotalViews(user_ref: string): Promise<number> {
-    const questionViews = await this.db('question_views')
+  async getTotalViews(user_ref: string, lastDays?: number): Promise<number> {
+    const now = new Date();
+    if (lastDays) {
+      now.setDate(now.getDate() - lastDays);
+    }
+
+    const questionViewsQuery = this.db('question_views')
       .innerJoin('questions', 'question_views.questionId', 'questions.id')
-      .where('questions.author', user_ref)
-      .count('* as total');
-    const answerViews = await this.db('question_views')
+      .where('questions.author', user_ref);
+    if (lastDays) {
+      questionViewsQuery.where('questions.created', '>', now);
+    }
+
+    const answerViewsQuery = this.db('question_views')
       .innerJoin('answers', 'question_views.questionId', 'answers.questionId')
       .innerJoin('questions', 'question_views.questionId', 'questions.id')
       .where('answers.author', user_ref)
-      .whereNot('questions.author', user_ref)
-      .count('* as total');
+      .whereNot('questions.author', user_ref);
+    if (lastDays) {
+      answerViewsQuery.where('answers.created', '>', now);
+    }
+
+    const questionViews = await questionViewsQuery.count('* as total');
+    const answerViews = await answerViewsQuery.count('* as total');
+
     return Number(questionViews[0].total) + Number(answerViews[0].total);
   }
 
