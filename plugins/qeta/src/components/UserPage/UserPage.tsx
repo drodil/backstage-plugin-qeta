@@ -8,7 +8,7 @@ import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { AnswersContainer } from '../AnswersContainer';
 import { useTranslation } from '../../utils/hooks';
-import { UserStatsCard } from './UserStatsCard';
+import { UserStatsContent } from './UserStatsContent';
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
@@ -38,7 +38,7 @@ export const UserPage = () => {
           </TabList>
         </Box>
         <TabPanel value="statistics">
-          <UserStatsCard userRef={identity ?? ''} />
+          <UserStatsContent userRef={identity ?? ''} />
         </TabPanel>
         <TabPanel value="questions">
           <QuestionsContainer

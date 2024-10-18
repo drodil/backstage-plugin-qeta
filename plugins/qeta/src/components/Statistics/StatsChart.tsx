@@ -44,11 +44,12 @@ export const StatsChart = (props: { data: GlobalStat[] | UserStat[] }) => {
   if (props.data.length === 0) {
     return <Typography variant="subtitle1">{t('stats.noStats')}</Typography>;
   }
-  const globalStats = isGlobalStat(props.data[0]);
+  const data = props.data.reverse();
+  const globalStats = isGlobalStat(data[0]);
 
   return (
     <ResponsiveContainer height={300} width="100%">
-      <BarChart data={props.data} width={900} height={300}>
+      <BarChart data={data} width={900} height={300}>
         <Tooltip
           labelClassName={styles.tooltipLabel}
           wrapperClassName={styles.tooltipWrapper}

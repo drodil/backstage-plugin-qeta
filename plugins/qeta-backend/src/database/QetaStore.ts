@@ -419,6 +419,7 @@ export interface QetaStore {
     author,
     options,
   }: StatisticsRequestParameters): Promise<Statistic[]>;
+  getCount(table: string, user_ref?: string): Promise<number>;
   saveGlobalStats(date: Date): Promise<void>;
   saveUserStats(user_ref: string, date: Date): Promise<void>;
   getUsers(): Promise<string[]>;

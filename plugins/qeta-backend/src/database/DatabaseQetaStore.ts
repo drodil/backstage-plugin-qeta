@@ -1239,7 +1239,7 @@ export class DatabaseQetaStore implements QetaStore {
     await this.db('global_stats').where('date', '<=', now).delete();
   }
 
-  private async getCount(table: string, user_ref?: string): Promise<number> {
+  async getCount(table: string, user_ref?: string): Promise<number> {
     const query = this.db(table);
     if (user_ref) {
       query.where('author', user_ref);

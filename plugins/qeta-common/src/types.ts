@@ -213,4 +213,11 @@ export interface ImpactResponse {
 
 export interface StatisticsResponse {
   statistics: Stat[];
+  summary: {
+    totalQuestions: number;
+    totalAnswers: number;
+    totalVotes: number;
+    totalComments: number;
+    totalViews: number;
+  };
 }

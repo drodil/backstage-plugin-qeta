@@ -10,6 +10,27 @@ import { RouteOptions } from '../types';
 export const statisticRoutes = (router: Router, options: RouteOptions) => {
   const { database } = options;
 
+  const getSummary = async (user_ref?: string) => {
+    const results = await Promise.all([
+      database.getCount('questions', user_ref),
+      database.getCount('answers', user_ref),
+      user_ref
+        ? database.getTotalViews(user_ref)
+        : database.getCount('question_views'),
+      database.getCount('question_comments', user_ref),
+      database.getCount('answer_comments', user_ref),
+      database.getCount('question_votes', user_ref),
+      database.getCount('answer_votes', user_ref),
+    ]);
+    return {
+      totalQuestions: results[0],
+      totalAnswers: results[1],
+      totalViews: results[2],
+      totalComments: results[3] + results[4],
+      totalVotes: results[5] + results[6],
+    };
+  };
+
   router.get('/statistics/user/impact', async (request, response) => {
     const userRef = await getUsername(request, options);
     const userImpact = await database.getTotalViews(userRef);
@@ -18,13 +39,15 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
 
   router.get('/statistics/global', async (_req, response) => {
     const globalStats = await database.getGlobalStats();
-    return response.status(200).json({ statistics: globalStats });
+    const summary = await getSummary();
+    return response.status(200).json({ statistics: globalStats, summary });
   });
 
   router.get('/statistics/user/:userRef(*)', async (req, response) => {
     const userRef = req.params.userRef;
     const userStats = await database.getUserStats(userRef);
-    return response.status(200).json({ statistics: userStats });
+    const summary = await getSummary(userRef);
+    return response.status(200).json({ statistics: userStats, summary });
   });
 
   // GET /statistics/questions/top-upvoted-users?period=x&limit=x

@@ -2,7 +2,7 @@ import React from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { TopRankingUsers } from './TopRankingUsersCard';
-import { GlobalStatsCard } from './GlobalStatsCard';
+import { GlobalStatsContent } from './GlobalStatsContent';
 import { Grid } from '@material-ui/core';
 
 export const StatisticsPage = () => {
@@ -13,7 +13,7 @@ export const StatisticsPage = () => {
       </ContentHeader>
       <Grid container>
         <Grid item xs={12}>
-          <GlobalStatsCard />
+          <GlobalStatsContent />
         </Grid>
         <Grid item xs={12}>
           <TopRankingUsers limit={10} />
