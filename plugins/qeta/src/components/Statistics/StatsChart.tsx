@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   GlobalStat,
   Stat,
@@ -47,30 +47,122 @@ const isGlobalStat = (stat: Stat): stat is GlobalStat => {
   return (stat as GlobalStat).totalUsers !== undefined;
 };
 
-const StatsBarChart = (props: { data: GlobalStat[] | UserStat[] }) => {
+type StatType = {
+  dataKey:
+    | 'totalViews'
+    | 'totalQuestions'
+    | 'totalAnswers'
+    | 'totalComments'
+    | 'totalVotes'
+    | 'totalUsers'
+    | 'totalTags';
+  name: string;
+  color: string;
+  enabled: boolean;
+  globalStat: boolean;
+};
+
+const DEFAULT_STATS: StatType[] = [
+  {
+    dataKey: 'totalViews',
+    name: 'Total views',
+    color: '#8884d8',
+    enabled: false,
+    globalStat: false,
+  },
+  {
+    dataKey: 'totalQuestions',
+    name: 'Total questions',
+    color: '#82ca9d',
+    enabled: true,
+    globalStat: false,
+  },
+  {
+    dataKey: 'totalAnswers',
+    name: 'Total answers',
+    color: '#ff7300',
+    enabled: true,
+    globalStat: false,
+  },
+  {
+    dataKey: 'totalComments',
+    name: 'Total comments',
+    color: '#739973',
+    enabled: true,
+    globalStat: false,
+  },
+  {
+    dataKey: 'totalVotes',
+    name: 'Total votes',
+    color: '#d88884',
+    enabled: true,
+    globalStat: false,
+  },
+  {
+    dataKey: 'totalUsers',
+    name: 'Total users',
+    color: '#ff0000',
+    enabled: true,
+    globalStat: true,
+  },
+  {
+    dataKey: 'totalTags',
+    name: 'Total tags',
+    color: '#ff00ff',
+    enabled: true,
+    globalStat: true,
+  },
+];
+
+const useChartState = (data: GlobalStat[] | UserStat[]) => {
   const styles = useStyles();
   const isDark = useIsDarkTheme();
-  const { data } = props;
   const globalStats = isGlobalStat(data[0]);
+  const [stats, setStats] = React.useState<StatType[]>(
+    DEFAULT_STATS.filter(stat => {
+      return globalStats || !stat.globalStat;
+    }),
+  );
+  const toggleStat = useCallback(
+    (name: string) => {
+      setStats(prev =>
+        prev.map(stat =>
+          stat.name === name ? { ...stat, enabled: !stat.enabled } : stat,
+        ),
+      );
+    },
+    [setStats],
+  );
+  const isDisabled = useCallback(
+    (name: string) => {
+      return stats.find(stat => stat.name === name)?.enabled === false;
+    },
+    [stats],
+  );
+
+  return { styles, isDark, toggleStat, stats, isDisabled };
+};
+
+const StatsBarChart = (props: { data: GlobalStat[] | UserStat[] }) => {
+  const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
+    props.data,
+  );
   return (
     <ResponsiveContainer height={400} width="100%">
-      <BarChart data={data} width={900} height={300}>
+      <BarChart data={props.data} width={900} height={300}>
         <Tooltip
           labelClassName={styles.tooltipLabel}
           wrapperClassName={styles.tooltipWrapper}
           cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
         />
-        <Bar name="Total views" dataKey="totalViews" fill="#8884d8" />
-        <Bar name="Total questions" dataKey="totalQuestions" fill="#82ca9d" />
-        <Bar name="Total answers" dataKey="totalAnswers" fill="#ff7300" />
-        <Bar name="Total comments" dataKey="totalComments" fill="#739973" />
-        {globalStats && (
-          <Bar name="Total users" dataKey="totalUsers" fill="#ff0000" />
-        )}
-        <Bar name="Total votes" dataKey="totalVotes" fill="#d88884" />
-        {globalStats && (
-          <Bar name="Total tags" dataKey="totalTags" fill="#ff00ff" />
-        )}
+        {stats.map(stat => (
+          <Bar
+            key={stat.dataKey}
+            dataKey={stat.enabled ? stat.dataKey : 'hidden'}
+            name={stat.name}
+            fill={stat.color}
+          />
+        ))}
         <CartesianGrid stroke="#ccc" />
         <XAxis
           dataKey="date"
@@ -85,40 +177,44 @@ const StatsBarChart = (props: { data: GlobalStat[] | UserStat[] }) => {
           tickLine={{ stroke: isDark ? 'white' : 'black' }}
           tick={{ fill: isDark ? 'white' : 'black' }}
         />
-        <Legend verticalAlign="top" height={36} />
+        <Legend
+          verticalAlign="top"
+          height={36}
+          wrapperStyle={{ cursor: 'pointer' }}
+          formatter={data => {
+            return isDisabled(data) ? `[ ] ${data}` : `[x] ${data}`;
+          }}
+          onClick={data => {
+            if (data.value) {
+              toggleStat(data.value as string);
+            }
+          }}
+        />
       </BarChart>
     </ResponsiveContainer>
   );
 };
 
 const StatsLineChart = (props: { data: GlobalStat[] | UserStat[] }) => {
-  const styles = useStyles();
-  const isDark = useIsDarkTheme();
-  const { data } = props;
-  const globalStats = isGlobalStat(data[0]);
+  const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
+    props.data,
+  );
   return (
     <ResponsiveContainer height={400} width="100%">
-      <LineChart data={data} width={900} height={300}>
+      <LineChart data={props.data} width={900} height={300}>
         <Tooltip
           labelClassName={styles.tooltipLabel}
           wrapperClassName={styles.tooltipWrapper}
           cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
         />
-        <Line name="Total views" dataKey="totalViews" stroke="#8884d8" />
-        <Line
-          name="Total questions"
-          dataKey="totalQuestions"
-          stroke="#82ca9d"
-        />
-        <Line name="Total answers" dataKey="totalAnswers" stroke="#ff7300" />
-        <Line name="Total comments" dataKey="totalComments" stroke="#739973" />
-        {globalStats && (
-          <Line name="Total users" dataKey="totalUsers" stroke="#ff0000" />
-        )}
-        <Line name="Total votes" dataKey="totalVotes" stroke="#d88884" />
-        {globalStats && (
-          <Line name="Total tags" dataKey="totalTags" stroke="#ff00ff" />
-        )}
+        {stats.map(stat => (
+          <Line
+            key={stat.dataKey}
+            dataKey={stat.enabled ? stat.dataKey : 'hidden'}
+            name={stat.name}
+            stroke={stat.color}
+          />
+        ))}
         <CartesianGrid stroke="#ccc" />
         <XAxis
           dataKey="date"
@@ -133,7 +229,19 @@ const StatsLineChart = (props: { data: GlobalStat[] | UserStat[] }) => {
           tickLine={{ stroke: isDark ? 'white' : 'black' }}
           tick={{ fill: isDark ? 'white' : 'black' }}
         />
-        <Legend verticalAlign="top" height={36} />
+        <Legend
+          verticalAlign="top"
+          height={36}
+          wrapperStyle={{ cursor: 'pointer' }}
+          formatter={data => {
+            return isDisabled(data) ? `[ ] ${data}` : `[x] ${data}`;
+          }}
+          onClick={data => {
+            if (data.value) {
+              toggleStat(data.value as string);
+            }
+          }}
+        />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -146,7 +254,7 @@ export const StatsChart = (props: { data: GlobalStat[] | UserStat[] }) => {
   if (props.data.length === 0) {
     return <Typography variant="subtitle1">{t('stats.noStats')}</Typography>;
   }
-  const data = props.data.reverse();
+  const data = props.data.reverse().map(d => ({ ...d, hidden: 0 }));
 
   return (
     <>
