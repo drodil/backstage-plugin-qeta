@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.15.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.14.0...v2.15.0) (2024-10-18)
+
+
+### Features
+
+* add week impact to home page ([61de927](https://github.com/drodil/backstage-plugin-qeta/commit/61de92749873d8a3debd2c05449fa0345dba8f66))
+* allow hiding some stats by clicking the legend ([bbb2aef](https://github.com/drodil/backstage-plugin-qeta/commit/bbb2aef79fe0e89fd532aa7b1966642b4604afdd))
+
+
+### Bug Fixes
+
+* answer list styling ([e2446e2](https://github.com/drodil/backstage-plugin-qeta/commit/e2446e28b5db063e2d70f43fd3738a2df896732f))
+* list spacing ([f3c87be](https://github.com/drodil/backstage-plugin-qeta/commit/f3c87be59209fce0f7e755576730ebaf6133ed59))
+* missing icon in charts ([b359d71](https://github.com/drodil/backstage-plugin-qeta/commit/b359d719a4eb0a6875ef7365fa92335a6727e758))
+
 ## [2.14.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.13.1...v2.14.0) (2024-10-18)
 
 
