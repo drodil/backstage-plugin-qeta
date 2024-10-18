@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Container, Grid } from '@material-ui/core';
+import { Box, Container, Grid } from '@material-ui/core';
 import { Content, Header, Page } from '@backstage/core-components';
 import { Route, Routes } from 'react-router-dom';
 import { AskPage } from '../AskPage';
@@ -23,6 +23,7 @@ import { LeftMenu } from '../LeftMenu/LeftMenu';
 import { QuestionsPage } from '../QuestionsPage/QuestionsPage';
 import { HomePage } from '../HomePage/HomePage';
 import { useStyles } from '../../utils/hooks';
+import { LeftMenuButton } from '../LeftMenu/LeftMenuButton';
 
 type Props = {
   title?: string;
@@ -63,8 +64,10 @@ export const QetaPage = (props?: Props) => {
         {introElement}
         <Container maxWidth="xl">
           <Grid container spacing={4} justifyContent="flex-start">
-            <Grid item md={12} lg={2} className={styles.noPadding}>
-              <LeftMenu />
+            <Grid item md={1} lg={2} className={styles.noPadding}>
+              <Box display={{ md: 'none', lg: 'block' }}>
+                <LeftMenu />
+              </Box>
             </Grid>
             <Grid
               item
@@ -72,6 +75,9 @@ export const QetaPage = (props?: Props) => {
               lg={10}
               style={{ paddingLeft: '0', paddingRight: '0' }}
             >
+              <Box display={{ md: 'block', lg: 'none' }}>
+                <LeftMenuButton />
+              </Box>
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route

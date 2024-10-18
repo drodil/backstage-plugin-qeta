@@ -79,9 +79,10 @@ export function useIsDarkTheme() {
 export const useStyles = makeStyles(theme => {
   return {
     leftMenu: {
+      float: 'right',
       position: 'sticky',
       top: '0',
-      width: '180px',
+      width: '165px',
     },
     selectedMenuItem: {
       color: theme.palette.primary.contrastText,

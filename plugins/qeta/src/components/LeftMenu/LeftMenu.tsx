@@ -25,7 +25,12 @@ import { useNavigate } from 'react-router-dom';
 import Home from '@material-ui/icons/Home';
 import { useLocation } from 'react-use';
 
-export const LeftMenu = () => {
+export const LeftMenu = (props: {
+  onKeyDown?: (event: React.KeyboardEvent) => void;
+  autoFocusItem?: boolean;
+  onClick?: (event: React.MouseEvent<EventTarget>) => void;
+  inPopup?: boolean;
+}) => {
   const rootRoute = useRouteRef(qetaRouteRef);
   const tagsRoute = useRouteRef(tagsRouteRef);
   const favoritesRoute = useRouteRef(favoriteQuestionsRouteRef);
@@ -51,7 +56,12 @@ export const LeftMenu = () => {
   }) => {
     return (
       <MenuItem
-        onClick={() => navigate(route)}
+        onClick={e => {
+          navigate(route);
+          if (props.onClick) {
+            props.onClick(e);
+          }
+        }}
         className={
           route === location.pathname
             ? styles.selectedMenuItem
@@ -64,7 +74,17 @@ export const LeftMenu = () => {
   };
 
   return (
-    <MenuList id="left-menu" className={styles.leftMenu}>
+    <MenuList
+      id="left-menu"
+      className={styles.leftMenu}
+      onKeyDown={props.onKeyDown}
+      autoFocusItem={props.autoFocusItem}
+      style={
+        props.inPopup
+          ? { marginRight: 0, padding: '0.5rem' }
+          : { marginRight: '2rem' }
+      }
+    >
       <CustomMenuItem route={rootRoute()}>
         <ListItemIcon className={styles.menuIcon}>
           <Home fontSize="small" />
