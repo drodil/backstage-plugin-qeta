@@ -5,6 +5,7 @@ exports.up = async function up(knex) {
   await knex.schema.renameTable('questions', 'posts');
   await knex.schema.alterTable('posts', table => {
     table.string('type', 16).notNullable().defaultTo('question');
+    table.index('type');
   });
   await knex.schema.alterTable('answers', table => {
     table.renameColumn('questionId', 'postId');
@@ -43,6 +44,7 @@ exports.up = async function up(knex) {
 exports.down = async function down(knex) {
   await knex.schema.renameTable('posts', 'questions');
   await knex.schema.alterTable('questions', table => {
+    table.dropIndex('type');
     table.dropColumn('type');
   });
   await knex.schema.alterTable('answers', table => {
