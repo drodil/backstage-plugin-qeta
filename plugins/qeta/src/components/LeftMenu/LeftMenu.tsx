@@ -82,7 +82,7 @@ export const LeftMenu = (props: {
       style={
         props.inPopup
           ? { marginRight: 0, padding: '0.5rem' }
-          : { marginRight: '2rem' }
+          : { marginRight: '2rem', float: 'right' }
       }
     >
       <CustomMenuItem route={rootRoute()}>

@@ -79,7 +79,6 @@ export function useIsDarkTheme() {
 export const useStyles = makeStyles(theme => {
   return {
     leftMenu: {
-      float: 'right',
       position: 'sticky',
       top: '0',
       width: '165px',

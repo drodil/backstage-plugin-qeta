@@ -75,7 +75,7 @@ export const LeftMenuButton = () => {
             }}
           >
             <ClickAwayListener onClickAway={handleClose}>
-              <Paper style={{ height: '280px' }}>
+              <Paper>
                 <LeftMenu
                   onKeyDown={handleListKeyDown}
                   autoFocusItem={open}
