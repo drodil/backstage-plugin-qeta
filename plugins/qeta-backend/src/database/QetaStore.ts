@@ -4,6 +4,7 @@ import {
   Comment,
   GlobalStat,
   Post,
+  PostType,
   Statistic,
   StatisticsRequestParameters,
   UserEntitiesResponse,
@@ -36,6 +37,7 @@ export interface Answers {
 }
 
 export interface PostOptions {
+  type: PostType;
   limit?: number;
   offset?: number;
   author?: string | string[];

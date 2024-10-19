@@ -69,10 +69,17 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       const filter: PermissionCriteria<QetaFilters> = transformConditions(
         decision.conditions,
       );
-      const posts = await database.getPosts(username, request.query, filter);
+      const posts = await database.getPosts(
+        username,
+        { ...request.query, type: 'question' },
+        filter,
+      );
       response.json({ questions: posts.posts, total: posts.total });
     } else {
-      const posts = await database.getPosts(username, request.query);
+      const posts = await database.getPosts(username, {
+        ...request.query,
+        type: 'question',
+      });
       response.json({ questions: posts.posts, total: posts.total });
     }
   });
@@ -89,7 +96,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const optionOverride: PostOptions = {};
+    const optionOverride: PostOptions = { type: 'question' };
     const type = request.params.type;
     if (type === 'unanswered') {
       optionOverride.random = true;

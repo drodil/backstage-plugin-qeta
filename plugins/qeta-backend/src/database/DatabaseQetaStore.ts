@@ -24,6 +24,7 @@ import {
   filterTags,
   GlobalStat,
   Post,
+  PostType,
   Statistic,
   StatisticsRequestParameters,
   UserEntitiesResponse,
@@ -198,6 +199,7 @@ export class DatabaseQetaStore implements QetaStore {
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Posts> {
     const query = this.getPostsBaseQuery(user_ref);
+    query.where('type', options.type);
 
     if (options.fromDate && options.toDate) {
       query.whereBetween('posts.created', [
@@ -381,6 +383,7 @@ export class DatabaseQetaStore implements QetaStore {
     entities?: string[],
     images?: number[],
     anonymous?: boolean,
+    type?: PostType,
   ): Promise<Post> {
     const posts = await this.db
       .insert(
@@ -390,11 +393,20 @@ export class DatabaseQetaStore implements QetaStore {
           content,
           created,
           anonymous: anonymous ?? false,
+          type: type ?? 'question',
         },
         ['id'],
       )
       .into('posts')
-      .returning(['id', 'author', 'title', 'content', 'created', 'anonymous']);
+      .returning([
+        'id',
+        'author',
+        'title',
+        'content',
+        'created',
+        'anonymous',
+        'type',
+      ]);
 
     await Promise.all([
       this.addPostTags(posts[0].id, tags),

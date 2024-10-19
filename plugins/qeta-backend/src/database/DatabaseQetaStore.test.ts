@@ -146,14 +146,14 @@ describe.each(databases.eachSupportedId())(
         expect(ans2?.comments?.length).toEqual(1);
       });
 
-      it('should fetch list of posts', async () => {
+      it('should fetch list of questions', async () => {
         await insertPost(post);
         await insertPost({ ...post, title: 'title2' });
-        const ret = await storage.getPosts('user1', {});
+        const ret = await storage.getPosts('user1', { type: 'question' });
         expect(ret?.posts.length).toEqual(2);
       });
 
-      it('should fetch posts within fromDate and toDate DateRange', async () => {
+      it('should fetch questions within fromDate and toDate DateRange', async () => {
         await insertPost({
           ...post,
           title: 'title2',
@@ -168,19 +168,23 @@ describe.each(databases.eachSupportedId())(
         const ret = await storage.getPosts('user', {
           fromDate: '2024-04-02',
           toDate: '2024-04-02',
+          type: 'question',
         });
 
         expect(ret?.posts.length).toEqual(1);
       });
 
-      it('should fetch list of random posts', async () => {
+      it('should fetch list of random questions', async () => {
         await insertPost(post);
         await insertPost({ ...post, title: 'title2' });
-        const ret = await storage.getPosts('user1', { random: true });
+        const ret = await storage.getPosts('user1', {
+          random: true,
+          type: 'question',
+        });
         expect(ret?.posts.length).toEqual(2);
       });
 
-      it('should fetch list of posts based on searchQuery', async () => {
+      it('should fetch list of questions based on searchQuery', async () => {
         await insertPost(post);
         await insertPost({
           ...post,
@@ -189,27 +193,30 @@ describe.each(databases.eachSupportedId())(
         });
         const ret = await storage.getPosts('user1', {
           searchQuery: 'to search',
+          type: 'question',
         });
         expect(ret?.posts.length).toEqual(1);
 
         const noPosts = await storage.getPosts('user1', {
           searchQuery: 'missing',
+          type: 'question',
         });
         expect(noPosts?.posts.length).toEqual(0);
       });
 
-      it('should fetch list of posts with special characters in searchQuery', async () => {
+      it('should fetch list of questions with special characters in searchQuery', async () => {
         await insertPost({
           ...post,
           content: 'Cannot read config file:',
         });
         const ret = await storage.getPosts('user1', {
           searchQuery: 'Cannot read config file:',
+          type: 'question',
         });
         expect(ret?.posts.length).toEqual(1);
       });
 
-      it('should fetch posts with specific component', async () => {
+      it('should fetch questions with specific component', async () => {
         const q1 = await storage.createPost(
           'user1',
           'title',
@@ -229,12 +236,14 @@ describe.each(databases.eachSupportedId())(
 
         const ret1 = await storage.getPosts('user1', {
           entity: 'component:default/comp1',
+          type: 'question',
         });
         expect(ret1.posts.length).toEqual(1);
         expect(ret1.posts.at(0)?.id).toEqual(q1.id);
 
         const ret2 = await storage.getPosts('user1', {
           entity: 'component:default/comp2',
+          type: 'question',
         });
 
         expect(ret2.posts.length).toEqual(2);
@@ -266,6 +275,7 @@ describe.each(databases.eachSupportedId())(
         const ret1 = await storage.getPosts('user1', {
           favorite: true,
           author: 'user1',
+          type: 'question',
         });
 
         expect(ret1.posts.length).toEqual(1);
@@ -278,6 +288,7 @@ describe.each(databases.eachSupportedId())(
         const ret2 = await storage.getPosts('user1', {
           favorite: true,
           author: 'user1',
+          type: 'question',
         });
         expect(ret2.posts.length).toEqual(0);
       });
