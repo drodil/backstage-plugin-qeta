@@ -251,7 +251,7 @@ export const StatsChart = (props: { data: GlobalStat[] | UserStat[] }) => {
   const { t } = useTranslation();
   const [chart, setChart] = React.useState<'line' | 'bar'>('line');
 
-  if (props.data.length === 0) {
+  if (!props.data || props.data.length === 0) {
     return <Typography variant="subtitle1">{t('stats.noStats')}</Typography>;
   }
   const data = props.data.reverse().map(d => ({ ...d, hidden: 0 }));

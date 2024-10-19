@@ -5,8 +5,8 @@ import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   AnswerRequest,
   AnswerResponse,
+  PostResponse,
   qetaCreateAnswerPermission,
-  QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useStyles, useTranslation } from '../../utils/hooks';
 import { Controller, useForm } from 'react-hook-form';
@@ -16,17 +16,17 @@ import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymously
 import { qetaApiRef } from '../../api';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 
-const getDefaultValues = (questionId: number) => {
-  return { questionId, answer: '' };
+const getDefaultValues = (postId: number) => {
+  return { postId, answer: '' };
 };
 
 export const AnswerForm = (props: {
-  question: QuestionResponse;
+  post: PostResponse;
   onPost: (answer: AnswerResponse) => void;
   id?: number;
 }) => {
-  const { question, onPost, id } = props;
-  const [values, setValues] = React.useState(getDefaultValues(question.id));
+  const { post, onPost, id } = props;
+  const [values, setValues] = React.useState(getDefaultValues(post.id));
   const analytics = useAnalytics();
   const [error, setError] = React.useState(false);
   const [images, setImages] = React.useState<number[]>([]);
@@ -44,14 +44,14 @@ export const AnswerForm = (props: {
     reset,
   } = useForm<AnswerRequest>({
     values,
-    defaultValues: getDefaultValues(question.id),
+    defaultValues: getDefaultValues(post.id),
   });
 
   const postAnswer = (data: AnswerRequest) => {
     if (id) {
       qetaApi
         .updateAnswer(id, {
-          questionId: question.id,
+          postId: post.id,
           answer: data.answer,
           images,
         })
@@ -71,7 +71,7 @@ export const AnswerForm = (props: {
     // http://localhost:7007/api/qeta/attachments/36e551b1-3be7-479a-8942-b7018434e710
     qetaApi
       .postAnswer({
-        questionId: question.id,
+        postId: post.id,
         answer: data.answer,
         images,
         anonymous: data.anonymous,
@@ -91,15 +91,15 @@ export const AnswerForm = (props: {
 
   useEffect(() => {
     if (id) {
-      qetaApi.getAnswer(question.id, id).then(a => {
+      qetaApi.getAnswer(post.id, id).then(a => {
         if ('content' in a) {
-          setValues({ questionId: question.id, answer: a.content });
+          setValues({ postId: post.id, answer: a.content });
         } else {
           setError(true);
         }
       });
     }
-  }, [id, question, qetaApi]);
+  }, [id, post, qetaApi]);
 
   useEffect(() => {
     reset(values);

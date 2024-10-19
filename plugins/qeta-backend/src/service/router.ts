@@ -7,8 +7,8 @@ import {
   ANSWER_RESOURCE_TYPE,
   Comment,
   COMMENT_RESOURCE_TYPE,
+  Post,
   qetaPermissions,
-  Question,
   QUESTION_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 import { statisticRoutes } from './routes/statistics';
@@ -45,12 +45,12 @@ export async function createRouter(
         getResources: async resourceRefs => {
           return await Promise.all(
             resourceRefs.map(async ref => {
-              const question = await options.database.getQuestion(
+              const question = await options.database.getPost(
                 '',
                 Number.parseInt(ref, 10),
                 false,
               );
-              return question === null ? undefined : (question as Question);
+              return question === null ? undefined : (question as Post);
             }),
           );
         },
@@ -80,7 +80,7 @@ export async function createRouter(
                 (await options.database.getAnswerComment(
                   Number.parseInt(ref, 10),
                 )) ??
-                (await options.database.getQuestionComment(
+                (await options.database.getPostComment(
                   Number.parseInt(ref, 10),
                 ));
               return comment === null ? undefined : (comment as Comment);

@@ -10,8 +10,8 @@ import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
+  PostResponse,
   QuestionRequest,
-  QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useStyles, useTranslation } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
@@ -42,7 +42,7 @@ export type AskFormProps = {
   id?: string;
   entity?: string;
   tags?: string[];
-  onPost?: (question: QuestionResponse) => void;
+  onPost?: (question: PostResponse) => void;
   entityPage?: boolean;
 };
 

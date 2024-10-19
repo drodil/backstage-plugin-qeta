@@ -1,7 +1,7 @@
 import { NotificationService } from '@backstage/plugin-notifications-node';
 import {
   Answer,
-  Question,
+  Post,
   removeMarkdownFormatting,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -15,7 +15,7 @@ export class NotificationManager {
 
   async onNewQuestion(
     username: string,
-    question: Question,
+    question: Post,
     followingUsers: string[],
   ) {
     if (!this.notifications) {
@@ -50,7 +50,7 @@ export class NotificationManager {
 
   async onNewQuestionComment(
     username: string,
-    question: Question,
+    question: Post,
     comment: string,
     followingUsers: string[],
   ) {
@@ -93,7 +93,7 @@ export class NotificationManager {
 
   async onNewAnswer(
     username: string,
-    question: Question,
+    question: Post,
     answer: Answer,
     followingUsers: string[],
   ) {
@@ -131,7 +131,7 @@ export class NotificationManager {
 
   async onAnswerComment(
     username: string,
-    question: Question,
+    question: Post,
     answer: Answer,
     comment: string,
     followingUsers: string[],
@@ -173,7 +173,7 @@ export class NotificationManager {
     }
   }
 
-  async onCorrectAnswer(username: string, question: Question, answer: Answer) {
+  async onCorrectAnswer(username: string, question: Post, answer: Answer) {
     if (!this.notifications) {
       return;
     }

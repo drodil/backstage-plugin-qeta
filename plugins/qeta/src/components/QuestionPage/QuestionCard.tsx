@@ -1,6 +1,6 @@
 import {
   AnswerResponse,
-  QuestionResponse,
+  PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   Box,
@@ -25,7 +25,7 @@ import { editQuestionRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { LinkButton } from './LinkButton';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 
-export const QuestionCard = (props: { question: QuestionResponse }) => {
+export const QuestionCard = (props: { question: PostResponse }) => {
   const { question } = props;
   const styles = useStyles();
   const editQuestionRoute = useRouteRef(editQuestionRouteRef);
@@ -34,7 +34,7 @@ export const QuestionCard = (props: { question: QuestionResponse }) => {
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
   const { t } = useTranslation();
-  const onCommentAction = (q: QuestionResponse, _?: AnswerResponse) => {
+  const onCommentAction = (q: PostResponse, _?: AnswerResponse) => {
     setQuestionEntity(q);
   };
 

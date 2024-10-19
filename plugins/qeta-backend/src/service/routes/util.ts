@@ -1,13 +1,9 @@
-import {
-  Answer,
-  QetaSignal,
-  Question,
-} from '@drodil/backstage-plugin-qeta-common';
+import { Answer, Post, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import { SignalsService } from '@backstage/plugin-signals-node';
 
 export const signalQuestionStats = (
   signalService?: SignalsService,
-  question?: Question | null,
+  question?: Post | null,
 ) => {
   if (!signalService || !question) {
     return;
@@ -16,7 +12,7 @@ export const signalQuestionStats = (
     recipients: { type: 'broadcast' },
     channel: `qeta:question_${question.id}`,
     message: {
-      type: 'question_stats',
+      type: 'post_stats',
       views: question.views,
       score: question.score,
       answersCount: question.answersCount,

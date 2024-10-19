@@ -3,8 +3,8 @@ import { Link } from '@backstage/core-components';
 import React, { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
 import {
+  PostResponse,
   QetaSignal,
-  QuestionResponse,
   removeMarkdownFormatting,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -21,7 +21,7 @@ import { VoteButtons } from '../QuestionPage/VoteButtons';
 import { FavoriteButton } from '../QuestionPage/FavoriteButton';
 
 export interface QuestionListItemProps {
-  question: QuestionResponse;
+  question: PostResponse;
   entity?: string;
 }
 
@@ -36,7 +36,7 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
   const { lastSignal } = useSignal<QetaSignal>(`qeta:question_${question.id}`);
 
   useEffect(() => {
-    if (lastSignal?.type === 'question_stats') {
+    if (lastSignal?.type === 'post_stats') {
       setCorrectAnswer(lastSignal.correctAnswer);
       setAnswersCount(lastSignal.answersCount);
       setViews(lastSignal.views);

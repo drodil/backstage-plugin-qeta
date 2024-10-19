@@ -11,10 +11,10 @@ import {
   EntityResponse,
   MaybeAnswer,
   MaybeComment,
-  MaybeQuestion,
+  MaybePost,
+  PostOptions,
+  Posts,
   QetaStore,
-  Questions,
-  QuestionsOptions,
   TagResponse,
 } from './QetaStore';
 import {
@@ -23,7 +23,7 @@ import {
   Comment,
   filterTags,
   GlobalStat,
-  Question,
+  Post,
   Statistic,
   StatisticsRequestParameters,
   UserEntitiesResponse,
@@ -45,7 +45,7 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
-export type RawQuestionEntity = {
+export type RawPostEntity = {
   id: number;
   author: string;
   title: string;
@@ -60,11 +60,12 @@ export type RawQuestionEntity = {
   favorite: number | string;
   trend: number | string;
   anonymous: boolean;
+  type: 'question';
 };
 
 export type RawAnswerEntity = {
   id: number;
-  questionId: number;
+  postId: number;
   author: string;
   content: string;
   correct: boolean;
@@ -75,8 +76,8 @@ export type RawAnswerEntity = {
   anonymous: boolean;
 };
 
-export type RawQuestionVoteEntity = {
-  questionId: number;
+export type RawPostVoteEntity = {
+  postId: number;
   author: string;
   score: number;
   timestamp: Date;
@@ -117,41 +118,31 @@ function parseFilter(
   filter: PermissionCriteria<QetaFilters>,
   query: Knex.QueryBuilder,
   db: Knex,
-  isQuestion: boolean = true,
+  isPost: boolean = true,
   negate: boolean = false,
 ): Knex.QueryBuilder {
   if (isNotCriteria(filter)) {
-    return parseFilter(filter.not, query, db, isQuestion, !negate);
+    return parseFilter(filter.not, query, db, isPost, !negate);
   }
 
   if (isQetaFilter(filter)) {
     const values: string[] = compact(filter.values) ?? [];
 
     if (filter.property === 'tags') {
-      const questionIds = db('tags')
-        .leftJoin('question_tags', 'tags.id', 'question_tags.tagId')
+      const postIds = db('tags')
+        .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
         .where('tags.tag', 'in', values)
-        .select('question_tags.questionId');
-      query.whereIn(
-        isQuestion ? 'questions.id' : 'answers.questionId',
-        questionIds,
-      );
+        .select('post_tags.postId');
+      query.whereIn(isPost ? 'posts.id' : 'answers.postId', postIds);
       return query;
     }
 
     if (filter.property === 'entityRefs') {
-      const questionIds = db('entities')
-        .leftJoin(
-          'question_entities',
-          'entities.id',
-          'question_entities.entityId',
-        )
+      const postIds = db('entities')
+        .leftJoin('post_entities', 'entities.id', 'post_entities.entityId')
         .where('entities.entity_ref', 'in', values)
-        .select('question_entities.questionId');
-      query.whereIn(
-        isQuestion ? 'questions.id' : 'answers.questionId',
-        questionIds,
-      );
+        .select('post_entities.postId');
+      query.whereIn(isPost ? 'posts.id' : 'answers.postId', postIds);
       return query;
     }
 
@@ -166,13 +157,13 @@ function parseFilter(
     if (isOrCriteria(filter)) {
       for (const subFilter of filter.anyOf ?? []) {
         this.orWhere(subQuery =>
-          parseFilter(subFilter, subQuery, db, isQuestion, false),
+          parseFilter(subFilter, subQuery, db, isPost, false),
         );
       }
     } else if (isAndCriteria(filter)) {
       for (const subFilter of filter.allOf ?? []) {
         this.andWhere(subQuery =>
-          parseFilter(subFilter, subQuery, db, isQuestion, false),
+          parseFilter(subFilter, subQuery, db, isPost, false),
         );
       }
     }
@@ -201,15 +192,15 @@ export class DatabaseQetaStore implements QetaStore {
     return new DatabaseQetaStore(client);
   }
 
-  async getQuestions(
+  async getPosts(
     user_ref: string,
-    options: QuestionsOptions,
+    options: PostOptions,
     filters?: PermissionCriteria<QetaFilters>,
-  ): Promise<Questions> {
-    const query = this.getQuestionBaseQuery(user_ref);
+  ): Promise<Posts> {
+    const query = this.getPostsBaseQuery(user_ref);
 
     if (options.fromDate && options.toDate) {
-      query.whereBetween('questions.created', [
+      query.whereBetween('posts.created', [
         `${options.fromDate} 00:00:00.000+00`,
         `${options.toDate} 23:59:59.999+00`,
       ]);
@@ -217,9 +208,9 @@ export class DatabaseQetaStore implements QetaStore {
 
     if (options.author) {
       if (Array.isArray(options.author)) {
-        query.whereIn('questions.author', options.author);
+        query.whereIn('posts.author', options.author);
       } else {
-        query.where('questions.author', '=', options.author);
+        query.where('posts.author', '=', options.author);
       }
     }
 
@@ -230,8 +221,8 @@ export class DatabaseQetaStore implements QetaStore {
     if (options.searchQuery) {
       if (this.db.client.config.client === 'pg') {
         query.whereRaw(
-          `(to_tsvector('english', questions.title || ' ' || questions.content) @@ websearch_to_tsquery('english', quote_literal(?))
-          or to_tsvector('english', questions.title || ' ' || questions.content) @@ to_tsquery('english',quote_literal(?)))`,
+          `(to_tsvector('english', posts.title || ' ' || posts.content) @@ websearch_to_tsquery('english', quote_literal(?))
+          or to_tsvector('english', posts.title || ' ' || posts.content) @@ to_tsquery('english',quote_literal(?)))`,
           [
             `${options.searchQuery}`,
             `${options.searchQuery.replaceAll(/\s/g, '+')}:*`,
@@ -239,7 +230,7 @@ export class DatabaseQetaStore implements QetaStore {
         );
       } else {
         query.whereRaw(
-          `LOWER(questions.title || ' ' || questions.content) LIKE LOWER(?)`,
+          `LOWER(posts.title || ' ' || posts.content) LIKE LOWER(?)`,
           [`%${options.searchQuery}%`],
         );
       }
@@ -248,60 +239,45 @@ export class DatabaseQetaStore implements QetaStore {
     const tags = filterTags(options.tags);
     if (tags) {
       tags.forEach((t, i) => {
-        query.innerJoin(
-          `question_tags AS qt${i}`,
-          'questions.id',
-          `qt${i}.questionId`,
-        );
+        query.innerJoin(`post_tags AS qt${i}`, 'posts.id', `qt${i}.postId`);
         query.innerJoin(`tags AS t${i}`, `qt${i}.tagId`, `t${i}.id`);
         query.where(`t${i}.tag`, '=', t);
       });
     }
 
     if (options.entity) {
-      query.leftJoin(
-        'question_entities',
-        'questions.id',
-        'question_entities.questionId',
-      );
-      query.leftJoin('entities', 'question_entities.entityId', 'entities.id');
+      query.leftJoin('post_entities', 'posts.id', 'post_entities.postId');
+      query.leftJoin('entities', 'post_entities.entityId', 'entities.id');
       query.where('entities.entity_ref', '=', options.entity);
     }
 
     if (options.noAnswers) {
-      query.whereNull('answers.questionId');
+      query.whereNull('answers.postId');
     }
 
     if (options.noCorrectAnswer) {
       query.leftJoin('answers as correct_answer', builder => {
         builder
-          .on('questions.id', 'correct_answer.questionId')
+          .on('posts.id', 'correct_answer.postId')
           .on('correct_answer.correct', this.db.raw('?', [true]));
       });
-      query.whereNull('correct_answer.questionId');
+      query.whereNull('correct_answer.postId');
     }
 
     if (options.noVotes) {
-      query.whereNull('question_votes.questionId');
+      query.whereNull('post_votes.postId');
     }
 
     if (options.favorite) {
       query.where('user_favorite.user', '=', user_ref);
-      query.whereNotNull('user_favorite.questionId');
+      query.whereNotNull('user_favorite.postId');
     }
 
     if (options.includeTrend) {
       query.select(
         this.db.raw(
-          '((EXTRACT(EPOCH FROM questions.created) / EXTRACT(EPOCH FROM now())) * (SELECT coalesce(NULLIF(COUNT(*),0), 1) FROM question_views WHERE ?? = ??) * (SELECT coalesce(NULLIF(COUNT(*),0), 1) FROM answers WHERE ?? = ??) * (SELECT coalesce(NULLIF(SUM(score),0), 1) FROM question_votes WHERE ?? = ??)) as trend',
-          [
-            'questionId',
-            'questions.id',
-            'questionId',
-            'questions.id',
-            'questionId',
-            'questions.id',
-          ],
+          '((EXTRACT(EPOCH FROM posts.created) / EXTRACT(EPOCH FROM now())) * (SELECT coalesce(NULLIF(COUNT(*),0), 1) FROM post_views WHERE ?? = ??) * (SELECT coalesce(NULLIF(COUNT(*),0), 1) FROM answers WHERE ?? = ??) * (SELECT coalesce(NULLIF(SUM(score),0), 1) FROM post_votes WHERE ?? = ??)) as trend',
+          ['postId', 'posts.id', 'postId', 'posts.id', 'postId', 'posts.id'],
         ),
       );
     }
@@ -328,13 +304,13 @@ export class DatabaseQetaStore implements QetaStore {
       query,
       this.db(totalQuery.as('totalQuery')).count('* as CNT').first(),
     ]);
-    const rows = results[0] as RawQuestionEntity[];
+    const rows = results[0] as RawPostEntity[];
     const total = this.mapToInteger((results[1] as any)?.CNT);
 
     return {
-      questions: await Promise.all(
+      posts: await Promise.all(
         rows.map(async val => {
-          return this.mapQuestion(
+          return this.mapPostEntity(
             val,
             user_ref,
             options.includeAnswers,
@@ -347,13 +323,13 @@ export class DatabaseQetaStore implements QetaStore {
     };
   }
 
-  async getQuestion(
+  async getPost(
     user_ref: string,
     id: number,
     recordView?: boolean,
-  ): Promise<MaybeQuestion> {
-    const rows = await this.getQuestionBaseQuery(user_ref).where(
-      'questions.id',
+  ): Promise<MaybePost> {
+    const rows = await this.getPostsBaseQuery(user_ref).where(
+      'posts.id',
       '=',
       id,
     );
@@ -361,10 +337,10 @@ export class DatabaseQetaStore implements QetaStore {
       return null;
     }
     if (recordView === undefined || recordView) {
-      this.recordQuestionView(id, user_ref);
+      this.recordPostView(id, user_ref);
     }
-    return await this.mapQuestion(
-      rows[0] as unknown as RawQuestionEntity,
+    return await this.mapPostEntity(
+      rows[0] as unknown as RawPostEntity,
       user_ref,
       true,
       true,
@@ -373,22 +349,22 @@ export class DatabaseQetaStore implements QetaStore {
     );
   }
 
-  async getQuestionByAnswerId(
+  async getPostByAnswerId(
     user_ref: string,
     answerId: number,
     recordView?: boolean,
-  ): Promise<MaybeQuestion> {
-    const rows = await this.getQuestionBaseQuery(user_ref)
+  ): Promise<MaybePost> {
+    const rows = await this.getPostsBaseQuery(user_ref)
       .where('answers.id', '=', answerId)
-      .select('questions.*');
+      .select('posts.*');
     if (!rows || rows.length === 0) {
       return null;
     }
     if (recordView === undefined || recordView) {
-      this.recordQuestionView(rows[0].id, user_ref);
+      this.recordPostView(rows[0].id, user_ref);
     }
-    return await this.mapQuestion(
-      rows[0] as unknown as RawQuestionEntity,
+    return await this.mapPostEntity(
+      rows[0] as unknown as RawPostEntity,
       user_ref,
       true,
       true,
@@ -396,7 +372,7 @@ export class DatabaseQetaStore implements QetaStore {
     );
   }
 
-  async postQuestion(
+  async createPost(
     user_ref: string,
     title: string,
     content: string,
@@ -405,8 +381,8 @@ export class DatabaseQetaStore implements QetaStore {
     entities?: string[],
     images?: number[],
     anonymous?: boolean,
-  ): Promise<Question> {
-    const questions = await this.db
+  ): Promise<Post> {
+    const posts = await this.db
       .insert(
         {
           author: user_ref,
@@ -417,51 +393,51 @@ export class DatabaseQetaStore implements QetaStore {
         },
         ['id'],
       )
-      .into('questions')
+      .into('posts')
       .returning(['id', 'author', 'title', 'content', 'created', 'anonymous']);
 
     await Promise.all([
-      this.addQuestionTags(questions[0].id, tags),
-      this.addQuestionEntities(questions[0].id, entities),
+      this.addPostTags(posts[0].id, tags),
+      this.addPostEntities(posts[0].id, entities),
     ]);
 
     if (images && images.length > 0) {
       await this.db('attachments')
         .whereIn('id', images)
-        .update({ questionId: questions[0].id });
+        .update({ postId: posts[0].id });
     }
 
-    return this.mapQuestion(questions[0], user_ref, false, false, true);
+    return this.mapPostEntity(posts[0], user_ref, false, false, true);
   }
 
-  async commentQuestion(
-    question_id: number,
+  async commentPost(
+    post_id: number,
     user_ref: string,
     content: string,
     created: Date,
-  ): Promise<MaybeQuestion> {
+  ): Promise<MaybePost> {
     await this.db
       .insert({
         author: user_ref,
         content,
         created,
-        questionId: question_id,
+        postId: post_id,
       })
-      .into('question_comments');
+      .into('post_comments');
 
-    return await this.getQuestion(user_ref, question_id, false);
+    return await this.getPost(user_ref, post_id, false);
   }
 
-  async deleteQuestionComment(
-    question_id: number,
+  async deletePostComment(
+    post_id: number,
     id: number,
     user_ref: string,
-  ): Promise<MaybeQuestion> {
-    const query = this.db('question_comments')
+  ): Promise<MaybePost> {
+    const query = this.db('post_comments')
       .where('id', '=', id)
-      .where('questionId', '=', question_id);
+      .where('postId', '=', post_id);
     await query.delete();
-    return this.getQuestion(user_ref, question_id, false);
+    return this.getPost(user_ref, post_id, false);
   }
 
   async commentAnswer(
@@ -493,7 +469,7 @@ export class DatabaseQetaStore implements QetaStore {
     return this.getAnswer(answer_id, user_ref);
   }
 
-  async updateQuestion(
+  async updatePost(
     id: number,
     user_ref: string,
     title: string,
@@ -501,8 +477,8 @@ export class DatabaseQetaStore implements QetaStore {
     tags?: string[],
     entities?: string[],
     images?: number[],
-  ): Promise<MaybeQuestion> {
-    const query = this.db('questions').where('questions.id', '=', id);
+  ): Promise<MaybePost> {
+    const query = this.db('posts').where('posts.id', '=', id);
     const rows = await query.update({
       title,
       content,
@@ -515,27 +491,25 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     await Promise.all([
-      this.addQuestionTags(id, tags, true),
-      this.addQuestionEntities(id, entities, true),
+      this.addPostTags(id, tags, true),
+      this.addPostEntities(id, entities, true),
     ]);
 
     if (images && images.length > 0) {
-      await this.db('attachments')
-        .whereIn('id', images)
-        .update({ questionId: id });
+      await this.db('attachments').whereIn('id', images).update({ postId: id });
     }
 
-    return await this.getQuestion(user_ref, id, false);
+    return await this.getPost(user_ref, id, false);
   }
 
-  async deleteQuestion(id: number): Promise<boolean> {
-    const query = this.db('questions').where('id', '=', id);
+  async deletePost(id: number): Promise<boolean> {
+    const query = this.db('posts').where('id', '=', id);
     return !!(await query.delete());
   }
 
-  async answerQuestion(
+  async answerPost(
     user_ref: string,
-    questionId: number,
+    postId: number,
     answer: string,
     created: Date,
     images?: number[],
@@ -543,7 +517,7 @@ export class DatabaseQetaStore implements QetaStore {
   ): Promise<MaybeAnswer> {
     const answers = await this.db
       .insert({
-        questionId,
+        postId,
         author: user_ref,
         content: answer,
         correct: false,
@@ -564,14 +538,14 @@ export class DatabaseQetaStore implements QetaStore {
 
   async updateAnswer(
     user_ref: string,
-    questionId: number,
+    postId: number,
     answerId: number,
     answer: string,
     images?: number[],
   ): Promise<MaybeAnswer> {
     const query = this.db('answers')
       .where('answers.id', '=', answerId)
-      .where('answers.questionId', '=', questionId);
+      .where('answers.postId', '=', postId);
 
     const rows = await query.update({
       content: answer,
@@ -617,9 +591,9 @@ export class DatabaseQetaStore implements QetaStore {
     if (tags) {
       tags.forEach((t, i) => {
         query.innerJoin(
-          `question_tags AS at${i}`,
-          'answers.questionId',
-          `at${i}.questionId`,
+          `post_tags AS at${i}`,
+          'answers.postId',
+          `at${i}.postId`,
         );
         query.innerJoin(`tags AS t${i}`, `at${i}.tagId`, `t${i}.id`);
         query.where(`t${i}.tag`, '=', t);
@@ -627,12 +601,8 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.entity) {
-      query.leftJoin(
-        'question_entities',
-        'answers.questionId',
-        'question_entities.questionId',
-      );
-      query.leftJoin('entities', 'question_entities.entityId', 'entities.id');
+      query.leftJoin('post_entities', 'answers.postId', 'post_entities.postId');
+      query.leftJoin('entities', 'post_entities.entityId', 'entities.id');
       query.where('entities.entity_ref', '=', options.entity);
     }
 
@@ -699,9 +669,9 @@ export class DatabaseQetaStore implements QetaStore {
     return this.mapAnswer(answers[0], user_ref, true, true);
   }
 
-  async getQuestionComment(commentId: number): Promise<MaybeComment> {
-    const comments = await this.db<RawCommentEntity>('question_comments') // nosonar
-      .where('question_comments.id', '=', commentId)
+  async getPostComment(commentId: number): Promise<MaybeComment> {
+    const comments = await this.db<RawCommentEntity>('post_comments') // nosonar
+      .where('post_comments.id', '=', commentId)
       .select();
     if (comments.length === 0) {
       return null;
@@ -724,43 +694,40 @@ export class DatabaseQetaStore implements QetaStore {
     return !!(await query.delete());
   }
 
-  async voteQuestion(
+  async votePost(
     user_ref: string,
-    questionId: number,
+    postId: number,
     score: number,
   ): Promise<boolean> {
-    await this.db('question_votes')
+    await this.db('post_votes')
       .where('author', '=', user_ref)
-      .where('questionId', '=', questionId)
+      .where('postId', '=', postId)
       .delete();
 
     const id = await this.db
       .insert(
         {
           author: user_ref,
-          questionId,
+          postId,
           score,
           timestamp: new Date(),
         },
-        ['questionId'],
+        ['postId'],
       )
       .onConflict()
       .ignore()
-      .into('question_votes');
+      .into('post_votes');
     return id && id.length > 0;
   }
 
-  async favoriteQuestion(
-    user_ref: string,
-    questionId: number,
-  ): Promise<boolean> {
+  async favoritePost(user_ref: string, postId: number): Promise<boolean> {
     const id = await this.db
       .insert(
         {
           user: user_ref,
-          questionId,
+          postId,
         },
-        ['questionId'],
+        ['postId'],
       )
       .onConflict()
       .ignore()
@@ -768,13 +735,10 @@ export class DatabaseQetaStore implements QetaStore {
     return id && id.length > 0;
   }
 
-  async unfavoriteQuestion(
-    user_ref: string,
-    questionId: number,
-  ): Promise<boolean> {
+  async unfavoritePost(user_ref: string, postId: number): Promise<boolean> {
     return !!(await this.db('user_favorite')
       .where('user', '=', user_ref)
-      .where('questionId', '=', questionId)
+      .where('postId', '=', postId)
       .delete());
   }
 
@@ -804,37 +768,34 @@ export class DatabaseQetaStore implements QetaStore {
     return id && id.length > 0;
   }
 
-  async markAnswerCorrect(
-    questionId: number,
-    answerId: number,
-  ): Promise<boolean> {
-    return await this.markAnswer(questionId, answerId, true);
+  async markAnswerCorrect(postId: number, answerId: number): Promise<boolean> {
+    return await this.markAnswer(postId, answerId, true);
   }
 
   async markAnswerIncorrect(
-    questionId: number,
+    postId: number,
     answerId: number,
   ): Promise<boolean> {
-    return await this.markAnswer(questionId, answerId, false);
+    return await this.markAnswer(postId, answerId, false);
   }
 
   async getTags(): Promise<TagResponse[]> {
     const tagRef = this.db.ref('tags.id');
-    const questionsCount = this.db('question_tags')
-      .where('question_tags.tagId', tagRef)
+    const postsCount = this.db('post_tags')
+      .where('post_tags.tagId', tagRef)
       .count('*')
-      .as('questionsCount');
+      .as('postsCount');
 
     const tags = await this.db('tags')
-      .leftJoin('question_tags', 'tags.id', 'question_tags.tagId')
-      .orderBy('questionsCount', 'desc')
-      .select('tag', questionsCount)
+      .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
+      .orderBy('postsCount', 'desc')
+      .select('tag', postsCount)
       .groupBy('tags.id');
 
     return tags.map(tag => {
       return {
         tag: tag.tag,
-        questionsCount: this.mapToInteger(tag.questionsCount),
+        postsCount: this.mapToInteger(tag.postsCount),
       };
     });
   }
@@ -894,25 +855,21 @@ export class DatabaseQetaStore implements QetaStore {
 
   async getEntities(): Promise<EntityResponse[]> {
     const entityRef = this.db.ref('entities.id');
-    const questionsCount = this.db('question_entities')
-      .where('question_entities.entityId', entityRef)
+    const postsCount = this.db('post_entities')
+      .where('post_entities.entityId', entityRef)
       .count('*')
-      .as('questionsCount');
+      .as('postsCount');
 
     const entities = await this.db('entities')
-      .leftJoin(
-        'question_entities',
-        'entities.id',
-        'question_entities.entityId',
-      )
-      .orderBy('questionsCount', 'desc')
-      .select('entity_ref', questionsCount)
+      .leftJoin('post_entities', 'entities.id', 'post_entities.entityId')
+      .orderBy('postsCount', 'desc')
+      .select('entity_ref', postsCount)
       .groupBy('entities.id');
 
     return entities.map(entity => {
       return {
         entityRef: entity.entity_ref,
-        questionsCount: this.mapToInteger(entity.questionsCount),
+        postsCount: this.mapToInteger(entity.postsCount),
       };
     });
   }
@@ -957,14 +914,14 @@ export class DatabaseQetaStore implements QetaStore {
     return true;
   }
 
-  async getMostUpvotedQuestions({
+  async getMostUpvotedPosts({
     author,
     options,
   }: StatisticsRequestParameters): Promise<Statistic[]> {
-    const query = this.db<Statistic>('questions as q')
+    const query = this.db<Statistic>('posts as q')
       .sum('qv.score as total')
       .select('q.author')
-      .join('question_votes as qv', 'q.id', 'qv.questionId')
+      .join('post_votes as qv', 'q.id', 'qv.postId')
       .groupBy('q.author')
       .orderBy('total', 'desc')
       .where('anonymous', '!=', true);
@@ -992,11 +949,11 @@ export class DatabaseQetaStore implements QetaStore {
     return rows;
   }
 
-  async getTotalQuestions({
+  async getTotalPosts({
     author,
     options,
   }: StatisticsRequestParameters): Promise<Statistic[]> {
-    const query = this.db<Statistic>('questions as q')
+    const query = this.db<Statistic>('posts as q')
       .count('q.id as total')
       .select('q.author')
       .groupBy('author')
@@ -1160,9 +1117,9 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   async getUsers(): Promise<string[]> {
-    const questionUsers = await this.db('questions').select('author');
+    const postUsers = await this.db('posts').select('author');
     const answerUsers = await this.db('answers').select('author');
-    const allUsers = [...questionUsers, answerUsers]
+    const allUsers = [...postUsers, answerUsers]
       .map(user => user.author)
       .filter(Boolean);
     return [...new Set(allUsers)];
@@ -1174,40 +1131,40 @@ export class DatabaseQetaStore implements QetaStore {
       now.setDate(now.getDate() - lastDays);
     }
 
-    const questionViewsQuery = this.db('question_views')
-      .innerJoin('questions', 'question_views.questionId', 'questions.id')
-      .where('questions.author', user_ref);
+    const postViewsQuery = this.db('post_views')
+      .innerJoin('posts', 'post_views.postId', 'posts.id')
+      .where('posts.author', user_ref);
     if (lastDays) {
-      questionViewsQuery.where('questions.created', '>', now);
+      postViewsQuery.where('posts.created', '>', now);
     }
 
-    const answerViewsQuery = this.db('question_views')
-      .innerJoin('answers', 'question_views.questionId', 'answers.questionId')
-      .innerJoin('questions', 'question_views.questionId', 'questions.id')
+    const answerViewsQuery = this.db('post_views')
+      .innerJoin('answers', 'post_views.postId', 'answers.postId')
+      .innerJoin('posts', 'post_views.postId', 'posts.id')
       .where('answers.author', user_ref)
-      .whereNot('questions.author', user_ref);
+      .whereNot('posts.author', user_ref);
     if (lastDays) {
       answerViewsQuery.where('answers.created', '>', now);
     }
 
-    const questionViews = await questionViewsQuery.count('* as total');
+    const postViews = await postViewsQuery.count('* as total');
     const answerViews = await answerViewsQuery.count('* as total');
 
-    return Number(questionViews[0].total) + Number(answerViews[0].total);
+    return Number(postViews[0].total) + Number(answerViews[0].total);
   }
 
   async saveUserStats(user_ref: string, date: Date): Promise<void> {
     await this.db('user_stats')
       .insert({
         userRef: user_ref,
-        totalQuestions: await this.getCount('questions', user_ref),
+        totalQuestions: await this.getCount('posts', user_ref),
         totalAnswers: await this.getCount('answers', user_ref),
         totalViews: await this.getTotalViews(user_ref),
         totalComments:
-          (await this.getCount('question_comments', user_ref)) +
+          (await this.getCount('post_comments', user_ref)) +
           (await this.getCount('answer_comments', user_ref)),
         totalVotes:
-          (await this.getCount('question_votes', user_ref)) +
+          (await this.getCount('post_votes', user_ref)) +
           (await this.getCount('answer_votes', user_ref)),
         date,
       })
@@ -1218,16 +1175,16 @@ export class DatabaseQetaStore implements QetaStore {
   async saveGlobalStats(date: Date): Promise<void> {
     await this.db('global_stats')
       .insert({
-        totalQuestions: await this.getCount('questions'),
+        totalQuestions: await this.getCount('posts'),
         totalAnswers: await this.getCount('answers'),
         totalUsers: (await this.getUsers()).length,
         totalTags: await this.getCount('tags'),
-        totalViews: await this.getCount('question_views'),
+        totalViews: await this.getCount('post_views'),
         totalComments:
-          (await this.getCount('question_comments')) +
+          (await this.getCount('post_comments')) +
           (await this.getCount('answer_comments')),
         totalVotes:
-          (await this.getCount('question_votes')) +
+          (await this.getCount('post_votes')) +
           (await this.getCount('answer_votes')),
         date,
       })
@@ -1271,23 +1228,23 @@ export class DatabaseQetaStore implements QetaStore {
     return typeof val === 'string' ? Number.parseInt(val, 10) : val ?? 0;
   };
 
-  private async mapQuestion(
-    val: RawQuestionEntity,
+  private async mapPostEntity(
+    val: RawPostEntity,
     user_ref: string,
     addAnswers?: boolean,
     addVotes?: boolean,
     addEntities?: boolean,
     addComments?: boolean,
-  ): Promise<Question> {
+  ): Promise<Post> {
     // TODO: This could maybe done with join
     const additionalInfo = await Promise.all([
-      this.getQuestionTags(val.id),
+      this.getPostTags(val.id),
       addAnswers
-        ? this.getQuestionAnswers(val.id, user_ref, addVotes, addComments)
+        ? this.getPostAnswers(val.id, user_ref, addVotes, addComments)
         : undefined,
-      addVotes !== false ? this.getQuestionVotes(val.id) : undefined,
-      addEntities ? this.getQuestionEntities(val.id) : undefined,
-      addComments ? this.getQuestionComments(val.id) : undefined,
+      addVotes !== false ? this.getPostVotes(val.id) : undefined,
+      addEntities ? this.getPostEntities(val.id) : undefined,
+      addComments ? this.getPostComments(val.id) : undefined,
     ]);
     return {
       id: val.id,
@@ -1312,6 +1269,7 @@ export class DatabaseQetaStore implements QetaStore {
       comments: additionalInfo[4],
       ownVote: additionalInfo[2]?.find(v => v.author === user_ref)?.score,
       anonymous: val.anonymous,
+      type: val.type,
     };
   }
 
@@ -1331,18 +1289,16 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     addVotes?: boolean,
     addComments?: boolean,
-    addQuestion?: boolean,
+    addPost?: boolean,
   ): Promise<Answer> {
     const additionalInfo = await Promise.all([
       addVotes ? this.getAnswerVotes(val.id) : undefined,
       addComments ? this.getAnswerComments(val.id) : undefined,
-      addQuestion
-        ? this.getQuestion(user_ref, val.questionId, false)
-        : undefined,
+      addPost ? this.getPost(user_ref, val.postId, false) : undefined,
     ]);
     return {
       id: val.id,
-      questionId: val.questionId,
+      postId: val.postId,
       author:
         val.anonymous && val.author !== user_ref ? 'anonymous' : val.author,
       content: val.content,
@@ -1354,11 +1310,11 @@ export class DatabaseQetaStore implements QetaStore {
       votes: additionalInfo[0],
       comments: additionalInfo[1],
       anonymous: val.anonymous,
-      question: additionalInfo[2] ?? undefined,
+      post: additionalInfo[2] ?? undefined,
     };
   }
 
-  private mapVote(val: RawQuestionVoteEntity | RawAnswerVoteEntity): Vote {
+  private mapVote(val: RawPostVoteEntity | RawAnswerVoteEntity): Vote {
     return {
       author: val.author,
       score: val.score,
@@ -1366,19 +1322,17 @@ export class DatabaseQetaStore implements QetaStore {
     };
   }
 
-  private async getQuestionTags(questionId: number): Promise<string[]> {
+  private async getPostTags(postId: number): Promise<string[]> {
     const rows = await this.db<RawTagEntity>('tags') // nosonar
-      .leftJoin('question_tags', 'tags.id', 'question_tags.tagId')
-      .where('question_tags.questionId', '=', questionId)
+      .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
+      .where('post_tags.postId', '=', postId)
       .select();
     return rows.map(val => val.tag);
   }
 
-  private async getQuestionComments(
-    questionId: number,
-  ): Promise<RawCommentEntity[]> {
-    return this.db<RawCommentEntity>('question_comments') // nosonar
-      .where('question_comments.questionId', '=', questionId)
+  private async getPostComments(postId: number): Promise<RawCommentEntity[]> {
+    return this.db<RawCommentEntity>('post_comments') // nosonar
+      .where('post_comments.postId', '=', postId)
       .select();
   }
 
@@ -1390,22 +1344,18 @@ export class DatabaseQetaStore implements QetaStore {
       .select();
   }
 
-  private async getQuestionEntities(questionId: number): Promise<string[]> {
+  private async getPostEntities(postId: number): Promise<string[]> {
     const rows = await this.db<RawTagEntity>('entities') // nosonar
-      .leftJoin(
-        'question_entities',
-        'entities.id',
-        'question_entities.entityId',
-      )
-      .where('question_entities.questionId', '=', questionId)
+      .leftJoin('post_entities', 'entities.id', 'post_entities.entityId')
+      .where('post_entities.postId', '=', postId)
       .select();
     return rows.map(val => val.entity_ref);
   }
 
-  private async getQuestionVotes(questionId: number): Promise<Vote[]> {
-    const rows = (await this.db<RawQuestionVoteEntity>('question_votes')
-      .where('questionId', '=', questionId)
-      .select()) as RawQuestionVoteEntity[];
+  private async getPostVotes(postId: number): Promise<Vote[]> {
+    const rows = (await this.db<RawPostVoteEntity>('post_votes')
+      .where('postId', '=', postId)
+      .select()) as RawPostVoteEntity[];
     return rows.map(val => this.mapVote(val));
   }
 
@@ -1417,10 +1367,10 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   private getAnswerBaseQuery() {
-    const questionRef = this.db.ref('answers.id');
+    const postRef = this.db.ref('answers.id');
 
     const score = this.db('answer_votes')
-      .where('answer_votes.answerId', questionRef)
+      .where('answer_votes.answerId', postRef)
       .sum('score')
       .as('score');
 
@@ -1430,14 +1380,14 @@ export class DatabaseQetaStore implements QetaStore {
       .groupBy('answers.id');
   }
 
-  private async getQuestionAnswers(
-    questionId: number,
+  private async getPostAnswers(
+    postId: number,
     user_ref: string,
     addVotes?: boolean,
     addComments?: boolean,
   ): Promise<Answer[]> {
     const rows = await this.getAnswerBaseQuery()
-      .where('questionId', '=', questionId)
+      .where('postId', '=', postId)
       .orderBy('answers.correct', 'desc')
       .orderBy('answers.created');
     return await Promise.all(
@@ -1447,75 +1397,66 @@ export class DatabaseQetaStore implements QetaStore {
     );
   }
 
-  private async recordQuestionView(
-    questionId: number,
+  private async recordPostView(
+    postId: number,
     user_ref: string,
   ): Promise<void> {
     await this.db
       .insert({
         author: user_ref,
-        questionId,
+        postId,
         timestamp: new Date(),
       })
-      .into('question_views');
+      .into('post_views');
   }
 
-  private getQuestionBaseQuery(user: string) {
-    const questionRef = this.db.ref('questions.id');
+  private getPostsBaseQuery(user: string) {
+    const postRef = this.db.ref('posts.id');
 
-    const score = this.db('question_votes')
-      .where('question_votes.questionId', questionRef)
+    const score = this.db('post_votes')
+      .where('post_votes.postId', postRef)
       .sum('score')
       .as('score');
 
-    const views = this.db('question_views')
-      .where('question_views.questionId', questionRef)
+    const views = this.db('post_views')
+      .where('post_views.postId', postRef)
       .count('*')
       .as('views');
 
     const answersCount = this.db('answers')
-      .where('answers.questionId', questionRef)
+      .where('answers.postId', postRef)
       .count('*')
       .as('answersCount');
 
     const correctAnswers = this.db('answers')
-      .where('answers.questionId', questionRef)
+      .where('answers.postId', postRef)
       .where('answers.correct', '=', true)
       .count('*')
       .as('correctAnswers');
 
     const favorite = this.db('user_favorite')
       .where('user_favorite.user', '=', user)
-      .where('user_favorite.questionId', questionRef)
+      .where('user_favorite.postId', postRef)
       .count('*')
       .as('favorite');
 
-    return this.db<RawQuestionEntity>('questions') // nosonar
-      .select(
-        'questions.*',
-        score,
-        views,
-        answersCount,
-        correctAnswers,
-        favorite,
-      )
-      .leftJoin('question_votes', 'questions.id', 'question_votes.questionId')
-      .leftJoin('question_views', 'questions.id', 'question_views.questionId')
-      .leftJoin('answers', 'questions.id', 'answers.questionId')
-      .leftJoin('user_favorite', 'questions.id', 'user_favorite.questionId')
-      .groupBy('questions.id');
+    return this.db<RawPostEntity>('posts') // nosonar
+      .select('posts.*', score, views, answersCount, correctAnswers, favorite)
+      .leftJoin('post_votes', 'posts.id', 'post_votes.postId')
+      .leftJoin('post_views', 'posts.id', 'post_views.postId')
+      .leftJoin('answers', 'posts.id', 'answers.postId')
+      .leftJoin('user_favorite', 'posts.id', 'user_favorite.postId')
+      .groupBy('posts.id');
   }
 
-  private async addQuestionTags(
-    questionId: number,
+  private async addPostTags(
+    postId: number,
     tagsInput?: string[],
     removeOld?: boolean,
   ) {
     const tags = filterTags(tagsInput);
     if (removeOld) {
-      await this.db('question_tags')
-        .where('questionId', '=', questionId)
-        .delete();
+      await this.db('post_tags').where('postId', '=', postId).delete();
     }
 
     if (!tags || tags.length === 0) {
@@ -1546,23 +1487,21 @@ export class DatabaseQetaStore implements QetaStore {
     await Promise.all(
       tagIds.map(async tagId => {
         await this.db
-          .insert({ questionId, tagId })
-          .into('question_tags')
+          .insert({ postId, tagId })
+          .into('post_tags')
           .onConflict()
           .ignore();
       }),
     );
   }
 
-  private async addQuestionEntities(
-    questionId: number,
+  private async addPostEntities(
+    postId: number,
     entitiesInput?: string[],
     removeOld?: boolean,
   ) {
     if (removeOld) {
-      await this.db('question_entities')
-        .where('questionId', '=', questionId)
-        .delete();
+      await this.db('post_entities').where('postId', '=', postId).delete();
     }
 
     const regex = /\w+:\w+\/\w+/g;
@@ -1598,8 +1537,8 @@ export class DatabaseQetaStore implements QetaStore {
     await Promise.all(
       entityIds.map(async entityId => {
         await this.db
-          .insert({ questionId, entityId })
-          .into('question_entities')
+          .insert({ postId, entityId })
+          .into('post_entities')
           .onConflict()
           .ignore();
       }),
@@ -1607,7 +1546,7 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   private async markAnswer(
-    questionId: number,
+    postId: number,
     answerId: number,
     correct: boolean,
   ): Promise<boolean> {
@@ -1616,7 +1555,7 @@ export class DatabaseQetaStore implements QetaStore {
       const exists = await this.db('answers')
         .select('id')
         .where('correct', '=', true)
-        .where('questionId', '=', questionId);
+        .where('postId', '=', postId);
       if (exists && exists.length > 0) {
         return false;
       }
@@ -1626,7 +1565,7 @@ export class DatabaseQetaStore implements QetaStore {
       .onConflict()
       .ignore()
       .where('answers.id', '=', answerId)
-      .where('questionId', '=', questionId);
+      .where('postId', '=', postId);
 
     const ret = await query.update({ correct }, ['id']);
     return ret !== undefined && ret?.length > 0;

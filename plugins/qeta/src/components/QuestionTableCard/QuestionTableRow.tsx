@@ -1,4 +1,4 @@
-import { Question } from '@drodil/backstage-plugin-qeta-common';
+import { Post } from '@drodil/backstage-plugin-qeta-common';
 import { TableCell, TableRow } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
@@ -7,7 +7,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { questionRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { AuthorLink } from '../Links/Links';
 
-export const QuestionTableRow = (props: { question: Question }) => {
+export const QuestionTableRow = (props: { question: Post }) => {
   const { question } = props;
   const questionRoute = useRouteRef(questionRouteRef);
 

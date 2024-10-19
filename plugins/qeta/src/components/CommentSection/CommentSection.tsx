@@ -3,8 +3,8 @@ import { Box, Button, Grid, TextField } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import {
   AnswerResponse,
+  PostResponse,
   qetaCreateCommentPermission,
-  QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Controller, useForm } from 'react-hook-form';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
@@ -15,12 +15,9 @@ import { confirmNavigationIfEdited } from '../../utils/utils';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 
 export const CommentSection = (props: {
-  onCommentPost: (question: QuestionResponse, answer?: AnswerResponse) => void;
-  onCommentDelete: (
-    question: QuestionResponse,
-    answer?: AnswerResponse,
-  ) => void;
-  question: QuestionResponse;
+  onCommentPost: (question: PostResponse, answer?: AnswerResponse) => void;
+  onCommentDelete: (question: PostResponse, answer?: AnswerResponse) => void;
+  question: PostResponse;
   answer?: AnswerResponse;
 }) => {
   const { answer, question, onCommentPost, onCommentDelete } = props;

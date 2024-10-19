@@ -23,7 +23,7 @@ import { QetaStore } from '../database/QetaStore';
 import {
   Answer,
   Comment,
-  Question,
+  Post,
   Statistic,
 } from '@drodil/backstage-plugin-qeta-common';
 import { ConfigReader } from '@backstage/config';
@@ -69,7 +69,7 @@ const mostUpvotedAnswers: Statistic[] = [
   },
 ];
 
-const question: Question = {
+const question: Post = {
   id: 1,
   score: 0,
   views: 122,
@@ -80,11 +80,12 @@ const question: Question = {
   created: new Date('2022-01-01T00:00:00Z'),
   answersCount: 0,
   correctAnswer: false,
+  type: 'question',
 };
 
 const answer: Answer = {
   id: 1,
-  questionId: 1,
+  postId: 1,
   score: 0,
   author: 'user',
   content: 'content',
@@ -104,7 +105,7 @@ const answerWithComment: Answer = {
   comments: [comment],
 };
 
-const questionWithComment: Question = {
+const questionWithComment: Post = {
   ...question,
   comments: [comment],
 };
@@ -206,8 +207,8 @@ describe('createRouter', () => {
 
   describe('GET /questions', () => {
     it('returns list of questions', async () => {
-      qetaStore.getQuestions.mockResolvedValue({
-        questions: [],
+      qetaStore.getPosts.mockResolvedValue({
+        posts: [],
         total: 0,
       });
       const response = await request(app).get('/questions');
@@ -215,8 +216,8 @@ describe('createRouter', () => {
       expect(response.body).toEqual({ questions: [], total: 0 });
     });
     it('returns 400 error when date range is invalid', async () => {
-      qetaStore.getQuestions.mockResolvedValue({
-        questions: [],
+      qetaStore.getPosts.mockResolvedValue({
+        posts: [],
         total: 0,
       });
       const response = await request(app).get(
@@ -229,8 +230,8 @@ describe('createRouter', () => {
       });
     });
     it('returns 400 error when fromDate provided but not toDate', async () => {
-      qetaStore.getQuestions.mockResolvedValue({
-        questions: [],
+      qetaStore.getPosts.mockResolvedValue({
+        posts: [],
         total: 0,
       });
       const response = await request(app).get('/questions?fromDate=2024-05-10');
@@ -242,8 +243,8 @@ describe('createRouter', () => {
       });
     });
     it('returns 400 error when toDate provided but not fromDate', async () => {
-      qetaStore.getQuestions.mockResolvedValue({
-        questions: [],
+      qetaStore.getPosts.mockResolvedValue({
+        posts: [],
         total: 0,
       });
       const response = await request(app).get('/questions?toDate=2024-05-10');
@@ -255,8 +256,8 @@ describe('createRouter', () => {
       });
     });
     it('returns 400 error when fromDate is invalid', async () => {
-      qetaStore.getQuestions.mockResolvedValue({
-        questions: [],
+      qetaStore.getPosts.mockResolvedValue({
+        posts: [],
         total: 0,
       });
       const response = await request(app).get(
@@ -271,14 +272,11 @@ describe('createRouter', () => {
 
   describe('GET /questions/:id', () => {
     it('returns a question by id', async () => {
-      qetaStore.getQuestion.mockResolvedValue(question);
+      qetaStore.getPost.mockResolvedValue(question);
 
       const response = await request(app).get('/questions/1');
 
-      expect(qetaStore.getQuestion).toHaveBeenCalledWith(
-        'user:default/mock',
-        1,
-      );
+      expect(qetaStore.getPost).toHaveBeenCalledWith('user:default/mock', 1);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         ...question,
@@ -287,13 +285,13 @@ describe('createRouter', () => {
     });
 
     it('not found', async () => {
-      qetaStore.getQuestion.mockResolvedValue(null);
+      qetaStore.getPost.mockResolvedValue(null);
       const response = await request(app).get('/questions/1');
       expect(response.status).toEqual(404);
     });
 
     it('forbidden', async () => {
-      qetaStore.getQuestion.mockResolvedValue(question);
+      qetaStore.getPost.mockResolvedValue(question);
       mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
       const response = await request(app).get('/questions/1');
       expect(response.status).toEqual(403);
@@ -302,7 +300,7 @@ describe('createRouter', () => {
 
   describe('POST /questions', () => {
     it('creates new question', async () => {
-      qetaStore.postQuestion.mockResolvedValue(question);
+      qetaStore.createPost.mockResolvedValue(question);
       mockSystemDate(question.created);
 
       const response = await request(app)
@@ -314,7 +312,7 @@ describe('createRouter', () => {
           entities: ['component:default/comp1'],
         });
 
-      expect(qetaStore.postQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.createPost).toHaveBeenCalledWith(
         'user:default/mock',
         'title',
         'content',
@@ -332,7 +330,7 @@ describe('createRouter', () => {
     });
 
     it('allows user and created to be specified if allowMetadataInput is true', async () => {
-      qetaStore.postQuestion.mockResolvedValue(question);
+      qetaStore.createPost.mockResolvedValue(question);
       app = await buildApp({ qeta: { allowMetadataInput: true } });
 
       const testDate = new Date('1999-01-01T00:00:00.000Z');
@@ -347,7 +345,7 @@ describe('createRouter', () => {
           created: testDate.toISOString(),
         });
 
-      expect(qetaStore.postQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.createPost).toHaveBeenCalledWith(
         'user2',
         'title',
         'content',
@@ -394,13 +392,13 @@ describe('createRouter', () => {
 
   describe('DELETE /questions/:id', () => {
     it('deletes question', async () => {
-      qetaStore.deleteQuestion.mockResolvedValue(true);
+      qetaStore.deletePost.mockResolvedValue(true);
       const response = await request(app).delete('/questions/1');
       expect(response.status).toEqual(200);
     });
 
     it('delete failure', async () => {
-      qetaStore.deleteQuestion.mockResolvedValue(false);
+      qetaStore.deletePost.mockResolvedValue(false);
       const response = await request(app).delete('/questions/1');
       expect(response.status).toEqual(404);
     });
@@ -408,7 +406,7 @@ describe('createRouter', () => {
 
   describe('POST /questions/:id/comments', () => {
     it('posts a comment on the question', async () => {
-      qetaStore.commentQuestion.mockResolvedValue(questionWithComment);
+      qetaStore.commentPost.mockResolvedValue(questionWithComment);
       mockSystemDate(answer.created);
 
       const response = await request(app).post(`/questions/1/comments`).send({
@@ -416,7 +414,7 @@ describe('createRouter', () => {
       });
 
       expect(response.status).toEqual(200);
-      expect(qetaStore.commentQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.commentPost).toHaveBeenCalledWith(
         1,
         'user:default/mock',
         'content',
@@ -428,7 +426,7 @@ describe('createRouter', () => {
     });
 
     it('allows user and created to be specified if allowMetadataInput is true', async () => {
-      qetaStore.commentQuestion.mockResolvedValue(questionWithComment);
+      qetaStore.commentPost.mockResolvedValue(questionWithComment);
       app = await buildApp({ qeta: { allowMetadataInput: true } });
 
       const testDate = new Date('1999-01-01T00:00:00.000Z');
@@ -439,7 +437,7 @@ describe('createRouter', () => {
       });
 
       expect(response.status).toEqual(200);
-      expect(qetaStore.commentQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.commentPost).toHaveBeenCalledWith(
         1,
         'user2',
         'content2',
@@ -471,14 +469,14 @@ describe('createRouter', () => {
 
   describe('POST /questions/:id/answers', () => {
     it('posts answer', async () => {
-      qetaStore.answerQuestion.mockResolvedValue(answer);
-      qetaStore.getQuestion.mockResolvedValue(question);
+      qetaStore.answerPost.mockResolvedValue(answer);
+      qetaStore.getPost.mockResolvedValue(question);
       mockSystemDate(answer.created);
       const response = await request(app).post('/questions/1/answers').send({
         answer: 'content',
       });
 
-      expect(qetaStore.answerQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.answerPost).toHaveBeenCalledWith(
         'user:default/mock',
         1,
         'content',
@@ -494,8 +492,8 @@ describe('createRouter', () => {
     });
 
     it('allows user and created to be specified if allowMetadataInput is true', async () => {
-      qetaStore.answerQuestion.mockResolvedValue(answer);
-      qetaStore.getQuestion.mockResolvedValue(question);
+      qetaStore.answerPost.mockResolvedValue(answer);
+      qetaStore.getPost.mockResolvedValue(question);
       app = await buildApp({ qeta: { allowMetadataInput: true } });
 
       const testDate = new Date('1999-01-01T00:00:00.000Z');
@@ -505,7 +503,7 @@ describe('createRouter', () => {
         created: testDate.toISOString(),
       });
 
-      expect(qetaStore.answerQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.answerPost).toHaveBeenCalledWith(
         'user2',
         1,
         'content',
@@ -547,7 +545,7 @@ describe('createRouter', () => {
   describe('DELETE /questions/:id/answers/:answerId', () => {
     it('deletes answer', async () => {
       qetaStore.getAnswer.mockResolvedValue(answer);
-      qetaStore.getQuestion.mockResolvedValue(question);
+      qetaStore.getPost.mockResolvedValue(question);
       qetaStore.deleteAnswer.mockResolvedValue(true);
       const response = await request(app).delete(
         `/questions/${question.id}/answers/${answer.id}`,
@@ -564,15 +562,15 @@ describe('createRouter', () => {
 
   describe('GET /questions/:id/upvote', () => {
     it('votes question up', async () => {
-      qetaStore.voteQuestion.mockResolvedValue(true);
-      qetaStore.getQuestion.mockResolvedValue(question);
+      qetaStore.votePost.mockResolvedValue(true);
+      qetaStore.getPost.mockResolvedValue(question);
 
       const response = await request(app).get(
         `/questions/${question.id}/upvote`,
       );
 
       expect(response.status).toEqual(200);
-      expect(qetaStore.voteQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.votePost).toHaveBeenCalledWith(
         'user:default/mock',
         1,
         1,
@@ -584,11 +582,11 @@ describe('createRouter', () => {
     });
 
     it('vote fails', async () => {
-      qetaStore.voteQuestion.mockResolvedValue(false);
+      qetaStore.votePost.mockResolvedValue(false);
 
       const response = await request(app).get('/questions/1/upvote');
 
-      expect(qetaStore.voteQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.votePost).toHaveBeenCalledWith(
         'user:default/mock',
         1,
         1,
@@ -599,12 +597,12 @@ describe('createRouter', () => {
 
   describe('GET /questions/:id/downvote', () => {
     it('votes question down', async () => {
-      qetaStore.voteQuestion.mockResolvedValue(true);
-      qetaStore.getQuestion.mockResolvedValue(question);
+      qetaStore.votePost.mockResolvedValue(true);
+      qetaStore.getPost.mockResolvedValue(question);
 
       const response = await request(app).get('/questions/1/downvote');
 
-      expect(qetaStore.voteQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.votePost).toHaveBeenCalledWith(
         'user:default/mock',
         1,
         -1,
@@ -617,11 +615,11 @@ describe('createRouter', () => {
     });
 
     it('vote fails', async () => {
-      qetaStore.voteQuestion.mockResolvedValue(false);
+      qetaStore.votePost.mockResolvedValue(false);
 
       const response = await request(app).get('/questions/1/downvote');
 
-      expect(qetaStore.voteQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.votePost).toHaveBeenCalledWith(
         'user:default/mock',
         1,
         -1,
@@ -632,12 +630,12 @@ describe('createRouter', () => {
 
   describe('GET /questions/:id/favorite', () => {
     it('marks question favorite', async () => {
-      qetaStore.favoriteQuestion.mockResolvedValue(true);
-      qetaStore.getQuestion.mockResolvedValue(question);
+      qetaStore.favoritePost.mockResolvedValue(true);
+      qetaStore.getPost.mockResolvedValue(question);
 
       const response = await request(app).get('/questions/1/favorite');
 
-      expect(qetaStore.favoriteQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.favoritePost).toHaveBeenCalledWith(
         'user:default/mock',
         1,
       );
@@ -649,11 +647,11 @@ describe('createRouter', () => {
     });
 
     it('favorite fails', async () => {
-      qetaStore.favoriteQuestion.mockResolvedValue(false);
+      qetaStore.favoritePost.mockResolvedValue(false);
 
       const response = await request(app).get('/questions/1/favorite');
 
-      expect(qetaStore.favoriteQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.favoritePost).toHaveBeenCalledWith(
         'user:default/mock',
         1,
       );
@@ -663,12 +661,12 @@ describe('createRouter', () => {
 
   describe('GET /questions/:id/unfavorite', () => {
     it('unfavorite question', async () => {
-      qetaStore.unfavoriteQuestion.mockResolvedValue(true);
-      qetaStore.getQuestion.mockResolvedValue(question);
+      qetaStore.unfavoritePost.mockResolvedValue(true);
+      qetaStore.getPost.mockResolvedValue(question);
 
       const response = await request(app).get('/questions/1/unfavorite');
 
-      expect(qetaStore.unfavoriteQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.unfavoritePost).toHaveBeenCalledWith(
         'user:default/mock',
         1,
       );
@@ -680,11 +678,11 @@ describe('createRouter', () => {
     });
 
     it('unfavorite fails', async () => {
-      qetaStore.unfavoriteQuestion.mockResolvedValue(false);
+      qetaStore.unfavoritePost.mockResolvedValue(false);
 
       const response = await request(app).get('/questions/1/unfavorite');
 
-      expect(qetaStore.unfavoriteQuestion).toHaveBeenCalledWith(
+      expect(qetaStore.unfavoritePost).toHaveBeenCalledWith(
         'user:default/mock',
         1,
       );
@@ -890,11 +888,9 @@ describe('createRouter', () => {
     });
 
     it('returns the users with the best voted questions', async () => {
-      qetaStore.getMostUpvotedQuestions.mockResolvedValueOnce(
-        mostUpvotedQuestions,
-      );
+      qetaStore.getMostUpvotedPosts.mockResolvedValueOnce(mostUpvotedQuestions);
 
-      qetaStore.getMostUpvotedQuestions.mockResolvedValueOnce([
+      qetaStore.getMostUpvotedPosts.mockResolvedValueOnce([
         {
           total: 1,
           author: 'user:default/thor',
@@ -914,15 +910,13 @@ describe('createRouter', () => {
     });
 
     it('ensure that the position of the logged user is equal to the ranking', async () => {
-      qetaStore.getMostUpvotedQuestions.mockResolvedValueOnce(
-        mostUpvotedQuestions,
-      );
+      qetaStore.getMostUpvotedPosts.mockResolvedValueOnce(mostUpvotedQuestions);
 
       const response = await request(app).get(
         '/statistics/questions/top-upvoted-users',
       );
 
-      expect(qetaStore.getMostUpvotedQuestions).toHaveBeenCalledTimes(3);
+      expect(qetaStore.getMostUpvotedPosts).toHaveBeenCalledTimes(3);
       expect(response.status).toEqual(200);
       expect(response.body.ranking.length).toBeGreaterThan(0);
       expect(response.body.loggedUser.author).toEqual('user:default/mock');

@@ -3,14 +3,12 @@ import React from 'react';
 import { useEntityAuthor, useStyles, useTranslation } from '../../utils/hooks';
 import {
   AnswerResponse,
-  QuestionResponse,
+  PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { AuthorLink, UpdatedByLink } from '../Links/Links';
 
-export const AuthorBox = (props: {
-  entity: QuestionResponse | AnswerResponse;
-}) => {
+export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
   const { entity } = props;
   const styles = useStyles();
   const { t } = useTranslation();

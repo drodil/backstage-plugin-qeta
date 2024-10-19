@@ -1,6 +1,6 @@
 import {
   AnswerResponse,
-  QuestionResponse,
+  PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Box, Divider, Typography } from '@material-ui/core';
 import React from 'react';
@@ -13,11 +13,8 @@ import { qetaApiRef } from '../../api';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 
 export const CommentList = (props: {
-  onCommentDelete: (
-    question: QuestionResponse,
-    answer?: AnswerResponse,
-  ) => void;
-  question: QuestionResponse;
+  onCommentDelete: (question: PostResponse, answer?: AnswerResponse) => void;
+  question: PostResponse;
   answer?: AnswerResponse;
 }) => {
   const { question, answer, onCommentDelete } = props;

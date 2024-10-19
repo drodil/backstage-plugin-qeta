@@ -1,4 +1,4 @@
-import { QuestionsOptions } from '../../database/QetaStore';
+import { PostOptions } from '../../database/QetaStore';
 import {
   authorize,
   authorizeConditional,
@@ -69,11 +69,11 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       const filter: PermissionCriteria<QetaFilters> = transformConditions(
         decision.conditions,
       );
-      response.json(
-        await database.getQuestions(username, request.query, filter),
-      );
+      const posts = await database.getPosts(username, request.query, filter);
+      response.json({ questions: posts.posts, total: posts.total });
     } else {
-      response.json(await database.getQuestions(username, request.query));
+      const posts = await database.getPosts(username, request.query);
+      response.json({ questions: posts.posts, total: posts.total });
     }
   });
 
@@ -89,7 +89,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const optionOverride: QuestionsOptions = {};
+    const optionOverride: PostOptions = {};
     const type = request.params.type;
     if (type === 'unanswered') {
       optionOverride.random = true;
@@ -115,20 +115,18 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       const filter: PermissionCriteria<QetaFilters> = transformConditions(
         decision.conditions,
       );
-      response.json(
-        await database.getQuestions(
-          username,
-          { ...request.query, ...optionOverride },
-          filter,
-        ),
+      const posts = await database.getPosts(
+        username,
+        { ...request.query, ...optionOverride },
+        filter,
       );
+      response.json({ questions: posts.posts, total: posts.total });
     } else {
-      response.json(
-        await database.getQuestions(username, {
-          ...request.query,
-          ...optionOverride,
-        }),
-      );
+      const posts = await database.getPosts(username, {
+        ...request.query,
+        ...optionOverride,
+      });
+      response.json({ questions: posts.posts, total: posts.total });
     }
   });
 
@@ -145,7 +143,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const question = await database.getQuestion(
+    const question = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
     );
@@ -192,7 +190,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    let question = await database.getQuestion(
+    let question = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
@@ -201,7 +199,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
     await authorize(request, qetaReadQuestionPermission, options, question);
     await authorize(request, qetaCreateCommentPermission, options);
 
-    question = await database.commentQuestion(
+    question = await database.commentPost(
       questionId,
       username,
       request.body.content,
@@ -263,18 +261,18 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       }
 
       const username = await getUsername(request, options);
-      let question = await database.getQuestion(
+      let question = await database.getPost(
         username,
         Number.parseInt(request.params.id, 10),
         false,
       );
-      const comment = await database.getQuestionComment(commentId);
+      const comment = await database.getPostComment(commentId);
 
       await authorize(request, qetaDeleteQuestionPermission, options, question);
 
       await authorize(request, qetaDeleteCommentPermission, options, comment);
 
-      question = await database.deleteQuestionComment(
+      question = await database.deletePostComment(
         questionId,
         commentId,
         username,
@@ -343,7 +341,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
     const created = await getCreated(request, options);
 
     // Act
-    const question = await database.postQuestion(
+    const question = await database.createPost(
       username,
       request.body.title,
       request.body.content,
@@ -402,7 +400,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const username = await getUsername(request, options);
-    let question = await database.getQuestion(
+    let question = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
@@ -414,7 +412,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
     const entities = getEntities(request);
 
     // Act
-    question = await database.updateQuestion(
+    question = await database.updatePost(
       questionId,
       username,
       request.body.title,
@@ -457,7 +455,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
     const username = await getUsername(request, options);
-    const question = await database.getQuestion(
+    const question = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
@@ -476,7 +474,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     // Act
-    const deleted = await database.deleteQuestion(questionId);
+    const deleted = await database.deletePost(questionId);
 
     // Response
     response.sendStatus(deleted ? 200 : 404);
@@ -498,7 +496,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
 
     // Act
     const username = await getUsername(request, options);
-    const question = await database.getQuestion(username, questionId, false);
+    const question = await database.getPost(username, questionId, false);
 
     if (question === null) {
       response.sendStatus(404);
@@ -507,14 +505,14 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
 
     await authorize(request, qetaReadQuestionPermission, options, question);
 
-    const voted = await database.voteQuestion(username, questionId, score);
+    const voted = await database.votePost(username, questionId, score);
 
     if (!voted) {
       response.sendStatus(404);
       return;
     }
 
-    const resp = await database.getQuestion(username, questionId, false);
+    const resp = await database.getPost(username, questionId, false);
     if (resp === null) {
       response.sendStatus(404);
       return;
@@ -561,7 +559,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const username = await getUsername(request, options);
-    let question = await database.getQuestion(
+    let question = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
@@ -569,14 +567,14 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
 
     await authorize(request, qetaReadQuestionPermission, options, question);
 
-    const favorited = await database.favoriteQuestion(username, questionId);
+    const favorited = await database.favoritePost(username, questionId);
 
     if (!favorited) {
       response.sendStatus(404);
       return;
     }
 
-    question = await database.getQuestion(
+    question = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
@@ -599,7 +597,7 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const username = await getUsername(request, options);
-    let question = await database.getQuestion(
+    let question = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
@@ -607,14 +605,14 @@ export const questionsRoutes = (router: Router, options: RouteOptions) => {
 
     await authorize(request, qetaReadQuestionPermission, options, question);
 
-    const unfavorited = await database.unfavoriteQuestion(username, questionId);
+    const unfavorited = await database.unfavoritePost(username, questionId);
 
     if (!unfavorited) {
       response.sendStatus(404);
       return;
     }
 
-    question = await database.getQuestion(
+    question = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,

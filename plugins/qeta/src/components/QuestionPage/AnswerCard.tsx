@@ -1,6 +1,6 @@
 import {
   AnswerResponse,
-  QuestionResponse,
+  PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   Box,
@@ -24,7 +24,7 @@ import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;
-  question: QuestionResponse;
+  question: PostResponse;
 }) => {
   const { answer, question } = props;
   const styles = useStyles();
@@ -44,7 +44,7 @@ export const AnswerCard = (props: {
     setAnswerEntity(a);
   };
 
-  const onCommentAction = (_: QuestionResponse, a?: AnswerResponse) => {
+  const onCommentAction = (_: PostResponse, a?: AnswerResponse) => {
     if (a) {
       setAnswerEntity(a);
     }
@@ -69,7 +69,7 @@ export const AnswerCard = (props: {
             <Grid item xs={11} className={styles.answerCardContent}>
               {editMode ? (
                 <AnswerForm
-                  question={question}
+                  post={question}
                   onPost={onAnswerEdit}
                   id={answerEntity.id}
                 />

@@ -3,12 +3,12 @@ import Link from '@material-ui/icons/Link';
 import React from 'react';
 import {
   AnswerResponse,
-  QuestionResponse,
+  PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslation } from '../../utils/hooks';
 
 export const LinkButton = (props: {
-  entity: QuestionResponse | AnswerResponse;
+  entity: PostResponse | AnswerResponse;
 }) => {
   const isQuestion = 'title' in props.entity;
   const { t } = useTranslation();

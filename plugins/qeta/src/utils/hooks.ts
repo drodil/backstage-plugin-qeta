@@ -19,7 +19,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { UserEntity } from '@backstage/catalog-model';
 import {
   AnswerResponse,
-  QuestionResponse,
+  PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import DataLoader from 'dataloader';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -360,7 +360,7 @@ const dataLoaderFactory = (catalogApi: CatalogApi) =>
     },
   );
 
-export const useEntityAuthor = (entity: QuestionResponse | AnswerResponse) => {
+export const useEntityAuthor = (entity: PostResponse | AnswerResponse) => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
   const [name, setName] = React.useState<string | undefined>(undefined);

@@ -51,7 +51,7 @@ export interface QetaEntity {
   updatedBy?: string;
 }
 
-export interface QuestionAnswerEntity extends QetaEntity {
+export interface PostAnswerEntity extends QetaEntity {
   score: number;
   ownVote?: number;
   comments?: Comment[];
@@ -59,7 +59,9 @@ export interface QuestionAnswerEntity extends QetaEntity {
   anonymous?: boolean;
 }
 
-export interface Question extends QuestionAnswerEntity {
+export type PostType = 'question';
+
+export interface Post extends PostAnswerEntity {
   title: string;
   views: number;
   answersCount: number;
@@ -69,6 +71,11 @@ export interface Question extends QuestionAnswerEntity {
   entities?: string[];
   answers?: Answer[];
   trend?: number;
+  type: PostType;
+}
+
+export interface Question extends Post {
+  type: 'question';
 }
 
 export type AnswerFilter = {
@@ -76,8 +83,8 @@ export type AnswerFilter = {
   values: Array<string | undefined>;
 };
 
-export type QuestionFilter = {
-  property: 'questions.author' | 'questions.id' | 'tags' | 'entityRefs';
+export type PostFilter = {
+  property: 'posts.author' | 'posts.id' | 'tags' | 'entityRefs' | 'posts.type';
   values: Array<string | undefined>;
 };
 
@@ -86,10 +93,10 @@ export type CommentFilter = {
   values: Array<string | undefined>;
 };
 
-export interface Answer extends QuestionAnswerEntity {
-  questionId: number;
+export interface Answer extends PostAnswerEntity {
+  postId: number;
   correct: boolean;
-  question?: Question;
+  post?: Post;
 }
 
 export interface Vote {
@@ -142,7 +149,7 @@ export type QuestionsResponseBody = QuestionsResponse | ErrorResponse;
 
 export type QuestionResponseBody = Question | ErrorResponse;
 
-export interface QuestionRequest {
+export interface PostRequest {
   title: string;
   content: string;
   tags?: string[];
@@ -150,8 +157,10 @@ export interface QuestionRequest {
   images?: number[];
 }
 
+export interface QuestionRequest extends PostRequest {}
+
 export interface AnswerRequest {
-  questionId: number;
+  postId: number;
   answer: string;
   images?: number[];
   anonymous?: boolean;
@@ -168,21 +177,21 @@ export type AnswerResponseBody = Answer | ErrorResponse;
 
 export interface TagResponse {
   tag: string;
-  questionsCount: number;
+  postsCount: number;
 }
 
 export interface EntityResponse {
   entityRef: string;
-  questionsCount: number;
+  postsCount: number;
 }
 
 export type AttachmentResponseBody = Attachment | ErrorResponse;
 
-export type QuestionResponse = Question;
+export type PostResponse = Post;
 export type AnswerResponse = Answer;
 
-export type QetaQuestionStatsSignal = {
-  type: 'question_stats';
+export type QetaPostsStatsSignal = {
+  type: 'post_stats';
   views: number;
   score: number;
   answersCount: number;
@@ -195,7 +204,7 @@ export type QetaAnswerStatsSignal = {
   correctAnswer: boolean;
 };
 
-export type QetaSignal = QetaQuestionStatsSignal | QetaAnswerStatsSignal;
+export type QetaSignal = QetaPostsStatsSignal | QetaAnswerStatsSignal;
 
 export interface UserTagsResponse {
   tags: string[];

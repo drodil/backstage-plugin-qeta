@@ -98,7 +98,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
     const username = await getUsername(request, options);
-    const question = await database.getQuestion(username, questionId, false);
+    const question = await database.getPost(username, questionId, false);
     if (!question) {
       response.status(404).send({ errors: 'Question not found', type: 'body' });
       return;
@@ -110,7 +110,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     const created = await getCreated(request, options);
 
     // Act
-    const answer = await database.answerQuestion(
+    const answer = await database.answerPost(
       username,
       questionId,
       request.body.answer,
@@ -176,7 +176,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const question = await database.getQuestion(username, questionId, false);
+    const question = await database.getPost(username, questionId, false);
     let answer = await database.getAnswer(answerId, username);
     await authorize(request, qetaReadQuestionPermission, options, question);
     await authorize(request, qetaEditAnswerPermission, options, answer);
@@ -223,7 +223,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
 
       const username = await getUsername(request, options);
-      const question = await database.getQuestion(username, questionId, false);
+      const question = await database.getPost(username, questionId, false);
 
       if (!question) {
         response
@@ -298,7 +298,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
 
       const username = await getUsername(request, options);
-      const question = await database.getQuestion(username, questionId, false);
+      const question = await database.getPost(username, questionId, false);
       let answer = await database.getAnswer(answerId, username);
       const comment = await database.getAnswerComment(commentId);
 
@@ -337,7 +337,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       response.status(400).send({ errors: 'Invalid id', type: 'body' });
       return;
     }
-    const question = await database.getQuestion(username, questionId, false);
+    const question = await database.getPost(username, questionId, false);
     let answer = await database.getAnswer(answerId, username);
 
     await authorize(request, qetaReadQuestionPermission, options, question);
@@ -369,7 +369,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      const question = await database.getQuestion(username, questionId, false);
+      const question = await database.getPost(username, questionId, false);
       const answer = await database.getAnswer(answerId, username);
 
       await authorize(request, qetaReadQuestionPermission, options, question);
@@ -410,7 +410,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const username = await getUsername(request, options);
-    const question = await database.getQuestion(username, questionId, false);
+    const question = await database.getPost(username, questionId, false);
     const answer = await database.getAnswer(answerId, username);
 
     if (answer === null || question === null) {
@@ -485,7 +485,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      const question = await database.getQuestion(username, questionId, false);
+      const question = await database.getPost(username, questionId, false);
       const answer = await database.getAnswer(answerId, username);
 
       if (!question || !answer) {
@@ -557,7 +557,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         response.status(400).send({ errors: 'Invalid id', type: 'body' });
         return;
       }
-      const question = await database.getQuestion(username, questionId, false);
+      const question = await database.getPost(username, questionId, false);
       const answer = await database.getAnswer(answerId, username);
 
       await authorize(request, qetaEditQuestionPermission, options, question);

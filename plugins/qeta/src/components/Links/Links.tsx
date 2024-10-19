@@ -1,8 +1,4 @@
-import {
-  Answer,
-  Comment,
-  Question,
-} from '@drodil/backstage-plugin-qeta-common';
+import { Answer, Comment, Post } from '@drodil/backstage-plugin-qeta-common';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { userRouteRef } from '@drodil/backstage-plugin-qeta-react';
@@ -31,7 +27,7 @@ export const UserLink = (props: {
 };
 
 export const AuthorLink = (props: {
-  entity: Question | Answer | Comment;
+  entity: Post | Answer | Comment;
   linkProps?: LinkProps;
 }) => {
   const { entity, linkProps } = props;
@@ -39,7 +35,7 @@ export const AuthorLink = (props: {
 };
 
 export const UpdatedByLink = (props: {
-  entity: Question | Answer | Comment;
+  entity: Post | Answer | Comment;
   linkProps?: LinkProps;
 }) => {
   const { entity, linkProps } = props;

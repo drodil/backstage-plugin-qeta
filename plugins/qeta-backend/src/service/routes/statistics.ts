@@ -12,14 +12,14 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
 
   const getSummary = async (user_ref?: string) => {
     const results = await Promise.all([
-      database.getCount('questions', user_ref),
+      database.getCount('posts', user_ref),
       database.getCount('answers', user_ref),
       user_ref
         ? database.getTotalViews(user_ref)
-        : database.getCount('question_views'),
-      database.getCount('question_comments', user_ref),
+        : database.getCount('post_views'),
+      database.getCount('post_comments', user_ref),
       database.getCount('answer_comments', user_ref),
-      database.getCount('question_votes', user_ref),
+      database.getCount('post_votes', user_ref),
       database.getCount('answer_votes', user_ref),
     ]);
     return {
@@ -66,7 +66,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       };
 
       const mostUpvotedQuestions: Statistic[] =
-        await database.getMostUpvotedQuestions({
+        await database.getMostUpvotedPosts({
           options: statsOptions,
         });
 
@@ -80,11 +80,10 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       });
 
       if (!findLoggerUserInData) {
-        const loggedUserUpvotedQuestions =
-          await database.getMostUpvotedQuestions({
-            author: userRef,
-            options: statsOptions,
-          });
+        const loggedUserUpvotedQuestions = await database.getMostUpvotedPosts({
+          author: userRef,
+          options: statsOptions,
+        });
 
         if (loggedUserUpvotedQuestions) {
           rankingResponse.loggedUser!.author =
@@ -233,7 +232,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
         limit: Number(limit),
       };
 
-      const mostQuestions: Statistic[] = await database.getTotalQuestions({
+      const mostQuestions: Statistic[] = await database.getTotalPosts({
         options: statsOptions,
       });
 
@@ -247,7 +246,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       });
 
       if (!findLoggerUserInData) {
-        const loggedUserQuestions = await database.getTotalQuestions({
+        const loggedUserQuestions = await database.getTotalPosts({
           author: userRef,
           options: statsOptions,
         });

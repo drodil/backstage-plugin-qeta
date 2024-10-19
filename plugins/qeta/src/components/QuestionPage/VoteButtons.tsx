@@ -1,7 +1,7 @@
 import {
   AnswerResponse,
+  PostResponse,
   QetaSignal,
-  QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   Box,
@@ -37,15 +37,15 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export const VoteButtons = (props: {
-  entity: QuestionResponse | AnswerResponse;
-  question?: QuestionResponse;
+  entity: PostResponse | AnswerResponse;
+  question?: PostResponse;
 }) => {
-  const [entity, setEntity] = React.useState<QuestionResponse | AnswerResponse>(
+  const [entity, setEntity] = React.useState<PostResponse | AnswerResponse>(
     props.entity,
   );
   const [ownVote, setOwnVote] = React.useState(props.entity.ownVote ?? 0);
   const [correctAnswer, setCorrectAnswer] = useState(
-    'questionId' in props.entity ? props.entity.correct : false,
+    'postId' in props.entity ? props.entity.correct : false,
   );
   const [score, setScore] = useState(entity.score);
   const analytics = useAnalytics();
@@ -68,7 +68,7 @@ export const VoteButtons = (props: {
 
   useEffect(() => {
     if (
-      lastSignal?.type === 'question_stats' ||
+      lastSignal?.type === 'post_stats' ||
       lastSignal?.type === 'answer_stats'
     ) {
       setCorrectAnswer(lastSignal.correctAnswer);
@@ -84,7 +84,7 @@ export const VoteButtons = (props: {
         setEntity(response);
       });
     } else if ('questionId' in entity) {
-      qetaApi.voteAnswerUp(entity.questionId, entity.id).then(response => {
+      qetaApi.voteAnswerUp(entity.postId, entity.id).then(response => {
         setOwnVote(1);
         analytics.captureEvent('vote', 'answer', { value: 1 });
         setEntity(response);
@@ -100,7 +100,7 @@ export const VoteButtons = (props: {
         setEntity(response);
       });
     } else if ('questionId' in entity) {
-      qetaApi.voteAnswerDown(entity.questionId, entity.id).then(response => {
+      qetaApi.voteAnswerDown(entity.postId, entity.id).then(response => {
         setOwnVote(-1);
         analytics.captureEvent('vote', 'answer', { value: -1 });
         setEntity(response);
@@ -132,19 +132,17 @@ export const VoteButtons = (props: {
   }
 
   const toggleCorrectAnswer = () => {
-    if (!('questionId' in entity)) {
+    if (!('postId' in entity)) {
       return;
     }
     if (correctAnswer) {
-      qetaApi
-        .markAnswerIncorrect(entity.questionId, entity.id)
-        .then(response => {
-          if (response) {
-            setCorrectAnswer(false);
-          }
-        });
+      qetaApi.markAnswerIncorrect(entity.postId, entity.id).then(response => {
+        if (response) {
+          setCorrectAnswer(false);
+        }
+      });
     } else {
-      qetaApi.markAnswerCorrect(entity.questionId, entity.id).then(response => {
+      qetaApi.markAnswerCorrect(entity.postId, entity.id).then(response => {
         if (response) {
           setCorrectAnswer(true);
         }

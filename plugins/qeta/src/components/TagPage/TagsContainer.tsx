@@ -70,7 +70,7 @@ export const TagsContainer = () => {
           <Chip
             key={tag.tag}
             variant="outlined"
-            avatar={<Avatar>{tag.questionsCount}</Avatar>}
+            avatar={<Avatar>{tag.postsCount}</Avatar>}
             label={tag.tag}
             className="qetaTagsContainerChip"
             component="a"

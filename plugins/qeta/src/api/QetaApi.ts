@@ -6,8 +6,8 @@ import {
   AttachmentResponseBody,
   EntityResponse,
   ImpactResponse,
+  PostResponse,
   QuestionRequest,
-  QuestionResponse,
   QuestionsResponse,
   StatisticResponse,
   StatisticsRequestParameters,
@@ -57,16 +57,13 @@ export interface QetaApi {
     options?: GetQuestionsOptions,
   ): Promise<QuestionsResponse>;
 
-  postQuestion(question: QuestionRequest): Promise<QuestionResponse>;
+  postQuestion(question: QuestionRequest): Promise<PostResponse>;
 
-  commentQuestion(id: number, content: string): Promise<QuestionResponse>;
+  commentQuestion(id: number, content: string): Promise<PostResponse>;
 
-  deleteQuestionComment(
-    questionId: number,
-    id: number,
-  ): Promise<QuestionResponse>;
+  deleteQuestionComment(questionId: number, id: number): Promise<PostResponse>;
 
-  getQuestion(id: string | undefined): Promise<QuestionResponse>;
+  getQuestion(id: string | undefined): Promise<PostResponse>;
 
   getTags(): Promise<TagResponse[]>;
 
@@ -102,9 +99,9 @@ export interface QetaApi {
     options,
   }: StatisticsRequestParameters): Promise<StatisticResponse[]>;
 
-  voteQuestionUp(id: number): Promise<QuestionResponse>;
+  voteQuestionUp(id: number): Promise<PostResponse>;
 
-  voteQuestionDown(id: number): Promise<QuestionResponse>;
+  voteQuestionDown(id: number): Promise<PostResponse>;
 
   voteAnswerUp(questionId: number, id: number): Promise<AnswerResponse>;
 
@@ -114,9 +111,9 @@ export interface QetaApi {
 
   markAnswerIncorrect(questionId: number, id: number): Promise<boolean>;
 
-  favoriteQuestion(id: number): Promise<QuestionResponse>;
+  favoriteQuestion(id: number): Promise<PostResponse>;
 
-  unfavoriteQuestion(id: number): Promise<QuestionResponse>;
+  unfavoriteQuestion(id: number): Promise<PostResponse>;
 
   postAnswer(answer: AnswerRequest): Promise<AnswerResponseBody>;
 
@@ -138,10 +135,7 @@ export interface QetaApi {
 
   deleteAnswer(questionId: number, id: number): Promise<boolean>;
 
-  updateQuestion(
-    id: string,
-    question: QuestionRequest,
-  ): Promise<QuestionResponse>;
+  updateQuestion(id: string, question: QuestionRequest): Promise<PostResponse>;
 
   updateAnswer(id: number, answer: AnswerRequest): Promise<AnswerResponseBody>;
 

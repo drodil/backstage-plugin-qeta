@@ -1,4 +1,4 @@
-import { QuestionResponse } from '@drodil/backstage-plugin-qeta-common';
+import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
@@ -8,7 +8,7 @@ import { Chip } from '@material-ui/core';
 import { tagRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { EntityChip } from './EntityChip';
 
-export const TagsAndEntities = (props: { question: QuestionResponse }) => {
+export const TagsAndEntities = (props: { question: PostResponse }) => {
   const { question } = props;
   const catalogApi = useApi(catalogApiRef);
   const tagRoute = useRouteRef(tagRouteRef);

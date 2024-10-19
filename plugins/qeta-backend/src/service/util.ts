@@ -15,13 +15,14 @@ import {
   Permission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { isQuestion, MaybeAnswer, MaybeQuestion } from '../database/QetaStore';
+import { isQuestion, MaybeAnswer, MaybePost } from '../database/QetaStore';
 import { Config } from '@backstage/config';
 import { S3Client } from '@aws-sdk/client-s3';
 import { RouteOptions, RouterOptions } from './types';
 import {
   Answer,
   Comment,
+  Post,
   qetaDeleteAnswerPermission,
   qetaDeleteCommentPermission,
   qetaDeleteQuestionPermission,
@@ -29,7 +30,6 @@ import {
   qetaEditCommentPermission,
   qetaEditQuestionPermission,
   qetaReadCommentPermission,
-  Question,
 } from '@drodil/backstage-plugin-qeta-common';
 import { compact } from 'lodash';
 import {
@@ -140,7 +140,7 @@ const authorizeWithoutPermissions = async (
   request: Request<unknown>,
   permission: Permission,
   options: RouterOptions,
-  resource?: Question | Answer | Comment | null,
+  resource?: Post | Answer | Comment | null,
 ): Promise<DefinitivePolicyDecision> => {
   const readPermission = isReadPermission(permission);
   const createPermission = isCreatePermission(permission);
@@ -177,7 +177,7 @@ export const authorize = async (
   request: Request<unknown>,
   permission: Permission,
   options: RouterOptions,
-  resource?: Question | Answer | Comment | null,
+  resource?: Post | Answer | Comment | null,
 ): Promise<DefinitivePolicyDecision> => {
   if (!options.permissions) {
     return await authorizeWithoutPermissions(
@@ -223,8 +223,9 @@ export const authorize = async (
 
 export type QetaFilter = {
   property:
-    | 'questions.id'
-    | 'questions.author'
+    | 'posts.id'
+    | 'posts.author'
+    | 'posts.type'
     | 'tags'
     | 'entityRefs'
     | 'answers.id'
@@ -276,7 +277,7 @@ export const authorizeBoolean = async (
   request: Request<unknown>,
   permission: Permission,
   options: RouterOptions,
-  resource?: Question | Answer | Comment | null,
+  resource?: Post | Answer | Comment | null,
 ): Promise<boolean> => {
   try {
     const res = await authorize(request, permission, options, resource);
@@ -288,7 +289,7 @@ export const authorizeBoolean = async (
 
 export const mapAdditionalFields = async (
   request: Request<unknown>,
-  resp: MaybeQuestion | MaybeAnswer,
+  resp: MaybePost | MaybeAnswer,
   options: RouterOptions,
 ) => {
   if (!resp) {

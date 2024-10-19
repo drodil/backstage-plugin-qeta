@@ -1,6 +1,6 @@
 import {
   AnswerResponse,
-  QuestionResponse,
+  PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Backdrop, Box, Button, Modal, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -12,10 +12,10 @@ import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
 
 export const DeleteModal = (props: {
-  entity: QuestionResponse | AnswerResponse;
+  entity: PostResponse | AnswerResponse;
   open: boolean;
   onClose: () => void;
-  question?: QuestionResponse;
+  question?: PostResponse;
 }) => {
   const qetaApi = useApi(qetaApiRef);
   const base_path = useBasePath();

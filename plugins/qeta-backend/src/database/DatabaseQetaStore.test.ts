@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 import {
   DatabaseQetaStore,
   RawAnswerEntity,
-  RawQuestionEntity,
+  RawPostEntity,
 } from './DatabaseQetaStore';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 
@@ -30,10 +30,10 @@ async function createStore(databaseId: TestDatabaseId) {
   };
 }
 
-type InsertQuestionType = Partial<RawQuestionEntity>;
+type InsertPostType = Partial<RawPostEntity>;
 type InsertAnswerType = Partial<RawAnswerEntity>;
 
-const question: InsertQuestionType = {
+const post: InsertPostType = {
   author: 'user',
   title: 'title',
   content: 'content',
@@ -57,10 +57,9 @@ describe.each(databases.eachSupportedId())(
     let storage: DatabaseQetaStore;
     let knex: Knex;
 
-    const insertQuestion = async (data: InsertQuestionType) =>
-      (
-        await knex<InsertQuestionType>('questions').insert(data).returning('id')
-      )[0].id ?? -1;
+    const insertPost = async (data: InsertPostType) =>
+      (await knex<InsertPostType>('posts').insert(data).returning('id'))[0]
+        .id ?? -1;
 
     const insertAnswer = async (data: InsertAnswerType) =>
       (await knex<InsertAnswerType>('answers').insert(data).returning('id'))[0]
@@ -69,9 +68,9 @@ describe.each(databases.eachSupportedId())(
     const insertTag = async (tag: string) =>
       (await knex('tags').insert({ tag }).returning('id'))[0].id ?? -1;
 
-    const voteQuestion = (questionId: number, user: string) =>
-      knex('question_votes').insert({
-        questionId,
+    const votePost = (postId: number, user: string) =>
+      knex('post_votes').insert({
+        postId,
         author: user,
         score: 1,
         timestamp: new Date(),
@@ -92,27 +91,27 @@ describe.each(databases.eachSupportedId())(
     afterEach(async () => {
       jest.resetAllMocks();
 
-      await knex('questions').del();
+      await knex('posts').del();
       await knex('answers').del();
-      await knex('question_votes').del();
+      await knex('post_votes').del();
       await knex('answer_votes').del();
-      await knex('question_views').del();
+      await knex('post_views').del();
       await knex('tags').del();
-      await knex('question_comments').del();
+      await knex('post_comments').del();
       await knex('answer_comments').del();
       await knex('user_tags').del();
     });
 
-    describe('questions and answers database', () => {
-      it('should fetch question and answers', async () => {
-        const id = await insertQuestion(question);
-        const answerId = await insertAnswer({ questionId: id, ...answer });
-        await voteQuestion(id, 'user3');
-        await voteQuestion(id, 'user4');
+    describe('posts and answers database', () => {
+      it('should fetch post and answers', async () => {
+        const id = await insertPost(post);
+        const answerId = await insertAnswer({ postId: id, ...answer });
+        await votePost(id, 'user3');
+        await votePost(id, 'user4');
         await voteAnswer(answerId, 'user3');
         await voteAnswer(answerId, 'user4');
 
-        let ret = await storage.getQuestion('user', id);
+        let ret = await storage.getPost('user', id);
         expect(ret).toBeDefined();
         expect(ret?.author).toEqual('user');
         expect(ret?.title).toEqual('title');
@@ -123,25 +122,20 @@ describe.each(databases.eachSupportedId())(
         expect(answers?.length).toEqual(1);
         expect(answers?.at(0)?.content).toEqual('content');
 
-        ret = await storage.getQuestion('user', id);
+        ret = await storage.getPost('user', id);
         expect(ret?.views).toEqual(1);
 
-        const ans = await storage.getQuestion('user', answerId);
+        const ans = await storage.getPost('user', answerId);
         expect(ans).toBeDefined();
       });
 
-      it('should be able to answer question', async () => {
-        const id = await insertQuestion(question);
+      it('should be able to answer post', async () => {
+        const id = await insertPost(post);
 
-        const ans = await storage.answerQuestion(
-          'user',
-          id,
-          'answer',
-          new Date(),
-        );
+        const ans = await storage.answerPost('user', id, 'answer', new Date());
         expect(ans).toBeDefined();
         expect(ans?.content).toEqual('answer');
-        expect(ans?.questionId).toEqual(id);
+        expect(ans?.postId).toEqual(id);
 
         const ans2 = await storage.commentAnswer(
           ans?.id ?? 0,
@@ -152,71 +146,71 @@ describe.each(databases.eachSupportedId())(
         expect(ans2?.comments?.length).toEqual(1);
       });
 
-      it('should fetch list of questions', async () => {
-        await insertQuestion(question);
-        await insertQuestion({ ...question, title: 'title2' });
-        const ret = await storage.getQuestions('user1', {});
-        expect(ret?.questions.length).toEqual(2);
+      it('should fetch list of posts', async () => {
+        await insertPost(post);
+        await insertPost({ ...post, title: 'title2' });
+        const ret = await storage.getPosts('user1', {});
+        expect(ret?.posts.length).toEqual(2);
       });
 
-      it('should fetch questions within fromDate and toDate DateRange', async () => {
-        await insertQuestion({
-          ...question,
+      it('should fetch posts within fromDate and toDate DateRange', async () => {
+        await insertPost({
+          ...post,
           title: 'title2',
           content: 'content',
           created: '2024-05-08 20:51:55.715+05:30',
         });
-        await insertQuestion({
-          ...question,
+        await insertPost({
+          ...post,
           title: 'title2',
           created: '2024-04-02 13:08:32.821+05:30',
         });
-        const ret = await storage.getQuestions('user', {
+        const ret = await storage.getPosts('user', {
           fromDate: '2024-04-02',
           toDate: '2024-04-02',
         });
 
-        expect(ret?.questions.length).toEqual(1);
+        expect(ret?.posts.length).toEqual(1);
       });
 
-      it('should fetch list of random questions', async () => {
-        await insertQuestion(question);
-        await insertQuestion({ ...question, title: 'title2' });
-        const ret = await storage.getQuestions('user1', { random: true });
-        expect(ret?.questions.length).toEqual(2);
+      it('should fetch list of random posts', async () => {
+        await insertPost(post);
+        await insertPost({ ...post, title: 'title2' });
+        const ret = await storage.getPosts('user1', { random: true });
+        expect(ret?.posts.length).toEqual(2);
       });
 
-      it('should fetch list of questions based on searchQuery', async () => {
-        await insertQuestion(question);
-        await insertQuestion({
-          ...question,
+      it('should fetch list of posts based on searchQuery', async () => {
+        await insertPost(post);
+        await insertPost({
+          ...post,
           title: 'title2',
           content: 'content to search for',
         });
-        const ret = await storage.getQuestions('user1', {
+        const ret = await storage.getPosts('user1', {
           searchQuery: 'to search',
         });
-        expect(ret?.questions.length).toEqual(1);
+        expect(ret?.posts.length).toEqual(1);
 
-        const noQuestions = await storage.getQuestions('user1', {
+        const noPosts = await storage.getPosts('user1', {
           searchQuery: 'missing',
         });
-        expect(noQuestions?.questions.length).toEqual(0);
+        expect(noPosts?.posts.length).toEqual(0);
       });
 
-      it('should fetch list of questions with special characters in searchQuery', async () => {
-        await insertQuestion({
-          ...question,
+      it('should fetch list of posts with special characters in searchQuery', async () => {
+        await insertPost({
+          ...post,
           content: 'Cannot read config file:',
         });
-        const ret = await storage.getQuestions('user1', {
+        const ret = await storage.getPosts('user1', {
           searchQuery: 'Cannot read config file:',
         });
-        expect(ret?.questions.length).toEqual(1);
+        expect(ret?.posts.length).toEqual(1);
       });
 
-      it('should fetch questions with specific component', async () => {
-        const q1 = await storage.postQuestion(
+      it('should fetch posts with specific component', async () => {
+        const q1 = await storage.createPost(
           'user1',
           'title',
           'content',
@@ -224,7 +218,7 @@ describe.each(databases.eachSupportedId())(
           ['java', 'xml', ''],
           ['component:default/comp1', 'component:default/comp2'],
         );
-        const q2 = await storage.postQuestion(
+        const q2 = await storage.createPost(
           'user2',
           'title2',
           'content2',
@@ -233,23 +227,23 @@ describe.each(databases.eachSupportedId())(
           ['component:default/comp2', 'component:default/comp3'],
         );
 
-        const ret1 = await storage.getQuestions('user1', {
+        const ret1 = await storage.getPosts('user1', {
           entity: 'component:default/comp1',
         });
-        expect(ret1.questions.length).toEqual(1);
-        expect(ret1.questions.at(0)?.id).toEqual(q1.id);
+        expect(ret1.posts.length).toEqual(1);
+        expect(ret1.posts.at(0)?.id).toEqual(q1.id);
 
-        const ret2 = await storage.getQuestions('user1', {
+        const ret2 = await storage.getPosts('user1', {
           entity: 'component:default/comp2',
         });
 
-        expect(ret2.questions.length).toEqual(2);
-        expect(ret2.questions.at(0)?.id).toEqual(q2.id);
-        expect(ret2.questions.at(1)?.id).toEqual(q1.id);
+        expect(ret2.posts.length).toEqual(2);
+        expect(ret2.posts.at(0)?.id).toEqual(q2.id);
+        expect(ret2.posts.at(1)?.id).toEqual(q1.id);
       });
 
-      it('should mark question as favorite', async () => {
-        const q1 = await storage.postQuestion(
+      it('should mark post as favorite', async () => {
+        const q1 = await storage.createPost(
           'user1',
           'title',
           'content',
@@ -257,7 +251,7 @@ describe.each(databases.eachSupportedId())(
           ['java', 'xml', ''],
           ['component:default/comp1', 'component:default/comp2'],
         );
-        await storage.postQuestion(
+        await storage.createPost(
           'user2',
           'title2',
           'content2',
@@ -266,30 +260,30 @@ describe.each(databases.eachSupportedId())(
           ['component:default/comp2', 'component:default/comp3'],
         );
 
-        const favorite = await storage.favoriteQuestion('user1', q1.id);
+        const favorite = await storage.favoritePost('user1', q1.id);
         expect(favorite).toBeTruthy();
 
-        const ret1 = await storage.getQuestions('user1', {
+        const ret1 = await storage.getPosts('user1', {
           favorite: true,
           author: 'user1',
         });
 
-        expect(ret1.questions.length).toEqual(1);
-        expect(ret1.questions.at(0)?.id).toEqual(q1.id);
-        expect(ret1.questions.at(0)?.favorite).toBeTruthy();
+        expect(ret1.posts.length).toEqual(1);
+        expect(ret1.posts.at(0)?.id).toEqual(q1.id);
+        expect(ret1.posts.at(0)?.favorite).toBeTruthy();
 
-        const unfavorite = await storage.unfavoriteQuestion('user1', q1.id);
+        const unfavorite = await storage.unfavoritePost('user1', q1.id);
         expect(unfavorite).toBeTruthy();
 
-        const ret2 = await storage.getQuestions('user1', {
+        const ret2 = await storage.getPosts('user1', {
           favorite: true,
           author: 'user1',
         });
-        expect(ret2.questions.length).toEqual(0);
+        expect(ret2.posts.length).toEqual(0);
       });
 
-      it('should add new question', async () => {
-        const id1 = await storage.postQuestion(
+      it('should add new post', async () => {
+        const id1 = await storage.createPost(
           'user1',
           'title',
           'content',
@@ -302,7 +296,7 @@ describe.each(databases.eachSupportedId())(
             '',
           ],
         );
-        const id2 = await storage.postQuestion(
+        const id2 = await storage.createPost(
           'user2',
           'title2',
           'content2',
@@ -311,19 +305,19 @@ describe.each(databases.eachSupportedId())(
           ['component:default/comp2', 'component:default/comp3'],
         );
 
-        const ret1 = await storage.getQuestion('user', id1.id);
+        const ret1 = await storage.getPost('user', id1.id);
         expect(ret1?.tags?.sort()).toEqual(['xml', 'java'].sort());
         expect(ret1?.entities?.sort()).toEqual(
           ['component:default/comp1', 'component:default/comp2'].sort(),
         );
 
-        const ret2 = await storage.getQuestion('user', id2.id);
+        const ret2 = await storage.getPost('user', id2.id);
         expect(ret2?.tags?.sort()).toEqual(['java', 'mysql'].sort());
         expect(ret2?.entities?.sort()).toEqual(
           ['component:default/comp2', 'component:default/comp3'].sort(),
         );
 
-        const ret3 = await storage.commentQuestion(
+        const ret3 = await storage.commentPost(
           id1.id,
           'user:default/user',
           'this is comment',
@@ -332,8 +326,8 @@ describe.each(databases.eachSupportedId())(
         expect(ret3?.comments?.length).toEqual(1);
       });
 
-      it('should update question', async () => {
-        const id1 = await storage.postQuestion(
+      it('should update post', async () => {
+        const id1 = await storage.createPost(
           'user1',
           'title',
           'content',
@@ -347,7 +341,7 @@ describe.each(databases.eachSupportedId())(
           ],
         );
 
-        const ret = await storage.updateQuestion(
+        const ret = await storage.updatePost(
           id1.id,
           'user1',
           'title2',
@@ -367,63 +361,63 @@ describe.each(databases.eachSupportedId())(
         expect(ret?.updated).toBeDefined();
       });
 
-      it('should delete question', async () => {
-        const id1 = await storage.postQuestion(
+      it('should delete post', async () => {
+        const id1 = await storage.createPost(
           'user1',
           'title',
           'content',
           new Date(),
         );
-        let ret1 = await storage.getQuestion('user', id1.id);
+        let ret1 = await storage.getPost('user', id1.id);
         expect(ret1?.title).toEqual('title');
 
-        const deleted = await storage.deleteQuestion(id1.id);
+        const deleted = await storage.deletePost(id1.id);
         expect(deleted).toBeTruthy();
 
-        ret1 = await storage.getQuestion('user', id1.id);
+        ret1 = await storage.getPost('user', id1.id);
         expect(ret1).toBeNull();
       });
 
-      it('should get question by answer', async () => {
-        const id = await insertQuestion(question);
-        const answerId = await insertAnswer({ questionId: id, ...answer });
-        const ret = await storage.getQuestionByAnswerId('user', answerId);
+      it('should get post by answer', async () => {
+        const id = await insertPost(post);
+        const answerId = await insertAnswer({ postId: id, ...answer });
+        const ret = await storage.getPostByAnswerId('user', answerId);
         expect(ret).not.toBeNull();
         expect(ret?.title).toEqual('title');
       });
 
-      it('should vote question', async () => {
-        const id = await insertQuestion(question);
-        const voted = await storage.voteQuestion('user', id, 1);
+      it('should vote post', async () => {
+        const id = await insertPost(post);
+        const voted = await storage.votePost('user', id, 1);
         expect(voted).toBeTruthy();
 
-        const ret = await storage.getQuestion('user', id);
+        const ret = await storage.getPost('user', id);
         expect(ret?.score).toEqual(1);
       });
 
       it('should vote answer', async () => {
-        const id = await insertQuestion(question);
-        const answerId = await insertAnswer({ questionId: id, ...answer });
+        const id = await insertPost(post);
+        const answerId = await insertAnswer({ postId: id, ...answer });
         const voted = await storage.voteAnswer('user', answerId, 1);
         expect(voted).toBeTruthy();
 
-        const ret = await storage.getQuestion('user', id);
+        const ret = await storage.getPost('user', id);
         const answers = ret?.answers;
         expect(answers?.length).toEqual(1);
         expect(answers?.at(0)?.score).toEqual(1);
       });
 
       it('should mark answer correct or incorrect', async () => {
-        const id = await insertQuestion(question);
-        const answerId = await insertAnswer({ questionId: id, ...answer });
+        const id = await insertPost(post);
+        const answerId = await insertAnswer({ postId: id, ...answer });
         const anotherAnswerId = await insertAnswer({
-          questionId: id,
+          postId: id,
           ...answer,
         });
         let marked = await storage.markAnswerCorrect(id, answerId);
         expect(marked).toBeTruthy();
 
-        const ret = await storage.getQuestion('user', id);
+        const ret = await storage.getPost('user', id);
         const answers = ret?.answers;
         expect(answers?.length).toEqual(2);
         expect(answers?.at(0)?.correct).toBeTruthy();
@@ -432,7 +426,7 @@ describe.each(databases.eachSupportedId())(
         marked = await storage.markAnswerCorrect(id, answerId);
         expect(marked).toBeFalsy();
 
-        // should not allow setting two answers correct for one question
+        // should not allow setting two answers correct for one post
         marked = await storage.markAnswerCorrect(id, anotherAnswerId);
         expect(marked).toBeFalsy();
 

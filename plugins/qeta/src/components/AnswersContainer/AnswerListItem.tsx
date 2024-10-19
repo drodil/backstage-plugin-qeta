@@ -34,10 +34,10 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
   const getAnswerLink = () => {
     return entity
       ? `${questionRoute({
-          id: answer.questionId.toString(10),
+          id: answer.postId.toString(10),
         })}?entity=${entity}#answer_${answer.id}`
       : `${questionRoute({
-          id: answer.questionId.toString(10),
+          id: answer.postId.toString(10),
         })}/#answer_${answer.id}`;
   };
 
@@ -62,7 +62,7 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
                 className="qetaAnswerListItemQuestionBtn"
               >
                 {t('answer.questionTitle', {
-                  question: answer.question?.title ?? '',
+                  question: answer.post?.title ?? '',
                 })}
               </Link>
             </Typography>
@@ -78,9 +78,7 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
               )}
             </Typography>
             <Grid item xs={12}>
-              {answer.question && (
-                <TagsAndEntities question={answer.question} />
-              )}
+              {answer.post && <TagsAndEntities question={answer.post} />}
               <Typography
                 variant="caption"
                 display="inline"

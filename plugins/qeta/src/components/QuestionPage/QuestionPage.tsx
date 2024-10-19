@@ -14,8 +14,8 @@ import { QuestionCard } from './QuestionCard';
 import {
   Answer,
   AnswerResponse,
+  PostResponse,
   QetaSignal,
-  QuestionResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { AnswerForm } from './AnswerForm';
 import { AnswerCard } from './AnswerCard';
@@ -53,7 +53,7 @@ export const QuestionPage = () => {
   }, [question]);
 
   useEffect(() => {
-    if (lastSignal?.type === 'question_stats') {
+    if (lastSignal?.type === 'post_stats') {
       setAnswersCount(lastSignal.answersCount);
       setViews(lastSignal.views);
     }
@@ -63,7 +63,7 @@ export const QuestionPage = () => {
     setNewAnswers(newAnswers.concat([answer]));
   };
 
-  const getDescription = (q: QuestionResponse) => {
+  const getDescription = (q: PostResponse) => {
     return (
       <span>
         {t('authorBox.postedAtTime')}{' '}
@@ -220,7 +220,7 @@ export const QuestionPage = () => {
         );
       })}
       <Divider className={styles.questionDivider} />
-      <AnswerForm question={question} onPost={onAnswerPost} />
+      <AnswerForm post={question} onPost={onAnswerPost} />
     </>
   );
 };

@@ -10,14 +10,15 @@ import {
   Comment,
   COMMENT_RESOURCE_TYPE,
   CommentFilter,
+  Post,
+  PostFilter,
   Question,
   QUESTION_RESOURCE_TYPE,
-  QuestionFilter,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export const createQuestionPermissionRule = makeCreatePermissionRule<
   Question,
-  QuestionFilter,
+  PostFilter,
   typeof QUESTION_RESOURCE_TYPE
 >();
 
@@ -28,13 +29,18 @@ export const isQuestionAuthor = createQuestionPermissionRule({
   paramsSchema: z.object({
     userRef: z.string().describe('User ID to match on the author'),
   }),
-  apply: (resource: Question, { userRef }) => {
-    return resource.author === userRef;
+  apply: (resource: Post, { userRef }) => {
+    return resource.author === userRef && resource.type === 'question';
   },
   toQuery: ({ userRef }) => {
     return {
-      property: 'questions.author',
-      values: [userRef],
+      allOf: [
+        {
+          property: 'posts.author',
+          values: [userRef],
+        },
+        { property: 'posts.type', values: ['question'] },
+      ],
     };
   },
 });
@@ -49,13 +55,21 @@ export const questionHasTags = createQuestionPermissionRule({
   paramsSchema: z.object({
     tags: z.array(z.string()).describe('Tag to match the question'),
   }),
-  apply: (resource: Question, { tags }) => {
-    return tags.every(t => resource.tags?.includes(t));
+  apply: (resource: Post, { tags }) => {
+    return (
+      tags.every(t => resource.tags?.includes(t)) &&
+      resource.type === 'question'
+    );
   },
   toQuery: ({ tags }) => {
     return {
-      property: 'tags',
-      values: tags,
+      allOf: [
+        {
+          property: 'tags',
+          values: tags,
+        },
+        { property: 'posts.type', values: ['question'] },
+      ],
     };
   },
 });
@@ -73,13 +87,21 @@ export const questionHasEntities = createQuestionPermissionRule({
       .array(z.string())
       .describe('Entity refs to match the question'),
   }),
-  apply: (resource: Question, { entityRefs }) => {
-    return entityRefs.every(t => resource.entities?.includes(t));
+  apply: (resource: Post, { entityRefs }) => {
+    return (
+      entityRefs.every(t => resource.entities?.includes(t)) &&
+      resource.type === 'question'
+    );
   },
   toQuery: ({ entityRefs }) => {
     return {
-      property: 'entityRefs',
-      values: entityRefs,
+      allOf: [
+        {
+          property: 'entityRefs',
+          values: entityRefs,
+        },
+        { property: 'posts.type', values: ['question'] },
+      ],
     };
   },
 });
@@ -129,7 +151,7 @@ export const answerQuestionHasTags = createAnswerPermissionRule({
     tags: z.array(z.string()).describe('Tag to match the question'),
   }),
   apply: (resource: Answer, { tags }) => {
-    return tags.every(t => resource.question?.tags?.includes(t));
+    return tags.every(t => resource.post?.tags?.includes(t));
   },
   toQuery: ({ tags }) => {
     return {
@@ -152,7 +174,7 @@ export const answerQuestionHasEntityRefs = createAnswerPermissionRule({
     entityRefs: z.array(z.string()).describe('Tag to match the question'),
   }),
   apply: (resource: Answer, { entityRefs }) => {
-    return entityRefs.every(t => resource.question?.entities?.includes(t));
+    return entityRefs.every(t => resource.post?.entities?.includes(t));
   },
   toQuery: ({ entityRefs }) => {
     return {

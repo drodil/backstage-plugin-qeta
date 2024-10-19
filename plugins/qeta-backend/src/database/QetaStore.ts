@@ -3,7 +3,7 @@ import {
   Attachment,
   Comment,
   GlobalStat,
-  Question,
+  Post,
   Statistic,
   StatisticsRequestParameters,
   UserEntitiesResponse,
@@ -13,24 +13,20 @@ import {
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
-export function isQuestion(
-  entity: Question | Answer | Comment,
-): entity is Question {
+export function isQuestion(entity: Post | Answer | Comment): entity is Post {
   return 'answers' in entity;
 }
 
-export function isAnswer(
-  entity: Question | Answer | Comment,
-): entity is Answer {
+export function isAnswer(entity: Post | Answer | Comment): entity is Answer {
   return !('answers' in entity);
 }
 
 export type MaybeAnswer = Answer | null;
-export type MaybeQuestion = Question | null;
+export type MaybePost = Post | null;
 export type MaybeComment = Comment | null;
 
-export interface Questions {
-  questions: Question[];
+export interface Posts {
+  posts: Post[];
   total: number;
 }
 
@@ -39,7 +35,7 @@ export interface Answers {
   total: number;
 }
 
-export interface QuestionsOptions {
+export interface PostOptions {
   limit?: number;
   offset?: number;
   author?: string | string[];
@@ -90,12 +86,12 @@ export interface AnswersOptions {
 
 export interface TagResponse {
   tag: string;
-  questionsCount: number;
+  postsCount: number;
 }
 
 export interface EntityResponse {
   entityRef: string;
-  questionsCount: number;
+  postsCount: number;
 }
 
 export interface AttachmentParameters {
@@ -114,16 +110,16 @@ export interface AttachmentParameters {
  */
 export interface QetaStore {
   /**
-   * Fetch all stored questions with options
-   * @param user_ref user name requesting question
+   * Fetch all stored posts with options
+   * @param user_ref user name requesting post
    * @param options Search options
    * @param filters Permission filters
    */
-  getQuestions(
+  getPosts(
     user_ref: string,
-    options: QuestionsOptions,
+    options: PostOptions,
     filters?: PermissionCriteria<QetaFilters>,
-  ): Promise<Questions>;
+  ): Promise<Posts>;
 
   /**
    * Fetch single question by id
@@ -132,11 +128,11 @@ export interface QetaStore {
    * @param id question id
    * @param recordView record question view, default true
    */
-  getQuestion(
+  getPost(
     user_ref: string,
     id: number,
     recordView?: boolean,
-  ): Promise<MaybeQuestion>;
+  ): Promise<MaybePost>;
 
   /**
    * Fetch single question by answer id
@@ -145,11 +141,11 @@ export interface QetaStore {
    * @param answerId answer id
    * @param recordView record question view, default true
    */
-  getQuestionByAnswerId(
+  getPostByAnswerId(
     user_ref: string,
     answerId: number,
     recordView?: boolean,
-  ): Promise<MaybeQuestion>;
+  ): Promise<MaybePost>;
 
   /**
    * Post new question
@@ -162,7 +158,7 @@ export interface QetaStore {
    * @param images
    * @param anonymous
    */
-  postQuestion(
+  createPost(
     user_ref: string,
     title: string,
     content: string,
@@ -171,7 +167,7 @@ export interface QetaStore {
     components?: string[],
     images?: number[],
     anonymous?: boolean,
-  ): Promise<Question>;
+  ): Promise<Post>;
 
   /**
    * Comment question
@@ -180,12 +176,12 @@ export interface QetaStore {
    * @param content comment content
    * @param created
    */
-  commentQuestion(
+  commentPost(
     question_id: number,
     user_ref: string,
     content: string,
     created: Date,
-  ): Promise<MaybeQuestion>;
+  ): Promise<MaybePost>;
 
   /**
    * Delete question comment
@@ -193,11 +189,11 @@ export interface QetaStore {
    * @param id comment id
    * @param user_ref username
    */
-  deleteQuestionComment(
+  deletePostComment(
     question_id: number,
     id: number,
     user_ref: string,
-  ): Promise<MaybeQuestion>;
+  ): Promise<MaybePost>;
 
   /**
    * Update question
@@ -209,7 +205,7 @@ export interface QetaStore {
    * @param components new components
    * @param images
    */
-  updateQuestion(
+  updatePost(
     id: number,
     user_ref: string,
     title: string,
@@ -217,13 +213,13 @@ export interface QetaStore {
     tags?: string[],
     components?: string[],
     images?: number[],
-  ): Promise<MaybeQuestion>;
+  ): Promise<MaybePost>;
 
   /**
    * Delete question. Only the user who created the question can delete it.
    * @param id question id
    */
-  deleteQuestion(id: number): Promise<boolean>;
+  deletePost(id: number): Promise<boolean>;
 
   /**
    * Answer question
@@ -234,7 +230,7 @@ export interface QetaStore {
    * @param images
    * @param anonymous
    */
-  answerQuestion(
+  answerPost(
     user_ref: string,
     questionId: number,
     answer: string,
@@ -302,7 +298,7 @@ export interface QetaStore {
    */
   getAnswer(answerId: number, user_ref: string): Promise<MaybeAnswer>;
 
-  getQuestionComment(commentId: number): Promise<MaybeComment>;
+  getPostComment(commentId: number): Promise<MaybeComment>;
   getAnswerComment(commentId: number): Promise<MaybeComment>;
 
   /**
@@ -317,7 +313,7 @@ export interface QetaStore {
    * @param questionId question id
    * @param score score to vote with
    */
-  voteQuestion(
+  votePost(
     user_ref: string,
     questionId: number,
     score: number,
@@ -354,17 +350,17 @@ export interface QetaStore {
    * @param user_ref user name of the user voting question
    * @param questionId question id
    */
-  favoriteQuestion(user_ref: string, questionId: number): Promise<boolean>;
+  favoritePost(user_ref: string, questionId: number): Promise<boolean>;
 
   /**
    * Mark question unfavorite for user
    * @param user_ref user name of the user voting question
    * @param questionId question id
    */
-  unfavoriteQuestion(user_ref: string, questionId: number): Promise<boolean>;
+  unfavoritePost(user_ref: string, questionId: number): Promise<boolean>;
 
   /**
-   * Returns all used tags for questions
+   * Returns all used tags for posts
    */
   getTags(): Promise<TagResponse[]>;
 
@@ -399,11 +395,11 @@ export interface QetaStore {
 
   getAttachment(uuid: string): Promise<Attachment | undefined>;
 
-  getMostUpvotedQuestions({
+  getMostUpvotedPosts({
     author,
     options,
   }: StatisticsRequestParameters): Promise<Statistic[]>;
-  getTotalQuestions({
+  getTotalPosts({
     author,
     options,
   }: StatisticsRequestParameters): Promise<Statistic[]>;
