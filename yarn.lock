@@ -4930,9 +4930,13 @@ __metadata:
   resolution: "@drodil/backstage-plugin-qeta-common@workspace:plugins/qeta-common"
   dependencies:
     "@backstage/cli": "backstage:^"
+    "@backstage/errors": "backstage:^"
     "@backstage/plugin-permission-common": "backstage:^"
     "@backstage/plugin-search-common": "backstage:^"
+    "@types/lodash": "npm:^4.14.199"
     ajv: "npm:^8.12.0"
+    cross-fetch: "npm:^4.0.0"
+    lodash: "npm:^4.17.21"
   peerDependencies:
     "@backstage/catalog-model": ^1.7.0
   languageName: unknown
@@ -4945,6 +4949,7 @@ __metadata:
     "@backstage/cli": "backstage:^"
     "@backstage/core-plugin-api": "backstage:^"
     "@backstage/test-utils": "backstage:^"
+    "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
     "@testing-library/jest-dom": "npm:^5.10.1"
     "@testing-library/react": "npm:^12.1.3"

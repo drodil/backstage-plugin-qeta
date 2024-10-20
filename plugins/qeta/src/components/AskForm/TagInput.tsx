@@ -2,7 +2,7 @@ import { Control, Controller } from 'react-hook-form';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
-import { qetaApiRef } from '../../api';
+import { qetaApiRef } from '@drodil/backstage-plugin-qeta-react';
 import { QuestionForm } from './types';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';

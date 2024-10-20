@@ -6,8 +6,8 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home-react';
-import { qetaApiRef, QetaClient } from './api';
-import { qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
+import { qetaApiRef, qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
+import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
 
 export const qetaPlugin = createPlugin({
   id: 'qeta',

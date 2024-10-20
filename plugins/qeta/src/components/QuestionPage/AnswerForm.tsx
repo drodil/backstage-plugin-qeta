@@ -13,7 +13,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymouslyCheckbox';
-import { qetaApiRef } from '../../api';
+import { qetaApiRef } from '@drodil/backstage-plugin-qeta-react';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 
 const getDefaultValues = (postId: number) => {

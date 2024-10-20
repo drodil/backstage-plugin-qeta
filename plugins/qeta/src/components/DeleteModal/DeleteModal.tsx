@@ -9,7 +9,7 @@ import React from 'react';
 import { useBasePath, useStyles, useTranslation } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
-import { qetaApiRef } from '../../api';
+import { qetaApiRef } from '@drodil/backstage-plugin-qeta-react';
 
 export const DeleteModal = (props: {
   entity: PostResponse | AnswerResponse;

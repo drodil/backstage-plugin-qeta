@@ -21,6 +21,8 @@ export type GetQuestionsOptions = {
   noCorrectAnswer?: string;
   offset?: number;
   includeEntities?: boolean;
+  includeAnswers?: boolean;
+  includeComments?: boolean;
   author?: string;
   orderBy?: string;
   tags?: string[];
@@ -49,8 +51,15 @@ export type GetAnswersOptions = {
   toDate?: string;
 };
 
+export type RequestOptions = {
+  token?: string;
+};
+
 export interface QetaApi {
-  getPosts(options: GetQuestionsOptions): Promise<PostsResponse>;
+  getPosts(
+    options: GetQuestionsOptions,
+    requestOptions?: RequestOptions,
+  ): Promise<PostsResponse>;
 
   getPostsList(
     type: string,

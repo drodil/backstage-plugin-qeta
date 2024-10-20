@@ -11,7 +11,7 @@ import { useQetaApi, useStyles, useTranslation } from '../../utils/hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { questionRouteRef } from '@drodil/backstage-plugin-qeta-react';
-import { GetQuestionsOptions } from '../../api/QetaApi';
+import { GetQuestionsOptions } from '@drodil/backstage-plugin-qeta-common';
 
 export const QuestionHighlightList = (props: {
   type: string;

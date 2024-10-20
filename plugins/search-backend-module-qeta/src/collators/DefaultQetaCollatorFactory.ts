@@ -2,7 +2,8 @@ import { Config } from '@backstage/config';
 import { Readable } from 'stream';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import {
-  PostsResponseBody,
+  QetaApi,
+  QetaClient,
   QetaDocument,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
@@ -20,13 +21,13 @@ export type QetaCollatorFactoryOptions = {
 export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'qeta';
   private readonly logger: LoggerService;
-  private readonly discovery: DiscoveryService;
   private readonly auth?: AuthService;
+  private readonly api: QetaApi;
 
   private constructor(_config: Config, options: QetaCollatorFactoryOptions) {
     this.logger = options.logger;
-    this.discovery = options.discovery;
     this.auth = options.auth;
+    this.api = new QetaClient({ discoveryApi: options.discovery });
   }
 
   static fromConfig(config: Config, options: QetaCollatorFactoryOptions) {
@@ -41,36 +42,33 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
     this.logger.info('Executing QetaCollator');
     let totalQuestions = Number.MAX_VALUE;
     let indexedQuestions = 0;
-    const baseUrl = await this.discovery.getBaseUrl('qeta');
 
     while (totalQuestions > indexedQuestions) {
-      let headers = {};
+      let tok = undefined;
 
       if (this.auth) {
         const { token } = await this.auth.getPluginRequestToken({
           onBehalfOf: await this.auth.getOwnServiceCredentials(),
           targetPluginId: 'qeta',
         });
-        headers = {
-          Authorization: `Bearer ${token}`,
-        };
+        tok = token;
       }
 
-      const params = new URLSearchParams();
-      params.append('includeAnswers', 'true');
-      params.append('includeComments', 'true');
-      params.append('orderBy', 'created');
-      params.append('order', 'asc');
-      params.append('limit', '50');
-      params.append('offset', indexedQuestions.toString(10));
-      const response = await fetch(`${baseUrl}/posts?${params.toString()}`, {
-        headers,
-      });
-      const data = (await response.json()) as PostsResponseBody;
+      const data = await this.api.getPosts(
+        {
+          includeAnswers: true,
+          includeComments: true,
+          orderBy: 'created',
+          order: 'asc',
+          limit: 50,
+          offset: indexedQuestions,
+        },
+        { token: tok },
+      );
 
       if (!data || 'errors' in data || !('posts' in data)) {
         this.logger.error(
-          `Error while fetching questions from qeta: ${JSON.stringify(data)}`,
+          `Error while fetching posts from qeta: ${JSON.stringify(data)}`,
         );
         return;
       }

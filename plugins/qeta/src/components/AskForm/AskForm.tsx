@@ -12,6 +12,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   PostRequest,
   PostResponse,
+  QetaApi,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useStyles, useTranslation } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
@@ -22,9 +23,11 @@ import { compact } from 'lodash';
 import { TagInput } from './TagInput';
 import { QuestionForm } from './types';
 import { EntitiesInput } from './EntitiesInput';
-import { questionRouteRef } from '@drodil/backstage-plugin-qeta-react';
+import {
+  qetaApiRef,
+  questionRouteRef,
+} from '@drodil/backstage-plugin-qeta-react';
 import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymouslyCheckbox';
-import { QetaApi, qetaApiRef } from '../../api';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 
 const formToRequest = (form: QuestionForm, images: number[]): PostRequest => {

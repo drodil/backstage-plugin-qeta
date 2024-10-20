@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-import { GetAnswersOptions, GetQuestionsOptions, QetaApi } from './QetaApi';
 import {
-  createApiRef,
-  DiscoveryApi,
-  FetchApi,
-} from '@backstage/core-plugin-api';
+  GetAnswersOptions,
+  GetQuestionsOptions,
+  QetaApi,
+  RequestOptions,
+} from './QetaApi';
 import { CustomErrorBase } from '@backstage/errors';
 import {
   Answer,
@@ -29,10 +29,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import omitBy from 'lodash/omitBy';
 import isEmpty from 'lodash/isEmpty';
-
-export const qetaApiRef = createApiRef<QetaApi>({
-  id: 'plugin.qeta.service',
-});
+import crossFetch from 'cross-fetch';
 
 export class QetaError extends CustomErrorBase {
   public errors: null | undefined | any[];
@@ -45,11 +42,16 @@ export class QetaError extends CustomErrorBase {
 }
 
 export class QetaClient implements QetaApi {
-  private readonly fetchApi: FetchApi;
-  private readonly discoveryApi: DiscoveryApi;
+  private readonly fetchApi: { fetch: typeof fetch };
+  private readonly discoveryApi: {
+    getBaseUrl(pluginId: string): Promise<string>;
+  };
 
-  constructor(options: { fetchApi: FetchApi; discoveryApi: DiscoveryApi }) {
-    this.fetchApi = options.fetchApi;
+  constructor(options: {
+    discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
+    fetchApi?: { fetch: typeof fetch };
+  }) {
+    this.fetchApi = options.fetchApi ?? { fetch: crossFetch };
     this.discoveryApi = options.discoveryApi;
   }
 
@@ -57,7 +59,10 @@ export class QetaClient implements QetaApi {
     return this.discoveryApi.getBaseUrl('qeta');
   }
 
-  async getPosts(options: GetQuestionsOptions): Promise<PostsResponse> {
+  async getPosts(
+    options: GetQuestionsOptions,
+    requestOptions?: RequestOptions,
+  ): Promise<PostsResponse> {
     const query = this.getQueryParameters(options).toString();
 
     let url = `${await this.getBaseUrl()}/posts`;
@@ -65,7 +70,12 @@ export class QetaClient implements QetaApi {
       url += `?${query}`;
     }
 
-    const response = await this.fetchApi.fetch(url);
+    const headers: Record<string, string> = {};
+    if (requestOptions?.token) {
+      headers.Authorization = `Bearer ${requestOptions.token}`;
+    }
+
+    const response = await this.fetchApi.fetch(url, { method: 'GET', headers });
     if (response.status === 403) {
       return { posts: [], total: 0 };
     }
@@ -669,7 +679,7 @@ export class QetaClient implements QetaApi {
     if (!params) {
       return new URLSearchParams();
     }
-    const asStrings = Object.fromEntries(
+    const asStrings: Record<string, string> = Object.fromEntries(
       Object.entries(params).map(([k, v]) => {
         if (!v) {
           return [k, ''];

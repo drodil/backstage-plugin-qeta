@@ -47,15 +47,19 @@
     "tsc": "tsc"
   },
   "dependencies": {
+    "@backstage/errors": "backstage:^",
     "@backstage/plugin-permission-common": "backstage:^",
     "@backstage/plugin-search-common": "backstage:^",
-    "ajv": "^8.12.0"
+    "ajv": "^8.12.0",
+    "cross-fetch": "^4.0.0",
+    "lodash": "^4.17.21"
   },
   "peerDependencies": {
     "@backstage/catalog-model": "^1.7.0"
   },
   "devDependencies": {
-    "@backstage/cli": "backstage:^"
+    "@backstage/cli": "backstage:^",
+    "@types/lodash": "^4.14.199"
   },
   "files": [
     "dist"

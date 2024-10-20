@@ -4,7 +4,7 @@ import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
-import { qetaApiRef } from '../../api';
+import { qetaApiRef } from '@drodil/backstage-plugin-qeta-react';
 import { useTranslation } from '../../utils/hooks';
 
 export const FavoriteButton = (props: { entity: PostResponse }) => {

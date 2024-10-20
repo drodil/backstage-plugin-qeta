@@ -1,4 +1,3 @@
-import { QetaApi, qetaApiRef } from '../api';
 import useAsync from 'react-use/lib/useAsync';
 import {
   appThemeApiRef,
@@ -20,10 +19,12 @@ import { UserEntity } from '@backstage/catalog-model';
 import {
   AnswerResponse,
   PostResponse,
+  QetaApi,
 } from '@drodil/backstage-plugin-qeta-common';
 import DataLoader from 'dataloader';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../translation';
+import { qetaApiRef } from '@drodil/backstage-plugin-qeta-react';
 
 export function useQetaApi<T>(
   f: (api: QetaApi) => Promise<T>,

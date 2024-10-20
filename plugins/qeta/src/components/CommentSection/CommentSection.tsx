@@ -9,7 +9,7 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
-import { qetaApiRef } from '../../api';
+import { qetaApiRef } from '@drodil/backstage-plugin-qeta-react';
 import { useTranslation } from '../../utils/hooks';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { RequirePermission } from '@backstage/plugin-permission-react';

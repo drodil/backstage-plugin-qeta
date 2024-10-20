@@ -9,8 +9,8 @@ import { useStyles, useTranslation } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { AuthorLink } from '../Links/Links';
-import { qetaApiRef } from '../../api';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
+import { qetaApiRef } from '@drodil/backstage-plugin-qeta-react';
 
 export const CommentList = (props: {
   onCommentDelete: (question: PostResponse, answer?: AnswerResponse) => void;

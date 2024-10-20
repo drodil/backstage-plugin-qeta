@@ -26,6 +26,7 @@
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "backstage:bump": "backstage-cli versions:bump",
+    "bump-test": "yarn run standard-version --dry-run --no-verify --releaseCommitMessageFormat 'v{{currentTag}}'",
     "bump": "yarn run standard-version --no-verify --releaseCommitMessageFormat 'v{{currentTag}}'",
     "fix": "backstage-cli repo fix --publish"
   },

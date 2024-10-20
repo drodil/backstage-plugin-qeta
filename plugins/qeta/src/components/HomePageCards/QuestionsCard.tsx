@@ -2,7 +2,7 @@ import { Card, CardHeader, Divider, Grid } from '@material-ui/core';
 import React from 'react';
 import { useQetaApi } from '../../utils/hooks';
 import { QuestionListItem } from '../QuestionsContainer/QuestionListItem';
-import { GetQuestionsOptions } from '../../api/QetaApi';
+import { GetQuestionsOptions } from '@drodil/backstage-plugin-qeta-common';
 
 export const QuestionsCard = (props: {
   type: string;

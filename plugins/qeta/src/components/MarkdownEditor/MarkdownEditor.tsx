@@ -9,7 +9,7 @@ import 'react-mde/lib/styles/css/react-mde-toolbar.css';
 import { useStyles } from '../../utils/hooks';
 import FileType from 'file-type';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { qetaApiRef } from '../../api';
+import { qetaApiRef } from '@drodil/backstage-plugin-qeta-react';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 
 export const MarkdownEditor = (props: {

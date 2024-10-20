@@ -17,7 +17,7 @@ import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
 import React, { useEffect, useState } from 'react';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
-import { qetaApiRef } from '../../api';
+import { qetaApiRef } from '@drodil/backstage-plugin-qeta-react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslation } from '../../utils/hooks';
 
