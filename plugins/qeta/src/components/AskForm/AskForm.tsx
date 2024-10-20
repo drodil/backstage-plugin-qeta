@@ -10,8 +10,8 @@ import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
+  PostRequest,
   PostResponse,
-  QuestionRequest,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useStyles, useTranslation } from '../../utils/hooks';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
@@ -27,14 +27,12 @@ import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymously
 import { QetaApi, qetaApiRef } from '../../api';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 
-const formToRequest = (
-  form: QuestionForm,
-  images: number[],
-): QuestionRequest => {
+const formToRequest = (form: QuestionForm, images: number[]): PostRequest => {
   return {
     ...form,
     entities: form.entities?.map(stringifyEntityRef),
     images,
+    type: 'question',
   };
 };
 
@@ -64,7 +62,7 @@ const getValues = async (
     return getDefaultValues({});
   }
 
-  const question = await api.getQuestion(id);
+  const question = await api.getPost(id);
   const entities =
     question.entities && question.entities.length > 0
       ? await catalogApi.getEntitiesByRefs({
@@ -129,7 +127,7 @@ export const AskForm = (props: AskFormProps) => {
 
     if (id) {
       qetaApi
-        .updateQuestion(id, formToRequest(data, images))
+        .updatePost(id, formToRequest(data, images))
         .then(q => {
           if (!q || !q.id) {
             setError(true);
@@ -157,7 +155,7 @@ export const AskForm = (props: AskFormProps) => {
       return;
     }
     qetaApi
-      .postQuestion(formToRequest(data, images))
+      .createPost(formToRequest(data, images))
       .then(q => {
         if (!q || !q.id) {
           setError(true);

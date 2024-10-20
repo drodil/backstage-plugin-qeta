@@ -1,27 +1,23 @@
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import {
-  answerRules,
-  commentRules,
-  questionRules,
-} from './service/questionRules';
+import { answerRules, commentRules, postRules } from './service/postRules';
 import {
   ANSWER_RESOURCE_TYPE,
   COMMENT_RESOURCE_TYPE,
-  QUESTION_RESOURCE_TYPE,
+  POST_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 
 const {
   conditions: qConditions,
-  createConditionalDecision: createQuestionDecision,
+  createConditionalDecision: createPostDecision,
 } = createConditionExports({
   pluginId: 'qeta',
-  resourceType: QUESTION_RESOURCE_TYPE,
-  rules: questionRules,
+  resourceType: POST_RESOURCE_TYPE,
+  rules: postRules,
 });
 
 export const questionConditions = qConditions;
 
-export const createQuestionConditionalDecision = createQuestionDecision;
+export const createPostConditionalDecision = createPostDecision;
 
 const {
   conditions: aConditions,

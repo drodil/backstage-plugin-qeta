@@ -39,6 +39,12 @@ export const SummaryStatsGrid = (props: { stats: StatisticsResponse }) => {
       </Grid>
       <Grid item xs={4}>
         <SummaryCard
+          title={t('stats.articles')}
+          value={stats.summary.totalArticles}
+        />
+      </Grid>
+      <Grid item xs={4}>
+        <SummaryCard
           title={t('stats.comments')}
           value={stats.summary.totalComments}
         />

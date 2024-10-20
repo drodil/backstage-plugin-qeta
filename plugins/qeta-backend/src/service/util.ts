@@ -25,10 +25,10 @@ import {
   Post,
   qetaDeleteAnswerPermission,
   qetaDeleteCommentPermission,
-  qetaDeleteQuestionPermission,
+  qetaDeletePostPermission,
   qetaEditAnswerPermission,
   qetaEditCommentPermission,
-  qetaEditQuestionPermission,
+  qetaEditPostPermission,
   qetaReadCommentPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { compact } from 'lodash';
@@ -36,7 +36,7 @@ import {
   ConditionTransformer,
   createConditionTransformer,
 } from '@backstage/plugin-permission-node';
-import { rules } from './questionRules';
+import { rules } from './postRules';
 
 export const getUsername = async (
   req: Request<unknown>,
@@ -300,15 +300,13 @@ export const mapAdditionalFields = async (
   resp.own = resp.author === username;
   resp.canEdit = await authorizeBoolean(
     request,
-    isQuestion(resp) ? qetaEditQuestionPermission : qetaEditAnswerPermission,
+    isQuestion(resp) ? qetaEditPostPermission : qetaEditAnswerPermission,
     options,
     resp,
   );
   resp.canDelete = await authorizeBoolean(
     request,
-    isQuestion(resp)
-      ? qetaDeleteQuestionPermission
-      : qetaDeleteAnswerPermission,
+    isQuestion(resp) ? qetaDeletePostPermission : qetaDeleteAnswerPermission,
     options,
     resp,
   );

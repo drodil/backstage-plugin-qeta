@@ -13,17 +13,13 @@ export class NotificationManager {
     private readonly notifications?: NotificationService,
   ) {}
 
-  async onNewQuestion(
-    username: string,
-    question: Post,
-    followingUsers: string[],
-  ) {
+  async onNewPost(username: string, post: Post, followingUsers: string[]) {
     if (!this.notifications) {
       return;
     }
 
     const notificationReceivers = new Set<string>([
-      ...(question?.entities ?? []),
+      ...(post?.entities ?? []),
       ...followingUsers,
     ]);
 
@@ -35,22 +31,29 @@ export class NotificationManager {
           excludeEntityRef: username,
         },
         payload: {
-          title: `New question`,
+          title: `New ${post.type}`,
           description: this.formatDescription(
-            `${username} asked a question: ${question.title}`,
+            post.type === 'question'
+              ? `${username} asked a question: ${post.title}`
+              : `${username} wrote an article: ${post.title}`,
           ),
-          link: `/qeta/questions/${question.id}`,
-          topic: 'New question about entity',
+          link:
+            post.type === 'question'
+              ? `/qeta/questions/${post.id}`
+              : `/qeta/articles/${post.id}`,
+          topic: 'New post about entity',
         },
       });
     } catch (e) {
-      this.logger.error(`Failed to send notification for new question: ${e}`);
+      this.logger.error(
+        `Failed to send notification for new ${post.type}: ${e}`,
+      );
     }
   }
 
-  async onNewQuestionComment(
+  async onNewPostComment(
     username: string,
-    question: Post,
+    post: Post,
     comment: string,
     followingUsers: string[],
   ) {
@@ -58,11 +61,11 @@ export class NotificationManager {
       return;
     }
 
-    const commenters = new Set<string>(question.comments?.map(c => c.author));
+    const commenters = new Set<string>(post.comments?.map(c => c.author));
 
     const notificationReceivers = new Set<string>([
-      question.author,
-      ...(question?.entities ?? []),
+      post.author,
+      ...(post?.entities ?? []),
       ...commenters,
       ...followingUsers,
     ]);
@@ -75,18 +78,18 @@ export class NotificationManager {
           excludeEntityRef: username,
         },
         payload: {
-          title: `New comment on question`,
+          title: `New comment on ${post.type}`,
           description: this.formatDescription(
-            `${username} commented on question: ${comment}`,
+            `${username} commented on ${post.type}: ${comment}`,
           ),
-          link: `/qeta/questions/${question.id}`,
-          topic: 'New question comment',
-          scope: `question:comment:${question.id}`,
+          link: `/qeta/questions/${post.id}`,
+          topic: 'New post comment',
+          scope: `question:comment:${post.id}`,
         },
       });
     } catch (e) {
       this.logger.error(
-        `Failed to send notification for new question comment: ${e}`,
+        `Failed to send notification for new post comment: ${e}`,
       );
     }
   }

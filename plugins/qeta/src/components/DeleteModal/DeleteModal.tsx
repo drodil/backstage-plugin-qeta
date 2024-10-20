@@ -33,7 +33,7 @@ export const DeleteModal = (props: {
   const handleDelete = () => {
     if (isQuestion) {
       qetaApi
-        .deleteQuestion(entity.id)
+        .deletePost(entity.id)
         .catch(_ => setError(true))
         .then(ret => {
           if (ret) {

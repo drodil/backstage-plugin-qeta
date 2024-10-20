@@ -12,15 +12,16 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
 
   const getSummary = async (user_ref?: string) => {
     const results = await Promise.all([
-      database.getCount('posts', user_ref),
-      database.getCount('answers', user_ref),
+      database.getCount('posts', { author: user_ref, type: 'question' }),
+      database.getCount('answers', { author: user_ref }),
       user_ref
         ? database.getTotalViews(user_ref)
         : database.getCount('post_views'),
-      database.getCount('post_comments', user_ref),
-      database.getCount('answer_comments', user_ref),
-      database.getCount('post_votes', user_ref),
-      database.getCount('answer_votes', user_ref),
+      database.getCount('post_comments', { author: user_ref }),
+      database.getCount('answer_comments', { author: user_ref }),
+      database.getCount('post_votes', { author: user_ref }),
+      database.getCount('answer_votes', { author: user_ref }),
+      database.getCount('posts', { author: user_ref, type: 'article' }),
     ]);
     return {
       totalQuestions: results[0],
@@ -28,6 +29,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       totalViews: results[2],
       totalComments: results[3] + results[4],
       totalVotes: results[5] + results[6],
+      totalArticles: results[7],
     };
   };
 
@@ -53,9 +55,9 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     return response.status(200).json({ statistics: userStats, summary });
   });
 
-  // GET /statistics/questions/top-upvoted-users?period=x&limit=x
+  // GET /statistics/posts/top-upvoted-users?period=x&limit=x
   router.get(
-    '/statistics/questions/top-upvoted-users',
+    '/statistics/posts/top-upvoted-users',
     async (request, response) => {
       const { period, limit } = request.query;
       const userRef = await getUsername(request, options);
@@ -220,56 +222,53 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     },
   );
 
-  // GET /statistics/questions/most-questions?period=x&limit=x
-  router.get(
-    '/statistics/questions/most-questions',
-    async (request, response) => {
-      const { period, limit } = request.query;
-      const userRef = await getUsername(request, options);
+  // GET /statistics/posts/most-questions?period=x&limit=x
+  router.get('/statistics/posts/most-questions', async (request, response) => {
+    const { period, limit } = request.query;
+    const userRef = await getUsername(request, options);
 
-      const statsOptions: StatisticsOptions = {
-        period: period && stringDateTime(period?.toString()),
-        limit: Number(limit),
-      };
+    const statsOptions: StatisticsOptions = {
+      period: period && stringDateTime(period?.toString()),
+      limit: Number(limit),
+    };
 
-      const mostQuestions: Statistic[] = await database.getTotalPosts({
+    const mostQuestions: Statistic[] = await database.getTotalPosts({
+      options: statsOptions,
+    });
+
+    const rankingResponse = {
+      ranking: mostQuestions,
+      loggedUser: {},
+    } as StatisticResponse;
+
+    const findLoggerUserInData = mostQuestions.find(userStats => {
+      return userStats.author === userRef;
+    });
+
+    if (!findLoggerUserInData) {
+      const loggedUserQuestions = await database.getTotalPosts({
+        author: userRef,
         options: statsOptions,
       });
 
-      const rankingResponse = {
-        ranking: mostQuestions,
-        loggedUser: {},
-      } as StatisticResponse;
+      if (loggedUserQuestions) {
+        rankingResponse.loggedUser!.author =
+          loggedUserQuestions.length > 0
+            ? loggedUserQuestions[0].author
+            : userRef;
 
-      const findLoggerUserInData = mostQuestions.find(userStats => {
-        return userStats.author === userRef;
-      });
+        rankingResponse.loggedUser!.total =
+          loggedUserQuestions.length > 0 ? loggedUserQuestions[0].total : 0;
 
-      if (!findLoggerUserInData) {
-        const loggedUserQuestions = await database.getTotalPosts({
-          author: userRef,
-          options: statsOptions,
-        });
-
-        if (loggedUserQuestions) {
-          rankingResponse.loggedUser!.author =
-            loggedUserQuestions.length > 0
-              ? loggedUserQuestions[0].author
-              : userRef;
-
-          rankingResponse.loggedUser!.total =
-            loggedUserQuestions.length > 0 ? loggedUserQuestions[0].total : 0;
-
-          rankingResponse.loggedUser!.position =
-            mostQuestions.length === 1 ? 0 : mostQuestions.length + 1;
-        }
-      } else {
-        rankingResponse.loggedUser = findLoggerUserInData;
+        rankingResponse.loggedUser!.position =
+          mostQuestions.length === 1 ? 0 : mostQuestions.length + 1;
       }
+    } else {
+      rankingResponse.loggedUser = findLoggerUserInData;
+    }
 
-      return response.status(200).json(rankingResponse);
-    },
-  );
+    return response.status(200).json(rankingResponse);
+  });
 
   // GET /statistics/answers/most-answers?period=x&limit=x
   router.get('/statistics/answers/most-answers', async (request, response) => {

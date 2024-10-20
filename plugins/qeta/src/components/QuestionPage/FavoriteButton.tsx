@@ -13,13 +13,13 @@ export const FavoriteButton = (props: { entity: PostResponse }) => {
   const { t } = useTranslation();
 
   const favoriteQuestion = () => {
-    qetaApi.favoriteQuestion(entity.id).then(response => {
+    qetaApi.favoritePost(entity.id).then(response => {
       setEntity(response);
     });
   };
 
   const unfavoriteQuestion = () => {
-    qetaApi.unfavoriteQuestion(entity.id).then(response => {
+    qetaApi.unfavoritePost(entity.id).then(response => {
       setEntity(response);
     });
   };

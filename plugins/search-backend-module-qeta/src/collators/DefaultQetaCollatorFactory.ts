@@ -2,8 +2,8 @@ import { Config } from '@backstage/config';
 import { Readable } from 'stream';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import {
+  PostsResponseBody,
   QetaDocument,
-  QuestionsResponseBody,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   AuthService,
@@ -63,79 +63,79 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
       params.append('order', 'asc');
       params.append('limit', '50');
       params.append('offset', indexedQuestions.toString(10));
-      const response = await fetch(
-        `${baseUrl}/questions?${params.toString()}`,
-        {
-          headers,
-        },
-      );
-      const data = (await response.json()) as QuestionsResponseBody;
+      const response = await fetch(`${baseUrl}/posts?${params.toString()}`, {
+        headers,
+      });
+      const data = (await response.json()) as PostsResponseBody;
 
-      if (!data || 'errors' in data || !('questions' in data)) {
+      if (!data || 'errors' in data || !('posts' in data)) {
         this.logger.error(
           `Error while fetching questions from qeta: ${JSON.stringify(data)}`,
         );
         return;
       }
 
-      const questions = data.questions;
-      this.logger.info(`Indexing ${questions.length} questions`);
+      const posts = data.posts;
+      this.logger.info(`Indexing ${posts.length} posts`);
       totalQuestions = data.total;
-      indexedQuestions += questions.length;
+      indexedQuestions += posts.length;
 
-      for (const question of questions) {
+      for (const post of posts) {
         yield {
-          title: question.title,
-          text: question.content,
-          location: `/qeta/questions/${question.id}`,
+          title: post.title,
+          text: post.content,
+          location:
+            post.type === 'question'
+              ? `/qeta/questions/${post.id}`
+              : `/qeta/articles/${post.id}`,
           docType: 'qeta',
-          author: question.author,
-          score: question.score,
-          entityRefs: question.entities,
-          answerCount: question.answersCount,
-          views: question.views,
-          tags: question.tags,
+          author: post.author,
+          score: post.score,
+          entityRefs: post.entities,
+          answerCount: post.answersCount,
+          views: post.views,
+          tags: post.tags,
         };
 
-        for (const answer of question.answers ?? []) {
+        for (const answer of post.answers ?? []) {
           yield {
             title: `${
               answer.correct ? 'Correct answer' : 'Answer'
-            } for question ${question.title}`,
+            } for question ${post.title}`,
             text: answer.content,
-            location: `/qeta/questions/${question.id}#answer_${answer.id}`,
+            location: `/qeta/questions/${post.id}#answer_${answer.id}`,
             docType: 'qeta',
-            entityRefs: question.entities,
+            entityRefs: post.entities,
             author: answer.author,
             score: answer.score,
-            tags: question.tags,
+            tags: post.tags,
             correctAnswer: answer.correct,
           };
 
           for (const comment of answer.comments ?? []) {
             yield {
-              title: `Comment for ${question.title}`,
+              title: `Comment for ${post.title}`,
               text: comment.content,
-              location: `/qeta/questions/${question.id}#answer_${answer.id}`,
+              location: `/qeta/questions/${post.id}#answer_${answer.id}`,
               docType: 'qeta',
               author: comment.author,
               score: answer.score,
-              tags: question.tags,
-              entityRefs: question.entities,
+              tags: post.tags,
+              entityRefs: post.entities,
             };
           }
         }
 
-        for (const comment of question.comments ?? []) {
+        for (const comment of post.comments ?? []) {
           yield {
-            title: `Comment for ${question.title}`,
+            title: `Comment for ${post.title}`,
             text: comment.content,
-            location: `/qeta/questions/${question.id}`,
+            location: `/qeta/questions/${post.id}`,
             docType: 'qeta',
             author: comment.author,
-            score: question.score,
-            tags: question.tags,
-            entityRefs: question.entities,
+            score: post.score,
+            tags: post.tags,
+            entityRefs: post.entities,
           };
         }
       }

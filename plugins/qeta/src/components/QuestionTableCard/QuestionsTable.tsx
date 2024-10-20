@@ -48,7 +48,7 @@ export const QuestionsTable = (props: {
     error,
   } = useQetaApi(
     api =>
-      api.getQuestions({
+      api.getPosts({
         limit: questionsPerPage,
         offset: (page - 1) * questionsPerPage,
         includeEntities: true,
@@ -158,7 +158,7 @@ export const QuestionsTable = (props: {
           </TableHead>
           <TableBody>
             {loading ? <Progress /> : null}
-            {response.questions.map(q => (
+            {response.posts.map(q => (
               <QuestionTableRow question={q} />
             ))}
           </TableBody>

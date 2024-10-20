@@ -33,7 +33,7 @@ export const QuestionListItem = (props: QuestionListItemProps) => {
   const [views, setViews] = useState(question.views);
   const { t } = useTranslation();
 
-  const { lastSignal } = useSignal<QetaSignal>(`qeta:question_${question.id}`);
+  const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${question.id}`);
 
   useEffect(() => {
     if (lastSignal?.type === 'post_stats') {

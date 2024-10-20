@@ -11,108 +11,81 @@ import {
   COMMENT_RESOURCE_TYPE,
   CommentFilter,
   Post,
+  POST_RESOURCE_TYPE,
   PostFilter,
-  Question,
-  QUESTION_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 
-export const createQuestionPermissionRule = makeCreatePermissionRule<
-  Question,
+export const createPostPermissionRule = makeCreatePermissionRule<
+  Post,
   PostFilter,
-  typeof QUESTION_RESOURCE_TYPE
+  typeof POST_RESOURCE_TYPE
 >();
 
-export const isQuestionAuthor = createQuestionPermissionRule({
+export const isPostAuthor = createPostPermissionRule({
   name: 'IS_AUTHOR',
-  description: 'Should allow only if the question is asked by the user',
-  resourceType: QUESTION_RESOURCE_TYPE,
+  description: 'Should allow only if the post is created by the user',
+  resourceType: POST_RESOURCE_TYPE,
   paramsSchema: z.object({
     userRef: z.string().describe('User ID to match on the author'),
   }),
   apply: (resource: Post, { userRef }) => {
-    return resource.author === userRef && resource.type === 'question';
+    return resource.author === userRef;
   },
   toQuery: ({ userRef }) => {
     return {
-      allOf: [
-        {
-          property: 'posts.author',
-          values: [userRef],
-        },
-        { property: 'posts.type', values: ['question'] },
-      ],
+      property: 'posts.author',
+      values: [userRef],
     };
   },
 });
 
-export const questionAuthorConditionFactory =
-  createConditionFactory(isQuestionAuthor);
+export const postAuthorConditionFactory = createConditionFactory(isPostAuthor);
 
-export const questionHasTags = createQuestionPermissionRule({
+export const postHasTags = createPostPermissionRule({
   name: 'HAS_TAGS',
-  description: 'Should allow only if the question has all the specific tags',
-  resourceType: QUESTION_RESOURCE_TYPE,
+  description: 'Should allow only if the post has all the specific tags',
+  resourceType: POST_RESOURCE_TYPE,
   paramsSchema: z.object({
-    tags: z.array(z.string()).describe('Tag to match the question'),
+    tags: z.array(z.string()).describe('Tag to match the post'),
   }),
   apply: (resource: Post, { tags }) => {
-    return (
-      tags.every(t => resource.tags?.includes(t)) &&
-      resource.type === 'question'
-    );
+    return tags.every(t => resource.tags?.includes(t));
   },
   toQuery: ({ tags }) => {
     return {
-      allOf: [
-        {
-          property: 'tags',
-          values: tags,
-        },
-        { property: 'posts.type', values: ['question'] },
-      ],
+      property: 'tags',
+      values: tags,
     };
   },
 });
 
-export const questionHasTagsConditionFactory =
-  createConditionFactory(questionHasTags);
+export const postHasTagsConditionFactory = createConditionFactory(postHasTags);
 
-export const questionHasEntities = createQuestionPermissionRule({
+export const postHasEntities = createPostPermissionRule({
   name: 'HAS_ENTITIES',
-  description:
-    'Should allow only if the question has all the specific entities',
-  resourceType: QUESTION_RESOURCE_TYPE,
+  description: 'Should allow only if the post has all the specific entities',
+  resourceType: POST_RESOURCE_TYPE,
   paramsSchema: z.object({
-    entityRefs: z
-      .array(z.string())
-      .describe('Entity refs to match the question'),
+    entityRefs: z.array(z.string()).describe('Entity refs to match the post'),
   }),
   apply: (resource: Post, { entityRefs }) => {
-    return (
-      entityRefs.every(t => resource.entities?.includes(t)) &&
-      resource.type === 'question'
-    );
+    return entityRefs.every(t => resource.entities?.includes(t));
   },
   toQuery: ({ entityRefs }) => {
     return {
-      allOf: [
-        {
-          property: 'entityRefs',
-          values: entityRefs,
-        },
-        { property: 'posts.type', values: ['question'] },
-      ],
+      property: 'entityRefs',
+      values: entityRefs,
     };
   },
 });
 
-export const questionHasEntitiesConditionFactory =
-  createConditionFactory(questionHasEntities);
+export const postHasEntitiesConditionFactory =
+  createConditionFactory(postHasEntities);
 
-export const questionRules = {
-  isQuestionAuthor,
-  questionHasTags,
-  questionHasEntities,
+export const postRules = {
+  isQuestionAuthor: isPostAuthor,
+  questionHasTags: postHasTags,
+  questionHasEntities: postHasEntities,
 };
 
 export const createAnswerPermissionRule = makeCreatePermissionRule<
@@ -223,4 +196,4 @@ export const commentAuthorConditionFactory =
 
 export const commentRules = { isCommentAuthor };
 
-export const rules = { ...commentRules, ...answerRules, ...questionRules };
+export const rules = { ...commentRules, ...answerRules, ...postRules };

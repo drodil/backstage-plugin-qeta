@@ -25,14 +25,14 @@ export const QuestionHighlightList = (props: {
     loading,
     error,
   } = useQetaApi(
-    api => api.getQuestionsList(props.type, { limit: 5, ...props.options }),
+    api => api.getPostsList(props.type, { limit: 5, ...props.options }),
     [],
   );
   const classes = useStyles();
   const { t } = useTranslation();
   const questionRoute = useRouteRef(questionRouteRef);
 
-  const questions = response?.questions ?? [];
+  const posts = response?.posts ?? [];
 
   return (
     <Box
@@ -65,13 +65,13 @@ export const QuestionHighlightList = (props: {
             <ListItemText>{t('highlights.loadError')}</ListItemText>
           </ListItem>
         )}
-        {!error && questions.length === 0 && (
+        {!error && posts.length === 0 && (
           <ListItem className="qetaQuestionHighlightListListItem" dense>
             <ListItemText>{props.noQuestionsLabel}</ListItemText>
           </ListItem>
         )}
         {!error &&
-          questions.map(q => (
+          posts.map(q => (
             <React.Fragment key={q.id}>
               <Divider />
               <ListItem

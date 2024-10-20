@@ -62,6 +62,7 @@ export type RawPostEntity = {
   trend: number | string;
   anonymous: boolean;
   type: 'question';
+  headerImage: string;
 };
 
 export type RawAnswerEntity = {
@@ -374,17 +375,30 @@ export class DatabaseQetaStore implements QetaStore {
     );
   }
 
-  async createPost(
-    user_ref: string,
-    title: string,
-    content: string,
-    created: Date,
-    tags?: string[],
-    entities?: string[],
-    images?: number[],
-    anonymous?: boolean,
-    type?: PostType,
-  ): Promise<Post> {
+  async createPost(options: {
+    user_ref: string;
+    title: string;
+    content: string;
+    created: Date;
+    tags?: string[];
+    entities?: string[];
+    images?: number[];
+    anonymous?: boolean;
+    type?: PostType;
+    headerImage?: string;
+  }): Promise<Post> {
+    const {
+      user_ref,
+      title,
+      content,
+      created,
+      tags,
+      entities,
+      images,
+      anonymous,
+      type = 'question',
+      headerImage,
+    } = options;
     const posts = await this.db
       .insert(
         {
@@ -394,6 +408,7 @@ export class DatabaseQetaStore implements QetaStore {
           created,
           anonymous: anonymous ?? false,
           type: type ?? 'question',
+          headerImage,
         },
         ['id'],
       )
@@ -481,19 +496,31 @@ export class DatabaseQetaStore implements QetaStore {
     return this.getAnswer(answer_id, user_ref);
   }
 
-  async updatePost(
-    id: number,
-    user_ref: string,
-    title: string,
-    content: string,
-    tags?: string[],
-    entities?: string[],
-    images?: number[],
-  ): Promise<MaybePost> {
+  async updatePost(options: {
+    id: number;
+    user_ref: string;
+    title: string;
+    content: string;
+    tags?: string[];
+    entities?: string[];
+    images?: number[];
+    headerImage?: string;
+  }): Promise<MaybePost> {
+    const {
+      id,
+      user_ref,
+      title,
+      content,
+      tags,
+      entities,
+      images,
+      headerImage,
+    } = options;
     const query = this.db('posts').where('posts.id', '=', id);
     const rows = await query.update({
       title,
       content,
+      headerImage,
       updatedBy: user_ref,
       updated: new Date(),
     });
@@ -1169,15 +1196,22 @@ export class DatabaseQetaStore implements QetaStore {
     await this.db('user_stats')
       .insert({
         userRef: user_ref,
-        totalQuestions: await this.getCount('posts', user_ref),
-        totalAnswers: await this.getCount('answers', user_ref),
+        totalQuestions: await this.getCount('posts', {
+          author: user_ref,
+          type: 'question',
+        }),
+        totalAnswers: await this.getCount('answers', { author: user_ref }),
         totalViews: await this.getTotalViews(user_ref),
         totalComments:
-          (await this.getCount('post_comments', user_ref)) +
-          (await this.getCount('answer_comments', user_ref)),
+          (await this.getCount('post_comments', { author: user_ref })) +
+          (await this.getCount('answer_comments', { author: user_ref })),
         totalVotes:
-          (await this.getCount('post_votes', user_ref)) +
-          (await this.getCount('answer_votes', user_ref)),
+          (await this.getCount('post_votes', { author: user_ref })) +
+          (await this.getCount('answer_votes', { author: user_ref })),
+        totalArticles: await this.getCount('posts', {
+          author: user_ref,
+          type: 'article',
+        }),
         date,
       })
       .onConflict(['userRef', 'date'])
@@ -1187,7 +1221,7 @@ export class DatabaseQetaStore implements QetaStore {
   async saveGlobalStats(date: Date): Promise<void> {
     await this.db('global_stats')
       .insert({
-        totalQuestions: await this.getCount('posts'),
+        totalQuestions: await this.getCount('posts', { type: 'question' }),
         totalAnswers: await this.getCount('answers'),
         totalUsers: (await this.getUsers()).length,
         totalTags: await this.getCount('tags'),
@@ -1198,6 +1232,7 @@ export class DatabaseQetaStore implements QetaStore {
         totalVotes:
           (await this.getCount('post_votes')) +
           (await this.getCount('answer_votes')),
+        totalArticles: await this.getCount('posts', { type: 'article' }),
         date,
       })
       .onConflict(['date'])
@@ -1222,10 +1257,16 @@ export class DatabaseQetaStore implements QetaStore {
     await this.db('global_stats').where('date', '<=', now).delete();
   }
 
-  async getCount(table: string, user_ref?: string): Promise<number> {
+  async getCount(
+    table: string,
+    filters?: { author?: string; type?: PostType },
+  ): Promise<number> {
     const query = this.db(table);
-    if (user_ref) {
-      query.where('author', user_ref);
+    if (filters?.author) {
+      query.where('author', filters.author);
+    }
+    if (filters?.type) {
+      query.where('type', filters.type);
     }
     const result = await query.count('* as total').first();
     return this.mapToInteger(result?.total);
@@ -1282,6 +1323,7 @@ export class DatabaseQetaStore implements QetaStore {
       ownVote: additionalInfo[2]?.find(v => v.author === user_ref)?.score,
       anonymous: val.anonymous,
       type: val.type,
+      headerImage: val.headerImage,
     };
   }
 

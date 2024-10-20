@@ -8,18 +8,18 @@ import {
   Comment,
   COMMENT_RESOURCE_TYPE,
   Post,
+  POST_RESOURCE_TYPE,
   qetaPermissions,
-  QUESTION_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 import { statisticRoutes } from './routes/statistics';
-import { questionsRoutes } from './routes/questions';
 import { attachmentsRoutes } from './routes/attachments';
 import { answersRoutes } from './routes/answers';
 import { helperRoutes } from './routes/helpers';
 import { RouterOptions } from './types';
 import { NotificationManager } from './NotificationManager';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { answerRules, commentRules, questionRules } from './questionRules';
+import { answerRules, commentRules, postRules } from './postRules';
+import { postsRoutes } from './routes/posts';
 
 export async function createRouter(
   options: RouterOptions,
@@ -45,17 +45,17 @@ export async function createRouter(
         getResources: async resourceRefs => {
           return await Promise.all(
             resourceRefs.map(async ref => {
-              const question = await options.database.getPost(
+              const post = await options.database.getPost(
                 '',
                 Number.parseInt(ref, 10),
                 false,
               );
-              return question === null ? undefined : (question as Post);
+              return post === null ? undefined : (post as Post);
             }),
           );
         },
-        resourceType: QUESTION_RESOURCE_TYPE,
-        rules: Object.values(questionRules),
+        resourceType: POST_RESOURCE_TYPE,
+        rules: Object.values(postRules),
       },
       {
         getResources: async resourceRefs => {
@@ -100,7 +100,7 @@ export async function createRouter(
 
   router.use(permissionIntegrationRouter);
 
-  questionsRoutes(router, routeOptions);
+  postsRoutes(router, routeOptions);
   answersRoutes(router, routeOptions);
   helperRoutes(router, routeOptions);
   attachmentsRoutes(router, routeOptions);

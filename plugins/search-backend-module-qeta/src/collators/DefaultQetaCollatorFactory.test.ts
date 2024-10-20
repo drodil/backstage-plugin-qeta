@@ -32,8 +32,8 @@ const mockAnswers = [
     comments: mockComments,
   },
 ];
-const mockQuestions = {
-  questions: [
+const mockPosts = {
+  posts: [
     {
       id: 1,
       title: 'question1',
@@ -79,10 +79,10 @@ describe('DefaultQetaCollatorFactory', () => {
 
       worker.use(
         rest.get(
-          'http://test-backend/api/qeta/questions',
+          'http://test-backend/api/qeta/posts',
           (req: any, res: any, ctx: any) => {
             lastRequest = req;
-            return res(ctx.status(200), ctx.json(mockQuestions));
+            return res(ctx.status(200), ctx.json(mockPosts));
           },
         ),
       );
@@ -97,9 +97,9 @@ describe('DefaultQetaCollatorFactory', () => {
       const { documents } = await pipeline.execute();
       expect(mockDiscovery.getBaseUrl).toHaveBeenCalledWith('qeta');
       const totalDocuments =
-        mockQuestions.questions.length +
-        mockQuestions.questions.length * mockAnswers.length +
-        mockQuestions.questions.length * mockComments.length +
+        mockPosts.posts.length +
+        mockPosts.posts.length * mockAnswers.length +
+        mockPosts.posts.length * mockComments.length +
         mockAnswers.length * mockComments.length;
       expect(documents).toHaveLength(totalDocuments);
       expect(lastRequest.headers.get('authorization')).toEqual(
@@ -119,9 +119,9 @@ describe('DefaultQetaCollatorFactory', () => {
 
       expect(mockDiscovery.getBaseUrl).toHaveBeenCalledWith('qeta');
       const totalDocuments =
-        mockQuestions.questions.length +
-        mockQuestions.questions.length * mockAnswers.length +
-        mockQuestions.questions.length * mockComments.length +
+        mockPosts.posts.length +
+        mockPosts.posts.length * mockAnswers.length +
+        mockPosts.posts.length * mockComments.length +
         mockAnswers.length * mockComments.length;
       expect(documents).toHaveLength(totalDocuments);
       expect(lastRequest.headers.get('authorization')).toEqual(null);

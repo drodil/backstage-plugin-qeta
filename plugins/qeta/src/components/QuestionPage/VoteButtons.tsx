@@ -78,7 +78,7 @@ export const VoteButtons = (props: {
 
   const voteUp = () => {
     if (isQuestion) {
-      qetaApi.voteQuestionUp(entity.id).then(response => {
+      qetaApi.votePostUp(entity.id).then(response => {
         setOwnVote(1);
         analytics.captureEvent('vote', 'question', { value: 1 });
         setEntity(response);
@@ -94,7 +94,7 @@ export const VoteButtons = (props: {
 
   const voteDown = () => {
     if (isQuestion) {
-      qetaApi.voteQuestionDown(entity.id).then(response => {
+      qetaApi.votePostDown(entity.id).then(response => {
         setOwnVote(-1);
         analytics.captureEvent('vote', 'question', { value: -1 });
         setEntity(response);

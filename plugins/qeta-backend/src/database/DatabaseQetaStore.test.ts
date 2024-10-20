@@ -217,22 +217,22 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should fetch questions with specific component', async () => {
-        const q1 = await storage.createPost(
-          'user1',
-          'title',
-          'content',
-          new Date(),
-          ['java', 'xml', ''],
-          ['component:default/comp1', 'component:default/comp2'],
-        );
-        const q2 = await storage.createPost(
-          'user2',
-          'title2',
-          'content2',
-          new Date(),
-          ['java', 'mysql'],
-          ['component:default/comp2', 'component:default/comp3'],
-        );
+        const q1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'title',
+          content: 'content',
+          created: new Date(),
+          tags: ['java', 'xml', ''],
+          entities: ['component:default/comp1', 'component:default/comp2'],
+        });
+        const q2 = await storage.createPost({
+          user_ref: 'user2',
+          title: 'title2',
+          content: 'content2',
+          created: new Date(),
+          tags: ['java', 'mysql'],
+          entities: ['component:default/comp2', 'component:default/comp3'],
+        });
 
         const ret1 = await storage.getPosts('user1', {
           entity: 'component:default/comp1',
@@ -252,22 +252,22 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should mark post as favorite', async () => {
-        const q1 = await storage.createPost(
-          'user1',
-          'title',
-          'content',
-          new Date(),
-          ['java', 'xml', ''],
-          ['component:default/comp1', 'component:default/comp2'],
-        );
-        await storage.createPost(
-          'user2',
-          'title2',
-          'content2',
-          new Date(),
-          ['java', 'mysql'],
-          ['component:default/comp2', 'component:default/comp3'],
-        );
+        const q1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'title',
+          content: 'content',
+          created: new Date(),
+          tags: ['java', 'xml', ''],
+          entities: ['component:default/comp1', 'component:default/comp2'],
+        });
+        await storage.createPost({
+          user_ref: 'user2',
+          title: 'title2',
+          content: 'content2',
+          created: new Date(),
+          tags: ['java', 'mysql'],
+          entities: ['component:default/comp2', 'component:default/comp3'],
+        });
 
         const favorite = await storage.favoritePost('user1', q1.id);
         expect(favorite).toBeTruthy();
@@ -294,27 +294,27 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should add new post', async () => {
-        const id1 = await storage.createPost(
-          'user1',
-          'title',
-          'content',
-          new Date(),
-          ['java', 'xml', ''],
-          [
+        const id1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'title',
+          content: 'content',
+          created: new Date(),
+          tags: ['java', 'xml', ''],
+          entities: [
             'component:default/comp1',
             'component:default/comp2',
             'invalidComponent',
             '',
           ],
-        );
-        const id2 = await storage.createPost(
-          'user2',
-          'title2',
-          'content2',
-          new Date(),
-          ['java', 'mysql'],
-          ['component:default/comp2', 'component:default/comp3'],
-        );
+        });
+        const id2 = await storage.createPost({
+          user_ref: 'user2',
+          title: 'title2',
+          content: 'content2',
+          created: new Date(),
+          tags: ['java', 'mysql'],
+          entities: ['component:default/comp2', 'component:default/comp3'],
+        });
 
         const ret1 = await storage.getPost('user', id1.id);
         expect(ret1?.tags?.sort()).toEqual(['xml', 'java'].sort());
@@ -338,28 +338,28 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should update post', async () => {
-        const id1 = await storage.createPost(
-          'user1',
-          'title',
-          'content',
-          new Date(),
-          ['java', 'xml', ''],
-          [
+        const id1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'title',
+          content: 'content',
+          created: new Date(),
+          tags: ['java', 'xml', ''],
+          entities: [
             'component:default/comp1',
             'component:default/comp2',
             'invalidComponent',
             '',
           ],
-        );
+        });
 
-        const ret = await storage.updatePost(
-          id1.id,
-          'user1',
-          'title2',
-          'content2',
-          ['java'],
-          ['component:default/comp2'],
-        );
+        const ret = await storage.updatePost({
+          id: id1.id,
+          user_ref: 'user1',
+          title: 'title2',
+          content: 'content2',
+          tags: ['java'],
+          entities: ['component:default/comp2'],
+        });
 
         expect(ret?.id).toEqual(id1.id);
         expect(ret?.title).toEqual('title2');
@@ -373,12 +373,12 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should delete post', async () => {
-        const id1 = await storage.createPost(
-          'user1',
-          'title',
-          'content',
-          new Date(),
-        );
+        const id1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'title',
+          content: 'content',
+          created: new Date(),
+        });
         let ret1 = await storage.getPost('user', id1.id);
         expect(ret1?.title).toEqual('title');
 

@@ -22,16 +22,12 @@ import {
   qetaDeleteAnswerPermission,
   qetaDeleteCommentPermission,
   qetaEditAnswerPermission,
-  qetaEditQuestionPermission,
+  qetaEditPostPermission,
   qetaReadAnswerPermission,
-  qetaReadQuestionPermission,
+  qetaReadPostPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Response } from 'express-serve-static-core';
-import {
-  signalAnswerStats,
-  signalQuestionStats,
-  validateDateRange,
-} from './util';
+import { signalAnswerStats, signalPostStats, validateDateRange } from './util';
 import {
   AuthorizeResult,
   PermissionCriteria,
@@ -79,8 +75,8 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
   });
 
-  // POST /questions/:id/answers
-  router.post(`/questions/:id/answers`, async (request, response) => {
+  // POST /posts/:id/answers
+  router.post(`/posts/:id/answers`, async (request, response) => {
     // Validation
     const validateRequestBody = ajv.compile(PostAnswerSchema);
     if (!validateRequestBody(request.body)) {
@@ -90,21 +86,19 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const questionId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(questionId)) {
-      response
-        .status(400)
-        .send({ errors: 'Invalid question id', type: 'body' });
+    const postId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(postId)) {
+      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
       return;
     }
     const username = await getUsername(request, options);
-    const question = await database.getPost(username, questionId, false);
-    if (!question) {
-      response.status(404).send({ errors: 'Question not found', type: 'body' });
+    const post = await database.getPost(username, postId, false);
+    if (!post || post.type !== 'question') {
+      response.status(404).send({ errors: 'Post not found', type: 'body' });
       return;
     }
 
-    await authorize(request, qetaReadQuestionPermission, options, question);
+    await authorize(request, qetaReadPostPermission, options, post);
     await authorize(request, qetaCreateAnswerPermission, options);
 
     const created = await getCreated(request, options);
@@ -112,7 +106,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     // Act
     const answer = await database.answerPost(
       username,
-      questionId,
+      postId,
       request.body.answer,
       created,
       request.body.images,
@@ -122,20 +116,15 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     if (!answer) {
       response
         .status(400)
-        .send({ errors: 'Failed to answer question', type: 'body' });
+        .send({ errors: 'Failed to answer post', type: 'body' });
       return;
     }
 
     const followingUsers = await Promise.all([
-      database.getUsersForTags(question.tags),
-      database.getUsersForEntities(question.entities),
+      database.getUsersForTags(post.tags),
+      database.getUsersForEntities(post.entities),
     ]);
-    notificationMgr.onNewAnswer(
-      username,
-      question,
-      answer,
-      followingUsers.flat(),
-    );
+    notificationMgr.onNewAnswer(username, post, answer, followingUsers.flat());
     await mapAdditionalFields(request, answer, options);
 
     if (events) {
@@ -143,12 +132,12 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         topic: 'qeta',
         eventPayload: {
           answer,
-          question,
+          question: post,
           author: username,
         },
         metadata: { action: 'post_answer' },
       });
-      signalQuestionStats(signals, question);
+      signalPostStats(signals, post);
     }
 
     // Response
@@ -157,7 +146,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
   });
 
   // POST /questions/:id/answers/:answerId
-  router.post(`/questions/:id/answers/:answerId`, async (request, response) => {
+  router.post(`/posts/:id/answers/:answerId`, async (request, response) => {
     // Validation
     const validateRequestBody = ajv.compile(PostAnswerSchema);
     if (!validateRequestBody(request.body)) {
@@ -169,22 +158,26 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
     const username = await getUsername(request, options);
 
-    const questionId = Number.parseInt(request.params.id, 10);
+    const postId = Number.parseInt(request.params.id, 10);
     const answerId = Number.parseInt(request.params.answerId, 10);
-    if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+    if (Number.isNaN(postId) || Number.isNaN(answerId)) {
       response.status(400).send({ errors: 'Invalid id', type: 'body' });
       return;
     }
 
-    const question = await database.getPost(username, questionId, false);
+    const post = await database.getPost(username, postId, false);
     let answer = await database.getAnswer(answerId, username);
-    await authorize(request, qetaReadQuestionPermission, options, question);
+    if (!answer || !post || post.type !== 'question') {
+      response.status(404).send({ errors: 'Post not found', type: 'body' });
+      return;
+    }
+    await authorize(request, qetaReadPostPermission, options, post);
     await authorize(request, qetaEditAnswerPermission, options, answer);
 
     // Act
     answer = await database.updateAnswer(
       username,
-      questionId,
+      postId,
       answerId,
       request.body.answer,
       request.body.images,
@@ -202,9 +195,9 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     response.json(answer);
   });
 
-  // POST /questions/:id/answers/:answerId/comments
+  // POST /posts/:id/answers/:answerId/comments
   router.post(
-    `/questions/:id/answers/:answerId/comments`,
+    `/posts/:id/answers/:answerId/comments`,
     async (request, response) => {
       // Validation
       const validateRequestBody = ajv.compile(CommentSchema);
@@ -215,25 +208,23 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      const questionId = Number.parseInt(request.params.id, 10);
+      const postId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
-      if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+      if (Number.isNaN(postId) || Number.isNaN(answerId)) {
         response.status(400).send({ errors: 'Invalid id', type: 'body' });
         return;
       }
 
       const username = await getUsername(request, options);
-      const question = await database.getPost(username, questionId, false);
+      const post = await database.getPost(username, postId, false);
 
-      if (!question) {
-        response
-          .status(404)
-          .send({ errors: 'Question not found', type: 'body' });
+      if (!post) {
+        response.status(404).send({ errors: 'Post not found', type: 'body' });
         return;
       }
       let answer = await database.getAnswer(answerId, username);
 
-      await authorize(request, qetaReadQuestionPermission, options, question);
+      await authorize(request, qetaReadPostPermission, options, post);
       await authorize(request, qetaReadAnswerPermission, options, answer);
       await authorize(request, qetaCreateCommentPermission, options);
 
@@ -251,10 +242,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      const followingUsers = await database.getUsersForTags(question.tags);
+      const followingUsers = await database.getUsersForTags(post.tags);
       notificationMgr.onAnswerComment(
         username,
-        question,
+        post,
         answer,
         request.body.content,
         followingUsers,
@@ -265,7 +256,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         events.publish({
           topic: 'qeta',
           eventPayload: {
-            question,
+            question: post,
             answer,
             comment: request.body.content,
             author: username,
@@ -280,16 +271,16 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     },
   );
 
-  // DELETE /questions/:id/answers/:answerId/comments/:commentId
+  // DELETE /posts/:id/answers/:answerId/comments/:commentId
   router.delete(
-    `/questions/:id/answers/:answerId/comments/:commentId`,
+    `/posts/:id/answers/:answerId/comments/:commentId`,
     async (request, response) => {
       // Validation
-      const questionId = Number.parseInt(request.params.id, 10);
+      const postId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
       const commentId = Number.parseInt(request.params.commentId, 10);
       if (
-        Number.isNaN(questionId) ||
+        Number.isNaN(postId) ||
         Number.isNaN(answerId) ||
         Number.isNaN(commentId)
       ) {
@@ -298,11 +289,11 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
 
       const username = await getUsername(request, options);
-      const question = await database.getPost(username, questionId, false);
+      const post = await database.getPost(username, postId, false);
       let answer = await database.getAnswer(answerId, username);
       const comment = await database.getAnswerComment(commentId);
 
-      await authorize(request, qetaReadQuestionPermission, options, question);
+      await authorize(request, qetaReadPostPermission, options, post);
       await authorize(request, qetaReadAnswerPermission, options, answer);
       await authorize(request, qetaDeleteCommentPermission, options, comment);
 
@@ -326,21 +317,21 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     },
   );
 
-  // GET /questions/:id/answers/:answerId
-  router.get(`/questions/:id/answers/:answerId`, async (request, response) => {
+  // GET /posts/:id/answers/:answerId
+  router.get(`/posts/:id/answers/:answerId`, async (request, response) => {
     // Validation
     // Act
     const username = await getUsername(request, options);
-    const questionId = Number.parseInt(request.params.id, 10);
+    const postId = Number.parseInt(request.params.id, 10);
     const answerId = Number.parseInt(request.params.answerId, 10);
-    if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+    if (Number.isNaN(postId) || Number.isNaN(answerId)) {
       response.status(400).send({ errors: 'Invalid id', type: 'body' });
       return;
     }
-    const question = await database.getPost(username, questionId, false);
+    const post = await database.getPost(username, postId, false);
     let answer = await database.getAnswer(answerId, username);
 
-    await authorize(request, qetaReadQuestionPermission, options, question);
+    await authorize(request, qetaReadPostPermission, options, post);
     await authorize(request, qetaEditAnswerPermission, options, answer);
 
     answer = await database.getAnswer(answerId, username);
@@ -356,45 +347,42 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     response.json(answer);
   });
 
-  // DELETE /questions/:id/answers/:answerId
-  router.delete(
-    '/questions/:id/answers/:answerId',
-    async (request, response) => {
-      // Validation
-      const username = await getUsername(request, options);
-      const questionId = Number.parseInt(request.params.id, 10);
-      const answerId = Number.parseInt(request.params.answerId, 10);
-      if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
-        response.status(400).send({ errors: 'Invalid id', type: 'body' });
-        return;
-      }
+  // DELETE /posts/:id/answers/:answerId
+  router.delete('/posts/:id/answers/:answerId', async (request, response) => {
+    // Validation
+    const username = await getUsername(request, options);
+    const postId = Number.parseInt(request.params.id, 10);
+    const answerId = Number.parseInt(request.params.answerId, 10);
+    if (Number.isNaN(postId) || Number.isNaN(answerId)) {
+      response.status(400).send({ errors: 'Invalid id', type: 'body' });
+      return;
+    }
 
-      const question = await database.getPost(username, questionId, false);
-      const answer = await database.getAnswer(answerId, username);
+    const post = await database.getPost(username, postId, false);
+    const answer = await database.getAnswer(answerId, username);
 
-      await authorize(request, qetaReadQuestionPermission, options, question);
-      await authorize(request, qetaDeleteAnswerPermission, options, answer);
+    await authorize(request, qetaReadPostPermission, options, post);
+    await authorize(request, qetaDeleteAnswerPermission, options, answer);
 
-      if (events) {
-        events.publish({
-          topic: 'qeta',
-          eventPayload: {
-            question,
-            answer,
-            author: username,
-          },
-          metadata: { action: 'delete_answer' },
-        });
-        signalQuestionStats(signals, question);
-      }
+    if (events) {
+      events.publish({
+        topic: 'qeta',
+        eventPayload: {
+          question: post,
+          answer,
+          author: username,
+        },
+        metadata: { action: 'delete_answer' },
+      });
+      signalPostStats(signals, post);
+    }
 
-      // Act
-      const deleted = await database.deleteAnswer(answerId);
+    // Act
+    const deleted = await database.deleteAnswer(answerId);
 
-      // Response
-      response.sendStatus(deleted ? 200 : 404);
-    },
-  );
+    // Response
+    response.sendStatus(deleted ? 200 : 404);
+  });
 
   const voteAnswer = async (
     request: Request<any>,
@@ -402,23 +390,23 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     score: number,
   ) => {
     // Validation
-    const questionId = Number.parseInt(request.params.id, 10);
+    const postId = Number.parseInt(request.params.id, 10);
     const answerId = Number.parseInt(request.params.answerId, 10);
-    if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+    if (Number.isNaN(postId) || Number.isNaN(answerId)) {
       response.status(400).send({ errors: 'Invalid id', type: 'body' });
       return;
     }
 
     const username = await getUsername(request, options);
-    const question = await database.getPost(username, questionId, false);
+    const post = await database.getPost(username, postId, false);
     const answer = await database.getAnswer(answerId, username);
 
-    if (answer === null || question === null) {
+    if (answer === null || post === null) {
       response.sendStatus(404);
       return;
     }
 
-    await authorize(request, qetaReadQuestionPermission, options, question);
+    await authorize(request, qetaReadPostPermission, options, post);
     await authorize(request, qetaReadAnswerPermission, options, answer);
 
     // Act
@@ -442,7 +430,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       events.publish({
         topic: 'qeta',
         eventPayload: {
-          question,
+          question: post,
           answer: resp,
           author: username,
           score,
@@ -457,48 +445,48 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     response.json(resp);
   };
 
-  // GET /questions/:id/answers/:answerId/upvote
+  // GET /posts/:id/answers/:answerId/upvote
   router.get(
-    `/questions/:id/answers/:answerId/upvote`,
+    `/posts/:id/answers/:answerId/upvote`,
     async (request, response) => {
       return await voteAnswer(request, response, 1);
     },
   );
 
-  // GET /questions/:id/answers/:answerId/downvote
+  // GET /posts/:id/answers/:answerId/downvote
   router.get(
-    `/questions/:id/answers/:answerId/downvote`,
+    `/posts/:id/answers/:answerId/downvote`,
     async (request, response) => {
       return await voteAnswer(request, response, -1);
     },
   );
 
-  // GET /questions/:id/answers/:answerId/correct
+  // GET /posts/:id/answers/:answerId/correct
   router.get(
-    `/questions/:id/answers/:answerId/correct`,
+    `/posts/:id/answers/:answerId/correct`,
     async (request, response) => {
       const username = await getUsername(request, options);
-      const questionId = Number.parseInt(request.params.id, 10);
+      const postId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
-      if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+      if (Number.isNaN(postId) || Number.isNaN(answerId)) {
         response.status(400).send({ errors: 'Invalid id', type: 'body' });
         return;
       }
 
-      const question = await database.getPost(username, questionId, false);
+      const post = await database.getPost(username, postId, false);
       const answer = await database.getAnswer(answerId, username);
 
-      if (!question || !answer) {
+      if (!post || !answer) {
         response
           .status(404)
-          .send({ errors: 'Question or answer not found', type: 'body' });
+          .send({ errors: 'Post or answer not found', type: 'body' });
         return;
       }
 
-      await authorize(request, qetaEditQuestionPermission, options, question);
+      await authorize(request, qetaEditPostPermission, options, post);
       await authorize(request, qetaReadAnswerPermission, options, answer);
 
-      const marked = await database.markAnswerCorrect(questionId, answerId);
+      const marked = await database.markAnswerCorrect(postId, answerId);
 
       if (!marked) {
         response
@@ -512,7 +500,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
           events.publish({
             topic: 'qeta',
             eventPayload: {
-              question,
+              question: post,
               answer,
               author: username,
             },
@@ -520,25 +508,25 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
           });
         }
 
-        signalQuestionStats(signals, question);
+        signalPostStats(signals, post);
         signalAnswerStats(signals, answer);
       }
 
-      notificationMgr.onCorrectAnswer(username, question, answer);
+      notificationMgr.onCorrectAnswer(username, post, answer);
 
       if (events || signals) {
         const updated = await database.getAnswer(answerId, username);
         events?.publish({
           topic: 'qeta',
           eventPayload: {
-            question,
+            question: post,
             answer: updated,
             author: username,
           },
           metadata: { action: 'correct_answer' },
         });
 
-        signalQuestionStats(signals, question);
+        signalPostStats(signals, post);
         signalAnswerStats(signals, updated);
       }
 
@@ -546,29 +534,29 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     },
   );
 
-  // GET /questions/:id/answers/:answerId/incorrect
+  // GET /posts/:id/answers/:answerId/incorrect
   router.get(
-    `/questions/:id/answers/:answerId/incorrect`,
+    `/posts/:id/answers/:answerId/incorrect`,
     async (request, response) => {
       const username = await getUsername(request, options);
-      const questionId = Number.parseInt(request.params.id, 10);
+      const postId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
-      if (Number.isNaN(questionId) || Number.isNaN(answerId)) {
+      if (Number.isNaN(postId) || Number.isNaN(answerId)) {
         response.status(400).send({ errors: 'Invalid id', type: 'body' });
         return;
       }
-      const question = await database.getPost(username, questionId, false);
+      const post = await database.getPost(username, postId, false);
       const answer = await database.getAnswer(answerId, username);
 
-      await authorize(request, qetaEditQuestionPermission, options, question);
+      await authorize(request, qetaEditPostPermission, options, post);
       await authorize(request, qetaReadAnswerPermission, options, answer);
 
-      const marked = await database.markAnswerIncorrect(questionId, answerId);
+      const marked = await database.markAnswerIncorrect(postId, answerId);
       if (events) {
         events.publish({
           topic: 'qeta',
           eventPayload: {
-            question,
+            question: post,
             answer,
             author: username,
           },

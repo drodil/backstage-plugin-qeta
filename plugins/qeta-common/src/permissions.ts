@@ -5,8 +5,8 @@ import {
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
 
-export const qetaCreateQuestionPermission = createPermission({
-  name: 'qeta.create.question',
+export const qetaCreatePostPermission = createPermission({
+  name: 'qeta.create.post',
   attributes: { action: 'create' },
 });
 
@@ -20,24 +20,24 @@ export const qetaCreateCommentPermission = createPermission({
   attributes: { action: 'create' },
 });
 
-export const QUESTION_RESOURCE_TYPE = 'question';
+export const POST_RESOURCE_TYPE = 'question';
 
-export const qetaReadQuestionPermission = createPermission({
-  name: 'qeta.read.question',
+export const qetaReadPostPermission = createPermission({
+  name: 'qeta.read.post',
   attributes: { action: 'read' },
-  resourceType: QUESTION_RESOURCE_TYPE,
+  resourceType: POST_RESOURCE_TYPE,
 });
 
-export const qetaEditQuestionPermission = createPermission({
-  name: 'qeta.edit.question',
+export const qetaEditPostPermission = createPermission({
+  name: 'qeta.edit.post',
   attributes: { action: 'update' },
-  resourceType: QUESTION_RESOURCE_TYPE,
+  resourceType: POST_RESOURCE_TYPE,
 });
 
-export const qetaDeleteQuestionPermission = createPermission({
+export const qetaDeletePostPermission = createPermission({
   name: 'qeta.delete.question',
   attributes: { action: 'delete' },
-  resourceType: QUESTION_RESOURCE_TYPE,
+  resourceType: POST_RESOURCE_TYPE,
 });
 
 export const ANSWER_RESOURCE_TYPE = 'answer';
@@ -77,11 +77,11 @@ export const qetaDeleteCommentPermission = createPermission({
 });
 
 export const qetaPermissions = [
-  qetaReadQuestionPermission,
-  qetaCreateQuestionPermission,
+  qetaReadPostPermission,
+  qetaCreatePostPermission,
   qetaCreateAnswerPermission,
-  qetaEditQuestionPermission,
-  qetaDeleteQuestionPermission,
+  qetaEditPostPermission,
+  qetaDeletePostPermission,
   qetaReadAnswerPermission,
   qetaEditAnswerPermission,
   qetaDeleteAnswerPermission,

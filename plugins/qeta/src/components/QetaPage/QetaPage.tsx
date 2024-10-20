@@ -65,9 +65,7 @@ export const QetaPage = (props?: Props) => {
         <Container maxWidth="xl">
           <Grid container spacing={4} justifyContent="flex-start">
             <Grid item md={1} lg={2} className={styles.noPadding}>
-              <Box display={{ md: 'none', lg: 'block' }}>
-                <LeftMenu />
-              </Box>
+              <LeftMenu />
             </Grid>
             <Grid
               item

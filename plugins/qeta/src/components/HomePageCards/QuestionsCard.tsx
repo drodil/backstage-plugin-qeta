@@ -11,12 +11,12 @@ export const QuestionsCard = (props: {
   icon?: React.ReactNode;
 }) => {
   const { value: response } = useQetaApi(
-    api => api.getQuestions({ limit: 3, ...props.options }),
+    api => api.getPosts({ limit: 3, ...props.options }),
     [],
   );
 
-  const questions = response?.questions ?? [];
-  if (questions.length === 0) {
+  const posts = response?.posts ?? [];
+  if (posts.length === 0) {
     return null;
   }
 
@@ -24,7 +24,7 @@ export const QuestionsCard = (props: {
     <Card>
       <CardHeader style={{ paddingBottom: '8px' }} title={props.title} />
       <Grid container spacing={2}>
-        {questions.map(question => {
+        {posts.map(question => {
           return (
             <Grid item xs={12} key={question.id}>
               <QuestionListItem question={question} />

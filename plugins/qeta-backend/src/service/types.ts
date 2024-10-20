@@ -12,6 +12,7 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import { NotificationService } from '@backstage/plugin-notifications-node';
 import { NotificationManager } from './NotificationManager';
+import { PostType } from '@drodil/backstage-plugin-qeta-common';
 
 export interface RouterOptions {
   database: QetaStore;
@@ -30,7 +31,7 @@ export interface RouteOptions extends RouterOptions {
   notificationMgr: NotificationManager;
 }
 
-export interface QuestionsQuery {
+export interface PostsQuery {
   limit?: number;
   offset?: number;
   tags?: string;
@@ -51,6 +52,7 @@ export interface QuestionsQuery {
   searchQuery?: string;
   fromDate?: string;
   toDate?: string;
+  type?: PostType;
 }
 
 export interface AnswersQuery {
@@ -71,7 +73,7 @@ export interface AnswersQuery {
   toDate?: string;
 }
 
-export interface PostQuestion {
+export interface PostContent {
   title: string;
   content: string;
   tags?: string[];
@@ -79,10 +81,12 @@ export interface PostQuestion {
   images?: number[];
   user?: string;
   created?: string;
+  headerImage?: string;
   anonymous?: boolean;
+  type: PostType;
 }
 
-export const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
+export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
   type: 'object',
   properties: {
     limit: { type: 'integer', nullable: true },
@@ -109,6 +113,7 @@ export const QuestionsQuerySchema: JSONSchemaType<QuestionsQuery> = {
     searchQuery: { type: 'string', nullable: true },
     fromDate: { type: 'string', nullable: true, format: 'date' },
     toDate: { type: 'string', nullable: true, format: 'date' },
+    type: { type: 'string', enum: ['question', 'article'], nullable: true },
   },
   required: [],
   additionalProperties: false,
@@ -141,7 +146,7 @@ export const AnswersQuerySchema: JSONSchemaType<AnswersQuery> = {
   additionalProperties: false,
 };
 
-export const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
+export const PostSchema: JSONSchemaType<PostContent> = {
   type: 'object',
   properties: {
     title: { type: 'string', minLength: 1 },
@@ -152,6 +157,8 @@ export const PostQuestionSchema: JSONSchemaType<PostQuestion> = {
     user: { type: 'string', minLength: 1, nullable: true },
     created: { type: 'string', minLength: 1, nullable: true },
     anonymous: { type: 'boolean', nullable: true },
+    headerImage: { type: 'string', nullable: true },
+    type: { type: 'string', enum: ['question', 'article'] },
   },
   required: ['title', 'content'],
   additionalProperties: false,

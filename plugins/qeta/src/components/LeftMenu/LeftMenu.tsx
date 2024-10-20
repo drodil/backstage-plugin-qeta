@@ -1,4 +1,5 @@
 import {
+  Box,
   ListItem,
   ListItemIcon,
   MenuItem,
@@ -82,50 +83,52 @@ export const LeftMenu = (props: {
       style={
         props.inPopup
           ? { marginRight: 0, padding: '0.5rem' }
-          : { marginRight: '2rem', float: 'right' }
+          : { marginRight: '2rem', float: 'right', position: 'sticky' }
       }
     >
-      <CustomMenuItem route={rootRoute()}>
-        <ListItemIcon className={styles.menuIcon}>
-          <Home fontSize="small" />
-        </ListItemIcon>
-        {t('leftMenu.home')}
-      </CustomMenuItem>
-      <ListItem>
-        <Typography variant="subtitle2">Content</Typography>
-      </ListItem>
-      <CustomMenuItem route={questionsRoute()}>
-        <ListItemIcon className={styles.menuIcon}>
-          <HelpOutlined fontSize="small" />
-        </ListItemIcon>
-        {t('leftMenu.questions')}
-      </CustomMenuItem>
-      <CustomMenuItem route={favoritesRoute()}>
-        <ListItemIcon className={styles.menuIcon}>
-          <StarIcon fontSize="small" />
-        </ListItemIcon>
-        {t('leftMenu.favoriteQuestions')}
-      </CustomMenuItem>
-      <CustomMenuItem route={tagsRoute()}>
-        <ListItemIcon className={styles.menuIcon}>
-          <LoyaltyOutlined fontSize="small" />
-        </ListItemIcon>
-        {t('leftMenu.tags')}
-      </CustomMenuItem>
-      {user && !loadingUser && !userError && (
-        <CustomMenuItem route={`${userRoute()}/${user.userEntityRef}`}>
+      <Box display={props.inPopup ? {} : { md: 'none', lg: 'block' }}>
+        <CustomMenuItem route={rootRoute()}>
           <ListItemIcon className={styles.menuIcon}>
-            <AccountBox fontSize="small" />
+            <Home fontSize="small" />
           </ListItemIcon>
-          {t('leftMenu.profile')}
+          {t('leftMenu.home')}
         </CustomMenuItem>
-      )}
-      <CustomMenuItem route={statisticsRoute()}>
-        <ListItemIcon className={styles.menuIcon}>
-          <TrophyIcon />
-        </ListItemIcon>
-        {t('leftMenu.statistics')}
-      </CustomMenuItem>
+        <ListItem>
+          <Typography variant="subtitle2">Content</Typography>
+        </ListItem>
+        <CustomMenuItem route={questionsRoute()}>
+          <ListItemIcon className={styles.menuIcon}>
+            <HelpOutlined fontSize="small" />
+          </ListItemIcon>
+          {t('leftMenu.questions')}
+        </CustomMenuItem>
+        <CustomMenuItem route={favoritesRoute()}>
+          <ListItemIcon className={styles.menuIcon}>
+            <StarIcon fontSize="small" />
+          </ListItemIcon>
+          {t('leftMenu.favoriteQuestions')}
+        </CustomMenuItem>
+        <CustomMenuItem route={tagsRoute()}>
+          <ListItemIcon className={styles.menuIcon}>
+            <LoyaltyOutlined fontSize="small" />
+          </ListItemIcon>
+          {t('leftMenu.tags')}
+        </CustomMenuItem>
+        {user && !loadingUser && !userError && (
+          <CustomMenuItem route={`${userRoute()}/${user.userEntityRef}`}>
+            <ListItemIcon className={styles.menuIcon}>
+              <AccountBox fontSize="small" />
+            </ListItemIcon>
+            {t('leftMenu.profile')}
+          </CustomMenuItem>
+        )}
+        <CustomMenuItem route={statisticsRoute()}>
+          <ListItemIcon className={styles.menuIcon}>
+            <TrophyIcon />
+          </ListItemIcon>
+          {t('leftMenu.statistics')}
+        </CustomMenuItem>
+      </Box>
     </MenuList>
   );
 };

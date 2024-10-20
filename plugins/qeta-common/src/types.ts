@@ -19,6 +19,7 @@ export interface Stat {
   totalAnswers: number;
   totalComments: number;
   totalVotes: number;
+  totalArticles: number;
 }
 
 export interface GlobalStat extends Stat {
@@ -59,7 +60,7 @@ export interface PostAnswerEntity extends QetaEntity {
   anonymous?: boolean;
 }
 
-export type PostType = 'question';
+export type PostType = 'question' | 'article';
 
 export interface Post extends PostAnswerEntity {
   title: string;
@@ -72,10 +73,15 @@ export interface Post extends PostAnswerEntity {
   answers?: Answer[];
   trend?: number;
   type: PostType;
+  headerImage?: string;
 }
 
 export interface Question extends Post {
   type: 'question';
+}
+
+export interface Article extends Post {
+  type: 'article';
 }
 
 export type AnswerFilter = {
@@ -140,14 +146,14 @@ interface ErrorResponse {
   type: 'query' | 'body';
 }
 
-export interface QuestionsResponse {
-  questions: Question[];
+export interface PostsResponse {
+  posts: Post[];
   total: number;
 }
 
-export type QuestionsResponseBody = QuestionsResponse | ErrorResponse;
+export type PostsResponseBody = PostsResponse | ErrorResponse;
 
-export type QuestionResponseBody = Question | ErrorResponse;
+export type PostResponseBody = Question | ErrorResponse;
 
 export interface PostRequest {
   title: string;
@@ -155,9 +161,8 @@ export interface PostRequest {
   tags?: string[];
   entities?: string[];
   images?: number[];
+  type: PostType;
 }
-
-export interface QuestionRequest extends PostRequest {}
 
 export interface AnswerRequest {
   postId: number;
@@ -229,5 +234,6 @@ export interface StatisticsResponse {
     totalVotes: number;
     totalComments: number;
     totalViews: number;
+    totalArticles: number;
   };
 }

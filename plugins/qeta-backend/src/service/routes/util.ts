@@ -1,7 +1,7 @@
 import { Answer, Post, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import { SignalsService } from '@backstage/plugin-signals-node';
 
-export const signalQuestionStats = (
+export const signalPostStats = (
   signalService?: SignalsService,
   question?: Post | null,
 ) => {
@@ -10,7 +10,7 @@ export const signalQuestionStats = (
   }
   signalService.publish<QetaSignal>({
     recipients: { type: 'broadcast' },
-    channel: `qeta:question_${question.id}`,
+    channel: `qeta:post_${question.id}`,
     message: {
       type: 'post_stats',
       views: question.views,

@@ -156,7 +156,7 @@ export const QuestionsContainer = (props: QuestionsContainerProps) => {
     error,
   } = useQetaApi(
     api => {
-      return api.getQuestions({
+      return api.getPosts({
         limit: questionsPerPage,
         offset: (page - 1) * questionsPerPage,
         includeEntities: true,

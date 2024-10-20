@@ -6,9 +6,9 @@ import {
   AttachmentResponseBody,
   EntityResponse,
   ImpactResponse,
+  PostRequest,
   PostResponse,
-  QuestionRequest,
-  QuestionsResponse,
+  PostsResponse,
   StatisticResponse,
   StatisticsRequestParameters,
   StatisticsResponse,
@@ -50,26 +50,26 @@ export type GetAnswersOptions = {
 };
 
 export interface QetaApi {
-  getQuestions(options: GetQuestionsOptions): Promise<QuestionsResponse>;
+  getPosts(options: GetQuestionsOptions): Promise<PostsResponse>;
 
-  getQuestionsList(
+  getPostsList(
     type: string,
     options?: GetQuestionsOptions,
-  ): Promise<QuestionsResponse>;
+  ): Promise<PostsResponse>;
 
-  postQuestion(question: QuestionRequest): Promise<PostResponse>;
+  createPost(post: PostRequest): Promise<PostResponse>;
 
-  commentQuestion(id: number, content: string): Promise<PostResponse>;
+  commentPost(id: number, content: string): Promise<PostResponse>;
 
-  deleteQuestionComment(questionId: number, id: number): Promise<PostResponse>;
+  deletePostComment(postId: number, id: number): Promise<PostResponse>;
 
-  getQuestion(id: string | undefined): Promise<PostResponse>;
+  getPost(id: string | undefined): Promise<PostResponse>;
 
   getTags(): Promise<TagResponse[]>;
 
   getEntities(): Promise<EntityResponse[]>;
 
-  getMostUpvotedQuestions({
+  getMostUpvotedPosts({
     author,
     options,
   }: StatisticsRequestParameters): Promise<StatisticResponse>;
@@ -84,7 +84,7 @@ export interface QetaApi {
     options,
   }: StatisticsRequestParameters): Promise<StatisticResponse>;
 
-  getMostQuestions({
+  getMostPosts({
     author,
     options,
   }: StatisticsRequestParameters): Promise<StatisticResponse>;
@@ -99,21 +99,21 @@ export interface QetaApi {
     options,
   }: StatisticsRequestParameters): Promise<StatisticResponse[]>;
 
-  voteQuestionUp(id: number): Promise<PostResponse>;
+  votePostUp(id: number): Promise<PostResponse>;
 
-  voteQuestionDown(id: number): Promise<PostResponse>;
+  votePostDown(id: number): Promise<PostResponse>;
 
-  voteAnswerUp(questionId: number, id: number): Promise<AnswerResponse>;
+  voteAnswerUp(postId: number, id: number): Promise<AnswerResponse>;
 
-  voteAnswerDown(questionId: number, id: number): Promise<AnswerResponse>;
+  voteAnswerDown(postId: number, id: number): Promise<AnswerResponse>;
 
-  markAnswerCorrect(questionId: number, id: number): Promise<boolean>;
+  markAnswerCorrect(postId: number, id: number): Promise<boolean>;
 
-  markAnswerIncorrect(questionId: number, id: number): Promise<boolean>;
+  markAnswerIncorrect(postId: number, id: number): Promise<boolean>;
 
-  favoriteQuestion(id: number): Promise<PostResponse>;
+  favoritePost(id: number): Promise<PostResponse>;
 
-  unfavoriteQuestion(id: number): Promise<PostResponse>;
+  unfavoritePost(id: number): Promise<PostResponse>;
 
   postAnswer(answer: AnswerRequest): Promise<AnswerResponseBody>;
 
@@ -131,11 +131,11 @@ export interface QetaApi {
     id: number,
   ): Promise<AnswerResponse>;
 
-  deleteQuestion(questionId: number): Promise<boolean>;
+  deletePost(questionId: number): Promise<boolean>;
 
   deleteAnswer(questionId: number, id: number): Promise<boolean>;
 
-  updateQuestion(id: string, question: QuestionRequest): Promise<PostResponse>;
+  updatePost(id: string, question: PostRequest): Promise<PostResponse>;
 
   updateAnswer(id: number, answer: AnswerRequest): Promise<AnswerResponseBody>;
 

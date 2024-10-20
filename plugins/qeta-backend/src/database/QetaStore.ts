@@ -37,7 +37,7 @@ export interface Answers {
 }
 
 export interface PostOptions {
-  type: PostType;
+  type?: PostType;
   limit?: number;
   offset?: number;
   author?: string | string[];
@@ -150,26 +150,20 @@ export interface QetaStore {
   ): Promise<MaybePost>;
 
   /**
-   * Post new question
-   * @param user_ref user name of the user posting question
-   * @param title question title
-   * @param content question content
-   * @param created
-   * @param tags optional tags for the question
-   * @param components optional entity refs of catalog components for the question
-   * @param images
-   * @param anonymous
+   * Post new post
    */
-  createPost(
-    user_ref: string,
-    title: string,
-    content: string,
-    created: Date,
-    tags?: string[],
-    components?: string[],
-    images?: number[],
-    anonymous?: boolean,
-  ): Promise<Post>;
+  createPost(options: {
+    user_ref: string;
+    title: string;
+    content: string;
+    created: Date;
+    tags?: string[];
+    entities?: string[];
+    images?: number[];
+    anonymous?: boolean;
+    type?: PostType;
+    headerImage?: string;
+  }): Promise<Post>;
 
   /**
    * Comment question
@@ -199,23 +193,17 @@ export interface QetaStore {
 
   /**
    * Update question
-   * @param id question id
-   * @param user_ref user name of the user updating question
-   * @param title new title
-   * @param content new content
-   * @param tags new tags
-   * @param components new components
-   * @param images
    */
-  updatePost(
-    id: number,
-    user_ref: string,
-    title: string,
-    content: string,
-    tags?: string[],
-    components?: string[],
-    images?: number[],
-  ): Promise<MaybePost>;
+  updatePost(options: {
+    id: number;
+    user_ref: string;
+    title: string;
+    content: string;
+    tags?: string[];
+    entities?: string[];
+    images?: number[];
+    headerImage?: string;
+  }): Promise<MaybePost>;
 
   /**
    * Delete question. Only the user who created the question can delete it.
@@ -417,7 +405,10 @@ export interface QetaStore {
     author,
     options,
   }: StatisticsRequestParameters): Promise<Statistic[]>;
-  getCount(table: string, user_ref?: string): Promise<number>;
+  getCount(
+    table: string,
+    filters?: { author?: string; type?: PostType },
+  ): Promise<number>;
   saveGlobalStats(date: Date): Promise<void>;
   saveUserStats(user_ref: string, date: Date): Promise<void>;
   getUsers(): Promise<string[]>;

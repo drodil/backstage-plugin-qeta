@@ -13,7 +13,7 @@ import {
   ANSWER_RESOURCE_TYPE,
   COMMENT_RESOURCE_TYPE,
   isQetaPermission,
-  QUESTION_RESOURCE_TYPE,
+  POST_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   answerAuthorConditionFactory,
@@ -21,9 +21,9 @@ import {
   commentAuthorConditionFactory,
   createAnswerConditionalDecision,
   createCommentConditionalDecision,
-  createQuestionConditionalDecision,
-  questionAuthorConditionFactory,
-  questionHasEntitiesConditionFactory,
+  createPostConditionalDecision,
+  postAuthorConditionFactory,
+  postHasEntitiesConditionFactory,
 } from '@drodil/backstage-plugin-qeta-backend';
 
 export class PermissionPolicy implements PermissionPolicy {
@@ -40,15 +40,15 @@ export class PermissionPolicy implements PermissionPolicy {
       request.permission.attributes.action === 'create' ||
       request.permission.attributes.action === 'read'
     ) {
-      // Testing so that only own questions can be seen
+      // Testing so that only own posts can be seen
       /**
        if (
-        isResourcePermission(request.permission, QUESTION_RESOURCE_TYPE) &&
+        isResourcePermission(request.permission, POST_RESOURCE_TYPE) &&
         user
       ) {
         return createQuestionConditionalDecision(request.permission, {
           allOf: [
-            questionAuthorConditionFactory({
+            postAuthorConditionFactory({
               userRef: user.identity.userEntityRef,
             }),
           ],
@@ -56,12 +56,12 @@ export class PermissionPolicy implements PermissionPolicy {
       }
       */
 
-      // Testing so that only questions with specific tag can be seen
+      // Testing so that only posts with specific tag can be seen
       /**
-       if (isResourcePermission(request.permission, QUESTION_RESOURCE_TYPE)) {
+       if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
         return createQuestionConditionalDecision(request.permission, {
           allOf: [
-            questionHasTagsConditionFactory({
+            postHasTagsConditionFactory({
               tags: ['test'],
             }),
           ],
@@ -69,12 +69,12 @@ export class PermissionPolicy implements PermissionPolicy {
       }
       */
 
-      // Testing so that only questions with specific entity can be seen
+      // Testing so that only posts with specific entity can be seen
       /**
-       if (isResourcePermission(request.permission, QUESTION_RESOURCE_TYPE)) {
+       if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
         return createQuestionConditionalDecision(request.permission, {
           allOf: [
-            questionHasEntitiesConditionFactory({
+            postHasEntitiesConditionFactory({
               entityRefs: ['component:default/test-component'],
             }),
           ],
@@ -82,9 +82,9 @@ export class PermissionPolicy implements PermissionPolicy {
       }
       */
 
-      // Disable question asking
+      // Disable posting
       /**
-       if (isPermission(request.permission, qetaCreateQuestionPermission)) {
+       if (isPermission(request.permission, qetaCreatePostPermission)) {
         return { result: AuthorizeResult.DENY };
       }
       */
@@ -107,17 +107,17 @@ export class PermissionPolicy implements PermissionPolicy {
       return { result: AuthorizeResult.DENY };
     }
 
-    // Allow updating and deleting only own questions/answers/comments
+    // Allow updating and deleting only own posts/answers/comments
     if (
       request.permission.attributes.action === 'update' ||
       request.permission.attributes.action === 'delete'
     ) {
-      // Can edit and delete only questions with specific tag
+      // Can edit and delete only posts with specific tag
       /**
-      if (isResourcePermission(request.permission, QUESTION_RESOURCE_TYPE)) {
-        return createQuestionConditionalDecision(request.permission, {
+      if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
+        return createPostConditionalDecision(request.permission, {
           allOf: [
-            questionHasTagsConditionFactory({
+            postHasTagsConditionFactory({
               tags: ['test'],
             }),
           ],
@@ -125,16 +125,16 @@ export class PermissionPolicy implements PermissionPolicy {
       }
       */
 
-      if (isResourcePermission(request.permission, QUESTION_RESOURCE_TYPE)) {
-        return createQuestionConditionalDecision(request.permission, {
+      if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
+        return createPostConditionalDecision(request.permission, {
           anyOf: [
             // Can edit and delete own questions
-            questionAuthorConditionFactory({
+            postAuthorConditionFactory({
               userRef: user.identity.userEntityRef,
             }),
             // Each owned component should have it's own condition factory as the rule requires that the
             // question has ALL of the entityRefs attached passed in this array
-            questionHasEntitiesConditionFactory({
+            postHasEntitiesConditionFactory({
               entityRefs: ['component:default/test-component'],
             }),
           ],

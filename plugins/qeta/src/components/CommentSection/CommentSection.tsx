@@ -48,7 +48,7 @@ export const CommentSection = (props: {
       return;
     }
 
-    qetaApi.commentQuestion(question.id, data.content).then(q => {
+    qetaApi.commentPost(question.id, data.content).then(q => {
       setFormVisible(false);
       analytics.captureEvent('comment', 'question');
       reset();

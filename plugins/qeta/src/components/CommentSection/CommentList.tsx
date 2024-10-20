@@ -30,9 +30,7 @@ export const CommentList = (props: {
         return;
       });
     }
-    qetaApi
-      .deleteQuestionComment(question.id, id)
-      .then(q => onCommentDelete(q));
+    qetaApi.deletePostComment(question.id, id).then(q => onCommentDelete(q));
   };
 
   return (

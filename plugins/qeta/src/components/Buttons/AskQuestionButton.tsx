@@ -1,7 +1,7 @@
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import React from 'react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { qetaCreateQuestionPermission } from '@drodil/backstage-plugin-qeta-common';
+import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef } from '@drodil/backstage-plugin-qeta-react';
@@ -28,10 +28,7 @@ export const AskQuestionButton = (props: {
   }
 
   return (
-    <RequirePermission
-      permission={qetaCreateQuestionPermission}
-      errorPage={<></>}
-    >
+    <RequirePermission permission={qetaCreatePostPermission} errorPage={<></>}>
       <LinkButton
         variant="contained"
         to={entity || tags ? `${askRoute()}?${params.toString()}` : askRoute()}

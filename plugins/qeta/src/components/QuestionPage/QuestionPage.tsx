@@ -37,13 +37,13 @@ export const QuestionPage = () => {
   const [answersCount, setAnswersCount] = useState(0);
   const [views, setViews] = useState(0);
 
-  const { lastSignal } = useSignal<QetaSignal>(`qeta:question_${id}`);
+  const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${id}`);
 
   const {
     value: question,
     loading,
     error,
-  } = useQetaApi(api => api.getQuestion(id), [id]);
+  } = useQetaApi(api => api.getPost(id), [id]);
 
   useEffect(() => {
     if (question) {

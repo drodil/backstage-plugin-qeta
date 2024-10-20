@@ -55,7 +55,8 @@ type StatType = {
     | 'totalComments'
     | 'totalVotes'
     | 'totalUsers'
-    | 'totalTags';
+    | 'totalTags'
+    | 'totalArticles';
   name: string;
   color: string;
   enabled: boolean;
@@ -111,6 +112,13 @@ const DEFAULT_STATS: StatType[] = [
     color: '#ff00ff',
     enabled: true,
     globalStat: true,
+  },
+  {
+    dataKey: 'totalArticles',
+    name: 'Total articles',
+    color: '#00ff00',
+    enabled: true,
+    globalStat: false,
   },
 ];
 

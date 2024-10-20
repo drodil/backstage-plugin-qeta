@@ -13,13 +13,13 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import { QuestionListItem } from './QuestionListItem';
 import { Pagination } from '@material-ui/lab';
-import { QuestionsResponse } from '@drodil/backstage-plugin-qeta-common';
+import { PostsResponse } from '@drodil/backstage-plugin-qeta-common';
 import { NoQuestionsCard } from './NoQuestionsCard';
 
 export const QuestionList = (props: {
   loading: boolean;
   error: any;
-  response?: QuestionsResponse;
+  response?: PostsResponse;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
   page: number;
@@ -83,7 +83,7 @@ export const QuestionList = (props: {
     );
   }
 
-  if (initialLoad && (!response.questions || response.questions.length === 0)) {
+  if (initialLoad && (!response.posts || response.posts.length === 0)) {
     return (
       <NoQuestionsCard
         showNoQuestionsBtn={showNoQuestionsBtn}
@@ -104,10 +104,10 @@ export const QuestionList = (props: {
       <Box sx={{ mt: 2 }} className="qetaQuestionList">
         <Card>
           <Grid container spacing={2} style={{ paddingTop: '1rem' }}>
-            {response.questions.map(question => {
+            {response.posts.map(post => {
               return (
-                <Grid item xs={12} key={question.id}>
-                  <QuestionListItem question={question} entity={entity} />
+                <Grid item xs={12} key={post.id}>
+                  <QuestionListItem question={post} entity={entity} />
                   <Divider />
                 </Grid>
               );
