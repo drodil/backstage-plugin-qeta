@@ -1,0 +1,1 @@
+export { TagsContainer } from './TagsContainer';

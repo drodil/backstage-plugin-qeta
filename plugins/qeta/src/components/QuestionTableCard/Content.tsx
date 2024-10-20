@@ -1,5 +1,5 @@
 import React from 'react';
-import { QuestionsTable } from './QuestionsTable';
+import { QuestionsTable } from '@drodil/backstage-plugin-qeta-react';
 
 export const Content = (props: {
   rowsPerPage?: number;

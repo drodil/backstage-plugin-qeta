@@ -1,15 +1,17 @@
 import React from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
-import { QuestionsContainer } from '../QuestionsContainer/QuestionsContainer';
-import { TagsContainer } from './TagsContainer';
-import { AskQuestionButton } from '../Buttons/AskQuestionButton';
-import { useTranslation } from '../../utils/hooks';
-import { TagFollowButton } from '../Buttons/TagFollowButton';
+import {
+  AskQuestionButton,
+  FollowedTagsList,
+  QuestionHighlightList,
+  QuestionsContainer,
+  TagFollowButton,
+  TagsContainer,
+  useTranslation,
+} from '@drodil/backstage-plugin-qeta-react';
 import { Grid } from '@material-ui/core';
-import { QuestionHighlightList } from '../QuestionHighlightList/QuestionHighlightList';
 import Whatshot from '@material-ui/icons/Whatshot';
-import { FollowedTagsList } from '../QetaPage/FollowedTagsList';
 
 export const TagPage = () => {
   const { tag } = useParams();

@@ -9,18 +9,20 @@ import {
 import AccountBox from '@material-ui/icons/AccountBox';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 import StarIcon from '@material-ui/icons/Star';
-import { TrophyIcon } from '../Statistics';
-import React, { ReactNode } from 'react';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { useIdentityApi, useStyles, useTranslation } from '../../utils/hooks';
 import {
   favoriteQuestionsRouteRef,
   qetaRouteRef,
   questionsRouteRef,
   statisticsRouteRef,
   tagsRouteRef,
+  TrophyIcon,
+  useIdentityApi,
   userRouteRef,
+  useStyles,
+  useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
+import React, { ReactNode } from 'react';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import HelpOutlined from '@material-ui/icons/HelpOutlined';
 import { useNavigate } from 'react-router-dom';
 import Home from '@material-ui/icons/Home';

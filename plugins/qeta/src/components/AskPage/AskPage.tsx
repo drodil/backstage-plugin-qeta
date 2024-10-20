@@ -1,12 +1,10 @@
 import { ContentHeader, InfoCard } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import React from 'react';
-
-import { AskForm } from '../AskForm/AskForm';
+import { AskForm, useTranslation } from '@drodil/backstage-plugin-qeta-react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from '../../utils/hooks';
 
 export const AskPage = () => {
   const { id } = useParams();

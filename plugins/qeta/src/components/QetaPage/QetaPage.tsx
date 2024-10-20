@@ -18,11 +18,11 @@ import {
   tagRouteRef,
   tagsRouteRef,
   userRouteRef,
+  useStyles,
 } from '@drodil/backstage-plugin-qeta-react';
 import { LeftMenu } from '../LeftMenu/LeftMenu';
 import { QuestionsPage } from '../QuestionsPage/QuestionsPage';
 import { HomePage } from '../HomePage/HomePage';
-import { useStyles } from '../../utils/hooks';
 import { LeftMenuButton } from '../LeftMenu/LeftMenuButton';
 
 type Props = {

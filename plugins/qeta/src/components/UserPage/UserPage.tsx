@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { QuestionsContainer } from '../QuestionsContainer';
-import { AskQuestionButton } from '../Buttons/AskQuestionButton';
+import {
+  AnswersContainer,
+  AskQuestionButton,
+  QuestionsContainer,
+  useTranslation,
+} from '@drodil/backstage-plugin-qeta-react';
 import { Box, Tab } from '@material-ui/core';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import { AnswersContainer } from '../AnswersContainer';
-import { useTranslation } from '../../utils/hooks';
 import { UserStatsContent } from './UserStatsContent';
 
 export const UserPage = () => {

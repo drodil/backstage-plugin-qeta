@@ -9,21 +9,25 @@ import {
 } from '@material-ui/core';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useQetaApi, useStyles, useTranslation } from '../../utils/hooks';
-import { QuestionCard } from './QuestionCard';
+import {
+  AnswerCard,
+  AnswerForm,
+  AskQuestionButton,
+  BackToQuestionsButton,
+  QuestionCard,
+  RelativeTimeWithTooltip,
+  UpdatedByLink,
+  useQetaApi,
+  useStyles,
+  useTranslation,
+} from '@drodil/backstage-plugin-qeta-react';
 import {
   Answer,
   AnswerResponse,
   PostResponse,
   QetaSignal,
 } from '@drodil/backstage-plugin-qeta-common';
-import { AnswerForm } from './AnswerForm';
-import { AnswerCard } from './AnswerCard';
 import { Skeleton } from '@material-ui/lab';
-import { AskQuestionButton } from '../Buttons/AskQuestionButton';
-import { BackToQuestionsButton } from '../Buttons/BackToQuestionsButton';
-import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
-import { UpdatedByLink } from '../Links/Links';
 import { useSignal } from '@backstage/plugin-signals-react';
 
 export const QuestionPage = () => {

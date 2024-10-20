@@ -9,7 +9,6 @@ import { qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { TablePage } from './TablePage';
 import { HomePage } from './HomePage';
-import { StatisticsPage } from './StatisticsPage';
 import { TagPage } from './TagPage';
 import {
   NotificationsPage,
@@ -86,11 +85,6 @@ createDevApp()
     element: <HomePage />,
     title: 'Home Page',
     path: '/home',
-  })
-  .addPage({
-    element: <StatisticsPage />,
-    title: 'Statistics Components',
-    path: '/statistics',
   })
   .addPage({ element: <NotificationsPage />, path: '/notifications' })
   .addSidebarItem(<NotificationsSidebarItem />)

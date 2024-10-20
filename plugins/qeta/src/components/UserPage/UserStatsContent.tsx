@@ -1,8 +1,10 @@
-import { useQetaApi } from '../../utils/hooks';
+import {
+  StatsChart,
+  SummaryStatsGrid,
+  useQetaApi,
+} from '@drodil/backstage-plugin-qeta-react';
 import React from 'react';
 import { Card, CardContent, Grid } from '@material-ui/core';
-import { StatsChart } from '../Statistics/StatsChart';
-import { SummaryStatsGrid } from '../Statistics/SummaryStatsGrid';
 
 export const UserStatsContent = (props: { userRef: string }) => {
   const {

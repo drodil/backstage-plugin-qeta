@@ -1,15 +1,17 @@
 import { useSearchParams } from 'react-router-dom';
 import React, { useEffect } from 'react';
-import { useTranslation } from '../../utils/hooks';
+import {
+  AskQuestionButton,
+  FollowedEntitiesList,
+  FollowedTagsList,
+  QuestionHighlightList,
+  QuestionsContainer,
+  useTranslation,
+} from '@drodil/backstage-plugin-qeta-react';
 import { ContentHeader } from '@backstage/core-components';
-import { AskQuestionButton } from '../Buttons/AskQuestionButton';
-import { QuestionsContainer } from '../QuestionsContainer';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { Grid } from '@material-ui/core';
-import { QuestionHighlightList } from '../QuestionHighlightList/QuestionHighlightList';
 import Whatshot from '@material-ui/icons/Whatshot';
-import { FollowedTagsList } from '../QetaPage/FollowedTagsList';
-import { FollowedEntitiesList } from '../QetaPage/FollowedEntitiesList';
 
 export const QuestionsPage = () => {
   const [searchParams] = useSearchParams();

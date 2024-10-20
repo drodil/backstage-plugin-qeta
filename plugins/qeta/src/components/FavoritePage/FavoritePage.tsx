@@ -1,10 +1,12 @@
 import React from 'react';
 import { ContentHeader } from '@backstage/core-components';
-import { QuestionsContainer } from '../QuestionsContainer';
-import { AskQuestionButton } from '../Buttons/AskQuestionButton';
-import { useTranslation } from '../../utils/hooks';
+import {
+  AskQuestionButton,
+  QuestionHighlightList,
+  QuestionsContainer,
+  useTranslation,
+} from '@drodil/backstage-plugin-qeta-react';
 import { Grid } from '@material-ui/core';
-import { QuestionHighlightList } from '../QuestionHighlightList/QuestionHighlightList';
 import Whatshot from '@material-ui/icons/Whatshot';
 
 export const FavoritePage = () => {

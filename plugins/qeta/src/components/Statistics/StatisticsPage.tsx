@@ -1,7 +1,7 @@
 import React from 'react';
 import { ContentHeader } from '@backstage/core-components';
-import { AskQuestionButton } from '../Buttons/AskQuestionButton';
-import { TopRankingUsers } from './TopRankingUsersCard';
+import { AskQuestionButton } from '@drodil/backstage-plugin-qeta-react';
+import { TopRankingUsers } from '@drodil/backstage-plugin-qeta-react';
 import { GlobalStatsContent } from './GlobalStatsContent';
 import { Grid } from '@material-ui/core';
 

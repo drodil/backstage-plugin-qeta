@@ -1,12 +1,15 @@
 import { ContentHeader } from '@backstage/core-components';
-import { AskQuestionButton } from '../Buttons/AskQuestionButton';
+import {
+  AskQuestionButton,
+  FollowedEntitiesList,
+  FollowedTagsList,
+  ImpactCard,
+  QuestionsCard,
+  useIdentityApi,
+  useTranslation,
+} from '@drodil/backstage-plugin-qeta-react';
 import React from 'react';
-import { useIdentityApi, useTranslation } from '../../utils/hooks';
-import { QuestionsCard } from '../HomePageCards/QuestionsCard';
 import { Grid } from '@material-ui/core';
-import { FollowedTagsList } from '../QetaPage/FollowedTagsList';
-import { FollowedEntitiesList } from '../QetaPage/FollowedEntitiesList';
-import { ImpactCard } from '../HomePageCards/ImpactCard';
 
 export const HomePage = () => {
   const { t } = useTranslation();
