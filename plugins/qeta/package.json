@@ -74,7 +74,8 @@
     "react-relative-time": "^0.0.9",
     "react-syntax-highlighter": "^15.6.1",
     "react-use": "^17.4.0",
-    "recharts": "^2.13.0"
+    "recharts": "^2.13.0",
+    "remark-gfm": "^4.0.0"
   },
   "peerDependencies": {
     "@backstage/catalog-client": "^1.7.1",
