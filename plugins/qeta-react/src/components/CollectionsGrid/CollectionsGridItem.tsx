@@ -1,15 +1,12 @@
 import {
-  PostResponse,
-  PostType,
-  QetaSignal,
+  Collection,
   removeMarkdownFormatting,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useStyles, useTranslation } from '../../utils';
-import { useSignal } from '@backstage/plugin-signals-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { articleRouteRef, questionRouteRef, userRouteRef } from '../../routes';
+import { collectionRouteRef, userRouteRef } from '../../routes';
 import {
   Avatar,
   Box,
@@ -27,62 +24,46 @@ import { Link } from '@backstage/core-components';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 
 export interface PostsGridItemProps {
-  post: PostResponse;
-  entity?: string;
-  type?: PostType;
+  collection: Collection;
 }
 
-export const PostsGridItem = (props: PostsGridItemProps) => {
-  const { post, entity } = props;
-  const [views, setViews] = useState(post.views);
+export const CollectionsGridItem = (props: PostsGridItemProps) => {
+  const { collection } = props;
   const { t } = useTranslation();
 
-  const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
-
-  useEffect(() => {
-    if (lastSignal?.type === 'post_stats') {
-      setViews(lastSignal.views);
-    }
-  }, [lastSignal]);
-
-  const questionRoute = useRouteRef(questionRouteRef);
-  const articleRoute = useRouteRef(articleRouteRef);
+  const collectionRoute = useRouteRef(collectionRouteRef);
   const userRoute = useRouteRef(userRouteRef);
   const styles = useStyles();
-  const { name, initials, user } = useEntityAuthor(post);
+  const { name, initials, user } = useEntityAuthor(collection);
   const navigate = useNavigate();
-
-  const route = post.type === 'question' ? questionRoute : articleRoute;
-  const href = entity
-    ? `${route({
-        id: post.id.toString(10),
-      })}?entity=${entity}`
-    : route({ id: post.id.toString(10) });
+  const href = collectionRoute({ id: collection.id.toString(10) });
 
   return (
     <Card style={{ height: '100%' }}>
       <CardActionArea onClick={() => navigate(href)}>
-        {post.headerImage && (
+        {collection.headerImage && (
           <CardMedia
             component="img"
             height="140"
-            image={post.headerImage}
-            alt={post.title}
+            image={collection.headerImage}
+            alt={collection.title}
           />
         )}
         <CardContent style={{ paddingBottom: '0.5rem' }}>
           <Typography gutterBottom variant="h6" component="div">
-            {post.title}
+            {collection.title}
           </Typography>
-          <Typography variant="body2" color="textSecondary" gutterBottom>
-            {DOMPurify.sanitize(
-              truncate(removeMarkdownFormatting(post.content), 400),
-            )}
-          </Typography>
+          {collection.description && (
+            <Typography variant="body2" color="textSecondary" gutterBottom>
+              {DOMPurify.sanitize(
+                truncate(removeMarkdownFormatting(collection.description), 200),
+              )}
+            </Typography>
+          )}
         </CardContent>
       </CardActionArea>
       <CardContent style={{ paddingTop: '0.5rem' }}>
-        <TagsAndEntities entity={post} />
+        <TagsAndEntities entity={collection} />
         <Box style={{ paddingLeft: '0.2rem', paddingTop: '0.5rem' }}>
           <Typography variant="caption">
             <Avatar
@@ -93,16 +74,19 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             >
               {initials}
             </Avatar>
-            {post.author === 'anonymous' ? (
+            {collection.owner === 'anonymous' ? (
               t('common.anonymousAuthor')
             ) : (
-              <Link to={`${userRoute()}/${post.author}`}>{name}</Link>
+              <Link to={`${userRoute()}/${collection.owner}`}>{name}</Link>
             )}{' '}
             <Link to={href} className="qetaPostListItemQuestionBtn">
-              <RelativeTimeWithTooltip value={post.created} />
+              <RelativeTimeWithTooltip value={collection.created} />
             </Link>
             {' · '}
-            {t('common.views', { count: views })}
+            {t('common.posts', {
+              count: collection.posts?.length ?? 0,
+              itemType: 'post',
+            })}
           </Typography>
         </Box>
       </CardContent>

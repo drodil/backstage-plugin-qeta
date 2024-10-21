@@ -2,15 +2,6 @@ import {
   createTranslationRef,
   createTranslationResource,
 } from '@backstage/core-plugin-api/alpha';
-import i18next from 'i18next';
-
-i18next.services?.formatter?.add('lowercase', (value, _lng, _options) => {
-  return value.toLowerCase();
-});
-
-i18next.services?.formatter?.add('capitalize', (value, _lng, _options) => {
-  return value.charAt(0).toUpperCase() + value.slice(1);
-});
 
 /** @alpha */
 export const qetaTranslationRef = createTranslationRef({
@@ -23,6 +14,9 @@ export const qetaTranslationRef = createTranslationRef({
       limitSelect: 'Answers per page',
     },
     common: {
+      post: 'post',
+      question: 'question',
+      article: 'article',
       score: '{{score}} score',
       comments: 'Comments',
       anonymousAuthor: 'Anonymous',
@@ -35,9 +29,12 @@ export const qetaTranslationRef = createTranslationRef({
       viewsShort_zero: '0 views',
       viewsShort_one: '{{count}} view',
       viewsShort_other: '{{count}} views',
-      posts_zero: 'No {{itemType, lowercase}}s',
-      posts_one: '{{count}} {{itemType, lowercase}}',
-      posts_other: '{{count}} {{itemType, lowercase}}s',
+      posts_zero: 'No {{itemType}}s',
+      posts_one: '{{count}} {{itemType}}',
+      posts_other: '{{count}} {{itemType}}s',
+      collections_zero: 'No collections',
+      collections_one: '{{count}} collection',
+      collections_other: '{{count}} collections',
     },
     answer: {
       questionTitle: 'Q: {{question}}',
@@ -60,8 +57,24 @@ export const qetaTranslationRef = createTranslationRef({
       answerAnonymously: 'Answer anonymously',
       postAnonymously: 'Post anonymously',
     },
+    collectionForm: {
+      errorPosting: 'Could not create collection',
+      uploadHeaderImage: 'Upload header image',
+      titleInput: {
+        label: 'Title',
+        helperText: 'Name of the colleciton',
+      },
+      descriptionInput: {
+        placeholder: 'Collection description, what does it contain?',
+      },
+      submit: {
+        existingCollection: 'Save',
+        newCollection: 'Create',
+      },
+    },
     postForm: {
       errorPosting: 'Could not post {{type}}',
+      uploadHeaderImage: 'Upload header image',
       titleInput: {
         label: 'Title',
         helperText:
@@ -109,13 +122,30 @@ export const qetaTranslationRef = createTranslationRef({
         newArticle: 'New article',
       },
     },
+    collectionCreatePage: {
+      title: {
+        existingCollection: 'Edit collection',
+        newCollection: 'New collection',
+      },
+    },
     askQuestionButton: {
       title: 'Ask a question',
+    },
+    addToCollectionButton: {
+      title: 'Collections',
+      manage: 'Add or remove this post from collections',
+      close: 'Close',
     },
     writeArticleButton: {
       title: 'Write an article',
     },
+    createCollectionButton: {
+      title: 'Create collection',
+    },
     backToQuestionsButton: {
+      title: 'Back',
+    },
+    backToCollectionsButton: {
       title: 'Back',
     },
     commentList: {
@@ -132,6 +162,7 @@ export const qetaTranslationRef = createTranslationRef({
       title: {
         question: 'Are you sure you want to delete this post?',
         answer: 'Are you sure you want to delete this answer?',
+        collection: 'Are you sure you want to delete this collection?',
       },
       errorDeleting: 'Failed to delete',
       deleteButton: 'Delete',
@@ -148,6 +179,9 @@ export const qetaTranslationRef = createTranslationRef({
       tags: 'Tags',
       favoriteQuestions: 'Favorites',
       statistics: 'Statistics',
+      collections: 'Collections',
+      content: 'Content',
+      community: 'Community',
     },
     homePage: {
       title: 'Home',
@@ -197,6 +231,13 @@ export const qetaTranslationRef = createTranslationRef({
       errorLoading: 'Could not load article',
       editButton: 'Edit this article',
       deleteButton: 'Delete this article',
+    },
+    collectionsPage: {
+      title: 'Collections',
+    },
+    collectionPage: {
+      description: 'Description',
+      info: 'You can add questions and articles to the collection from question and article pages',
     },
     questionPage: {
       errorLoading: 'Could not load question',
@@ -295,21 +336,21 @@ export const qetaTranslationRef = createTranslationRef({
       },
     },
     postsList: {
-      errorLoading: 'Could not load {{itemType, lowercase}}s',
-      postsPerPage: '{{itemType, capitalize}}s per page',
+      errorLoading: 'Could not load {{itemType}}s',
+      postsPerPage: '{{itemType}}s per page',
     },
     postsContainer: {
       title: {
-        by: `{{itemType, capitalize}}s by`,
-        about: '{{itemType, capitalize}}s about',
-        tagged: `{{itemType, capitalize}} tagged with {{tags}}`,
-        favorite: 'Your favorite {{itemType, lowercase}}s',
+        by: `{{itemType}}s by`,
+        about: '{{itemType}}s about',
+        tagged: `{{itemType}} tagged with {{tags}}`,
+        favorite: 'Your favorite {{itemType}}s',
       },
       search: {
-        label: 'Search for {{itemType, lowercase}}',
+        label: 'Search for {{itemType}}',
         placeholder: 'Search...',
       },
-      noItems: 'No {{itemType, lowercase}}s',
+      noItems: 'No {{itemType}}s',
       createButton: 'Go ahead and create one!',
     },
     questionsTable: {

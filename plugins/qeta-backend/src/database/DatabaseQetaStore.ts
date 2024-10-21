@@ -8,8 +8,11 @@ import {
   Answers,
   AnswersOptions,
   AttachmentParameters,
+  CollectionOptions,
+  Collections,
   EntityResponse,
   MaybeAnswer,
+  MaybeCollection,
   MaybeComment,
   MaybePost,
   PostOptions,
@@ -20,6 +23,7 @@ import {
 import {
   Answer,
   Attachment,
+  Collection,
   Comment,
   filterTags,
   GlobalStat,
@@ -62,6 +66,17 @@ export type RawPostEntity = {
   trend: number | string;
   anonymous: boolean;
   type: 'question';
+  headerImage: string;
+};
+
+export type RawCollectionEntity = {
+  id: number;
+  title: string;
+  description: string;
+  created: Date;
+  owner: string;
+  readAccess: string;
+  editAccess: string;
   headerImage: string;
 };
 
@@ -254,6 +269,12 @@ export class DatabaseQetaStore implements QetaStore {
       query.leftJoin('post_entities', 'posts.id', 'post_entities.postId');
       query.leftJoin('entities', 'post_entities.entityId', 'entities.id');
       query.where('entities.entity_ref', '=', options.entity);
+    }
+
+    if (options.collectionId) {
+      console.log(options.collectionId);
+      query.leftJoin('collection_posts', 'posts.id', 'collection_posts.postId');
+      query.where('collection_posts.collectionId', options.collectionId);
     }
 
     if (options.noAnswers) {
@@ -1274,6 +1295,205 @@ export class DatabaseQetaStore implements QetaStore {
     return this.mapToInteger(result?.total);
   }
 
+  async getCollections(
+    user_ref: string,
+    options: CollectionOptions,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<Collections> {
+    const query = this.db('collections');
+    if (options.owner) {
+      query.where('owner', options.owner);
+    }
+
+    if (options.searchQuery) {
+      if (this.db.client.config.client === 'pg') {
+        query.whereRaw(
+          `(to_tsvector('english', collections.title || ' ' || collections.description) @@ websearch_to_tsquery('english', quote_literal(?))
+          or to_tsvector('english', collections.title || ' ' || collections.description) @@ to_tsquery('english',quote_literal(?)))`,
+          [
+            `${options.searchQuery}`,
+            `${options.searchQuery.replaceAll(/\s/g, '+')}:*`,
+          ],
+        );
+      } else {
+        query.whereRaw(
+          `LOWER(collections.title || ' ' || collections.content) LIKE LOWER(?)`,
+          [`%${options.searchQuery}%`],
+        );
+      }
+    }
+
+    query.where('owner', user_ref).orWhere('readAccess', 'public');
+    const totalQuery = query.clone();
+
+    if (options.orderBy) {
+      query.orderBy(options.orderBy, options.order || 'desc');
+    }
+
+    if (options.limit) {
+      query.limit(options.limit);
+    }
+    if (options.offset) {
+      query.offset(options.offset);
+    }
+    const results = await Promise.all([
+      query,
+      this.db(totalQuery.as('totalQuery')).count('* as CNT').first(),
+    ]);
+    const rows = results[0] as RawCollectionEntity[];
+    const total = this.mapToInteger((results[1] as any)?.CNT);
+    return {
+      collections: await Promise.all(
+        rows.map(async val => {
+          return this.mapCollectionEntity(val, user_ref, filters);
+        }),
+      ),
+      total,
+    };
+  }
+
+  async getCollection(
+    user_ref: string,
+    id: number,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<MaybeCollection> {
+    const collections = await this.db('collections').where('id', '=', id);
+    if (collections.length === 0) {
+      return null;
+    }
+    return this.mapCollectionEntity(collections[0], user_ref, filters);
+  }
+
+  async createCollection(options: {
+    user_ref: string;
+    title: string;
+    description?: string;
+    created: Date;
+    readAccess: string;
+    editAccess: string;
+    images?: number[];
+    headerImage?: string;
+  }): Promise<Collection> {
+    const {
+      user_ref,
+      title,
+      readAccess,
+      editAccess,
+      description,
+      created,
+      images,
+      headerImage,
+    } = options;
+    const collections = await this.db
+      .insert(
+        {
+          owner: user_ref,
+          title,
+          description,
+          created,
+          readAccess,
+          editAccess,
+          headerImage,
+        },
+        ['id'],
+      )
+      .into('collections')
+      .returning([
+        'id',
+        'title',
+        'description',
+        'created',
+        'readAccess',
+        'editAccess',
+        'headerImage',
+      ]);
+
+    if (images && images.length > 0) {
+      await this.db('attachments')
+        .whereIn('id', images)
+        .update({ collectionId: collections[0].id });
+    }
+
+    return this.mapCollectionEntity(collections[0], user_ref);
+  }
+
+  async updateCollection(options: {
+    id: number;
+    user_ref: string;
+    title: string;
+    description?: string;
+    readAccess?: string;
+    editAccess?: string;
+    images?: number[];
+    headerImage?: string;
+  }): Promise<MaybeCollection> {
+    const {
+      id,
+      user_ref,
+      title,
+      readAccess,
+      editAccess,
+      description,
+      images,
+      headerImage,
+    } = options;
+    const query = this.db('collections').where('collections.id', '=', id);
+    const rows = await query.update({
+      title,
+      description,
+      headerImage,
+      readAccess,
+      editAccess,
+    });
+
+    if (!rows) {
+      return null;
+    }
+
+    if (images && images.length > 0) {
+      await this.db('attachments')
+        .whereIn('id', images)
+        .update({ collectionId: id });
+    }
+
+    return await this.getCollection(user_ref, id);
+  }
+
+  async deleteCollection(id: number): Promise<boolean> {
+    const query = this.db('collections').where('id', '=', id);
+    return !!(await query.delete());
+  }
+
+  async addPostToCollection(
+    user_ref: string,
+    id: number,
+    postId: number,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<MaybeCollection> {
+    await this.db
+      .insert({
+        collectionId: id,
+        postId,
+      })
+      .into('collection_posts')
+      .onConflict()
+      .ignore();
+    return await this.getCollection(user_ref, id, filters);
+  }
+
+  async removePostFromCollection(
+    user_ref: string,
+    id: number,
+    postId: number,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<MaybeCollection> {
+    await this.db('collection_posts')
+      .where('collectionId', id)
+      .where('postId', postId)
+      .delete();
+    return await this.getCollection(user_ref, id, filters);
+  }
+
   /**
    * Maps string or number value to integer. This is due to fact that postgres returns
    * strings instead numbers for count and sum functions.
@@ -1282,6 +1502,43 @@ export class DatabaseQetaStore implements QetaStore {
   private mapToInteger = (val: string | number | undefined): number => {
     return typeof val === 'string' ? Number.parseInt(val, 10) : val ?? 0;
   };
+
+  private async mapCollectionEntity(
+    val: RawCollectionEntity,
+    user_ref: string,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<Collection> {
+    const collections = await this.getPosts(
+      user_ref,
+      { collectionId: val.id },
+      filters,
+    );
+    const canEdit = val.owner === user_ref || val.editAccess === 'public';
+    const canDelete = val.owner === user_ref;
+
+    const entities = compact([
+      ...new Set(collections.posts.map(p => p.entities).flat()),
+    ]);
+    const tags = compact([
+      ...new Set(collections.posts.map(p => p.tags).flat()),
+    ]);
+
+    return {
+      id: val.id,
+      title: val.title,
+      owner: val.owner,
+      description: val.description,
+      created: val.created as Date,
+      posts: collections.posts,
+      readAccess: val.readAccess as 'public' | 'private',
+      editAccess: val.editAccess as 'public' | 'private',
+      canEdit,
+      canDelete,
+      headerImage: val.headerImage,
+      entities,
+      tags,
+    };
+  }
 
   private async mapPostEntity(
     val: RawPostEntity,

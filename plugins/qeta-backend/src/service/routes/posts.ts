@@ -284,7 +284,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     response.json(post);
   });
 
-  // POST /questions
+  // POST /posts
   router.post(`/posts`, async (request, response) => {
     // Validation
     const validateRequestBody = ajv.compile(PostSchema);
@@ -342,7 +342,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     response.json(question);
   });
 
-  // POST /questions/:id
+  // POST /posts/:id
   router.post(`/posts/:id`, async (request, response) => {
     // Validation
     const validateRequestBody = ajv.compile(PostSchema);
@@ -391,7 +391,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       events.publish({
         topic: 'qeta',
         eventPayload: {
-          question: post,
+          post,
           author: username,
         },
         metadata: { action: 'update_post' },
@@ -424,7 +424,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       events.publish({
         topic: 'qeta',
         eventPayload: {
-          question: post,
+          post,
           author: username,
         },
         metadata: { action: 'delete_post' },
@@ -480,7 +480,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       events.publish({
         topic: 'qeta',
         eventPayload: {
-          question: resp,
+          resp,
           author: username,
           score,
         },

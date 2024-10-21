@@ -1,4 +1,7 @@
-import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
+import {
+  CollectionResponse,
+  PostResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
@@ -8,16 +11,18 @@ import { Chip } from '@material-ui/core';
 import { tagRouteRef } from '../../routes';
 import { EntityChip } from '../EntityChip/EntityChip';
 
-export const TagsAndEntities = (props: { post: PostResponse }) => {
-  const { post } = props;
+export const TagsAndEntities = (props: {
+  entity: PostResponse | CollectionResponse;
+}) => {
+  const { entity } = props;
   const catalogApi = useApi(catalogApiRef);
   const tagRoute = useRouteRef(tagRouteRef);
   const [entities, setEntities] = React.useState<Entity[]>([]);
   useEffect(() => {
-    if (post.entities && post.entities.length > 0) {
+    if (entity.entities && entity.entities.length > 0) {
       catalogApi
         .getEntitiesByRefs({
-          entityRefs: post.entities,
+          entityRefs: entity.entities,
           fields: [
             'kind',
             'metadata.name',
@@ -30,12 +35,12 @@ export const TagsAndEntities = (props: { post: PostResponse }) => {
           data ? setEntities(compact(data.items)) : setEntities([]),
         );
     }
-  }, [catalogApi, post]);
+  }, [catalogApi, entity]);
 
   return (
     <>
-      {post.tags &&
-        post.tags.map(tag => (
+      {entity.tags &&
+        entity.tags.map(tag => (
           <Chip
             key={tag}
             label={tag}

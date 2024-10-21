@@ -53,7 +53,7 @@ export const QuestionsTable = (props: {
         limit: questionsPerPage,
         offset: (page - 1) * questionsPerPage,
         includeEntities: true,
-        ...filters,
+        ...(filters as any),
       }),
     [page, filters, questionsPerPage, refresh],
   );

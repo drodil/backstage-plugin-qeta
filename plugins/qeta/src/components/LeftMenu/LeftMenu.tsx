@@ -11,6 +11,7 @@ import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 import StarIcon from '@material-ui/icons/Star';
 import {
   articlesRouteRef,
+  collectionsRouteRef,
   favoriteQuestionsRouteRef,
   qetaRouteRef,
   questionsRouteRef,
@@ -29,6 +30,7 @@ import { useNavigate } from 'react-router-dom';
 import Home from '@material-ui/icons/Home';
 import { useLocation } from 'react-use';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import PlaylistPlay from '@material-ui/icons/PlaylistPlay';
 
 export const LeftMenu = (props: {
   onKeyDown?: (event: React.KeyboardEvent) => void;
@@ -43,6 +45,7 @@ export const LeftMenu = (props: {
   const userRoute = useRouteRef(userRouteRef);
   const questionsRoute = useRouteRef(questionsRouteRef);
   const articlesRoute = useRouteRef(articlesRouteRef);
+  const collectionsRoute = useRouteRef(collectionsRouteRef);
   const styles = useStyles();
   const { t } = useTranslation();
   const location = useLocation();
@@ -105,7 +108,7 @@ export const LeftMenu = (props: {
           {t('leftMenu.home')}
         </CustomMenuItem>
         <ListItem>
-          <Typography variant="subtitle2">Content</Typography>
+          <Typography variant="subtitle2">{t('leftMenu.content')}</Typography>
         </ListItem>
         <CustomMenuItem route={questionsRoute()}>
           <ListItemIcon className={styles.menuIcon}>
@@ -130,6 +133,15 @@ export const LeftMenu = (props: {
             <LoyaltyOutlined fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.tags')}
+        </CustomMenuItem>
+        <ListItem>
+          <Typography variant="subtitle2">{t('leftMenu.community')}</Typography>
+        </ListItem>
+        <CustomMenuItem route={collectionsRoute()}>
+          <ListItemIcon className={styles.menuIcon}>
+            <PlaylistPlay fontSize="small" />
+          </ListItemIcon>
+          {t('leftMenu.collections')}
         </CustomMenuItem>
         {user && !loadingUser && !userError && (
           <CustomMenuItem route={`${userRoute()}/${user.userEntityRef}`}>

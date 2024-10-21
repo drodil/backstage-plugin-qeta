@@ -10,6 +10,7 @@ import {
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { useParams, useSearchParams } from 'react-router-dom';
 import {
+  AddToCollectionButton,
   AnswerCard,
   AnswerForm,
   AskQuestionButton,
@@ -150,6 +151,7 @@ export const QuestionPage = () => {
           entityPage={searchParams.get('entityPage') === 'true'}
         />
         <AskQuestionButton />
+        <AddToCollectionButton post={question} />
       </ContentHeader>
       <QuestionCard question={question} />
       <Box sx={{ mt: 3, mb: 2 }}>

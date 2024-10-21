@@ -19,6 +19,7 @@ import {
 import FilterList from '@material-ui/icons/FilterList';
 import { FilterPanel } from '../FilterPanel/FilterPanel';
 import { PostsGridContent } from './PostsGridContent';
+import { capitalize } from 'lodash';
 
 export const PostsGrid = (props: PaginatedPostsProps) => {
   const {
@@ -49,7 +50,7 @@ export const PostsGrid = (props: PaginatedPostsProps) => {
     onPageChange,
   } = usePaginatedPosts({ initialPageSize: 50, ...props });
 
-  const itemType = (type ?? 'post') as any;
+  const itemType = capitalize(t(`common.${type ?? 'post'}`, {}));
   let shownTitle = title;
   let link = undefined;
   let btn = undefined;

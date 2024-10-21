@@ -136,7 +136,7 @@ export const PostListItem = (props: PostListItemProps) => {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <TagsAndEntities post={post} />
+            <TagsAndEntities entity={post} />
             <Typography
               variant="caption"
               display="inline"

@@ -30,6 +30,7 @@ export const NoPostsCard = (props: {
     queryParams.set('tags', tags.join(','));
   }
 
+  const itemType = t(`common.${type ?? 'post'}`, {});
   return (
     <Card style={{ marginTop: '2rem' }}>
       <CardContent>
@@ -42,7 +43,7 @@ export const NoPostsCard = (props: {
           <Grid item>
             <Typography variant="h6">
               {t('postsContainer.noItems', {
-                itemType: type ?? ('post' as any),
+                itemType,
               })}
             </Typography>
           </Grid>

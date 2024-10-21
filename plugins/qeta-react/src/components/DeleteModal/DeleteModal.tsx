@@ -1,5 +1,6 @@
 import {
   AnswerResponse,
+  CollectionResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Backdrop, Box, Button, Modal, Typography } from '@material-ui/core';
@@ -12,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
 
 export const DeleteModal = (props: {
-  entity: PostResponse | AnswerResponse;
+  entity: PostResponse | AnswerResponse | CollectionResponse;
   open: boolean;
   onClose: () => void;
   question?: PostResponse;
@@ -25,13 +26,29 @@ export const DeleteModal = (props: {
   const [error, setError] = React.useState(false);
   const { t } = useTranslation();
   const isQuestion = 'title' in entity;
+  const isCollection = 'owner' in entity;
 
-  const title = isQuestion
+  // eslint-disable-next-line no-nested-ternary
+  const title = isCollection
+    ? t('deleteModal.title.collection')
+    : isQuestion
     ? t('deleteModal.title.question')
     : t('deleteModal.title.answer');
 
   const handleDelete = () => {
-    if (isQuestion) {
+    if (isCollection) {
+      qetaApi
+        .deleteCollection(entity.id)
+        .catch(_ => setError(true))
+        .then(ret => {
+          if (ret) {
+            onClose();
+            navigate(`${base_path}/qeta`);
+          } else {
+            setError(true);
+          }
+        });
+    } else if (isQuestion) {
       qetaApi
         .deletePost(entity.id)
         .catch(_ => setError(true))

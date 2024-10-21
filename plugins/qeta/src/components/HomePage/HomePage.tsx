@@ -40,7 +40,7 @@ export const HomePage = () => {
             <PostsCard
               type="own"
               title={t('highlights.unanswered.title')}
-              options={{ noAnswers: 'true', random: 'true', type: 'question' }}
+              options={{ noAnswers: true, random: true, type: 'question' }}
               postType="question"
             />
           </Grid>

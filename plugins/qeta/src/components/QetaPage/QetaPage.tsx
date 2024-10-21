@@ -12,6 +12,10 @@ import {
   articleRouteRef,
   articlesRouteRef,
   askRouteRef,
+  collectionCreateRouteRef,
+  collectionEditRouteRef,
+  collectionRouteRef,
+  collectionsRouteRef,
   editArticleRouteRef,
   editQuestionRouteRef,
   favoriteQuestionsRouteRef,
@@ -31,6 +35,9 @@ import { LeftMenuButton } from '../LeftMenu/LeftMenuButton';
 import { ArticlesPage } from '../ArticlesPage/ArticlesPage';
 import { WritePage } from '../WritePage/WritePage';
 import { ArticlePage } from '../ArticlePage/ArticlePage';
+import { CollectionsPage } from '../CollectionsPage/CollectionsPage';
+import { CollectionPage } from '../CollectionPage/CollectionPage';
+import { CollectionCreatePage } from '../CollectionCreatePage/CollectionCreatePage';
 
 type Props = {
   title?: string;
@@ -115,6 +122,22 @@ export const QetaPage = (props?: Props) => {
                 <Route
                   path={statisticsRouteRef.path}
                   element={<StatisticsPage />}
+                />
+                <Route
+                  path={collectionsRouteRef.path}
+                  element={<CollectionsPage />}
+                />
+                <Route
+                  path={collectionCreateRouteRef.path}
+                  element={<CollectionCreatePage />}
+                />
+                <Route
+                  path={collectionEditRouteRef.path}
+                  element={<CollectionCreatePage />}
+                />
+                <Route
+                  path={collectionRouteRef.path}
+                  element={<CollectionPage />}
                 />
               </Routes>
             </Grid>

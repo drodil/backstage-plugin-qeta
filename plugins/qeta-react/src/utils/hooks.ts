@@ -19,6 +19,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { UserEntity } from '@backstage/catalog-model';
 import {
   AnswerResponse,
+  CollectionResponse,
   filterTags,
   PostResponse,
   PostType,
@@ -37,6 +38,7 @@ import {
 import useDebounce from 'react-use/lib/useDebounce';
 import { getFiltersWithDateRange } from './utils';
 import { useSignal } from '@backstage/plugin-signals-react';
+import { useAsyncRetry } from 'react-use';
 
 export const useTranslation = () => {
   return useTranslationRef(qetaTranslationRef);
@@ -55,6 +57,7 @@ export type PaginatedPostsProps = {
   showWriteButton?: boolean;
   showNoQuestionsBtn?: boolean;
   initialPageSize?: number;
+  collectionId?: number;
 };
 
 export function usePaginatedPosts(props: PaginatedPostsProps) {
@@ -76,6 +79,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     entity: entity ?? '',
     tags: tags ?? [],
     dateRange: '',
+    collectionId: props.collectionId,
   });
 
   const onPageChange = (value: number) => {
@@ -180,7 +184,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
         includeEntities: true,
         author,
         favorite,
-        ...getFiltersWithDateRange(filters),
+        ...(getFiltersWithDateRange(filters) as any),
       });
     },
     [type, page, filters, postsPerPage],
@@ -363,7 +367,7 @@ export function useQetaApi<T>(
 ) {
   const qetaApi = useApi(qetaApiRef);
 
-  return useAsync(async () => {
+  return useAsyncRetry(async () => {
     return await f(qetaApi);
   }, deps);
 }
@@ -698,15 +702,17 @@ const dataLoaderFactory = (catalogApi: CatalogApi) =>
     },
   );
 
-export const useEntityAuthor = (entity: PostResponse | AnswerResponse) => {
+export const useEntityAuthor = (
+  entity: PostResponse | AnswerResponse | CollectionResponse,
+) => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
   const [name, setName] = React.useState<string | undefined>(undefined);
   const [user, setUser] = React.useState<UserEntity | null>(null);
   const [initials, setInitials] = React.useState<string | null>(null);
   const [currentUser, setCurrentUser] = React.useState<string | null>(null);
-  const anonymous = entity.anonymous ?? false;
-  let author = entity.author;
+  const anonymous = 'anonymous' in entity ? entity.anonymous ?? false : false;
+  let author = 'author' in entity ? entity.author : entity.owner;
   if (!author.startsWith('user:')) {
     author = `user:${author}`;
   }
@@ -745,14 +751,14 @@ export const useEntityAuthor = (entity: PostResponse | AnswerResponse) => {
 
   useEffect(() => {
     let displayName = userName;
-    if (entity.author === currentUser) {
+    if (author === currentUser) {
       displayName = 'You';
       if (anonymous) {
         displayName += ' (anonymous)';
       }
     }
     setName(displayName);
-  }, [entity.author, anonymous, currentUser, userName]);
+  }, [author, anonymous, currentUser, userName]);
 
   useEffect(() => {
     const init = (name ?? '')

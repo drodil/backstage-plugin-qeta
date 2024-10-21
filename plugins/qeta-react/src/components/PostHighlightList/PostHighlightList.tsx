@@ -11,17 +11,14 @@ import { useQetaApi, useStyles, useTranslation } from '../../utils/hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef } from '../../routes';
-import {
-  GetPostsOptions,
-  PostType,
-} from '@drodil/backstage-plugin-qeta-common';
+import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
 
 export const PostHighlightList = (props: {
   type: string;
   title: string;
   noQuestionsLabel: string;
   icon?: React.ReactNode;
-  options?: GetPostsOptions;
+  options?: PostsQuery;
   postType?: PostType;
 }) => {
   const {

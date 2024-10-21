@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import {
-  GetAnswersOptions,
-  GetPostsOptions,
+  AnswersQuery,
+  CollectionsQuery,
+  PostsQuery,
   QetaApi,
   RequestOptions,
 } from './QetaApi';
@@ -13,6 +14,11 @@ import {
   AnswersResponse,
   AnswersResponseBody,
   AttachmentResponseBody,
+  CollectionRequest,
+  CollectionResponse,
+  CollectionResponseBody,
+  CollectionsResponse,
+  CollectionsResponseBody,
   EntityResponse,
   ImpactResponse,
   Post,
@@ -28,8 +34,8 @@ import {
   UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import omitBy from 'lodash/omitBy';
-import isEmpty from 'lodash/isEmpty';
 import crossFetch from 'cross-fetch';
+import qs from 'qs';
 
 export class QetaError extends CustomErrorBase {
   public errors: null | undefined | any[];
@@ -60,10 +66,10 @@ export class QetaClient implements QetaApi {
   }
 
   async getPosts(
-    options: GetPostsOptions,
+    options: PostsQuery,
     requestOptions?: RequestOptions,
   ): Promise<PostsResponse> {
-    const query = this.getQueryParameters(options).toString();
+    const query = this.getQueryParameters(options);
 
     let url = `${await this.getBaseUrl()}/posts`;
     if (query) {
@@ -90,9 +96,9 @@ export class QetaClient implements QetaApi {
 
   async getPostsList(
     type: string,
-    options?: GetPostsOptions,
+    options?: PostsQuery,
   ): Promise<PostsResponse> {
-    const query = this.getQueryParameters(options).toString();
+    const query = this.getQueryParameters(options);
 
     let url = `${await this.getBaseUrl()}/posts/list/${type}`;
     if (query) {
@@ -445,8 +451,8 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async getAnswers(options: GetAnswersOptions): Promise<AnswersResponse> {
-    const query = this.getQueryParameters(options).toString();
+  async getAnswers(options: AnswersQuery): Promise<AnswersResponse> {
+    const query = this.getQueryParameters(options);
 
     let url = `${await this.getBaseUrl()}/answers`;
     if (query) {
@@ -557,7 +563,7 @@ export class QetaClient implements QetaApi {
   async getMostUpvotedAnswers(
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
-    const query = this.getQueryParameters(options.options).toString();
+    const query = this.getQueryParameters(options.options);
 
     let url = `${await this.getBaseUrl()}/statistics/answers/top-upvoted-users`;
     if (query) {
@@ -566,15 +572,13 @@ export class QetaClient implements QetaApi {
 
     const response = await this.fetchApi.fetch(url);
 
-    const data = (await response.json()) as StatisticResponse;
-
-    return data;
+    return (await response.json()) as StatisticResponse;
   }
 
   async getMostUpvotedCorrectAnswers(
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
-    const query = this.getQueryParameters(options.options).toString();
+    const query = this.getQueryParameters(options.options);
     let url = `${await this.getBaseUrl()}/statistics/answers/top-correct-upvoted-users`;
 
     if (query) {
@@ -583,15 +587,13 @@ export class QetaClient implements QetaApi {
 
     const response = await this.fetchApi.fetch(url);
 
-    const data = (await response.json()) as StatisticResponse;
-
-    return data;
+    return (await response.json()) as StatisticResponse;
   }
 
   async getMostUpvotedPosts(
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
-    const query = this.getQueryParameters(options.options).toString();
+    const query = this.getQueryParameters(options.options);
     let url = `${await this.getBaseUrl()}/statistics/posts/top-upvoted-users`;
 
     if (query) {
@@ -600,15 +602,13 @@ export class QetaClient implements QetaApi {
 
     const response = await this.fetchApi.fetch(url);
 
-    const data = (await response.json()) as StatisticResponse;
-
-    return data;
+    return (await response.json()) as StatisticResponse;
   }
 
   async getMostPosts(
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
-    const query = this.getQueryParameters(options.options).toString();
+    const query = this.getQueryParameters(options.options);
     let url = `${await this.getBaseUrl()}/statistics/posts/most-questions`;
 
     if (query) {
@@ -617,15 +617,13 @@ export class QetaClient implements QetaApi {
 
     const response = await this.fetchApi.fetch(url);
 
-    const data = (await response.json()) as StatisticResponse;
-
-    return data;
+    return (await response.json()) as StatisticResponse;
   }
 
   async getMostAnswers(
     options: StatisticsRequestParameters,
   ): Promise<StatisticResponse> {
-    const query = this.getQueryParameters(options.options).toString();
+    const query = this.getQueryParameters(options.options);
     let url = `${await this.getBaseUrl()}/statistics/answers/most-answers`;
 
     if (query) {
@@ -675,21 +673,148 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as StatisticsResponse;
   }
 
-  private getQueryParameters(params?: any): URLSearchParams {
-    if (!params) {
-      return new URLSearchParams();
+  async getCollections(
+    options?: CollectionsQuery,
+  ): Promise<CollectionsResponse> {
+    const query = this.getQueryParameters(options);
+
+    let url = `${await this.getBaseUrl()}/collections`;
+    if (query) {
+      url += `?${query}`;
     }
-    const asStrings: Record<string, string> = Object.fromEntries(
-      Object.entries(params).map(([k, v]) => {
-        if (!v) {
-          return [k, ''];
-        }
-        if (Array.isArray(v)) {
-          return [k, v.join(',')];
-        }
-        return [k, `${v}`];
-      }),
+
+    const response = await this.fetchApi.fetch(url);
+    if (response.status === 403) {
+      return { collections: [], total: 0 };
+    }
+    const data = (await response.json()) as CollectionsResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async getCollection(id?: string): Promise<CollectionResponse> {
+    if (!id) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/collections/${id}`,
     );
-    return new URLSearchParams(omitBy(asStrings, isEmpty));
+
+    const data = (await response.json()) as CollectionResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async createCollection(
+    collection: CollectionRequest,
+  ): Promise<CollectionResponse> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/collections`,
+      {
+        method: 'POST',
+        body: JSON.stringify(collection),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    const data = (await response.json()) as CollectionResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async updateCollection(
+    id: number,
+    collection: CollectionRequest,
+  ): Promise<CollectionResponse> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/collections/${id}`,
+      {
+        method: 'POST',
+        body: JSON.stringify(collection),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    const data = (await response.json()) as CollectionResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to update', data.errors);
+    }
+
+    return data;
+  }
+
+  async deleteCollection(id?: number): Promise<boolean> {
+    if (!id) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/collections/${id}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    const data = await response;
+    return data.ok;
+  }
+
+  async addPostToCollection(
+    collectionId: number,
+    postId: number,
+  ): Promise<CollectionResponse> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/collections/${collectionId}/posts`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ postId }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    const data = (await response.json()) as CollectionResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to update', data.errors);
+    }
+
+    return data;
+  }
+
+  async removePostFromCollection(
+    collectionId: number,
+    postId: number,
+  ): Promise<CollectionResponse> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/collections/${collectionId}/posts`,
+      {
+        method: 'DELETE',
+        body: JSON.stringify({ postId }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    const data = (await response.json()) as CollectionResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to update', data.errors);
+    }
+
+    return data;
+  }
+
+  private getQueryParameters(params?: any) {
+    if (!params) {
+      return '';
+    }
+    const cleaned = omitBy(params, v => !Boolean(v));
+    return qs.stringify(cleaned);
   }
 }

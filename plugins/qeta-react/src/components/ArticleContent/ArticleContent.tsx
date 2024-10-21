@@ -98,7 +98,7 @@ export const ArticleContent = (props: {
       />
       <Grid container>
         <Grid item xs={12}>
-          <TagsAndEntities post={postEntity} />
+          <TagsAndEntities entity={postEntity} />
         </Grid>
       </Grid>
     </>

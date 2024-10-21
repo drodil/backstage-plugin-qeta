@@ -4,6 +4,9 @@ import {
   AnswerResponseBody,
   AnswersResponse,
   AttachmentResponseBody,
+  CollectionRequest,
+  CollectionResponse,
+  CollectionsResponse,
   EntityResponse,
   ImpactResponse,
   PostRequest,
@@ -18,40 +21,56 @@ import {
   UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
-export type GetPostsOptions = {
-  type?: PostType;
-  noCorrectAnswer?: string;
+export interface PostsQuery {
+  limit?: number;
   offset?: number;
-  includeEntities?: boolean;
-  includeAnswers?: boolean;
-  includeComments?: boolean;
-  author?: string;
-  orderBy?: string;
   tags?: string[];
-  noVotes?: string;
-  noAnswers?: string;
-  searchQuery?: string;
-  random?: string;
-  limit?: number;
-  favorite?: boolean;
   entity?: string;
-  order?: string;
-  fromDate?: string;
-  toDate?: string;
-};
-
-export type GetAnswersOptions = {
-  noCorrectAnswer?: string;
-  noVotes?: string;
-  offset?: number;
   author?: string;
-  orderBy?: string;
+  orderBy?: 'views' | 'score' | 'answersCount' | 'created' | 'updated';
+  order?: 'desc' | 'asc';
+  noCorrectAnswer?: boolean;
+  noAnswers?: boolean;
+  favorite?: boolean;
+  noVotes?: boolean;
+  random?: boolean;
+  includeAnswers?: boolean;
+  includeVotes?: boolean;
+  includeEntities?: boolean;
+  includeTrend?: boolean;
+  includeComments?: boolean;
   searchQuery?: string;
-  limit?: number;
-  order?: string;
   fromDate?: string;
   toDate?: string;
-};
+  type?: PostType;
+  collectionId?: number;
+}
+
+export interface CollectionsQuery {
+  limit?: number;
+  offset?: number;
+  searchQuery?: string;
+  orderBy?: 'created' | 'owner';
+  order?: 'desc' | 'asc';
+}
+
+export interface AnswersQuery {
+  limit?: number;
+  offset?: number;
+  tags?: string[];
+  entity?: string;
+  author?: string;
+  orderBy?: 'score' | 'created' | 'updated';
+  order?: 'desc' | 'asc';
+  noCorrectAnswer?: boolean;
+  noVotes?: boolean;
+  includeVotes?: boolean;
+  includeEntities?: boolean;
+  includeComments?: boolean;
+  searchQuery?: string;
+  fromDate?: string;
+  toDate?: string;
+}
 
 export type RequestOptions = {
   token?: string;
@@ -59,11 +78,11 @@ export type RequestOptions = {
 
 export interface QetaApi {
   getPosts(
-    options: GetPostsOptions,
+    options: PostsQuery,
     requestOptions?: RequestOptions,
   ): Promise<PostsResponse>;
 
-  getPostsList(type: string, options?: GetPostsOptions): Promise<PostsResponse>;
+  getPostsList(type: string, options?: PostsQuery): Promise<PostsResponse>;
 
   createPost(post: PostRequest): Promise<PostResponse>;
 
@@ -147,7 +166,7 @@ export interface QetaApi {
 
   updateAnswer(id: number, answer: AnswerRequest): Promise<AnswerResponseBody>;
 
-  getAnswers(options: GetAnswersOptions): Promise<AnswersResponse>;
+  getAnswers(options: AnswersQuery): Promise<AnswersResponse>;
 
   getAnswer(
     questionId: string | number | undefined,
@@ -165,4 +184,21 @@ export interface QetaApi {
   getUserImpact(): Promise<ImpactResponse>;
   getGlobalStats(): Promise<StatisticsResponse>;
   getUserStats(userRef: string): Promise<StatisticsResponse>;
+
+  getCollections(options?: CollectionsQuery): Promise<CollectionsResponse>;
+  getCollection(id?: string): Promise<CollectionResponse>;
+  createCollection(collection: CollectionRequest): Promise<CollectionResponse>;
+  updateCollection(
+    id: number,
+    collection: CollectionRequest,
+  ): Promise<CollectionResponse>;
+  deleteCollection(id?: number): Promise<boolean>;
+  addPostToCollection(
+    collectionId: number,
+    postId: number,
+  ): Promise<CollectionResponse>;
+  removePostFromCollection(
+    collectionId: number,
+    postId: number,
+  ): Promise<CollectionResponse>;
 }

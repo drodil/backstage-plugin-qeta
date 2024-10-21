@@ -1,6 +1,7 @@
 import {
   Answer,
   Attachment,
+  Collection,
   Comment,
   GlobalStat,
   Post,
@@ -25,6 +26,7 @@ export function isAnswer(entity: Post | Answer | Comment): entity is Answer {
 export type MaybeAnswer = Answer | null;
 export type MaybePost = Post | null;
 export type MaybeComment = Comment | null;
+export type MaybeCollection = Collection | null;
 
 export interface Posts {
   posts: Post[];
@@ -34,6 +36,20 @@ export interface Posts {
 export interface Answers {
   answers: Answer[];
   total: number;
+}
+
+export interface Collections {
+  collections: Collection[];
+  total: number;
+}
+
+export interface CollectionOptions {
+  limit?: number;
+  offset?: number;
+  owner?: string;
+  searchQuery?: string;
+  orderBy?: 'created' | 'owner';
+  order?: 'desc' | 'asc';
 }
 
 export interface PostOptions {
@@ -63,6 +79,7 @@ export interface PostOptions {
   searchQuery?: string;
   fromDate?: string;
   toDate?: string;
+  collectionId?: number;
 }
 
 export interface AnswersOptions {
@@ -416,4 +433,53 @@ export interface QetaStore {
   cleanStats(days: number, date: Date): Promise<void>;
   getGlobalStats(): Promise<GlobalStat[]>;
   getUserStats(user_ref: string): Promise<UserStat[]>;
+
+  getCollections(
+    user_ref: string,
+    options: CollectionOptions,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<Collections>;
+
+  getCollection(
+    user_ref: string,
+    id: number,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<MaybeCollection>;
+
+  createCollection(options: {
+    user_ref: string;
+    title: string;
+    description?: string;
+    created: Date;
+    readAccess: string;
+    editAccess: string;
+    images?: number[];
+    headerImage?: string;
+  }): Promise<Collection>;
+
+  updateCollection(options: {
+    id: number;
+    user_ref: string;
+    title: string;
+    description?: string;
+    readAccess?: string;
+    editAccess?: string;
+    images?: number[];
+    headerImage?: string;
+  }): Promise<MaybeCollection>;
+
+  deleteCollection(id: number): Promise<boolean>;
+
+  addPostToCollection(
+    user_ref: string,
+    id: number,
+    postId: number,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<MaybeCollection>;
+  removePostFromCollection(
+    user_ref: string,
+    id: number,
+    postId: number,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<MaybeCollection>;
 }

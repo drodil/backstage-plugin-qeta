@@ -147,7 +147,7 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
         limit: answersPerPage,
         offset: (page - 1) * answersPerPage,
         author,
-        ...getFiltersWithDateRange(filters),
+        ...(getFiltersWithDateRange(filters) as any),
       });
     },
     [page, filters, answersPerPage],

@@ -34,6 +34,30 @@ export const questionRouteRef = createSubRouteRef({
   path: '/questions/:id',
 });
 
+export const collectionsRouteRef = createSubRouteRef({
+  id: 'qeta.collections',
+  parent: qetaRouteRef,
+  path: '/collections',
+});
+
+export const collectionRouteRef = createSubRouteRef({
+  id: 'qeta.collection',
+  parent: qetaRouteRef,
+  path: '/collections/:id',
+});
+
+export const collectionCreateRouteRef = createSubRouteRef({
+  id: 'qeta.collection.create',
+  parent: qetaRouteRef,
+  path: '/collections/create',
+});
+
+export const collectionEditRouteRef = createSubRouteRef({
+  id: 'qeta.collection.edit',
+  parent: qetaRouteRef,
+  path: '/collections/:id/edit',
+});
+
 export const writeRouteRef = createSubRouteRef({
   id: 'qeta.write',
   parent: qetaRouteRef,

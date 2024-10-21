@@ -5,6 +5,7 @@ import { Skeleton } from '@material-ui/lab';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import {
+  AddToCollectionButton,
   ArticleContent,
   BackToArticlesButton,
   useQetaApi,
@@ -59,6 +60,7 @@ export const ArticlePage = () => {
           entityPage={searchParams.get('entityPage') === 'true'}
         />
         <WriteArticleButton />
+        <AddToCollectionButton post={post} />
       </ContentHeader>
       <Container maxWidth="md">
         <ArticleContent post={post} views={views} />

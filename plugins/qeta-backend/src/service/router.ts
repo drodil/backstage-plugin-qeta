@@ -20,6 +20,7 @@ import { NotificationManager } from './NotificationManager';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { answerRules, commentRules, postRules } from './postRules';
 import { postsRoutes } from './routes/posts';
+import { collectionsRoutes } from './routes/collections';
 
 export async function createRouter(
   options: RouterOptions,
@@ -105,6 +106,7 @@ export async function createRouter(
   helperRoutes(router, routeOptions);
   attachmentsRoutes(router, routeOptions);
   statisticRoutes(router, routeOptions);
+  collectionsRoutes(router, routeOptions);
 
   router.use(MiddlewareFactory.create({ config, logger }).error());
   return router;

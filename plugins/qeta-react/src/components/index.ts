@@ -19,3 +19,6 @@ export * from './TopRankingUsersCard';
 export * from './TagsContainer';
 export * from './PostsGrid';
 export * from './ArticleContent';
+export * from './CollectionForm';
+export * from './CollectionsGrid';
+export * from './CollectionCard';

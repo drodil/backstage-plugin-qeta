@@ -12,7 +12,12 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import { NotificationService } from '@backstage/plugin-notifications-node';
 import { NotificationManager } from './NotificationManager';
-import { PostType } from '@drodil/backstage-plugin-qeta-common';
+import {
+  AnswersQuery,
+  CollectionsQuery,
+  PostsQuery,
+  PostType,
+} from '@drodil/backstage-plugin-qeta-common';
 
 export interface RouterOptions {
   database: QetaStore;
@@ -31,48 +36,6 @@ export interface RouteOptions extends RouterOptions {
   notificationMgr: NotificationManager;
 }
 
-export interface PostsQuery {
-  limit?: number;
-  offset?: number;
-  tags?: string;
-  entity?: string;
-  author?: string;
-  orderBy?: 'views' | 'score' | 'answersCount' | 'created' | 'updated';
-  order?: 'desc' | 'asc';
-  noCorrectAnswer?: boolean;
-  noAnswers?: boolean;
-  favorite?: boolean;
-  noVotes?: boolean;
-  random?: boolean;
-  includeAnswers?: boolean;
-  includeVotes?: boolean;
-  includeEntities?: boolean;
-  includeTrend?: boolean;
-  includeComments?: boolean;
-  searchQuery?: string;
-  fromDate?: string;
-  toDate?: string;
-  type?: PostType;
-}
-
-export interface AnswersQuery {
-  limit?: number;
-  offset?: number;
-  tags?: string;
-  entity?: string;
-  author?: string;
-  orderBy?: 'score' | 'created' | 'updated';
-  order?: 'desc' | 'asc';
-  noCorrectAnswer?: boolean;
-  noVotes?: boolean;
-  includeVotes?: boolean;
-  includeEntities?: boolean;
-  includeComments?: boolean;
-  searchQuery?: string;
-  fromDate?: string;
-  toDate?: string;
-}
-
 export interface PostContent {
   title: string;
   content: string;
@@ -86,6 +49,37 @@ export interface PostContent {
   type: PostType;
 }
 
+export interface CollectionContent {
+  title: string;
+  description?: string;
+  headerImage?: string;
+  images?: number[];
+  created?: string;
+  readAccess: 'public' | 'private';
+  editAccess: 'public' | 'private';
+}
+
+export interface CollectionPostContent {
+  postId: number;
+}
+
+export const CollectionsQuerySchema: JSONSchemaType<CollectionsQuery> = {
+  type: 'object',
+  properties: {
+    limit: { type: 'integer', nullable: true },
+    offset: { type: 'integer', nullable: true },
+    searchQuery: { type: 'string', nullable: true },
+    orderBy: {
+      type: 'string',
+      enum: ['created', 'owner'],
+      nullable: true,
+    },
+    order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
+  },
+  required: [],
+  additionalProperties: false,
+};
+
 export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
   type: 'object',
   properties: {
@@ -97,13 +91,14 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
       enum: ['views', 'score', 'answersCount', 'created', 'updated'],
       nullable: true,
     },
+    collectionId: { type: 'number', nullable: true },
     order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
     noCorrectAnswer: { type: 'boolean', nullable: true },
     noAnswers: { type: 'boolean', nullable: true },
     favorite: { type: 'boolean', nullable: true },
     noVotes: { type: 'boolean', nullable: true },
     random: { type: 'boolean', nullable: true },
-    tags: { type: 'string', nullable: true },
+    tags: { type: 'array', items: { type: 'string' }, nullable: true },
     entity: { type: 'string', nullable: true },
     includeAnswers: { type: 'boolean', nullable: true },
     includeVotes: { type: 'boolean', nullable: true },
@@ -133,7 +128,7 @@ export const AnswersQuerySchema: JSONSchemaType<AnswersQuery> = {
     order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
     noCorrectAnswer: { type: 'boolean', nullable: true },
     noVotes: { type: 'boolean', nullable: true },
-    tags: { type: 'string', nullable: true },
+    tags: { type: 'array', items: { type: 'string' }, nullable: true },
     entity: { type: 'string', nullable: true },
     includeVotes: { type: 'boolean', nullable: true },
     includeEntities: { type: 'boolean', nullable: true },
@@ -161,6 +156,30 @@ export const PostSchema: JSONSchemaType<PostContent> = {
     type: { type: 'string', enum: ['question', 'article'] },
   },
   required: ['title', 'content'],
+  additionalProperties: false,
+};
+
+export const CollectionSchema: JSONSchemaType<CollectionContent> = {
+  type: 'object',
+  properties: {
+    title: { type: 'string', minLength: 1 },
+    description: { type: 'string', nullable: true },
+    headerImage: { type: 'string', nullable: true },
+    images: { type: 'array', items: { type: 'integer' }, nullable: true },
+    created: { type: 'string', minLength: 1, nullable: true },
+    readAccess: { type: 'string', enum: ['public', 'private'] },
+    editAccess: { type: 'string', enum: ['public', 'private'] },
+  },
+  required: ['title', 'readAccess', 'editAccess'],
+  additionalProperties: false,
+};
+
+export const CollectionPostSchema: JSONSchemaType<CollectionPostContent> = {
+  type: 'object',
+  properties: {
+    postId: { type: 'integer' },
+  },
+  required: ['postId'],
   additionalProperties: false,
 };
 

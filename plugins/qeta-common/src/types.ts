@@ -60,6 +60,17 @@ export interface PostAnswerEntity extends QetaEntity {
   anonymous?: boolean;
 }
 
+export interface CollectionEntity {
+  id: number;
+  title: string;
+  description?: string;
+  owner: string;
+  created: Date;
+  headerImage?: string;
+  readAccess: 'private' | 'public';
+  editAccess: 'private' | 'public';
+}
+
 export type PostType = 'question' | 'article';
 
 export interface Post extends PostAnswerEntity {
@@ -103,6 +114,14 @@ export interface Answer extends PostAnswerEntity {
   postId: number;
   correct: boolean;
   post?: Post;
+}
+
+export interface Collection extends CollectionEntity {
+  tags?: string[];
+  entities?: string[];
+  posts?: Post[];
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 export interface Vote {
@@ -151,9 +170,25 @@ export interface PostsResponse {
   total: number;
 }
 
+export interface CollectionsResponse {
+  collections: Collection[];
+  total: number;
+}
+
 export type PostsResponseBody = PostsResponse | ErrorResponse;
 
 export type PostResponseBody = Question | ErrorResponse;
+
+export type CollectionsResponseBody = CollectionsResponse | ErrorResponse;
+
+export interface CollectionRequest {
+  title: string;
+  description?: string;
+  readAccess: 'public' | 'private';
+  editAccess: 'public' | 'private';
+  images: number[];
+  headerImage?: string;
+}
 
 export interface PostRequest {
   title: string;
@@ -195,6 +230,9 @@ export type AttachmentResponseBody = Attachment | ErrorResponse;
 
 export type PostResponse = Post;
 export type AnswerResponse = Answer;
+export type CollectionResponse = Collection;
+
+export type CollectionResponseBody = CollectionResponse | ErrorResponse;
 
 export type QetaPostsStatsSignal = {
   type: 'post_stats';

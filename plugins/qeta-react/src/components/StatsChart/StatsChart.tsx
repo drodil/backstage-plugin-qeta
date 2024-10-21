@@ -262,7 +262,9 @@ export const StatsChart = (props: { data: GlobalStat[] | UserStat[] }) => {
   if (!props.data || props.data.length === 0) {
     return <Typography variant="subtitle1">{t('stats.noStats')}</Typography>;
   }
-  const data = props.data.reverse().map(d => ({ ...d, hidden: 0 }));
+  const data = props.data
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .map(d => ({ ...d, hidden: 0 }));
 
   return (
     <>

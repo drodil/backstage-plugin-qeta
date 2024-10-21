@@ -4822,9 +4822,11 @@ __metadata:
     "@backstage/plugin-permission-common": "backstage:^"
     "@backstage/plugin-search-common": "backstage:^"
     "@types/lodash": "npm:^4.14.199"
+    "@types/qs": "npm:^6"
     ajv: "npm:^8.12.0"
     cross-fetch: "npm:^4.0.0"
     lodash: "npm:^4.17.21"
+    qs: "npm:^6.13.0"
   peerDependencies:
     "@backstage/catalog-model": ^1.7.0
   languageName: unknown
@@ -9230,7 +9232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/qs@npm:*, @types/qs@npm:^6.9.11, @types/qs@npm:^6.9.6":
+"@types/qs@npm:*, @types/qs@npm:^6, @types/qs@npm:^6.9.11, @types/qs@npm:^6.9.6":
   version: 6.9.16
   resolution: "@types/qs@npm:6.9.16"
   checksum: 10c0/a4e871b80fff623755e356fd1f225aea45ff7a29da30f99fddee1a05f4f5f33485b314ab5758145144ed45708f97e44595aa9a8368e9bbc083932f931b12dbb6
@@ -23849,7 +23851,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:6.13.0, qs@npm:^6.11.0, qs@npm:^6.12.3, qs@npm:^6.9.4":
+"qs@npm:6.13.0, qs@npm:^6.11.0, qs@npm:^6.12.3, qs@npm:^6.13.0, qs@npm:^6.9.4":
   version: 6.13.0
   resolution: "qs@npm:6.13.0"
   dependencies:

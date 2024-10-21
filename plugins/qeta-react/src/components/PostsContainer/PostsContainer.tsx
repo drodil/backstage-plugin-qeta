@@ -20,6 +20,7 @@ import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { TagFollowButton } from '../Buttons/TagFollowButton';
 import { EntityFollowButton } from '../Buttons/EntityFollowButton';
 import { WriteArticleButton } from '../Buttons';
+import { capitalize } from 'lodash';
 
 export const PostsContainer = (props: PaginatedPostsProps) => {
   const {
@@ -52,7 +53,7 @@ export const PostsContainer = (props: PaginatedPostsProps) => {
   } = usePaginatedPosts(props);
   const { t } = useTranslation();
 
-  const itemType = (type ?? 'post') as any;
+  const itemType = capitalize(t(`common.${type ?? 'post'}`, {}));
   let shownTitle = title;
   let link = undefined;
   let btn = undefined;
@@ -72,7 +73,9 @@ export const PostsContainer = (props: PaginatedPostsProps) => {
       btn = <TagFollowButton tag={tags[0]} />;
     }
   } else if (favorite) {
-    shownTitle = t('postsContainer.title.favorite', { itemType });
+    shownTitle = t('postsContainer.title.favorite', {
+      itemType: itemType.toLowerCase(),
+    });
   }
 
   return (

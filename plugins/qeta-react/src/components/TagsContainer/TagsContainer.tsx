@@ -12,11 +12,13 @@ import { Progress, WarningPanel } from '@backstage/core-components';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
+import { useNavigate } from 'react-router-dom';
 
 export const TagsContainer = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const tagRoute = useRouteRef(tagRouteRef);
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const {
     value: response,
     loading,
@@ -75,7 +77,7 @@ export const TagsContainer = () => {
             className="qetaTagsContainerChip"
             component="a"
             clickable
-            href={tagRoute({ tag: tag.tag })}
+            onClick={() => navigate(tagRoute({ tag: tag.tag }))}
           />
         ))}
       </Grid>

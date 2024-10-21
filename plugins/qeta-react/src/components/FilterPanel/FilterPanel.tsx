@@ -53,6 +53,7 @@ export type Filters = {
   entity?: string;
   tags?: string[];
   dateRange?: string;
+  collectionId?: number;
 };
 
 export interface FilterPanelProps {

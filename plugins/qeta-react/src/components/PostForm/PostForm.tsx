@@ -279,7 +279,7 @@ export const PostForm = (props: PostFormProps) => {
           />
           <label htmlFor="headerImage">
             <Button variant="contained" color="primary" component="span">
-              Upload header image
+              {t('postForm.uploadHeaderImage')}
             </Button>
           </label>
         </>

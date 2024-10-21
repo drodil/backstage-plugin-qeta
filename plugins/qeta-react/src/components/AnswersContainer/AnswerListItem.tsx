@@ -75,7 +75,7 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
               )}
             </Typography>
             <Grid item xs={12}>
-              {answer.post && <TagsAndEntities post={answer.post} />}
+              {answer.post && <TagsAndEntities entity={answer.post} />}
               <Typography
                 variant="caption"
                 display="inline"
