@@ -32,6 +32,7 @@ export const AskQuestionButton = (props: {
     <RequirePermission permission={qetaCreatePostPermission} errorPage={<></>}>
       <LinkButton
         variant="contained"
+        size="small"
         to={entity || tags ? `${askRoute()}?${params.toString()}` : askRoute()}
         color="primary"
         className={`${styles.marginLeft} qetaAskQuestionBtn`}

@@ -15,6 +15,7 @@ export const CreateCollectionButton = () => {
   return (
     <RequirePermission permission={qetaCreatePostPermission} errorPage={<></>}>
       <LinkButton
+        size="small"
         variant="contained"
         to={createRoute()}
         color="primary"

@@ -12,6 +12,7 @@ export const BackToCollectionsButton = () => {
 
   return (
     <LinkButton
+      size="small"
       className={`${styles.marginLeft} qetaBackToQuestionsBtn`}
       to={collectionsRoute()}
       startIcon={<ChevronLeft />}

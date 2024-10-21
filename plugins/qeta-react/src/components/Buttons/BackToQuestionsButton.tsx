@@ -28,6 +28,7 @@ export const BackToQuestionsButton = (props: { entityPage?: boolean }) => {
 
   return (
     <LinkButton
+      size="small"
       className={`${styles.marginLeft} qetaBackToQuestionsBtn`}
       to={to}
       startIcon={<ChevronLeft />}

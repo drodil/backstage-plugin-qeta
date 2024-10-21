@@ -1,7 +1,10 @@
 import React from 'react';
 import { ContentHeader } from '@backstage/core-components';
-import { AskQuestionButton } from '@drodil/backstage-plugin-qeta-react';
-import { TopRankingUsers } from '@drodil/backstage-plugin-qeta-react';
+import {
+  AskQuestionButton,
+  TopRankingUsers,
+  WriteArticleButton,
+} from '@drodil/backstage-plugin-qeta-react';
 import { GlobalStatsContent } from './GlobalStatsContent';
 import { Grid } from '@material-ui/core';
 
@@ -10,6 +13,7 @@ export const StatisticsPage = () => {
     <>
       <ContentHeader title="Statistics">
         <AskQuestionButton />
+        <WriteArticleButton />
       </ContentHeader>
       <Grid container>
         <Grid item xs={12}>

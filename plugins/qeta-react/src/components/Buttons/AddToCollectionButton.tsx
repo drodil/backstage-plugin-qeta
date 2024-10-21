@@ -54,6 +54,7 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
     <div>
       <Button
         variant="contained"
+        size="small"
         onClick={handleClickOpen}
         className={`${styles.marginLeft} qetaAddToCollectionBtn`}
         startIcon={<PlayListAddIcon />}

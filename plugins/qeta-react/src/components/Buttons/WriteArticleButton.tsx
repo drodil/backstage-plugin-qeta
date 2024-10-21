@@ -31,6 +31,7 @@ export const WriteArticleButton = (props: {
   return (
     <RequirePermission permission={qetaCreatePostPermission} errorPage={<></>}>
       <LinkButton
+        size="small"
         variant="contained"
         to={
           entity || tags ? `${writeRoute()}?${params.toString()}` : writeRoute()
