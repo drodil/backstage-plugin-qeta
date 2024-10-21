@@ -996,6 +996,10 @@ export class DatabaseQetaStore implements QetaStore {
       query.where('q.created', '>', options.period);
     }
 
+    if (options?.type) {
+      query.where('q.type', '=', options.type);
+    }
+
     if (options?.limit) {
       query.limit(options.limit);
     }
@@ -1028,6 +1032,10 @@ export class DatabaseQetaStore implements QetaStore {
 
     if (options?.period) {
       query.where('q.created', '>', options.period);
+    }
+
+    if (options?.type) {
+      query.where('q.type', '=', options.type);
     }
 
     if (options?.limit) {

@@ -65,6 +65,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       const statsOptions: StatisticsOptions = {
         period: period && stringDateTime(period?.toString()),
         limit: Number(limit),
+        type: 'question',
       };
 
       const mostUpvotedQuestions: Statistic[] =
@@ -230,6 +231,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     const statsOptions: StatisticsOptions = {
       period: period && stringDateTime(period?.toString()),
       limit: Number(limit),
+      type: 'question',
     };
 
     const mostQuestions: Statistic[] = await database.getTotalPosts({

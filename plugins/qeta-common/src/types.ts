@@ -33,6 +33,7 @@ export interface StatisticsOptions {
   limit?: number;
   period?: string;
   loggedUser?: string;
+  type?: PostType;
 }
 
 export interface StatisticsRequestParameters {
