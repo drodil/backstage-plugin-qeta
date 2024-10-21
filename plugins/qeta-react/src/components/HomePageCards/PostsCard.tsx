@@ -1,17 +1,21 @@
 import { Card, CardHeader, Divider, Grid } from '@material-ui/core';
 import React from 'react';
 import { useQetaApi } from '../../utils/hooks';
-import { GetQuestionsOptions } from '@drodil/backstage-plugin-qeta-common';
-import { QuestionListItem } from '../QuestionsContainer';
+import {
+  GetPostsOptions,
+  PostType,
+} from '@drodil/backstage-plugin-qeta-common';
+import { PostListItem } from '../PostsContainer';
 
-export const QuestionsCard = (props: {
+export const PostsCard = (props: {
   type: string;
   title: string;
-  options?: GetQuestionsOptions;
+  options?: GetPostsOptions;
   icon?: React.ReactNode;
+  postType?: PostType;
 }) => {
   const { value: response } = useQetaApi(
-    api => api.getPosts({ limit: 3, ...props.options }),
+    api => api.getPosts({ limit: 3, type: props.postType, ...props.options }),
     [],
   );
 
@@ -27,7 +31,7 @@ export const QuestionsCard = (props: {
         {posts.map(question => {
           return (
             <Grid item xs={12} key={question.id}>
-              <QuestionListItem question={question} />
+              <PostListItem post={question} type={props.postType} />
               <Divider />
             </Grid>
           );

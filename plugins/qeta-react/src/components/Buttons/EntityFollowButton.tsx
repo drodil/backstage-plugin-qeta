@@ -17,7 +17,7 @@ export const EntityFollowButton = (props: { entityRef: string }) => {
     <Tooltip title={t('entityButton.tooltip')}>
       <Button
         size="small"
-        className={`${styles.marginRight} qetaFollowEntityBtn`}
+        className={`${styles.marginLeft} qetaFollowEntityBtn`}
         color={entities.isFollowingEntity(entityRef) ? 'secondary' : 'primary'}
         onClick={() => {
           if (entities.isFollowingEntity(entityRef)) {

@@ -15,7 +15,7 @@ export const TagFollowButton = (props: { tag: string }) => {
   return (
     <Tooltip title={t('tagButton.tooltip')}>
       <IconButton
-        className={`${styles.marginRight} qetaFollowTagBtn`}
+        className={`${styles.marginLeft} qetaFollowTagBtn`}
         color={tags.isFollowingTag(tag) ? 'secondary' : 'primary'}
         onClick={() => {
           if (tags.isFollowingTag(tag)) {

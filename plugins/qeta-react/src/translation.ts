@@ -2,6 +2,15 @@ import {
   createTranslationRef,
   createTranslationResource,
 } from '@backstage/core-plugin-api/alpha';
+import i18next from 'i18next';
+
+i18next.services?.formatter?.add('lowercase', (value, _lng, _options) => {
+  return value.toLowerCase();
+});
+
+i18next.services?.formatter?.add('capitalize', (value, _lng, _options) => {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+});
 
 /** @alpha */
 export const qetaTranslationRef = createTranslationRef({
@@ -15,6 +24,7 @@ export const qetaTranslationRef = createTranslationRef({
     },
     common: {
       score: '{{score}} score',
+      comments: 'Comments',
       anonymousAuthor: 'Anonymous',
       answers_zero: 'No answers',
       answers_one: '{{count}} answer',
@@ -25,9 +35,9 @@ export const qetaTranslationRef = createTranslationRef({
       viewsShort_zero: '0 views',
       viewsShort_one: '{{count}} view',
       viewsShort_other: '{{count}} views',
-      questions_zero: 'No questions',
-      questions_one: '{{count}} question',
-      questions_other: '{{count}} questions',
+      posts_zero: 'No {{itemType, lowercase}}s',
+      posts_one: '{{count}} {{itemType, lowercase}}',
+      posts_other: '{{count}} {{itemType, lowercase}}s',
     },
     answer: {
       questionTitle: 'Q: {{question}}',
@@ -48,21 +58,21 @@ export const qetaTranslationRef = createTranslationRef({
       tooltip:
         "By enabling this, other users won't be able to see you as an author",
       answerAnonymously: 'Answer anonymously',
-      askAnonymously: 'Ask anonymously',
+      postAnonymously: 'Post anonymously',
     },
-    askForm: {
-      errorPosting: 'Could not post question',
+    postForm: {
+      errorPosting: 'Could not post {{type}}',
       titleInput: {
         label: 'Title',
         helperText:
-          'Write good title for your question that people can understand',
+          'Write good title for your {{type}} that people can understand',
       },
       contentInput: {
-        placeholder: 'Your question',
+        placeholder: 'Your {{type}}',
       },
       submit: {
-        existingQuestion: 'Save',
-        newQuestion: 'Post',
+        existingPost: 'Save',
+        newPost: 'Post',
       },
     },
     answerForm: {
@@ -92,8 +102,18 @@ export const qetaTranslationRef = createTranslationRef({
         newQuestion: 'Ask a question',
       },
     },
+    writePage: {
+      title: {
+        existingArticle: 'Edit article',
+        entityArticle: 'Write an article about {{entity}}',
+        newArticle: 'New article',
+      },
+    },
     askQuestionButton: {
       title: 'Ask a question',
+    },
+    writeArticleButton: {
+      title: 'Write an article',
     },
     backToQuestionsButton: {
       title: 'Back',
@@ -110,7 +130,7 @@ export const qetaTranslationRef = createTranslationRef({
     },
     deleteModal: {
       title: {
-        question: 'Are you sure you want to delete this question?',
+        question: 'Are you sure you want to delete this post?',
         answer: 'Are you sure you want to delete this answer?',
       },
       errorDeleting: 'Failed to delete',
@@ -118,11 +138,12 @@ export const qetaTranslationRef = createTranslationRef({
       cancelButton: 'Cancel',
     },
     favoritePage: {
-      title: 'Your favorite questions',
+      title: 'Favorited posts',
     },
     leftMenu: {
       home: 'Home',
       questions: 'Questions',
+      articles: 'Articles',
       profile: 'Profile',
       tags: 'Tags',
       favoriteQuestions: 'Favorites',
@@ -146,9 +167,13 @@ export const qetaTranslationRef = createTranslationRef({
         title: 'Your latest questions',
         noQuestionsLabel: 'No questions',
       },
-      hot: {
+      hotQuestions: {
         title: 'Hot questions',
         noQuestionsLabel: 'No questions',
+      },
+      hotArticles: {
+        title: 'Hot articles',
+        noArticlesLabel: 'No articles',
       },
       unanswered: {
         title: 'Unanswered questions',
@@ -162,8 +187,16 @@ export const qetaTranslationRef = createTranslationRef({
     questionsPage: {
       title: 'All questions',
     },
+    articlesPage: {
+      title: 'All articles',
+    },
     userLink: {
       anonymous: 'Anonymous',
+    },
+    articlePage: {
+      errorLoading: 'Could not load article',
+      editButton: 'Edit this article',
+      deleteButton: 'Delete this article',
     },
     questionPage: {
       errorLoading: 'Could not load question',
@@ -184,17 +217,16 @@ export const qetaTranslationRef = createTranslationRef({
       },
     },
     authorBox: {
-      askedAtTime: 'asked',
       postedAtTime: 'Posted',
       updatedAtTime: 'Updated',
       updatedBy: 'by',
     },
     favorite: {
-      remove: 'Remove this question from favorites',
-      add: 'Mark this question as favorite',
+      remove: 'Remove this post from favorites',
+      add: 'Mark this post as favorite',
     },
     link: {
-      question: 'Copy link to this question to clipboard',
+      post: 'Copy link to this post to clipboard',
       answer: 'Copy link to this answer to clipboard',
       aria: 'Copy link to clipboard',
     },
@@ -208,9 +240,9 @@ export const qetaTranslationRef = createTranslationRef({
         own: 'You cannot vote your own answer',
       },
       question: {
-        good: 'This question is good',
-        bad: 'This question is not good',
-        own: 'You cannot vote your own question',
+        good: 'This post is good',
+        bad: 'This post is not good',
+        own: 'You cannot vote your own post',
       },
     },
     datePicker: {
@@ -262,23 +294,23 @@ export const qetaTranslationRef = createTranslationRef({
         },
       },
     },
-    questionList: {
-      errorLoading: 'Could not load questions',
-      questionsPerPage: 'Questions per page',
+    postsList: {
+      errorLoading: 'Could not load {{itemType, lowercase}}s',
+      postsPerPage: '{{itemType, capitalize}}s per page',
     },
-    questionsContainer: {
+    postsContainer: {
       title: {
-        questionsBy: 'Questions by',
-        questionsAbout: 'Questions about',
-        questionsTagged: `Questions tagged with {{tags}}`,
-        favorite: 'Your favorite questions',
+        by: `{{itemType, capitalize}}s by`,
+        about: '{{itemType, capitalize}}s about',
+        tagged: `{{itemType, capitalize}} tagged with {{tags}}`,
+        favorite: 'Your favorite {{itemType, lowercase}}s',
       },
       search: {
-        label: 'Search for questions',
+        label: 'Search for {{itemType, lowercase}}',
         placeholder: 'Search...',
       },
-      noQuestions: 'No questions found',
-      askOneButton: 'Go ahead and ask one!',
+      noItems: 'No {{itemType, lowercase}}s',
+      createButton: 'Go ahead and create one!',
     },
     questionsTable: {
       errorLoading: 'Could not load questions',
@@ -334,6 +366,7 @@ export const qetaTranslationRef = createTranslationRef({
       statistics: 'Statistics',
       questions: 'Questions',
       answers: 'Answers',
+      articles: 'Articles',
     },
     stats: {
       noStats: 'No statistics available. Check back later!',
@@ -348,20 +381,18 @@ export const qetaTranslationRef = createTranslationRef({
       follow: 'Follow',
       unfollow: 'Unfollow',
       tooltip:
-        'By following a tag, you will get notified when ever a new question with that tag is posted',
+        'By following a tag, you will get notified when ever a new post with that tag is posted',
     },
     entityButton: {
       follow: 'Follow',
       unfollow: 'Unfollow',
       tooltip:
-        'By following an entity, you will get notified when ever a new question for that entity is posted',
+        'By following an entity, you will get notified when ever a new post for that entity is posted',
     },
   },
 });
 
 export const qetaTranslations = createTranslationResource({
   ref: qetaTranslationRef,
-  translations: {
-    fi: () => import('./locale/fi'),
-  },
+  translations: {},
 });

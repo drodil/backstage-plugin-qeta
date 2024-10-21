@@ -9,7 +9,10 @@ import { UserPage } from '../UserPage/UserPage';
 import { FavoritePage } from '../FavoritePage/FavoritePage';
 import { StatisticsPage } from '../Statistics';
 import {
+  articleRouteRef,
+  articlesRouteRef,
   askRouteRef,
+  editArticleRouteRef,
   editQuestionRouteRef,
   favoriteQuestionsRouteRef,
   questionRouteRef,
@@ -19,11 +22,15 @@ import {
   tagsRouteRef,
   userRouteRef,
   useStyles,
+  writeRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { LeftMenu } from '../LeftMenu/LeftMenu';
 import { QuestionsPage } from '../QuestionsPage/QuestionsPage';
 import { HomePage } from '../HomePage/HomePage';
 import { LeftMenuButton } from '../LeftMenu/LeftMenuButton';
+import { ArticlesPage } from '../ArticlesPage/ArticlesPage';
+import { WritePage } from '../WritePage/WritePage';
+import { ArticlePage } from '../ArticlePage/ArticlePage';
 
 type Props = {
   title?: string;
@@ -84,14 +91,24 @@ export const QetaPage = (props?: Props) => {
                 />
                 <Route path={askRouteRef.path} element={<AskPage />} />
                 <Route
+                  path={articlesRouteRef.path}
+                  element={<ArticlesPage />}
+                />
+                <Route path={writeRouteRef.path} element={<WritePage />} />
+                <Route
                   path={favoriteQuestionsRouteRef.path}
                   element={<FavoritePage />}
                 />
                 <Route path={editQuestionRouteRef.path} element={<AskPage />} />
                 <Route
+                  path={editArticleRouteRef.path}
+                  element={<WritePage />}
+                />
+                <Route
                   path={questionRouteRef.path}
                   element={<QuestionPage />}
                 />
+                <Route path={articleRouteRef.path} element={<ArticlePage />} />
                 <Route path={tagsRouteRef.path} element={<TagPage />} />
                 <Route path={tagRouteRef.path} element={<TagPage />} />
                 <Route path={userRouteRef.path} element={<UserPage />} />

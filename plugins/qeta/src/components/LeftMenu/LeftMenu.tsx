@@ -10,6 +10,7 @@ import AccountBox from '@material-ui/icons/AccountBox';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 import StarIcon from '@material-ui/icons/Star';
 import {
+  articlesRouteRef,
   favoriteQuestionsRouteRef,
   qetaRouteRef,
   questionsRouteRef,
@@ -27,6 +28,7 @@ import HelpOutlined from '@material-ui/icons/HelpOutlined';
 import { useNavigate } from 'react-router-dom';
 import Home from '@material-ui/icons/Home';
 import { useLocation } from 'react-use';
+import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 
 export const LeftMenu = (props: {
   onKeyDown?: (event: React.KeyboardEvent) => void;
@@ -40,6 +42,7 @@ export const LeftMenu = (props: {
   const statisticsRoute = useRouteRef(statisticsRouteRef);
   const userRoute = useRouteRef(userRouteRef);
   const questionsRoute = useRouteRef(questionsRouteRef);
+  const articlesRoute = useRouteRef(articlesRouteRef);
   const styles = useStyles();
   const { t } = useTranslation();
   const location = useLocation();
@@ -88,7 +91,13 @@ export const LeftMenu = (props: {
           : { marginRight: '2rem', float: 'right', position: 'sticky' }
       }
     >
-      <Box display={props.inPopup ? {} : { md: 'none', lg: 'block' }}>
+      <Box
+        display={
+          props.inPopup
+            ? {}
+            : { xs: 'none', sm: 'none', md: 'none', lg: 'block' }
+        }
+      >
         <CustomMenuItem route={rootRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <Home fontSize="small" />
@@ -103,6 +112,12 @@ export const LeftMenu = (props: {
             <HelpOutlined fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.questions')}
+        </CustomMenuItem>
+        <CustomMenuItem route={articlesRoute()}>
+          <ListItemIcon className={styles.menuIcon}>
+            <CollectionsBookmarkIcon fontSize="small" />
+          </ListItemIcon>
+          {t('leftMenu.articles')}
         </CustomMenuItem>
         <CustomMenuItem route={favoritesRoute()}>
           <ListItemIcon className={styles.menuIcon}>

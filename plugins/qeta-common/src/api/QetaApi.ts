@@ -9,6 +9,7 @@ import {
   PostRequest,
   PostResponse,
   PostsResponse,
+  PostType,
   StatisticResponse,
   StatisticsRequestParameters,
   StatisticsResponse,
@@ -17,7 +18,8 @@ import {
   UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
-export type GetQuestionsOptions = {
+export type GetPostsOptions = {
+  type?: PostType;
   noCorrectAnswer?: string;
   offset?: number;
   includeEntities?: boolean;
@@ -57,14 +59,11 @@ export type RequestOptions = {
 
 export interface QetaApi {
   getPosts(
-    options: GetQuestionsOptions,
+    options: GetPostsOptions,
     requestOptions?: RequestOptions,
   ): Promise<PostsResponse>;
 
-  getPostsList(
-    type: string,
-    options?: GetQuestionsOptions,
-  ): Promise<PostsResponse>;
+  getPostsList(type: string, options?: GetPostsOptions): Promise<PostsResponse>;
 
   createPost(post: PostRequest): Promise<PostResponse>;
 

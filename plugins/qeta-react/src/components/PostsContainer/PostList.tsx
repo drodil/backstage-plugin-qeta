@@ -11,12 +11,12 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import React, { useEffect, useRef, useState } from 'react';
-import { QuestionListItem } from './QuestionListItem';
+import { PostListItem } from './PostListItem';
 import { Pagination } from '@material-ui/lab';
-import { PostsResponse } from '@drodil/backstage-plugin-qeta-common';
-import { NoQuestionsCard } from './NoQuestionsCard';
+import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
+import { NoPostsCard } from './NoPostsCard';
 
-export const QuestionList = (props: {
+export const PostList = (props: {
   loading: boolean;
   error: any;
   response?: PostsResponse;
@@ -24,10 +24,12 @@ export const QuestionList = (props: {
   onPageSizeChange: (size: number) => void;
   page: number;
   pageSize: number;
+  pageCount: number;
   entity?: string;
   tags?: string[];
   showNoQuestionsBtn?: boolean;
   entityPage?: boolean;
+  type?: PostType;
 }) => {
   const {
     loading,
@@ -40,6 +42,7 @@ export const QuestionList = (props: {
     showNoQuestionsBtn = true,
     entityPage,
     tags,
+    type,
   } = props;
   const styles = useStyles();
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -75,9 +78,14 @@ export const QuestionList = (props: {
     return <Progress />;
   }
 
+  const itemType = (type ?? 'post') as any;
+
   if (error || response === undefined) {
     return (
-      <WarningPanel severity="error" title={t('questionList.errorLoading')}>
+      <WarningPanel
+        severity="error"
+        title={t('postsList.errorLoading', { itemType })}
+      >
         {error?.message}
       </WarningPanel>
     );
@@ -85,11 +93,12 @@ export const QuestionList = (props: {
 
   if (initialLoad && (!response.posts || response.posts.length === 0)) {
     return (
-      <NoQuestionsCard
+      <NoPostsCard
         showNoQuestionsBtn={showNoQuestionsBtn}
         entity={entity}
         entityPage={entityPage}
         tags={tags}
+        type={type}
       />
     );
   }
@@ -101,13 +110,13 @@ export const QuestionList = (props: {
 
   return (
     <div ref={listRef}>
-      <Box sx={{ mt: 2 }} className="qetaQuestionList">
+      <Box sx={{ mt: 2 }} className="qetaPostList">
         <Card>
           <Grid container spacing={2} style={{ paddingTop: '1rem' }}>
             {response.posts.map(post => {
               return (
                 <Grid item xs={12} key={post.id}>
-                  <QuestionListItem question={post} entity={entity} />
+                  <PostListItem post={post} entity={entity} type={type} />
                   <Divider />
                 </Grid>
               );
@@ -117,16 +126,16 @@ export const QuestionList = (props: {
         <Grid
           container
           spacing={0}
-          className={`qetaQuestionListPaginationGrid ${styles.questionListPagination}`}
+          className={`qetaPostListPaginationGrid ${styles.questionListPagination}`}
           alignItems="center"
           justifyContent="space-between"
         >
-          <Tooltip title={t('questionList.questionsPerPage')} arrow>
+          <Tooltip title={t('postsList.postsPerPage', { itemType })} arrow>
             <FormControl variant="filled">
               <Select
                 value={props.pageSize}
                 onChange={handlePageSizeChange}
-                className={`qetaQuestionListPaginationSizeSelect ${styles.questionsPerPage}`}
+                className={`qetaPostListPaginationSizeSelect ${styles.questionsPerPage}`}
                 inputProps={{ className: styles.questionsPerPageInput }}
               >
                 <MenuItem value={5}>5</MenuItem>
@@ -143,7 +152,7 @@ export const QuestionList = (props: {
             count={pageCount}
             size="large"
             variant="outlined"
-            className="qetaQuestionListPagination"
+            className="qetaPostListPagination"
             showFirstButton
             showLastButton
           />

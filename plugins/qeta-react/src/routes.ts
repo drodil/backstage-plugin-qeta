@@ -34,6 +34,24 @@ export const questionRouteRef = createSubRouteRef({
   path: '/questions/:id',
 });
 
+export const writeRouteRef = createSubRouteRef({
+  id: 'qeta.write',
+  parent: qetaRouteRef,
+  path: '/write',
+});
+
+export const articlesRouteRef = createSubRouteRef({
+  id: 'qeta.articles',
+  parent: qetaRouteRef,
+  path: '/articles',
+});
+
+export const articleRouteRef = createSubRouteRef({
+  id: 'qeta.article',
+  parent: qetaRouteRef,
+  path: '/article/:id',
+});
+
 export const userRouteRef = createSubRouteRef({
   id: 'qeta.user',
   parent: qetaRouteRef,
@@ -44,6 +62,12 @@ export const editQuestionRouteRef = createSubRouteRef({
   id: 'qeta.editQuestion',
   parent: qetaRouteRef,
   path: '/questions/:id/edit',
+});
+
+export const editArticleRouteRef = createSubRouteRef({
+  id: 'qeta.editArticle',
+  parent: qetaRouteRef,
+  path: '/articles/:id/edit',
 });
 
 export const tagsRouteRef = createSubRouteRef({

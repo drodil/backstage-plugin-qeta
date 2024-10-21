@@ -1,6 +1,6 @@
 import { Content, Page } from '@backstage/core-components';
 import { Container } from '@material-ui/core';
-import { QuestionsContainer } from '@drodil/backstage-plugin-qeta-react';
+import { PostsContainer } from '@drodil/backstage-plugin-qeta-react';
 import React from 'react';
 
 export const TagPage = () => {
@@ -8,7 +8,7 @@ export const TagPage = () => {
     <Page themeId="home">
       <Content>
         <Container>
-          <QuestionsContainer tags={['tag1', 'tag2']} showTitle showAskButton />
+          <PostsContainer tags={['tag1', 'tag2']} showTitle showAskButton />
         </Container>
       </Content>
     </Page>

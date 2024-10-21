@@ -5,14 +5,16 @@ import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef } from '../../routes';
 import { useEntityQueryParameter, useTranslation } from '../../utils/hooks';
+import { PostType } from '@drodil/backstage-plugin-qeta-common';
 
-export const NoQuestionsCard = (props: {
+export const NoPostsCard = (props: {
   showNoQuestionsBtn?: boolean;
   entity?: string;
   entityPage?: boolean;
   tags?: string[];
+  type?: PostType;
 }) => {
-  const { showNoQuestionsBtn, entity, entityPage, tags } = props;
+  const { showNoQuestionsBtn, entity, entityPage, tags, type } = props;
   const askRoute = useRouteRef(askRouteRef);
   const { t } = useTranslation();
   const entityRef = useEntityQueryParameter(entity);
@@ -39,7 +41,9 @@ export const NoQuestionsCard = (props: {
         >
           <Grid item>
             <Typography variant="h6">
-              {t('questionsContainer.noQuestions')}
+              {t('postsContainer.noItems', {
+                itemType: type ?? ('post' as any),
+              })}
             </Typography>
           </Grid>
           {showNoQuestionsBtn && (
@@ -54,7 +58,7 @@ export const NoQuestionsCard = (props: {
                 color="primary"
                 variant="outlined"
               >
-                {t('questionsContainer.askOneButton')}
+                {t('postsContainer.createButton')}
               </LinkButton>
             </Grid>
           )}

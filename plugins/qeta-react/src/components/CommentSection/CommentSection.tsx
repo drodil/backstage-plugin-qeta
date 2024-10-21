@@ -17,10 +17,11 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 export const CommentSection = (props: {
   onCommentPost: (question: PostResponse, answer?: AnswerResponse) => void;
   onCommentDelete: (question: PostResponse, answer?: AnswerResponse) => void;
-  question: PostResponse;
+  post: PostResponse;
   answer?: AnswerResponse;
+  className?: string;
 }) => {
-  const { answer, question, onCommentPost, onCommentDelete } = props;
+  const { answer, post, onCommentPost, onCommentDelete } = props;
   const analytics = useAnalytics();
   const qetaApi = useApi(qetaApiRef);
   const [posting, setPosting] = React.useState(false);
@@ -37,20 +38,20 @@ export const CommentSection = (props: {
   const postComment = (data: { content: string }) => {
     setPosting(true);
     if (answer) {
-      qetaApi.commentAnswer(question.id, answer.id, data.content).then(a => {
+      qetaApi.commentAnswer(post.id, answer.id, data.content).then(a => {
         setFormVisible(false);
         analytics.captureEvent('comment', 'answer');
         reset();
         setPosting(false);
         setEdited(false);
-        onCommentPost(question, a);
+        onCommentPost(post, a);
       });
       return;
     }
 
-    qetaApi.commentPost(question.id, data.content).then(q => {
+    qetaApi.commentPost(post.id, data.content).then(q => {
       setFormVisible(false);
-      analytics.captureEvent('comment', 'question');
+      analytics.captureEvent('comment', post.type);
       reset();
       setPosting(false);
       setEdited(false);
@@ -63,9 +64,9 @@ export const CommentSection = (props: {
   }, [edited]);
 
   return (
-    <Box marginLeft={9} className="qetaCommentSection">
+    <Box marginLeft={9} className={`${props.className} qetaCommentSection`}>
       <CommentList
-        question={question}
+        question={post}
         answer={answer}
         onCommentDelete={onCommentDelete}
       />

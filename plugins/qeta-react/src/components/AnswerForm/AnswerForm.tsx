@@ -12,7 +12,7 @@ import { useStyles, useTranslation } from '../../utils';
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { AskAnonymouslyCheckbox } from '../AskAnonymouslyCheckbox/AskAnonymouslyCheckbox';
+import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 
@@ -147,7 +147,7 @@ export const AnswerForm = (props: {
           name="answer"
         />
         {allowAnonymouns && !id && (
-          <AskAnonymouslyCheckbox
+          <PostAnonymouslyCheckbox
             control={control}
             label={t('anonymousCheckbox.answerAnonymously')}
           />

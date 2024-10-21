@@ -1,5 +1,35 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { Filters } from '../components/QuestionsContainer/FilterPanel';
+import { Filters } from '../components/FilterPanel/FilterPanel';
+import FileType from 'file-type';
+import { ErrorApi } from '@backstage/core-plugin-api';
+import { QetaApi } from '@drodil/backstage-plugin-qeta-common';
+
+export const imageUpload = (opts: {
+  qetaApi: QetaApi;
+  errorApi: ErrorApi;
+  onImageUpload?: (id: number) => void;
+}) => {
+  const { qetaApi, errorApi, onImageUpload } = opts;
+  // eslint-disable-next-line func-names
+  return async function* (data: ArrayBuffer) {
+    const fileType = await FileType.fromBuffer(data);
+
+    const mimeType = fileType ? fileType.mime : 'text/plain';
+    const attachment = await qetaApi.postAttachment(
+      new Blob([data], { type: mimeType }),
+    );
+    if ('errors' in attachment) {
+      errorApi.post({
+        name: 'Upload failed',
+        message: attachment.errors?.map(e => e.message).join(', ') ?? '',
+      });
+      return false;
+    }
+    onImageUpload?.(attachment.id);
+    yield attachment.locationUri;
+    return true;
+  };
+};
 
 export const formatEntityName = (username?: string) => {
   if (!username) {

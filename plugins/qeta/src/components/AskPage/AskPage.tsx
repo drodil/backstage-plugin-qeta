@@ -1,7 +1,7 @@
 import { ContentHeader, InfoCard } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import React from 'react';
-import { AskForm, useTranslation } from '@drodil/backstage-plugin-qeta-react';
+import { PostForm, useTranslation } from '@drodil/backstage-plugin-qeta-react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
@@ -32,11 +32,12 @@ export const AskPage = () => {
       <Grid container spacing={3} direction="column">
         <Grid item>
           <InfoCard>
-            <AskForm
+            <PostForm
               id={id}
               entity={entity}
               entityPage={entityPage}
               tags={tags}
+              type="question"
             />
           </InfoCard>
         </Grid>

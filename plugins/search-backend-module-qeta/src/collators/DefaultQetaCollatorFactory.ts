@@ -128,7 +128,10 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
           yield {
             title: `Comment for ${post.title}`,
             text: comment.content,
-            location: `/qeta/questions/${post.id}`,
+            location:
+              post.type === 'question'
+                ? `/qeta/questions/${post.id}`
+                : `/qeta/articles/${post.id}`,
             docType: 'qeta',
             author: comment.author,
             score: post.score,

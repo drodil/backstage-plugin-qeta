@@ -4,8 +4,8 @@ import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
   FollowedTagsList,
-  QuestionHighlightList,
-  QuestionsContainer,
+  PostHighlightList,
+  PostsContainer,
   TagFollowButton,
   TagsContainer,
   useTranslation,
@@ -29,28 +29,31 @@ export const TagPage = () => {
           {tag && <TagFollowButton tag={tag} />}
           <AskQuestionButton tags={tag ? [tag] : undefined} />
         </ContentHeader>
-        {tag ? <QuestionsContainer tags={[tag ?? '']} /> : <TagsContainer />}
+        {tag ? <PostsContainer tags={[tag ?? '']} /> : <TagsContainer />}
       </Grid>
       <Grid item lg={3} xl={2}>
         <FollowedTagsList />
-        <QuestionHighlightList
+        <PostHighlightList
           type="hot"
-          title={t('highlights.hot.title')}
-          noQuestionsLabel={t('highlights.hot.noQuestionsLabel')}
+          title={t('highlights.hotQuestions.title')}
+          noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
           icon={<Whatshot fontSize="small" />}
           options={{ tags: [tag ?? ''] }}
+          postType="question"
         />
-        <QuestionHighlightList
+        <PostHighlightList
           type="unanswered"
           title={t('highlights.unanswered.title')}
           noQuestionsLabel={t('highlights.unanswered.noQuestionsLabel')}
           options={{ tags: [tag ?? ''] }}
+          postType="question"
         />
-        <QuestionHighlightList
+        <PostHighlightList
           type="incorrect"
           title={t('highlights.incorrect.title')}
           noQuestionsLabel={t('highlights.incorrect.noQuestionsLabel')}
           options={{ tags: [tag ?? ''] }}
+          postType="question"
         />
       </Grid>
     </Grid>

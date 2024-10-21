@@ -1,2 +1,2 @@
-export { QuestionsCard } from './QuestionsCard';
+export { PostsCard } from './PostsCard';
 export { ImpactCard } from './ImpactCard';

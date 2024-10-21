@@ -1,7 +1,6 @@
 import {
   AnswerResponse,
   PostResponse,
-  QetaSignal,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   Box,
@@ -15,11 +14,8 @@ import {
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
-import React, { useEffect, useState } from 'react';
-import { useAnalytics, useApi } from '@backstage/core-plugin-api';
-import { qetaApiRef } from '../../api';
-import { useSignal } from '@backstage/plugin-signals-react';
-import { useTranslation } from '../../utils/hooks';
+import React from 'react';
+import { useVoting } from '../../utils/hooks';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,117 +34,21 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const VoteButtons = (props: {
   entity: PostResponse | AnswerResponse;
-  question?: PostResponse;
+  post?: PostResponse;
 }) => {
-  const [entity, setEntity] = React.useState<PostResponse | AnswerResponse>(
-    props.entity,
-  );
-  const [ownVote, setOwnVote] = React.useState(props.entity.ownVote ?? 0);
-  const [correctAnswer, setCorrectAnswer] = useState(
-    'postId' in props.entity ? props.entity.correct : false,
-  );
-  const [score, setScore] = useState(entity.score);
-  const analytics = useAnalytics();
-  const qetaApi = useApi(qetaApiRef);
-  const { t } = useTranslation();
-
-  const isQuestion = 'title' in entity;
+  const {
+    voteUpTooltip,
+    ownVote,
+    voteUp,
+    score,
+    voteDownTooltip,
+    voteDown,
+    correctAnswer,
+    correctTooltip,
+    toggleCorrectAnswer,
+  } = useVoting(props.entity);
   const own = props.entity.own ?? false;
   const classes = useStyles();
-
-  const { lastSignal } = useSignal<QetaSignal>(
-    isQuestion ? `qeta:question_${entity.id}` : `qeta:answer_${entity.id}`,
-  );
-
-  useEffect(() => {
-    if (entity) {
-      setScore(entity.score);
-    }
-  }, [entity]);
-
-  useEffect(() => {
-    if (
-      lastSignal?.type === 'post_stats' ||
-      lastSignal?.type === 'answer_stats'
-    ) {
-      setCorrectAnswer(lastSignal.correctAnswer);
-      setScore(lastSignal.score);
-    }
-  }, [lastSignal]);
-
-  const voteUp = () => {
-    if (isQuestion) {
-      qetaApi.votePostUp(entity.id).then(response => {
-        setOwnVote(1);
-        analytics.captureEvent('vote', 'question', { value: 1 });
-        setEntity(response);
-      });
-    } else if ('questionId' in entity) {
-      qetaApi.voteAnswerUp(entity.postId, entity.id).then(response => {
-        setOwnVote(1);
-        analytics.captureEvent('vote', 'answer', { value: 1 });
-        setEntity(response);
-      });
-    }
-  };
-
-  const voteDown = () => {
-    if (isQuestion) {
-      qetaApi.votePostDown(entity.id).then(response => {
-        setOwnVote(-1);
-        analytics.captureEvent('vote', 'question', { value: -1 });
-        setEntity(response);
-      });
-    } else if ('questionId' in entity) {
-      qetaApi.voteAnswerDown(entity.postId, entity.id).then(response => {
-        setOwnVote(-1);
-        analytics.captureEvent('vote', 'answer', { value: -1 });
-        setEntity(response);
-      });
-    }
-  };
-
-  let correctTooltip: string = correctAnswer
-    ? t('voteButtons.answer.markIncorrect')
-    : t('voteButtons.answer.markCorrect');
-  if (!props.question?.own) {
-    correctTooltip = correctAnswer ? t('voteButtons.answer.marked') : '';
-  }
-
-  let voteUpTooltip: string = isQuestion
-    ? t('voteButtons.question.good')
-    : t('voteButtons.answer.good');
-  if (own) {
-    voteUpTooltip = isQuestion
-      ? t('voteButtons.question.own')
-      : t('voteButtons.answer.own');
-  }
-
-  let voteDownTooltip: string = isQuestion
-    ? t('voteButtons.question.bad')
-    : t('voteButtons.answer.bad');
-  if (own) {
-    voteDownTooltip = voteUpTooltip;
-  }
-
-  const toggleCorrectAnswer = () => {
-    if (!('postId' in entity)) {
-      return;
-    }
-    if (correctAnswer) {
-      qetaApi.markAnswerIncorrect(entity.postId, entity.id).then(response => {
-        if (response) {
-          setCorrectAnswer(false);
-        }
-      });
-    } else {
-      qetaApi.markAnswerCorrect(entity.postId, entity.id).then(response => {
-        if (response) {
-          setCorrectAnswer(true);
-        }
-      });
-    }
-  };
 
   return (
     <React.Fragment>
@@ -182,7 +82,7 @@ export const VoteButtons = (props: {
         </span>
       </Tooltip>
       {'correct' in props.entity &&
-        (props.question?.own || props.question?.canEdit || correctAnswer) && (
+        (props.post?.own || props.post?.canEdit || correctAnswer) && (
           <Box>
             <Tooltip title={correctTooltip}>
               <span>
@@ -190,7 +90,7 @@ export const VoteButtons = (props: {
                   aria-label="mark correct"
                   size="small"
                   onClick={
-                    props.question?.own || props.question?.canEdit
+                    props.post?.own || props.post?.canEdit
                       ? toggleCorrectAnswer
                       : undefined
                   }

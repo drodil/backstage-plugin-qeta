@@ -14,13 +14,13 @@ export const FollowedEntitiesList = () => {
 
   return (
     <Box
-      className={`qetaQuestionHighlightList ${classes.questionHighlightListContainer}`}
+      className={`qetaPostHighlightList ${classes.postHighlightListContainer}`}
       display={{ md: 'none', lg: 'block' }}
     >
       <List
         component="nav"
         aria-labelledby="nested-list-subheader"
-        className={`qetaQuestionHighlightListList ${classes.questionHighlightList}`}
+        className={`qetaPostHighlightListList ${classes.postHighlightList}`}
         subheader={
           <ListSubheader
             disableSticky

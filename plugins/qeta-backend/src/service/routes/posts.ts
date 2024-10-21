@@ -73,10 +73,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       const posts = await database.getPosts(username, request.query, filter);
       response.json({ posts: posts.posts, total: posts.total });
     } else {
-      const posts = await database.getPosts(username, {
-        ...request.query,
-        type: 'question',
-      });
+      const posts = await database.getPosts(username, request.query);
       response.json({ posts: posts.posts, total: posts.total });
     }
   });

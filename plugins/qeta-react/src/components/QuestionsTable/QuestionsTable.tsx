@@ -49,6 +49,7 @@ export const QuestionsTable = (props: {
   } = useQetaApi(
     api =>
       api.getPosts({
+        type: 'question',
         limit: questionsPerPage,
         offset: (page - 1) * questionsPerPage,
         includeEntities: true,

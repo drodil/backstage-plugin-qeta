@@ -21,7 +21,7 @@ export const LinkButton = (props: {
   };
 
   return (
-    <Tooltip title={isQuestion ? t('link.question') : t('link.answer')}>
+    <Tooltip title={isQuestion ? t('link.post') : t('link.answer')}>
       <IconButton
         aria-label={t('link.aria')}
         size="small"

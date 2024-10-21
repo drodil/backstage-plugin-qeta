@@ -4,8 +4,8 @@ import {
   AskQuestionButton,
   FollowedEntitiesList,
   FollowedTagsList,
-  QuestionHighlightList,
-  QuestionsContainer,
+  PostHighlightList,
+  PostsContainer,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
 import { ContentHeader } from '@backstage/core-components';
@@ -32,27 +32,30 @@ export const QuestionsPage = () => {
         <ContentHeader title={t('questionsPage.title')}>
           <AskQuestionButton entity={entityRef} tags={tags} />
         </ContentHeader>
-        <QuestionsContainer entity={entityRef} tags={tags} />
+        <PostsContainer entity={entityRef} tags={tags} type="question" />
       </Grid>
       <Grid item lg={3} xl={2}>
-        <QuestionHighlightList
+        <PostHighlightList
           type="hot"
-          title={t('highlights.hot.title')}
-          noQuestionsLabel={t('highlights.hot.noQuestionsLabel')}
+          title={t('highlights.hotQuestions.title')}
+          noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
           icon={<Whatshot fontSize="small" />}
           options={{ tags: tags, entity: entityRef }}
+          postType="question"
         />
-        <QuestionHighlightList
+        <PostHighlightList
           type="unanswered"
           title={t('highlights.unanswered.title')}
           noQuestionsLabel={t('highlights.unanswered.noQuestionsLabel')}
           options={{ tags: tags, entity: entityRef }}
+          postType="question"
         />
-        <QuestionHighlightList
+        <PostHighlightList
           type="incorrect"
           title={t('highlights.incorrect.title')}
           noQuestionsLabel={t('highlights.incorrect.noQuestionsLabel')}
           options={{ tags: tags, entity: entityRef }}
+          postType="question"
         />
         <FollowedTagsList />
         <FollowedEntitiesList />

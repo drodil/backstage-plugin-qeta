@@ -4,7 +4,7 @@ import {
   FollowedEntitiesList,
   FollowedTagsList,
   ImpactCard,
-  QuestionsCard,
+  PostsCard,
   useIdentityApi,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
@@ -28,18 +28,20 @@ export const HomePage = () => {
         <Grid container>
           {user && !loadingUser && !userError && (
             <Grid item xs={12}>
-              <QuestionsCard
+              <PostsCard
                 type="own"
                 title={t('highlights.own.title')}
                 options={{ author: user.userEntityRef }}
+                postType="question"
               />
             </Grid>
           )}
           <Grid item xs={12}>
-            <QuestionsCard
+            <PostsCard
               type="own"
               title={t('highlights.unanswered.title')}
-              options={{ noAnswers: 'true', random: 'true' }}
+              options={{ noAnswers: 'true', random: 'true', type: 'question' }}
+              postType="question"
             />
           </Grid>
         </Grid>

@@ -2,9 +2,10 @@ import React from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import {
   AskQuestionButton,
-  QuestionHighlightList,
-  QuestionsContainer,
+  PostHighlightList,
+  PostsContainer,
   useTranslation,
+  WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Grid } from '@material-ui/core';
 import Whatshot from '@material-ui/icons/Whatshot';
@@ -16,28 +17,26 @@ export const FavoritePage = () => {
       <Grid item md={12} lg={9} xl={10}>
         <ContentHeader title={t('favoritePage.title')}>
           <AskQuestionButton />
+          <WriteArticleButton />
         </ContentHeader>
-        <QuestionsContainer favorite />
+        <PostsContainer favorite />
       </Grid>
       <Grid item lg={3} xl={2}>
-        <QuestionHighlightList
+        <PostHighlightList
           type="hot"
-          title={t('highlights.hot.title')}
-          noQuestionsLabel={t('highlights.hot.noQuestionsLabel')}
+          title={t('highlights.hotQuestions.title')}
+          noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
           icon={<Whatshot fontSize="small" />}
           options={{ favorite: true }}
+          postType="question"
         />
-        <QuestionHighlightList
-          type="unanswered"
-          title={t('highlights.unanswered.title')}
-          noQuestionsLabel={t('highlights.unanswered.noQuestionsLabel')}
+        <PostHighlightList
+          type="hot"
+          title={t('highlights.hotArticles.title')}
+          noQuestionsLabel={t('highlights.hotArticles.noArticlesLabel')}
+          icon={<Whatshot fontSize="small" />}
           options={{ favorite: true }}
-        />
-        <QuestionHighlightList
-          type="incorrect"
-          title={t('highlights.incorrect.title')}
-          noQuestionsLabel={t('highlights.incorrect.noQuestionsLabel')}
-          options={{ favorite: true }}
+          postType="article"
         />
       </Grid>
     </Grid>

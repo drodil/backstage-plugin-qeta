@@ -8,16 +8,16 @@ import { Chip } from '@material-ui/core';
 import { tagRouteRef } from '../../routes';
 import { EntityChip } from '../EntityChip/EntityChip';
 
-export const TagsAndEntities = (props: { question: PostResponse }) => {
-  const { question } = props;
+export const TagsAndEntities = (props: { post: PostResponse }) => {
+  const { post } = props;
   const catalogApi = useApi(catalogApiRef);
   const tagRoute = useRouteRef(tagRouteRef);
   const [entities, setEntities] = React.useState<Entity[]>([]);
   useEffect(() => {
-    if (question.entities && question.entities.length > 0) {
+    if (post.entities && post.entities.length > 0) {
       catalogApi
         .getEntitiesByRefs({
-          entityRefs: question.entities,
+          entityRefs: post.entities,
           fields: [
             'kind',
             'metadata.name',
@@ -30,12 +30,12 @@ export const TagsAndEntities = (props: { question: PostResponse }) => {
           data ? setEntities(compact(data.items)) : setEntities([]),
         );
     }
-  }, [catalogApi, question]);
+  }, [catalogApi, post]);
 
   return (
     <>
-      {question.tags &&
-        question.tags.map(tag => (
+      {post.tags &&
+        post.tags.map(tag => (
           <Chip
             key={tag}
             label={tag}

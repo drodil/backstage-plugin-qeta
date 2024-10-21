@@ -3,7 +3,7 @@ import { Box, Checkbox, FormControlLabel, Tooltip } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from '../../utils';
 
-export const AskAnonymouslyCheckbox = (props: {
+export const PostAnonymouslyCheckbox = (props: {
   control: Control<any>;
   label: string;
 }) => {

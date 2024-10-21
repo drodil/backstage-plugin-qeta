@@ -10,39 +10,49 @@ import React from 'react';
 import { useQetaApi, useStyles, useTranslation } from '../../utils/hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { questionRouteRef } from '../../routes';
-import { GetQuestionsOptions } from '@drodil/backstage-plugin-qeta-common';
+import { articleRouteRef, questionRouteRef } from '../../routes';
+import {
+  GetPostsOptions,
+  PostType,
+} from '@drodil/backstage-plugin-qeta-common';
 
-export const QuestionHighlightList = (props: {
+export const PostHighlightList = (props: {
   type: string;
   title: string;
   noQuestionsLabel: string;
   icon?: React.ReactNode;
-  options?: GetQuestionsOptions;
+  options?: GetPostsOptions;
+  postType?: PostType;
 }) => {
   const {
     value: response,
     loading,
     error,
   } = useQetaApi(
-    api => api.getPostsList(props.type, { limit: 5, ...props.options }),
+    api =>
+      api.getPostsList(props.type, {
+        limit: 5,
+        type: props.postType,
+        ...props.options,
+      }),
     [],
   );
   const classes = useStyles();
   const { t } = useTranslation();
   const questionRoute = useRouteRef(questionRouteRef);
+  const articleRoute = useRouteRef(articleRouteRef);
 
   const posts = response?.posts ?? [];
 
   return (
     <Box
-      className={`qetaQuestionHighlightList ${classes.questionHighlightListContainer}`}
+      className={`qetaPostHighlightList ${classes.postHighlightListContainer}`}
       display={{ md: 'none', lg: 'block' }}
     >
       <List
         component="nav"
         aria-labelledby="nested-list-subheader"
-        className={`qetaQuestionHighlightListList ${classes.questionHighlightList}`}
+        className={`qetaPostHighlightListList ${classes.postHighlightList}`}
         subheader={
           <ListSubheader
             disableSticky
@@ -56,35 +66,38 @@ export const QuestionHighlightList = (props: {
         }
       >
         {loading && (
-          <ListItem className="qetaQuestionHighlightListListItem" dense>
+          <ListItem className="qetaPostHighlightListListItem" dense>
             <Skeleton variant="rect" />
           </ListItem>
         )}
         {error && (
-          <ListItem className="qetaQuestionHighlightListListItem" dense>
+          <ListItem className="qetaPostHighlightListListItem" dense>
             <ListItemText>{t('highlights.loadError')}</ListItemText>
           </ListItem>
         )}
         {!error && posts.length === 0 && (
-          <ListItem className="qetaQuestionHighlightListListItem" dense>
+          <ListItem className="qetaPostHighlightListListItem" dense>
             <ListItemText>{props.noQuestionsLabel}</ListItemText>
           </ListItem>
         )}
         {!error &&
-          posts.map(q => (
-            <React.Fragment key={q.id}>
-              <Divider />
-              <ListItem
-                className="qetaQuestionHighlightListListItem"
-                button
-                dense
-                component="a"
-                href={questionRoute({ id: q.id.toString(10) })}
-              >
-                <ListItemText>{q.title}</ListItemText>
-              </ListItem>
-            </React.Fragment>
-          ))}
+          posts.map(q => {
+            const route = q.type === 'question' ? questionRoute : articleRoute;
+            return (
+              <React.Fragment key={q.id}>
+                <Divider />
+                <ListItem
+                  className="qetaPostHighlightListListItem"
+                  button
+                  dense
+                  component="a"
+                  href={route({ id: q.id.toString(10) })}
+                >
+                  <ListItemText>{q.title}</ListItemText>
+                </ListItem>
+              </React.Fragment>
+            );
+          })}
       </List>
     </Box>
   );

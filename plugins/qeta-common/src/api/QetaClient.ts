@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import {
   GetAnswersOptions,
-  GetQuestionsOptions,
+  GetPostsOptions,
   QetaApi,
   RequestOptions,
 } from './QetaApi';
@@ -60,7 +60,7 @@ export class QetaClient implements QetaApi {
   }
 
   async getPosts(
-    options: GetQuestionsOptions,
+    options: GetPostsOptions,
     requestOptions?: RequestOptions,
   ): Promise<PostsResponse> {
     const query = this.getQueryParameters(options).toString();
@@ -90,7 +90,7 @@ export class QetaClient implements QetaApi {
 
   async getPostsList(
     type: string,
-    options?: GetQuestionsOptions,
+    options?: GetPostsOptions,
   ): Promise<PostsResponse> {
     const query = this.getQueryParameters(options).toString();
 

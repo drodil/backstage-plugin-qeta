@@ -62,7 +62,7 @@ export const AnswerCard = (props: {
           <Grid container spacing={0} justifyContent="flex-start">
             <Grid container item xs={1} justifyContent="center">
               <div className={styles.questionCardVote}>
-                <VoteButtons entity={answerEntity} question={question} />
+                <VoteButtons entity={answerEntity} post={question} />
                 <LinkButton entity={answerEntity} />
               </div>
             </Grid>
@@ -104,7 +104,7 @@ export const AnswerCard = (props: {
                                   size="small"
                                   color="secondary"
                                   onClick={handleDeleteModalOpen}
-                                  className={`${styles.marginRight} qetaAnswerCardDeleteBtn`}
+                                  className={`${styles.marginLeft} qetaAnswerCardDeleteBtn`}
                                   startIcon={<DeleteIcon />}
                                 >
                                   {t('deleteModal.deleteButton')}
@@ -142,7 +142,7 @@ export const AnswerCard = (props: {
         </CardContent>
       </Card>
       <CommentSection
-        question={question}
+        post={question}
         answer={answerEntity}
         onCommentPost={onCommentAction}
         onCommentDelete={onCommentAction}

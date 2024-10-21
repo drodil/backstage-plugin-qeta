@@ -1,4 +1,4 @@
-import { Filters } from '../components/QuestionsContainer/FilterPanel';
+import { Filters } from '../components/FilterPanel/FilterPanel';
 import {
   FiltersWithDateRange,
   formatDate,

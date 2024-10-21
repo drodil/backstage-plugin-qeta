@@ -161,6 +161,7 @@ export interface PostRequest {
   tags?: string[];
   entities?: string[];
   images?: number[];
+  headerImage?: string;
   type: PostType;
 }
 

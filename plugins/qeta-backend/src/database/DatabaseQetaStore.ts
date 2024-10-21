@@ -200,7 +200,9 @@ export class DatabaseQetaStore implements QetaStore {
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Posts> {
     const query = this.getPostsBaseQuery(user_ref);
-    query.where('type', options.type);
+    if (options.type) {
+      query.where('type', options.type);
+    }
 
     if (options.fromDate && options.toDate) {
       query.whereBetween('posts.created', [

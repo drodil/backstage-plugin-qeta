@@ -19,6 +19,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { getEntityTitle } from '../../utils/utils';
 import { DateRangeFilter } from './DateRangeFilter';
+import { PostType } from '@drodil/backstage-plugin-qeta-common';
 
 const radioSelect = (value: string, label: string) => {
   return (
@@ -60,6 +61,7 @@ export interface FilterPanelProps {
   showEntityFilter?: boolean;
   showTagFilter?: boolean;
   answerFilters?: boolean;
+  type?: PostType;
 }
 
 export const FilterPanel = (props: FilterPanelProps) => {
@@ -69,6 +71,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
     showEntityFilter = true,
     showTagFilter = true,
     answerFilters = false,
+    type,
   } = props;
   const styles = useStyles();
   const { value: refs } = useQetaApi(api => api.getEntities(), []);
@@ -160,7 +163,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
       <Grid container spacing={4}>
         <Grid item md={3} xs={4}>
           <FormGroup>
-            {!answerFilters && (
+            {!answerFilters && type !== 'article' && (
               <FormControlLabel
                 control={
                   <Checkbox
@@ -173,17 +176,19 @@ export const FilterPanel = (props: FilterPanelProps) => {
                 label={t('filterPanel.noAnswers.label')}
               />
             )}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  name="noCorrectAnswer"
-                  checked={filters.noCorrectAnswer === 'true'}
-                  onChange={handleChange}
-                />
-              }
-              label={t('filterPanel.noCorrectAnswers.label')}
-            />
+            {type !== 'article' && (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    size="small"
+                    name="noCorrectAnswer"
+                    checked={filters.noCorrectAnswer === 'true'}
+                    onChange={handleChange}
+                  />
+                }
+                label={t('filterPanel.noCorrectAnswers.label')}
+              />
+            )}
             <FormControlLabel
               control={
                 <Checkbox

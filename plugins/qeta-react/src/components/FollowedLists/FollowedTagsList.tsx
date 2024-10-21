@@ -23,13 +23,13 @@ export const FollowedTagsList = () => {
 
   return (
     <Box
-      className={`qetaQuestionHighlightList ${classes.questionHighlightListContainer}`}
+      className={`qetaQuestionHighlightList ${classes.postHighlightListContainer}`}
       display={{ md: 'none', lg: 'block' }}
     >
       <List
         component="nav"
         aria-labelledby="nested-list-subheader"
-        className={`qetaQuestionHighlightListList ${classes.questionHighlightList}`}
+        className={`qetaQuestionHighlightListList ${classes.postHighlightList}`}
         subheader={
           <ListSubheader
             disableSticky

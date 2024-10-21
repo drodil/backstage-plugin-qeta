@@ -4,6 +4,7 @@ import {
   configApiRef,
   IdentityApi,
   identityApiRef,
+  useAnalytics,
   useApi,
 } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core';
@@ -14,17 +15,347 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { trimEnd } from 'lodash';
 import { useSearchParams } from 'react-router-dom';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { UserEntity } from '@backstage/catalog-model';
 import {
   AnswerResponse,
+  filterTags,
   PostResponse,
+  PostType,
   QetaApi,
+  QetaSignal,
 } from '@drodil/backstage-plugin-qeta-common';
 import DataLoader from 'dataloader';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../translation';
 import { qetaApiRef } from '../api';
+import {
+  FilterKey,
+  filterKeys,
+  Filters,
+} from '../components/FilterPanel/FilterPanel';
+import useDebounce from 'react-use/lib/useDebounce';
+import { getFiltersWithDateRange } from './utils';
+import { useSignal } from '@backstage/plugin-signals-react';
+
+export const useTranslation = () => {
+  return useTranslationRef(qetaTranslationRef);
+};
+
+export type PaginatedPostsProps = {
+  type?: PostType;
+  tags?: string[];
+  author?: string;
+  entity?: string;
+  showFilters?: boolean;
+  showTitle?: boolean;
+  title?: string;
+  favorite?: boolean;
+  showAskButton?: boolean;
+  showWriteButton?: boolean;
+  showNoQuestionsBtn?: boolean;
+  initialPageSize?: number;
+};
+
+export function usePaginatedPosts(props: PaginatedPostsProps) {
+  const { type, tags, author, entity, favorite, initialPageSize } = props;
+  const analytics = useAnalytics();
+  const [page, setPage] = React.useState(1);
+  const [pageCount, setPageCount] = React.useState(1);
+  const [postsPerPage, setPostsPerPage] = React.useState(initialPageSize ?? 10);
+  const [showFilterPanel, setShowFilterPanel] = React.useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [filters, setFilters] = React.useState<Filters>({
+    order: 'desc',
+    orderBy: 'created',
+    noAnswers: 'false',
+    noCorrectAnswer: 'false',
+    noVotes: 'false',
+    searchQuery: '',
+    entity: entity ?? '',
+    tags: tags ?? [],
+    dateRange: '',
+  });
+
+  const onPageChange = (value: number) => {
+    setPage(value);
+    setSearchParams(prev => {
+      const newValue = prev;
+      newValue.set('page', String(value));
+      return newValue;
+    });
+  };
+
+  const loadNextPage = () => {
+    setPage(prev => prev + 1);
+  };
+
+  const onFilterChange = (key: FilterKey, value: string | string[]) => {
+    if (filters[key] === value) {
+      return;
+    }
+
+    setPage(1);
+    setFilters({ ...filters, ...{ [key]: value } });
+    setSearchParams(prev => {
+      const newValue = prev;
+      if (!value || value === 'false') {
+        newValue.delete(key);
+      } else if (Array.isArray(value)) {
+        if (value.length === 0) {
+          newValue.delete(key);
+        } else {
+          newValue.set(key, value.join(','));
+        }
+      } else if (value.length > 0) {
+        newValue.set(key, value);
+      } else {
+        newValue.delete(key);
+      }
+      return newValue;
+    });
+  };
+
+  const onSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onPageChange(1);
+    if (event.target.value) {
+      analytics.captureEvent('qeta_search', event.target.value);
+    }
+    setSearchQuery(event.target.value);
+  };
+
+  useDebounce(
+    () => {
+      if (filters.searchQuery !== searchQuery) {
+        setFilters({ ...filters, searchQuery: searchQuery });
+      }
+    },
+    400,
+    [searchQuery],
+  );
+
+  useEffect(() => {
+    let filtersApplied = false;
+    searchParams.forEach((value, key) => {
+      try {
+        if (key === 'page') {
+          const pv = Number.parseInt(value, 10);
+          if (pv > 0) {
+            setPage(pv);
+          } else {
+            setPage(1);
+          }
+        } else if (key === 'postsPerPage') {
+          const qpp = Number.parseInt(value, 10);
+          if (qpp > 0) setPostsPerPage(qpp);
+        } else if (filterKeys.includes(key as FilterKey)) {
+          filtersApplied = true;
+          if (key === 'tags') {
+            filters.tags = filterTags(value) ?? [];
+          } else {
+            (filters as any)[key] = value;
+          }
+        }
+      } catch (_e) {
+        // NOOP
+      }
+    });
+    setFilters(filters);
+    if (filtersApplied) {
+      setShowFilterPanel(true);
+    }
+  }, [searchParams, filters]);
+
+  const {
+    value: response,
+    loading,
+    error,
+  } = useQetaApi(
+    api => {
+      return api.getPosts({
+        type,
+        limit: postsPerPage,
+        offset: (page - 1) * postsPerPage,
+        includeEntities: true,
+        author,
+        favorite,
+        ...getFiltersWithDateRange(filters),
+      });
+    },
+    [type, page, filters, postsPerPage],
+  );
+
+  useEffect(() => {
+    if (response) {
+      setPageCount(Math.ceil(response.total / postsPerPage));
+    }
+  }, [response, postsPerPage]);
+
+  const onPageSizeChange = (value: number) => {
+    if (response) {
+      let newPage = page;
+      while (newPage * value > response.total) {
+        newPage -= 1;
+      }
+      onPageChange(Math.max(1, newPage));
+    }
+    setPostsPerPage(value);
+    setSearchParams(prev => {
+      const newValue = prev;
+      newValue.set('postsPerPage', String(value));
+      return newValue;
+    });
+  };
+
+  return {
+    page,
+    setPage,
+    postsPerPage,
+    setPostsPerPage,
+    showFilterPanel,
+    setShowFilterPanel,
+    searchParams,
+    setSearchParams,
+    searchQuery,
+    setSearchQuery,
+    filters,
+    setFilters,
+    onPageChange,
+    onPageSizeChange,
+    onFilterChange,
+    onSearchQueryChange,
+    response,
+    loading,
+    error,
+    loadNextPage,
+    pageCount,
+  };
+}
+
+export function useVoting(resp: PostResponse | AnswerResponse) {
+  const [entity, setEntity] = React.useState<PostResponse | AnswerResponse>(
+    resp,
+  );
+  const [ownVote, setOwnVote] = React.useState(entity.ownVote ?? 0);
+  const [correctAnswer, setCorrectAnswer] = useState(
+    'postId' in entity ? entity.correct : false,
+  );
+  const [score, setScore] = useState(entity.score);
+  const analytics = useAnalytics();
+  const qetaApi = useApi(qetaApiRef);
+  const { t } = useTranslation();
+
+  const isQuestion = 'title' in entity;
+  const own = entity.own ?? false;
+
+  const { lastSignal } = useSignal<QetaSignal>(
+    isQuestion ? `qeta:question_${entity.id}` : `qeta:answer_${entity.id}`,
+  );
+
+  useEffect(() => {
+    if (entity) {
+      setScore(entity.score);
+    }
+  }, [entity]);
+
+  useEffect(() => {
+    if (
+      lastSignal?.type === 'post_stats' ||
+      lastSignal?.type === 'answer_stats'
+    ) {
+      setCorrectAnswer(lastSignal.correctAnswer);
+      setScore(lastSignal.score);
+    }
+  }, [lastSignal]);
+
+  const voteUp = () => {
+    if (isQuestion) {
+      qetaApi.votePostUp(entity.id).then(response => {
+        setOwnVote(1);
+        analytics.captureEvent('vote', 'question', { value: 1 });
+        setEntity(response);
+      });
+    } else if ('questionId' in entity) {
+      qetaApi.voteAnswerUp(entity.postId, entity.id).then(response => {
+        setOwnVote(1);
+        analytics.captureEvent('vote', 'answer', { value: 1 });
+        setEntity(response);
+      });
+    }
+  };
+
+  const voteDown = () => {
+    if (isQuestion) {
+      qetaApi.votePostDown(entity.id).then(response => {
+        setOwnVote(-1);
+        analytics.captureEvent('vote', 'question', { value: -1 });
+        setEntity(response);
+      });
+    } else if ('questionId' in entity) {
+      qetaApi.voteAnswerDown(entity.postId, entity.id).then(response => {
+        setOwnVote(-1);
+        analytics.captureEvent('vote', 'answer', { value: -1 });
+        setEntity(response);
+      });
+    }
+  };
+
+  let correctTooltip: string = correctAnswer
+    ? t('voteButtons.answer.markIncorrect')
+    : t('voteButtons.answer.markCorrect');
+  if (!entity?.own) {
+    correctTooltip = correctAnswer ? t('voteButtons.answer.marked') : '';
+  }
+
+  let voteUpTooltip: string = isQuestion
+    ? t('voteButtons.question.good')
+    : t('voteButtons.answer.good');
+  if (own) {
+    voteUpTooltip = isQuestion
+      ? t('voteButtons.question.own')
+      : t('voteButtons.answer.own');
+  }
+
+  let voteDownTooltip: string = isQuestion
+    ? t('voteButtons.question.bad')
+    : t('voteButtons.answer.bad');
+  if (own) {
+    voteDownTooltip = voteUpTooltip;
+  }
+
+  const toggleCorrectAnswer = () => {
+    if (!('postId' in entity)) {
+      return;
+    }
+    if (correctAnswer) {
+      qetaApi.markAnswerIncorrect(entity.postId, entity.id).then(response => {
+        if (response) {
+          setCorrectAnswer(false);
+        }
+      });
+    } else {
+      qetaApi.markAnswerCorrect(entity.postId, entity.id).then(response => {
+        if (response) {
+          setCorrectAnswer(true);
+        }
+      });
+    }
+  };
+
+  return {
+    entity,
+    ownVote,
+    correctAnswer,
+    score,
+    voteUp,
+    voteDown,
+    toggleCorrectAnswer,
+    voteUpTooltip,
+    voteDownTooltip,
+    correctTooltip,
+  };
+}
 
 export function useQetaApi<T>(
   f: (api: QetaApi) => Promise<T>,
@@ -96,6 +427,11 @@ export const useStyles = makeStyles(theme => {
     },
     nonSelectedMenuItem: {
       backgroundColor: 'initial',
+    },
+    headerImage: {
+      width: '100%',
+      height: '250px',
+      objectFit: 'cover',
     },
     markdownEditor: {
       backgroundColor: 'initial',
@@ -228,7 +564,7 @@ export const useStyles = makeStyles(theme => {
     questionsPerPage: {
       marginRight: theme.spacing(3),
     },
-    questionHighlightListContainer: {
+    postHighlightListContainer: {
       width: '100%',
       backgroundColor: theme.palette.background.paper,
       border: `1px solid ${theme.palette.action.selected}`,
@@ -237,7 +573,7 @@ export const useStyles = makeStyles(theme => {
         marginTop: theme.spacing(2),
       },
     },
-    questionHighlightList: {
+    postHighlightList: {
       paddingBottom: '0px',
       '& p': {
         marginTop: '0',
@@ -254,6 +590,9 @@ export const useStyles = makeStyles(theme => {
     },
     marginRight: {
       marginRight: theme.spacing(1),
+    },
+    marginLeft: {
+      marginLeft: theme.spacing(1),
     },
     questionCardActions: {
       marginTop: theme.spacing(2),
@@ -500,8 +839,4 @@ export const useEntityFollow = () => {
     [entities],
   );
   return { entities, followEntity, unfollowEntity, isFollowingEntity, loading };
-};
-
-export const useTranslation = () => {
-  return useTranslationRef(qetaTranslationRef);
 };

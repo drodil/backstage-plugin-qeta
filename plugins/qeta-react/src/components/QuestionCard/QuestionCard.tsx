@@ -83,7 +83,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                 className={styles.questionCardMetadata}
               >
                 <Grid item xs={9} style={{ alignSelf: 'flex-end' }}>
-                  <TagsAndEntities question={questionEntity} />
+                  <TagsAndEntities post={questionEntity} />
                   {(question.canEdit || question.canDelete) && (
                     <Box className={styles.questionCardActions}>
                       {question.canDelete && (
@@ -93,7 +93,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                             size="small"
                             color="secondary"
                             onClick={handleDeleteModalOpen}
-                            className={`${styles.marginRight} qetaQuestionCardDeleteBtn`}
+                            className={`${styles.marginLeft} qetaQuestionCardDeleteBtn`}
                             startIcon={<DeleteIcon />}
                           >
                             {t('deleteModal.deleteButton')}
@@ -130,7 +130,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
         </CardContent>
       </Card>
       <CommentSection
-        question={questionEntity}
+        post={questionEntity}
         onCommentDelete={onCommentAction}
         onCommentPost={onCommentAction}
       />

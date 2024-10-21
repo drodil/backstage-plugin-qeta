@@ -20,7 +20,7 @@ import {
   filterKeys,
   FilterPanel,
   Filters,
-} from '../QuestionsContainer/FilterPanel';
+} from '../FilterPanel/FilterPanel';
 import { AnswerList } from './AnswerList';
 
 export interface AnswersContainerProps {
