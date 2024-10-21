@@ -37,13 +37,11 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "backstage:^",
     "@backstage/plugin-scaffolder-node": "backstage:^",
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "backstage:^",
     "@backstage/cli": "backstage:^",
     "@types/node-fetch": "^2.6.11"
   },

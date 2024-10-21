@@ -47,7 +47,6 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.540.0",
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-defaults": "backstage:^",
     "@backstage/backend-plugin-api": "backstage:^",
     "@backstage/catalog-model": "backstage:^",
@@ -58,14 +57,12 @@
     "@backstage/plugin-notifications-node": "backstage:^",
     "@backstage/plugin-permission-common": "backstage:^",
     "@backstage/plugin-permission-node": "backstage:^",
-    "@backstage/plugin-search-common": "backstage:^",
     "@backstage/plugin-signals-node": "backstage:^",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",
     "@types/express": "*",
     "@types/multiparty": "^0.0.33",
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
-    "aws-sdk": "^2.1584.0",
     "body-parser": "^1.20.3",
     "date-fns": "^2.30.0",
     "express": "^4.20.0",
@@ -75,7 +72,6 @@
     "lodash": "^4.17.21",
     "multiparty": "^4.2.3",
     "uuid": "^9.0.1",
-    "yn": "^4.0.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

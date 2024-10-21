@@ -41,11 +41,8 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "backstage:^",
-    "@backstage/backend-tasks": "^0.6.1",
     "@backstage/config": "backstage:^",
-    "@backstage/core-plugin-api": "backstage:^",
     "@backstage/errors": "backstage:^",
     "@backstage/plugin-search-backend-node": "backstage:^",
     "@backstage/plugin-search-common": "backstage:^",

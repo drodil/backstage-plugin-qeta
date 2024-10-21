@@ -28,7 +28,8 @@
     "backstage:bump": "backstage-cli versions:bump",
     "bump-test": "yarn run standard-version --dry-run --no-verify --releaseCommitMessageFormat 'v{{currentTag}}'",
     "bump": "yarn run standard-version --no-verify --releaseCommitMessageFormat 'v{{currentTag}}'",
-    "fix": "backstage-cli repo fix --publish"
+    "fix": "backstage-cli repo fix --publish",
+    "knip:check:deps": "knip --include dependencies --cache && :"
   },
   "workspaces": {
     "packages": [
@@ -46,11 +47,11 @@
     "@spotify/prettier-config": "^15.0.0",
     "concurrently": "^7.0.0",
     "husky": "^8.0.1",
-    "knip": "^3.13.0",
+    "knip": "^5.27.0",
     "lint-staged": "^14.0.1",
     "prettier": "^2.4.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "standard-version": "^9.5.0",
@@ -66,12 +67,9 @@
       "prettier --write"
     ],
     "package.json": [
-      "yarn fix"
+      "yarn fix",
+      "yarn knip:check:deps"
     ]
   },
-  "packageManager": "yarn@4.5.0",
-  "dependencies": {
-    "@aws-sdk/client-s3": "^3.540.0",
-    "@octokit/rest": "19.0.8"
-  }
+  "packageManager": "yarn@4.5.0"
 }
