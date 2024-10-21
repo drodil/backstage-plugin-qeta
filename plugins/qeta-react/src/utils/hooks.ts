@@ -507,7 +507,6 @@ export const useStyles = makeStyles(theme => {
       width: '32px',
       marginRight: '20px',
       marginLeft: '5px',
-      marginTop: '10px',
       display: 'inline-block',
       verticalAlign: 'top',
     },
