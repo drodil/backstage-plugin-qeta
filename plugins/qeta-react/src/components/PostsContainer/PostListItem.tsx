@@ -74,7 +74,12 @@ export const PostListItem = (props: PostListItemProps) => {
       </Grid>
       <Grid item xs={11} className={styles.questionListItemContent}>
         <Grid container spacing={1}>
-          <Grid container item xs={12} style={{ marginLeft: '0px' }}>
+          <Grid
+            container
+            item
+            xs={12}
+            style={{ marginLeft: '0px', paddingLeft: '0px' }}
+          >
             {type === undefined && (
               <Chip
                 color="secondary"
