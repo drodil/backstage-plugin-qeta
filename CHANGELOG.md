@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.0.1...v3.1.0) (2024-10-22)
+
+
+### Features
+
+* add more overridable components ([abbba2d](https://github.com/drodil/backstage-plugin-qeta/commit/abbba2d551315b037e9448fa6718f6d6e8ba7251))
+* allow overriding some component styles, more to come ([705db0b](https://github.com/drodil/backstage-plugin-qeta/commit/705db0bffb15569d0b16cdac9da796c99f724f91))
+
 ### [3.0.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.0.0...v3.0.1) (2024-10-22)
 
 
