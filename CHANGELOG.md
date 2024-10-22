@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.1.1...v3.2.0) (2024-10-22)
+
+
+### Features
+
+* add support to tag people ([d2cda03](https://github.com/drodil/backstage-plugin-qeta/commit/d2cda03681b763afb361f868d16d34f466c320ab)), closes [#86](https://github.com/drodil/backstage-plugin-qeta/issues/86)
+* add tag updater to automatically set descriptions for usually used tags ([279c4b0](https://github.com/drodil/backstage-plugin-qeta/commit/279c4b06cba70a8439c450b29df380565dbae1ff))
+* allow mentioning users also in comments ([9d9ccf6](https://github.com/drodil/backstage-plugin-qeta/commit/9d9ccf6eff33864002282cff258e21e584e14787))
+
+
+### Bug Fixes
+
+* add warning panel if question has invalid type ([e1edd9f](https://github.com/drodil/backstage-plugin-qeta/commit/e1edd9faef36284ba6fc1ee364cea315658d6b85))
+
 ### [3.1.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.1.0...v3.1.1) (2024-10-22)
 
 
