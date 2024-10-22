@@ -221,6 +221,23 @@ const TAGS: Record<string, string> = {
     'Apache Kafka is an open-source distributed event streaming platform used by thousands of companies for high-performance data pipelines, streaming analytics, data integration, and mission-critical applications.',
   rabbitmq:
     'RabbitMQ is an open-source message-broker software that originally implemented the Advanced Message Queuing Protocol (AMQP) and has since been extended with other protocols.',
+  jira: 'Jira is a proprietary issue tracking product developed by Atlassian.',
+  'github-actions': 'GitHub Actions is a CI/CD service provided by GitHub.',
+  database:
+    'A database is an organized collection of data, generally stored and accessed electronically from a computer system.',
+  codebuild:
+    'AWS CodeBuild is a fully managed continuous integration service that compiles source code, runs tests, and produces software packages that are ready to deploy.',
+  db2: 'IBM Db2 is a family of data management products, including database servers, developed by IBM.',
+  confluence:
+    'Confluence is a team workspace where knowledge and collaboration meet.',
+  bicep:
+    'Bicep is a Domain Specific Language (DSL) for deploying Azure resources declaratively.',
+  vpn: 'A virtual private network (VPN) extends a private network across a public network and enables users to send and receive data across shared or public networks as if their computing devices were directly connected to the private network.',
+  artifactory: 'JFrog Artifactory is a universal artifact repository manager.',
+  'api-gateway':
+    'An API gateway is an API management tool that sits between a client and a collection of backend services.',
+  'cloud-formation':
+    'AWS CloudFormation is a service that helps you model and set up your Amazon Web Services resources.',
 };
 
 export class TagsUpdater {
