@@ -104,7 +104,9 @@ export const QuestionPage = () => {
   }
 
   if (question.type !== 'question') {
-    return null;
+    return (
+      <WarningPanel title="Not found" message="Could not find the question" />
+    );
   }
 
   const sortAnswers = (a: Answer, b: Answer) => {
