@@ -7,7 +7,9 @@ import {
 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { useIsDarkTheme } from '../../utils/hooks';
 import { makeStyles } from '@material-ui/core';
+import { findUserMentions } from '@drodil/backstage-plugin-qeta-common';
 import gfm from 'remark-gfm';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 export type QetaMarkdownContentClassKey = 'markdown';
 
@@ -87,6 +89,33 @@ export const MarkdownRenderer = (props: {
         h4: (p: any) => headingRenderer(p),
         h5: (p: any) => headingRenderer(p),
         h6: (p: any) => headingRenderer(p),
+        p: (p: any) => {
+          const { children, ...rest } = p;
+          const arr = React.Children.toArray(children);
+          const formatted = arr.map((child: any) => {
+            if (typeof child !== 'string') {
+              return child;
+            }
+            const mentions = findUserMentions(child);
+            if (mentions.length === 0) {
+              return child;
+            }
+
+            return child.split(' ').map((word: string) => {
+              const mention = mentions.find(m => word.includes(m));
+              if (mention) {
+                return (
+                  <>
+                    <EntityRefLink entityRef={mention.slice(1)} />{' '}
+                  </>
+                );
+              }
+              return <>{word} </>;
+            });
+          });
+
+          return <p {...rest}>{formatted}</p>;
+        },
         code(p: any) {
           const { children, className, node, ...rest } = p;
           const match = /language-(\w+)/.exec(className || '');

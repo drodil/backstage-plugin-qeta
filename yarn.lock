@@ -4783,6 +4783,7 @@ __metadata:
     "@backstage/plugin-auth-backend-module-guest-provider": "backstage:^"
     "@backstage/plugin-auth-node": "backstage:^"
     "@backstage/plugin-catalog-backend": "backstage:^"
+    "@backstage/plugin-catalog-node": "npm:^1.13.1"
     "@backstage/plugin-events-backend": "backstage:^"
     "@backstage/plugin-events-node": "backstage:^"
     "@backstage/plugin-notifications-backend": "backstage:^"

@@ -11,6 +11,7 @@ import {
 import Ajv from 'ajv';
 import { Request, Router } from 'express';
 import {
+  findUserMentions,
   qetaCreateCommentPermission,
   qetaCreatePostPermission,
   qetaDeleteCommentPermission,
@@ -325,6 +326,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       database.getUsersForEntities(entities),
     ]);
     notificationMgr.onNewPost(username, question, followingUsers.flat());
+    const mentions = findUserMentions(request.body.content);
+    if (mentions.length > 0) {
+      notificationMgr.onMention(username, question, mentions);
+    }
 
     if (events) {
       events.publish({

@@ -17,6 +17,7 @@ import {
 } from '../types';
 import { Request, Router } from 'express';
 import {
+  findUserMentions,
   qetaCreateAnswerPermission,
   qetaCreateCommentPermission,
   qetaDeleteAnswerPermission,
@@ -125,6 +126,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       database.getUsersForEntities(post.entities),
     ]);
     notificationMgr.onNewAnswer(username, post, answer, followingUsers.flat());
+    const mentions = findUserMentions(answer.content);
+    if (mentions.length > 0) {
+      notificationMgr.onMention(username, answer, mentions);
+    }
     await mapAdditionalFields(request, answer, options);
 
     if (events) {

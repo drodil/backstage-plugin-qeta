@@ -11,6 +11,8 @@ import { qetaApiRef } from '../../api';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { imageUpload } from '../../utils/utils';
 import { makeStyles } from '@material-ui/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
 
 export type QetaMarkdownEditorClassKey =
   | 'markdownEditor'
@@ -74,6 +76,25 @@ export const useStyles = makeStyles(
           marginBottom: '0px !important',
         },
       },
+      suggestionsDropdown: {
+        position: 'absolute',
+        top: theme.typography.body1.fontSize,
+        listStyle: 'none',
+        fontSize: theme.typography.body1.fontSize,
+        padding: '0',
+        cursor: 'pointer',
+        backgroundColor: theme.palette.background.paper,
+        border: `1px solid ${theme.palette.divider}`,
+        borderRadius: theme.shape.borderRadius,
+        zIndex: theme.zIndex.modal,
+        '& li': {
+          width: '100%',
+          padding: '0.5rem',
+          '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+          },
+        },
+      },
     };
   },
   { name: 'QetaMarkdownEditor' },
@@ -95,6 +116,42 @@ export const MarkdownEditor = (props: {
   const styles = useStyles();
   const errorApi = useApi(errorApiRef);
   const qetaApi = useApi(qetaApiRef);
+  const catalogApi = useApi(catalogApiRef);
+
+  const loadSuggestions = async (text: string) => {
+    if (!text) {
+      return [{ preview: 'No suggestions', value: '' }];
+    }
+    const users = await catalogApi.queryEntities({
+      filter: { kind: 'User' },
+      limit: 5,
+      fullTextFilter: {
+        term: text,
+        fields: [
+          'metadata.name',
+          'metadata.title',
+          'spec.profile.displayName',
+          'spec.profile.email',
+        ],
+      },
+    });
+
+    if (users.items.length === 0) {
+      return [{ preview: 'No suggestions', value: '' }];
+    }
+
+    return users.items.map(entity => {
+      const user = entity as UserEntity;
+      const preview =
+        user.metadata.title ??
+        user.spec?.profile?.displayName ??
+        user.metadata.name;
+      return {
+        preview,
+        value: `@${stringifyEntityRef(user)}`,
+      };
+    });
+  };
 
   const isUploadDisabled =
     config?.getOptionalBoolean('qeta.storage.disabled') || false;
@@ -108,6 +165,7 @@ export const MarkdownEditor = (props: {
           : undefined,
         preview: 'qetaMarkdownEditorPreview',
         toolbar: 'qetaMarkdownEditorToolbar',
+        suggestionsDropdown: styles.suggestionsDropdown,
       }}
       value={value}
       onChange={onChange}
@@ -121,6 +179,9 @@ export const MarkdownEditor = (props: {
           placeholder,
         },
       }}
+      suggestionTriggerCharacters={['@']}
+      loadSuggestions={loadSuggestions}
+      suggestionsAutoplace
       generateMarkdownPreview={content =>
         Promise.resolve(
           <MarkdownRenderer

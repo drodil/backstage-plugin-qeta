@@ -80,6 +80,7 @@
     "@backstage/plugin-auth-backend": "backstage:^",
     "@backstage/plugin-auth-backend-module-guest-provider": "backstage:^",
     "@backstage/plugin-catalog-backend": "backstage:^",
+    "@backstage/plugin-catalog-node": "^1.13.1",
     "@backstage/plugin-events-backend": "backstage:^",
     "@backstage/plugin-notifications-backend": "backstage:^",
     "@backstage/plugin-permission-backend": "backstage:^",

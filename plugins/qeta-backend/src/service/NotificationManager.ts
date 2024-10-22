@@ -209,6 +209,44 @@ export class NotificationManager {
     }
   }
 
+  async onMention(username: string, post: Post | Answer, mentions: string[]) {
+    if (!this.notifications) {
+      return;
+    }
+
+    const notificationReceivers = mentions.map(m => m.replaceAll('@', ''));
+
+    const isPost = 'title' in post;
+    const isQuestion = isPost && post.type === 'question';
+    const description = isPost
+      ? `${username} mentioned you in a post: ${post.title}`
+      : `${username} mentioned you in an answer: ${post.content}`;
+    // eslint-disable-next-line no-nested-ternary
+    const link = !isPost
+      ? `/qeta/questions/${post.postId}#answer_${post.id}`
+      : isQuestion
+      ? `/qeta/questions/${post.id}`
+      : `/qeta/articles/${post.id}`;
+
+    try {
+      await this.notifications.send({
+        recipients: {
+          type: 'entity',
+          entityRef: [...notificationReceivers],
+          excludeEntityRef: username,
+        },
+        payload: {
+          title: `New mention`,
+          description: this.formatDescription(description),
+          link,
+          topic: 'New mention',
+        },
+      });
+    } catch (e) {
+      this.logger.error(`Failed to send notification for mentions: ${e}`);
+    }
+  }
+
   private formatDescription(description: string) {
     return truncate(removeMarkdownFormatting(description), 150);
   }

@@ -4,13 +4,13 @@ import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 import { PermissionPolicy } from './PermissionPolicy';
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
-backend.add(import('@backstage/plugin-events-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(import('@backstage/plugin-events-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-notifications-backend'));
-backend.add(import('@backstage/plugin-permission-backend/alpha'));
+backend.add(import('@backstage/plugin-permission-backend'));
 backend.add(
   createBackendModule({
     pluginId: 'permission',

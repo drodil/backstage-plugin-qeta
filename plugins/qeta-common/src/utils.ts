@@ -1,5 +1,26 @@
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import { compact } from 'lodash';
+
 export const truncate = (str: string, n: number): string => {
   return str.length > n ? `${str.slice(0, n - 1)}...` : str;
+};
+
+export const findUserMentions = (text: string): string[] => {
+  const mentions = text.match(/@(\S+)/g);
+  const ret = mentions ? Array.from(new Set(mentions)) : [];
+  return compact(
+    ret.map(mention => {
+      try {
+        const parsed = parseEntityRef(mention.replace(/^@+/, ''));
+        if (parsed.kind.toLocaleLowerCase('en-US') !== 'user') {
+          return undefined;
+        }
+        return `@${stringifyEntityRef(parsed)}`;
+      } catch (e) {
+        return undefined;
+      }
+    }),
+  );
 };
 
 // Covers many common but not all cases of markdown formatting
