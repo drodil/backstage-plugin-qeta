@@ -9,10 +9,14 @@
 Backstage.io plugin for Q&A. This plugin is both frontend and backend that manages and displays questions and answers
 within Backstage. This plugin provides:
 
-- Interface to ask questions
-- Interface to answer questions
-- Interface to vote questions and answers
-- Interface for individual users and tags
+- Support to ask and answer questions
+- Support to write articles
+- Support to vote questions, articles and answers
+- Support to create collections containing questions and articles
+- Support to favorie questions and articles
+- Support to subscribe to entities and tags
+- Views for users, entities and tags with their stats
+- Global and user statistics
 - Backend that saves questions and answers to desired database
 - Integration with the [`@backstage/plugin-search`](https://github.com/backstage/backstage/tree/master/plugins/search) plugin
 - Integration with the [`@backstage/plugin-catalog-react`](https://github.com/backstage/backstage/tree/master/plugins/catalog-react) plugin
