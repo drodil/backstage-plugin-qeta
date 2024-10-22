@@ -45,6 +45,30 @@ export const useTranslation = () => {
   return useTranslationRef(qetaTranslationRef);
 };
 
+export type QetaFormClassKey = 'headerImage' | 'postButton' | 'postForm';
+
+export const useFormStyles = makeStyles(
+  theme => {
+    return {
+      headerImage: {
+        marginBottom: '1rem',
+        marginTop: '1rem',
+        height: '250px',
+        objectFit: 'cover',
+        width: '100%',
+        border: `1px solid ${theme.palette.background.paper}`,
+        boxShadow: theme.shadows[1],
+      },
+      postButton: {
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+      },
+      form: {},
+    };
+  },
+  { name: 'QetaForm' },
+);
+
 export type PaginatedPostsProps = {
   type?: PostType;
   tags?: string[];
@@ -416,18 +440,6 @@ export function useIsDarkTheme() {
 export const useStyles = makeStyles(
   theme => {
     return {
-      headerImage: {
-        marginTop: '1rem',
-        marginBottom: '1rem',
-        width: '100%',
-        height: '250px',
-        objectFit: 'cover',
-        border: `1px solid ${theme.palette.background.paper}`,
-        boxShadow: theme.shadows[1],
-      },
-      successColor: {
-        color: theme.palette.success.main,
-      },
       questionDivider: {
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
@@ -479,10 +491,6 @@ export const useStyles = makeStyles(
       },
       questionListPagination: {
         marginTop: theme.spacing(2),
-      },
-      postButton: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
       },
       questionsPerPageInput: {
         paddingTop: '10px',

@@ -16,7 +16,7 @@ import {
   PostType,
   QetaApi,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useStyles, useTranslation } from '../../utils';
+import { useTranslation } from '../../utils';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -29,6 +29,7 @@ import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { confirmNavigationIfEdited, imageUpload } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
+import { useFormStyles } from '../../utils/hooks';
 
 const formToRequest = (
   form: QuestionForm,
@@ -95,6 +96,8 @@ const getValues = async (
   };
 };
 
+export type QetaPostFormClassKey = 'headerImage' | 'postButton' | 'postForm';
+
 export const PostForm = (props: PostFormProps) => {
   const { id, entity, onPost, entityPage, type } = props;
   const questionRoute = useRouteRef(questionRouteRef);
@@ -117,7 +120,7 @@ export const PostForm = (props: PostFormProps) => {
   const configApi = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
-  const styles = useStyles();
+  const styles = useFormStyles();
   const isUploadDisabled =
     configApi.getOptionalBoolean('qeta.storage.disabled') || false;
   const {
@@ -249,7 +252,7 @@ export const PostForm = (props: PostFormProps) => {
       onChange={() => {
         setEdited(true);
       }}
-      className="qetaAskForm"
+      className={`${styles.form} qetaAskForm`}
     >
       {error && (
         <Alert severity="error">{t('postForm.errorPosting', { type })}</Alert>

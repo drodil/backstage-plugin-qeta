@@ -23,12 +23,13 @@ import {
   CollectionResponse,
   QetaApi,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useStyles, useTranslation } from '../../utils';
+import { useTranslation } from '../../utils';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { collectionRouteRef } from '../../routes';
 import { confirmNavigationIfEdited, imageUpload } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { CollectionFormData } from './types';
+import { useFormStyles } from '../../utils/hooks';
 
 const formToRequest = (
   form: CollectionFormData,
@@ -94,7 +95,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
   const qetaApi = useApi(qetaApiRef);
   const configApi = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
-  const styles = useStyles();
+  const styles = useFormStyles();
   const isUploadDisabled =
     configApi.getOptionalBoolean('qeta.storage.disabled') || false;
   const {
@@ -183,7 +184,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
       onChange={() => {
         setEdited(true);
       }}
-      className="qetaAskForm"
+      className={`${styles.form} qetaCollectionForm`}
     >
       {error && (
         <Alert severity="error">{t('collectionForm.errorPosting')}</Alert>

@@ -8,6 +8,7 @@ import { QetaArticleButtonsClassKey } from './components/ArticleContent/ArticleB
 import { QetaLeftMenuClassKey } from './components';
 import { QetaMarkdownEditorClassKey } from './components/MarkdownEditor/MarkdownEditor';
 import { QetaAuthorBoxClassKey } from './components/AuthorBox/AuthorBox';
+import { QetaFormClassKey } from './utils/hooks';
 
 type QetaComponentsNameToClassKey = {
   QetaLeftMenu: QetaLeftMenuClassKey;
@@ -18,6 +19,7 @@ type QetaComponentsNameToClassKey = {
   QetaStatsChart: QetaStatsChartClassKey;
   QetaMarkdownEditor: QetaMarkdownEditorClassKey;
   QetaAuthorBox: QetaAuthorBoxClassKey;
+  QetaForm: QetaFormClassKey;
 };
 
 export type QetaOverrides = Overrides & {

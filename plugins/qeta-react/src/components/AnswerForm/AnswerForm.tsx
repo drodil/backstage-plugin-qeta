@@ -8,13 +8,14 @@ import {
   PostResponse,
   qetaCreateAnswerPermission,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useStyles, useTranslation } from '../../utils';
+import { useTranslation } from '../../utils';
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
+import { useFormStyles } from '../../utils/hooks';
 
 const getDefaultValues = (postId: number) => {
   return { postId, answer: '' };
@@ -32,7 +33,7 @@ export const AnswerForm = (props: {
   const [images, setImages] = React.useState<number[]>([]);
   const [edited, setEdited] = React.useState(false);
   const qetaApi = useApi(qetaApiRef);
-  const styles = useStyles();
+  const styles = useFormStyles();
   const configApi = useApi(configApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const { t } = useTranslation();
@@ -119,7 +120,7 @@ export const AnswerForm = (props: {
         onChange={() => {
           setEdited(true);
         }}
-        className="qetaAnswerForm"
+        className={`${styles.form} qetaAnswerForm`}
       >
         <Typography variant="h6">Your answer</Typography>
         {error && (
