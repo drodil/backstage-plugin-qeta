@@ -477,17 +477,6 @@ export const useStyles = makeStyles(
         display: 'inline-block',
         width: 'calc(100% - 70px)',
       },
-      questionCardAuthor: {
-        padding: theme.spacing(1),
-        float: 'right',
-        maxWidth: '200px',
-        border: `1px solid ${theme.palette.action.selected}`,
-        '& .avatar': {
-          width: theme.spacing(3),
-          height: theme.spacing(3),
-          fontSize: '1rem',
-        },
-      },
       questionListPagination: {
         marginTop: theme.spacing(2),
       },
@@ -554,11 +543,6 @@ export const useStyles = makeStyles(
           marginTop: theme.spacing(2),
           float: 'right',
         },
-      },
-      authorLink: {
-        textOverflow: 'ellipsis',
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
       },
       highlight: {
         animation: '$highlight 2s',

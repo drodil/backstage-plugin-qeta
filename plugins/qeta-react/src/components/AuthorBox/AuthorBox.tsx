@@ -1,12 +1,36 @@
-import { Avatar, Box, Grid, Typography } from '@material-ui/core';
+import { Avatar, Box, Grid, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import { useEntityAuthor, useStyles, useTranslation } from '../../utils/hooks';
+import { useEntityAuthor, useTranslation } from '../../utils/hooks';
 import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { AuthorLink, UpdatedByLink } from '../Links';
+
+export type QetaAuthorBoxClassKey = 'authorBox' | 'authorLink';
+
+const useStyles = makeStyles(
+  theme => ({
+    authorBox: {
+      padding: theme.spacing(1),
+      float: 'right',
+      maxWidth: '200px',
+      border: `1px solid ${theme.palette.action.selected}`,
+      '& .avatar': {
+        width: theme.spacing(3),
+        height: theme.spacing(3),
+        fontSize: '1rem',
+      },
+    },
+    authorLink: {
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+    },
+  }),
+  { name: 'QetaAuthorBox' },
+);
 
 export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
   const { entity } = props;
@@ -15,7 +39,7 @@ export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
   const { name, initials, user } = useEntityAuthor(entity);
 
   return (
-    <Box className={`qetaAuthorBox ${styles.questionCardAuthor}`}>
+    <Box className={`qetaAuthorBox ${styles.authorBox}`}>
       <Grid container alignItems="center">
         <Grid item xs={12} style={{ paddingBottom: 0 }}>
           <Typography className="qetaAuthorBoxCreated" variant="caption">
