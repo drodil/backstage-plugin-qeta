@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.15.0...v3.0.0) (2024-10-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* most of the UI components have been moved to the react
+package. this should allow the plugin users to use some of the elements
+directly in their app for better integration.
+* api has been moved to the common package.
+this allows to use the q&a api also from the backend
+modules such as the search collator which is also refactored.
+* the /questions API is now /posts thus making
+this a breaking change. additionally, the naming of permissions has
+changed accordingly.
+
+### Features
+
+* add support for collections ([d12b49c](https://github.com/drodil/backstage-plugin-qeta/commit/d12b49cc0127c3dd13b0ec50e7a58da2e8ce1900)), closes [#189](https://github.com/drodil/backstage-plugin-qeta/issues/189)
+* add support to post articles ([8b1d3a8](https://github.com/drodil/backstage-plugin-qeta/commit/8b1d3a87db816b8619dda101b22b5784569e0717)), closes [#188](https://github.com/drodil/backstage-plugin-qeta/issues/188)
+* add users page ([a77600a](https://github.com/drodil/backstage-plugin-qeta/commit/a77600a778d6e1a87b6a77b94814416a2d4e1b7a)), closes [#190](https://github.com/drodil/backstage-plugin-qeta/issues/190)
+* backend work ready for articles ([547b4fe](https://github.com/drodil/backstage-plugin-qeta/commit/547b4feba33a4d1c7baeacb9784b279dadb88d2e)), closes [#188](https://github.com/drodil/backstage-plugin-qeta/issues/188)
+* new styles for tag and entity chips and pages ([16bfce6](https://github.com/drodil/backstage-plugin-qeta/commit/16bfce6e33f70ba7685886feee9080b73da20092))
+* rename questions table in database to posts ([7a17516](https://github.com/drodil/backstage-plugin-qeta/commit/7a17516f1b30107b46d2e15d4bbc0af6cb1cd710)), closes [#188](https://github.com/drodil/backstage-plugin-qeta/issues/188)
+
+
+### Bug Fixes
+
+* add index for the type column ([3366201](https://github.com/drodil/backstage-plugin-qeta/commit/3366201d3fc680735bf46781360e41ebee763233))
+* entity left menu icon ([4d4b526](https://github.com/drodil/backstage-plugin-qeta/commit/4d4b5265068c6afd6fca156772ec30ef06d51c88))
+* left menu button paper not showing ([18d83a7](https://github.com/drodil/backstage-plugin-qeta/commit/18d83a751a4a92377fcacf34d61e4f1894026308))
+* make menu more responsive on small screens ([5b72df9](https://github.com/drodil/backstage-plugin-qeta/commit/5b72df9596dacd022089b0f549e260bda8c84752))
+* markdown renderer to follow theme ([7748eb3](https://github.com/drodil/backstage-plugin-qeta/commit/7748eb38f6e669aea2b0ea5d9ad8dec6afd7cb9a)), closes [#203](https://github.com/drodil/backstage-plugin-qeta/issues/203)
+* posts tests ([4626388](https://github.com/drodil/backstage-plugin-qeta/commit/462638810375ea800ee43a79dd9cd28e146243d5))
+* show todays stats in real time for statistics response ([cf0c762](https://github.com/drodil/backstage-plugin-qeta/commit/cf0c76222cb9f2dbc65a55ef980ffabf1943a819))
+* small fix for vote buttons styling ([36d175b](https://github.com/drodil/backstage-plugin-qeta/commit/36d175b9a875130381b45ed68cc0725c959d3892))
+* small tuning for post chips ([1cdecf1](https://github.com/drodil/backstage-plugin-qeta/commit/1cdecf17ec456f62d3c755e6d5f1803d26c1cf8a))
+* statistics endpoint to return only question stats ([44dcc78](https://github.com/drodil/backstage-plugin-qeta/commit/44dcc782c5c8e8d4ad0ea71b31c43fd3e4905d5f))
+
+
+* move api and client to common package ([4d6ab3e](https://github.com/drodil/backstage-plugin-qeta/commit/4d6ab3e8a64f7e374f007a164270be35af978370)), closes [#197](https://github.com/drodil/backstage-plugin-qeta/issues/197)
+* move most of the react components to react package ([671a87a](https://github.com/drodil/backstage-plugin-qeta/commit/671a87aae3397551c8c9b978d1281d128fd8210a)), closes [#197](https://github.com/drodil/backstage-plugin-qeta/issues/197)
+
 ## [2.15.0](https://github.com/drodil/backstage-plugin-qeta/compare/v2.14.0...v2.15.0) (2024-10-18)
 
 
