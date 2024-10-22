@@ -22,6 +22,8 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       database.getCount('post_votes', { author: user_ref }),
       database.getCount('answer_votes', { author: user_ref }),
       database.getCount('posts', { author: user_ref, type: 'article' }),
+      !user_ref ? database.getUsers() : undefined,
+      !user_ref ? database.getCount('tags') : undefined,
     ]);
     return {
       totalQuestions: results[0],
@@ -30,6 +32,8 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       totalComments: results[3] + results[4],
       totalVotes: results[5] + results[6],
       totalArticles: results[7],
+      totalUsers: results[8] ? results[8].length : undefined,
+      totalTags: results[9],
     };
   };
 
@@ -45,14 +49,44 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   router.get('/statistics/global', async (_req, response) => {
     const globalStats = await database.getGlobalStats();
     const summary = await getSummary();
-    return response.status(200).json({ statistics: globalStats, summary });
+    let todayStatsAdded = false;
+    const statistics = globalStats.map(g => {
+      if (g.date.toDateString() !== new Date().toDateString()) {
+        return g;
+      }
+      todayStatsAdded = true;
+      return {
+        date: g.date,
+        ...summary,
+      };
+    });
+
+    if (!todayStatsAdded) {
+      statistics.push({ date: new Date(), ...summary });
+    }
+    return response.status(200).json({ statistics, summary });
   });
 
   router.get('/statistics/user/:userRef(*)', async (req, response) => {
     const userRef = req.params.userRef;
     const userStats = await database.getUserStats(userRef);
     const summary = await getSummary(userRef);
-    return response.status(200).json({ statistics: userStats, summary });
+    let todayStatsAdded = false;
+    const statistics = userStats.map(g => {
+      if (g.date.toDateString() !== new Date().toDateString()) {
+        return g;
+      }
+      todayStatsAdded = true;
+      return {
+        date: g.date,
+        ...summary,
+      };
+    });
+
+    if (!todayStatsAdded) {
+      statistics.push({ date: new Date(), ...summary });
+    }
+    return response.status(200).json({ statistics, summary });
   });
 
   // GET /statistics/posts/top-upvoted-users?period=x&limit=x
