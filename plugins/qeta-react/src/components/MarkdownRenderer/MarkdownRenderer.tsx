@@ -9,6 +9,8 @@ import { useIsDarkTheme } from '../../utils/hooks';
 import { makeStyles } from '@material-ui/core';
 import gfm from 'remark-gfm';
 
+export type QetaMarkdownContentClassKey = 'markdown';
+
 const useStyles = makeStyles(
   theme => ({
     markdown: {

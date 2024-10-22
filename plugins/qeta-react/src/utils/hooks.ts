@@ -414,242 +414,245 @@ export function useIsDarkTheme() {
   return Boolean(themes.find(t => t.id === theme)?.variant === 'dark');
 }
 
-export const useStyles = makeStyles(theme => {
-  return {
-    leftMenu: {
-      top: '0',
-      width: '165px',
-    },
-    selectedMenuItem: {
-      color: theme.palette.primary.contrastText,
-      backgroundColor: theme.palette.primary.light,
-      borderRadius: theme.shape.borderRadius,
-      '&:hover': {
-        backgroundColor: theme.palette.primary.dark,
+export const useStyles = makeStyles(
+  theme => {
+    return {
+      leftMenu: {
+        top: '0',
+        width: '165px',
       },
-      '& svg': {
+      selectedMenuItem: {
         color: theme.palette.primary.contrastText,
-      },
-    },
-    nonSelectedMenuItem: {
-      backgroundColor: 'initial',
-    },
-    headerImage: {
-      width: '100%',
-      height: '250px',
-      objectFit: 'cover',
-    },
-    markdownEditor: {
-      backgroundColor: 'initial',
-      color: theme.palette.text.primary,
-      border: `1px solid ${theme.palette.action.disabled}`,
-      borderRadius: theme.shape.borderRadius,
-      '&:hover': {
-        borderColor: theme.palette.action.active,
-      },
-      '&:focus-within': {
-        borderColor: theme.palette.primary.main,
-      },
-      '& .mde-header': {
-        backgroundColor: 'initial',
-        color: theme.palette.text.primary,
-        borderBottom: `1px solid ${theme.palette.action.selected}`,
-        '& .mde-tabs button, .mde-header-item > button': {
-          color: `${theme.palette.text.primary} !important`,
+        backgroundColor: theme.palette.primary.light,
+        borderRadius: theme.shape.borderRadius,
+        '&:hover': {
+          backgroundColor: theme.palette.primary.dark,
+        },
+        '& svg': {
+          color: theme.palette.primary.contrastText,
         },
       },
-      '& .mde-preview-content': {
-        padding: '10px',
-      },
-      '& .mde-text, .mde-preview': {
-        fontSize: theme.typography.body1.fontSize,
-        fontFamily: theme.typography.body1.fontFamily,
-        lineHeight: theme.typography.body1.lineHeight,
-      },
-      '& .mde-text': {
-        backgroundColor: 'initial',
-        color: theme.palette.text.primary,
-        outline: 'none',
-      },
-      '& .image-tip': {
-        color: theme.palette.text.primary,
+      nonSelectedMenuItem: {
         backgroundColor: 'initial',
       },
-    },
-    markdownEditorError: {
-      border: `1px solid ${theme.palette.error.main} !important`,
-    },
-    markdownContent: {
-      '& *': {
-        wordBreak: 'break-word',
+      headerImage: {
+        width: '100%',
+        height: '250px',
+        objectFit: 'cover',
       },
-      '&.inline': {
+      markdownEditor: {
+        backgroundColor: 'initial',
+        color: theme.palette.text.primary,
+        border: `1px solid ${theme.palette.action.disabled}`,
+        borderRadius: theme.shape.borderRadius,
+        '&:hover': {
+          borderColor: theme.palette.action.active,
+        },
+        '&:focus-within': {
+          borderColor: theme.palette.primary.main,
+        },
+        '& .mde-header': {
+          backgroundColor: 'initial',
+          color: theme.palette.text.primary,
+          borderBottom: `1px solid ${theme.palette.action.selected}`,
+          '& .mde-tabs button, .mde-header-item > button': {
+            color: `${theme.palette.text.primary} !important`,
+          },
+        },
+        '& .mde-preview-content': {
+          padding: '10px',
+        },
+        '& .mde-text, .mde-preview': {
+          fontSize: theme.typography.body1.fontSize,
+          fontFamily: theme.typography.body1.fontFamily,
+          lineHeight: theme.typography.body1.lineHeight,
+        },
+        '& .mde-text': {
+          backgroundColor: 'initial',
+          color: theme.palette.text.primary,
+          outline: 'none',
+        },
+        '& .image-tip': {
+          color: theme.palette.text.primary,
+          backgroundColor: 'initial',
+        },
+      },
+      markdownEditorError: {
+        border: `1px solid ${theme.palette.error.main} !important`,
+      },
+      markdownContent: {
+        '& *': {
+          wordBreak: 'break-word',
+        },
+        '&.inline': {
+          display: 'inline-block',
+        },
+        '& > :first-child': {
+          marginTop: '0px !important',
+        },
+        '& > :last-child': {
+          marginBottom: '0px !important',
+        },
+        ...(theme.overrides as BackstageOverrides)?.BackstageMarkdownContent,
+      },
+      successColor: {
+        color: theme.palette.success.main,
+      },
+      questionDivider: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+      },
+      questionCard: {
+        marginBottom: theme.spacing(1),
+        position: 'relative',
+      },
+      questionCardVote: {
+        textAlign: 'center',
+        width: '32px',
+        marginRight: '20px',
+        marginLeft: '5px',
         display: 'inline-block',
+        verticalAlign: 'top',
       },
-      '& > :first-child': {
-        marginTop: '0px !important',
+      questionCardContent: {
+        minHeight: '160px',
       },
-      '& > :last-child': {
-        marginBottom: '0px !important',
+      questionListItem: {
+        padding: '0.7rem',
+        paddingBottom: '1.4rem',
       },
-      ...(theme.overrides as BackstageOverrides)?.BackstageMarkdownContent,
-    },
-    successColor: {
-      color: theme.palette.success.main,
-    },
-    questionDivider: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-    },
-    questionCard: {
-      marginBottom: theme.spacing(1),
-      position: 'relative',
-    },
-    questionCardVote: {
-      textAlign: 'center',
-      width: '32px',
-      marginRight: '20px',
-      marginLeft: '5px',
-      display: 'inline-block',
-      verticalAlign: 'top',
-    },
-    questionCardContent: {
-      minHeight: '160px',
-    },
-    questionListItem: {
-      padding: '0.7rem',
-      paddingBottom: '1.4rem',
-    },
-    questionListItemStats: {
-      width: '70px',
-      textAlign: 'right',
-      marginRight: '5px',
-      display: 'inline-block',
-      verticalAlign: 'top',
-    },
-    questionListItemContent: {
-      display: 'inline-block',
-      width: 'calc(100% - 80px)',
-    },
-    questionListItemAuthor: {
-      display: 'inline',
-      float: 'right',
-    },
-    questionListItemAvatar: {
-      display: 'inline-flex !important',
-      marginRight: '0.25rem',
-      fontSize: '1rem',
-      maxWidth: '1rem',
-      maxHeight: '1rem',
-    },
-    answerCardContent: {
-      display: 'inline-block',
-      width: 'calc(100% - 70px)',
-    },
-    questionCardAuthor: {
-      padding: theme.spacing(1),
-      float: 'right',
-      maxWidth: '200px',
-      border: `1px solid ${theme.palette.action.selected}`,
-      '& .avatar': {
-        width: theme.spacing(3),
-        height: theme.spacing(3),
-        fontSize: '1rem',
+      questionListItemStats: {
+        width: '70px',
+        textAlign: 'right',
+        marginRight: '5px',
+        display: 'inline-block',
+        verticalAlign: 'top',
       },
-    },
-    questionListPagination: {
-      marginTop: theme.spacing(2),
-    },
-    postButton: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
-    },
-    questionsPerPageInput: {
-      paddingTop: '10px',
-    },
-    questionsPerPage: {
-      marginRight: theme.spacing(3),
-    },
-    postHighlightListContainer: {
-      width: '100%',
-      backgroundColor: theme.palette.background.paper,
-      border: `1px solid ${theme.palette.action.selected}`,
-      borderRadius: theme.shape.borderRadius,
-      '&:not(:first-child)': {
-        marginTop: theme.spacing(2),
+      questionListItemContent: {
+        display: 'inline-block',
+        width: 'calc(100% - 80px)',
       },
-    },
-    postHighlightList: {
-      paddingBottom: '0px',
-      '& p': {
-        marginTop: '0',
-        marginBottom: '0',
-      },
-    },
-    filterPanel: {
-      border: `1px solid ${theme.palette.action.selected}`,
-      borderRadius: theme.shape.borderRadius,
-      padding: theme.spacing(3),
-    },
-    questionCardMetadata: {
-      marginTop: theme.spacing(3),
-    },
-    marginRight: {
-      marginRight: theme.spacing(1),
-    },
-    marginLeft: {
-      marginLeft: theme.spacing(1),
-    },
-    questionCardActions: {
-      marginTop: theme.spacing(2),
-      '& a': {
-        marginRight: theme.spacing(1),
-      },
-    },
-    noPadding: {
-      padding: `0 !important`,
-    },
-    menuIcon: {
-      minWidth: '26px',
-    },
-    deleteModal: {
-      position: 'absolute',
-      top: '20%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: 400,
-      backgroundColor: theme.palette.background.default,
-      border: `1px solid ${theme.palette.action.selected}`,
-      borderRadius: theme.shape.borderRadius,
-      padding: theme.spacing(2),
-      '& button': {
-        marginTop: theme.spacing(2),
+      questionListItemAuthor: {
+        display: 'inline',
         float: 'right',
       },
-    },
-    authorLink: {
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-    },
-    highlight: {
-      animation: '$highlight 2s',
-    },
-    '@keyframes highlight': {
-      '0%': {
-        boxShadow: `0px 0px 0px 3px ${theme.palette.secondary.light}`,
+      questionListItemAvatar: {
+        display: 'inline-flex !important',
+        marginRight: '0.25rem',
+        fontSize: '1rem',
+        maxWidth: '1rem',
+        maxHeight: '1rem',
       },
-      '100%': {
-        boxShadow: 'none',
+      answerCardContent: {
+        display: 'inline-block',
+        width: 'calc(100% - 70px)',
       },
-    },
-    dateFilter: {
-      minWidth: '200px',
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-    },
-  };
-});
+      questionCardAuthor: {
+        padding: theme.spacing(1),
+        float: 'right',
+        maxWidth: '200px',
+        border: `1px solid ${theme.palette.action.selected}`,
+        '& .avatar': {
+          width: theme.spacing(3),
+          height: theme.spacing(3),
+          fontSize: '1rem',
+        },
+      },
+      questionListPagination: {
+        marginTop: theme.spacing(2),
+      },
+      postButton: {
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+      },
+      questionsPerPageInput: {
+        paddingTop: '10px',
+      },
+      questionsPerPage: {
+        marginRight: theme.spacing(3),
+      },
+      postHighlightListContainer: {
+        width: '100%',
+        backgroundColor: theme.palette.background.paper,
+        border: `1px solid ${theme.palette.action.selected}`,
+        borderRadius: theme.shape.borderRadius,
+        '&:not(:first-child)': {
+          marginTop: theme.spacing(2),
+        },
+      },
+      postHighlightList: {
+        paddingBottom: '0px',
+        '& p': {
+          marginTop: '0',
+          marginBottom: '0',
+        },
+      },
+      filterPanel: {
+        border: `1px solid ${theme.palette.action.selected}`,
+        borderRadius: theme.shape.borderRadius,
+        padding: theme.spacing(3),
+      },
+      questionCardMetadata: {
+        marginTop: theme.spacing(3),
+      },
+      marginRight: {
+        marginRight: theme.spacing(1),
+      },
+      marginLeft: {
+        marginLeft: theme.spacing(1),
+      },
+      questionCardActions: {
+        marginTop: theme.spacing(2),
+        '& a': {
+          marginRight: theme.spacing(1),
+        },
+      },
+      noPadding: {
+        padding: `0 !important`,
+      },
+      menuIcon: {
+        minWidth: '26px',
+      },
+      deleteModal: {
+        position: 'absolute',
+        top: '20%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        backgroundColor: theme.palette.background.default,
+        border: `1px solid ${theme.palette.action.selected}`,
+        borderRadius: theme.shape.borderRadius,
+        padding: theme.spacing(2),
+        '& button': {
+          marginTop: theme.spacing(2),
+          float: 'right',
+        },
+      },
+      authorLink: {
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+      },
+      highlight: {
+        animation: '$highlight 2s',
+      },
+      '@keyframes highlight': {
+        '0%': {
+          boxShadow: `0px 0px 0px 3px ${theme.palette.secondary.light}`,
+        },
+        '100%': {
+          boxShadow: 'none',
+        },
+      },
+      dateFilter: {
+        minWidth: '200px',
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+      },
+    };
+  },
+  { name: 'Qeta' },
+);
 
 // Url resolving logic from https://github.com/backstage/backstage/blob/master/packages/core-components/src/components/Link/Link.tsx
 

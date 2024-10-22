@@ -28,19 +28,30 @@ import { useIsDarkTheme, useTranslation } from '../../utils/hooks';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import BarChartIcon from '@material-ui/icons/BarChart';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    tooltipLabel: {
-      color: theme.palette.text.primary,
-    },
-    tooltipWrapper: {
-      backgroundColor: `${theme.palette.background.default} !important`,
-      border: 'none !important',
-    },
-    xAxis: {
-      color: `${theme.palette.text.primary} !important`,
-    },
-  }),
+export type QetaStatsChartClassKey =
+  | 'tooltipLabel'
+  | 'tooltipWrapper'
+  | 'xAxis'
+  | 'lineChart'
+  | 'barChart';
+
+const useStyles = makeStyles(
+  (theme: Theme) =>
+    createStyles({
+      tooltipLabel: {
+        color: theme.palette.text.primary,
+      },
+      tooltipWrapper: {
+        backgroundColor: `${theme.palette.background.default} !important`,
+        border: 'none !important',
+      },
+      xAxis: {
+        color: `${theme.palette.text.primary} !important`,
+      },
+      lineChart: {},
+      barChart: {},
+    }),
+  { name: 'QetaStatsChart' },
 );
 
 const isGlobalStat = (stat: Stat): stat is GlobalStat => {
@@ -155,9 +166,15 @@ const StatsBarChart = (props: { data: GlobalStat[] | UserStat[] }) => {
   const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
     props.data,
   );
+  const localStyles = useStyles();
   return (
     <ResponsiveContainer height={400} width="100%">
-      <BarChart data={props.data} width={900} height={300}>
+      <BarChart
+        data={props.data}
+        width={900}
+        height={300}
+        className={localStyles.barChart}
+      >
         <Tooltip
           labelClassName={styles.tooltipLabel}
           wrapperClassName={styles.tooltipWrapper}
@@ -207,9 +224,15 @@ const StatsLineChart = (props: { data: GlobalStat[] | UserStat[] }) => {
   const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
     props.data,
   );
+  const localStyles = useStyles();
   return (
     <ResponsiveContainer height={400} width="100%">
-      <LineChart data={props.data} width={900} height={300}>
+      <LineChart
+        data={props.data}
+        width={900}
+        height={300}
+        className={localStyles.lineChart}
+      >
         <Tooltip
           labelClassName={styles.tooltipLabel}
           wrapperClassName={styles.tooltipWrapper}

@@ -12,32 +12,37 @@ import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
 import { BackstageOverrides } from '@backstage/core-components';
 
-export const useStyles = makeStyles(theme => {
-  return {
-    content: {
-      fontSize: '1.1rem',
-      lineHeight: '1.5rem',
-      paddingTop: '1rem',
-      paddingBottom: '1rem',
-      marginBottom: '1rem',
-      borderBottom: `1px solid ${theme.palette.background.paper}`,
-      ...(theme.overrides as BackstageOverrides)?.BackstageMarkdownContent,
-    },
-    headerImage: {
-      objectFit: 'cover',
-      width: '100%',
-      height: '200px',
-      marginBottom: '1rem',
-      marginTop: '1rem',
-    },
-    commentSection: {
-      borderBottom: `1px solid ${theme.palette.background.paper}`,
-      paddingBottom: '1rem',
-      marginBottom: '1rem',
-      marginLeft: 0,
-    },
-  };
-});
+export type QetaArticleContentClassKey =
+  | 'content'
+  | 'headerImage'
+  | 'commentSection';
+
+export const useStyles = makeStyles(
+  theme => {
+    return {
+      content: {
+        fontSize: '1.1rem',
+        lineHeight: '1.5rem',
+        paddingTop: '1rem',
+        paddingBottom: '1rem',
+        marginBottom: '1rem',
+        borderBottom: `1px solid ${theme.palette.background.paper}`,
+        ...(theme.overrides as BackstageOverrides)?.BackstageMarkdownContent,
+      },
+      headerImage: {
+        marginBottom: '1rem',
+        marginTop: '1rem',
+      },
+      commentSection: {
+        borderBottom: `1px solid ${theme.palette.background.paper}`,
+        paddingBottom: '1rem',
+        marginBottom: '1rem',
+        marginLeft: 0,
+      },
+    };
+  },
+  { name: 'QetaArticle' },
+);
 
 export const ArticleContent = (props: {
   post: PostResponse;
@@ -63,7 +68,7 @@ export const ArticleContent = (props: {
         <Grid item>
           <Avatar
             src={user?.spec?.profile?.picture}
-            className="qetaAvatar avatar"
+            className={`${styles.headerImage} qetaAvatar avatar`}
             alt={name}
             variant="rounded"
           >

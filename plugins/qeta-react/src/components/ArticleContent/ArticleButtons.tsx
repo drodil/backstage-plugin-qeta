@@ -18,21 +18,24 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteModal } from '../DeleteModal';
 import EditIcon from '@material-ui/icons/Edit';
 
-export const useLocalStyles = makeStyles(theme => {
-  return {
-    container: {
-      width: '100%',
-      paddingTop: '0.5rem',
-      paddingBottom: '0.5rem',
-      borderTop: `1px solid ${theme.palette.background.paper}`,
-      borderBottom: `1px solid ${theme.palette.background.paper}`,
-    },
-    scoreText: {
-      marginLeft: '0.5rem',
-      userSelect: 'none',
-    },
-  };
-});
+export const useLocalStyles = makeStyles(
+  theme => {
+    return {
+      container: {
+        width: '100%',
+        paddingTop: '0.5rem',
+        paddingBottom: '0.5rem',
+        borderTop: `1px solid ${theme.palette.background.paper}`,
+        borderBottom: `1px solid ${theme.palette.background.paper}`,
+      },
+      scoreText: {
+        marginLeft: '0.5rem',
+        userSelect: 'none',
+      },
+    };
+  },
+  { name: 'QetaArticleButtons' },
+);
 
 export const ArticleButtons = (props: { post: PostResponse }) => {
   const { post } = props;

@@ -17,19 +17,26 @@ import Check from '@material-ui/icons/Check';
 import React from 'react';
 import { useVoting } from '../../utils/hooks';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    qetaCorrectAnswerSelected: {
-      color: theme.palette.success.main,
-    },
-    qetaCorrectAnswer: {
-      color: theme.palette.grey[500],
-    },
-    voteButtonContainer: {
-      borderWidth: '1px',
-      borderColor: 'white',
-    },
-  }),
+export type QetaVoteButtonsClassKey =
+  | 'qetaCorrectAnswerSelected'
+  | 'qetaCorrectAnswer'
+  | 'voteButtonContainer';
+
+const useStyles = makeStyles(
+  (theme: Theme) =>
+    createStyles({
+      qetaCorrectAnswerSelected: {
+        color: theme.palette.success.main,
+      },
+      qetaCorrectAnswer: {
+        color: theme.palette.grey[500],
+      },
+      voteButtonContainer: {
+        borderWidth: '1px',
+        borderColor: 'white',
+      },
+    }),
+  { name: 'QetaVoteButtons' },
 );
 
 export const VoteButtons = (props: {
