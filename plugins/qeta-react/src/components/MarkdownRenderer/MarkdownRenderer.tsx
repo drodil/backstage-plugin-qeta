@@ -90,7 +90,7 @@ export const MarkdownRenderer = (props: {
         h5: (p: any) => headingRenderer(p),
         h6: (p: any) => headingRenderer(p),
         p: (p: any) => {
-          const { children, ...rest } = p;
+          const { children } = p;
           const arr = React.Children.toArray(children);
           const formatted = arr.map((child: any) => {
             if (typeof child !== 'string') {
@@ -106,7 +106,7 @@ export const MarkdownRenderer = (props: {
               if (mention) {
                 return (
                   <>
-                    <EntityRefLink entityRef={mention.slice(1)} />{' '}
+                    <EntityRefLink entityRef={mention.slice(1)} hideIcon />{' '}
                   </>
                 );
               }
@@ -114,7 +114,7 @@ export const MarkdownRenderer = (props: {
             });
           });
 
-          return <p {...rest}>{formatted}</p>;
+          return <p>{formatted}</p>;
         },
         code(p: any) {
           const { children, className, node, ...rest } = p;

@@ -209,7 +209,12 @@ export class NotificationManager {
     }
   }
 
-  async onMention(username: string, post: Post | Answer, mentions: string[]) {
+  async onMention(
+    username: string,
+    post: Post | Answer,
+    mentions: string[],
+    isComment?: boolean,
+  ) {
     if (!this.notifications) {
       return;
     }
@@ -219,14 +224,21 @@ export class NotificationManager {
     const isPost = 'title' in post;
     const isQuestion = isPost && post.type === 'question';
     const description = isPost
-      ? `${username} mentioned you in a post: ${post.title}`
-      : `${username} mentioned you in an answer: ${post.content}`;
+      ? `${username} mentioned you in a post${isComment ? ' comment' : ''}: ${
+          post.title
+        }`
+      : `${username} mentioned you in an answer${
+          isComment ? ' comment' : ''
+        }: ${post.content}`;
     // eslint-disable-next-line no-nested-ternary
     const link = !isPost
       ? `/qeta/questions/${post.postId}#answer_${post.id}`
       : isQuestion
       ? `/qeta/questions/${post.id}`
       : `/qeta/articles/${post.id}`;
+    const scope = isPost
+      ? `post:mention:${post.id}`
+      : `answer:mention:${post.id}`;
 
     try {
       await this.notifications.send({
@@ -240,6 +252,7 @@ export class NotificationManager {
           description: this.formatDescription(description),
           link,
           topic: 'New mention',
+          scope,
         },
       });
     } catch (e) {

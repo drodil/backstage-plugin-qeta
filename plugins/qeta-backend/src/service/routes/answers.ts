@@ -255,6 +255,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         request.body.content,
         followingUsers,
       );
+      const mentions = findUserMentions(request.body.content);
+      if (mentions.length > 0) {
+        notificationMgr.onMention(username, answer, mentions, true);
+      }
       await mapAdditionalFields(request, answer, options);
 
       if (events) {

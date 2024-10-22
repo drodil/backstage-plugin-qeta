@@ -78,15 +78,15 @@ export const useStyles = makeStyles(
       },
       suggestionsDropdown: {
         position: 'absolute',
-        top: theme.typography.body1.fontSize,
+        minWidth: '180px',
+        margin: '20px 0 0',
         listStyle: 'none',
         fontSize: theme.typography.body1.fontSize,
         padding: '0',
         cursor: 'pointer',
-        backgroundColor: theme.palette.background.paper,
+        background: theme.palette.background.paper,
         border: `1px solid ${theme.palette.divider}`,
         borderRadius: theme.shape.borderRadius,
-        zIndex: theme.zIndex.modal,
         '& li': {
           width: '100%',
           padding: '0.5rem',
@@ -94,6 +94,9 @@ export const useStyles = makeStyles(
             backgroundColor: theme.palette.action.hover,
           },
         },
+      },
+      hide: {
+        display: 'none',
       },
     };
   },
@@ -107,9 +110,22 @@ export const MarkdownEditor = (props: {
   height: number;
   error?: boolean;
   placeholder?: string;
-  onImageUpload: (imageId: number) => void;
+  onImageUpload?: (imageId: number) => void;
+  disableToolbar?: boolean;
+  disableAttachments?: boolean;
+  disablePreview?: boolean;
 }) => {
-  const { config, value, onChange, height, error, placeholder } = props;
+  const {
+    config,
+    value,
+    onChange,
+    height,
+    error,
+    placeholder,
+    disableAttachments,
+    disableToolbar,
+    disablePreview,
+  } = props;
   const [selectedTab, setSelectedTab] = React.useState<'write' | 'preview'>(
     'write',
   );
@@ -154,7 +170,9 @@ export const MarkdownEditor = (props: {
   };
 
   const isUploadDisabled =
-    config?.getOptionalBoolean('qeta.storage.disabled') || false;
+    config?.getOptionalBoolean('qeta.storage.disabled') ||
+    disableAttachments ||
+    false;
 
   return (
     <ReactMde
@@ -164,9 +182,12 @@ export const MarkdownEditor = (props: {
           ? `qetaMarkdownEditorError ${styles.markdownEditorError}`
           : undefined,
         preview: 'qetaMarkdownEditorPreview',
-        toolbar: 'qetaMarkdownEditorToolbar',
+        toolbar: `${
+          disableToolbar ? styles.hide : ''
+        } qetaMarkdownEditorToolbar`,
         suggestionsDropdown: styles.suggestionsDropdown,
       }}
+      disablePreview={disablePreview}
       value={value}
       onChange={onChange}
       selectedTab={selectedTab}

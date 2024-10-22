@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Grid, TextField } from '@material-ui/core';
+import { Box, Button, Grid } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import {
   AnswerResponse,
@@ -7,12 +7,13 @@ import {
   qetaCreateCommentPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Controller, useForm } from 'react-hook-form';
-import { useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../utils/hooks';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { RequirePermission } from '@backstage/plugin-permission-react';
+import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 
 export const CommentSection = (props: {
   onCommentPost: (question: PostResponse, answer?: AnswerResponse) => void;
@@ -24,16 +25,12 @@ export const CommentSection = (props: {
   const { answer, post, onCommentPost, onCommentDelete } = props;
   const analytics = useAnalytics();
   const qetaApi = useApi(qetaApiRef);
+  const configApi = useApi(configApiRef);
   const [posting, setPosting] = React.useState(false);
   const [formVisible, setFormVisible] = useState(false);
   const [edited, setEdited] = React.useState(false);
   const { t } = useTranslation();
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    reset,
-  } = useForm<{ content: string }>({});
+  const { handleSubmit, control, reset } = useForm<{ content: string }>({});
 
   const postComment = (data: { content: string }) => {
     setPosting(true);
@@ -101,17 +98,14 @@ export const CommentSection = (props: {
                     required: true,
                   }}
                   render={({ field: { onChange, value } }) => (
-                    <TextField
-                      id="comment"
-                      multiline
-                      minRows={2}
-                      fullWidth
-                      className="qetaCommentInput"
+                    <MarkdownEditor
+                      config={configApi}
                       value={value}
-                      placeholder={t('commentSection.input.placeholder')}
                       onChange={onChange}
-                      variant="outlined"
-                      error={'content' in errors}
+                      height={60}
+                      disablePreview
+                      disableAttachments
+                      disableToolbar
                     />
                   )}
                   name="content"

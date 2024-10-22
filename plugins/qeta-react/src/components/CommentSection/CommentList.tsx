@@ -2,7 +2,7 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Box, Divider, Typography } from '@material-ui/core';
+import { Box, Divider, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import { Link } from '@backstage/core-components';
 import { useTranslation } from '../../utils/hooks';
@@ -11,6 +11,17 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTime
 import { AuthorLink } from '../Links/Links';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { qetaApiRef } from '../../api';
+
+export const useStyles = makeStyles(
+  _theme => {
+    return {
+      inline: {
+        display: 'inline-block',
+      },
+    };
+  },
+  { name: 'QetaCommentList' },
+);
 
 export const CommentList = (props: {
   onCommentDelete: (question: PostResponse, answer?: AnswerResponse) => void;
@@ -21,6 +32,7 @@ export const CommentList = (props: {
   const entity = answer ?? question;
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslation();
+  const styles = useStyles();
 
   const deleteComment = (id: number) => {
     if (answer) {
@@ -38,7 +50,7 @@ export const CommentList = (props: {
         return (
           <>
             <Box key={c.id} className="qetaCommentBox">
-              <MarkdownRenderer content={c.content} />
+              <MarkdownRenderer content={c.content} className={styles.inline} />
               {' – '}
               <AuthorLink entity={c} />{' '}
               <Typography variant="caption" className="qetaCommentTime">

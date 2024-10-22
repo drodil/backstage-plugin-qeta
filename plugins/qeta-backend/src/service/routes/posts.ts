@@ -228,6 +228,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       request.body.content,
       followingUsers.flat(),
     );
+    const mentions = findUserMentions(request.body.content);
+    if (mentions.length > 0) {
+      notificationMgr.onMention(username, question, mentions, true);
+    }
 
     if (events) {
       events.publish({
