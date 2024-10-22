@@ -417,9 +417,13 @@ export const useStyles = makeStyles(
   theme => {
     return {
       headerImage: {
+        marginTop: '1rem',
+        marginBottom: '1rem',
         width: '100%',
         height: '250px',
         objectFit: 'cover',
+        border: `1px solid ${theme.palette.background.paper}`,
+        boxShadow: theme.shadows[1],
       },
       successColor: {
         color: theme.palette.success.main,

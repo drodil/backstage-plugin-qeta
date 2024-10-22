@@ -10,6 +10,7 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { ArticleButtons } from './ArticleButtons';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
+import { WarningPanel } from '@backstage/core-components';
 
 export type QetaArticleContentClassKey =
   | 'content'
@@ -30,6 +31,11 @@ export const useStyles = makeStyles(
       headerImage: {
         marginBottom: '1rem',
         marginTop: '1rem',
+        height: '250px',
+        objectFit: 'cover',
+        width: '100%',
+        border: `1px solid ${theme.palette.background.paper}`,
+        boxShadow: theme.shadows[1],
       },
       commentSection: {
         borderBottom: `1px solid ${theme.palette.background.paper}`,
@@ -56,7 +62,9 @@ export const ArticleContent = (props: {
   };
 
   if (post.type !== 'article') {
-    return null;
+    return (
+      <WarningPanel title="Not found" message="Could not find the article" />
+    );
   }
 
   return (
@@ -66,7 +74,7 @@ export const ArticleContent = (props: {
         <Grid item>
           <Avatar
             src={user?.spec?.profile?.picture}
-            className={`${styles.headerImage} qetaAvatar avatar`}
+            className="qetaAvatar avatar"
             alt={name}
             variant="rounded"
           >
