@@ -54,7 +54,7 @@ export const CollectionsGridContent = (props: {
     initialLoad &&
     (!response.collections || response.collections.length === 0)
   ) {
-    return <div>No collections... TODO</div>;
+    return null;
   }
 
   return (

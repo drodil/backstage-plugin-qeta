@@ -71,14 +71,18 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
               );
 
               return (
-                <Button
-                  variant="outlined"
-                  startIcon={isInCollection ? <RemoveCircle /> : <AddCircle />}
-                  color={isInCollection ? 'secondary' : 'primary'}
-                  onClick={() => handleClick(collection)}
-                >
-                  {collection.title}
-                </Button>
+                <Grid item key={collection.id}>
+                  <Button
+                    variant="outlined"
+                    startIcon={
+                      isInCollection ? <RemoveCircle /> : <AddCircle />
+                    }
+                    color={isInCollection ? 'secondary' : 'primary'}
+                    onClick={() => handleClick(collection)}
+                  >
+                    {collection.title}
+                  </Button>
+                </Grid>
               );
             })}
           </Grid>

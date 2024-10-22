@@ -32,26 +32,59 @@ using the old backend system, please use version 1.24.5.
 
 ## Examples
 
-Questions page;
+Home page:
+![Home page](./docs/images/homePage.png)
 
-![Questions list](./docs/images/questions.png)
+Questions page:
+
+![Questions page](./docs/images/questionsPage.png)
 
 Posting question:
 
-![Questions post](./docs/images/askQuestion.png)
+![Ask page](./docs/images/askPage.png)
 
 Answering question:
 
 ![Questions answer](./docs/images/questionPage.png)
 
-Home page:
-![Home page](./docs/images/homePage.png)
+Adding to collection
+
+![Collection](./docs/images/addToCollection.png)
+
+Articles page:
+
+![Articles page](./docs/images/articlesPage.png)
+
+Article page:
+
+![Article page](./docs/images/articlePage.png)
+
+Collections page:
+
+![Collections page](./docs/images/collectionsPage.png)
+
+Collection page:
+
+![Collection page](./docs/images/collectionPage.png)
+
+Entities page:
+
+![Entities page](./docs/images/entitiesPage.png)
+
+Entity page:
+
+![Entity page](./docs/images/entityPage.png)
+
+Users page:
+
+![Users page](./docs/images/usersPage.png)
 
 Profile page:
 
 ![Profile page](./docs/images/profilePage.png)
 
 Stats page:
+
 ![Stats page](./docs/images/statisticsPage.png)
 
 Tags page:
