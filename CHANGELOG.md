@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.1.0...v3.1.1) (2024-10-22)
+
+
+### Bug Fixes
+
+* article header image sizing ([eb24d1a](https://github.com/drodil/backstage-plugin-qeta/commit/eb24d1ab339757a8c36fde99c90da2c41fffa723))
+
 ## [3.1.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.0.1...v3.1.0) (2024-10-22)
 
 
