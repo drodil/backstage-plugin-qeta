@@ -4,6 +4,7 @@ import {
   ListItemIcon,
   MenuItem,
   MenuList,
+  SvgIcon,
   Typography,
 } from '@material-ui/core';
 import AccountBox from '@material-ui/icons/AccountBox';
@@ -25,7 +26,7 @@ import {
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
 import React, { ReactNode } from 'react';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useApp, useRouteRef } from '@backstage/core-plugin-api';
 import HelpOutlined from '@material-ui/icons/HelpOutlined';
 import { useNavigate } from 'react-router-dom';
 import Home from '@material-ui/icons/Home';
@@ -52,6 +53,7 @@ export const LeftMenu = (props: {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const app = useApp();
   const {
     value: user,
     loading: loadingUser,
@@ -83,6 +85,8 @@ export const LeftMenu = (props: {
       </MenuItem>
     );
   };
+
+  const EntityIcon = app.getSystemIcon('kind:system') ?? SvgIcon;
 
   return (
     <MenuList
@@ -132,7 +136,7 @@ export const LeftMenu = (props: {
         </CustomMenuItem>
         <CustomMenuItem route={entitiesRoute()}>
           <ListItemIcon className={styles.menuIcon}>
-            <LoyaltyOutlined fontSize="small" />
+            <EntityIcon fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.entities')}
         </CustomMenuItem>
