@@ -40,6 +40,7 @@ import useDebounce from 'react-use/lib/useDebounce';
 import { getFiltersWithDateRange } from './utils';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useAsyncRetry } from 'react-use';
+import { BackstageOverrides } from '@backstage/core-components';
 
 export const useTranslation = () => {
   return useTranslationRef(qetaTranslationRef);
@@ -491,6 +492,7 @@ export const useStyles = makeStyles(theme => {
       '& > :last-child': {
         marginBottom: '0px !important',
       },
+      ...(theme.overrides as BackstageOverrides)?.BackstageMarkdownContent,
     },
     successColor: {
       color: theme.palette.success.main,

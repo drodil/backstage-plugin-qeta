@@ -1,5 +1,5 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation, useVoting } from '../../utils/hooks';
+import { useStyles, useTranslation, useVoting } from '../../utils/hooks';
 import React from 'react';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import {
@@ -18,7 +18,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteModal } from '../DeleteModal';
 import EditIcon from '@material-ui/icons/Edit';
 
-export const useStyles = makeStyles(theme => {
+export const useLocalStyles = makeStyles(theme => {
   return {
     container: {
       width: '100%',
@@ -38,7 +38,8 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
   const { post } = props;
   const { voteUpTooltip, ownVote, voteUp, score, voteDownTooltip, voteDown } =
     useVoting(post);
-  const styles = useStyles();
+  const styles = useLocalStyles();
+  const classes = useStyles();
   const { t } = useTranslation();
   const editArticleRoute = useRouteRef(editArticleRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
@@ -89,7 +90,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
         </Grid>
         <Grid item>
           <FavoriteButton entity={post} />
-          <LinkButton entity={post} />
+          <LinkButton entity={post} className={classes.marginLeft} />
           {(post.canEdit || post.canDelete) && (
             <>
               {post.canDelete && (
@@ -97,8 +98,8 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
                   <Tooltip title={t('articlePage.deleteButton')}>
                     <IconButton
                       size="small"
-                      color="secondary"
                       onClick={handleDeleteModalOpen}
+                      className={classes.marginLeft}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -114,7 +115,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
                 <Tooltip title={t('articlePage.editButton')}>
                   <IconButton
                     size="small"
-                    color="primary"
+                    className={classes.marginLeft}
                     href={editArticleRoute({
                       id: post.id.toString(10),
                     })}

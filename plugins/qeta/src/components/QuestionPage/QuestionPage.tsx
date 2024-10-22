@@ -103,6 +103,10 @@ export const QuestionPage = () => {
     );
   }
 
+  if (question.type !== 'question') {
+    return null;
+  }
+
   const sortAnswers = (a: Answer, b: Answer) => {
     if (answerSort === 'default') {
       return 1;

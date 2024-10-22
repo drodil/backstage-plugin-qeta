@@ -22,8 +22,11 @@ import { useTagsFollow } from '../../utils/hooks';
 import { EditTagModal } from './EditTagModal';
 import DOMPurify from 'dompurify';
 
-export const TagGridItem = (props: { tag: TagResponse }) => {
-  const { tag } = props;
+export const TagGridItem = (props: {
+  tag: TagResponse;
+  onTagEdit: () => void;
+}) => {
+  const { tag, onTagEdit } = props;
   const tagRoute = useRouteRef(tagRouteRef);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -31,10 +34,13 @@ export const TagGridItem = (props: { tag: TagResponse }) => {
 
   const [editModalOpen, setEditModalOpen] = React.useState(false);
   const handleEditModalOpen = () => setEditModalOpen(true);
-  const handleEditModalClose = () => setEditModalOpen(false);
+  const handleEditModalClose = () => {
+    setEditModalOpen(false);
+    onTagEdit();
+  };
 
   return (
-    <Grid item xs={3}>
+    <Grid item xs={4}>
       <Card
         variant="outlined"
         style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
@@ -56,25 +62,35 @@ export const TagGridItem = (props: { tag: TagResponse }) => {
           </CardContent>
         </CardActionArea>
         <CardActions style={{ marginTop: 'auto' }}>
-          <Button
-            size="small"
-            variant="outlined"
-            color={tags.isFollowingTag(tag.tag) ? 'secondary' : 'primary'}
-            onClick={() => {
-              if (tags.isFollowingTag(tag.tag)) {
-                tags.unfollowTag(tag.tag);
-              } else {
-                tags.followTag(tag.tag);
-              }
-            }}
-          >
-            {tags.isFollowingTag(tag.tag)
-              ? t('tagButton.unfollow')
-              : t('tagButton.follow')}
-          </Button>
-          <Button size="small" onClick={handleEditModalOpen} variant="outlined">
-            {t('tagButton.edit')}
-          </Button>
+          <Grid container justifyContent="center">
+            <Grid item>
+              <Button
+                size="small"
+                variant="outlined"
+                color={tags.isFollowingTag(tag.tag) ? 'secondary' : 'primary'}
+                onClick={() => {
+                  if (tags.isFollowingTag(tag.tag)) {
+                    tags.unfollowTag(tag.tag);
+                  } else {
+                    tags.followTag(tag.tag);
+                  }
+                }}
+              >
+                {tags.isFollowingTag(tag.tag)
+                  ? t('tagButton.unfollow')
+                  : t('tagButton.follow')}
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                size="small"
+                onClick={handleEditModalOpen}
+                variant="outlined"
+              >
+                {t('tagButton.edit')}
+              </Button>
+            </Grid>
+          </Grid>
         </CardActions>
       </Card>
       <EditTagModal

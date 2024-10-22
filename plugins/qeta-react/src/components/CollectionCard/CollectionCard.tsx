@@ -1,7 +1,6 @@
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
 import { InfoCard } from '@backstage/core-components';
 import {
-  Box,
   Button,
   CardContent,
   CardMedia,
@@ -51,9 +50,9 @@ export const CollectionCard = (props: { collection: Collection }) => {
           <Grid item xs={12}>
             <TagsAndEntities entity={collection} />
           </Grid>
-          <Grid item xs={12}>
+          <Grid container item xs={12}>
             {collection.canDelete && (
-              <Box>
+              <Grid item>
                 <Button
                   variant="outlined"
                   size="small"
@@ -69,20 +68,22 @@ export const CollectionCard = (props: { collection: Collection }) => {
                   onClose={handleDeleteModalClose}
                   entity={collection}
                 />
-              </Box>
+              </Grid>
             )}
             {collection.canEdit && (
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<EditIcon />}
-                href={editCollectionRoute({
-                  id: collection.id.toString(10),
-                })}
-                className="qetaCollectionCardEditBtn"
-              >
-                {t('questionPage.editButton')}
-              </Button>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<EditIcon />}
+                  href={editCollectionRoute({
+                    id: collection.id.toString(10),
+                  })}
+                  className="qetaCollectionCardEditBtn"
+                >
+                  {t('questionPage.editButton')}
+                </Button>
+              </Grid>
             )}
           </Grid>
         </Grid>

@@ -13,6 +13,7 @@ export const TagsGrid = () => {
     value: response,
     loading,
     error,
+    retry,
   } = useQetaApi(api => api.getTags(), []);
 
   if (loading) {
@@ -36,6 +37,10 @@ export const TagsGrid = () => {
         tag.tag.toLowerCase().includes(query) ||
         tag.description?.toLowerCase().includes(query),
     );
+  };
+
+  const onTagEdit = () => {
+    retry();
   };
 
   const tags = filterData(searchQuery, response);
@@ -63,7 +68,7 @@ export const TagsGrid = () => {
       </Grid>
       <Grid container item xs={12} alignItems="stretch">
         {tags.map(tag => (
-          <TagGridItem tag={tag} key={tag.tag} />
+          <TagGridItem tag={tag} key={tag.tag} onTagEdit={onTagEdit} />
         ))}
       </Grid>
     </Grid>

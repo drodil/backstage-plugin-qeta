@@ -59,26 +59,30 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
           </CardContent>
         </CardActionArea>
         <CardActions style={{ marginTop: 'auto' }}>
-          <Button
-            size="small"
-            variant="outlined"
-            color={
-              entityFollow.isFollowingEntity(entity.entityRef)
-                ? 'secondary'
-                : 'primary'
-            }
-            onClick={() => {
-              if (entityFollow.isFollowingEntity(entity.entityRef)) {
-                entityFollow.unfollowEntity(entity.entityRef);
-              } else {
-                entityFollow.followEntity(entity.entityRef);
-              }
-            }}
-          >
-            {entityFollow.isFollowingEntity(entity.entityRef)
-              ? t('entityButton.unfollow')
-              : t('entityButton.follow')}
-          </Button>
+          <Grid container justifyContent="center">
+            <Grid item>
+              <Button
+                size="small"
+                variant="outlined"
+                color={
+                  entityFollow.isFollowingEntity(entity.entityRef)
+                    ? 'secondary'
+                    : 'primary'
+                }
+                onClick={() => {
+                  if (entityFollow.isFollowingEntity(entity.entityRef)) {
+                    entityFollow.unfollowEntity(entity.entityRef);
+                  } else {
+                    entityFollow.followEntity(entity.entityRef);
+                  }
+                }}
+              >
+                {entityFollow.isFollowingEntity(entity.entityRef)
+                  ? t('entityButton.unfollow')
+                  : t('entityButton.follow')}
+              </Button>
+            </Grid>
+          </Grid>
         </CardActions>
       </Card>
     </Grid>

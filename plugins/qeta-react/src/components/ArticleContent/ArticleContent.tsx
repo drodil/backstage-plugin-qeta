@@ -10,6 +10,7 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { ArticleButtons } from './ArticleButtons';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
+import { BackstageOverrides } from '@backstage/core-components';
 
 export const useStyles = makeStyles(theme => {
   return {
@@ -20,6 +21,7 @@ export const useStyles = makeStyles(theme => {
       paddingBottom: '1rem',
       marginBottom: '1rem',
       borderBottom: `1px solid ${theme.palette.background.paper}`,
+      ...(theme.overrides as BackstageOverrides)?.BackstageMarkdownContent,
     },
     headerImage: {
       objectFit: 'cover',
@@ -49,6 +51,10 @@ export const ArticleContent = (props: {
   const onCommentAction = (q: PostResponse, _?: AnswerResponse) => {
     setPostEntity(q);
   };
+
+  if (post.type !== 'article') {
+    return null;
+  }
 
   return (
     <>

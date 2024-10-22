@@ -9,6 +9,7 @@ import { useTranslation } from '../../utils';
 
 export const LinkButton = (props: {
   entity: PostResponse | AnswerResponse;
+  className?: string;
 }) => {
   const isQuestion = 'title' in props.entity;
   const { t } = useTranslation();
@@ -26,6 +27,7 @@ export const LinkButton = (props: {
         aria-label={t('link.aria')}
         size="small"
         onClick={copyToClipboard}
+        className={props.className}
       >
         <Link />
       </IconButton>

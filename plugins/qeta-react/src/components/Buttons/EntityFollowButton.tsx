@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEntityFollow, useStyles, useTranslation } from '../../utils/hooks';
-import { Button, Tooltip } from '@material-ui/core';
+import { IconButton, Tooltip } from '@material-ui/core';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
@@ -15,7 +15,7 @@ export const EntityFollowButton = (props: { entityRef: string }) => {
 
   return (
     <Tooltip title={t('entityButton.tooltip')}>
-      <Button
+      <IconButton
         size="small"
         className={`${styles.marginLeft} qetaFollowEntityBtn`}
         color={entities.isFollowingEntity(entityRef) ? 'secondary' : 'primary'}
@@ -32,7 +32,7 @@ export const EntityFollowButton = (props: { entityRef: string }) => {
         ) : (
           <Visibility />
         )}
-      </Button>
+      </IconButton>
     </Tooltip>
   );
 };

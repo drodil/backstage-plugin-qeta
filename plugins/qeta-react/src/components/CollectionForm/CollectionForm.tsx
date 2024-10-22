@@ -254,50 +254,42 @@ export const CollectionForm = (props: CollectionFormProps) => {
         )}
         name="description"
       />
-      <Grid container style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-        <Grid item>
-          <Controller
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <FormControl>
-                <FormHelperText>Read access</FormHelperText>
-                <Select
-                  variant="outlined"
-                  onChange={onChange}
-                  value={value}
-                  disabled={!canModifyAccess}
-                >
-                  <MenuItem value="private">Only you</MenuItem>
-                  <MenuItem value="public">Anyone</MenuItem>
-                </Select>
-              </FormControl>
-            )}
-            name="readAccess"
-          />
+      {canModifyAccess && (
+        <Grid container style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+          <Grid item>
+            <Controller
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
+                <FormControl>
+                  <FormHelperText>Read access</FormHelperText>
+                  <Select variant="outlined" onChange={onChange} value={value}>
+                    <MenuItem value="private">Only you</MenuItem>
+                    <MenuItem value="public">Anyone</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+              name="readAccess"
+            />
+          </Grid>
+          <Grid item>
+            <Controller
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
+                <FormControl>
+                  <FormHelperText>Edit access</FormHelperText>
+                  <Select variant="outlined" onChange={onChange} value={value}>
+                    <MenuItem value="private">Only you</MenuItem>
+                    <MenuItem value="public">Anyone</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+              name="editAccess"
+            />
+          </Grid>
         </Grid>
-        <Grid item>
-          <Controller
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <FormControl>
-                <FormHelperText>Edit access</FormHelperText>
-                <Select
-                  variant="outlined"
-                  onChange={onChange}
-                  value={value}
-                  disabled={!canModifyAccess}
-                >
-                  <MenuItem value="private">Only you</MenuItem>
-                  <MenuItem value="public">Anyone</MenuItem>
-                </Select>
-              </FormControl>
-            )}
-            name="editAccess"
-          />
-        </Grid>
-      </Grid>
+      )}
       <Button
         color="primary"
         type="submit"
