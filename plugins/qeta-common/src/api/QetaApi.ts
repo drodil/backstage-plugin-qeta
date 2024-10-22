@@ -18,6 +18,7 @@ import {
   StatisticsResponse,
   TagResponse,
   UserEntitiesResponse,
+  UserResponse,
   UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
@@ -98,6 +99,8 @@ export interface QetaApi {
 
   getEntities(): Promise<EntityResponse[]>;
   getEntity(entityRef: string): Promise<EntityResponse | null>;
+
+  getUsers(): Promise<UserResponse[]>;
 
   getMostUpvotedPosts({
     author,

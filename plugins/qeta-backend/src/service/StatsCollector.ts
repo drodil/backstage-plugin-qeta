@@ -47,7 +47,7 @@ export class StatsCollector {
 
     const users = await database.getUsers();
     for (const user of users) {
-      logger.info(`Collecting stats for ${user}`);
+      logger.info(`Collecting stats for ${user.userRef}`);
       await database.saveUserStats(user, now);
     }
 

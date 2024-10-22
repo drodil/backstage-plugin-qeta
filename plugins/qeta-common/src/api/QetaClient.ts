@@ -31,6 +31,7 @@ import {
   StatisticsResponse,
   TagResponse,
   UserEntitiesResponse,
+  UserResponse,
   UserTagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import omitBy from 'lodash/omitBy';
@@ -221,6 +222,13 @@ export class QetaClient implements QetaApi {
       return null;
     }
     return (await response.json()) as TagResponse;
+  }
+
+  async getUsers(): Promise<UserResponse[]> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/users`,
+    );
+    return (await response.json()) as UserResponse[];
   }
 
   async getEntities(): Promise<EntityResponse[]> {

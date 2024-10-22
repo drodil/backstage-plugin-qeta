@@ -22,6 +22,7 @@ import {
   TrophyIcon,
   useIdentityApi,
   userRouteRef,
+  usersRouteRef,
   useStyles,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
@@ -33,6 +34,7 @@ import Home from '@material-ui/icons/Home';
 import { useLocation } from 'react-use';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import PlaylistPlay from '@material-ui/icons/PlaylistPlay';
+import { GroupIcon } from '@backstage/core-components';
 
 export const LeftMenu = (props: {
   onKeyDown?: (event: React.KeyboardEvent) => void;
@@ -49,6 +51,7 @@ export const LeftMenu = (props: {
   const articlesRoute = useRouteRef(articlesRouteRef);
   const collectionsRoute = useRouteRef(collectionsRouteRef);
   const entitiesRoute = useRouteRef(entitiesRouteRef);
+  const usersRoute = useRouteRef(usersRouteRef);
   const styles = useStyles();
   const { t } = useTranslation();
   const location = useLocation();
@@ -154,6 +157,12 @@ export const LeftMenu = (props: {
             <PlaylistPlay fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.collections')}
+        </CustomMenuItem>
+        <CustomMenuItem route={usersRoute()}>
+          <ListItemIcon className={styles.menuIcon}>
+            <GroupIcon fontSize="small" />
+          </ListItemIcon>
+          {t('leftMenu.users')}
         </CustomMenuItem>
         {user && !loadingUser && !userError && (
           <CustomMenuItem route={`${userRoute()}/${user.userEntityRef}`}>

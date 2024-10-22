@@ -70,10 +70,10 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   router.get('/statistics/user/:userRef(*)', async (req, response) => {
     const userRef = req.params.userRef;
     const userStats = await database.getUserStats(userRef);
-    const summary = await getSummary(userRef);
+    const summary = await database.getUser(userRef);
     let todayStatsAdded = false;
     const statistics = userStats.map(g => {
-      if (g.date.toDateString() !== new Date().toDateString()) {
+      if (!summary || g.date.toDateString() !== new Date().toDateString()) {
         return g;
       }
       todayStatsAdded = true;
@@ -83,7 +83,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       };
     });
 
-    if (!todayStatsAdded) {
+    if (!todayStatsAdded && summary) {
       statistics.push({ date: new Date(), ...summary });
     }
     return response.status(200).json({ statistics, summary });

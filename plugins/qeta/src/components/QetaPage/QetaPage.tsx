@@ -27,6 +27,7 @@ import {
   tagRouteRef,
   tagsRouteRef,
   userRouteRef,
+  usersRouteRef,
   useStyles,
   writeRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
@@ -41,6 +42,7 @@ import { CollectionsPage } from '../CollectionsPage/CollectionsPage';
 import { CollectionPage } from '../CollectionPage/CollectionPage';
 import { CollectionCreatePage } from '../CollectionCreatePage/CollectionCreatePage';
 import { EntityPage } from '../EntityPage/EntityPage';
+import { UsersPage } from '../UsersPage/UsersPage';
 
 type Props = {
   title?: string;
@@ -121,6 +123,7 @@ export const QetaPage = (props?: Props) => {
                 <Route path={articleRouteRef.path} element={<ArticlePage />} />
                 <Route path={tagsRouteRef.path} element={<TagPage />} />
                 <Route path={tagRouteRef.path} element={<TagPage />} />
+                <Route path={usersRouteRef.path} element={<UsersPage />} />
                 <Route path={userRouteRef.path} element={<UserPage />} />
                 <Route
                   path={statisticsRouteRef.path}

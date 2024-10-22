@@ -14,6 +14,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     }
   };
 
+  router.get('/users', async (_req, response) => {
+    const users = await database.getUsers();
+    response.json(users);
+  });
+
   // GET /tags
   router.get('/tags', async (_request, response) => {
     const tags = await database.getTags();
@@ -87,6 +92,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/entities/:entityRef(*)', async (request, response) => {
+    validateEntityRef(request.params.entityRef);
     const entity = await database.getEntity(request.params.entityRef);
     if (entity === null) {
       response.sendStatus(404);

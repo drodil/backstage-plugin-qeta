@@ -18,6 +18,7 @@ export * from './SummaryStatsGrid';
 export * from './TopRankingUsersCard';
 export * from './TagsGrid';
 export * from './EntitiesGrid';
+export * from './UsersGrid';
 export * from './PostsGrid';
 export * from './ArticleContent';
 export * from './CollectionForm';

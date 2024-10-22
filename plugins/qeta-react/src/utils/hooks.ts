@@ -25,6 +25,7 @@ import {
   PostType,
   QetaApi,
   QetaSignal,
+  UserResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import DataLoader from 'dataloader';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -702,7 +703,7 @@ const dataLoaderFactory = (catalogApi: CatalogApi) =>
   );
 
 export const useEntityAuthor = (
-  entity: PostResponse | AnswerResponse | CollectionResponse,
+  entity: PostResponse | AnswerResponse | CollectionResponse | UserResponse,
 ) => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
@@ -711,7 +712,13 @@ export const useEntityAuthor = (
   const [initials, setInitials] = React.useState<string | null>(null);
   const [currentUser, setCurrentUser] = React.useState<string | null>(null);
   const anonymous = 'anonymous' in entity ? entity.anonymous ?? false : false;
-  let author = 'author' in entity ? entity.author : entity.owner;
+  let author =
+    // eslint-disable-next-line no-nested-ternary
+    'author' in entity
+      ? entity.author
+      : 'userRef' in entity
+      ? entity.userRef
+      : entity.owner;
   if (!author.startsWith('user:')) {
     author = `user:${author}`;
   }

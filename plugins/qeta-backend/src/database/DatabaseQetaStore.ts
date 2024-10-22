@@ -19,6 +19,7 @@ import {
   Posts,
   QetaStore,
   TagResponse,
+  UserResponse,
 } from './QetaStore';
 import {
   Answer,
@@ -272,7 +273,6 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.collectionId) {
-      console.log(options.collectionId);
       query.leftJoin('collection_posts', 'posts.id', 'collection_posts.postId');
       query.where('collection_posts.collectionId', options.collectionId);
     }
@@ -881,6 +881,43 @@ export class DatabaseQetaStore implements QetaStore {
     return this.getTag(tag);
   }
 
+  async getUsers(): Promise<UserResponse[]> {
+    const rows = await this.getUserBaseQuery();
+
+    return rows.map(r => ({
+      userRef: r.author,
+      totalViews: this.mapToInteger(r.totalViews),
+      totalQuestions: this.mapToInteger(r.totalQuestions),
+      totalAnswers: this.mapToInteger(r.totalAnswers),
+      totalComments:
+        this.mapToInteger(r.postComments) + this.mapToInteger(r.answerComments),
+      totalVotes:
+        this.mapToInteger(r.postVotes) + this.mapToInteger(r.answerVotes),
+      totalArticles: this.mapToInteger(r.totalArticles),
+    }));
+  }
+
+  async getUser(user_ref: string): Promise<UserResponse | null> {
+    const q = this.getUserBaseQuery();
+    const rows = await q.where('author', user_ref);
+    if (rows.length === 0) {
+      return null;
+    }
+    return {
+      userRef: rows[0].author,
+      totalViews: this.mapToInteger(rows[0].totalViews),
+      totalQuestions: this.mapToInteger(rows[0].totalQuestions),
+      totalAnswers: this.mapToInteger(rows[0].totalAnswers),
+      totalComments:
+        this.mapToInteger(rows[0].postComments) +
+        this.mapToInteger(rows[0].answerComments),
+      totalVotes:
+        this.mapToInteger(rows[0].postVotes) +
+        this.mapToInteger(rows[0].answerVotes),
+      totalArticles: this.mapToInteger(rows[0].totalArticles),
+    };
+  }
+
   async getUserTags(user_ref: string): Promise<UserTagsResponse> {
     const tags = await this.db('user_tags')
       .where('userRef', user_ref)
@@ -1210,15 +1247,6 @@ export class DatabaseQetaStore implements QetaStore {
     return this.db<Attachment>('attachments').where('uuid', '=', uuid).first();
   }
 
-  async getUsers(): Promise<string[]> {
-    const postUsers = await this.db('posts').select('author');
-    const answerUsers = await this.db('answers').select('author');
-    const allUsers = [...postUsers, answerUsers]
-      .map(user => user.author)
-      .filter(Boolean);
-    return [...new Set(allUsers)];
-  }
-
   async getTotalViews(user_ref: string, lastDays?: number): Promise<number> {
     const now = new Date();
     if (lastDays) {
@@ -1247,26 +1275,10 @@ export class DatabaseQetaStore implements QetaStore {
     return Number(postViews[0].total) + Number(answerViews[0].total);
   }
 
-  async saveUserStats(user_ref: string, date: Date): Promise<void> {
+  async saveUserStats(user: UserResponse, date: Date): Promise<void> {
     await this.db('user_stats')
       .insert({
-        userRef: user_ref,
-        totalQuestions: await this.getCount('posts', {
-          author: user_ref,
-          type: 'question',
-        }),
-        totalAnswers: await this.getCount('answers', { author: user_ref }),
-        totalViews: await this.getTotalViews(user_ref),
-        totalComments:
-          (await this.getCount('post_comments', { author: user_ref })) +
-          (await this.getCount('answer_comments', { author: user_ref })),
-        totalVotes:
-          (await this.getCount('post_votes', { author: user_ref })) +
-          (await this.getCount('answer_votes', { author: user_ref })),
-        totalArticles: await this.getCount('posts', {
-          author: user_ref,
-          type: 'article',
-        }),
+        ...user,
         date,
       })
       .onConflict(['userRef', 'date'])
@@ -1540,7 +1552,6 @@ export class DatabaseQetaStore implements QetaStore {
       .as('followerCount');
 
     return this.db('entities')
-      .leftJoin('post_entities', 'entities.id', 'post_entities.entityId')
       .orderBy('postsCount', 'desc')
       .select('id', 'entity_ref', postsCount, followerCount)
       .groupBy('entities.id');
@@ -1559,10 +1570,66 @@ export class DatabaseQetaStore implements QetaStore {
       .as('followerCount');
 
     return this.db('tags')
-      .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
       .orderBy('postsCount', 'desc')
       .select('id', 'tag', 'description', postsCount, followerCount)
       .groupBy('tags.id');
+  }
+
+  private getUserBaseQuery() {
+    const authorRef = this.db.ref('unique_authors.author');
+
+    const views = this.db('post_views')
+      .where('post_views.author', authorRef)
+      .count('*')
+      .as('totalViews');
+
+    const questions = this.db('posts')
+      .where('posts.author', authorRef)
+      .where('posts.type', 'question')
+      .count('*')
+      .as('totalQuestions');
+
+    const articles = this.db('posts')
+      .where('posts.author', authorRef)
+      .where('posts.type', 'article')
+      .count('*')
+      .as('totalArticles');
+
+    const answers = this.db('answers')
+      .where('answers.author', authorRef)
+      .count('*')
+      .as('totalAnswers');
+
+    const aComments = this.db('answer_comments')
+      .where('answer_comments.author', authorRef)
+      .count('*')
+      .as('answerComments');
+
+    const pComments = this.db('post_comments')
+      .where('post_comments.author', authorRef)
+      .count('*')
+      .as('postComments');
+    const aVotes = this.db('answer_votes')
+      .where('answer_votes.author', authorRef)
+      .count('*')
+      .as('answerVotes');
+
+    const pVotes = this.db('post_votes')
+      .where('post_votes.author', authorRef)
+      .count('*')
+      .as('postVotes');
+
+    return this.db('unique_authors').select(
+      'author',
+      views,
+      questions,
+      answers,
+      articles,
+      pComments,
+      aComments,
+      pVotes,
+      aVotes,
+    );
   }
 
   /**

@@ -29,6 +29,9 @@ export const qetaTranslationRef = createTranslationRef({
       viewsShort_zero: '0 views',
       viewsShort_one: '{{count}} view',
       viewsShort_other: '{{count}} views',
+      votes_zero: '0 votes',
+      votes_one: '{{count}} vote',
+      votes_other: '{{count}} votes',
       posts_zero: 'No {{itemType}}s',
       posts_one: '{{count}} {{itemType}}',
       posts_other: '{{count}} {{itemType}}s',
@@ -193,6 +196,7 @@ export const qetaTranslationRef = createTranslationRef({
       collections: 'Collections',
       content: 'Content',
       community: 'Community',
+      users: 'Users',
     },
     homePage: {
       title: 'Home',
@@ -422,6 +426,18 @@ export const qetaTranslationRef = createTranslationRef({
       entities_zero: 'No entities',
       entities_one: 'Showing {{count}} entity',
       entities_other: 'Showing {{count}} entities',
+    },
+    usersPage: {
+      title: 'Users',
+      errorLoading: 'Could not load users',
+      defaultTitle: 'users',
+      search: {
+        label: 'Search user',
+        placeholder: 'Search...',
+      },
+      users_zero: 'No users',
+      users_one: 'Showing {{count}} users',
+      users_other: 'Showing {{count}} users',
     },
     userPage: {
       profileTab: 'Profile',

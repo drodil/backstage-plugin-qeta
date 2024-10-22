@@ -118,6 +118,16 @@ export interface EntityResponse {
   followerCount: number;
 }
 
+export interface UserResponse {
+  userRef: string;
+  totalViews: number;
+  totalQuestions: number;
+  totalAnswers: number;
+  totalComments: number;
+  totalVotes: number;
+  totalArticles: number;
+}
+
 export interface AttachmentParameters {
   uuid: string;
   locationType: string;
@@ -378,6 +388,8 @@ export interface QetaStore {
   getTag(tag: string): Promise<TagResponse | null>;
   updateTag(tag: string, description?: string): Promise<TagResponse | null>;
 
+  getUsers(): Promise<UserResponse[]>;
+  getUser(user_ref: string): Promise<UserResponse | null>;
   /**
    * Gets all tags user is following
    * @param user_ref
@@ -435,8 +447,7 @@ export interface QetaStore {
     filters?: { author?: string; type?: PostType },
   ): Promise<number>;
   saveGlobalStats(date: Date): Promise<void>;
-  saveUserStats(user_ref: string, date: Date): Promise<void>;
-  getUsers(): Promise<string[]>;
+  saveUserStats(user: UserResponse, date: Date): Promise<void>;
   getTotalViews(user_ref: string, lastDays?: number): Promise<number>;
   cleanStats(days: number, date: Date): Promise<void>;
   getGlobalStats(): Promise<GlobalStat[]>;

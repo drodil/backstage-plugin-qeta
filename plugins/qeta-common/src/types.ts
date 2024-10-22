@@ -232,6 +232,16 @@ export interface EntityResponse {
   followerCount: number;
 }
 
+export interface UserResponse {
+  userRef: string;
+  totalViews: number;
+  totalQuestions: number;
+  totalAnswers: number;
+  totalComments: number;
+  totalVotes: number;
+  totalArticles: number;
+}
+
 export type AttachmentResponseBody = Attachment | ErrorResponse;
 
 export type PostResponse = Post;
