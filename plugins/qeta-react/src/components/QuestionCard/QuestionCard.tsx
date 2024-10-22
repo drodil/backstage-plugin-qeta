@@ -69,10 +69,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
             </Grid>
             <Grid item xs={11} className={styles.questionCardContent}>
               <Typography variant="body1" gutterBottom>
-                <MarkdownRenderer
-                  content={questionEntity.content}
-                  className={styles.markdownContent}
-                />
+                <MarkdownRenderer content={questionEntity.content} />
               </Typography>
               <Grid
                 container

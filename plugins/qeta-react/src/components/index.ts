@@ -24,3 +24,4 @@ export * from './ArticleContent';
 export * from './CollectionForm';
 export * from './CollectionsGrid';
 export * from './CollectionCard';
+export * from './LeftMenu';

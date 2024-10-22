@@ -21,6 +21,8 @@ import {
   entitiesRouteRef,
   entityRouteRef,
   favoriteQuestionsRouteRef,
+  LeftMenu,
+  LeftMenuButton,
   questionRouteRef,
   questionsRouteRef,
   statisticsRouteRef,
@@ -31,10 +33,8 @@ import {
   useStyles,
   writeRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
-import { LeftMenu } from '../LeftMenu/LeftMenu';
 import { QuestionsPage } from '../QuestionsPage/QuestionsPage';
 import { HomePage } from '../HomePage/HomePage';
-import { LeftMenuButton } from '../LeftMenu/LeftMenuButton';
 import { ArticlesPage } from '../ArticlesPage/ArticlesPage';
 import { WritePage } from '../WritePage/WritePage';
 import { ArticlePage } from '../ArticlePage/ArticlePage';

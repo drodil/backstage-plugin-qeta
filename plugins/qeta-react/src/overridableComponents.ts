@@ -4,12 +4,18 @@ import { QetaMarkdownContentClassKey } from './components/MarkdownRenderer/Markd
 import { QetaArticleContentClassKey } from './components/ArticleContent/ArticleContent';
 import { QetaVoteButtonsClassKey } from './components/Buttons/VoteButtons';
 import { QetaStatsChartClassKey } from './components/StatsChart/StatsChart';
+import { QetaArticleButtonsClassKey } from './components/ArticleContent/ArticleButtons';
+import { QetaLeftMenuClassKey } from './components';
+import { QetaMarkdownEditorClassKey } from './components/MarkdownEditor/MarkdownEditor';
 
 type QetaComponentsNameToClassKey = {
+  QetaLeftMenu: QetaLeftMenuClassKey;
+  QetaArticleButtons: QetaArticleButtonsClassKey;
   QetaMarkdownContent: QetaMarkdownContentClassKey;
   QetaArticle: QetaArticleContentClassKey;
   QetaVoteButtons: QetaVoteButtonsClassKey;
   QetaStatsChart: QetaStatsChartClassKey;
+  QetaMarkdownEditor: QetaMarkdownEditorClassKey;
 };
 
 export type QetaOverrides = Overrides & {

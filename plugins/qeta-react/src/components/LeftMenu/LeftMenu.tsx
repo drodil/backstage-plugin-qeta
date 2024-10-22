@@ -2,6 +2,7 @@ import {
   Box,
   ListItem,
   ListItemIcon,
+  makeStyles,
   MenuItem,
   MenuList,
   SvgIcon,
@@ -10,22 +11,6 @@ import {
 import AccountBox from '@material-ui/icons/AccountBox';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 import StarIcon from '@material-ui/icons/Star';
-import {
-  articlesRouteRef,
-  collectionsRouteRef,
-  entitiesRouteRef,
-  favoriteQuestionsRouteRef,
-  qetaRouteRef,
-  questionsRouteRef,
-  statisticsRouteRef,
-  tagsRouteRef,
-  TrophyIcon,
-  useIdentityApi,
-  userRouteRef,
-  usersRouteRef,
-  useStyles,
-  useTranslation,
-} from '@drodil/backstage-plugin-qeta-react';
 import React, { ReactNode } from 'react';
 import { useApp, useRouteRef } from '@backstage/core-plugin-api';
 import HelpOutlined from '@material-ui/icons/HelpOutlined';
@@ -35,6 +20,67 @@ import { useLocation } from 'react-use';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import PlaylistPlay from '@material-ui/icons/PlaylistPlay';
 import { GroupIcon } from '@backstage/core-components';
+import {
+  articlesRouteRef,
+  collectionsRouteRef,
+  entitiesRouteRef,
+  favoriteQuestionsRouteRef,
+  qetaRouteRef,
+  questionsRouteRef,
+  statisticsRouteRef,
+  tagsRouteRef,
+  userRouteRef,
+  usersRouteRef,
+} from '../../routes';
+import { useIdentityApi, useTranslation } from '../../utils';
+import { TrophyIcon } from '../TopRankingUsersCard';
+
+export type QetaLeftMenuClassKey =
+  | 'leftMenu'
+  | 'inPopup'
+  | 'outsidePopup'
+  | 'selectedMenuItem'
+  | 'nonSelectedMenuItem'
+  | 'menuIcon';
+
+export const useStyles = makeStyles(
+  theme => {
+    return {
+      leftMenu: {
+        top: '0',
+        width: '165px',
+      },
+      inPopup: {
+        marginRight: 0,
+        padding: '0.5rem',
+      },
+      outsidePopup: {
+        marginRight: theme.spacing(5),
+        marginLeft: theme.spacing(1),
+        float: 'right',
+        position: 'sticky',
+      },
+      selectedMenuItem: {
+        color: theme.palette.primary.contrastText,
+        backgroundColor: theme.palette.primary.light,
+        borderRadius: theme.shape.borderRadius,
+        '&:hover': {
+          backgroundColor: theme.palette.primary.dark,
+        },
+        '& svg': {
+          color: theme.palette.primary.contrastText,
+        },
+      },
+      nonSelectedMenuItem: {
+        backgroundColor: 'initial',
+      },
+      menuIcon: {
+        minWidth: '26px',
+      },
+    };
+  },
+  { name: 'QetaLeftMenu' },
+);
 
 export const LeftMenu = (props: {
   onKeyDown?: (event: React.KeyboardEvent) => void;
@@ -94,14 +140,11 @@ export const LeftMenu = (props: {
   return (
     <MenuList
       id="left-menu"
-      className={styles.leftMenu}
+      className={`${styles.leftMenu} ${
+        props.inPopup ? styles.inPopup : styles.outsidePopup
+      }`}
       onKeyDown={props.onKeyDown}
       autoFocusItem={props.autoFocusItem}
-      style={
-        props.inPopup
-          ? { marginRight: 0, padding: '0.5rem' }
-          : { marginRight: '2rem', float: 'right', position: 'sticky' }
-      }
     >
       <Box
         display={

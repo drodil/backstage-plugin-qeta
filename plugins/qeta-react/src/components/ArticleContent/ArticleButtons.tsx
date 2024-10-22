@@ -18,6 +18,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteModal } from '../DeleteModal';
 import EditIcon from '@material-ui/icons/Edit';
 
+export type QetaArticleButtonsClassKey = 'container' | 'scoreText';
+
 export const useLocalStyles = makeStyles(
   theme => {
     return {

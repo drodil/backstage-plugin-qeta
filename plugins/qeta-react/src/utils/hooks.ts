@@ -40,7 +40,6 @@ import useDebounce from 'react-use/lib/useDebounce';
 import { getFiltersWithDateRange } from './utils';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useAsyncRetry } from 'react-use';
-import { BackstageOverrides } from '@backstage/core-components';
 
 export const useTranslation = () => {
   return useTranslationRef(qetaTranslationRef);
@@ -417,83 +416,10 @@ export function useIsDarkTheme() {
 export const useStyles = makeStyles(
   theme => {
     return {
-      leftMenu: {
-        top: '0',
-        width: '165px',
-      },
-      selectedMenuItem: {
-        color: theme.palette.primary.contrastText,
-        backgroundColor: theme.palette.primary.light,
-        borderRadius: theme.shape.borderRadius,
-        '&:hover': {
-          backgroundColor: theme.palette.primary.dark,
-        },
-        '& svg': {
-          color: theme.palette.primary.contrastText,
-        },
-      },
-      nonSelectedMenuItem: {
-        backgroundColor: 'initial',
-      },
       headerImage: {
         width: '100%',
         height: '250px',
         objectFit: 'cover',
-      },
-      markdownEditor: {
-        backgroundColor: 'initial',
-        color: theme.palette.text.primary,
-        border: `1px solid ${theme.palette.action.disabled}`,
-        borderRadius: theme.shape.borderRadius,
-        '&:hover': {
-          borderColor: theme.palette.action.active,
-        },
-        '&:focus-within': {
-          borderColor: theme.palette.primary.main,
-        },
-        '& .mde-header': {
-          backgroundColor: 'initial',
-          color: theme.palette.text.primary,
-          borderBottom: `1px solid ${theme.palette.action.selected}`,
-          '& .mde-tabs button, .mde-header-item > button': {
-            color: `${theme.palette.text.primary} !important`,
-          },
-        },
-        '& .mde-preview-content': {
-          padding: '10px',
-        },
-        '& .mde-text, .mde-preview': {
-          fontSize: theme.typography.body1.fontSize,
-          fontFamily: theme.typography.body1.fontFamily,
-          lineHeight: theme.typography.body1.lineHeight,
-        },
-        '& .mde-text': {
-          backgroundColor: 'initial',
-          color: theme.palette.text.primary,
-          outline: 'none',
-        },
-        '& .image-tip': {
-          color: theme.palette.text.primary,
-          backgroundColor: 'initial',
-        },
-      },
-      markdownEditorError: {
-        border: `1px solid ${theme.palette.error.main} !important`,
-      },
-      markdownContent: {
-        '& *': {
-          wordBreak: 'break-word',
-        },
-        '&.inline': {
-          display: 'inline-block',
-        },
-        '& > :first-child': {
-          marginTop: '0px !important',
-        },
-        '& > :last-child': {
-          marginBottom: '0px !important',
-        },
-        ...(theme.overrides as BackstageOverrides)?.BackstageMarkdownContent,
       },
       successColor: {
         color: theme.palette.success.main,
@@ -609,9 +535,6 @@ export const useStyles = makeStyles(
       },
       noPadding: {
         padding: `0 !important`,
-      },
-      menuIcon: {
-        minWidth: '26px',
       },
       deleteModal: {
         position: 'absolute',

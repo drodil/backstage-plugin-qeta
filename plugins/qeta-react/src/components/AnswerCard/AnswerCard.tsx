@@ -77,7 +77,7 @@ export const AnswerCard = (props: {
                 <>
                   <Typography variant="body1" gutterBottom>
                     <MarkdownRenderer
-                      className={`qetaAndwerCardAnswerContent ${styles.markdownContent}`}
+                      className="qetaAndwerCardAnswerContent"
                       content={answerEntity.content}
                     />
                   </Typography>

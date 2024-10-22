@@ -10,7 +10,6 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { ArticleButtons } from './ArticleButtons';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
-import { BackstageOverrides } from '@backstage/core-components';
 
 export type QetaArticleContentClassKey =
   | 'content'
@@ -27,7 +26,6 @@ export const useStyles = makeStyles(
         paddingBottom: '1rem',
         marginBottom: '1rem',
         borderBottom: `1px solid ${theme.palette.background.paper}`,
-        ...(theme.overrides as BackstageOverrides)?.BackstageMarkdownContent,
       },
       headerImage: {
         marginBottom: '1rem',
