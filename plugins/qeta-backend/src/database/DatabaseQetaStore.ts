@@ -841,8 +841,12 @@ export class DatabaseQetaStore implements QetaStore {
     return await this.markAnswer(postId, answerId, false);
   }
 
-  async getTags(): Promise<TagResponse[]> {
-    const tags = await this.getTagBaseQuery();
+  async getTags(options?: { noDescription: boolean }): Promise<TagResponse[]> {
+    const query = this.getTagBaseQuery();
+    if (options?.noDescription) {
+      query.whereNull('tags.description');
+    }
+    const tags = await query;
 
     return tags.map(tag => {
       return {

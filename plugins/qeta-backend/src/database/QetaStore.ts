@@ -384,7 +384,7 @@ export interface QetaStore {
   /**
    * Returns all used tags for posts
    */
-  getTags(): Promise<TagResponse[]>;
+  getTags(options?: { noDescription?: boolean }): Promise<TagResponse[]>;
   getTag(tag: string): Promise<TagResponse | null>;
   updateTag(tag: string, description?: string): Promise<TagResponse | null>;
 

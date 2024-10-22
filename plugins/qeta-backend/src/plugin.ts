@@ -8,6 +8,7 @@ import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { notificationService } from '@backstage/plugin-notifications-node';
 import { StatsCollector } from './service/StatsCollector';
+import { TagsUpdater } from './service/TagsUpdater';
 
 /**
  * Qeta backend plugin
@@ -79,6 +80,8 @@ export const qetaPlugin = createBackendPlugin({
           logger,
           qetaStore,
         );
+
+        await TagsUpdater.initTagsUpdater(config, scheduler, logger, qetaStore);
       },
     });
   },

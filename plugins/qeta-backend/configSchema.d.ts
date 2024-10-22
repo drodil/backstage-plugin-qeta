@@ -100,5 +100,8 @@ export interface Config {
        */
       historyDays?: number;
     };
+    tagUpdater?: {
+      schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+    };
   };
 }

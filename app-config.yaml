@@ -86,3 +86,9 @@ qeta:
       initialDelay: { seconds: 30 }
       timeout: { minutes: 10 }
       scope: global
+  tagUpdater:
+    schedule:
+      frequency: { minutes: 1 }
+      initialDelay: { seconds: 30 }
+      timeout: { minutes: 10 }
+      scope: global
