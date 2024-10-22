@@ -105,3 +105,15 @@ export const tagRouteRef = createSubRouteRef({
   parent: qetaRouteRef,
   path: '/tags/:tag',
 });
+
+export const entitiesRouteRef = createSubRouteRef({
+  id: 'qeta.entities',
+  parent: qetaRouteRef,
+  path: '/entities',
+});
+
+export const entityRouteRef = createSubRouteRef({
+  id: 'qeta.entity',
+  parent: qetaRouteRef,
+  path: '/entities/:entityRef',
+});

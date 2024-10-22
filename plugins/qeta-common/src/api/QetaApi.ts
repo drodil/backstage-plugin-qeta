@@ -93,8 +93,11 @@ export interface QetaApi {
   getPost(id: string | undefined): Promise<PostResponse>;
 
   getTags(): Promise<TagResponse[]>;
+  getTag(tag: string): Promise<TagResponse | null>;
+  updateTag(tag: string, description?: string): Promise<TagResponse | null>;
 
   getEntities(): Promise<EntityResponse[]>;
+  getEntity(entityRef: string): Promise<EntityResponse | null>;
 
   getMostUpvotedPosts({
     author,

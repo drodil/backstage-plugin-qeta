@@ -18,6 +18,8 @@ import {
   collectionsRouteRef,
   editArticleRouteRef,
   editQuestionRouteRef,
+  entitiesRouteRef,
+  entityRouteRef,
   favoriteQuestionsRouteRef,
   questionRouteRef,
   questionsRouteRef,
@@ -38,6 +40,7 @@ import { ArticlePage } from '../ArticlePage/ArticlePage';
 import { CollectionsPage } from '../CollectionsPage/CollectionsPage';
 import { CollectionPage } from '../CollectionPage/CollectionPage';
 import { CollectionCreatePage } from '../CollectionCreatePage/CollectionCreatePage';
+import { EntityPage } from '../EntityPage/EntityPage';
 
 type Props = {
   title?: string;
@@ -139,6 +142,8 @@ export const QetaPage = (props?: Props) => {
                   path={collectionRouteRef.path}
                   element={<CollectionPage />}
                 />
+                <Route path={entitiesRouteRef.path} element={<EntityPage />} />
+                <Route path={entityRouteRef.path} element={<EntityPage />} />
               </Routes>
             </Grid>
           </Grid>

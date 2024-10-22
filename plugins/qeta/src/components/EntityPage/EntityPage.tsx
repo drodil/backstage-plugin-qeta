@@ -3,48 +3,61 @@ import { ContentHeader } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
-  FollowedTagsList,
-  MarkdownRenderer,
+  EntitiesGrid,
+  EntityFollowButton,
+  FollowedEntitiesList,
   PostHighlightList,
   PostsContainer,
   qetaApiRef,
-  TagFollowButton,
-  TagsGrid,
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 import Whatshot from '@material-ui/icons/Whatshot';
 import { useApi } from '@backstage/core-plugin-api';
-import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
+import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
-export const TagPage = () => {
-  const { tag } = useParams();
+export const EntityPage = () => {
+  const { entityRef } = useParams();
   const { t } = useTranslation();
-  const [resp, setResp] = React.useState<undefined | TagResponse>();
+  const [resp, setResp] = React.useState<undefined | EntityResponse>();
 
   const qetaApi = useApi(qetaApiRef);
 
   useEffect(() => {
-    if (!tag) {
+    if (!entityRef) {
       setResp(undefined);
       return;
     }
 
-    qetaApi.getTag(tag).then(res => {
+    qetaApi.getEntity(entityRef).then(res => {
       if (res) {
         setResp(res);
       }
     });
-  }, [qetaApi, tag]);
+  }, [qetaApi, entityRef]);
+
+  let shownTitle: string = t('entitiesPage.defaultTitle');
+  let link = undefined;
+  if (entityRef) {
+    shownTitle = t(`postsContainer.title.about`, { itemType: 'Post' });
+    link = <EntityRefLink entityRef={entityRef} />;
+  }
 
   return (
     <Grid container spacing={4}>
       <Grid item md={12} lg={9} xl={10}>
-        <ContentHeader title={tag ? `#${tag}` : t('tagPage.defaultTitle')}>
-          {tag && <TagFollowButton tag={tag} />}
-          <AskQuestionButton tags={tag ? [tag] : undefined} />
-          <WriteArticleButton tags={tag ? [tag] : undefined} />
+        <ContentHeader
+          titleComponent={
+            <Typography variant="h5" component="h2">
+              {shownTitle} {link}
+            </Typography>
+          }
+        >
+          {entityRef && <EntityFollowButton entityRef={entityRef} />}
+          <AskQuestionButton entity={entityRef} />
+          <WriteArticleButton entity={entityRef} />
         </ContentHeader>
         {resp && (
           <Card variant="outlined" style={{ marginBottom: '1rem' }}>
@@ -57,36 +70,33 @@ export const TagPage = () => {
                 {' · '}
                 {t('common.followers', { count: resp.followerCount })}
               </Typography>
-              {resp.description && (
-                <MarkdownRenderer content={resp.description} />
-              )}
             </CardContent>
           </Card>
         )}
-        {tag ? <PostsContainer tags={[tag ?? '']} /> : <TagsGrid />}
+        {entityRef ? <PostsContainer entity={entityRef} /> : <EntitiesGrid />}
       </Grid>
       <Grid item lg={3} xl={2}>
-        <FollowedTagsList />
+        <FollowedEntitiesList />
         <PostHighlightList
           type="hot"
           title={t('highlights.hotQuestions.title')}
           noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
           icon={<Whatshot fontSize="small" />}
-          options={{ tags: [tag ?? ''] }}
+          options={{ entity: entityRef }}
           postType="question"
         />
         <PostHighlightList
           type="unanswered"
           title={t('highlights.unanswered.title')}
           noQuestionsLabel={t('highlights.unanswered.noQuestionsLabel')}
-          options={{ tags: [tag ?? ''] }}
+          options={{ entity: entityRef }}
           postType="question"
         />
         <PostHighlightList
           type="incorrect"
           title={t('highlights.incorrect.title')}
           noQuestionsLabel={t('highlights.incorrect.noQuestionsLabel')}
-          options={{ tags: [tag ?? ''] }}
+          options={{ entity: entityRef }}
           postType="question"
         />
       </Grid>

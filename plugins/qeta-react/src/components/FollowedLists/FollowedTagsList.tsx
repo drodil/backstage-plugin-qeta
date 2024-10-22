@@ -1,20 +1,11 @@
-import {
-  Box,
-  Chip,
-  Divider,
-  List,
-  ListItem,
-  ListSubheader,
-} from '@material-ui/core';
+import { Box, Divider, List, ListItem, ListSubheader } from '@material-ui/core';
 import React from 'react';
 import { useStyles, useTagsFollow, useTranslation } from '../../utils/hooks';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { tagRouteRef } from '../../routes';
+import { TagChip } from '../TagsAndEntities/TagChip';
 
 export const FollowedTagsList = () => {
   const classes = useStyles();
   const tags = useTagsFollow();
-  const tagRoute = useRouteRef(tagRouteRef);
   const { t } = useTranslation();
 
   if (tags.tags.length === 0 || tags.loading) {
@@ -44,15 +35,7 @@ export const FollowedTagsList = () => {
         <Divider />
         <ListItem style={{ display: 'block' }}>
           {tags.tags.map(tag => (
-            <Chip
-              key={tag}
-              label={tag}
-              size="small"
-              className="qetaTagChip"
-              component="a"
-              href={tagRoute({ tag: tag })}
-              clickable
-            />
+            <TagChip key={tag} tag={tag} />
           ))}
         </ListItem>
       </List>

@@ -104,13 +104,18 @@ export interface AnswersOptions {
 }
 
 export interface TagResponse {
+  id: number;
   tag: string;
+  description?: string;
   postsCount: number;
+  followerCount: number;
 }
 
 export interface EntityResponse {
+  id: number;
   entityRef: string;
   postsCount: number;
+  followerCount: number;
 }
 
 export interface AttachmentParameters {
@@ -370,6 +375,8 @@ export interface QetaStore {
    * Returns all used tags for posts
    */
   getTags(): Promise<TagResponse[]>;
+  getTag(tag: string): Promise<TagResponse | null>;
+  updateTag(tag: string, description?: string): Promise<TagResponse | null>;
 
   /**
    * Gets all tags user is following
@@ -388,6 +395,7 @@ export interface QetaStore {
   unfollowEntity(user_ref: string, entityRef: string): Promise<boolean>;
 
   getEntities(): Promise<EntityResponse[]>;
+  getEntity(entity_ref: string): Promise<EntityResponse | null>;
 
   postAttachment({
     uuid,

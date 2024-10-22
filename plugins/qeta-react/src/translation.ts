@@ -35,6 +35,9 @@ export const qetaTranslationRef = createTranslationRef({
       collections_zero: 'No collections',
       collections_one: '{{count}} collection',
       collections_other: '{{count}} collections',
+      followers_zero: 'No followers',
+      followers_one: '{{count}} follower',
+      followers_other: '{{count}} followers',
     },
     answer: {
       questionTitle: 'Q: {{question}}',
@@ -158,6 +161,13 @@ export const qetaTranslationRef = createTranslationRef({
       addComment: 'Add comment',
       post: 'Post',
     },
+    editTagModal: {
+      title: 'Edit tag {{tag}}',
+      description: 'Tag description',
+      errorPosting: 'Failed to edit',
+      saveButton: 'Save',
+      cancelButton: 'Cancel',
+    },
     deleteModal: {
       title: {
         question: 'Are you sure you want to delete this post?',
@@ -177,6 +187,7 @@ export const qetaTranslationRef = createTranslationRef({
       articles: 'Articles',
       profile: 'Profile',
       tags: 'Tags',
+      entities: 'Entities',
       favoriteQuestions: 'Favorites',
       statistics: 'Statistics',
       collections: 'Collections',
@@ -392,7 +403,6 @@ export const qetaTranslationRef = createTranslationRef({
     },
     tagPage: {
       errorLoading: 'Could not load tags',
-      taggedWithTitle: 'Questions tagged with {{tag}}',
       defaultTitle: 'Tags',
       search: {
         label: 'Search tag',
@@ -401,6 +411,17 @@ export const qetaTranslationRef = createTranslationRef({
       tags_zero: 'No tags',
       tags_one: 'Showing {{count}} tag',
       tags_other: 'Showing {{count}} tags',
+    },
+    entitiesPage: {
+      errorLoading: 'Could not load entities',
+      defaultTitle: 'Entities',
+      search: {
+        label: 'Search entity',
+        placeholder: 'Search...',
+      },
+      entities_zero: 'No entities',
+      entities_one: 'Showing {{count}} entity',
+      entities_other: 'Showing {{count}} entities',
     },
     userPage: {
       profileTab: 'Profile',
@@ -421,6 +442,7 @@ export const qetaTranslationRef = createTranslationRef({
     tagButton: {
       follow: 'Follow',
       unfollow: 'Unfollow',
+      edit: 'Edit',
       tooltip:
         'By following a tag, you will get notified when ever a new post with that tag is posted',
     },

@@ -1,24 +1,14 @@
-import {
-  Avatar,
-  Chip,
-  Grid,
-  IconButton,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import { Grid, IconButton, TextField, Typography } from '@material-ui/core';
 import React from 'react';
 import { useQetaApi, useTranslation } from '../../utils/hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { tagRouteRef } from '../../routes';
-import { useNavigate } from 'react-router-dom';
+import { TagGridItem } from './TagGridItem';
 
-export const TagsContainer = () => {
+export const TagsGrid = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
-  const tagRoute = useRouteRef(tagRouteRef);
   const { t } = useTranslation();
-  const navigate = useNavigate();
+
   const {
     value: response,
     loading,
@@ -41,7 +31,11 @@ export const TagsContainer = () => {
     if (!query) {
       return data;
     }
-    return data.filter(tag => tag.tag.toLowerCase().includes(query));
+    return data.filter(
+      tag =>
+        tag.tag.toLowerCase().includes(query) ||
+        tag.description?.toLowerCase().includes(query),
+    );
   };
 
   const tags = filterData(searchQuery, response);
@@ -67,18 +61,9 @@ export const TagsContainer = () => {
           {t('tagPage.tags', { count: tags.length })}
         </Typography>
       </Grid>
-      <Grid item>
+      <Grid container item xs={12} alignItems="stretch">
         {tags.map(tag => (
-          <Chip
-            key={tag.tag}
-            variant="outlined"
-            avatar={<Avatar>{tag.postsCount}</Avatar>}
-            label={tag.tag}
-            className="qetaTagsContainerChip"
-            component="a"
-            clickable
-            onClick={() => navigate(tagRoute({ tag: tag.tag }))}
-          />
+          <TagGridItem tag={tag} key={tag.tag} />
         ))}
       </Grid>
     </Grid>

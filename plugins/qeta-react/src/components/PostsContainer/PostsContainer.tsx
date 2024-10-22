@@ -65,10 +65,7 @@ export const PostsContainer = (props: PaginatedPostsProps) => {
     link = <EntityRefLink entityRef={entity} />;
     btn = <EntityFollowButton entityRef={entity} />;
   } else if (tags) {
-    shownTitle = t(`postsContainer.title.tagged`, {
-      tags: tags.join(', '),
-      itemType,
-    });
+    shownTitle = `#${tags.join(', #')}`;
     if (tags.length === 1) {
       btn = <TagFollowButton tag={tags[0]} />;
     }

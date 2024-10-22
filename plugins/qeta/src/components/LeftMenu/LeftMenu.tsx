@@ -12,6 +12,7 @@ import StarIcon from '@material-ui/icons/Star';
 import {
   articlesRouteRef,
   collectionsRouteRef,
+  entitiesRouteRef,
   favoriteQuestionsRouteRef,
   qetaRouteRef,
   questionsRouteRef,
@@ -46,6 +47,7 @@ export const LeftMenu = (props: {
   const questionsRoute = useRouteRef(questionsRouteRef);
   const articlesRoute = useRouteRef(articlesRouteRef);
   const collectionsRoute = useRouteRef(collectionsRouteRef);
+  const entitiesRoute = useRouteRef(entitiesRouteRef);
   const styles = useStyles();
   const { t } = useTranslation();
   const location = useLocation();
@@ -127,6 +129,12 @@ export const LeftMenu = (props: {
             <StarIcon fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.favoriteQuestions')}
+        </CustomMenuItem>
+        <CustomMenuItem route={entitiesRoute()}>
+          <ListItemIcon className={styles.menuIcon}>
+            <LoyaltyOutlined fontSize="small" />
+          </ListItemIcon>
+          {t('leftMenu.entities')}
         </CustomMenuItem>
         <CustomMenuItem route={tagsRoute()}>
           <ListItemIcon className={styles.menuIcon}>

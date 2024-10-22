@@ -5,8 +5,8 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { useSearchParams } from 'react-router-dom';
-import { articlesRouteRef } from '../../routes';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import { articlesRouteRef } from '../../routes';
 
 export const BackToArticlesButton = (props: { entityPage?: boolean }) => {
   const styles = useStyles();

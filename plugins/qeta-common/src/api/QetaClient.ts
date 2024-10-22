@@ -195,11 +195,50 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as TagResponse[];
   }
 
+  async getTag(tag: string): Promise<TagResponse | null> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/tags/${tag}`,
+    );
+    if (!response.ok) {
+      return null;
+    }
+    return (await response.json()) as TagResponse;
+  }
+
+  async updateTag(
+    tag: string,
+    description?: string,
+  ): Promise<TagResponse | null> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/tags/${tag}`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ description }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    if (!response.ok) {
+      return null;
+    }
+    return (await response.json()) as TagResponse;
+  }
+
   async getEntities(): Promise<EntityResponse[]> {
     const response = await this.fetchApi.fetch(
       `${await this.getBaseUrl()}/entities`,
     );
     return (await response.json()) as EntityResponse[];
+  }
+
+  async getEntity(entityRef: string): Promise<EntityResponse | null> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/entities/${entityRef}`,
+    );
+    if (!response.ok) {
+      return null;
+    }
+
+    return (await response.json()) as EntityResponse;
   }
 
   async votePostUp(id: number): Promise<Post> {

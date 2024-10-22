@@ -218,13 +218,18 @@ export interface AnswersResponse {
 export type AnswerResponseBody = Answer | ErrorResponse;
 
 export interface TagResponse {
+  id: number;
   tag: string;
+  description?: string;
   postsCount: number;
+  followerCount: number;
 }
 
 export interface EntityResponse {
+  id: number;
   entityRef: string;
   postsCount: number;
+  followerCount: number;
 }
 
 export type AttachmentResponseBody = Attachment | ErrorResponse;

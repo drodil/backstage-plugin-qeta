@@ -40,6 +40,25 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     response.status(204).send();
   });
 
+  router.get('/tags/:tag', async (request, response) => {
+    const tag = await database.getTag(request.params.tag);
+    if (!tag) {
+      response.sendStatus(404);
+      return;
+    }
+    response.json(tag);
+  });
+
+  router.post('/tags/:tag', async (request, response) => {
+    const description = request.body.description;
+    const tag = await database.updateTag(request.params.tag, description);
+    if (!tag) {
+      response.sendStatus(404);
+      return;
+    }
+    response.json(tag);
+  });
+
   router.get('/entities', async (_request, response) => {
     const entities = await database.getEntities();
     response.json(entities);
@@ -65,5 +84,14 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     const username = await getUsername(request, options, false);
     await database.unfollowEntity(username, entityRef);
     response.status(204).send();
+  });
+
+  router.get('/entities/:entityRef(*)', async (request, response) => {
+    const entity = await database.getEntity(request.params.entityRef);
+    if (entity === null) {
+      response.sendStatus(404);
+      return;
+    }
+    response.json(entity);
   });
 };

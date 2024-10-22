@@ -842,24 +842,43 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   async getTags(): Promise<TagResponse[]> {
-    const tagRef = this.db.ref('tags.id');
-    const postsCount = this.db('post_tags')
-      .where('post_tags.tagId', tagRef)
-      .count('*')
-      .as('postsCount');
-
-    const tags = await this.db('tags')
-      .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
-      .orderBy('postsCount', 'desc')
-      .select('tag', postsCount)
-      .groupBy('tags.id');
+    const tags = await this.getTagBaseQuery();
 
     return tags.map(tag => {
       return {
+        id: tag.id,
         tag: tag.tag,
+        description: tag.description,
         postsCount: this.mapToInteger(tag.postsCount),
+        followerCount: this.mapToInteger(tag.followerCount),
       };
     });
+  }
+
+  async getTag(tag: string): Promise<TagResponse | null> {
+    const query = this.getTagBaseQuery();
+    const tags = await query.where('tags.tag', '=', tag);
+
+    if (tags.length === 0) {
+      return null;
+    }
+    return {
+      id: tags[0].id,
+      tag: tags[0].tag,
+      description: tags[0].description,
+      postsCount: this.mapToInteger(tags[0].postsCount),
+      followerCount: this.mapToInteger(tags[0].followerCount),
+    };
+  }
+
+  async updateTag(
+    tag: string,
+    description?: string,
+  ): Promise<TagResponse | null> {
+    await this.db('tags')
+      .where('tags.tag', '=', tag)
+      .update({ description: description ?? null });
+    return this.getTag(tag);
   }
 
   async getUserTags(user_ref: string): Promise<UserTagsResponse> {
@@ -916,24 +935,29 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   async getEntities(): Promise<EntityResponse[]> {
-    const entityRef = this.db.ref('entities.id');
-    const postsCount = this.db('post_entities')
-      .where('post_entities.entityId', entityRef)
-      .count('*')
-      .as('postsCount');
-
-    const entities = await this.db('entities')
-      .leftJoin('post_entities', 'entities.id', 'post_entities.entityId')
-      .orderBy('postsCount', 'desc')
-      .select('entity_ref', postsCount)
-      .groupBy('entities.id');
-
+    const entities = await this.getEntitiesBaseQuery();
     return entities.map(entity => {
       return {
+        id: entity.id,
         entityRef: entity.entity_ref,
         postsCount: this.mapToInteger(entity.postsCount),
+        followerCount: this.mapToInteger(entity.followerCount),
       };
     });
+  }
+
+  async getEntity(entity_ref: string): Promise<EntityResponse | null> {
+    const query = this.getEntitiesBaseQuery();
+    const rows = await query.where('entity_ref', '=', entity_ref);
+    if (rows.length === 0) {
+      return null;
+    }
+    return {
+      id: rows[0].id,
+      entityRef: rows[0].entity_ref,
+      postsCount: this.mapToInteger(rows[0].postsCount),
+      followerCount: this.mapToInteger(rows[0].followerCount),
+    };
   }
 
   async getUserEntities(user_ref: string): Promise<UserEntitiesResponse> {
@@ -1500,6 +1524,45 @@ export class DatabaseQetaStore implements QetaStore {
       .where('postId', postId)
       .delete();
     return await this.getCollection(user_ref, id, filters);
+  }
+
+  private getEntitiesBaseQuery() {
+    const entityId = this.db.ref('entities.id');
+    const entityRef = this.db.ref('entities.entity_ref');
+    const postsCount = this.db('post_entities')
+      .where('post_entities.entityId', entityId)
+      .count('*')
+      .as('postsCount');
+
+    const followerCount = this.db('user_entities')
+      .where('user_entities.entityRef', entityRef)
+      .count('*')
+      .as('followerCount');
+
+    return this.db('entities')
+      .leftJoin('post_entities', 'entities.id', 'post_entities.entityId')
+      .orderBy('postsCount', 'desc')
+      .select('id', 'entity_ref', postsCount, followerCount)
+      .groupBy('entities.id');
+  }
+
+  private getTagBaseQuery() {
+    const tagRef = this.db.ref('tags.id');
+    const postsCount = this.db('post_tags')
+      .where('post_tags.tagId', tagRef)
+      .count('*')
+      .as('postsCount');
+
+    const followerCount = this.db('user_tags')
+      .where('user_tags.tagId', tagRef)
+      .count('*')
+      .as('followerCount');
+
+    return this.db('tags')
+      .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
+      .orderBy('postsCount', 'desc')
+      .select('id', 'tag', 'description', postsCount, followerCount)
+      .groupBy('tags.id');
   }
 
   /**

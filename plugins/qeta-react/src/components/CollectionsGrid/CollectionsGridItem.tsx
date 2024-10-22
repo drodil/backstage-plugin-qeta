@@ -39,7 +39,7 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
   const href = collectionRoute({ id: collection.id.toString(10) });
 
   return (
-    <Card style={{ height: '100%' }}>
+    <Card style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <CardActionArea onClick={() => navigate(href)}>
         {collection.headerImage && (
           <CardMedia
@@ -62,7 +62,7 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
           )}
         </CardContent>
       </CardActionArea>
-      <CardContent style={{ paddingTop: '0.5rem' }}>
+      <CardContent style={{ paddingTop: '0.5rem', marginTop: 'auto' }}>
         <TagsAndEntities entity={collection} />
         <Box style={{ paddingLeft: '0.2rem', paddingTop: '0.5rem' }}>
           <Typography variant="caption">

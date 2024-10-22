@@ -772,22 +772,30 @@ export const useEntityAuthor = (
   return { name, initials, user };
 };
 
+let followedTags: string[] | undefined = undefined;
+
 export const useTagsFollow = () => {
-  const [tags, setTags] = React.useState<string[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [tags, setTags] = React.useState<string[]>(followedTags ?? []);
+  const [loading, setLoading] = React.useState(followedTags === undefined);
   const qetaApi = useApi(qetaApiRef);
 
   useEffect(() => {
-    qetaApi.getFollowedTags().then(res => {
-      setTags(res.tags);
-      setLoading(false);
-    });
+    if (followedTags === undefined) {
+      qetaApi.getFollowedTags().then(res => {
+        followedTags = res.tags;
+        setTags(res.tags);
+        setLoading(false);
+      });
+    } else {
+      setTags(followedTags);
+    }
   }, [qetaApi]);
 
   const followTag = useCallback(
     (tag: string) => {
       qetaApi.followTag(tag).then(() => {
         setTags(prev => [...prev, tag]);
+        followedTags?.push(tag);
       });
     },
     [qetaApi],
@@ -797,6 +805,7 @@ export const useTagsFollow = () => {
     (tag: string) => {
       qetaApi.unfollowTag(tag).then(() => {
         setTags(prev => prev.filter(t => t !== tag));
+        followedTags = followedTags?.filter(t => t !== tag);
       });
     },
     [qetaApi],
@@ -806,25 +815,41 @@ export const useTagsFollow = () => {
     (tag: string) => tags.includes(tag),
     [tags],
   );
-  return { tags, followTag, unfollowTag, isFollowingTag, loading };
+  return {
+    tags,
+    followTag,
+    unfollowTag,
+    isFollowingTag,
+    loading,
+  };
 };
 
+let followedEntities: string[] | undefined = undefined;
+
 export const useEntityFollow = () => {
-  const [entities, setEntities] = React.useState<string[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [entities, setEntities] = React.useState<string[]>(
+    followedEntities ?? [],
+  );
+  const [loading, setLoading] = React.useState(followedEntities === undefined);
   const qetaApi = useApi(qetaApiRef);
 
   useEffect(() => {
-    qetaApi.getFollowedEntities().then(res => {
-      setEntities(res.entityRefs);
-      setLoading(false);
-    });
+    if (followedEntities === undefined) {
+      qetaApi.getFollowedEntities().then(res => {
+        followedEntities = res.entityRefs;
+        setEntities(res.entityRefs);
+        setLoading(false);
+      });
+    } else {
+      setEntities(followedEntities);
+    }
   }, [qetaApi]);
 
   const followEntity = useCallback(
     (entityRef: string) => {
       qetaApi.followEntity(entityRef).then(() => {
         setEntities(prev => [...prev, entityRef]);
+        followedEntities?.push(entityRef);
       });
     },
     [qetaApi],
@@ -834,6 +859,7 @@ export const useEntityFollow = () => {
     (entityRef: string) => {
       qetaApi.unfollowEntity(entityRef).then(() => {
         setEntities(prev => prev.filter(t => t !== entityRef));
+        followedEntities = followedEntities?.filter(t => t !== entityRef);
       });
     },
     [qetaApi],
