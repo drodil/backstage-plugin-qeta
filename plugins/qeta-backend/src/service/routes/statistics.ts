@@ -48,7 +48,19 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
 
   router.get('/statistics/global', async (_req, response) => {
     const globalStats = await database.getGlobalStats();
-    const summary = await getSummary();
+    let summary = await getSummary();
+    if (!summary) {
+      summary = {
+        totalAnswers: 0,
+        totalArticles: 0,
+        totalComments: 0,
+        totalQuestions: 0,
+        totalViews: 0,
+        totalVotes: 0,
+        totalTags: 0,
+        totalUsers: 0,
+      };
+    }
     let todayStatsAdded = false;
     const statistics = globalStats.map(g => {
       if (g.date.toDateString() !== new Date().toDateString()) {
@@ -64,13 +76,14 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     if (!todayStatsAdded) {
       statistics.push({ date: new Date(), ...summary });
     }
+
     return response.status(200).json({ statistics, summary });
   });
 
   router.get('/statistics/user/:userRef(*)', async (req, response) => {
     const userRef = req.params.userRef;
     const userStats = await database.getUserStats(userRef);
-    const summary = await database.getUser(userRef);
+    let summary = await database.getUser(userRef);
     let todayStatsAdded = false;
     const statistics = userStats.map(g => {
       if (!summary || g.date.toDateString() !== new Date().toDateString()) {
@@ -83,9 +96,21 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       };
     });
 
-    if (!todayStatsAdded && summary) {
+    if (!todayStatsAdded) {
+      if (!summary) {
+        summary = {
+          userRef,
+          totalAnswers: 0,
+          totalArticles: 0,
+          totalComments: 0,
+          totalQuestions: 0,
+          totalViews: 0,
+          totalVotes: 0,
+        };
+      }
       statistics.push({ date: new Date(), ...summary });
     }
+
     return response.status(200).json({ statistics, summary });
   });
 
