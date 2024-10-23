@@ -4775,6 +4775,7 @@ __metadata:
     "@backstage/backend-defaults": "backstage:^"
     "@backstage/backend-plugin-api": "backstage:^"
     "@backstage/backend-test-utils": "backstage:^"
+    "@backstage/catalog-client": "npm:^1.7.1"
     "@backstage/catalog-model": "backstage:^"
     "@backstage/cli": "backstage:^"
     "@backstage/config": "backstage:^"

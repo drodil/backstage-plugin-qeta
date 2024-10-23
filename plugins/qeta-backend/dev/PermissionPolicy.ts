@@ -25,8 +25,18 @@ import {
   postAuthorConditionFactory,
   postHasEntitiesConditionFactory,
 } from '@drodil/backstage-plugin-qeta-backend';
+import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 
 export class PermissionPolicy implements PermissionPolicy {
+  private catalogApi: CatalogApi;
+
+  constructor(private readonly auth: AuthService, discovery: DiscoveryService) {
+    this.catalogApi = new CatalogClient({
+      discoveryApi: discovery,
+    });
+  }
+
   async handle(
     request: PolicyQuery,
     user?: BackstageIdentityResponse,
@@ -35,6 +45,26 @@ export class PermissionPolicy implements PermissionPolicy {
     if (!isQetaPermission(request.permission)) {
       return { result: AuthorizeResult.ALLOW };
     }
+
+    // We cannot do anything without a user
+    if (!user) {
+      return { result: AuthorizeResult.DENY };
+    }
+
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
+
+    // Needed to get the entities that the user owns so that it can be used
+    // in the permissions
+    // @ts-ignore
+    const ownedEntities = (
+      await this.catalogApi.getEntities(
+        { filter: { 'spec.owner': user?.identity.ownershipEntityRefs } },
+        { token },
+      )
+    ).items;
 
     if (
       request.permission.attributes.action === 'create' ||
@@ -46,7 +76,7 @@ export class PermissionPolicy implements PermissionPolicy {
         isResourcePermission(request.permission, POST_RESOURCE_TYPE) &&
         user
       ) {
-        return createQuestionConditionalDecision(request.permission, {
+        return createPostConditionalDecision(request.permission, {
           allOf: [
             postAuthorConditionFactory({
               userRef: user.identity.userEntityRef,
@@ -59,7 +89,7 @@ export class PermissionPolicy implements PermissionPolicy {
       // Testing so that only posts with specific tag can be seen
       /**
        if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
-        return createQuestionConditionalDecision(request.permission, {
+        return createPostConditionalDecision(request.permission, {
           allOf: [
             postHasTagsConditionFactory({
               tags: ['test'],
@@ -72,7 +102,7 @@ export class PermissionPolicy implements PermissionPolicy {
       // Testing so that only posts with specific entity can be seen
       /**
        if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
-        return createQuestionConditionalDecision(request.permission, {
+        return createPostConditionalDecision(request.permission, {
           allOf: [
             postHasEntitiesConditionFactory({
               entityRefs: ['component:default/test-component'],
@@ -81,7 +111,6 @@ export class PermissionPolicy implements PermissionPolicy {
         });
       }
       */
-
       // Disable posting
       /**
        if (isPermission(request.permission, qetaCreatePostPermission)) {
@@ -124,6 +153,25 @@ export class PermissionPolicy implements PermissionPolicy {
         });
       }
       */
+
+      // Testing that posts for only owned entities can be edited and deleted
+      /* if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
+        const createEntitiesConditions = ownedEntities.map(e => {
+          return postHasEntitiesConditionFactory({
+            entityRefs: [stringifyEntityRef(e)],
+          });
+        });
+
+        return createPostConditionalDecision(request.permission, {
+          anyOf: [
+            // Can edit and delete own questions
+            postAuthorConditionFactory({
+              userRef: user?.identity.userEntityRef,
+            }),
+            ...createEntitiesConditions,
+          ],
+        });
+      }*/
 
       if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
         return createPostConditionalDecision(request.permission, {

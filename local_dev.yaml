@@ -73,3 +73,13 @@ spec:
   members:
     - user:development/jane.doe
   children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: test-component-2
+  title: Test component 2
+spec:
+  owner: user:development/guest
+  type: website
+  lifecycle: experimental

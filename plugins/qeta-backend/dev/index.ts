@@ -1,5 +1,8 @@
 import { createBackend } from '@backstage/backend-defaults';
-import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 import { PermissionPolicy } from './PermissionPolicy';
 
@@ -19,9 +22,11 @@ backend.add(
       reg.registerInit({
         deps: {
           policy: policyExtensionPoint,
+          discovery: coreServices.discovery,
+          auth: coreServices.auth,
         },
-        async init({ policy }) {
-          policy.setPolicy(new PermissionPolicy());
+        async init({ policy, auth, discovery }) {
+          policy.setPolicy(new PermissionPolicy(auth, discovery));
         },
       });
     },
