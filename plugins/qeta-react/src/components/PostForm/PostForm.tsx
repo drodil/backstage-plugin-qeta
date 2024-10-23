@@ -1,6 +1,5 @@
 import {
   configApiRef,
-  errorApiRef,
   useAnalytics,
   useApi,
   useRouteRef,
@@ -27,9 +26,10 @@ import { QuestionForm } from './types';
 import { EntitiesInput } from './EntitiesInput';
 import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
-import { confirmNavigationIfEdited, imageUpload } from '../../utils/utils';
+import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { useFormStyles } from '../../utils/hooks';
+import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 
 const formToRequest = (
   form: QuestionForm,
@@ -118,11 +118,8 @@ export const PostForm = (props: PostFormProps) => {
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
   const configApi = useApi(configApiRef);
-  const errorApi = useApi(errorApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const styles = useFormStyles();
-  const isUploadDisabled =
-    configApi.getOptionalBoolean('qeta.storage.disabled') || false;
   const {
     register,
     handleSubmit,
@@ -257,38 +254,12 @@ export const PostForm = (props: PostFormProps) => {
       {error && (
         <Alert severity="error">{t('postForm.errorPosting', { type })}</Alert>
       )}
-      {type === 'article' && !isUploadDisabled && (
-        <>
-          <input
-            accept="image/*"
-            style={{ display: 'none' }}
-            id="headerImage"
-            type="file"
-            onChange={async event => {
-              if (!event.target.files || event.target.files.length === 0) {
-                return;
-              }
-              const buffer = await event.target.files[0].arrayBuffer();
-
-              const uri = await imageUpload({
-                qetaApi,
-                errorApi,
-                onImageUpload,
-              })(buffer).next();
-              if (typeof uri.value === 'string') {
-                setHeaderImage(uri.value);
-              }
-            }}
-          />
-          <label htmlFor="headerImage">
-            <Button variant="contained" color="primary" component="span">
-              {t('postForm.uploadHeaderImage')}
-            </Button>
-          </label>
-        </>
-      )}
-      {headerImage && (
-        <img className={styles.headerImage} src={headerImage} alt="header" />
+      {type === 'article' && (
+        <HeaderImageInput
+          onChange={(url?: string) => setHeaderImage(url)}
+          onImageUpload={onImageUpload}
+          url={headerImage}
+        />
       )}
       <TextField
         label="Title"

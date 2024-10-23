@@ -1,6 +1,5 @@
 import {
   configApiRef,
-  errorApiRef,
   useAnalytics,
   useApi,
   useRouteRef,
@@ -26,10 +25,11 @@ import {
 import { useTranslation } from '../../utils';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { collectionRouteRef } from '../../routes';
-import { confirmNavigationIfEdited, imageUpload } from '../../utils/utils';
+import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { CollectionFormData } from './types';
 import { useFormStyles } from '../../utils/hooks';
+import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 
 const formToRequest = (
   form: CollectionFormData,
@@ -94,10 +94,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
 
   const qetaApi = useApi(qetaApiRef);
   const configApi = useApi(configApiRef);
-  const errorApi = useApi(errorApiRef);
   const styles = useFormStyles();
-  const isUploadDisabled =
-    configApi.getOptionalBoolean('qeta.storage.disabled') || false;
   const {
     register,
     handleSubmit,
@@ -189,41 +186,13 @@ export const CollectionForm = (props: CollectionFormProps) => {
       {error && (
         <Alert severity="error">{t('collectionForm.errorPosting')}</Alert>
       )}
-      {!isUploadDisabled && (
-        <>
-          <input
-            accept="image/*"
-            style={{ display: 'none' }}
-            id="headerImage"
-            type="file"
-            onChange={async event => {
-              if (!event.target.files || event.target.files.length === 0) {
-                return;
-              }
-              const buffer = await event.target.files[0].arrayBuffer();
-
-              const uri = await imageUpload({
-                qetaApi,
-                errorApi,
-                onImageUpload,
-              })(buffer).next();
-              if (typeof uri.value === 'string') {
-                setHeaderImage(uri.value);
-              }
-            }}
-          />
-          <label htmlFor="headerImage">
-            <Button variant="contained" color="primary" component="span">
-              {t('collectionForm.uploadHeaderImage')}
-            </Button>
-          </label>
-        </>
-      )}
-      {headerImage && (
-        <img className={styles.headerImage} src={headerImage} alt="header" />
-      )}
+      <HeaderImageInput
+        url={headerImage}
+        onChange={(url?: string) => setHeaderImage(url)}
+        onImageUpload={onImageUpload}
+      />
       <TextField
-        label="Title"
+        label={t('collectionForm.titleInput.label')}
         className="qetaCollectionFormTitle"
         required
         fullWidth

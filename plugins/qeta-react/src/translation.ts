@@ -63,9 +63,14 @@ export const qetaTranslationRef = createTranslationRef({
       answerAnonymously: 'Answer anonymously',
       postAnonymously: 'Post anonymously',
     },
+    fileInput: {
+      label: 'Header image',
+      helperText: 'URL of the header image to be used',
+      uploadHeaderImage: 'Upload image',
+      preview: 'Preview image',
+    },
     collectionForm: {
       errorPosting: 'Could not create collection',
-      uploadHeaderImage: 'Upload header image',
       titleInput: {
         label: 'Title',
         helperText: 'Name of the colleciton',

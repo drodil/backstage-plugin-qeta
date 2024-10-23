@@ -82,7 +82,6 @@ export const useStyles = makeStyles(
         minWidth: '180px',
         margin: '20px 0 0',
         listStyle: 'none',
-        fontSize: theme.typography.body1.fontSize,
         padding: '0',
         cursor: 'pointer',
         background: theme.palette.background.paper,
