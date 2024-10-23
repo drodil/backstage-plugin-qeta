@@ -3,19 +3,21 @@ import { LinkButton } from '@backstage/core-components';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { askRouteRef } from '../../routes';
+import { askRouteRef, writeRouteRef } from '../../routes';
 import { useEntityQueryParameter, useTranslation } from '../../utils/hooks';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
+import CreateIcon from '@material-ui/icons/Create';
 
 export const NoPostsCard = (props: {
-  showNoQuestionsBtn?: boolean;
+  showNoPostsBtn?: boolean;
   entity?: string;
   entityPage?: boolean;
   tags?: string[];
   type?: PostType;
 }) => {
-  const { showNoQuestionsBtn, entity, entityPage, tags, type } = props;
+  const { showNoPostsBtn, entity, entityPage, tags, type } = props;
   const askRoute = useRouteRef(askRouteRef);
+  const writeRoute = useRouteRef(writeRouteRef);
   const { t } = useTranslation();
   const entityRef = useEntityQueryParameter(entity);
 
@@ -29,6 +31,8 @@ export const NoPostsCard = (props: {
   if (tags && tags.length > 0) {
     queryParams.set('tags', tags.join(','));
   }
+
+  const route = type === 'article' ? writeRoute : askRoute;
 
   const itemType = t(`common.${type ?? 'post'}`, {});
   return (
@@ -47,15 +51,17 @@ export const NoPostsCard = (props: {
               })}
             </Typography>
           </Grid>
-          {showNoQuestionsBtn && (
+          {showNoPostsBtn && (
             <Grid item>
               <LinkButton
                 to={
                   entityRef || tags
-                    ? `${askRoute()}?${queryParams.toString()}`
-                    : `${askRoute()}`
+                    ? `${route()}?${queryParams.toString()}`
+                    : `${route()}`
                 }
-                startIcon={<HelpOutline />}
+                startIcon={
+                  type === 'article' ? <CreateIcon /> : <HelpOutline />
+                }
                 color="primary"
                 variant="outlined"
               >

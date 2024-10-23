@@ -94,7 +94,7 @@ export const PostList = (props: {
   if (initialLoad && (!response.posts || response.posts.length === 0)) {
     return (
       <NoPostsCard
-        showNoQuestionsBtn={showNoQuestionsBtn}
+        showNoPostsBtn={showNoQuestionsBtn}
         entity={entity}
         entityPage={entityPage}
         tags={tags}
