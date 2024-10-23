@@ -73,7 +73,7 @@ export const articlesRouteRef = createSubRouteRef({
 export const articleRouteRef = createSubRouteRef({
   id: 'qeta.article',
   parent: qetaRouteRef,
-  path: '/article/:id',
+  path: '/articles/:id',
 });
 
 export const usersRouteRef = createSubRouteRef({

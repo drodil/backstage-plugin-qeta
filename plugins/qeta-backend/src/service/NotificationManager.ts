@@ -45,7 +45,7 @@ export class NotificationManager {
             post.type === 'question'
               ? `/qeta/questions/${post.id}`
               : `/qeta/articles/${post.id}`,
-          topic: 'New post about entity',
+          topic: `New ${post.type} about entity`,
         },
       });
     } catch (e) {
@@ -87,9 +87,12 @@ export class NotificationManager {
           description: this.formatDescription(
             `${username} commented on ${post.type}: ${comment}`,
           ),
-          link: `/qeta/questions/${post.id}`,
-          topic: 'New post comment',
-          scope: `question:comment:${post.id}`,
+          link:
+            post.type === 'question'
+              ? `/qeta/questions/${post.id}`
+              : `/qeta/articles/${post.id}`,
+          topic: `New ${post.type} comment`,
+          scope: `${post.type}:comment:${post.id}`,
         },
       });
     } catch (e) {

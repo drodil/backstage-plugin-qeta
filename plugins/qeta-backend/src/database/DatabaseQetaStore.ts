@@ -257,8 +257,8 @@ export class DatabaseQetaStore implements QetaStore {
       }
     }
 
-    const tags = filterTags(options.tags);
-    if (tags) {
+    if (options.tags) {
+      const tags = filterTags(options.tags);
       tags.forEach((t, i) => {
         query.innerJoin(`post_tags AS qt${i}`, 'posts.id', `qt${i}.postId`);
         query.innerJoin(`tags AS t${i}`, `qt${i}.tagId`, `t${i}.id`);
@@ -649,8 +649,8 @@ export class DatabaseQetaStore implements QetaStore {
       parseFilter(filters, query, this.db, false);
     }
 
-    const tags = filterTags(options.tags);
-    if (tags) {
+    if (options.tags) {
+      const tags = filterTags(options.tags);
       tags.forEach((t, i) => {
         query.innerJoin(
           `post_tags AS at${i}`,
