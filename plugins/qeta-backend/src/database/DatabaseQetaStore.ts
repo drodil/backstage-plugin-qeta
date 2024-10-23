@@ -1556,6 +1556,7 @@ export class DatabaseQetaStore implements QetaStore {
       .as('followerCount');
 
     return this.db('entities')
+      .rightJoin('post_entities', 'entities.id', 'post_entities.entityId')
       .orderBy('postsCount', 'desc')
       .select('id', 'entity_ref', postsCount, followerCount)
       .groupBy('entities.id');
@@ -1574,6 +1575,7 @@ export class DatabaseQetaStore implements QetaStore {
       .as('followerCount');
 
     return this.db('tags')
+      .rightJoin('post_tags', 'tags.id', 'post_tags.tagId')
       .orderBy('postsCount', 'desc')
       .select('id', 'tag', 'description', postsCount, followerCount)
       .groupBy('tags.id');
