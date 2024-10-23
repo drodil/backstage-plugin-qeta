@@ -96,11 +96,7 @@ describe('DefaultQetaCollatorFactory', () => {
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
       expect(mockDiscovery.getBaseUrl).toHaveBeenCalledWith('qeta');
-      const totalDocuments =
-        mockPosts.posts.length +
-        mockPosts.posts.length * mockAnswers.length +
-        mockPosts.posts.length * mockComments.length +
-        mockAnswers.length * mockComments.length;
+      const totalDocuments = mockPosts.posts.length;
       expect(documents).toHaveLength(totalDocuments);
       expect(lastRequest.headers.get('authorization')).toEqual(
         'Bearer test_token',
@@ -118,11 +114,7 @@ describe('DefaultQetaCollatorFactory', () => {
       const { documents } = await pipeline.execute();
 
       expect(mockDiscovery.getBaseUrl).toHaveBeenCalledWith('qeta');
-      const totalDocuments =
-        mockPosts.posts.length +
-        mockPosts.posts.length * mockAnswers.length +
-        mockPosts.posts.length * mockComments.length +
-        mockAnswers.length * mockComments.length;
+      const totalDocuments = mockPosts.posts.length;
       expect(documents).toHaveLength(totalDocuments);
       expect(lastRequest.headers.get('authorization')).toEqual(null);
     });

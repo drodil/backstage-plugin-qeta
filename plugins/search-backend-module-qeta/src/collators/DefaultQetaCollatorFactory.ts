@@ -79,9 +79,25 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
       indexedQuestions += posts.length;
 
       for (const post of posts) {
+        const questionContent = `# Question: ${post.title}\n\n${post.content}`;
+        const answersContent = (post.answers ?? []).map(a => {
+          return `## ${a.correct ? 'Correct answer' : 'Answer'} by ${
+            a.author
+          }: ${a.content}`;
+        });
+
+        const allComments = (post.comments ?? []).concat(
+          (post.answers ?? []).flatMap(a => a.comments ?? []),
+        );
+        const commentsContent = allComments.map(c => {
+          return `* Comment by ${c.author}: ${c.content}`;
+        });
+
         yield {
           title: post.title,
-          text: post.content,
+          text: `${questionContent}\n\n${answersContent.join(
+            '\n\n',
+          )}\n\nComments:\n\n${commentsContent.join('\n\n')}`,
           location:
             post.type === 'question'
               ? `/qeta/questions/${post.id}`
@@ -94,51 +110,6 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
           views: post.views,
           tags: post.tags,
         };
-
-        for (const answer of post.answers ?? []) {
-          yield {
-            title: `${
-              answer.correct ? 'Correct answer' : 'Answer'
-            } for question ${post.title}`,
-            text: answer.content,
-            location: `/qeta/questions/${post.id}#answer_${answer.id}`,
-            docType: 'qeta',
-            entityRefs: post.entities,
-            author: answer.author,
-            score: answer.score,
-            tags: post.tags,
-            correctAnswer: answer.correct,
-          };
-
-          for (const comment of answer.comments ?? []) {
-            yield {
-              title: `Comment for ${post.title}`,
-              text: comment.content,
-              location: `/qeta/questions/${post.id}#answer_${answer.id}`,
-              docType: 'qeta',
-              author: comment.author,
-              score: answer.score,
-              tags: post.tags,
-              entityRefs: post.entities,
-            };
-          }
-        }
-
-        for (const comment of post.comments ?? []) {
-          yield {
-            title: `Comment for ${post.title}`,
-            text: comment.content,
-            location:
-              post.type === 'question'
-                ? `/qeta/questions/${post.id}`
-                : `/qeta/articles/${post.id}`,
-            docType: 'qeta',
-            author: comment.author,
-            score: post.score,
-            tags: post.tags,
-            entityRefs: post.entities,
-          };
-        }
       }
     }
   }
