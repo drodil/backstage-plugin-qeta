@@ -13,9 +13,13 @@ export class NotificationManager {
     private readonly notifications?: NotificationService,
   ) {}
 
-  async onNewPost(username: string, post: Post, followingUsers: string[]) {
+  async onNewPost(
+    username: string,
+    post: Post,
+    followingUsers: string[],
+  ): Promise<string[]> {
     if (!this.notifications) {
-      return;
+      return [];
     }
 
     const notificationReceivers = new Set<string>([
@@ -49,6 +53,7 @@ export class NotificationManager {
         `Failed to send notification for new ${post.type}: ${e}`,
       );
     }
+    return [...notificationReceivers];
   }
 
   async onNewPostComment(
@@ -56,9 +61,9 @@ export class NotificationManager {
     post: Post,
     comment: string,
     followingUsers: string[],
-  ) {
+  ): Promise<string[]> {
     if (!this.notifications) {
-      return;
+      return [];
     }
 
     const commenters = new Set<string>(post.comments?.map(c => c.author));
@@ -92,6 +97,7 @@ export class NotificationManager {
         `Failed to send notification for new post comment: ${e}`,
       );
     }
+    return [...notificationReceivers];
   }
 
   async onNewAnswer(
@@ -99,9 +105,9 @@ export class NotificationManager {
     question: Post,
     answer: Answer,
     followingUsers: string[],
-  ) {
+  ): Promise<string[]> {
     if (!this.notifications) {
-      return;
+      return [];
     }
 
     const notificationReceivers = new Set<string>([
@@ -130,6 +136,7 @@ export class NotificationManager {
     } catch (e) {
       this.logger.error(`Failed to send notification for new answer: ${e}`);
     }
+    return [...notificationReceivers];
   }
 
   async onAnswerComment(
@@ -138,9 +145,9 @@ export class NotificationManager {
     answer: Answer,
     comment: string,
     followingUsers: string[],
-  ) {
+  ): Promise<string[]> {
     if (!this.notifications) {
-      return;
+      return [];
     }
 
     const commenters = new Set<string>(answer.comments?.map(c => c.author));
@@ -174,11 +181,16 @@ export class NotificationManager {
         `Failed to send notification for new answer comment: ${e}`,
       );
     }
+    return [...notificationReceivers];
   }
 
-  async onCorrectAnswer(username: string, question: Post, answer: Answer) {
+  async onCorrectAnswer(
+    username: string,
+    question: Post,
+    answer: Answer,
+  ): Promise<string[]> {
     if (!this.notifications) {
-      return;
+      return [];
     }
 
     const notificationReceivers = new Set<string>([
@@ -207,19 +219,23 @@ export class NotificationManager {
     } catch (e) {
       this.logger.error(`Failed to send notification for correct answer: ${e}`);
     }
+    return [...notificationReceivers];
   }
 
   async onMention(
     username: string,
     post: Post | Answer,
     mentions: string[],
+    alreadySent: string[],
     isComment?: boolean,
-  ) {
+  ): Promise<string[]> {
     if (!this.notifications) {
-      return;
+      return [];
     }
 
-    const notificationReceivers = mentions.map(m => m.replaceAll('@', ''));
+    const notificationReceivers = mentions
+      .map(m => m.replaceAll('@', ''))
+      .filter(m => !alreadySent.includes(m));
 
     const isPost = 'title' in post;
     const isQuestion = isPost && post.type === 'question';
@@ -258,6 +274,7 @@ export class NotificationManager {
     } catch (e) {
       this.logger.error(`Failed to send notification for mentions: ${e}`);
     }
+    return [...notificationReceivers];
   }
 
   private formatDescription(description: string) {

@@ -125,10 +125,15 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       database.getUsersForTags(post.tags),
       database.getUsersForEntities(post.entities),
     ]);
-    notificationMgr.onNewAnswer(username, post, answer, followingUsers.flat());
+    const sent = await notificationMgr.onNewAnswer(
+      username,
+      post,
+      answer,
+      followingUsers.flat(),
+    );
     const mentions = findUserMentions(answer.content);
     if (mentions.length > 0) {
-      notificationMgr.onMention(username, answer, mentions);
+      notificationMgr.onMention(username, answer, sent, mentions);
     }
     await mapAdditionalFields(request, answer, options);
 
@@ -248,7 +253,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
 
       const followingUsers = await database.getUsersForTags(post.tags);
-      notificationMgr.onAnswerComment(
+      const sent = await notificationMgr.onAnswerComment(
         username,
         post,
         answer,
@@ -257,7 +262,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       );
       const mentions = findUserMentions(request.body.content);
       if (mentions.length > 0) {
-        notificationMgr.onMention(username, answer, mentions, true);
+        notificationMgr.onMention(username, answer, mentions, sent, true);
       }
       await mapAdditionalFields(request, answer, options);
 

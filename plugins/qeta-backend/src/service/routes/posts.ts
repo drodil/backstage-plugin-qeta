@@ -222,7 +222,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       database.getUsersForTags(question.tags),
       database.getUsersForEntities(question.entities),
     ]);
-    notificationMgr.onNewPostComment(
+    const sent = await notificationMgr.onNewPostComment(
       username,
       question,
       request.body.content,
@@ -230,7 +230,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     );
     const mentions = findUserMentions(request.body.content);
     if (mentions.length > 0) {
-      notificationMgr.onMention(username, question, mentions, true);
+      notificationMgr.onMention(username, question, mentions, sent, true);
     }
 
     if (events) {
@@ -329,10 +329,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       database.getUsersForTags(tags),
       database.getUsersForEntities(entities),
     ]);
-    notificationMgr.onNewPost(username, question, followingUsers.flat());
+    const sent = await notificationMgr.onNewPost(
+      username,
+      question,
+      followingUsers.flat(),
+    );
     const mentions = findUserMentions(request.body.content);
     if (mentions.length > 0) {
-      notificationMgr.onMention(username, question, mentions);
+      notificationMgr.onMention(username, question, sent, mentions);
     }
 
     if (events) {
