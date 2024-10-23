@@ -17,7 +17,8 @@ import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
 export type QetaMarkdownEditorClassKey =
   | 'markdownEditor'
   | 'markdownEditorError'
-  | 'markdownPreview';
+  | 'markdownPreview'
+  | 'suggestionsDropdown';
 
 export const useStyles = makeStyles(
   theme => {
