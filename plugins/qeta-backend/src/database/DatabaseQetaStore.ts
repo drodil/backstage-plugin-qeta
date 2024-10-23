@@ -1251,7 +1251,11 @@ export class DatabaseQetaStore implements QetaStore {
     return this.db<Attachment>('attachments').where('uuid', '=', uuid).first();
   }
 
-  async getTotalViews(user_ref: string, lastDays?: number): Promise<number> {
+  async getTotalViews(
+    user_ref: string,
+    lastDays?: number,
+    excludeUser?: boolean,
+  ): Promise<number> {
     const now = new Date();
     if (lastDays) {
       now.setDate(now.getDate() - lastDays);
@@ -1264,6 +1268,10 @@ export class DatabaseQetaStore implements QetaStore {
       postViewsQuery.where('posts.created', '>', now);
     }
 
+    if (excludeUser) {
+      postViewsQuery.where('post_views.author', '!=', user_ref);
+    }
+
     const answerViewsQuery = this.db('post_views')
       .innerJoin('answers', 'post_views.postId', 'answers.postId')
       .innerJoin('posts', 'post_views.postId', 'posts.id')
@@ -1271,6 +1279,10 @@ export class DatabaseQetaStore implements QetaStore {
       .whereNot('posts.author', user_ref);
     if (lastDays) {
       answerViewsQuery.where('answers.created', '>', now);
+    }
+
+    if (excludeUser) {
+      answerViewsQuery.where('post_views.author', '!=', user_ref);
     }
 
     const postViews = await postViewsQuery.count('* as total');
