@@ -27,6 +27,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-backend';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export class PermissionPolicy implements PermissionPolicy {
   private catalogApi: CatalogApi;
@@ -57,14 +58,22 @@ export class PermissionPolicy implements PermissionPolicy {
     });
 
     // Needed to get the entities that the user owns so that it can be used
-    // in the permissions
-    // @ts-ignore
+    // in the permissions.
     const ownedEntities = (
       await this.catalogApi.getEntities(
-        { filter: { 'spec.owner': user?.identity.ownershipEntityRefs } },
+        {
+          filter: { 'spec.owner': user.identity.ownershipEntityRefs },
+          fields: ['kind', 'metadata.name', 'metadata.namespace'],
+        },
         { token },
       )
     ).items;
+
+    // TODO: Could utilize caching here so that these are not fetched on
+    //       every authorization request. Adding CacheService is not too bit of
+    //       a job.
+    // @ts-ignore
+    const ownedEntityRefs = ownedEntities.map(e => stringifyEntityRef(e));
 
     if (
       request.permission.attributes.action === 'create' ||
@@ -154,11 +163,13 @@ export class PermissionPolicy implements PermissionPolicy {
       }
       */
 
-      // Testing that posts for only owned entities can be edited and deleted
-      /* if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
-        const createEntitiesConditions = ownedEntities.map(e => {
+      // Testing that posts for only owned entities can be edited and deleted.
+      // Same works for answers if needed.
+      /**
+       if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
+        const ownedEntitiesConditions = ownedEntityRefs.map(entityRef => {
           return postHasEntitiesConditionFactory({
-            entityRefs: [stringifyEntityRef(e)],
+            entityRefs: [entityRef],
           });
         });
 
@@ -168,10 +179,11 @@ export class PermissionPolicy implements PermissionPolicy {
             postAuthorConditionFactory({
               userRef: user?.identity.userEntityRef,
             }),
-            ...createEntitiesConditions,
+            ...ownedEntitiesConditions,
           ],
         });
-      }*/
+      }
+       */
 
       if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
         return createPostConditionalDecision(request.permission, {
