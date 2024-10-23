@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.2.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.2.0...v3.2.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* articles routing + notifications ([f431698](https://github.com/drodil/backstage-plugin-qeta/commit/f431698af48e24d78faf0ce8c79e6f04dbd4de25)), closes [#208](https://github.com/drodil/backstage-plugin-qeta/issues/208)
+* correct link from articles to write page if no posts ([848a0e0](https://github.com/drodil/backstage-plugin-qeta/commit/848a0e02f66cb3921f0f4cccf66c86005d57a695)), closes [#206](https://github.com/drodil/backstage-plugin-qeta/issues/206)
+* do not send notifications twice for mentions ([46b2369](https://github.com/drodil/backstage-plugin-qeta/commit/46b23698feba52d8fd97fc3689182aadd9c35d34))
+* do not show tags and entities without any posts ([fb00b4b](https://github.com/drodil/backstage-plugin-qeta/commit/fb00b4b45ba0300f603434471521b341bcfd2d6e))
+* exclude current user views from impact ([d169511](https://github.com/drodil/backstage-plugin-qeta/commit/d169511e48bc9fa3cec4b1a8377784c9aaa41774))
+* statistics to return zero if data is missing ([498f590](https://github.com/drodil/backstage-plugin-qeta/commit/498f5905154c4f8380db4b575fa422ce889104bc)), closes [#207](https://github.com/drodil/backstage-plugin-qeta/issues/207)
+
 ## [3.2.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.1.1...v3.2.0) (2024-10-22)
 
 
