@@ -45,6 +45,7 @@ import {
   isOrCriteria,
 } from '@backstage/plugin-permission-node';
 import { compact } from 'lodash';
+import { TAGS } from '../tagDb';
 
 const migrationsDir = resolvePackagePath(
   '@drodil/backstage-plugin-qeta-backend',
@@ -1938,15 +1939,17 @@ export class DatabaseQetaStore implements QetaStore {
     const newTags = tags.filter(t => !existingTags.some(e => e.tag === t));
     const tagIds = (
       await Promise.all(
-        [...new Set(newTags)].map(
-          async tag =>
-            await this.db
-              .insert({ tag: tag.trim() })
-              .into('tags')
-              .returning('id')
-              .onConflict('tag')
-              .ignore(),
-        ),
+        [...new Set(newTags)].map(async tag => {
+          const trimmed = tag.trim();
+          const description = trimmed in TAGS ? TAGS[trimmed] : undefined;
+
+          return this.db
+            .insert({ tag: trimmed, description })
+            .into('tags')
+            .returning('id')
+            .onConflict('tag')
+            .ignore();
+        }),
       )
     )
       .flat()
