@@ -81,6 +81,7 @@ const question: Post = {
   answersCount: 0,
   correctAnswer: false,
   type: 'question',
+  images: [],
 };
 
 const answer: Answer = {
@@ -91,6 +92,7 @@ const answer: Answer = {
   content: 'content',
   correct: false,
   created: new Date('2022-01-01T00:00:00Z'),
+  images: [],
 };
 
 const comment: Comment = {
