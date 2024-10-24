@@ -305,7 +305,7 @@ export function useVoting(resp: PostResponse | AnswerResponse) {
         analytics.captureEvent('vote', 'question', { value: 1 });
         setEntity(response);
       });
-    } else if ('questionId' in entity) {
+    } else if ('postId' in entity) {
       qetaApi.voteAnswerUp(entity.postId, entity.id).then(response => {
         setOwnVote(1);
         analytics.captureEvent('vote', 'answer', { value: 1 });
@@ -321,7 +321,7 @@ export function useVoting(resp: PostResponse | AnswerResponse) {
         analytics.captureEvent('vote', 'question', { value: -1 });
         setEntity(response);
       });
-    } else if ('questionId' in entity) {
+    } else if ('postId' in entity) {
       qetaApi.voteAnswerDown(entity.postId, entity.id).then(response => {
         setOwnVote(-1);
         analytics.captureEvent('vote', 'answer', { value: -1 });

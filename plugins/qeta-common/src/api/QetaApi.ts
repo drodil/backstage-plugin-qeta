@@ -168,7 +168,7 @@ export interface QetaApi {
     id: number,
   ): Promise<AnswerResponse>;
 
-  deletePost(questionId: number): Promise<boolean>;
+  deletePost(postId: number): Promise<boolean>;
 
   deleteAnswer(questionId: number, id: number): Promise<boolean>;
 

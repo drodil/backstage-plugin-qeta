@@ -78,8 +78,8 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     // Validation
     // Act
     const username = await getUsername(request, options);
-    const questionId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(questionId)) {
+    const collectionId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(collectionId)) {
       response
         .status(400)
         .send({ errors: 'Invalid collection id', type: 'body' });
