@@ -3,5 +3,6 @@ export interface CollectionFormData {
   description?: string;
   readAccess: 'public' | 'private';
   editAccess: 'public' | 'private';
+  images: number[];
   headerImage?: string;
 }

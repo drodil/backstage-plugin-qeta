@@ -21,7 +21,10 @@ class DatabaseStoreEngine {
     this.qetaUrl = `${this.backendBaseUrl}/api/qeta/attachments`;
   }
 
-  handleFile = async (file: File) => {
+  handleFile = async (
+    file: File,
+    options?: { postId?: number; answerId?: number; collectionId?: number },
+  ) => {
     const imageUuid = uuidv4();
     const locationUri = `${this.qetaUrl}/${imageUuid}`;
 
@@ -32,6 +35,7 @@ class DatabaseStoreEngine {
       extension: file.ext,
       mimeType: file.mimeType,
       binaryImage: file.buffer,
+      ...options,
     });
   };
 }

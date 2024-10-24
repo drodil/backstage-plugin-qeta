@@ -592,8 +592,15 @@ export class QetaClient implements QetaApi {
     return response.ok;
   }
 
-  async postAttachment(file: Blob): Promise<AttachmentResponseBody> {
-    const qetaUrl = `${await this.getBaseUrl()}/attachments`;
+  async postAttachment(
+    file: Blob,
+    options?: { postId?: number; answerId?: number; collectionId?: number },
+  ): Promise<AttachmentResponseBody> {
+    let qetaUrl = `${await this.getBaseUrl()}/attachments`;
+    const query = this.getQueryParameters(options);
+    if (query) {
+      qetaUrl += `?${query}`;
+    }
     const formData = new FormData();
 
     formData.append('image', file);

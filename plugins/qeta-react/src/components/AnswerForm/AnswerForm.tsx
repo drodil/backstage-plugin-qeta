@@ -1,6 +1,6 @@
 import { WarningPanel } from '@backstage/core-components';
 import { Button, Typography } from '@material-ui/core';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   AnswerRequest,
@@ -17,8 +17,14 @@ import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { useFormStyles } from '../../utils/hooks';
 
-const getDefaultValues = (postId: number) => {
-  return { postId, answer: '' };
+type AnswerFormData = {
+  postId: number;
+  answer: string;
+  images: number[];
+};
+
+const getDefaultValues = (postId: number): AnswerFormData => {
+  return { postId, answer: '', images: [] };
 };
 
 export const AnswerForm = (props: {
@@ -27,7 +33,9 @@ export const AnswerForm = (props: {
   id?: number;
 }) => {
   const { post, onPost, id } = props;
-  const [values, setValues] = React.useState(getDefaultValues(post.id));
+  const [values, setValues] = React.useState<AnswerFormData>(
+    getDefaultValues(post.id),
+  );
   const analytics = useAnalytics();
   const [error, setError] = React.useState(false);
   const [images, setImages] = React.useState<number[]>([]);
@@ -94,7 +102,8 @@ export const AnswerForm = (props: {
     if (id) {
       qetaApi.getAnswer(post.id, id).then(a => {
         if ('content' in a) {
-          setValues({ postId: post.id, answer: a.content });
+          setValues({ postId: post.id, answer: a.content, images: a.images });
+          setImages(a.images);
         } else {
           setError(true);
         }
@@ -109,6 +118,13 @@ export const AnswerForm = (props: {
   useEffect(() => {
     return confirmNavigationIfEdited(edited);
   }, [edited]);
+
+  const onImageUpload = useCallback(
+    (imageId: number) => {
+      setImages(prevImages => [...prevImages, imageId]);
+    },
+    [setImages],
+  );
 
   return (
     <RequirePermission
@@ -140,9 +156,8 @@ export const AnswerForm = (props: {
               error={'answer' in errors}
               config={configApi}
               placeholder={t('answerForm.contentInput.placeholder')}
-              onImageUpload={(imageId: number) => {
-                setImages(prevImages => [...prevImages, imageId]);
-              }}
+              onImageUpload={onImageUpload}
+              answerId={id ? Number(id) : undefined}
             />
           )}
           name="answer"

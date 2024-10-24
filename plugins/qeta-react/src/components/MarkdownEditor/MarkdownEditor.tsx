@@ -114,6 +114,9 @@ export const MarkdownEditor = (props: {
   disableToolbar?: boolean;
   disableAttachments?: boolean;
   disablePreview?: boolean;
+  postId?: number;
+  answerId?: number;
+  collectionId?: number;
 }) => {
   const {
     config,
@@ -125,6 +128,9 @@ export const MarkdownEditor = (props: {
     disableAttachments,
     disableToolbar,
     disablePreview,
+    postId,
+    answerId,
+    collectionId,
   } = props;
   const [selectedTab, setSelectedTab] = React.useState<'write' | 'preview'>(
     'write',
@@ -219,6 +225,9 @@ export const MarkdownEditor = (props: {
                 qetaApi,
                 errorApi,
                 onImageUpload: props.onImageUpload,
+                postId,
+                answerId,
+                collectionId,
               }),
             }
       }

@@ -9,6 +9,7 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { notificationService } from '@backstage/plugin-notifications-node';
 import { StatsCollector } from './service/StatsCollector';
 import { TagsUpdater } from './service/TagsUpdater';
+import { AttachmentCleaner } from './service/AttachmentCleaner';
 
 /**
  * Qeta backend plugin
@@ -32,6 +33,7 @@ export const qetaPlugin = createBackendPlugin({
         scheduler: coreServices.scheduler,
         signals: signalsServiceRef,
         notifications: notificationService,
+        auth: coreServices.auth,
       },
       async init({
         logger,
@@ -46,6 +48,7 @@ export const qetaPlugin = createBackendPlugin({
         scheduler,
         signals,
         notifications,
+        auth,
       }) {
         const qetaStore = await DatabaseQetaStore.create({
           database,
@@ -82,6 +85,15 @@ export const qetaPlugin = createBackendPlugin({
         );
 
         await TagsUpdater.initTagsUpdater(config, scheduler, logger, qetaStore);
+
+        await AttachmentCleaner.initAttachmentCleaner(
+          config,
+          scheduler,
+          logger,
+          qetaStore,
+          discovery,
+          auth,
+        );
       },
     });
   },

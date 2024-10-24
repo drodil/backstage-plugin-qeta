@@ -24,10 +24,12 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { LinkButton } from '../Buttons/LinkButton';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { editQuestionRouteRef } from '../../routes';
+import { useNavigate } from 'react-router-dom';
 
 export const QuestionCard = (props: { question: PostResponse }) => {
   const { question } = props;
   const styles = useStyles();
+  const navigate = useNavigate();
   const editQuestionRoute = useRouteRef(editQuestionRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [questionEntity, setQuestionEntity] = React.useState(question);
@@ -107,9 +109,13 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                           variant="outlined"
                           size="small"
                           startIcon={<EditIcon />}
-                          href={editQuestionRoute({
-                            id: question.id.toString(10),
-                          })}
+                          onClick={() =>
+                            navigate(
+                              editQuestionRoute({
+                                id: question.id.toString(10),
+                              }),
+                            )
+                          }
                           className="qetaQuestionCardEditBtn"
                         >
                           {t('questionPage.editButton')}

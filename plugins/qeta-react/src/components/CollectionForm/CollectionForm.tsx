@@ -34,12 +34,10 @@ import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 const formToRequest = (
   form: CollectionFormData,
   images: number[],
-  headerImage?: string,
 ): CollectionRequest => {
   return {
     ...form,
     images,
-    headerImage,
   };
 };
 
@@ -53,6 +51,7 @@ const getDefaultValues = (): CollectionFormData => {
     title: '',
     readAccess: 'private',
     editAccess: 'private',
+    images: [],
   };
 };
 
@@ -72,6 +71,7 @@ const getValues = async (
       editAccess: collection.editAccess,
       readAccess: collection.readAccess,
       headerImage: collection.headerImage,
+      images: collection.images,
     },
     collection,
   };
@@ -86,7 +86,6 @@ export const CollectionForm = (props: CollectionFormProps) => {
   const [values, setValues] = React.useState(getDefaultValues());
   const [error, setError] = React.useState(false);
   const [edited, setEdited] = React.useState(false);
-  const [headerImage, setHeaderImage] = React.useState<string | undefined>();
   const [canModifyAccess, setCanModifyAccess] = React.useState(true);
 
   const [images, setImages] = React.useState<number[]>([]);
@@ -111,7 +110,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
 
     if (id) {
       qetaApi
-        .updateCollection(Number(id), formToRequest(data, images, headerImage))
+        .updateCollection(Number(id), formToRequest(data, images))
         .then(q => {
           if (!q || !q.id) {
             setError(true);
@@ -133,7 +132,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
       return;
     }
     qetaApi
-      .createCollection(formToRequest(data, images, headerImage))
+      .createCollection(formToRequest(data, images))
       .then(q => {
         if (!q || !q.id) {
           setError(true);
@@ -154,8 +153,8 @@ export const CollectionForm = (props: CollectionFormProps) => {
     if (id) {
       getValues(qetaApi, id).then(data => {
         setValues(data.form);
-        setHeaderImage(data.form.headerImage);
         setCanModifyAccess(data.collection?.canDelete ?? false);
+        setImages(data.form.images);
       });
     }
   }, [qetaApi, id]);
@@ -187,9 +186,12 @@ export const CollectionForm = (props: CollectionFormProps) => {
         <Alert severity="error">{t('collectionForm.errorPosting')}</Alert>
       )}
       <HeaderImageInput
-        url={headerImage}
-        onChange={(url?: string) => setHeaderImage(url)}
+        url={values.headerImage}
+        onChange={(url?: string) =>
+          setValues(v => ({ ...v, headerImage: url }))
+        }
         onImageUpload={onImageUpload}
+        collectionId={id ? Number(id) : undefined}
       />
       <TextField
         label={t('collectionForm.titleInput.label')}
@@ -220,6 +222,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
             placeholder={t('collectionForm.descriptionInput.placeholder')}
             config={configApi}
             onImageUpload={onImageUpload}
+            collectionId={id ? Number(id) : undefined}
           />
         )}
         name="description"

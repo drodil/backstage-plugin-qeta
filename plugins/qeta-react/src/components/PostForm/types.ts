@@ -8,5 +8,6 @@ export interface QuestionForm {
   entities?: Entity[];
   anonymous?: boolean;
   type: PostType;
+  images: number[];
   headerImage?: string;
 }

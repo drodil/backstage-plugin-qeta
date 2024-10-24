@@ -7,7 +7,12 @@ import S3StoreEngine from '../upload/s3';
 import fs from 'fs';
 import FileType from 'file-type';
 import { File, RouteOptions } from '../types';
-import { GetObjectCommand, GetObjectCommandOutput } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  DeleteObjectCommandOutput,
+  GetObjectCommand,
+  GetObjectCommandOutput,
+} from '@aws-sdk/client-s3';
 import { getS3Client } from '../util';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
@@ -78,16 +83,26 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
         size: fileBuffer.byteLength || 0,
       };
 
+      const opts = {
+        postId: request.query.postId ? Number(request.query.postId) : undefined,
+        answerId: request.query.answerId
+          ? Number(request.query.answerId)
+          : undefined,
+        collectionId: request.query.collectionId
+          ? Number(request.query.collectionId)
+          : undefined,
+      };
+
       switch (storageType) {
         case 's3':
-          attachment = await s3Engine.handleFile(file);
+          attachment = await s3Engine.handleFile(file, opts);
           break;
         case 'filesystem':
-          attachment = await fileSystemEngine.handleFile(file);
+          attachment = await fileSystemEngine.handleFile(file, opts);
           break;
         case 'database':
         default:
-          attachment = await databaseEngine.handleFile(file);
+          attachment = await databaseEngine.handleFile(file, opts);
           break;
       }
       response.json(attachment);
@@ -100,7 +115,8 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
 
     const attachment = await database.getAttachment(uuid);
     if (!attachment) {
-      return response.status(404).send('Attachment not found');
+      response.status(404).send('Attachment not found');
+      return;
     }
 
     const getS3ImageBuffer = async () => {
@@ -146,6 +162,62 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       'Content-Length': imageBuffer ? imageBuffer.byteLength : '',
     });
 
-    return response.end(imageBuffer);
+    response.end(imageBuffer);
+  });
+
+  // DELETE /attachments/:id
+  router.delete('/attachments/:uuid', async (request, response) => {
+    const { uuid } = request.params;
+
+    // Only allow own service credentials
+    const credentials = await options.httpAuth.credentials(request, {
+      allow: ['service'],
+    });
+    if (!credentials || credentials.principal.subject !== 'plugin:qeta') {
+      response.status(401).send('Unauthorized');
+      return;
+    }
+
+    const attachment = await database.getAttachment(uuid);
+    if (!attachment) {
+      response.status(404).send('Attachment not found');
+      return;
+    }
+
+    const deleteS3Image = async () => {
+      const bucket = config.getOptionalString('qeta.storage.bucket');
+      if (!bucket) {
+        throw new Error('Bucket name is required for S3 storage');
+      }
+      const s3 = getS3Client(config);
+      const output: DeleteObjectCommandOutput = await s3.send(
+        new DeleteObjectCommand({
+          Bucket: bucket,
+          Key: attachment.path,
+        }),
+      );
+      if (output.$metadata.httpStatusCode !== 204) {
+        throw new Error('Failed to delete object');
+      }
+    };
+
+    switch (attachment.locationType) {
+      case 's3':
+        await deleteS3Image();
+        break;
+      case 'filesystem':
+        await fs.promises.rm(attachment.path);
+        break;
+      default:
+      case 'database':
+        break;
+    }
+
+    const result = await database.deleteAttachment(uuid);
+    if (!result) {
+      response.status(404).send('Attachment not found');
+      return;
+    }
+    response.sendStatus(204);
   });
 };

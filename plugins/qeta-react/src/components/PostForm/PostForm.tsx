@@ -31,16 +31,11 @@ import { qetaApiRef } from '../../api';
 import { useFormStyles } from '../../utils/hooks';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 
-const formToRequest = (
-  form: QuestionForm,
-  images: number[],
-  headerImage?: string,
-): PostRequest => {
+const formToRequest = (form: QuestionForm, images: number[]): PostRequest => {
   return {
     ...form,
     entities: form.entities?.map(stringifyEntityRef),
-    images,
-    headerImage,
+    images: images,
   };
 };
 
@@ -60,6 +55,7 @@ const getDefaultValues = (props: PostFormProps): QuestionForm => {
     tags: props.tags ?? [],
     entities: [],
     type: props.type,
+    images: [],
   };
 };
 
@@ -93,6 +89,7 @@ const getValues = async (
     entities: 'items' in entities ? compact(entities.items) : [],
     type,
     headerImage: post.headerImage,
+    images: post.images,
   };
 };
 
@@ -109,7 +106,6 @@ export const PostForm = (props: PostFormProps) => {
   const [values, setValues] = React.useState(getDefaultValues(props));
   const [error, setError] = React.useState(false);
   const [edited, setEdited] = React.useState(false);
-  const [headerImage, setHeaderImage] = React.useState<string | undefined>();
 
   const [images, setImages] = React.useState<number[]>([]);
   const [searchParams, _setSearchParams] = useSearchParams();
@@ -145,7 +141,7 @@ export const PostForm = (props: PostFormProps) => {
 
     if (id) {
       qetaApi
-        .updatePost(id, formToRequest(data, images, headerImage))
+        .updatePost(id, formToRequest(data, images))
         .then(q => {
           if (!q || !q.id) {
             setError(true);
@@ -173,7 +169,7 @@ export const PostForm = (props: PostFormProps) => {
       return;
     }
     qetaApi
-      .createPost(formToRequest(data, images, headerImage))
+      .createPost(formToRequest(data, images))
       .then(q => {
         if (!q || !q.id) {
           setError(true);
@@ -211,7 +207,7 @@ export const PostForm = (props: PostFormProps) => {
     if (id) {
       getValues(qetaApi, catalogApi, type, id).then(data => {
         setValues(data);
-        setHeaderImage(data.headerImage);
+        setImages(data.images);
       });
     }
   }, [qetaApi, catalogApi, type, id]);
@@ -256,9 +252,12 @@ export const PostForm = (props: PostFormProps) => {
       )}
       {type === 'article' && (
         <HeaderImageInput
-          onChange={(url?: string) => setHeaderImage(url)}
+          onChange={(url?: string) =>
+            setValues(v => ({ ...v, headerImage: url }))
+          }
           onImageUpload={onImageUpload}
-          url={headerImage}
+          url={values.headerImage}
+          postId={id ? Number(id) : undefined}
         />
       )}
       <TextField
@@ -290,6 +289,7 @@ export const PostForm = (props: PostFormProps) => {
             placeholder={t('postForm.contentInput.placeholder', { type })}
             config={configApi}
             onImageUpload={onImageUpload}
+            postId={id ? Number(id) : undefined}
           />
         )}
         name="content"

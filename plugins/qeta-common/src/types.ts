@@ -86,6 +86,7 @@ export interface Post extends PostAnswerEntity {
   trend?: number;
   type: PostType;
   headerImage?: string;
+  images: number[];
 }
 
 export interface Question extends Post {
@@ -115,6 +116,7 @@ export interface Answer extends PostAnswerEntity {
   postId: number;
   correct: boolean;
   post?: Post;
+  images: number[];
 }
 
 export interface Collection extends CollectionEntity {
@@ -123,6 +125,7 @@ export interface Collection extends CollectionEntity {
   posts?: Post[];
   canEdit: boolean;
   canDelete: boolean;
+  images: number[];
 }
 
 export interface Vote {

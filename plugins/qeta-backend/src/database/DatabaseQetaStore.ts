@@ -452,11 +452,13 @@ export class DatabaseQetaStore implements QetaStore {
       this.addPostEntities(posts[0].id, entities),
     ]);
 
-    if (images && images.length > 0) {
-      await this.db('attachments')
-        .whereIn('id', images)
-        .update({ postId: posts[0].id });
-    }
+    await this.updateAttachments(
+      'postId',
+      content,
+      images ?? [],
+      posts[0].id,
+      headerImage,
+    );
 
     return this.mapPostEntity(posts[0], user_ref, false, false, true);
   }
@@ -558,9 +560,13 @@ export class DatabaseQetaStore implements QetaStore {
       this.addPostEntities(id, entities, true),
     ]);
 
-    if (images && images.length > 0) {
-      await this.db('attachments').whereIn('id', images).update({ postId: id });
-    }
+    await this.updateAttachments(
+      'postId',
+      content,
+      images ?? [],
+      id,
+      headerImage,
+    );
 
     return await this.getPost(user_ref, id, false);
   }
@@ -590,11 +596,12 @@ export class DatabaseQetaStore implements QetaStore {
       .into('answers')
       .returning('id');
 
-    if (images && images.length > 0) {
-      await this.db('attachments')
-        .whereIn('id', images)
-        .update({ answerId: answers[0].id });
-    }
+    await this.updateAttachments(
+      'answerId',
+      answer,
+      images ?? [],
+      answers[0].id,
+    );
 
     return this.getAnswer(answers[0].id, user_ref);
   }
@@ -620,11 +627,7 @@ export class DatabaseQetaStore implements QetaStore {
       return null;
     }
 
-    if (images && images.length > 0) {
-      await this.db('attachments')
-        .whereIn('id', images)
-        .update({ answerId: answerId });
-    }
+    await this.updateAttachments('answerId', answer, images ?? [], answerId);
 
     return this.getAnswer(answerId, user_ref);
   }
@@ -1227,6 +1230,9 @@ export class DatabaseQetaStore implements QetaStore {
     binaryImage,
     path,
     creator,
+    postId,
+    answerId,
+    collectionId,
   }: AttachmentParameters): Promise<Attachment> {
     const attachments: Attachment[] = await this.db
       .insert(
@@ -1240,6 +1246,9 @@ export class DatabaseQetaStore implements QetaStore {
           binaryImage: binaryImage,
           creator: creator,
           created: new Date(),
+          postId,
+          answerId,
+          collectionId,
         },
         ['id', 'uuid', 'locationUri', 'locationType'],
       )
@@ -1248,8 +1257,24 @@ export class DatabaseQetaStore implements QetaStore {
     return attachments[0];
   }
 
+  async deleteAttachment(uuid: string): Promise<boolean> {
+    const query = this.db('attachments').where('uuid', '=', uuid);
+    return !!(await query.delete());
+  }
+
   async getAttachment(uuid: string): Promise<Attachment | undefined> {
     return this.db<Attachment>('attachments').where('uuid', '=', uuid).first();
+  }
+
+  async getDeletableAttachments(dayLimit: number): Promise<Attachment[]> {
+    const now = new Date();
+    now.setDate(now.getDate() - dayLimit);
+    return this.db<Attachment>('attachments')
+      .whereNull('postId')
+      .whereNull('answerId')
+      .whereNull('collectionId')
+      .where(`created`, '<=', now)
+      .select();
   }
 
   async getTotalViews(
@@ -1469,11 +1494,13 @@ export class DatabaseQetaStore implements QetaStore {
         'headerImage',
       ]);
 
-    if (images && images.length > 0) {
-      await this.db('attachments')
-        .whereIn('id', images)
-        .update({ collectionId: collections[0].id });
-    }
+    await this.updateAttachments(
+      'collectionId',
+      description ?? '',
+      images ?? [],
+      collections[0].id,
+      headerImage,
+    );
 
     return this.mapCollectionEntity(collections[0], user_ref);
   }
@@ -1511,11 +1538,13 @@ export class DatabaseQetaStore implements QetaStore {
       return null;
     }
 
-    if (images && images.length > 0) {
-      await this.db('attachments')
-        .whereIn('id', images)
-        .update({ collectionId: id });
-    }
+    await this.updateAttachments(
+      'collectionId',
+      description ?? '',
+      images ?? [],
+      id,
+      headerImage,
+    );
 
     return await this.getCollection(user_ref, id);
   }
@@ -1665,19 +1694,18 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Collection> {
-    const collections = await this.getPosts(
-      user_ref,
-      { collectionId: val.id },
-      filters,
-    );
+    const results = await Promise.all([
+      this.getPosts(user_ref, { collectionId: val.id }, filters),
+      this.db('attachments').where('collectionId', val.id).select('id'),
+    ]);
     const canEdit = val.owner === user_ref || val.editAccess === 'public';
     const canDelete = val.owner === user_ref;
 
     const entities = compact([
-      ...new Set(collections.posts.map(p => p.entities).flat()),
+      ...new Set(results[0].posts.map(p => p.entities).flat()),
     ]);
     const tags = compact([
-      ...new Set(collections.posts.map(p => p.tags).flat()),
+      ...new Set(results[0].posts.map(p => p.tags).flat()),
     ]);
 
     return {
@@ -1686,7 +1714,7 @@ export class DatabaseQetaStore implements QetaStore {
       owner: val.owner,
       description: val.description,
       created: val.created as Date,
-      posts: collections.posts,
+      posts: results[0].posts,
       readAccess: val.readAccess as 'public' | 'private',
       editAccess: val.editAccess as 'public' | 'private',
       canEdit,
@@ -1694,6 +1722,7 @@ export class DatabaseQetaStore implements QetaStore {
       headerImage: val.headerImage,
       entities,
       tags,
+      images: results[1].map(r => r.id),
     };
   }
 
@@ -1714,6 +1743,7 @@ export class DatabaseQetaStore implements QetaStore {
       addVotes !== false ? this.getPostVotes(val.id) : undefined,
       addEntities ? this.getPostEntities(val.id) : undefined,
       addComments ? this.getPostComments(val.id) : undefined,
+      this.db('attachments').select('id').where('postId', val.id),
     ]);
     return {
       id: val.id,
@@ -1740,6 +1770,7 @@ export class DatabaseQetaStore implements QetaStore {
       anonymous: val.anonymous,
       type: val.type,
       headerImage: val.headerImage,
+      images: additionalInfo[5].map(r => r.id),
     };
   }
 
@@ -1765,6 +1796,7 @@ export class DatabaseQetaStore implements QetaStore {
       addVotes ? this.getAnswerVotes(val.id) : undefined,
       addComments ? this.getAnswerComments(val.id) : undefined,
       addPost ? this.getPost(user_ref, val.postId, false) : undefined,
+      this.db('attachments').select('id').where('answerId', val.id),
     ]);
     return {
       id: val.id,
@@ -1781,6 +1813,7 @@ export class DatabaseQetaStore implements QetaStore {
       comments: additionalInfo[1],
       anonymous: val.anonymous,
       post: additionalInfo[2] ?? undefined,
+      images: additionalInfo[3].map(r => r.id),
     };
   }
 
@@ -2041,5 +2074,30 @@ export class DatabaseQetaStore implements QetaStore {
 
     const ret = await query.update({ correct }, ['id']);
     return ret !== undefined && ret?.length > 0;
+  }
+
+  private async updateAttachments(
+    key: 'postId' | 'answerId' | 'collectionId',
+    content: string,
+    images: number[],
+    id: number,
+    headerImage?: string,
+  ) {
+    if (images.length > 0) {
+      await this.db<Attachment>('attachments')
+        .whereIn('id', images)
+        .update({ [key]: id });
+    }
+
+    const attachments = await this.db<Attachment>('attachments')
+      .where(key, id)
+      .select('uuid');
+    const uuids = attachments.map(a => a.uuid);
+    const toRemove = uuids.filter(uuid => {
+      return !(content.includes(uuid) || headerImage?.includes(uuid));
+    });
+    await this.db<Attachment>('attachments')
+      .whereIn('uuid', toRemove)
+      .update({ [key]: null });
   }
 }

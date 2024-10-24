@@ -137,6 +137,9 @@ export interface AttachmentParameters {
   path?: string;
   binaryImage?: Buffer;
   creator?: string;
+  postId?: number;
+  answerId?: number;
+  collectionId?: number;
 }
 
 /**
@@ -421,6 +424,8 @@ export interface QetaStore {
   }: AttachmentParameters): Promise<Attachment>;
 
   getAttachment(uuid: string): Promise<Attachment | undefined>;
+  deleteAttachment(uuid: string): Promise<boolean>;
+  getDeletableAttachments(dayLimit: number): Promise<Attachment[]>;
 
   getMostUpvotedPosts({
     author,

@@ -32,7 +32,10 @@ class S3StoreEngine {
       '/backstage-qeta-images';
   }
 
-  handleFile = async (file: File): Promise<Attachment> => {
+  handleFile = async (
+    file: File,
+    options?: { postId?: number; answerId?: number; collectionId?: number },
+  ): Promise<Attachment> => {
     if (!this.bucket) {
       throw new Error('Bucket name is required for S3 storage');
     }
@@ -58,6 +61,7 @@ class S3StoreEngine {
       path: newPath,
       binaryImage: Buffer.from('0'),
       creator: '', // required to run locally on sqlite, otherwise it complains about null.
+      ...options,
     });
   };
 }

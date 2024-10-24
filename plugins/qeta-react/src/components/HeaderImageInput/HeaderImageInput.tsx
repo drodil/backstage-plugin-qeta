@@ -10,8 +10,10 @@ export const HeaderImageInput = (props: {
   url?: string;
   onChange: (url?: string) => void;
   onImageUpload: (imageId: number) => void;
+  postId?: number;
+  collectionId?: number;
 }) => {
-  const { url, onChange, onImageUpload } = props;
+  const { url, onChange, onImageUpload, postId, collectionId } = props;
   const configApi = useApi(configApiRef);
   const qetaApi = useApi(qetaApiRef);
   const errorApi = useApi(errorApiRef);
@@ -52,6 +54,8 @@ export const HeaderImageInput = (props: {
                 qetaApi,
                 errorApi,
                 onImageUpload,
+                postId,
+                collectionId,
               })(buffer).next();
               if (typeof uri.value === 'string') {
                 onChange(uri.value);

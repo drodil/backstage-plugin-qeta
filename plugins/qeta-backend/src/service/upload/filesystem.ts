@@ -27,7 +27,10 @@ class FilesystemStoreEngine {
       '/tmp/backstage-qeta-images';
   }
 
-  handleFile = async (file: File): Promise<Attachment> => {
+  handleFile = async (
+    file: File,
+    options?: { postId?: number; answerId?: number; collectionId?: number },
+  ): Promise<Attachment> => {
     fs.mkdirSync(this.folder, { recursive: true });
 
     const imageUuid = uuidv4();
@@ -48,6 +51,7 @@ class FilesystemStoreEngine {
       extension: file.ext,
       path: newPath,
       mimeType: file.mimeType,
+      ...options,
     });
   };
 }

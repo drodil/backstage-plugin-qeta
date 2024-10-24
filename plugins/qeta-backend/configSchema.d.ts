@@ -100,8 +100,21 @@ export interface Config {
        */
       historyDays?: number;
     };
+    /**
+     * Updates tag descriptions automatically
+     */
     tagUpdater?: {
       schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+    };
+    /**
+     * Deletes unused attachments
+     */
+    attachmentCleaner?: {
+      schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+      /**
+       * Number of days to keep the unused attachments, defaults to 7
+       */
+      dayLimit?: number;
     };
   };
 }
