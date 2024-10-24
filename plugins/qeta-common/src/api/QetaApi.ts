@@ -150,7 +150,10 @@ export interface QetaApi {
 
   postAnswer(answer: AnswerRequest): Promise<AnswerResponseBody>;
 
-  postAttachment(file: Blob): Promise<AttachmentResponseBody>;
+  postAttachment(
+    file: Blob,
+    options?: { width?: number; height?: number },
+  ): Promise<AttachmentResponseBody>;
 
   commentAnswer(
     questionId: number,

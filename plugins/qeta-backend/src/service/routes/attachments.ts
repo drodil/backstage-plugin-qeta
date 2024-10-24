@@ -9,6 +9,7 @@ import FileType from 'file-type';
 import { File, RouteOptions } from '../types';
 import { GetObjectCommand, GetObjectCommandOutput } from '@aws-sdk/client-s3';
 import { getS3Client } from '../util';
+import sharp from 'sharp';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
 const DEFAULT_MIME_TYPES = [
@@ -17,6 +18,10 @@ const DEFAULT_MIME_TYPES = [
   'image/jpeg',
   'image/gif',
 ];
+
+const resizeImage = (buffer: Buffer, width?: number, height?: number) => {
+  return sharp(buffer).resize(width, height).toBuffer();
+};
 
 export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
   const { database, config } = options;
@@ -46,7 +51,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       }
 
       const fileRequest = files.image[0];
-      const fileBuffer = await fs.promises.readFile(`${fileRequest?.path}`);
+      let fileBuffer = await fs.promises.readFile(`${fileRequest?.path}`);
       const mimeType = await FileType.fromBuffer(fileBuffer);
 
       if (mimeType && !supportedFilesTypes.includes(mimeType.mime)) {
@@ -56,6 +61,22 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
           ],
         });
         return;
+      }
+
+      if (request.query.width || request.query.height) {
+        const width = request.query.width
+          ? parseInt(request.query.width as string, 10)
+          : undefined;
+        const height = request.query.height
+          ? parseInt(request.query.height as string, 10)
+          : undefined;
+        if ((width && isNaN(width)) || (height && isNaN(height))) {
+          response.status(400).json({
+            errors: [{ message: `Width and height must be integers.` }],
+          });
+          return;
+        }
+        fileBuffer = await resizeImage(fileBuffer, width, height);
       }
 
       if (fileBuffer.byteLength > maxSizeImage) {
