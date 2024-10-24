@@ -8,8 +8,12 @@ export const imageUpload = (opts: {
   qetaApi: QetaApi;
   errorApi: ErrorApi;
   onImageUpload?: (id: number) => void;
+  options?: {
+    width?: number;
+    height?: number;
+  };
 }) => {
-  const { qetaApi, errorApi, onImageUpload } = opts;
+  const { qetaApi, errorApi, onImageUpload, options } = opts;
   // eslint-disable-next-line func-names
   return async function* (data: ArrayBuffer) {
     const fileType = await FileType.fromBuffer(data);
@@ -17,6 +21,7 @@ export const imageUpload = (opts: {
     const mimeType = fileType ? fileType.mime : 'text/plain';
     const attachment = await qetaApi.postAttachment(
       new Blob([data], { type: mimeType }),
+      options,
     );
     if ('errors' in attachment) {
       errorApi.post({

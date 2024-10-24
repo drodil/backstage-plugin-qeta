@@ -52,6 +52,7 @@ export const HeaderImageInput = (props: {
                 qetaApi,
                 errorApi,
                 onImageUpload,
+                options: { height: 500 },
               })(buffer).next();
               if (typeof uri.value === 'string') {
                 onChange(uri.value);
