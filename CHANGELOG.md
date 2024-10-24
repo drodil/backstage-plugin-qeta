@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.3.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.2.1...v3.3.0) (2024-10-24)
+
+
+### Features
+
+* add attachments clean up ([0fdc217](https://github.com/drodil/backstage-plugin-qeta/commit/0fdc2175cf4358f719ddf1bae40ba041fbce940c)), closes [#205](https://github.com/drodil/backstage-plugin-qeta/issues/205)
+* add support to follow users ([9e96111](https://github.com/drodil/backstage-plugin-qeta/commit/9e961111947ebb20483f239d0b6ce36b7d3a82ed)), closes [#198](https://github.com/drodil/backstage-plugin-qeta/issues/198)
+
+
+### Bug Fixes
+
+* add tag description when adding new tags ([6727a3e](https://github.com/drodil/backstage-plugin-qeta/commit/6727a3e5f8b61ddc89725e2e4c764716f428db62))
+* missing images array in tests ([cbc3669](https://github.com/drodil/backstage-plugin-qeta/commit/cbc3669ff6582a98ab50c7c7b99d2c8051d78838))
+* missing mock for following users ([8b6b935](https://github.com/drodil/backstage-plugin-qeta/commit/8b6b93583e4c9c03be31d742cc77e71d8b769660))
+* voting questions does not work ([bca1e0a](https://github.com/drodil/backstage-plugin-qeta/commit/bca1e0a9ab2dcc230ea608279100299100581464))
+
 ### [3.2.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.2.0...v3.2.1) (2024-10-23)
 
 
