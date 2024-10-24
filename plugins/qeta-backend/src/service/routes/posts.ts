@@ -221,6 +221,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const followingUsers = await Promise.all([
       database.getUsersForTags(question.tags),
       database.getUsersForEntities(question.entities),
+      database.getFollowingUsers(username),
     ]);
     const sent = await notificationMgr.onNewPostComment(
       username,
@@ -328,6 +329,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const followingUsers = await Promise.all([
       database.getUsersForTags(tags),
       database.getUsersForEntities(entities),
+      database.getFollowingUsers(username),
     ]);
     const sent = await notificationMgr.onNewPost(
       username,

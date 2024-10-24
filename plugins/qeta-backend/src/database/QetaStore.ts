@@ -11,6 +11,7 @@ import {
   UserEntitiesResponse,
   UserStat,
   UserTagsResponse,
+  UserUsersResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -408,6 +409,12 @@ export interface QetaStore {
 
   followEntity(user_ref: string, entityRef: string): Promise<boolean>;
   unfollowEntity(user_ref: string, entityRef: string): Promise<boolean>;
+
+  getFollowedUsers(user_ref: string): Promise<UserUsersResponse>;
+  getFollowingUsers(user_ref: string): Promise<string[]>;
+
+  followUser(user_ref: string, followedUserRef: string): Promise<boolean>;
+  unfollowUser(user_ref: string, followedUserRef: string): Promise<boolean>;
 
   getEntities(): Promise<EntityResponse[]>;
   getEntity(entity_ref: string): Promise<EntityResponse | null>;

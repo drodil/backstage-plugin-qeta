@@ -6,10 +6,12 @@ import {
   AskQuestionButton,
   PostsContainer,
   PostsGrid,
+  useIdentityApi,
+  UserFollowButton,
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box, Tab } from '@material-ui/core';
+import { Box, Tab, Typography } from '@material-ui/core';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { UserStatsContent } from './UserStatsContent';
@@ -20,14 +22,28 @@ export const UserPage = () => {
   const [tab, setTab] = useState('statistics');
   const { t } = useTranslation();
   const [_searchParams, setSearchParams] = useSearchParams();
+  const {
+    value: user,
+    loading: loadingUser,
+    error: userError,
+  } = useIdentityApi(api => api.getBackstageIdentity(), []);
 
   const handleChange = (_event: React.ChangeEvent<{}>, newValue: string) => {
     setSearchParams({});
     setTab(newValue);
   };
+  const title = (
+    <Typography variant="h5" component="h2">
+      {presentation.primaryTitle}
+      {!loadingUser && !userError && user?.userEntityRef !== identity && (
+        <UserFollowButton userRef={identity} />
+      )}
+    </Typography>
+  );
+
   return (
     <>
-      <ContentHeader title={`${presentation.primaryTitle}`}>
+      <ContentHeader titleComponent={title}>
         <AskQuestionButton />
         <WriteArticleButton />
       </ContentHeader>

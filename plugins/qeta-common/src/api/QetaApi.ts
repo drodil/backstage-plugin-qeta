@@ -20,6 +20,7 @@ import {
   UserEntitiesResponse,
   UserResponse,
   UserTagsResponse,
+  UserUsersResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export interface PostsQuery {
@@ -189,6 +190,10 @@ export interface QetaApi {
   getFollowedEntities(): Promise<UserEntitiesResponse>;
   followEntity(entityRef: string): Promise<boolean>;
   unfollowEntity(entityRef: string): Promise<boolean>;
+
+  getFollowedUsers(): Promise<UserUsersResponse>;
+  followUser(userRef: string): Promise<boolean>;
+  unfollowUser(userRef: string): Promise<boolean>;
 
   getUserImpact(): Promise<ImpactResponse>;
   getGlobalStats(): Promise<StatisticsResponse>;

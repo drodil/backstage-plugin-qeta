@@ -33,6 +33,7 @@ import {
   UserEntitiesResponse,
   UserResponse,
   UserTagsResponse,
+  UserUsersResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import omitBy from 'lodash/omitBy';
 import crossFetch from 'cross-fetch';
@@ -585,6 +586,33 @@ export class QetaClient implements QetaApi {
   async unfollowEntity(entityRef: string): Promise<boolean> {
     const response = await this.fetchApi.fetch(
       `${await this.getBaseUrl()}/entities/follow/${entityRef}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    return response.ok;
+  }
+
+  async getFollowedUsers(): Promise<UserUsersResponse> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/users/followed`,
+    );
+    return (await response.json()) as UserUsersResponse;
+  }
+
+  async followUser(userRef: string): Promise<boolean> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/users/follow/${userRef}`,
+      {
+        method: 'PUT',
+      },
+    );
+    return response.ok;
+  }
+
+  async unfollowUser(userRef: string): Promise<boolean> {
+    const response = await this.fetchApi.fetch(
+      `${await this.getBaseUrl()}/users/follow/${userRef}`,
       {
         method: 'DELETE',
       },

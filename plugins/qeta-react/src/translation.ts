@@ -473,6 +473,12 @@ export const qetaTranslationRef = createTranslationRef({
       tooltip:
         'By following an entity, you will get notified when ever a new post for that entity is posted',
     },
+    userButton: {
+      follow: 'Follow',
+      unfollow: 'Unfollow',
+      tooltip:
+        'By following a user, you will get notified when ever a new post by that user is posted',
+    },
   },
 });
 

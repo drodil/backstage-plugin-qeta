@@ -11,6 +11,7 @@ import {
   CardContent,
   CardHeader,
   Grid,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
@@ -64,22 +65,24 @@ export const TagGridItem = (props: {
         <CardActions style={{ marginTop: 'auto' }}>
           <Grid container justifyContent="center">
             <Grid item>
-              <Button
-                size="small"
-                variant="outlined"
-                color={tags.isFollowingTag(tag.tag) ? 'secondary' : 'primary'}
-                onClick={() => {
-                  if (tags.isFollowingTag(tag.tag)) {
-                    tags.unfollowTag(tag.tag);
-                  } else {
-                    tags.followTag(tag.tag);
-                  }
-                }}
-              >
-                {tags.isFollowingTag(tag.tag)
-                  ? t('tagButton.unfollow')
-                  : t('tagButton.follow')}
-              </Button>
+              <Tooltip title={t('tagButton.tooltip')}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color={tags.isFollowingTag(tag.tag) ? 'secondary' : 'primary'}
+                  onClick={() => {
+                    if (tags.isFollowingTag(tag.tag)) {
+                      tags.unfollowTag(tag.tag);
+                    } else {
+                      tags.followTag(tag.tag);
+                    }
+                  }}
+                >
+                  {tags.isFollowingTag(tag.tag)
+                    ? t('tagButton.unfollow')
+                    : t('tagButton.follow')}
+                </Button>
+              </Tooltip>
             </Grid>
             <Grid item>
               <Button

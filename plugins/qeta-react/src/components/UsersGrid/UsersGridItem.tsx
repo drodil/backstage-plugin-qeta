@@ -1,18 +1,21 @@
 import { UserResponse } from '@drodil/backstage-plugin-qeta-common';
 import {
   Avatar,
+  Button,
   Card,
   CardActionArea,
+  CardActions,
   CardContent,
   CardHeader,
   Grid,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../../utils';
-import { useEntityAuthor } from '../../utils/hooks';
+import { useIdentityApi, useTranslation } from '../../utils';
+import { useEntityAuthor, useUserFollow } from '../../utils/hooks';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { userRouteRef } from '../../routes';
 import { parseEntityRef } from '@backstage/catalog-model';
@@ -25,6 +28,12 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
   const compound = parseEntityRef(user.userRef);
   const { primaryTitle, Icon } = useEntityPresentation(compound);
   const { name, initials, user: userEntity } = useEntityAuthor(user);
+  const users = useUserFollow();
+  const {
+    value: currentUser,
+    loading: loadingUser,
+    error: userError,
+  } = useIdentityApi(api => api.getBackstageIdentity(), []);
 
   return (
     <Grid item xs={4}>
@@ -81,6 +90,38 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
             </Typography>
           </CardContent>
         </CardActionArea>
+        {!loadingUser &&
+          !userError &&
+          currentUser?.userEntityRef !== user.userRef && (
+            <CardActions style={{ marginTop: 'auto' }}>
+              <Grid container justifyContent="center">
+                <Grid item>
+                  <Tooltip title={t('userButton.tooltip')}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color={
+                        users.isFollowingUser(user.userRef)
+                          ? 'secondary'
+                          : 'primary'
+                      }
+                      onClick={() => {
+                        if (users.isFollowingUser(user.userRef)) {
+                          users.unfollowUser(user.userRef);
+                        } else {
+                          users.followUser(user.userRef);
+                        }
+                      }}
+                    >
+                      {users.isFollowingUser(user.userRef)
+                        ? t('userButton.unfollow')
+                        : t('userButton.follow')}
+                    </Button>
+                  </Tooltip>
+                </Grid>
+              </Grid>
+            </CardActions>
+          )}
       </Card>
     </Grid>
   );

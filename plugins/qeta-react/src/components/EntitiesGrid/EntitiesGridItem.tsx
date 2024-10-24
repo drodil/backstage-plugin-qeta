@@ -8,6 +8,7 @@ import {
   CardContent,
   CardHeader,
   Grid,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
@@ -61,26 +62,28 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
         <CardActions style={{ marginTop: 'auto' }}>
           <Grid container justifyContent="center">
             <Grid item>
-              <Button
-                size="small"
-                variant="outlined"
-                color={
-                  entityFollow.isFollowingEntity(entity.entityRef)
-                    ? 'secondary'
-                    : 'primary'
-                }
-                onClick={() => {
-                  if (entityFollow.isFollowingEntity(entity.entityRef)) {
-                    entityFollow.unfollowEntity(entity.entityRef);
-                  } else {
-                    entityFollow.followEntity(entity.entityRef);
+              <Tooltip title={t('entityButton.tooltip')}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color={
+                    entityFollow.isFollowingEntity(entity.entityRef)
+                      ? 'secondary'
+                      : 'primary'
                   }
-                }}
-              >
-                {entityFollow.isFollowingEntity(entity.entityRef)
-                  ? t('entityButton.unfollow')
-                  : t('entityButton.follow')}
-              </Button>
+                  onClick={() => {
+                    if (entityFollow.isFollowingEntity(entity.entityRef)) {
+                      entityFollow.unfollowEntity(entity.entityRef);
+                    } else {
+                      entityFollow.followEntity(entity.entityRef);
+                    }
+                  }}
+                >
+                  {entityFollow.isFollowingEntity(entity.entityRef)
+                    ? t('entityButton.unfollow')
+                    : t('entityButton.follow')}
+                </Button>
+              </Tooltip>
             </Grid>
           </Grid>
         </CardActions>

@@ -279,6 +279,11 @@ export interface UserEntitiesResponse {
   count: number;
 }
 
+export interface UserUsersResponse {
+  followedUserRefs: string[];
+  count: number;
+}
+
 export interface ImpactResponse {
   impact: number;
   lastWeekImpact: number;

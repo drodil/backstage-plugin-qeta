@@ -35,6 +35,7 @@ import {
   UserEntitiesResponse,
   UserStat,
   UserTagsResponse,
+  UserUsersResponse,
   Vote,
 } from '@drodil/backstage-plugin-qeta-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -1041,6 +1042,48 @@ export class DatabaseQetaStore implements QetaStore {
     await this.db('user_entities')
       .where('userRef', user_ref)
       .where('entityRef', entityRef)
+      .delete();
+    return true;
+  }
+
+  async getFollowedUsers(user_ref: string): Promise<UserUsersResponse> {
+    const entities = await this.db('user_users')
+      .where('userRef', user_ref)
+      .select('followedUserRef');
+
+    return {
+      followedUserRefs: entities.map(e => e.followedUserRef),
+      count: entities.length,
+    };
+  }
+
+  async getFollowingUsers(user_ref: string): Promise<string[]> {
+    const users = await this.db('user_users')
+      .where('followedUserRef', user_ref)
+      .select('userRef');
+    return users.map(user => user.userRef);
+  }
+
+  async followUser(
+    user_ref: string,
+    followedUserRef: string,
+  ): Promise<boolean> {
+    await this.db
+      .insert({
+        userRef: user_ref,
+        followedUserRef,
+      })
+      .into('user_users');
+    return true;
+  }
+
+  async unfollowUser(
+    user_ref: string,
+    followedUserRef: string,
+  ): Promise<boolean> {
+    await this.db('user_users')
+      .where('userRef', user_ref)
+      .where('followedUserRef', followedUserRef)
       .delete();
     return true;
   }

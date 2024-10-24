@@ -6,9 +6,16 @@ import { parseEntityRef } from '@backstage/catalog-model';
 export const helperRoutes = (router: Router, options: RouteOptions) => {
   const { database } = options;
 
-  const validateEntityRef = (entityRef: string) => {
+  const validateEntityRef = (entityRef: string, kind?: string) => {
     try {
-      parseEntityRef(entityRef);
+      const valid = parseEntityRef(entityRef);
+      if (
+        kind &&
+        valid.kind.toLocaleLowerCase('en-US') !==
+          kind.toLocaleLowerCase('en-US')
+      ) {
+        throw new Error(`Expected kind: ${kind}`);
+      }
     } catch (error) {
       throw new Error(`Invalid entityRef: ${entityRef}`);
     }
@@ -17,6 +24,28 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   router.get('/users', async (_req, response) => {
     const users = await database.getUsers();
     response.json(users);
+  });
+
+  router.get('/users/followed', async (request, response) => {
+    const username = await getUsername(request, options, false);
+    const users = await database.getFollowedUsers(username);
+    response.json(users);
+  });
+
+  router.put('/users/follow/:userRef(*)', async (request, response) => {
+    const { userRef } = request.params;
+    validateEntityRef(userRef, 'user');
+    const username = await getUsername(request, options, false);
+    await database.followUser(username, userRef);
+    response.status(204).send();
+  });
+
+  router.delete('/users/follow/:userRef(*)', async (request, response) => {
+    const { userRef } = request.params;
+    validateEntityRef(userRef, 'user');
+    const username = await getUsername(request, options, false);
+    await database.unfollowUser(username, userRef);
+    response.status(204).send();
   });
 
   // GET /tags
