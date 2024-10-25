@@ -1,4 +1,3 @@
-import { useStyles, useTranslation } from '../../utils/hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import {
   Box,
@@ -15,6 +14,7 @@ import { PostListItem } from './PostListItem';
 import { Pagination } from '@material-ui/lab';
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { NoPostsCard } from './NoPostsCard';
+import { useStyles, useTranslation } from '../../hooks';
 
 export const PostList = (props: {
   loading: boolean;

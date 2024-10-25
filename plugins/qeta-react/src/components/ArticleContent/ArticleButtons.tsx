@@ -1,5 +1,4 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
-import { useStyles, useTranslation, useVoting } from '../../utils/hooks';
 import React from 'react';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import {
@@ -17,6 +16,8 @@ import { editArticleRouteRef } from '../../routes';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteModal } from '../DeleteModal';
 import EditIcon from '@material-ui/icons/Edit';
+import { useVoting } from '../../hooks/useVoting';
+import { useStyles, useTranslation } from '../../hooks';
 
 export type QetaArticleButtonsClassKey = 'container' | 'scoreText';
 

@@ -2,9 +2,9 @@ import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { Link, LinkProps } from '@backstage/core-components';
-import { useTranslation } from '../../utils/hooks';
 import { userRouteRef } from '../../routes';
 import { Answer, Comment, Post } from '@drodil/backstage-plugin-qeta-common';
+import { useTranslation } from '../../hooks';
 
 export const UserLink = (props: {
   entityRef: string;

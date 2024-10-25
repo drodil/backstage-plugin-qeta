@@ -1,4 +1,3 @@
-import { useStyles, useTranslation } from '../../utils';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import {
   Box,
@@ -16,6 +15,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Pagination } from '@material-ui/lab';
 import { AnswersResponse } from '@drodil/backstage-plugin-qeta-common';
 import { AnswerListItem } from './AnswerListItem';
+import { useStyles, useTranslation } from '../../hooks';
 
 export const AnswerList = (props: {
   loading: boolean;

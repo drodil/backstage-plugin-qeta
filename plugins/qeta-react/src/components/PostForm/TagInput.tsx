@@ -6,7 +6,7 @@ import { qetaApiRef } from '../../api';
 import { QuestionForm } from './types';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from '../../utils/hooks';
+import { useTranslation } from '../../hooks';
 
 export const TagInput = (props: { control: Control<QuestionForm> }) => {
   const { control } = props;

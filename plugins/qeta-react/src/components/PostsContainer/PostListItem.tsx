@@ -13,13 +13,14 @@ import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef, userRouteRef } from '../../routes';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
-import { useEntityAuthor, useStyles, useTranslation } from '../../utils/hooks';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { capitalize } from 'lodash';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import HelpOutlined from '@material-ui/icons/HelpOutlined';
+import { useStyles, useTranslation } from '../../hooks';
+import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 
 export interface PostListItemProps {
   post: PostResponse;

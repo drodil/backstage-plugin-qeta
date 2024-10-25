@@ -15,7 +15,6 @@ import {
   PostType,
   QetaApi,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from '../../utils';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -28,8 +27,9 @@ import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
-import { useFormStyles } from '../../utils/hooks';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
+import { useFormStyles } from '../../hooks/useFormStyles';
+import { useTranslation } from '../../hooks';
 
 const formToRequest = (form: QuestionForm, images: number[]): PostRequest => {
   return {

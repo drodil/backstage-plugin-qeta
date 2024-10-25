@@ -5,9 +5,8 @@ import { tagRouteRef } from '../../routes';
 import { qetaApiRef } from '../../api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../../utils';
-import { useTagsFollow } from '../../utils/hooks';
 import { MarkdownRenderer } from '../MarkdownRenderer';
+import { useTagsFollow, useTranslation } from '../../hooks';
 
 const cache: Map<string, TagResponse> = new Map();
 

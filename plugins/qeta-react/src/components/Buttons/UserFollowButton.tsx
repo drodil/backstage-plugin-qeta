@@ -1,8 +1,8 @@
 import React from 'react';
-import { useStyles, useTranslation, useUserFollow } from '../../utils/hooks';
 import { IconButton, Tooltip } from '@material-ui/core';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { useStyles, useTranslation, useUserFollow } from '../../hooks';
 
 export const UserFollowButton = (props: { userRef: string }) => {
   const { userRef } = props;

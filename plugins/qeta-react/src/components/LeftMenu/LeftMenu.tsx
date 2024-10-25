@@ -32,8 +32,8 @@ import {
   userRouteRef,
   usersRouteRef,
 } from '../../routes';
-import { useIdentityApi, useTranslation } from '../../utils';
 import { TrophyIcon } from '../TopRankingUsersCard';
+import { useIdentityApi, useTranslation } from '../../hooks';
 
 export type QetaLeftMenuClassKey =
   | 'leftMenu'

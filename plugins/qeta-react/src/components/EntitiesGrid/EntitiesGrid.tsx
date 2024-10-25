@@ -1,9 +1,9 @@
 import { Grid, IconButton, TextField, Typography } from '@material-ui/core';
 import React from 'react';
-import { useQetaApi, useTranslation } from '../../utils/hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
 import { EntitiesGridItem } from './EntitiesGridItem';
+import { useQetaApi, useTranslation } from '../../hooks';
 
 export const EntitiesGrid = () => {
   const [searchQuery, setSearchQuery] = React.useState('');

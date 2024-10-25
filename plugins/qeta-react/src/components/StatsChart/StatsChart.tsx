@@ -24,9 +24,10 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import { useIsDarkTheme, useTranslation } from '../../utils/hooks';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import BarChartIcon from '@material-ui/icons/BarChart';
+import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
+import { useTranslation } from '../../hooks';
 
 export type QetaStatsChartClassKey =
   | 'tooltipLabel'

@@ -9,10 +9,11 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import { useEntityAuthor, useStyles, useTranslation } from '../../utils/hooks';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { questionRouteRef, userRouteRef } from '../../routes';
+import { useStyles, useTranslation } from '../../hooks';
+import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 
 export interface AnswerListItemProps {
   answer: AnswerResponse;

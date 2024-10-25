@@ -1,12 +1,13 @@
 import { Avatar, Box, Grid, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import { useEntityAuthor, useTranslation } from '../../utils/hooks';
 import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { AuthorLink, UpdatedByLink } from '../Links';
+import { useTranslation } from '../../hooks';
+import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 
 export type QetaAuthorBoxClassKey = 'authorBox' | 'authorLink';
 

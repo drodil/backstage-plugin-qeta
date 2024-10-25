@@ -7,11 +7,11 @@ import {
   ListSubheader,
 } from '@material-ui/core';
 import React from 'react';
-import { useQetaApi, useStyles, useTranslation } from '../../utils/hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
+import { useQetaApi, useStyles, useTranslation } from '../../hooks';
 
 export const PostHighlightList = (props: {
   type: string;

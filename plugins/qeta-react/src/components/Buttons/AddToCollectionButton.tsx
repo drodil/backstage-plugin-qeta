@@ -1,5 +1,4 @@
 import { Collection, PostResponse } from '@drodil/backstage-plugin-qeta-common';
-import { useQetaApi, useStyles, useTranslation } from '../../utils';
 import React from 'react';
 import {
   Button,
@@ -14,6 +13,7 @@ import RemoveCircle from '@material-ui/icons/RemoveCircle';
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
+import { useQetaApi, useStyles, useTranslation } from '../../hooks';
 
 export const AddToCollectionButton = (props: { post: PostResponse }) => {
   const { post } = props;

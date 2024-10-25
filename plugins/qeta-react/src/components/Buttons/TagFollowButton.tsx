@@ -1,8 +1,8 @@
 import React from 'react';
-import { useStyles, useTagsFollow, useTranslation } from '../../utils/hooks';
 import { IconButton, Tooltip } from '@material-ui/core';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { useStyles, useTagsFollow, useTranslation } from '../../hooks';
 
 export const TagFollowButton = (props: { tag: string }) => {
   const { tag } = props;

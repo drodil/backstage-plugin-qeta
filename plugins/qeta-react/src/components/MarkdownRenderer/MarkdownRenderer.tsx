@@ -5,11 +5,11 @@ import {
   a11yDark,
   a11yLight,
 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { useIsDarkTheme } from '../../utils/hooks';
 import { makeStyles } from '@material-ui/core';
 import { findUserMentions } from '@drodil/backstage-plugin-qeta-common';
 import gfm from 'remark-gfm';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 
 export type QetaMarkdownContentClassKey = 'markdown';
 

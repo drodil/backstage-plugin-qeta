@@ -8,5 +8,5 @@
 export * from './routes';
 export * from './api';
 export * from './components';
-export * from './utils';
+export * from './hooks';
 export type { QetaOverrides } from './overridableComponents';

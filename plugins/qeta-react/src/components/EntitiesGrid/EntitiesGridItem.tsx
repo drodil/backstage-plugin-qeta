@@ -14,11 +14,10 @@ import {
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../../utils';
-import { useEntityFollow } from '../../utils/hooks';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
 import { parseEntityRef } from '@backstage/catalog-model';
+import { useEntityFollow, useTranslation } from '../../hooks';
 
 export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
   const { entity } = props;

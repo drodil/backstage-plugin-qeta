@@ -5,12 +5,12 @@ import {
 import { Box, Divider, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import { Link } from '@backstage/core-components';
-import { useTranslation } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
 import { AuthorLink } from '../Links/Links';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { qetaApiRef } from '../../api';
+import { useTranslation } from '../../hooks';
 
 export const useStyles = makeStyles(
   _theme => {

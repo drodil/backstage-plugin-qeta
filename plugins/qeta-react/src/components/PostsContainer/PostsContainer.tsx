@@ -1,9 +1,4 @@
 import {
-  PaginatedPostsProps,
-  usePaginatedPosts,
-  useTranslation,
-} from '../../utils/hooks';
-import {
   Box,
   Button,
   Collapse,
@@ -21,6 +16,11 @@ import { TagFollowButton } from '../Buttons/TagFollowButton';
 import { EntityFollowButton } from '../Buttons/EntityFollowButton';
 import { WriteArticleButton } from '../Buttons';
 import { capitalize } from 'lodash';
+import {
+  PaginatedPostsProps,
+  usePaginatedPosts,
+} from '../../hooks/usePaginatedPosts';
+import { useTranslation } from '../../hooks';
 
 export const PostsContainer = (props: PaginatedPostsProps) => {
   const {

@@ -8,7 +8,6 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { VoteButtons } from '../Buttons/VoteButtons';
-import { useStyles, useTranslation } from '../../utils';
 import { AnswerForm } from '../AnswerForm';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { CommentSection } from '../CommentSection/CommentSection';
@@ -21,6 +20,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { DeleteModal } from '../DeleteModal';
+import { useStyles, useTranslation } from '../../hooks';
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;

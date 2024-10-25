@@ -1,8 +1,8 @@
 import { Card, CardHeader, Divider, Grid } from '@material-ui/core';
 import React from 'react';
-import { useQetaApi } from '../../utils/hooks';
 import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { PostListItem } from '../PostsContainer';
+import { useQetaApi } from '../../hooks';
 
 export const PostsCard = (props: {
   type: string;

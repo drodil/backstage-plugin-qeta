@@ -2,7 +2,7 @@ import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 import { StatisticsResponse } from '@drodil/backstage-plugin-qeta-common';
 import React from 'react';
 import numeral from 'numeral';
-import { useTranslation } from '../../utils/hooks';
+import { useTranslation } from '../../hooks';
 
 const SummaryCard = (props: { title: string; value: number }) => {
   const { title, value } = props;

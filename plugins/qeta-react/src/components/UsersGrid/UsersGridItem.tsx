@@ -14,11 +14,11 @@ import {
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
-import { useIdentityApi, useTranslation } from '../../utils';
-import { useEntityAuthor, useUserFollow } from '../../utils/hooks';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { userRouteRef } from '../../routes';
 import { parseEntityRef } from '@backstage/catalog-model';
+import { useIdentityApi, useTranslation, useUserFollow } from '../../hooks';
+import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 
 export const UsersGridItem = (props: { user: UserResponse }) => {
   const { user } = props;

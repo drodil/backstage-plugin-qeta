@@ -4,9 +4,10 @@ import HelpOutline from '@material-ui/icons/HelpOutline';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef, writeRouteRef } from '../../routes';
-import { useEntityQueryParameter, useTranslation } from '../../utils/hooks';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
 import CreateIcon from '@material-ui/icons/Create';
+import { useTranslation } from '../../hooks';
+import { useEntityQueryParameter } from '../../hooks/useEntityQueryParameter';
 
 export const NoPostsCard = (props: {
   showNoPostsBtn?: boolean;

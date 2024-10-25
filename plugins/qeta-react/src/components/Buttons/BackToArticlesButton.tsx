@@ -1,12 +1,12 @@
 import { LinkButton } from '@backstage/core-components';
 import React from 'react';
-import { useStyles, useTranslation } from '../../utils/hooks';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { useSearchParams } from 'react-router-dom';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import { articlesRouteRef } from '../../routes';
+import { useStyles, useTranslation } from '../../hooks';
 
 export const BackToArticlesButton = (props: { entityPage?: boolean }) => {
   const styles = useStyles();

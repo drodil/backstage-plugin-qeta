@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { useQetaApi, useTranslation } from '../../utils';
 import { Box, Grid, Typography } from '@material-ui/core';
 import { CollectionsGridContent } from './CollectionsGridContent';
+import { useQetaApi, useTranslation } from '../../hooks';
 
 export const CollectionsGrid = () => {
   const { t } = useTranslation();

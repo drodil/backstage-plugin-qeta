@@ -1,7 +1,7 @@
 import { Box, Divider, List, ListItem, ListSubheader } from '@material-ui/core';
 import React from 'react';
-import { useStyles, useTagsFollow, useTranslation } from '../../utils/hooks';
 import { TagChip } from '../TagsAndEntities/TagChip';
+import { useStyles, useTagsFollow, useTranslation } from '../../hooks';
 
 export const FollowedTagsList = () => {
   const classes = useStyles();

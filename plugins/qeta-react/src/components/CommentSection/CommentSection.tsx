@@ -10,10 +10,10 @@ import { Controller, useForm } from 'react-hook-form';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
-import { useTranslation } from '../../utils/hooks';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
+import { useTranslation } from '../../hooks';
 
 export const CommentSection = (props: {
   onCommentPost: (question: PostResponse, answer?: AnswerResponse) => void;

@@ -1,4 +1,3 @@
-import { useQetaApi, useTranslation } from '../../utils';
 import {
   Box,
   Button,
@@ -22,6 +21,7 @@ import {
   Filters,
 } from '../FilterPanel/FilterPanel';
 import { AnswerList } from './AnswerList';
+import { useQetaApi, useTranslation } from '../../hooks';
 
 export interface AnswersContainerProps {
   tags?: string[];

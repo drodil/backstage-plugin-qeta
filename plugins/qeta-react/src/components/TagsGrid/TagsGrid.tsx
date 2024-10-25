@@ -1,9 +1,9 @@
 import { Grid, IconButton, TextField, Typography } from '@material-ui/core';
 import React from 'react';
-import { useQetaApi, useTranslation } from '../../utils/hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { TagGridItem } from './TagGridItem';
+import { useQetaApi, useTranslation } from '../../hooks';
 
 export const TagsGrid = () => {
   const [searchQuery, setSearchQuery] = React.useState('');

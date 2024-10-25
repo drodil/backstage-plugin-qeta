@@ -1,8 +1,8 @@
 import React from 'react';
-import { useEntityFollow, useStyles, useTranslation } from '../../utils/hooks';
 import { IconButton, Tooltip } from '@material-ui/core';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { useEntityFollow, useStyles, useTranslation } from '../../hooks';
 
 export const EntityFollowButton = (props: { entityRef: string }) => {
   const { entityRef } = props;

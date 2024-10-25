@@ -8,7 +8,7 @@ import { QetaArticleButtonsClassKey } from './components/ArticleContent/ArticleB
 import { QetaLeftMenuClassKey } from './components';
 import { QetaMarkdownEditorClassKey } from './components/MarkdownEditor/MarkdownEditor';
 import { QetaAuthorBoxClassKey } from './components/AuthorBox/AuthorBox';
-import { QetaFormClassKey } from './utils/hooks';
+import { QetaFormClassKey } from './hooks/useFormStyles';
 
 type QetaComponentsNameToClassKey = {
   QetaLeftMenu: QetaLeftMenuClassKey;

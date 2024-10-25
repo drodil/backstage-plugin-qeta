@@ -4,7 +4,6 @@ import {
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
 import React from 'react';
-import { useStyles, useTranslation } from '../../utils';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionRouteRef, userRouteRef } from '../../routes';
 import {
@@ -16,12 +15,13 @@ import {
   CardMedia,
   Typography,
 } from '@material-ui/core';
-import { useEntityAuthor } from '../../utils/hooks';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { Link } from '@backstage/core-components';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
+import { useStyles, useTranslation } from '../../hooks';
+import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 
 export interface PostsGridItemProps {
   collection: Collection;

@@ -12,7 +12,6 @@ import {
   RadioGroup,
   TextField,
 } from '@material-ui/core';
-import { useQetaApi, useStyles, useTranslation } from '../../utils/hooks';
 import { Autocomplete } from '@material-ui/lab';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
@@ -20,6 +19,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { getEntityTitle } from '../../utils/utils';
 import { DateRangeFilter } from './DateRangeFilter';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
+import { useQetaApi, useStyles, useTranslation } from '../../hooks';
 
 const radioSelect = (value: string, label: string) => {
   return (

@@ -7,7 +7,7 @@ import { TextField } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { useTranslation } from '../../utils';
+import { useTranslation } from '../../hooks';
 
 export const EntitiesInput = (props: {
   control: Control<QuestionForm>;

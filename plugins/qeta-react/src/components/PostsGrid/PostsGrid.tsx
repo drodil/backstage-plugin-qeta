@@ -1,6 +1,4 @@
 import React from 'react';
-import { useTranslation } from '../../utils';
-import { PaginatedPostsProps, usePaginatedPosts } from '../../utils/hooks';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import {
   AskQuestionButton,
@@ -20,6 +18,11 @@ import FilterList from '@material-ui/icons/FilterList';
 import { FilterPanel } from '../FilterPanel/FilterPanel';
 import { PostsGridContent } from './PostsGridContent';
 import { capitalize } from 'lodash';
+import {
+  PaginatedPostsProps,
+  usePaginatedPosts,
+} from '../../hooks/usePaginatedPosts';
+import { useTranslation } from '../../hooks';
 
 export const PostsGrid = (props: PaginatedPostsProps) => {
   const {

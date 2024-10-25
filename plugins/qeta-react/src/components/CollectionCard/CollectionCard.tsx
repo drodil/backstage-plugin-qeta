@@ -9,13 +9,13 @@ import {
 } from '@material-ui/core';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import React from 'react';
-import { useStyles, useTranslation } from '../../utils';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteModal } from '../DeleteModal';
 import EditIcon from '@material-ui/icons/Edit';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionEditRouteRef } from '../../routes';
+import { useStyles, useTranslation } from '../../hooks';
 
 export const CollectionCard = (props: { collection: Collection }) => {
   const { collection } = props;

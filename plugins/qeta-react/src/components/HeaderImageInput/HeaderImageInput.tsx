@@ -2,9 +2,9 @@ import { Button, Grid, TextField, Typography } from '@material-ui/core';
 import { imageUpload } from '../../utils/utils';
 import React from 'react';
 import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { useTranslation } from '../../utils';
 import { qetaApiRef } from '../../api';
-import { useFormStyles } from '../../utils/hooks';
+import { useTranslation } from '../../hooks';
+import { useFormStyles } from '../../hooks/useFormStyles';
 
 export const HeaderImageInput = (props: {
   url?: string;

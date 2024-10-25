@@ -14,10 +14,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
-import { useQetaApi, useTranslation } from '../../utils/hooks';
 import { TrophyIcon } from './TrophyIcon';
 import { useStyles } from './styles';
 import { UserLink } from '../Links';
+import { useQetaApi, useTranslation } from '../../hooks';
 
 type RankingIcon = {
   iconsByRanking: Map<number, ReactNode>;

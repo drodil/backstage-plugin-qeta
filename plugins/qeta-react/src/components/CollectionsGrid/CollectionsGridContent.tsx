@@ -1,10 +1,10 @@
 import { CollectionsResponse } from '@drodil/backstage-plugin-qeta-common';
 import React, { useEffect, useRef, useState } from 'react';
-import { useTranslation } from '../../utils';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import { Box, Grid } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
 import { CollectionsGridItem } from './CollectionsGridItem';
+import { useTranslation } from '../../hooks';
 
 export const CollectionsGridContent = (props: {
   loading: boolean;

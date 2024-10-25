@@ -7,10 +7,11 @@ import { Backdrop, Box, Button, Modal, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Delete from '@material-ui/icons/Delete';
 import React from 'react';
-import { useBasePath, useStyles, useTranslation } from '../../utils/hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
+import { useBasePath } from '../../hooks/useBasePath';
+import { useStyles, useTranslation } from '../../hooks';
 
 export const DeleteModal = (props: {
   entity: PostResponse | AnswerResponse | CollectionResponse;

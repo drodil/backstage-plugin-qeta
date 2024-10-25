@@ -5,7 +5,7 @@ import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { writeRouteRef } from '../../routes';
-import { useStyles, useTranslation } from '../../utils/hooks';
+import { useStyles, useTranslation } from '../../hooks';
 
 export const WriteArticleButton = (props: {
   entity?: string;

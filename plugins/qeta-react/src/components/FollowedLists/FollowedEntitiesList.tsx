@@ -1,7 +1,7 @@
 import { Box, Divider, List, ListItem, ListSubheader } from '@material-ui/core';
 import React from 'react';
-import { useEntityFollow, useStyles, useTranslation } from '../../utils/hooks';
 import { EntityChip } from '../TagsAndEntities/EntityChip';
+import { useEntityFollow, useStyles, useTranslation } from '../../hooks';
 
 export const FollowedEntitiesList = () => {
   const classes = useStyles();

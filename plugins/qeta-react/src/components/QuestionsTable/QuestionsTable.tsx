@@ -1,5 +1,4 @@
 import React from 'react';
-import { useQetaApi, useTranslation } from '../../utils/hooks';
 import { LinkButton, Progress, WarningPanel } from '@backstage/core-components';
 import {
   Button,
@@ -16,6 +15,7 @@ import {
 } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { QuestionTableRow } from './QuestionTableRow';
+import { useQetaApi, useTranslation } from '../../hooks';
 
 type QuickFilterType = 'latest' | 'favorites' | 'most_viewed';
 

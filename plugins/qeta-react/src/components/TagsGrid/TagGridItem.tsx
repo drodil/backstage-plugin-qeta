@@ -18,10 +18,9 @@ import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../../utils';
-import { useTagsFollow } from '../../utils/hooks';
 import { EditTagModal } from './EditTagModal';
 import DOMPurify from 'dompurify';
+import { useTagsFollow, useTranslation } from '../../hooks';
 
 export const TagGridItem = (props: {
   tag: TagResponse;

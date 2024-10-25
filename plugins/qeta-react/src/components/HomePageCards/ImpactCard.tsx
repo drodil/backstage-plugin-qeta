@@ -1,7 +1,7 @@
-import { useQetaApi, useTranslation } from '../../utils/hooks';
 import React from 'react';
 import { Box, Card, CardContent, Typography } from '@material-ui/core';
 import numeral from 'numeral';
+import { useQetaApi, useTranslation } from '../../hooks';
 
 export const ImpactCard = () => {
   const { t } = useTranslation();

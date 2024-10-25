@@ -6,7 +6,6 @@ import {
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
 import React, { useEffect, useState } from 'react';
-import { useStyles, useTranslation } from '../../utils';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef, userRouteRef } from '../../routes';
@@ -19,12 +18,13 @@ import {
   CardMedia,
   Typography,
 } from '@material-ui/core';
-import { useEntityAuthor } from '../../utils/hooks';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { Link } from '@backstage/core-components';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
+import { useStyles, useTranslation } from '../../hooks';
+import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 
 export interface PostsGridItemProps {
   post: PostResponse;

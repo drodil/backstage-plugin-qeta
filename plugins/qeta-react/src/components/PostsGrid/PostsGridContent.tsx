@@ -1,11 +1,11 @@
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
 import React, { useEffect, useRef, useState } from 'react';
-import { useTranslation } from '../../utils';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import { NoPostsCard } from '../PostsContainer/NoPostsCard';
 import { Box, Grid } from '@material-ui/core';
 import { PostsGridItem } from './PostsGridItem';
 import { Pagination } from '@material-ui/lab';
+import { useTranslation } from '../../hooks';
 
 export const PostsGridContent = (props: {
   loading: boolean;

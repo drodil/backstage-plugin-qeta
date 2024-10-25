@@ -1,7 +1,7 @@
 import { Control, Controller } from 'react-hook-form';
 import { Box, Checkbox, FormControlLabel, Tooltip } from '@material-ui/core';
 import React from 'react';
-import { useTranslation } from '../../utils';
+import { useTranslation } from '../../hooks';
 
 export const PostAnonymouslyCheckbox = (props: {
   control: Control<any>;

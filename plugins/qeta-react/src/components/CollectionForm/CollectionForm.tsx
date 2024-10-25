@@ -22,14 +22,14 @@ import {
   CollectionResponse,
   QetaApi,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from '../../utils';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { collectionRouteRef } from '../../routes';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { CollectionFormData } from './types';
-import { useFormStyles } from '../../utils/hooks';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
+import { useTranslation } from '../../hooks';
+import { useFormStyles } from '../../hooks/useFormStyles';
 
 const formToRequest = (
   form: CollectionFormData,

@@ -5,7 +5,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import { qetaApiRef } from '../../api';
-import { useTranslation } from '../../utils';
+import { useTranslation } from '../../hooks';
 
 export const FavoriteButton = (props: { entity: PostResponse }) => {
   const [entity, setEntity] = React.useState<PostResponse>(props.entity);

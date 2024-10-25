@@ -5,12 +5,13 @@ import {
 import { Avatar, Grid, makeStyles, Typography } from '@material-ui/core';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import React from 'react';
-import { useEntityAuthor, useTranslation } from '../../utils/hooks';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { ArticleButtons } from './ArticleButtons';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
 import { WarningPanel } from '@backstage/core-components';
+import { useTranslation } from '../../hooks';
+import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 
 export type QetaArticleContentClassKey =
   | 'content'

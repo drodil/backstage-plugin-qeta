@@ -15,7 +15,7 @@ import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
 import React from 'react';
-import { useVoting } from '../../utils/hooks';
+import { useVoting } from '../../hooks/useVoting';
 
 export type QetaVoteButtonsClassKey =
   | 'qetaCorrectAnswerSelected'

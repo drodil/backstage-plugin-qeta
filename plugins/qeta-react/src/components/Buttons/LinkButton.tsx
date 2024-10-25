@@ -5,7 +5,7 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from '../../utils';
+import { useTranslation } from '../../hooks';
 
 export const LinkButton = (props: {
   entity: PostResponse | AnswerResponse;

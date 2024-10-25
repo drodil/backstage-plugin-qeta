@@ -10,9 +10,9 @@ import {
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
-import { useStyles, useTranslation } from '../../utils';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
+import { useStyles, useTranslation } from '../../hooks';
 
 export const EditTagModal = (props: {
   tag: TagResponse;

@@ -8,14 +8,14 @@ import {
   PostResponse,
   qetaCreateAnswerPermission,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from '../../utils';
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
-import { useFormStyles } from '../../utils/hooks';
+import { useFormStyles } from '../../hooks/useFormStyles';
+import { useTranslation } from '../../hooks';
 
 type AnswerFormData = {
   postId: number;

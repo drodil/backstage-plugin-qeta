@@ -7,8 +7,8 @@ import {
   Typography,
   useMediaQuery,
 } from '@material-ui/core';
-import { useStyles, useTranslation } from '../../utils/hooks';
 import { formatDate } from '../../utils/utils';
+import { useStyles, useTranslation } from '../../hooks';
 
 export interface DateRangeFilterProps {
   value?: string;

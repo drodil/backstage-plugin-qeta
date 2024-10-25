@@ -5,9 +5,8 @@ import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
 import { qetaApiRef } from '../../api';
-import { useTranslation } from '../../utils';
-import { useEntityFollow } from '../../utils/hooks';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
+import { useEntityFollow, useTranslation } from '../../hooks';
 
 const cache: Map<string, EntityResponse> = new Map();
 
