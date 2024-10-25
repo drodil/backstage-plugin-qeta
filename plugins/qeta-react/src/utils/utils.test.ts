@@ -1,9 +1,16 @@
 import { Filters } from '../components/FilterPanel/FilterPanel';
 import {
+  confirmNavigationIfEdited,
   FiltersWithDateRange,
   formatDate,
+  formatEntityName,
+  getEntityTitle,
   getFiltersWithDateRange,
+  imageUpload,
 } from './utils';
+import { Entity } from '@backstage/catalog-model';
+import { QetaApi } from '@drodil/backstage-plugin-qeta-common';
+import { ErrorApi } from '@backstage/core-plugin-api';
 
 describe('formatDate', () => {
   it('should format the date to YYYY-MM-DD format', () => {
@@ -71,5 +78,105 @@ describe('getFiltersWithDateRange', () => {
     };
     delete expectedVal.dateRange;
     expect(getFiltersWithDateRange(filters)).toMatchObject(expectedVal);
+  });
+});
+
+describe('imageUpload', () => {
+  it('should upload an image and return the location URI', async () => {
+    const mockQetaApi: QetaApi = {
+      postAttachment: jest.fn().mockResolvedValue({
+        id: 1,
+        locationUri: 'http://example.com/image.png',
+      }),
+    } as any;
+    const mockErrorApi: ErrorApi = {
+      post: jest.fn(),
+    } as any;
+    const onImageUpload = jest.fn();
+    const upload = imageUpload({
+      qetaApi: mockQetaApi,
+      errorApi: mockErrorApi,
+      onImageUpload,
+    });
+
+    const data = new ArrayBuffer(8);
+    const result = await upload(data).next();
+
+    expect(result.value).toBe('http://example.com/image.png');
+    expect(onImageUpload).toHaveBeenCalledWith(1);
+  });
+
+  it('should handle upload errors', async () => {
+    const mockQetaApi: QetaApi = {
+      postAttachment: jest
+        .fn()
+        .mockResolvedValue({ errors: [{ message: 'Upload failed' }] }),
+    } as any;
+    const mockErrorApi: ErrorApi = {
+      post: jest.fn(),
+    } as any;
+    const onImageUpload = jest.fn();
+    const upload = imageUpload({
+      qetaApi: mockQetaApi,
+      errorApi: mockErrorApi,
+      onImageUpload,
+    });
+
+    const data = new ArrayBuffer(8);
+    const result = await upload(data).next();
+
+    expect(result.value).toBe(false);
+    expect(mockErrorApi.post).toHaveBeenCalledWith({
+      name: 'Upload failed',
+      message: 'Upload failed',
+    });
+  });
+});
+
+describe('formatEntityName', () => {
+  it('should format the entity name correctly', () => {
+    expect(formatEntityName('user:default/john_doe')).toBe('John Doe');
+    expect(formatEntityName('user:default/jane-doe')).toBe('Jane Doe');
+    expect(formatEntityName('user:default/jane.doe')).toBe('Jane Doe');
+  });
+
+  it('should return an empty string if username is not provided', () => {
+    expect(formatEntityName()).toBe('');
+  });
+});
+
+describe('getEntityTitle', () => {
+  it('should return the entity title if available', () => {
+    const entity: Entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: { name: 'test', title: 'Test Entity' },
+    };
+    expect(getEntityTitle(entity)).toBe('Test Entity');
+  });
+
+  it('should return the stringified entity reference if title is not available', () => {
+    const entity: Entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: { name: 'test' },
+    };
+    expect(getEntityTitle(entity)).toBe('Test');
+  });
+});
+
+describe('confirmNavigationIfEdited', () => {
+  it('should add and remove the beforeunload event listener', () => {
+    const removeListener = confirmNavigationIfEdited(true);
+    const event = new Event('beforeunload');
+    const spy = jest.spyOn(event, 'preventDefault');
+
+    window.dispatchEvent(event);
+    expect(spy).toHaveBeenCalled();
+
+    removeListener();
+    spy.mockClear();
+    window.dispatchEvent(event);
+    expect(spy).not.toHaveBeenCalled();
   });
 });
