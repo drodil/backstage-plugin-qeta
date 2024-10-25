@@ -1,4 +1,4 @@
-import { removeMarkdownFormatting, truncate } from './utils';
+import { findUserMentions, removeMarkdownFormatting, truncate } from './utils';
 
 describe('truncate', () => {
   it('should truncate a long string and add three dots at the end', () => {
@@ -167,5 +167,52 @@ describe('removeMarkdownFormatting', () => {
     const expectedOutput =
       'Header   image of a cat   Item1 Item2 Item3  some code';
     expect(removeMarkdownFormatting(input.join('\n'))).toBe(expectedOutput);
+  });
+});
+
+describe('findUserMentions', () => {
+  it('should return an empty array if no mentions are found', () => {
+    const result = findUserMentions('No mentions here');
+    expect(result).toEqual([]);
+  });
+
+  it('should return an array of unique mentions', () => {
+    const result = findUserMentions(
+      '@user:default/username1 @user:default/username2 @user:default/username1',
+    );
+    expect(result).toEqual([
+      '@user:default/username1',
+      '@user:default/username2',
+    ]);
+  });
+
+  it('should ignore invalid mentions', () => {
+    const result = findUserMentions(
+      '@user:default/username1 @invalid @user:default/username2',
+    );
+    expect(result).toEqual([
+      '@user:default/username1',
+      '@user:default/username2',
+    ]);
+  });
+
+  it('should ignore mentions that are not users', () => {
+    const result = findUserMentions(
+      '@user:default/username1 @component:default/service1 @user:default/username2',
+    );
+    expect(result).toEqual([
+      '@user:default/username1',
+      '@user:default/username2',
+    ]);
+  });
+
+  it('should handle mentions with multiple @ symbols', () => {
+    const result = findUserMentions(
+      '@@user:default/username1 @@@user:default/username2',
+    );
+    expect(result).toEqual([
+      '@user:default/username1',
+      '@user:default/username2',
+    ]);
   });
 });
