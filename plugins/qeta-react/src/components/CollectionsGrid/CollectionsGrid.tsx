@@ -3,7 +3,11 @@ import { Box, Grid, Typography } from '@material-ui/core';
 import { CollectionsGridContent } from './CollectionsGridContent';
 import { useQetaApi, useTranslation } from '../../hooks';
 
-export const CollectionsGrid = () => {
+export type CollectionsGridProps = {
+  owner?: string;
+};
+
+export const CollectionsGrid = (props: CollectionsGridProps) => {
   const { t } = useTranslation();
   const [page, setPage] = React.useState(1);
   const [pageCount, setPageCount] = React.useState(1);
@@ -17,6 +21,7 @@ export const CollectionsGrid = () => {
     return api.getCollections({
       limit: collectionsPerPage,
       offset: (page - 1) * collectionsPerPage,
+      owner: props.owner,
     });
   }, []);
 

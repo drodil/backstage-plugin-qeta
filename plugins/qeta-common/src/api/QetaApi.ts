@@ -51,6 +51,7 @@ export interface PostsQuery {
 export interface CollectionsQuery {
   limit?: number;
   offset?: number;
+  owner?: string;
   searchQuery?: string;
   orderBy?: 'created' | 'owner';
   order?: 'desc' | 'asc';

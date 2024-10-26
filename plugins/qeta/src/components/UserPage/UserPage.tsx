@@ -4,6 +4,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import {
   AnswersContainer,
   AskQuestionButton,
+  CollectionsGrid,
   PostsContainer,
   PostsGrid,
   useIdentityApi,
@@ -56,6 +57,7 @@ export const UserPage = () => {
             <Tab label={t('userPage.statistics')} value="statistics" />
             <Tab label={t('userPage.questions')} value="questions" />
             <Tab label={t('userPage.articles')} value="articles" />
+            <Tab label={t('userPage.collections')} value="collections" />
             <Tab label={t('userPage.answers')} value="answers" />
           </TabList>
         </Box>
@@ -71,6 +73,9 @@ export const UserPage = () => {
         </TabPanel>
         <TabPanel value="articles">
           <PostsGrid author={identity ?? ''} type="article" />
+        </TabPanel>
+        <TabPanel value="collections">
+          <CollectionsGrid owner={identity ?? ''} />
         </TabPanel>
         <TabPanel value="answers">
           <AnswersContainer

@@ -75,6 +75,7 @@ export const CollectionsQuerySchema: JSONSchemaType<CollectionsQuery> = {
     limit: { type: 'integer', nullable: true },
     offset: { type: 'integer', nullable: true },
     searchQuery: { type: 'string', nullable: true },
+    owner: { type: 'string', nullable: true },
     orderBy: {
       type: 'string',
       enum: ['created', 'owner'],

@@ -449,6 +449,7 @@ export const qetaTranslationRef = createTranslationRef({
       statistics: 'Statistics',
       questions: 'Questions',
       answers: 'Answers',
+      collections: 'Collections',
       articles: 'Articles',
     },
     stats: {
