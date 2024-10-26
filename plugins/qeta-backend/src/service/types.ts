@@ -1,6 +1,8 @@
 import { JSONSchemaType } from 'ajv';
 import { QetaStore } from '../database/QetaStore';
 import {
+  AuthService,
+  CacheService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
@@ -18,6 +20,7 @@ import {
   PostsQuery,
   PostType,
 } from '@drodil/backstage-plugin-qeta-common';
+import { CatalogApi } from '@backstage/catalog-client';
 
 export interface RouterOptions {
   database: QetaStore;
@@ -26,6 +29,9 @@ export interface RouterOptions {
   discovery: DiscoveryService;
   httpAuth: HttpAuthService;
   userInfo: UserInfoService;
+  catalog: CatalogApi;
+  auth: AuthService;
+  cache?: CacheService;
   permissions?: PermissionsService;
   events?: EventsService;
   signals?: SignalsService;

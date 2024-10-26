@@ -5,12 +5,21 @@ import {
   removeMarkdownFormatting,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  CacheService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
+import { UserEntity } from '@backstage/catalog-model';
 
 export class NotificationManager {
   constructor(
     private readonly logger: LoggerService,
+    private readonly catalog: CatalogApi,
+    private readonly auth: AuthService,
     private readonly notifications?: NotificationService,
+    private readonly cache?: CacheService,
   ) {}
 
   async onNewPost(
@@ -28,6 +37,8 @@ export class NotificationManager {
     ]);
 
     try {
+      const user = await this.getUserDisplayName(username);
+
       await this.notifications.send({
         recipients: {
           type: 'entity',
@@ -38,8 +49,8 @@ export class NotificationManager {
           title: `New ${post.type}`,
           description: this.formatDescription(
             post.type === 'question'
-              ? `${username} asked a question: ${post.title}`
-              : `${username} wrote an article: ${post.title}`,
+              ? `${user} asked a question: ${post.title}`
+              : `${user} wrote an article: ${post.title}`,
           ),
           link:
             post.type === 'question'
@@ -76,6 +87,8 @@ export class NotificationManager {
     ]);
 
     try {
+      const user = await this.getUserDisplayName(username);
+
       await this.notifications.send({
         recipients: {
           type: 'entity',
@@ -85,7 +98,7 @@ export class NotificationManager {
         payload: {
           title: `New comment on ${post.type}`,
           description: this.formatDescription(
-            `${username} commented on ${post.type}: ${comment}`,
+            `${user} commented on ${post.type}: ${comment}`,
           ),
           link:
             post.type === 'question'
@@ -120,6 +133,8 @@ export class NotificationManager {
     ]);
 
     try {
+      const user = await this.getUserDisplayName(username);
+
       await this.notifications.send({
         recipients: {
           type: 'entity',
@@ -129,7 +144,7 @@ export class NotificationManager {
         payload: {
           title: `New answer on question`,
           description: this.formatDescription(
-            `${username} answered question: ${answer.content}`,
+            `${user} answered question: ${answer.content}`,
           ),
           link: `/qeta/questions/${question.id}#answer_${answer.id}`,
           topic: 'New answer on question',
@@ -163,6 +178,8 @@ export class NotificationManager {
     ]);
 
     try {
+      const user = await this.getUserDisplayName(username);
+
       await this.notifications.send({
         recipients: {
           type: 'entity',
@@ -172,7 +189,7 @@ export class NotificationManager {
         payload: {
           title: `New comment on answer`,
           description: this.formatDescription(
-            `${username} commented answer: ${comment}`,
+            `${user} commented answer: ${comment}`,
           ),
           link: `/qeta/questions/${question.id}#answer_${answer.id}`,
           topic: 'New answer comment',
@@ -203,6 +220,8 @@ export class NotificationManager {
     ]);
 
     try {
+      const user = await this.getUserDisplayName(username);
+
       await this.notifications.send({
         recipients: {
           type: 'entity',
@@ -212,7 +231,7 @@ export class NotificationManager {
         payload: {
           title: `Correct answer on question`,
           description: this.formatDescription(
-            `${username} marked answer as correct: ${answer.content}`,
+            `${user} marked answer as correct: ${answer.content}`,
           ),
           link: `/qeta/questions/${question.id}#answer_${answer.id}`,
           topic: 'Correct answer on question',
@@ -239,27 +258,28 @@ export class NotificationManager {
     const notificationReceivers = mentions
       .map(m => m.replaceAll('@', ''))
       .filter(m => !alreadySent.includes(m));
-
-    const isPost = 'title' in post;
-    const isQuestion = isPost && post.type === 'question';
-    const description = isPost
-      ? `${username} mentioned you in a post${isComment ? ' comment' : ''}: ${
-          post.title
-        }`
-      : `${username} mentioned you in an answer${
-          isComment ? ' comment' : ''
-        }: ${post.content}`;
-    // eslint-disable-next-line no-nested-ternary
-    const link = !isPost
-      ? `/qeta/questions/${post.postId}#answer_${post.id}`
-      : isQuestion
-      ? `/qeta/questions/${post.id}`
-      : `/qeta/articles/${post.id}`;
-    const scope = isPost
-      ? `post:mention:${post.id}`
-      : `answer:mention:${post.id}`;
-
     try {
+      const user = await this.getUserDisplayName(username);
+
+      const isPost = 'title' in post;
+      const isQuestion = isPost && post.type === 'question';
+      const description = isPost
+        ? `${user} mentioned you in a post${isComment ? ' comment' : ''}: ${
+            post.title
+          }`
+        : `${user} mentioned you in an answer${isComment ? ' comment' : ''}: ${
+            post.content
+          }`;
+      // eslint-disable-next-line no-nested-ternary
+      const link = !isPost
+        ? `/qeta/questions/${post.postId}#answer_${post.id}`
+        : isQuestion
+        ? `/qeta/questions/${post.id}`
+        : `/qeta/articles/${post.id}`;
+      const scope = isPost
+        ? `post:mention:${post.id}`
+        : `answer:mention:${post.id}`;
+
       await this.notifications.send({
         recipients: {
           type: 'entity',
@@ -278,6 +298,31 @@ export class NotificationManager {
       this.logger.error(`Failed to send notification for mentions: ${e}`);
     }
     return [...notificationReceivers];
+  }
+
+  private async getUserDisplayName(username: string) {
+    const cached = await this.cache?.get<string>(
+      `user:displayName:${username}`,
+    );
+    if (cached) {
+      return cached;
+    }
+
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
+    const entity = await this.catalog.getEntityByRef(username, { token });
+    if (entity) {
+      const displayName =
+        (entity as UserEntity).spec.profile?.displayName ??
+        entity.metadata.title ??
+        entity.metadata.name;
+      await this.cache?.set(`user:displayName:${username}`, displayName, {
+        ttl: 1000 * 60 * 60 * 24,
+      });
+    }
+    return username;
   }
 
   private formatDescription(description: string) {

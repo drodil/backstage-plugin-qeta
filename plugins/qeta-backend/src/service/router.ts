@@ -31,7 +31,10 @@ export async function createRouter(
   const { config, logger, httpAuth } = options;
   const notificationMgr = new NotificationManager(
     logger,
+    options.catalog,
+    options.auth,
     options.notifications,
+    options.cache,
   );
   const routeOptions = {
     ...options,

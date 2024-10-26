@@ -10,6 +10,7 @@ import { notificationService } from '@backstage/plugin-notifications-node';
 import { StatsCollector } from './service/StatsCollector';
 import { TagsUpdater } from './service/TagsUpdater';
 import { AttachmentCleaner } from './service/AttachmentCleaner';
+import { CatalogClient } from '@backstage/catalog-client';
 
 /**
  * Qeta backend plugin
@@ -34,6 +35,7 @@ export const qetaPlugin = createBackendPlugin({
         signals: signalsServiceRef,
         notifications: notificationService,
         auth: coreServices.auth,
+        cache: coreServices.cache,
       },
       async init({
         logger,
@@ -49,6 +51,7 @@ export const qetaPlugin = createBackendPlugin({
         signals,
         notifications,
         auth,
+        cache,
       }) {
         const qetaStore = await DatabaseQetaStore.create({
           database,
@@ -56,6 +59,8 @@ export const qetaPlugin = createBackendPlugin({
         const permissionEnabled =
           (config.getOptionalBoolean('permission.enabled') ?? false) &&
           (config.getOptionalBoolean('qeta.permissions') ?? false);
+
+        const catalog = new CatalogClient({ discoveryApi: discovery });
 
         httpRouter.use(
           await createRouter({
@@ -65,7 +70,10 @@ export const qetaPlugin = createBackendPlugin({
             database: qetaStore,
             discovery,
             permissions: permissionEnabled ? permissions : undefined,
+            catalog,
             httpAuth,
+            auth,
+            cache,
             userInfo,
             signals,
             notifications,

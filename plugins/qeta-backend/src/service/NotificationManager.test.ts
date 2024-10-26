@@ -2,19 +2,25 @@ import { NotificationManager } from './NotificationManager';
 import { NotificationService } from '@backstage/plugin-notifications-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Answer, Post } from '@drodil/backstage-plugin-qeta-common';
+import { CatalogApi } from '@backstage/catalog-client';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('NotificationManager', () => {
   let notificationManager: NotificationManager;
   let mockLogger: LoggerService;
   let mockNotificationService: NotificationService;
+  let mockCatalog: CatalogApi;
 
   beforeEach(() => {
     mockLogger = { error: jest.fn() } as unknown as LoggerService;
     mockNotificationService = {
       send: jest.fn(),
     } as unknown as NotificationService;
+    mockCatalog = { getEntityByRef: jest.fn() } as unknown as CatalogApi;
     notificationManager = new NotificationManager(
       mockLogger,
+      mockCatalog,
+      mockServices.auth.mock(),
       mockNotificationService,
     );
   });
