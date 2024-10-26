@@ -1,9 +1,5 @@
 import React, { useCallback } from 'react';
-import {
-  GlobalStat,
-  Stat,
-  UserStat,
-} from '@drodil/backstage-plugin-qeta-common';
+import { Stat } from '@drodil/backstage-plugin-qeta-common';
 import {
   Bar,
   BarChart,
@@ -28,6 +24,7 @@ import ShowChartIcon from '@material-ui/icons/ShowChart';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { useTranslation } from '../../hooks';
+import { isGlobalStat, isUserStat } from './util';
 
 export type QetaStatsChartClassKey =
   | 'tooltipLabel'
@@ -55,10 +52,6 @@ const useStyles = makeStyles(
   { name: 'QetaStatsChart' },
 );
 
-const isGlobalStat = (stat: Stat): stat is GlobalStat => {
-  return (stat as GlobalStat).totalUsers !== undefined;
-};
-
 type StatType = {
   dataKey:
     | 'totalViews'
@@ -68,11 +61,13 @@ type StatType = {
     | 'totalVotes'
     | 'totalUsers'
     | 'totalTags'
-    | 'totalArticles';
+    | 'totalArticles'
+    | 'totalFollowers';
   name: string;
   color: string;
   enabled: boolean;
   globalStat: boolean;
+  userStat: boolean;
 };
 
 const DEFAULT_STATS: StatType[] = [
@@ -81,35 +76,40 @@ const DEFAULT_STATS: StatType[] = [
     name: 'Total views',
     color: '#8884d8',
     enabled: false,
-    globalStat: false,
+    globalStat: true,
+    userStat: true,
   },
   {
     dataKey: 'totalQuestions',
     name: 'Total questions',
     color: '#82ca9d',
     enabled: true,
-    globalStat: false,
+    globalStat: true,
+    userStat: true,
   },
   {
     dataKey: 'totalAnswers',
     name: 'Total answers',
     color: '#ff7300',
     enabled: true,
-    globalStat: false,
+    globalStat: true,
+    userStat: true,
   },
   {
     dataKey: 'totalComments',
     name: 'Total comments',
     color: '#739973',
     enabled: true,
-    globalStat: false,
+    globalStat: true,
+    userStat: true,
   },
   {
     dataKey: 'totalVotes',
     name: 'Total votes',
     color: '#d88884',
     enabled: true,
-    globalStat: false,
+    globalStat: true,
+    userStat: true,
   },
   {
     dataKey: 'totalUsers',
@@ -117,6 +117,7 @@ const DEFAULT_STATS: StatType[] = [
     color: '#ff0000',
     enabled: true,
     globalStat: true,
+    userStat: false,
   },
   {
     dataKey: 'totalTags',
@@ -124,25 +125,40 @@ const DEFAULT_STATS: StatType[] = [
     color: '#ff00ff',
     enabled: true,
     globalStat: true,
+    userStat: false,
   },
   {
     dataKey: 'totalArticles',
     name: 'Total articles',
     color: '#00ff00',
     enabled: true,
+    globalStat: true,
+    userStat: true,
+  },
+  {
+    dataKey: 'totalFollowers',
+    name: 'Total followers',
+    color: '#ff0000',
+    enabled: true,
     globalStat: false,
+    userStat: true,
   },
 ];
 
-const useChartState = (data: GlobalStat[] | UserStat[]) => {
+const useChartState = (data: Stat[]) => {
   const styles = useStyles();
   const isDark = useIsDarkTheme();
   const globalStats = isGlobalStat(data[0]);
+  const isUserStats = isUserStat(data[0]);
   const [stats, setStats] = React.useState<StatType[]>(
     DEFAULT_STATS.filter(stat => {
-      return globalStats || !stat.globalStat;
+      if (globalStats && !stat.globalStat) {
+        return false;
+      }
+      return !(isUserStats && !stat.userStat);
     }),
   );
+
   const toggleStat = useCallback(
     (name: string) => {
       setStats(prev =>
@@ -163,7 +179,7 @@ const useChartState = (data: GlobalStat[] | UserStat[]) => {
   return { styles, isDark, toggleStat, stats, isDisabled };
 };
 
-const StatsBarChart = (props: { data: GlobalStat[] | UserStat[] }) => {
+const StatsBarChart = (props: { data: Stat[] }) => {
   const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
     props.data,
   );
@@ -221,7 +237,7 @@ const StatsBarChart = (props: { data: GlobalStat[] | UserStat[] }) => {
   );
 };
 
-const StatsLineChart = (props: { data: GlobalStat[] | UserStat[] }) => {
+const StatsLineChart = (props: { data: Stat[] }) => {
   const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
     props.data,
   );
@@ -279,7 +295,7 @@ const StatsLineChart = (props: { data: GlobalStat[] | UserStat[] }) => {
   );
 };
 
-export const StatsChart = (props: { data: GlobalStat[] | UserStat[] }) => {
+export const StatsChart = (props: { data: Stat[] }) => {
   const { t } = useTranslation();
   const [chart, setChart] = React.useState<'line' | 'bar'>('line');
 

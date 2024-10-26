@@ -460,6 +460,9 @@ export const qetaTranslationRef = createTranslationRef({
       votes: 'Votes',
       views: 'Views',
       articles: 'Articles',
+      followers: 'Followers',
+      users: 'Users',
+      tags: 'Tags',
     },
     tagButton: {
       follow: 'Follow',

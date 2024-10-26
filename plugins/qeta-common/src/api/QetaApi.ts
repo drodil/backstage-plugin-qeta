@@ -8,6 +8,7 @@ import {
   CollectionResponse,
   CollectionsResponse,
   EntityResponse,
+  GlobalStat,
   ImpactResponse,
   PostRequest,
   PostResponse,
@@ -19,6 +20,7 @@ import {
   TagResponse,
   UserEntitiesResponse,
   UserResponse,
+  UserStat,
   UserTagsResponse,
   UserUsersResponse,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -197,8 +199,8 @@ export interface QetaApi {
   unfollowUser(userRef: string): Promise<boolean>;
 
   getUserImpact(): Promise<ImpactResponse>;
-  getGlobalStats(): Promise<StatisticsResponse>;
-  getUserStats(userRef: string): Promise<StatisticsResponse>;
+  getGlobalStats(): Promise<StatisticsResponse<GlobalStat>>;
+  getUserStats(userRef: string): Promise<StatisticsResponse<UserStat>>;
 
   getCollections(options?: CollectionsQuery): Promise<CollectionsResponse>;
   getCollection(id?: string): Promise<CollectionResponse>;

@@ -106,6 +106,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
           totalQuestions: 0,
           totalViews: 0,
           totalVotes: 0,
+          totalFollowers: 0,
         };
       }
       statistics.push({ date: new Date(), ...summary });

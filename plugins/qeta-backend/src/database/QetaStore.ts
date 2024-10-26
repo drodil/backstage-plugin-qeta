@@ -127,6 +127,7 @@ export interface UserResponse {
   totalComments: number;
   totalVotes: number;
   totalArticles: number;
+  totalFollowers: number;
 }
 
 export interface AttachmentParameters {

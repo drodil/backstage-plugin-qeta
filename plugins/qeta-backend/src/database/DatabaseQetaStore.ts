@@ -903,6 +903,7 @@ export class DatabaseQetaStore implements QetaStore {
       totalVotes:
         this.mapToInteger(r.postVotes) + this.mapToInteger(r.answerVotes),
       totalArticles: this.mapToInteger(r.totalArticles),
+      totalFollowers: this.mapToInteger(r.totalFollowers),
     }));
   }
 
@@ -924,6 +925,7 @@ export class DatabaseQetaStore implements QetaStore {
         this.mapToInteger(rows[0].postVotes) +
         this.mapToInteger(rows[0].answerVotes),
       totalArticles: this.mapToInteger(rows[0].totalArticles),
+      totalFollowers: this.mapToInteger(rows[0].totalFollowers),
     };
   }
 
@@ -1710,6 +1712,11 @@ export class DatabaseQetaStore implements QetaStore {
       .count('*')
       .as('postVotes');
 
+    const followers = this.db('user_users')
+      .where('user_users.followedUserRef', authorRef)
+      .count('*')
+      .as('totalFollowers');
+
     return this.db('unique_authors').select(
       'author',
       views,
@@ -1720,6 +1727,7 @@ export class DatabaseQetaStore implements QetaStore {
       aComments,
       pVotes,
       aVotes,
+      followers,
     );
   }
 

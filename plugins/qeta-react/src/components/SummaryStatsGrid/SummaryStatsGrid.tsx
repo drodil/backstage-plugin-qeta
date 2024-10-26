@@ -1,8 +1,13 @@
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
-import { StatisticsResponse } from '@drodil/backstage-plugin-qeta-common';
+import {
+  GlobalStat,
+  StatisticsResponse,
+  UserStat,
+} from '@drodil/backstage-plugin-qeta-common';
 import React from 'react';
 import numeral from 'numeral';
 import { useTranslation } from '../../hooks';
+import { isGlobalStat, isUserStat } from '../StatsChart/util';
 
 const SummaryCard = (props: { title: string; value: number }) => {
   const { title, value } = props;
@@ -20,7 +25,9 @@ const SummaryCard = (props: { title: string; value: number }) => {
   );
 };
 
-export const SummaryStatsGrid = (props: { stats: StatisticsResponse }) => {
+export const SummaryStatsGrid = (props: {
+  stats: StatisticsResponse<UserStat | GlobalStat>;
+}) => {
   const { stats } = props;
   const { t } = useTranslation();
   return (
@@ -61,6 +68,30 @@ export const SummaryStatsGrid = (props: { stats: StatisticsResponse }) => {
           value={stats.summary.totalVotes}
         />
       </Grid>
+      {isGlobalStat(stats.summary) && (
+        <Grid item xs={4}>
+          <SummaryCard
+            title={t('stats.users')}
+            value={stats.summary!.totalUsers}
+          />
+        </Grid>
+      )}
+      {isGlobalStat(stats.summary) && (
+        <Grid item xs={4}>
+          <SummaryCard
+            title={t('stats.tags')}
+            value={stats.summary!.totalTags}
+          />
+        </Grid>
+      )}
+      {isUserStat(stats.summary) && (
+        <Grid item xs={4}>
+          <SummaryCard
+            title={t('stats.followers')}
+            value={stats.summary!.totalFollowers}
+          />
+        </Grid>
+      )}
     </Grid>
   );
 };

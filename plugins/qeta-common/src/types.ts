@@ -27,7 +27,9 @@ export interface GlobalStat extends Stat {
   totalUsers: number;
 }
 
-export interface UserStat extends Stat {}
+export interface UserStat extends Stat {
+  totalFollowers: number;
+}
 
 export interface StatisticsOptions {
   limit?: number;
@@ -289,14 +291,7 @@ export interface ImpactResponse {
   lastWeekImpact: number;
 }
 
-export interface StatisticsResponse {
-  statistics: Stat[];
-  summary: {
-    totalQuestions: number;
-    totalAnswers: number;
-    totalVotes: number;
-    totalComments: number;
-    totalViews: number;
-    totalArticles: number;
-  };
+export interface StatisticsResponse<T extends Stat> {
+  statistics: T[];
+  summary: T;
 }
