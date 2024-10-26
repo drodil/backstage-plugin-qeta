@@ -16,15 +16,15 @@ backend.start();
 
 Events are published in topic `qeta`. The following events are published:
 
-- Posting question
-  - payload: question, author
-  - metadata.action = `post_question`
+- New post
+  - payload: post, author
+  - metadata.action = `new_post`
 - Posting answer
   - payload: question, answer, author
   - metadata.action = `post_answer`
-- Comment question
-  - payload: question, author, comment
-  - metadata.action = `comment_question`
+- Comment post
+  - payload: post, author, comment
+  - metadata.action = `comment_post`
 - Comment answer
   - payload: question, answer, author, comment
   - metadata.action = `comment_answer`
@@ -34,15 +34,24 @@ Events are published in topic `qeta`. The following events are published:
 - Answer marked as incorrect
   - payload: question, answer, author
   - metadata.action = `incorrect_answer`
-- Vote question
-  - payload: question, author, score
-  - metadata.action = `vote_question`
+- Vote post
+  - payload: post, author, score
+  - metadata.action = `vote_post`
 - Vote answer
   - payload: question, answer, author, score
   - metadata.action = `vote_answer`
-- Delete question
-  - payload: question, author
-  - metadata.action = `delete_question`
+- Delete post
+  - payload: post, author
+  - metadata.action = `delete_post`
 - Delete answer
   - payload: question, answer, author
   - metadata.action = `delete_answer`
+- New collection
+  - payload: collection, author
+  - metadata.action = `new_collection`
+- Update collection
+  - payload: collection, author
+  - metadata.action = `update_collection`
+- Delete collection
+  - payload: collection, author
+  - metadata.action = `delete_collection`

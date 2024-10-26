@@ -3,16 +3,32 @@
 Notifications are new Backstage feature that allows you to send notifications to users.
 This plugin integrates with the notifications plugin to send notifications to users when:
 
-- A new question is posted about an entity
-  - Notification is sent to the entity owners
-- A question is answered
-  - Notification is sent to the question author and the entity owners
-- A question is commented
-  - Notification is sent to the question author
-- An answer is commented
-  - Notification is sent to the answer author
-- An answer is marked as correct
-  - Notification is sent to the answer author
+- A new post, notification is sent to:
+  - The entity owners if the post is related to an entity
+  - Tag followers if the post is tagged
+  - Users that follow the author
+  - Users who are mentioned in the post
+- A question is answered, notification is sent to:
+  - The question author
+  - Other commenters
+  - The entity owners if the question is related to an entity
+  - Tag followers if the question is tagged
+  - Users who are mentioned in the answer
+- A post is commented, notification is sent to:
+  - The post author
+  - The entity owners if the post is related to an entity
+  - Tag followers if the post is tagged
+  - Users who are mentioned in the comment
+- An answer is commented, notification is sent to:
+  - The answer author
+  - Other commenters
+  - The entity owners if the question is related to an entity
+  - Tag followers if the question is tagged
+  - Users who are mentioned in the comment
+- An answer is marked as correct, notification is sent to:
+  - The answer author
+  - The question author
+  - The entity owners if the question is related to an entity
 
 ## Setup
 
