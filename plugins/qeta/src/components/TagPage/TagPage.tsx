@@ -67,28 +67,51 @@ export const TagPage = () => {
       </Grid>
       <Grid item lg={3} xl={2}>
         <FollowedTagsList />
-        <PostHighlightList
-          type="hot"
-          title={t('highlights.hotQuestions.title')}
-          noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
-          icon={<Whatshot fontSize="small" />}
-          options={{ tags: [tag ?? ''] }}
-          postType="question"
-        />
-        <PostHighlightList
-          type="unanswered"
-          title={t('highlights.unanswered.title')}
-          noQuestionsLabel={t('highlights.unanswered.noQuestionsLabel')}
-          options={{ tags: [tag ?? ''] }}
-          postType="question"
-        />
-        <PostHighlightList
-          type="incorrect"
-          title={t('highlights.incorrect.title')}
-          noQuestionsLabel={t('highlights.incorrect.noQuestionsLabel')}
-          options={{ tags: [tag ?? ''] }}
-          postType="question"
-        />
+        {resp && (
+          <>
+            <PostHighlightList
+              type="hot"
+              title={t('highlights.hotQuestions.title')}
+              noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
+              icon={<Whatshot fontSize="small" />}
+              options={{ tags: [resp.tag] }}
+              postType="question"
+            />
+
+            <PostHighlightList
+              type="unanswered"
+              title={t('highlights.unanswered.title')}
+              noQuestionsLabel={t('highlights.unanswered.noQuestionsLabel')}
+              options={{ tags: [resp.tag] }}
+              postType="question"
+            />
+            <PostHighlightList
+              type="incorrect"
+              title={t('highlights.incorrect.title')}
+              noQuestionsLabel={t('highlights.incorrect.noQuestionsLabel')}
+              options={{ tags: [resp.tag] }}
+              postType="question"
+            />
+          </>
+        )}
+        {!resp && (
+          <>
+            <PostHighlightList
+              type="hot"
+              title={t('highlights.hotQuestions.title')}
+              noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
+              icon={<Whatshot fontSize="small" />}
+              postType="question"
+            />
+            <PostHighlightList
+              type="hot"
+              title={t('highlights.hotArticles.title')}
+              noQuestionsLabel={t('highlights.hotArticles.noArticlesLabel')}
+              icon={<Whatshot fontSize="small" />}
+              postType="article"
+            />
+          </>
+        )}
       </Grid>
     </Grid>
   );
