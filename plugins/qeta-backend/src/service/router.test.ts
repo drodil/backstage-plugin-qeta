@@ -32,6 +32,7 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { mockServices } from '@backstage/backend-test-utils';
+import { CatalogApi } from '@backstage/catalog-client';
 
 const mostUpvotedQuestions: Statistic[] = [
   {
@@ -170,6 +171,8 @@ describe('createRouter', () => {
     authorizeConditional: mockedPermissionQuery,
   };
 
+  const mockCatalog: CatalogApi = {} as unknown as CatalogApi;
+
   const mockSystemDate = (mockDate: Date) => {
     jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
   };
@@ -184,6 +187,8 @@ describe('createRouter', () => {
       userInfo: mockServices.userInfo(),
       discovery: mockServices.discovery(),
       database: qetaStore,
+      auth: mockServices.auth(),
+      catalog: mockCatalog,
       config,
       permissions: permissionEvaluator,
     });

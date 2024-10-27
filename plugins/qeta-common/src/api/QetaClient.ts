@@ -20,6 +20,7 @@ import {
   CollectionsResponse,
   CollectionsResponseBody,
   EntityResponse,
+  GlobalStat,
   ImpactResponse,
   Post,
   PostRequest,
@@ -32,6 +33,7 @@ import {
   TagResponse,
   UserEntitiesResponse,
   UserResponse,
+  UserStat,
   UserTagsResponse,
   UserUsersResponse,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -741,18 +743,18 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as ImpactResponse;
   }
 
-  async getGlobalStats(): Promise<StatisticsResponse> {
+  async getGlobalStats(): Promise<StatisticsResponse<GlobalStat>> {
     const response = await this.fetchApi.fetch(
       `${await this.getBaseUrl()}/statistics/global`,
     );
-    return (await response.json()) as StatisticsResponse;
+    return (await response.json()) as StatisticsResponse<GlobalStat>;
   }
 
-  async getUserStats(userRef: string): Promise<StatisticsResponse> {
+  async getUserStats(userRef: string): Promise<StatisticsResponse<UserStat>> {
     const response = await this.fetchApi.fetch(
       `${await this.getBaseUrl()}/statistics/user/${userRef}`,
     );
-    return (await response.json()) as StatisticsResponse;
+    return (await response.json()) as StatisticsResponse<UserStat>;
   }
 
   async getCollections(
