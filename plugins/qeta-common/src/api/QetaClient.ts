@@ -31,6 +31,7 @@ import {
   StatisticsRequestParameters,
   StatisticsResponse,
   TagResponse,
+  UserCollectionsResponse,
   UserEntitiesResponse,
   UserResponse,
   UserStat,
@@ -587,6 +588,41 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
+  async getFollowedCollections(
+    requestOptions?: RequestOptions,
+  ): Promise<UserCollectionsResponse> {
+    const response = await this.fetch(`/collections/followed`, {
+      requestOptions,
+    });
+    return (await response.json()) as UserCollectionsResponse;
+  }
+
+  async followCollection(
+    collectionId: number,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean> {
+    const response = await this.fetch(`/collections/follow/${collectionId}`, {
+      reqInit: {
+        method: 'PUT',
+      },
+      requestOptions,
+    });
+    return response.ok;
+  }
+
+  async unfollowCollection(
+    collectionId: number,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean> {
+    const response = await this.fetch(`/collections/follow/${collectionId}`, {
+      reqInit: {
+        method: 'DELETE',
+      },
+      requestOptions,
+    });
+    return response.ok;
+  }
+
   async getFollowedTags(
     requestOptions?: RequestOptions,
   ): Promise<UserTagsResponse> {
@@ -819,7 +855,7 @@ export class QetaClient implements QetaApi {
   }
 
   async getCollection(
-    id?: string,
+    id?: string | number,
     requestOptions?: RequestOptions,
   ): Promise<CollectionResponse> {
     if (!id) {

@@ -28,7 +28,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const collectionsRoutes = (router: Router, options: RouteOptions) => {
-  const { database, events } = options;
+  const { database, events, notificationMgr } = options;
   // GET /collections
   router.get(`/collections`, async (request, response) => {
     // Validation
@@ -73,43 +73,6 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
   });
 
-  // GET /posts/:id
-  router.get(`/collections/:id`, async (request, response) => {
-    // Validation
-    // Act
-    const username = await getUsername(request, options);
-    const collectionId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(collectionId)) {
-      response
-        .status(400)
-        .send({ errors: 'Invalid collection id', type: 'body' });
-      return;
-    }
-
-    const decision = await authorizeConditional(
-      request,
-      qetaReadPostPermission,
-      options,
-    );
-
-    let filter: PermissionCriteria<QetaFilters> | undefined;
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      filter = transformConditions(decision.conditions);
-    }
-    const collection = await database.getCollection(
-      username,
-      Number.parseInt(request.params.id, 10),
-      filter,
-    );
-
-    if (collection === null) {
-      response.sendStatus(404);
-      return;
-    }
-    // Response
-    response.json(collection);
-  });
-
   // POST /collections
   router.post(`/collections`, async (request, response) => {
     // Validation
@@ -143,6 +106,15 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
         .send({ errors: 'Failed to create collection', type: 'body' });
       return;
     }
+
+    const followingUsers = await Promise.all([
+      database.getFollowingUsers(username),
+    ]);
+    notificationMgr.onNewCollection(
+      username,
+      collection,
+      followingUsers.flat(),
+    );
 
     if (events) {
       events.publish({
@@ -262,6 +234,88 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     response.sendStatus(deleted ? 200 : 404);
   });
 
+  router.get('/collections/followed', async (request, response) => {
+    const username = await getUsername(request, options, false);
+    const decision = await authorizeConditional(
+      request,
+      qetaReadPostPermission,
+      options,
+    );
+
+    let filter: PermissionCriteria<QetaFilters> | undefined;
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      filter = transformConditions(decision.conditions);
+    }
+
+    const collections = await database.getUserCollections(username, filter);
+    response.json(collections);
+  });
+
+  router.put('/collections/follow/:id', async (request, response) => {
+    const { id } = request.params;
+    const collectionId = Number.parseInt(id, 10);
+    if (Number.isNaN(collectionId)) {
+      response
+        .status(400)
+        .send({ errors: 'Invalid collection id', type: 'body' });
+    }
+
+    const username = await getUsername(request, options, false);
+    await database.followCollection(username, collectionId);
+    response.status(204).send();
+  });
+
+  router.delete('/collections/follow/:id', async (request, response) => {
+    const { id } = request.params;
+    const collectionId = Number.parseInt(id, 10);
+    if (Number.isNaN(collectionId)) {
+      response
+        .status(400)
+        .send({ errors: 'Invalid collection id', type: 'body' });
+    }
+
+    const username = await getUsername(request, options, false);
+    await database.unfollowCollection(username, collectionId);
+    response.status(204).send();
+  });
+
+  // GET /posts/:id
+  router.get(`/collections/:id`, async (request, response) => {
+    // Validation
+    // Act
+    const username = await getUsername(request, options);
+    const collectionId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(collectionId)) {
+      response
+        .status(400)
+        .send({ errors: 'Invalid collection id', type: 'body' });
+      return;
+    }
+
+    const decision = await authorizeConditional(
+      request,
+      qetaReadPostPermission,
+      options,
+    );
+
+    let filter: PermissionCriteria<QetaFilters> | undefined;
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      filter = transformConditions(decision.conditions);
+    }
+    const collection = await database.getCollection(
+      username,
+      Number.parseInt(request.params.id, 10),
+      filter,
+    );
+
+    if (collection === null) {
+      response.sendStatus(404);
+      return;
+    }
+    // Response
+    response.json(collection);
+  });
+
   // POST /collections/:id
   router.post(`/collections/:id/posts`, async (request, response) => {
     // Validation
@@ -307,6 +361,21 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       collectionId,
       request.body.postId,
       filter,
+    );
+
+    if (!collection) {
+      response.sendStatus(404);
+      return;
+    }
+
+    const followingUsers = await Promise.all([
+      database.getUsersForCollection(collectionId),
+      database.getFollowingUsers(username),
+    ]);
+    notificationMgr.onNewPostToCollection(
+      username,
+      collection,
+      followingUsers.flat(),
     );
 
     if (events) {

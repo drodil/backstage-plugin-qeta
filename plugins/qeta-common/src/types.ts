@@ -130,6 +130,7 @@ export interface Collection extends CollectionEntity {
   canEdit: boolean;
   canDelete: boolean;
   images: number[];
+  followers: number;
 }
 
 export interface Vote {
@@ -282,6 +283,11 @@ export type QetaSignal = QetaPostsStatsSignal | QetaAnswerStatsSignal;
 
 export interface UserTagsResponse {
   tags: string[];
+  count: number;
+}
+
+export interface UserCollectionsResponse {
+  collections: Collection[];
   count: number;
 }
 

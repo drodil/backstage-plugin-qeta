@@ -8,6 +8,7 @@ import {
   PostType,
   Statistic,
   StatisticsRequestParameters,
+  UserCollectionsResponse,
   UserEntitiesResponse,
   UserStat,
   UserTagsResponse,
@@ -419,6 +420,15 @@ export interface QetaStore {
 
   getEntities(): Promise<EntityResponse[]>;
   getEntity(entity_ref: string): Promise<EntityResponse | null>;
+
+  getUserCollections(
+    user_ref: string,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<UserCollectionsResponse>;
+  getUsersForCollection(collectionId: number): Promise<string[]>;
+
+  followCollection(user_ref: string, collectionId: number): Promise<boolean>;
+  unfollowCollection(user_ref: string, collectionId: number): Promise<boolean>;
 
   postAttachment({
     uuid,

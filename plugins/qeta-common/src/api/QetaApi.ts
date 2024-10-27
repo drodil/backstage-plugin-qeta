@@ -18,6 +18,7 @@ import {
   StatisticsRequestParameters,
   StatisticsResponse,
   TagResponse,
+  UserCollectionsResponse,
   UserEntitiesResponse,
   UserResponse,
   UserStat,
@@ -264,6 +265,18 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<AnswerResponseBody>;
 
+  getFollowedCollections(
+    requestOptions?: RequestOptions,
+  ): Promise<UserCollectionsResponse>;
+  followCollection(
+    collectionId: number,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
+  unfollowCollection(
+    collectionId: number,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
+
   getFollowedTags(requestOptions?: RequestOptions): Promise<UserTagsResponse>;
   followTag(tag: string, requestOptions?: RequestOptions): Promise<boolean>;
   unfollowTag(tag: string, requestOptions?: RequestOptions): Promise<boolean>;
@@ -304,7 +317,7 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<CollectionsResponse>;
   getCollection(
-    id?: string,
+    id?: string | number,
     requestOptions?: RequestOptions,
   ): Promise<CollectionResponse>;
   createCollection(

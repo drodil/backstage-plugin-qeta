@@ -1,6 +1,7 @@
 import { ContentHeader } from '@backstage/core-components';
 import {
   AskQuestionButton,
+  FollowedCollectionsList,
   FollowedEntitiesList,
   FollowedTagsList,
   ImpactCard,
@@ -50,6 +51,7 @@ export const HomePage = () => {
         <ImpactCard />
         <FollowedTagsList />
         <FollowedEntitiesList />
+        <FollowedCollectionsList />
       </Grid>
     </Grid>
   );

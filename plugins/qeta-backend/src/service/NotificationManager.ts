@@ -1,6 +1,7 @@
 import { NotificationService } from '@backstage/plugin-notifications-node';
 import {
   Answer,
+  Collection,
   Post,
   removeMarkdownFormatting,
   truncate,
@@ -298,6 +299,80 @@ export class NotificationManager {
       this.logger.error(`Failed to send notification for mentions: ${e}`);
     }
     return [...notificationReceivers];
+  }
+
+  async onNewCollection(
+    username: string,
+    collection: Collection,
+    followingUsers: string[],
+  ): Promise<string[]> {
+    if (!this.notifications) {
+      return [];
+    }
+
+    try {
+      const user = await this.getUserDisplayName(username);
+
+      const description = `${user} created a new collection: ${collection.title}`;
+      // eslint-disable-next-line no-nested-ternary
+      const link = `/qeta/collections/${collection.id}`;
+      const scope = `collection:${collection.id}:created`;
+
+      await this.notifications.send({
+        recipients: {
+          type: 'entity',
+          entityRef: followingUsers,
+          excludeEntityRef: username,
+        },
+        payload: {
+          title: `New collection`,
+          description: this.formatDescription(description),
+          link,
+          topic: 'New collection',
+          scope,
+        },
+      });
+    } catch (e) {
+      this.logger.error(`Failed to send notification for collection: ${e}`);
+    }
+    return followingUsers;
+  }
+
+  async onNewPostToCollection(
+    username: string,
+    collection: Collection,
+    followingUsers: string[],
+  ): Promise<string[]> {
+    if (!this.notifications) {
+      return [];
+    }
+
+    try {
+      const user = await this.getUserDisplayName(username);
+
+      const description = `${user} added a new post to ${collection.title}`;
+      // eslint-disable-next-line no-nested-ternary
+      const link = `/qeta/collections/${collection.id}`;
+      const scope = `collection:${collection.id}:new_post`;
+
+      await this.notifications.send({
+        recipients: {
+          type: 'entity',
+          entityRef: followingUsers,
+          excludeEntityRef: username,
+        },
+        payload: {
+          title: `New post in collection`,
+          description: this.formatDescription(description),
+          link,
+          topic: 'New post in collection',
+          scope,
+        },
+      });
+    } catch (e) {
+      this.logger.error(`Failed to send notification for collection: ${e}`);
+    }
+    return followingUsers;
   }
 
   private async getUserDisplayName(username: string) {

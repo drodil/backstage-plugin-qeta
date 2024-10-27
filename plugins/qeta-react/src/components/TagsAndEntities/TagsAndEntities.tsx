@@ -35,6 +35,13 @@ export const TagsAndEntities = (props: {
     }
   }, [catalogApi, entity]);
 
+  if (
+    (!entity.tags || entity.tags.length === 0) &&
+    (!entities || entities.length === 0)
+  ) {
+    return null;
+  }
+
   return (
     <>
       {entity.tags && entity.tags.map(tag => <TagChip key={tag} tag={tag} />)}

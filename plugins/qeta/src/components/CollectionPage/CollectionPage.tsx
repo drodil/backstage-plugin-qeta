@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import {
   BackToCollectionsButton,
   CollectionCard,
+  CollectionFollowButton,
   CreateCollectionButton,
   PostsGrid,
   useQetaApi,
@@ -10,7 +11,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 
 export const CollectionPage = () => {
   const { id } = useParams();
@@ -34,10 +35,17 @@ export const CollectionPage = () => {
     );
   }
 
+  const title = (
+    <Typography variant="h5" component="h2">
+      {collection.title}
+      <CollectionFollowButton collection={collection} />
+    </Typography>
+  );
+
   return (
     <>
       <ContentHeader
-        title={collection.title}
+        titleComponent={title}
         description={t('collectionPage.info')}
       >
         <BackToCollectionsButton />

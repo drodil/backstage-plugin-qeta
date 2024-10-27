@@ -214,6 +214,7 @@ export const qetaTranslationRef = createTranslationRef({
     rightMenu: {
       followedEntities: 'Followed entities',
       followedTags: 'Followed tags',
+      followedCollections: 'Followed collections',
     },
     highlights: {
       loadError: 'Failed to load questions',
@@ -463,6 +464,12 @@ export const qetaTranslationRef = createTranslationRef({
       followers: 'Followers',
       users: 'Users',
       tags: 'Tags',
+    },
+    collectionButton: {
+      follow: 'Follow',
+      unfollow: 'Unfollow',
+      tooltip:
+        'By following a collection, you will get notified when ever a new post is added to the collection',
     },
     tagButton: {
       follow: 'Follow',

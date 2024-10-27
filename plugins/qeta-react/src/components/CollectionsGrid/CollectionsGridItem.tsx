@@ -5,23 +5,22 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { collectionRouteRef, userRouteRef } from '../../routes';
+import { collectionRouteRef } from '../../routes';
 import {
-  Avatar,
-  Box,
+  Button,
   Card,
   CardActionArea,
   CardContent,
   CardMedia,
+  Grid,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
-import { Link } from '@backstage/core-components';
-import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import { useStyles, useTranslation } from '../../hooks';
-import { useEntityAuthor } from '../../hooks/useEntityAuthor';
+import { useTranslation } from '../../hooks';
+import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
 
 export interface PostsGridItemProps {
   collection: Collection;
@@ -32,10 +31,8 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
   const { t } = useTranslation();
 
   const collectionRoute = useRouteRef(collectionRouteRef);
-  const userRoute = useRouteRef(userRouteRef);
-  const styles = useStyles();
-  const { name, initials, user } = useEntityAuthor(collection);
   const navigate = useNavigate();
+  const collections = useCollectionsFollow();
   const href = collectionRoute({ id: collection.id.toString(10) });
 
   return (
@@ -60,35 +57,52 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
               )}
             </Typography>
           )}
+          <Grid container>
+            <Grid item xs={12}>
+              <TagsAndEntities entity={collection} />
+            </Grid>
+            <Grid item>
+              <Typography variant="caption">
+                {t('common.posts', {
+                  count: collection.posts?.length ?? 0,
+                  itemType: 'post',
+                })}
+                {' · '}
+                {t('common.followers', {
+                  count: collection.followers,
+                })}
+              </Typography>
+            </Grid>
+          </Grid>
         </CardContent>
       </CardActionArea>
-      <CardContent style={{ paddingTop: '0.5rem', marginTop: 'auto' }}>
-        <TagsAndEntities entity={collection} />
-        <Box style={{ paddingLeft: '0.2rem', paddingTop: '0.5rem' }}>
-          <Typography variant="caption">
-            <Avatar
-              src={user?.spec?.profile?.picture}
-              className={styles.questionListItemAvatar}
-              alt={name}
-              variant="rounded"
-            >
-              {initials}
-            </Avatar>
-            {collection.owner === 'anonymous' ? (
-              t('common.anonymousAuthor')
-            ) : (
-              <Link to={`${userRoute()}/${collection.owner}`}>{name}</Link>
-            )}{' '}
-            <Link to={href} className="qetaPostListItemQuestionBtn">
-              <RelativeTimeWithTooltip value={collection.created} />
-            </Link>
-            {' · '}
-            {t('common.posts', {
-              count: collection.posts?.length ?? 0,
-              itemType: 'post',
-            })}
-          </Typography>
-        </Box>
+      <CardContent style={{ marginTop: 'auto' }}>
+        <Grid container justifyContent="center">
+          <Grid item>
+            <Tooltip title={t('collectionButton.tooltip')}>
+              <Button
+                size="small"
+                variant="outlined"
+                color={
+                  collections.isFollowingCollection(collection)
+                    ? 'secondary'
+                    : 'primary'
+                }
+                onClick={() => {
+                  if (collections.isFollowingCollection(collection)) {
+                    collections.unfollowCollection(collection);
+                  } else {
+                    collections.followCollection(collection);
+                  }
+                }}
+              >
+                {collections.isFollowingCollection(collection)
+                  ? t('collectionButton.unfollow')
+                  : t('collectionButton.follow')}
+              </Button>
+            </Tooltip>
+          </Grid>
+        </Grid>
       </CardContent>
     </Card>
   );

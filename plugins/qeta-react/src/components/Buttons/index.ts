@@ -8,3 +8,4 @@ export { CreateCollectionButton } from './CreateCollectionButton';
 export { AddToCollectionButton } from './AddToCollectionButton';
 export { BackToCollectionsButton } from './BackToCollectionsButton';
 export { UserFollowButton } from './UserFollowButton';
+export { CollectionFollowButton } from './CollectionFollowButton';

@@ -32,6 +32,7 @@ import {
   PostType,
   Statistic,
   StatisticsRequestParameters,
+  UserCollectionsResponse,
   UserEntitiesResponse,
   UserStat,
   UserTagsResponse,
@@ -929,6 +930,63 @@ export class DatabaseQetaStore implements QetaStore {
     };
   }
 
+  async getUserCollections(
+    user_ref: string,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<UserCollectionsResponse> {
+    const rows = await this.db('user_collections')
+      .where('userRef', user_ref)
+      .leftJoin(
+        'collections',
+        'user_collections.collectionId',
+        'collections.id',
+      )
+      .select('*');
+
+    return {
+      collections: await Promise.all(
+        rows.map(async val => {
+          return this.mapCollectionEntity(val, user_ref, filters);
+        }),
+      ),
+      count: rows.length,
+    };
+  }
+
+  async getUsersForCollection(collectionId: number): Promise<string[]> {
+    const users = await this.db('user_collections')
+      .where('collectionId', collectionId)
+      .select('userRef');
+    return users.map(user => user.userRef);
+  }
+
+  async followCollection(
+    user_ref: string,
+    collectionId: number,
+  ): Promise<boolean> {
+    await this.db
+      .insert(
+        {
+          userRef: user_ref,
+          collectionId,
+        },
+        ['collectionId'],
+      )
+      .into('user_collections');
+    return true;
+  }
+
+  async unfollowCollection(
+    user_ref: string,
+    collectionId: number,
+  ): Promise<boolean> {
+    await this.db('user_collections')
+      .where('userRef', user_ref)
+      .where('collectionId', collectionId)
+      .delete();
+    return true;
+  }
+
   async getUserTags(user_ref: string): Promise<UserTagsResponse> {
     const tags = await this.db('user_tags')
       .where('userRef', user_ref)
@@ -1746,8 +1804,17 @@ export class DatabaseQetaStore implements QetaStore {
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Collection> {
     const results = await Promise.all([
-      this.getPosts(user_ref, { collectionId: val.id }, filters),
+      this.getPosts(
+        user_ref,
+        { collectionId: val.id, includeEntities: true },
+        filters,
+      ),
       this.db('attachments').where('collectionId', val.id).select('id'),
+      this.db('user_collections')
+        .count('*')
+        .as('followers')
+        .where('collectionId', val.id)
+        .first(),
     ]);
     const canEdit = val.owner === user_ref || val.editAccess === 'public';
     const canDelete = val.owner === user_ref;
@@ -1774,6 +1841,7 @@ export class DatabaseQetaStore implements QetaStore {
       entities,
       tags,
       images: results[1].map(r => r.id),
+      followers: this.mapToInteger(results[2]!.count),
     };
   }
 
