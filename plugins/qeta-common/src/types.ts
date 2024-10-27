@@ -1,5 +1,6 @@
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { ErrorObject } from 'ajv';
+import { RequestOptions } from './api';
 
 export interface StatisticResponse {
   ranking: Statistic[];
@@ -41,6 +42,7 @@ export interface StatisticsOptions {
 export interface StatisticsRequestParameters {
   author?: string;
   options?: StatisticsOptions;
+  requestOptions?: RequestOptions;
 }
 
 export interface QetaEntity {

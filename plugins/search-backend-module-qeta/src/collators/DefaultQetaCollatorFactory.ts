@@ -40,10 +40,10 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
 
   async *execute(): AsyncGenerator<QetaDocument> {
     this.logger.info('Executing QetaCollator');
-    let totalQuestions = Number.MAX_VALUE;
-    let indexedQuestions = 0;
+    let totalPosts = Number.MAX_VALUE;
+    let indexedPosts = 0;
 
-    while (totalQuestions > indexedQuestions) {
+    while (totalPosts > indexedPosts) {
       let tok = undefined;
 
       if (this.auth) {
@@ -61,7 +61,7 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
           orderBy: 'created',
           order: 'asc',
           limit: 50,
-          offset: indexedQuestions,
+          offset: indexedPosts,
         },
         { token: tok },
       );
@@ -75,8 +75,8 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
 
       const posts = data.posts;
       this.logger.info(`Indexing ${posts.length} posts`);
-      totalQuestions = data.total;
-      indexedQuestions += posts.length;
+      totalPosts = data.total;
+      indexedPosts += posts.length;
 
       for (const post of posts) {
         const questionContent = `# Question: ${post.title}\n\n${post.content}`;

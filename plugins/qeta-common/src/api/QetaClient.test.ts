@@ -18,14 +18,6 @@ describe('QetaClient', () => {
     jest.clearAllMocks();
   });
 
-  describe('getBaseUrl', () => {
-    it('should return the base URL', async () => {
-      const baseUrl = await client.getBaseUrl();
-      expect(baseUrl).toBe('http://example.com');
-      expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('qeta');
-    });
-  });
-
   describe('getPosts', () => {
     it('should fetch posts', async () => {
       const mockResponse = {
@@ -37,7 +29,20 @@ describe('QetaClient', () => {
       expect(result).toEqual({ posts: [], total: 0 });
       expect(mockFetch).toHaveBeenCalledWith('http://example.com/posts', {
         method: 'GET',
-        headers: {},
+      });
+    });
+
+    it('should fetch posts with custom token', async () => {
+      const mockResponse = {
+        json: jest.fn().mockResolvedValue({ posts: [], total: 0 }),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getPosts({}, { token: 'token' });
+      expect(result).toEqual({ posts: [], total: 0 });
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/posts', {
+        method: 'GET',
+        headers: { Authorization: 'Bearer token' },
       });
     });
 
@@ -96,7 +101,9 @@ describe('QetaClient', () => {
 
       const result = await client.getTags();
       expect(result).toEqual([]);
-      expect(mockFetch).toHaveBeenCalledWith('http://example.com/tags');
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/tags', {
+        method: 'GET',
+      });
     });
   });
 
@@ -109,6 +116,7 @@ describe('QetaClient', () => {
       expect(result).toEqual({});
       expect(mockFetch).toHaveBeenCalledWith(
         'http://example.com/posts/1/upvote',
+        { method: 'GET' },
       );
     });
 
@@ -131,6 +139,7 @@ describe('QetaClient', () => {
       expect(result).toBe(true);
       expect(mockFetch).toHaveBeenCalledWith(
         'http://example.com/posts/1/answers/1/correct',
+        { method: 'GET' },
       );
     });
 
@@ -152,7 +161,9 @@ describe('QetaClient', () => {
 
       const result = await client.getPost('1');
       expect(result).toEqual({ id: 1, title: 'Test Post' });
-      expect(mockFetch).toHaveBeenCalledWith('http://example.com/posts/1');
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/posts/1', {
+        method: 'GET',
+      });
     });
 
     it('should handle errors', async () => {

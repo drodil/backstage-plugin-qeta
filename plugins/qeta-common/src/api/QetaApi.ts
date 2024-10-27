@@ -87,24 +87,52 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<PostsResponse>;
 
-  getPostsList(type: string, options?: PostsQuery): Promise<PostsResponse>;
+  getPostsList(
+    type: string,
+    options?: PostsQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<PostsResponse>;
 
-  createPost(post: PostRequest): Promise<PostResponse>;
+  createPost(
+    post: PostRequest,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
 
-  commentPost(id: number, content: string): Promise<PostResponse>;
+  commentPost(
+    id: number,
+    content: string,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
 
-  deletePostComment(postId: number, id: number): Promise<PostResponse>;
+  deletePostComment(
+    postId: number,
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
 
-  getPost(id: string | undefined): Promise<PostResponse>;
+  getPost(
+    id: string | number | undefined,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
 
-  getTags(): Promise<TagResponse[]>;
-  getTag(tag: string): Promise<TagResponse | null>;
-  updateTag(tag: string, description?: string): Promise<TagResponse | null>;
+  getTags(requestOptions?: RequestOptions): Promise<TagResponse[]>;
+  getTag(
+    tag: string,
+    requestOptions?: RequestOptions,
+  ): Promise<TagResponse | null>;
+  updateTag(
+    tag: string,
+    description?: string,
+    requestOptions?: RequestOptions,
+  ): Promise<TagResponse | null>;
 
-  getEntities(): Promise<EntityResponse[]>;
-  getEntity(entityRef: string): Promise<EntityResponse | null>;
+  getEntities(requestOptions?: RequestOptions): Promise<EntityResponse[]>;
+  getEntity(
+    entityRef: string,
+    requestOptions?: RequestOptions,
+  ): Promise<EntityResponse | null>;
 
-  getUsers(): Promise<UserResponse[]>;
+  getUsers(requestOptions?: RequestOptions): Promise<UserResponse[]>;
 
   getMostUpvotedPosts({
     author,
@@ -136,86 +164,170 @@ export interface QetaApi {
     options,
   }: StatisticsRequestParameters): Promise<StatisticResponse[]>;
 
-  votePostUp(id: number): Promise<PostResponse>;
+  votePostUp(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
 
-  votePostDown(id: number): Promise<PostResponse>;
+  votePostDown(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
 
-  voteAnswerUp(postId: number, id: number): Promise<AnswerResponse>;
+  voteAnswerUp(
+    postId: number,
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<AnswerResponse>;
 
-  voteAnswerDown(postId: number, id: number): Promise<AnswerResponse>;
+  voteAnswerDown(
+    postId: number,
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<AnswerResponse>;
 
-  markAnswerCorrect(postId: number, id: number): Promise<boolean>;
+  markAnswerCorrect(
+    postId: number,
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
 
-  markAnswerIncorrect(postId: number, id: number): Promise<boolean>;
+  markAnswerIncorrect(
+    postId: number,
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
 
-  favoritePost(id: number): Promise<PostResponse>;
+  favoritePost(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
 
-  unfavoritePost(id: number): Promise<PostResponse>;
+  unfavoritePost(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
 
-  postAnswer(answer: AnswerRequest): Promise<AnswerResponseBody>;
+  postAnswer(
+    answer: AnswerRequest,
+    requestOptions?: RequestOptions,
+  ): Promise<AnswerResponseBody>;
 
   postAttachment(
     file: Blob,
     options?: { postId?: number; answerId?: number; collectionId?: number },
+    requestOptions?: RequestOptions,
   ): Promise<AttachmentResponseBody>;
 
   commentAnswer(
     questionId: number,
     id: number,
     content: string,
+    requestOptions?: RequestOptions,
   ): Promise<AnswerResponse>;
 
   deleteAnswerComment(
     questionId: number,
     answerId: number,
     id: number,
+    requestOptions?: RequestOptions,
   ): Promise<AnswerResponse>;
 
-  deletePost(postId: number): Promise<boolean>;
+  deletePost(postId: number, requestOptions?: RequestOptions): Promise<boolean>;
 
-  deleteAnswer(questionId: number, id: number): Promise<boolean>;
+  deleteAnswer(
+    questionId: number,
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
 
-  updatePost(id: string, question: PostRequest): Promise<PostResponse>;
+  updatePost(
+    id: string,
+    question: PostRequest,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
 
-  updateAnswer(id: number, answer: AnswerRequest): Promise<AnswerResponseBody>;
+  updateAnswer(
+    id: number,
+    answer: AnswerRequest,
+    requestOptions?: RequestOptions,
+  ): Promise<AnswerResponseBody>;
 
-  getAnswers(options: AnswersQuery): Promise<AnswersResponse>;
+  getAnswers(
+    options: AnswersQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<AnswersResponse>;
 
   getAnswer(
     questionId: string | number | undefined,
     id: string | number | undefined,
+    requestOptions?: RequestOptions,
   ): Promise<AnswerResponseBody>;
 
-  getFollowedTags(): Promise<UserTagsResponse>;
-  followTag(tag: string): Promise<boolean>;
-  unfollowTag(tag: string): Promise<boolean>;
+  getFollowedTags(requestOptions?: RequestOptions): Promise<UserTagsResponse>;
+  followTag(tag: string, requestOptions?: RequestOptions): Promise<boolean>;
+  unfollowTag(tag: string, requestOptions?: RequestOptions): Promise<boolean>;
 
-  getFollowedEntities(): Promise<UserEntitiesResponse>;
-  followEntity(entityRef: string): Promise<boolean>;
-  unfollowEntity(entityRef: string): Promise<boolean>;
+  getFollowedEntities(
+    requestOptions?: RequestOptions,
+  ): Promise<UserEntitiesResponse>;
+  followEntity(
+    entityRef: string,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
+  unfollowEntity(
+    entityRef: string,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
 
-  getFollowedUsers(): Promise<UserUsersResponse>;
-  followUser(userRef: string): Promise<boolean>;
-  unfollowUser(userRef: string): Promise<boolean>;
+  getFollowedUsers(requestOptions?: RequestOptions): Promise<UserUsersResponse>;
+  followUser(
+    userRef: string,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
+  unfollowUser(
+    userRef: string,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
 
-  getUserImpact(): Promise<ImpactResponse>;
-  getGlobalStats(): Promise<StatisticsResponse<GlobalStat>>;
-  getUserStats(userRef: string): Promise<StatisticsResponse<UserStat>>;
+  getUserImpact(requestOptions?: RequestOptions): Promise<ImpactResponse>;
+  getGlobalStats(
+    requestOptions?: RequestOptions,
+  ): Promise<StatisticsResponse<GlobalStat>>;
+  getUserStats(
+    userRef: string,
+    requestOptions?: RequestOptions,
+  ): Promise<StatisticsResponse<UserStat>>;
 
-  getCollections(options?: CollectionsQuery): Promise<CollectionsResponse>;
-  getCollection(id?: string): Promise<CollectionResponse>;
-  createCollection(collection: CollectionRequest): Promise<CollectionResponse>;
+  getCollections(
+    options?: CollectionsQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<CollectionsResponse>;
+  getCollection(
+    id?: string,
+    requestOptions?: RequestOptions,
+  ): Promise<CollectionResponse>;
+  createCollection(
+    collection: CollectionRequest,
+    requestOptions?: RequestOptions,
+  ): Promise<CollectionResponse>;
   updateCollection(
     id: number,
     collection: CollectionRequest,
+    requestOptions?: RequestOptions,
   ): Promise<CollectionResponse>;
-  deleteCollection(id?: number): Promise<boolean>;
+  deleteCollection(
+    id?: number,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
   addPostToCollection(
     collectionId: number,
     postId: number,
+    requestOptions?: RequestOptions,
   ): Promise<CollectionResponse>;
   removePostFromCollection(
     collectionId: number,
     postId: number,
+    requestOptions?: RequestOptions,
   ): Promise<CollectionResponse>;
 }
