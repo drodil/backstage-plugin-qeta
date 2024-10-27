@@ -28,7 +28,12 @@ import {
   qetaReadPostPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Response } from 'express-serve-static-core';
-import { signalAnswerStats, signalPostStats, validateDateRange } from './util';
+import {
+  signalAnswerStats,
+  signalPostStats,
+  validateDateRange,
+  wrapAsync,
+} from './util';
 import {
   AuthorizeResult,
   PermissionCriteria,
@@ -121,21 +126,24 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const followingUsers = await Promise.all([
-      database.getUsersForTags(post.tags),
-      database.getUsersForEntities(post.entities),
-      database.getFollowingUsers(username),
-    ]);
-    const sent = await notificationMgr.onNewAnswer(
-      username,
-      post,
-      answer,
-      followingUsers.flat(),
-    );
-    const mentions = findUserMentions(answer.content);
-    if (mentions.length > 0) {
-      notificationMgr.onMention(username, answer, sent, mentions);
-    }
+    wrapAsync(async () => {
+      const followingUsers = await Promise.all([
+        database.getUsersForTags(post.tags),
+        database.getUsersForEntities(post.entities),
+        database.getFollowingUsers(username),
+      ]);
+      const sent = await notificationMgr.onNewAnswer(
+        username,
+        post,
+        answer,
+        followingUsers.flat(),
+      );
+      const mentions = findUserMentions(answer.content);
+      if (mentions.length > 0) {
+        await notificationMgr.onMention(username, answer, sent, mentions);
+      }
+    });
+
     await mapAdditionalFields(request, answer, options);
 
     if (events) {
@@ -253,22 +261,35 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      const followingUsers = await Promise.all([
-        database.getUsersForTags(post.tags),
-        database.getUsersForEntities(post.entities),
-        database.getFollowingUsers(username),
-      ]);
-      const sent = await notificationMgr.onAnswerComment(
-        username,
-        post,
-        answer,
-        request.body.content,
-        followingUsers.flat(),
-      );
-      const mentions = findUserMentions(request.body.content);
-      if (mentions.length > 0) {
-        notificationMgr.onMention(username, answer, mentions, sent, true);
-      }
+      wrapAsync(async () => {
+        if (!answer) {
+          return;
+        }
+
+        const followingUsers = await Promise.all([
+          database.getUsersForTags(post.tags),
+          database.getUsersForEntities(post.entities),
+          database.getFollowingUsers(username),
+        ]);
+        const sent = await notificationMgr.onAnswerComment(
+          username,
+          post,
+          answer,
+          request.body.content,
+          followingUsers.flat(),
+        );
+        const mentions = findUserMentions(request.body.content);
+        if (mentions.length > 0) {
+          await notificationMgr.onMention(
+            username,
+            answer,
+            mentions,
+            sent,
+            true,
+          );
+        }
+      });
+
       await mapAdditionalFields(request, answer, options);
 
       if (events) {
@@ -531,7 +552,9 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         signalAnswerStats(signals, answer);
       }
 
-      notificationMgr.onCorrectAnswer(username, post, answer);
+      wrapAsync(async () => {
+        await notificationMgr.onCorrectAnswer(username, post, answer);
+      });
 
       if (events || signals) {
         const updated = await database.getAnswer(answerId, username);

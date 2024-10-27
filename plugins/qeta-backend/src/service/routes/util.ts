@@ -1,6 +1,10 @@
 import { Answer, Post, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import { SignalsService } from '@backstage/plugin-signals-node';
 
+export const wrapAsync = async (fn: Function) => {
+  fn();
+};
+
 export const signalPostStats = (
   signalService?: SignalsService,
   question?: Post | null,

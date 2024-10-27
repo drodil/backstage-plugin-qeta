@@ -23,6 +23,7 @@ import {
   AuthorizeResult,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
+import { wrapAsync } from './util';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -107,14 +108,16 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const followingUsers = await Promise.all([
-      database.getFollowingUsers(username),
-    ]);
-    notificationMgr.onNewCollection(
-      username,
-      collection,
-      followingUsers.flat(),
-    );
+    wrapAsync(async () => {
+      const followingUsers = await Promise.all([
+        database.getFollowingUsers(username),
+      ]);
+      await notificationMgr.onNewCollection(
+        username,
+        collection,
+        followingUsers.flat(),
+      );
+    });
 
     if (events) {
       events.publish({
@@ -368,15 +371,20 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const followingUsers = await Promise.all([
-      database.getUsersForCollection(collectionId),
-      database.getFollowingUsers(username),
-    ]);
-    notificationMgr.onNewPostToCollection(
-      username,
-      collection,
-      followingUsers.flat(),
-    );
+    wrapAsync(async () => {
+      if (!collection) {
+        return;
+      }
+      const followingUsers = await Promise.all([
+        database.getUsersForCollection(collectionId),
+        database.getFollowingUsers(username),
+      ]);
+      await notificationMgr.onNewPostToCollection(
+        username,
+        collection,
+        followingUsers.flat(),
+      );
+    });
 
     if (events) {
       events.publish({

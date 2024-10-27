@@ -27,7 +27,7 @@ import {
   RouteOptions,
 } from '../types';
 import { Response } from 'express-serve-static-core';
-import { signalPostStats, validateDateRange } from './util';
+import { signalPostStats, validateDateRange, wrapAsync } from './util';
 import {
   AuthorizeResult,
   PermissionCriteria,
@@ -218,21 +218,32 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       ),
     );
 
-    const followingUsers = await Promise.all([
-      database.getUsersForTags(question.tags),
-      database.getUsersForEntities(question.entities),
-      database.getFollowingUsers(username),
-    ]);
-    const sent = await notificationMgr.onNewPostComment(
-      username,
-      question,
-      request.body.content,
-      followingUsers.flat(),
-    );
-    const mentions = findUserMentions(request.body.content);
-    if (mentions.length > 0) {
-      notificationMgr.onMention(username, question, mentions, sent, true);
-    }
+    wrapAsync(async () => {
+      if (!question) {
+        return;
+      }
+      const followingUsers = await Promise.all([
+        database.getUsersForTags(question.tags),
+        database.getUsersForEntities(question.entities),
+        database.getFollowingUsers(username),
+      ]);
+      const sent = await notificationMgr.onNewPostComment(
+        username,
+        question,
+        request.body.content,
+        followingUsers.flat(),
+      );
+      const mentions = findUserMentions(request.body.content);
+      if (mentions.length > 0) {
+        await notificationMgr.onMention(
+          username,
+          question,
+          mentions,
+          sent,
+          true,
+        );
+      }
+    });
 
     if (events) {
       events.publish({
@@ -326,20 +337,22 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const followingUsers = await Promise.all([
-      database.getUsersForTags(tags),
-      database.getUsersForEntities(entities),
-      database.getFollowingUsers(username),
-    ]);
-    const sent = await notificationMgr.onNewPost(
-      username,
-      question,
-      followingUsers.flat(),
-    );
-    const mentions = findUserMentions(request.body.content);
-    if (mentions.length > 0) {
-      notificationMgr.onMention(username, question, sent, mentions);
-    }
+    wrapAsync(async () => {
+      const followingUsers = await Promise.all([
+        database.getUsersForTags(tags),
+        database.getUsersForEntities(entities),
+        database.getFollowingUsers(username),
+      ]);
+      const sent = await notificationMgr.onNewPost(
+        username,
+        question,
+        followingUsers.flat(),
+      );
+      const mentions = findUserMentions(request.body.content);
+      if (mentions.length > 0) {
+        await notificationMgr.onMention(username, question, sent, mentions);
+      }
+    });
 
     if (events) {
       events.publish({

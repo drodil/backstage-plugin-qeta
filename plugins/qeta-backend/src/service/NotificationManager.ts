@@ -32,10 +32,13 @@ export class NotificationManager {
       return [];
     }
 
-    const notificationReceivers = new Set<string>([
-      ...(post?.entities ?? []),
-      ...followingUsers,
-    ]);
+    const notificationReceivers = [
+      ...new Set<string>([...(post?.entities ?? []), ...followingUsers]),
+    ];
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
 
     try {
       const user = await this.getUserDisplayName(username);
@@ -43,7 +46,7 @@ export class NotificationManager {
       await this.notifications.send({
         recipients: {
           type: 'entity',
-          entityRef: [...notificationReceivers],
+          entityRef: notificationReceivers,
           excludeEntityRef: username,
         },
         payload: {
@@ -65,7 +68,7 @@ export class NotificationManager {
         `Failed to send notification for new ${post.type}: ${e}`,
       );
     }
-    return [...notificationReceivers];
+    return notificationReceivers;
   }
 
   async onNewPostComment(
@@ -80,12 +83,18 @@ export class NotificationManager {
 
     const commenters = new Set<string>(post.comments?.map(c => c.author));
 
-    const notificationReceivers = new Set<string>([
-      post.author,
-      ...(post?.entities ?? []),
-      ...commenters,
-      ...followingUsers,
-    ]);
+    const notificationReceivers = [
+      ...new Set<string>([
+        post.author,
+        ...(post?.entities ?? []),
+        ...commenters,
+        ...followingUsers,
+      ]),
+    ];
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
 
     try {
       const user = await this.getUserDisplayName(username);
@@ -93,7 +102,7 @@ export class NotificationManager {
       await this.notifications.send({
         recipients: {
           type: 'entity',
-          entityRef: [...notificationReceivers],
+          entityRef: notificationReceivers,
           excludeEntityRef: username,
         },
         payload: {
@@ -114,7 +123,7 @@ export class NotificationManager {
         `Failed to send notification for new post comment: ${e}`,
       );
     }
-    return [...notificationReceivers];
+    return notificationReceivers;
   }
 
   async onNewAnswer(
@@ -127,11 +136,17 @@ export class NotificationManager {
       return [];
     }
 
-    const notificationReceivers = new Set<string>([
-      question.author,
-      ...(question?.entities ?? []),
-      ...followingUsers,
-    ]);
+    const notificationReceivers = [
+      ...new Set<string>([
+        question.author,
+        ...(question?.entities ?? []),
+        ...followingUsers,
+      ]),
+    ];
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
 
     try {
       const user = await this.getUserDisplayName(username);
@@ -139,7 +154,7 @@ export class NotificationManager {
       await this.notifications.send({
         recipients: {
           type: 'entity',
-          entityRef: [...notificationReceivers],
+          entityRef: notificationReceivers,
           excludeEntityRef: username,
         },
         payload: {
@@ -155,7 +170,7 @@ export class NotificationManager {
     } catch (e) {
       this.logger.error(`Failed to send notification for new answer: ${e}`);
     }
-    return [...notificationReceivers];
+    return notificationReceivers;
   }
 
   async onAnswerComment(
@@ -171,12 +186,18 @@ export class NotificationManager {
 
     const commenters = new Set<string>(answer.comments?.map(c => c.author));
 
-    const notificationReceivers = new Set<string>([
-      answer.author,
-      ...commenters,
-      ...(question?.entities ?? []),
-      ...followingUsers,
-    ]);
+    const notificationReceivers = [
+      ...new Set<string>([
+        answer.author,
+        ...commenters,
+        ...(question?.entities ?? []),
+        ...followingUsers,
+      ]),
+    ];
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
 
     try {
       const user = await this.getUserDisplayName(username);
@@ -184,7 +205,7 @@ export class NotificationManager {
       await this.notifications.send({
         recipients: {
           type: 'entity',
-          entityRef: [...notificationReceivers],
+          entityRef: notificationReceivers,
           excludeEntityRef: username,
         },
         payload: {
@@ -202,7 +223,7 @@ export class NotificationManager {
         `Failed to send notification for new answer comment: ${e}`,
       );
     }
-    return [...notificationReceivers];
+    return notificationReceivers;
   }
 
   async onCorrectAnswer(
@@ -214,11 +235,17 @@ export class NotificationManager {
       return [];
     }
 
-    const notificationReceivers = new Set<string>([
-      answer.author,
-      question.author,
-      ...(question?.entities ?? []),
-    ]);
+    const notificationReceivers = [
+      ...new Set<string>([
+        answer.author,
+        question.author,
+        ...(question?.entities ?? []),
+      ]),
+    ];
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
 
     try {
       const user = await this.getUserDisplayName(username);
@@ -226,7 +253,7 @@ export class NotificationManager {
       await this.notifications.send({
         recipients: {
           type: 'entity',
-          entityRef: [...notificationReceivers],
+          entityRef: notificationReceivers,
           excludeEntityRef: username,
         },
         payload: {
@@ -242,7 +269,7 @@ export class NotificationManager {
     } catch (e) {
       this.logger.error(`Failed to send notification for correct answer: ${e}`);
     }
-    return [...notificationReceivers];
+    return notificationReceivers;
   }
 
   async onMention(
@@ -259,6 +286,11 @@ export class NotificationManager {
     const notificationReceivers = mentions
       .map(m => m.replaceAll('@', ''))
       .filter(m => !alreadySent.includes(m));
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
+
     try {
       const user = await this.getUserDisplayName(username);
 
@@ -284,7 +316,7 @@ export class NotificationManager {
       await this.notifications.send({
         recipients: {
           type: 'entity',
-          entityRef: [...notificationReceivers],
+          entityRef: notificationReceivers,
           excludeEntityRef: username,
         },
         payload: {
@@ -298,7 +330,7 @@ export class NotificationManager {
     } catch (e) {
       this.logger.error(`Failed to send notification for mentions: ${e}`);
     }
-    return [...notificationReceivers];
+    return notificationReceivers;
   }
 
   async onNewCollection(
@@ -306,7 +338,7 @@ export class NotificationManager {
     collection: Collection,
     followingUsers: string[],
   ): Promise<string[]> {
-    if (!this.notifications) {
+    if (!this.notifications || followingUsers.length === 0) {
       return [];
     }
 
@@ -343,7 +375,7 @@ export class NotificationManager {
     collection: Collection,
     followingUsers: string[],
   ): Promise<string[]> {
-    if (!this.notifications) {
+    if (!this.notifications || followingUsers.length === 0) {
       return [];
     }
 
