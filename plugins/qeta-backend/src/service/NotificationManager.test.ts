@@ -16,11 +16,19 @@ describe('NotificationManager', () => {
     mockNotificationService = {
       send: jest.fn(),
     } as unknown as NotificationService;
-    mockCatalog = { getEntityByRef: jest.fn() } as unknown as CatalogApi;
+    mockCatalog = {
+      getEntityByRef: jest
+        .fn()
+        .mockResolvedValue({ metadata: { title: 'John Doe' } }),
+    } as unknown as CatalogApi;
     notificationManager = new NotificationManager(
       mockLogger,
       mockCatalog,
-      mockServices.auth.mock(),
+      mockServices.auth.mock({
+        getPluginRequestToken: jest
+          .fn()
+          .mockResolvedValue({ token: 'test_token' }),
+      }),
       mockNotificationService,
     );
   });
@@ -49,7 +57,7 @@ describe('NotificationManager', () => {
 
       expect(mockNotificationService.send).toHaveBeenCalledWith({
         payload: {
-          description: 'author asked a question: Test Post',
+          description: 'John Doe asked a question: Test Post',
           link: '/qeta/questions/1',
           title: 'New question',
           topic: 'New question about entity',
@@ -102,7 +110,7 @@ describe('NotificationManager', () => {
 
       expect(mockNotificationService.send).toHaveBeenCalledWith({
         payload: {
-          description: 'author commented on question: Test comment',
+          description: 'John Doe commented on question: Test comment',
           link: '/qeta/questions/1',
           scope: 'question:comment:1',
           title: 'New comment on question',
@@ -166,7 +174,7 @@ describe('NotificationManager', () => {
 
       expect(mockNotificationService.send).toHaveBeenCalledWith({
         payload: {
-          description: 'author answered question: Test Answer',
+          description: 'John Doe answered question: Test Answer',
           link: '/qeta/questions/1#answer_1',
           scope: 'question:answer:1:author',
           title: 'New answer on question',
@@ -229,7 +237,7 @@ describe('NotificationManager', () => {
 
       expect(mockNotificationService.send).toHaveBeenCalledWith({
         payload: {
-          description: 'author commented answer: Test comment',
+          description: 'John Doe commented answer: Test comment',
           link: '/qeta/questions/1#answer_1',
           scope: 'answer:comment:1',
           title: 'New comment on answer',
@@ -291,7 +299,7 @@ describe('NotificationManager', () => {
 
       expect(mockNotificationService.send).toHaveBeenCalledWith({
         payload: {
-          description: 'author marked answer as correct: Test Answer',
+          description: 'John Doe marked answer as correct: Test Answer',
           link: '/qeta/questions/1#answer_1',
           scope: 'question:correct:1:answer',
           title: 'Correct answer on question',
@@ -347,7 +355,7 @@ describe('NotificationManager', () => {
 
       expect(mockNotificationService.send).toHaveBeenCalledWith({
         payload: {
-          description: 'author mentioned you in a post: Test Post',
+          description: 'John Doe mentioned you in a post: Test Post',
           link: '/qeta/questions/1',
           scope: 'post:mention:1',
           title: 'New mention',

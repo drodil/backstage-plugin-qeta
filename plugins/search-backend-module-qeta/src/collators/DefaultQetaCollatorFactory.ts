@@ -4,7 +4,8 @@ import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import {
   QetaApi,
   QetaClient,
-  QetaDocument,
+  QetaCollectionDocument,
+  QetaPostDocument,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   AuthService,
@@ -38,7 +39,7 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
     return Readable.from(this.execute());
   }
 
-  async *execute(): AsyncGenerator<QetaDocument> {
+  async *execute(): AsyncGenerator<QetaPostDocument | QetaCollectionDocument> {
     this.logger.info('Executing QetaCollator');
     let totalPosts = Number.MAX_VALUE;
     let indexedPosts = 0;
@@ -102,13 +103,62 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
             post.type === 'question'
               ? `/qeta/questions/${post.id}`
               : `/qeta/articles/${post.id}`,
-          docType: 'qeta',
+          docType: 'qeta_post',
           author: post.author,
           score: post.score,
           entityRefs: post.entities,
           answerCount: post.answersCount,
           views: post.views,
           tags: post.tags,
+        };
+      }
+    }
+
+    let totalCollections = Number.MAX_VALUE;
+    let indexedCollections = 0;
+
+    while (totalCollections > indexedCollections) {
+      let tok = undefined;
+
+      if (this.auth) {
+        const { token } = await this.auth.getPluginRequestToken({
+          onBehalfOf: await this.auth.getOwnServiceCredentials(),
+          targetPluginId: 'qeta',
+        });
+        tok = token;
+      }
+
+      const data = await this.api.getCollections(
+        {
+          orderBy: 'created',
+          order: 'asc',
+          limit: 50,
+          offset: indexedCollections,
+        },
+        { token: tok },
+      );
+
+      if (!data || 'errors' in data || !('collections' in data)) {
+        this.logger.error(
+          `Error while fetching collections from qeta: ${JSON.stringify(data)}`,
+        );
+        return;
+      }
+
+      const collections = data.collections;
+      this.logger.info(`Indexing ${collections.length} collections`);
+      totalCollections = data.total;
+      indexedCollections += collections.length;
+
+      for (const collection of collections) {
+        yield {
+          title: collection.title,
+          text: collection.description ?? '',
+          location: `/qeta/collections/${collection.id}`,
+          docType: 'qeta_collection',
+          owner: collection.owner,
+          created: collection.created,
+          headerImage: collection.headerImage,
         };
       }
     }

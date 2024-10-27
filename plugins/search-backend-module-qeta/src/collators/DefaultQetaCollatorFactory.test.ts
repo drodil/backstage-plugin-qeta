@@ -44,6 +44,18 @@ const mockPosts = {
   ],
   total: 1,
 };
+const mockCollections = {
+  collections: [
+    {
+      id: 1,
+      title: 'collection1',
+      description: 'Test',
+      created: new Date(),
+      owner: 'user:default/john.doe',
+    },
+  ],
+  total: 1,
+};
 
 describe('DefaultQetaCollatorFactory', () => {
   const config = new ConfigReader({});
@@ -86,6 +98,15 @@ describe('DefaultQetaCollatorFactory', () => {
           },
         ),
       );
+      worker.use(
+        rest.get(
+          'http://test-backend/api/qeta/collections',
+          (req: any, res: any, ctx: any) => {
+            lastRequest = req;
+            return res(ctx.status(200), ctx.json(mockCollections));
+          },
+        ),
+      );
     });
 
     it('returns a readable stream', async () => {
@@ -96,7 +117,8 @@ describe('DefaultQetaCollatorFactory', () => {
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
       expect(mockDiscovery.getBaseUrl).toHaveBeenCalledWith('qeta');
-      const totalDocuments = mockPosts.posts.length;
+      const totalDocuments =
+        mockPosts.posts.length + mockCollections.collections.length;
       expect(documents).toHaveLength(totalDocuments);
       expect(lastRequest.headers.get('authorization')).toEqual(
         'Bearer test_token',
@@ -114,7 +136,8 @@ describe('DefaultQetaCollatorFactory', () => {
       const { documents } = await pipeline.execute();
 
       expect(mockDiscovery.getBaseUrl).toHaveBeenCalledWith('qeta');
-      const totalDocuments = mockPosts.posts.length;
+      const totalDocuments =
+        mockPosts.posts.length + mockCollections.collections.length;
       expect(documents).toHaveLength(totalDocuments);
       expect(lastRequest.headers.get('authorization')).toEqual(null);
     });

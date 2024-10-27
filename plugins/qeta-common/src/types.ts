@@ -153,7 +153,7 @@ export interface Attachment {
   created: Date;
 }
 
-export interface QetaDocument extends IndexableDocument {
+export interface QetaPostDocument extends IndexableDocument {
   docType: string;
   author: string;
   score: number;
@@ -162,6 +162,13 @@ export interface QetaDocument extends IndexableDocument {
   views?: number;
   tags?: string[];
   correctAnswer?: boolean;
+}
+
+export interface QetaCollectionDocument extends IndexableDocument {
+  docType: string;
+  owner: string;
+  created: Date;
+  headerImage?: string;
 }
 
 interface CustomError {

@@ -301,26 +301,31 @@ export class NotificationManager {
   }
 
   private async getUserDisplayName(username: string) {
-    const cached = await this.cache?.get<string>(
-      `user:displayName:${username}`,
-    );
-    if (cached) {
-      return cached;
-    }
+    try {
+      const cached = await this.cache?.get<string>(
+        `user:displayName:${username}`,
+      );
+      if (cached) {
+        return cached;
+      }
 
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
-    });
-    const entity = await this.catalog.getEntityByRef(username, { token });
-    if (entity) {
-      const displayName =
-        (entity as UserEntity).spec.profile?.displayName ??
-        entity.metadata.title ??
-        entity.metadata.name;
-      await this.cache?.set(`user:displayName:${username}`, displayName, {
-        ttl: 1000 * 60 * 60 * 24,
+      const { token } = await this.auth.getPluginRequestToken({
+        onBehalfOf: await this.auth.getOwnServiceCredentials(),
+        targetPluginId: 'catalog',
       });
+      const entity = await this.catalog.getEntityByRef(username, { token });
+      if (entity) {
+        const displayName =
+          (entity as UserEntity).spec?.profile?.displayName ??
+          entity.metadata.title ??
+          entity.metadata.name;
+        await this.cache?.set(`user:displayName:${username}`, displayName, {
+          ttl: 1000 * 60 * 60 * 24,
+        });
+        return displayName;
+      }
+    } catch (e) {
+      console.error(e);
     }
     return username;
   }
