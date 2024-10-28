@@ -4,18 +4,14 @@ import {
   Card,
   CardContent,
   Divider,
-  FormControl,
   Grid,
-  MenuItem,
-  Select,
-  Tooltip,
   Typography,
 } from '@material-ui/core';
 import React, { useEffect, useRef, useState } from 'react';
-import { Pagination } from '@material-ui/lab';
 import { AnswersResponse } from '@drodil/backstage-plugin-qeta-common';
 import { AnswerListItem } from './AnswerListItem';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
+import { QetaPagination } from '../QetaPagination/QetaPagination';
 
 export const AnswerList = (props: {
   loading: boolean;
@@ -38,7 +34,6 @@ export const AnswerList = (props: {
     page,
     onPageSizeChange,
   } = props;
-  const styles = useStyles();
   const listRef = useRef<HTMLDivElement | null>(null);
   const [initialLoad, setInitialLoad] = useState(true);
   const { t } = useTranslation();
@@ -119,40 +114,14 @@ export const AnswerList = (props: {
             })}
           </Grid>
         </Card>
-        <Grid
-          container
-          spacing={0}
-          className={`qetaAnswerListPaginationGrid ${styles.questionListPagination}`}
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Tooltip title={t('answerList.limitSelect')} arrow>
-            <FormControl variant="filled">
-              <Select
-                value={props.pageSize}
-                onChange={handlePageSizeChange}
-                className={`qetaAnswerListPaginationSizeSelect ${styles.questionsPerPage}`}
-                inputProps={{ className: styles.questionsPerPageInput }}
-              >
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={25}>25</MenuItem>
-                <MenuItem value={50}>50</MenuItem>
-                <MenuItem value={100}>100</MenuItem>
-              </Select>
-            </FormControl>
-          </Tooltip>
-          <Pagination
-            page={page}
-            onChange={handlePageChange}
-            count={pageCount}
-            size="large"
-            variant="outlined"
-            className="qetaAnswerListPagination"
-            showFirstButton
-            showLastButton
-          />
-        </Grid>
+        <QetaPagination
+          pageSize={props.pageSize}
+          handlePageChange={handlePageChange}
+          handlePageSizeChange={handlePageSizeChange}
+          page={page}
+          pageCount={pageCount}
+          tooltip={t('answerList.limitSelect')}
+        />
       </Box>
     </div>
   );
