@@ -6,7 +6,7 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import React from 'react';
-import { useStyles } from '../../hooks';
+import { useStyles, useTranslation } from '../../hooks';
 import { Pagination as MuiPagination } from '@material-ui/lab';
 
 export const QetaPagination = (props: {
@@ -20,6 +20,7 @@ export const QetaPagination = (props: {
   const { handlePageChange, handlePageSizeChange, page, pageCount, tooltip } =
     props;
   const styles = useStyles();
+  const { t } = useTranslation();
   return (
     <Grid
       container
@@ -28,8 +29,8 @@ export const QetaPagination = (props: {
       alignItems="center"
       justifyContent="center"
     >
-      <Tooltip title={tooltip ?? 'Change number of items'} arrow>
-        <FormControl variant="filled">
+      <Tooltip title={tooltip ?? t('pagination.defaultTooltip')} arrow>
+        <FormControl variant="outlined">
           <Select
             value={props.pageSize}
             onChange={handlePageSizeChange}

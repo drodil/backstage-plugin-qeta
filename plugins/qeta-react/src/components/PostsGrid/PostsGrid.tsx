@@ -48,10 +48,12 @@ export const PostsGrid = (props: PaginatedPostsProps) => {
     setShowFilterPanel,
     showFilterPanel,
     onFilterChange,
+    onPageSizeChange,
+    postsPerPage,
     page,
     pageCount,
     onPageChange,
-  } = usePaginatedPosts({ initialPageSize: 50, ...props });
+  } = usePaginatedPosts(props);
 
   const itemType = capitalize(t(`common.${type ?? 'post'}`, {}));
   let shownTitle = title;
@@ -150,6 +152,8 @@ export const PostsGrid = (props: PaginatedPostsProps) => {
         response={response}
         entity={entity}
         showNoQuestionsBtn={showNoQuestionsBtn}
+        onPageSizeChange={onPageSizeChange}
+        pageSize={postsPerPage}
         entityPage={entity !== undefined}
         tags={tags}
         type={type}

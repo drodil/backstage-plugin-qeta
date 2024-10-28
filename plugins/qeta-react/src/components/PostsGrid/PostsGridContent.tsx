@@ -4,8 +4,8 @@ import { Progress, WarningPanel } from '@backstage/core-components';
 import { NoPostsCard } from '../PostsContainer/NoPostsCard';
 import { Box, Grid } from '@material-ui/core';
 import { PostsGridItem } from './PostsGridItem';
-import { Pagination } from '@material-ui/lab';
 import { useTranslation } from '../../hooks';
+import { QetaPagination } from '../QetaPagination/QetaPagination';
 
 export const PostsGridContent = (props: {
   loading: boolean;
@@ -14,6 +14,8 @@ export const PostsGridContent = (props: {
   entity?: string;
   tags?: string[];
   showNoQuestionsBtn?: boolean;
+  onPageSizeChange: (size: number) => void;
+  pageSize: number;
   entityPage?: boolean;
   type?: PostType;
   onPageChange: (page: number) => void;
@@ -26,6 +28,8 @@ export const PostsGridContent = (props: {
     response,
     entity,
     showNoQuestionsBtn = true,
+    onPageSizeChange,
+    pageSize,
     entityPage,
     tags,
     type,
@@ -51,6 +55,15 @@ export const PostsGridContent = (props: {
       gridRef.current.scrollIntoView();
     }
     onPageChange(value);
+  };
+
+  const handlePageSizeChange = (
+    event: React.ChangeEvent<{ value: unknown }>,
+  ) => {
+    if (gridRef.current) {
+      gridRef.current.scrollIntoView();
+    }
+    onPageSizeChange(Number.parseInt(event.target.value as string, 10));
   };
 
   if (loading && initialLoad) {
@@ -99,18 +112,14 @@ export const PostsGridContent = (props: {
             );
           })}
         </Grid>
-        <Grid container justifyContent="center" style={{ marginTop: '2rem' }}>
-          <Pagination
-            page={page}
-            onChange={handlePageChange}
-            count={pageCount}
-            size="large"
-            variant="outlined"
-            className="qetaPostListPagination"
-            showFirstButton
-            showLastButton
-          />
-        </Grid>
+        <QetaPagination
+          pageSize={pageSize}
+          handlePageChange={handlePageChange}
+          handlePageSizeChange={handlePageSizeChange}
+          page={page}
+          pageCount={pageCount}
+          tooltip={t('postsList.postsPerPage', { itemType })}
+        />
       </Box>
     </div>
   );

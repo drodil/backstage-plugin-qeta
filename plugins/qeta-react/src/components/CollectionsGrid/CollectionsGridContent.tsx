@@ -1,8 +1,7 @@
 import { CollectionsResponse } from '@drodil/backstage-plugin-qeta-common';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Progress, WarningPanel } from '@backstage/core-components';
-import { Box, Grid } from '@material-ui/core';
-import { Pagination } from '@material-ui/lab';
+import { Grid, Typography } from '@material-ui/core';
 import { CollectionsGridItem } from './CollectionsGridItem';
 import { useTranslation } from '../../hooks';
 
@@ -10,30 +9,16 @@ export const CollectionsGridContent = (props: {
   loading: boolean;
   error: any;
   response?: CollectionsResponse;
-  onPageChange: (page: number) => void;
-  page: number;
-  pageCount: number;
 }) => {
-  const { loading, error, response, onPageChange, page, pageCount } = props;
+  const { loading, error, response } = props;
   const [initialLoad, setInitialLoad] = useState(true);
   const { t } = useTranslation();
-  const gridRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!initialLoad) {
       setInitialLoad(false);
     }
   }, [initialLoad, loading]);
-
-  const handlePageChange = (
-    _event: React.ChangeEvent<unknown>,
-    value: number,
-  ) => {
-    if (gridRef.current) {
-      gridRef.current.scrollIntoView();
-    }
-    onPageChange(value);
-  };
 
   if (loading && initialLoad) {
     return <Progress />;
@@ -54,39 +39,31 @@ export const CollectionsGridContent = (props: {
     initialLoad &&
     (!response.collections || response.collections.length === 0)
   ) {
-    return null;
+    return <Progress />;
   }
 
   return (
-    <div ref={gridRef}>
-      <Box sx={{ mt: 2 }} className="qetaCollectionsGrid">
-        <Grid
-          container
-          direction="row"
-          alignItems="stretch"
-          style={{ marginTop: '1rem' }}
-        >
-          {response.collections.map(p => {
-            return (
-              <Grid item xs={12} md={4} lg={3} key={p.id}>
-                <CollectionsGridItem collection={p} />
-              </Grid>
-            );
-          })}
-        </Grid>
-        <Grid container justifyContent="center" style={{ marginTop: '2rem' }}>
-          <Pagination
-            page={page}
-            onChange={handlePageChange}
-            count={pageCount}
-            size="large"
-            variant="outlined"
-            className="qetaPostListPagination"
-            showFirstButton
-            showLastButton
-          />
-        </Grid>
-      </Box>
-    </div>
+    <>
+      <Grid item>
+        <Typography variant="h6" className="qetaPostsContainerQuestionCount">
+          {t('common.collections', { count: response?.total ?? 0 })}
+        </Typography>
+      </Grid>
+      <Grid
+        container
+        item
+        direction="row"
+        alignItems="stretch"
+        style={{ marginTop: '1rem' }}
+      >
+        {response.collections.map(p => {
+          return (
+            <Grid item xs={12} md={4} lg={3} key={p.id}>
+              <CollectionsGridItem collection={p} />
+            </Grid>
+          );
+        })}
+      </Grid>
+    </>
   );
 };

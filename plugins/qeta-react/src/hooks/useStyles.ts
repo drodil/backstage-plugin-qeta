@@ -57,6 +57,7 @@ export const useStyles = makeStyles(
       },
       questionsPerPageInput: {
         paddingTop: '10px',
+        paddingBottom: '10px',
       },
       questionsPerPage: {
         marginRight: theme.spacing(3),
