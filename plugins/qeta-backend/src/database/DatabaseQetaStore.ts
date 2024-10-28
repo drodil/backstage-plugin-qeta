@@ -756,6 +756,13 @@ export class DatabaseQetaStore implements QetaStore {
     return !!(await query.delete());
   }
 
+  async deletePostVote(user_ref: string, postId: number): Promise<boolean> {
+    return !!(await this.db('post_votes')
+      .where('author', '=', user_ref)
+      .where('postId', '=', postId)
+      .delete());
+  }
+
   async votePost(
     user_ref: string,
     postId: number,
@@ -801,6 +808,13 @@ export class DatabaseQetaStore implements QetaStore {
     return !!(await this.db('user_favorite')
       .where('user', '=', user_ref)
       .where('postId', '=', postId)
+      .delete());
+  }
+
+  async deleteAnswerVote(user_ref: string, answerId: number): Promise<boolean> {
+    return !!(await this.db('answer_votes')
+      .where('author', '=', user_ref)
+      .where('answerId', '=', answerId)
       .delete());
   }
 

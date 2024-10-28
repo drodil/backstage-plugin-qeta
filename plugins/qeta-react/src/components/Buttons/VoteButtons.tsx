@@ -73,7 +73,9 @@ export const VoteButtons = (props: {
           </IconButton>
         </span>
       </Tooltip>
-      <Typography variant="h6">{score}</Typography>
+      <Typography variant="h6" style={{ userSelect: 'none' }}>
+        {score}
+      </Typography>
       <Tooltip title={voteDownTooltip}>
         <span>
           <IconButton

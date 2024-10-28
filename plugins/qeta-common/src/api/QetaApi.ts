@@ -198,6 +198,11 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<PostResponse>;
 
+  deletePostVote(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
+
   voteAnswerUp(
     postId: number,
     id: number,
@@ -205,6 +210,12 @@ export interface QetaApi {
   ): Promise<AnswerResponse>;
 
   voteAnswerDown(
+    postId: number,
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<AnswerResponse>;
+
+  deleteAnswerVote(
     postId: number,
     id: number,
     requestOptions?: RequestOptions,

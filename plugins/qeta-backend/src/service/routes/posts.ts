@@ -532,6 +532,53 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     return await votePost(request, response, -1);
   });
 
+  router.delete('/posts/:id/vote', async (request, response) => {
+    // Validation
+    const postId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(postId)) {
+      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
+      return;
+    }
+
+    // Act
+    const username = await getUsername(request, options);
+    const post = await database.getPost(username, postId, false);
+
+    if (post === null) {
+      response.sendStatus(404);
+      return;
+    }
+
+    await authorize(request, qetaReadPostPermission, options, post);
+
+    const deleted = await database.deletePostVote(username, postId);
+    if (!deleted) {
+      response.sendStatus(404);
+      return;
+    }
+
+    if (events) {
+      events.publish({
+        topic: 'qeta',
+        eventPayload: {
+          post,
+          author: username,
+        },
+        metadata: { action: 'delete_vote' },
+      });
+    }
+
+    const resp = await database.getPost(username, postId, false);
+    if (resp === null) {
+      response.sendStatus(404);
+      return;
+    }
+    await mapAdditionalFields(request, resp, options);
+
+    resp.ownVote = undefined;
+    response.json(resp);
+  });
+
   // GET /posts/:id/favorite
   router.get(`/posts/:id/favorite`, async (request, response) => {
     const postId = Number.parseInt(request.params.id, 10);

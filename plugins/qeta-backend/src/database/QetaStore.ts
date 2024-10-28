@@ -363,14 +363,12 @@ export interface QetaStore {
   /**
    * Vote question with given score
    * @param user_ref user name of the user voting question
-   * @param questionId question id
+   * @param postId question id
    * @param score score to vote with
    */
-  votePost(
-    user_ref: string,
-    questionId: number,
-    score: number,
-  ): Promise<boolean>;
+  votePost(user_ref: string, postId: number, score: number): Promise<boolean>;
+
+  deletePostVote(user_ref: string, postId: number): Promise<boolean>;
 
   /**
    * Vote answer with given score
@@ -383,6 +381,8 @@ export interface QetaStore {
     answerId: number,
     score: number,
   ): Promise<boolean>;
+
+  deleteAnswerVote(user_ref: string, answerId: number): Promise<boolean>;
 
   /**
    * Mark answer correct for question. Only user who created the question can mark answer correct

@@ -501,6 +501,50 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     },
   );
 
+  router.delete(
+    '/posts/:id/answers/:answerId/vote',
+    async (request, response) => {
+      const postId = Number.parseInt(request.params.id, 10);
+      const answerId = Number.parseInt(request.params.answerId, 10);
+      if (Number.isNaN(postId) || Number.isNaN(answerId)) {
+        response.status(400).send({ errors: 'Invalid id', type: 'body' });
+        return;
+      }
+
+      const username = await getUsername(request, options);
+      const post = await database.getPost(username, postId, false);
+      const answer = await database.getAnswer(answerId, username);
+
+      if (answer === null || post === null) {
+        response.sendStatus(404);
+        return;
+      }
+
+      await authorize(request, qetaReadPostPermission, options, post);
+      await authorize(request, qetaReadAnswerPermission, options, answer);
+
+      const deleted = await database.deleteAnswerVote(username, answerId);
+      if (!deleted) {
+        response.sendStatus(404);
+        return;
+      }
+
+      const resp = await database.getAnswer(answerId, username);
+      if (resp === null) {
+        response.sendStatus(404);
+        return;
+      }
+
+      await mapAdditionalFields(request, resp, options);
+      resp.ownVote = undefined;
+
+      signalAnswerStats(signals, resp);
+
+      // Response
+      response.json(resp);
+    },
+  );
+
   // GET /posts/:id/answers/:answerId/correct
   router.get(
     `/posts/:id/answers/:answerId/correct`,

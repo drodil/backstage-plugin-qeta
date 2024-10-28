@@ -13,6 +13,7 @@ import { CustomErrorBase } from '@backstage/errors';
 import {
   Answer,
   AnswerRequest,
+  AnswerResponse,
   AnswerResponseBody,
   AnswersResponse,
   AnswersResponseBody,
@@ -28,6 +29,7 @@ import {
   ImpactResponse,
   Post,
   PostRequest,
+  PostResponse,
   PostResponseBody,
   PostsResponse,
   PostsResponseBody,
@@ -306,6 +308,24 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
+  async deletePostVote(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse> {
+    if (!id) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    const response = await this.fetch(`/posts/${id}/vote`, {
+      reqInit: { method: 'DELETE' },
+      requestOptions,
+    });
+    const data = (await response.json()) as PostResponseBody;
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+    return data;
+  }
+
   async favoritePost(
     id: number,
     requestOptions?: RequestOptions,
@@ -452,6 +472,27 @@ export class QetaClient implements QetaApi {
       `/posts/${questionId}/answers/${id}/downvote`,
       { requestOptions },
     );
+    const data = (await response.json()) as AnswerResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch', data.errors);
+    }
+
+    return data;
+  }
+
+  async deleteAnswerVote(
+    postId: number,
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<AnswerResponse> {
+    if (!postId || !id) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    const response = await this.fetch(`/posts/${postId}/answers/${id}/vote`, {
+      reqInit: { method: 'DELETE' },
+      requestOptions,
+    });
     const data = (await response.json()) as AnswerResponseBody;
 
     if ('errors' in data) {
