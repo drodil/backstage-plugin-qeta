@@ -264,6 +264,11 @@ export interface TagResponse {
   followerCount: number;
 }
 
+export interface TagsResponse {
+  tags: TagResponse[];
+  total: number;
+}
+
 export interface EntityResponse {
   id: number;
   entityRef: string;

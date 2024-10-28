@@ -5,6 +5,7 @@ import {
   PostsQuery,
   QetaApi,
   RequestOptions,
+  TagsQuery,
 } from './QetaApi';
 import { CustomErrorBase } from '@backstage/errors';
 import {
@@ -31,6 +32,7 @@ import {
   StatisticsRequestParameters,
   StatisticsResponse,
   TagResponse,
+  TagsResponse,
   TemplateRequest,
   TemplateResponse,
   TemplatesResponse,
@@ -189,9 +191,15 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async getTags(requestOptions?: RequestOptions): Promise<TagResponse[]> {
-    const response = await this.fetch('/tags', { requestOptions });
-    return (await response.json()) as TagResponse[];
+  async getTags(
+    options?: TagsQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<TagsResponse> {
+    const response = await this.fetch('/tags', {
+      queryParams: options,
+      requestOptions,
+    });
+    return (await response.json()) as TagsResponse;
   }
 
   async getTag(

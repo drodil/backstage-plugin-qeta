@@ -1,20 +1,11 @@
 import { Progress, WarningPanel } from '@backstage/core-components';
-import {
-  Box,
-  Card,
-  Divider,
-  FormControl,
-  Grid,
-  MenuItem,
-  Select,
-  Tooltip,
-} from '@material-ui/core';
+import { Box, Card, Divider, Grid } from '@material-ui/core';
 import React, { useEffect, useRef, useState } from 'react';
 import { PostListItem } from './PostListItem';
-import { Pagination } from '@material-ui/lab';
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { NoPostsCard } from './NoPostsCard';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
+import { QetaPagination } from '../QetaPagination/QetaPagination';
 
 export const PostList = (props: {
   loading: boolean;
@@ -44,7 +35,6 @@ export const PostList = (props: {
     tags,
     type,
   } = props;
-  const styles = useStyles();
   const listRef = useRef<HTMLDivElement | null>(null);
   const [initialLoad, setInitialLoad] = useState(true);
   const { t } = useTranslation();
@@ -123,40 +113,14 @@ export const PostList = (props: {
             })}
           </Grid>
         </Card>
-        <Grid
-          container
-          spacing={0}
-          className={`qetaPostListPaginationGrid ${styles.questionListPagination}`}
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Tooltip title={t('postsList.postsPerPage', { itemType })} arrow>
-            <FormControl variant="filled">
-              <Select
-                value={props.pageSize}
-                onChange={handlePageSizeChange}
-                className={`qetaPostListPaginationSizeSelect ${styles.questionsPerPage}`}
-                inputProps={{ className: styles.questionsPerPageInput }}
-              >
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={25}>25</MenuItem>
-                <MenuItem value={50}>50</MenuItem>
-                <MenuItem value={100}>100</MenuItem>
-              </Select>
-            </FormControl>
-          </Tooltip>
-          <Pagination
-            page={page}
-            onChange={handlePageChange}
-            count={pageCount}
-            size="large"
-            variant="outlined"
-            className="qetaPostListPagination"
-            showFirstButton
-            showLastButton
-          />
-        </Grid>
+        <QetaPagination
+          pageSize={props.pageSize}
+          handlePageChange={handlePageChange}
+          handlePageSizeChange={handlePageSizeChange}
+          page={page}
+          pageCount={pageCount}
+          tooltip={t('postsList.postsPerPage', { itemType })}
+        />
       </Box>
     </div>
   );

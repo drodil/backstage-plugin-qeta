@@ -18,6 +18,7 @@ import {
   StatisticsRequestParameters,
   StatisticsResponse,
   TagResponse,
+  TagsResponse,
   TemplateRequest,
   TemplateResponse,
   TemplatesResponse,
@@ -29,9 +30,15 @@ import {
   UserUsersResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
-export interface PostsQuery {
+export interface PaginatedQuery {
   limit?: number;
   offset?: number;
+  orderBy?: string;
+  order?: 'desc' | 'asc';
+  searchQuery?: string;
+}
+
+export interface PostsQuery extends PaginatedQuery {
   tags?: string[];
   entity?: string;
   author?: string;
@@ -47,38 +54,33 @@ export interface PostsQuery {
   includeEntities?: boolean;
   includeTrend?: boolean;
   includeComments?: boolean;
-  searchQuery?: string;
   fromDate?: string;
   toDate?: string;
   type?: PostType;
   collectionId?: number;
 }
 
-export interface CollectionsQuery {
-  limit?: number;
-  offset?: number;
+export interface CollectionsQuery extends PaginatedQuery {
   owner?: string;
-  searchQuery?: string;
   orderBy?: 'created' | 'owner';
-  order?: 'desc' | 'asc';
 }
 
-export interface AnswersQuery {
-  limit?: number;
-  offset?: number;
+export interface AnswersQuery extends PaginatedQuery {
   tags?: string[];
   entity?: string;
   author?: string;
   orderBy?: 'score' | 'created' | 'updated';
-  order?: 'desc' | 'asc';
   noCorrectAnswer?: boolean;
   noVotes?: boolean;
   includeVotes?: boolean;
   includeEntities?: boolean;
   includeComments?: boolean;
-  searchQuery?: string;
   fromDate?: string;
   toDate?: string;
+}
+
+export interface TagsQuery extends PaginatedQuery {
+  orderBy?: 'tag' | 'postsCount' | 'followersCount';
 }
 
 export type RequestOptions = {
@@ -119,7 +121,10 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<PostResponse>;
 
-  getTags(requestOptions?: RequestOptions): Promise<TagResponse[]>;
+  getTags(
+    options?: TagsQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<TagsResponse>;
   getTag(
     tag: string,
     requestOptions?: RequestOptions,

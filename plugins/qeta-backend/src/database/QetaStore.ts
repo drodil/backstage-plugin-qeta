@@ -8,6 +8,7 @@ import {
   PostType,
   Statistic,
   StatisticsRequestParameters,
+  TagsQuery,
   Template,
   UserCollectionsResponse,
   UserEntitiesResponse,
@@ -118,6 +119,11 @@ export interface TagResponse {
   description?: string;
   postsCount: number;
   followerCount: number;
+}
+
+export interface TagsResponse {
+  tags: TagResponse[];
+  total: number;
 }
 
 export interface EntityResponse {
@@ -397,7 +403,9 @@ export interface QetaStore {
   /**
    * Returns all used tags for posts
    */
-  getTags(options?: { noDescription?: boolean }): Promise<TagResponse[]>;
+  getTags(
+    options?: { noDescription?: boolean } & TagsQuery,
+  ): Promise<TagsResponse>;
   getTag(tag: string): Promise<TagResponse | null>;
   updateTag(tag: string, description?: string): Promise<TagResponse | null>;
 

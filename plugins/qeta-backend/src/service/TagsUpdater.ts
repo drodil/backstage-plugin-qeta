@@ -43,7 +43,7 @@ export class TagsUpdater {
       noDescription: true,
     });
 
-    for (const tag of tagsWithoutDescription) {
+    for (const tag of tagsWithoutDescription.tags) {
       if (tag.tag.toLowerCase() in TAGS) {
         await database.updateTag(tag.tag, TAGS[tag.tag]);
       }

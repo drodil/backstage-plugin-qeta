@@ -35,7 +35,7 @@ export const TagInput = (props: {
         .catch(_ => setAvailableTags(null))
         .then(data =>
           data
-            ? setAvailableTags(data.map(tag => tag.tag))
+            ? setAvailableTags(data.tags.map(tag => tag.tag))
             : setAvailableTags(null),
         );
     } else {

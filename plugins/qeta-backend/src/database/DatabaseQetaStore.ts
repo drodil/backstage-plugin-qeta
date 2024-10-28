@@ -20,6 +20,7 @@ import {
   Posts,
   QetaStore,
   TagResponse,
+  TagsResponse,
   Templates,
   UserResponse,
 } from './QetaStore';
@@ -34,6 +35,7 @@ import {
   PostType,
   Statistic,
   StatisticsRequestParameters,
+  TagsQuery,
   Template,
   UserCollectionsResponse,
   UserEntitiesResponse,
@@ -858,22 +860,66 @@ export class DatabaseQetaStore implements QetaStore {
     return await this.markAnswer(postId, answerId, false);
   }
 
-  async getTags(options?: { noDescription: boolean }): Promise<TagResponse[]> {
+  async getTags(
+    options?: { noDescription: boolean } & TagsQuery,
+  ): Promise<TagsResponse> {
     const query = this.getTagBaseQuery();
     if (options?.noDescription) {
       query.whereNull('tags.description');
     }
-    const tags = await query;
 
-    return tags.map(tag => {
-      return {
-        id: tag.id,
-        tag: tag.tag,
-        description: tag.description,
-        postsCount: this.mapToInteger(tag.postsCount),
-        followerCount: this.mapToInteger(tag.followerCount),
-      };
-    });
+    if (options?.searchQuery) {
+      if (this.db.client.config.client === 'pg') {
+        query.whereRaw(
+          `(to_tsvector('english', tags.tag || ' ' || tags.description) @@ websearch_to_tsquery('english', quote_literal(?))
+          or to_tsvector('english', tags.tag || ' ' || tags.description) @@ to_tsquery('english',quote_literal(?)))`,
+          [
+            `${options.searchQuery}`,
+            `${options.searchQuery.replaceAll(/\s/g, '+')}:*`,
+          ],
+        );
+      } else {
+        query.whereRaw(
+          `LOWER(tags.tag || ' ' || tags.description) LIKE LOWER(?)`,
+          [`%${options.searchQuery}%`],
+        );
+      }
+    }
+
+    const totalQuery = query.clone();
+
+    if (options?.orderBy) {
+      query.orderBy(options?.orderBy, options?.order || 'desc');
+    }
+
+    if (options?.limit) {
+      query.limit(options.limit);
+    }
+
+    if (options?.offset) {
+      query.offset(options.offset);
+    }
+
+    const results = await Promise.all([
+      query,
+      this.db(totalQuery.as('totalQuery')).count('* as CNT').first(),
+    ]);
+
+    const rows = results[0];
+    const total = this.mapToInteger((results[1] as any)?.CNT);
+
+    return {
+      total,
+      tags: rows.map(tag => {
+        return {
+          id: tag.id,
+          tag: tag.tag,
+          description: tag.description,
+          postsCount: this.mapToInteger(tag.postsCount),
+          followerCount: this.mapToInteger(tag.followerCount),
+        };
+      }),
+    };
   }
 
   async getTag(tag: string): Promise<TagResponse | null> {

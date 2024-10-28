@@ -96,11 +96,13 @@ describe('QetaClient', () => {
 
   describe('getTags', () => {
     it('should fetch tags', async () => {
-      const mockResponse = { json: jest.fn().mockResolvedValue([]) };
+      const mockResponse = {
+        json: jest.fn().mockResolvedValue({ tags: [], total: 0 }),
+      };
       mockFetch.mockResolvedValue(mockResponse);
 
       const result = await client.getTags();
-      expect(result).toEqual([]);
+      expect(result).toEqual({ tags: [], total: 0 });
       expect(mockFetch).toHaveBeenCalledWith('http://example.com/tags', {
         method: 'GET',
       });

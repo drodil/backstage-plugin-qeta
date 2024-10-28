@@ -19,6 +19,7 @@ import {
   CollectionsQuery,
   PostsQuery,
   PostType,
+  TagsQuery,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CatalogApi } from '@backstage/catalog-client';
 
@@ -125,6 +126,23 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     fromDate: { type: 'string', nullable: true, format: 'date' },
     toDate: { type: 'string', nullable: true, format: 'date' },
     type: { type: 'string', enum: ['question', 'article'], nullable: true },
+  },
+  required: [],
+  additionalProperties: false,
+};
+
+export const TagsQuerySchema: JSONSchemaType<TagsQuery> = {
+  type: 'object',
+  properties: {
+    limit: { type: 'integer', nullable: true },
+    offset: { type: 'integer', nullable: true },
+    orderBy: {
+      type: 'string',
+      enum: ['tag', 'postsCount', 'followersCount'],
+      nullable: true,
+    },
+    order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
+    searchQuery: { type: 'string', nullable: true },
   },
   required: [],
   additionalProperties: false,

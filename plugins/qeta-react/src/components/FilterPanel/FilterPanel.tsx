@@ -90,8 +90,8 @@ export const FilterPanel = (props: FilterPanelProps) => {
   );
 
   useEffect(() => {
-    if ((tags && tags.length > 0) || filters.tags) {
-      const ts = (tags ?? []).map(tag => tag.tag);
+    if ((tags && tags.tags && tags.total > 0) || filters.tags) {
+      const ts = (tags?.tags ?? []).map(tag => tag.tag);
       if (filters.tags) {
         ts.push(...filters.tags);
       }

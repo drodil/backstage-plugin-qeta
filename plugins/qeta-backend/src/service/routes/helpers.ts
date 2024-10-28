@@ -1,7 +1,12 @@
 import { Router } from 'express';
-import { RouteOptions } from '../types';
+import { RouteOptions, TagsQuerySchema } from '../types';
 import { getUsername } from '../util';
 import { parseEntityRef } from '@backstage/catalog-model';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+
+const ajv = new Ajv({ coerceTypes: 'array' });
+addFormats(ajv);
 
 export const helperRoutes = (router: Router, options: RouteOptions) => {
   const { database } = options;
@@ -49,8 +54,16 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   // GET /tags
-  router.get('/tags', async (_request, response) => {
-    const tags = await database.getTags();
+  router.get('/tags', async (request, response) => {
+    const validateQuery = ajv.compile(TagsQuerySchema);
+    if (!validateQuery(request.query)) {
+      response
+        .status(400)
+        .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+
+    const tags = await database.getTags(request.query);
     response.json(tags);
   });
 
