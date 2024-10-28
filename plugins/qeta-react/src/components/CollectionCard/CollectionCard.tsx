@@ -1,12 +1,6 @@
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
 import { InfoCard } from '@backstage/core-components';
-import {
-  Button,
-  CardContent,
-  CardMedia,
-  Grid,
-  Typography,
-} from '@material-ui/core';
+import { Button, CardContent, CardMedia, Grid } from '@material-ui/core';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import React from 'react';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
@@ -39,12 +33,7 @@ export const CollectionCard = (props: { collection: Collection }) => {
         <Grid container>
           <Grid item xs={12}>
             {collection.description && (
-              <>
-                <Typography variant="h5">
-                  {t('collectionPage.description')}
-                </Typography>
-                <MarkdownRenderer content={collection.description} />
-              </>
+              <MarkdownRenderer content={collection.description} />
             )}
           </Grid>
           <Grid item xs={12}>
