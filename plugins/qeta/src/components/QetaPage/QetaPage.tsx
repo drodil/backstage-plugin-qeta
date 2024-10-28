@@ -23,6 +23,7 @@ import {
   favoriteQuestionsRouteRef,
   LeftMenu,
   LeftMenuButton,
+  moderatorRouteRef,
   questionRouteRef,
   questionsRouteRef,
   statisticsRouteRef,
@@ -43,6 +44,7 @@ import { CollectionPage } from '../CollectionPage/CollectionPage';
 import { CollectionCreatePage } from '../CollectionCreatePage/CollectionCreatePage';
 import { EntityPage } from '../EntityPage/EntityPage';
 import { UsersPage } from '../UsersPage/UsersPage';
+import { ModeratorPage } from '../ModeratorPage/ModeratorPage';
 
 type Props = {
   title?: string;
@@ -147,6 +149,10 @@ export const QetaPage = (props?: Props) => {
                 />
                 <Route path={entitiesRouteRef.path} element={<EntityPage />} />
                 <Route path={entityRouteRef.path} element={<EntityPage />} />
+                <Route
+                  path={moderatorRouteRef.path}
+                  element={<ModeratorPage />}
+                />
               </Routes>
             </Grid>
           </Grid>

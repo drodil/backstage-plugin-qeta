@@ -202,6 +202,13 @@ export const qetaTranslationRef = createTranslationRef({
       content: 'Content',
       community: 'Community',
       users: 'Users',
+      manage: 'Manage',
+      moderate: 'Moderate',
+    },
+    moderatorPage: {
+      title: 'Moderate',
+      tools: 'Tools',
+      templates: 'Templates',
     },
     homePage: {
       title: 'Home',

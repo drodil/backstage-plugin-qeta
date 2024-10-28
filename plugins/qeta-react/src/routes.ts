@@ -123,3 +123,9 @@ export const entityRouteRef = createSubRouteRef({
   parent: qetaRouteRef,
   path: '/entities/:entityRef',
 });
+
+export const moderatorRouteRef = createSubRouteRef({
+  id: 'qeta.moderator',
+  parent: qetaRouteRef,
+  path: '/moderate',
+});

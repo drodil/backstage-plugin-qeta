@@ -67,8 +67,10 @@ export interface Config {
     };
     /**
      * List of users/groups that can moderate questions and answers in case permission framework is not in use.
+     * In case permission framework is in use, this list is used to determine if user
+     * can access the moderator panel
      *
-     * @visibility backend
+     * @visibility frontend
      */
     moderators?: string[];
     /**

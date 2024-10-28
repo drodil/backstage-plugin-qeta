@@ -19,12 +19,14 @@ import Home from '@material-ui/icons/Home';
 import { useLocation } from 'react-use';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import PlaylistPlay from '@material-ui/icons/PlaylistPlay';
+import SettingsIcon from '@material-ui/icons/Settings';
 import { GroupIcon } from '@backstage/core-components';
 import {
   articlesRouteRef,
   collectionsRouteRef,
   entitiesRouteRef,
   favoriteQuestionsRouteRef,
+  moderatorRouteRef,
   qetaRouteRef,
   questionsRouteRef,
   statisticsRouteRef,
@@ -33,7 +35,7 @@ import {
   usersRouteRef,
 } from '../../routes';
 import { TrophyIcon } from '../TopRankingUsersCard';
-import { useIdentityApi, useTranslation } from '../../hooks';
+import { useIdentityApi, useIsModerator, useTranslation } from '../../hooks';
 
 export type QetaLeftMenuClassKey =
   | 'leftMenu'
@@ -98,10 +100,12 @@ export const LeftMenu = (props: {
   const collectionsRoute = useRouteRef(collectionsRouteRef);
   const entitiesRoute = useRouteRef(entitiesRouteRef);
   const usersRoute = useRouteRef(usersRouteRef);
+  const moderatorRoute = useRouteRef(moderatorRouteRef);
   const styles = useStyles();
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const { isModerator } = useIsModerator();
   const app = useApp();
   const {
     value: user,
@@ -221,6 +225,21 @@ export const LeftMenu = (props: {
           </ListItemIcon>
           {t('leftMenu.statistics')}
         </CustomMenuItem>
+        {isModerator && (
+          <>
+            <ListItem>
+              <Typography variant="subtitle2">
+                {t('leftMenu.manage')}
+              </Typography>
+            </ListItem>
+            <CustomMenuItem route={moderatorRoute()}>
+              <ListItemIcon className={styles.menuIcon}>
+                <SettingsIcon />
+              </ListItemIcon>
+              {t('leftMenu.moderate')}
+            </CustomMenuItem>
+          </>
+        )}
       </Box>
     </MenuList>
   );

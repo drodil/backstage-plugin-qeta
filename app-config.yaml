@@ -73,8 +73,8 @@ qeta:
       #- test
       #- another_tag
     max: 3
-  # moderators:
-    # - 'user:default/guest'
+  moderators:
+    - 'user:development/guest'
   entityKinds:
     - Component
     - Resource
