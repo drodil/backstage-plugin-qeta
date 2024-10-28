@@ -256,21 +256,11 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.searchQuery) {
-      if (this.db.client.config.client === 'pg') {
-        query.whereRaw(
-          `(to_tsvector('english', posts.title || ' ' || posts.content) @@ websearch_to_tsquery('english', quote_literal(?))
-          or to_tsvector('english', posts.title || ' ' || posts.content) @@ to_tsquery('english',quote_literal(?)))`,
-          [
-            `${options.searchQuery}`,
-            `${options.searchQuery.replaceAll(/\s/g, '+')}:*`,
-          ],
-        );
-      } else {
-        query.whereRaw(
-          `LOWER(posts.title || ' ' || posts.content) LIKE LOWER(?)`,
-          [`%${options.searchQuery}%`],
-        );
-      }
+      this.applySearchQuery(
+        query,
+        ['posts.title', 'posts.content'],
+        options.searchQuery,
+      );
     }
 
     if (options.tags) {
@@ -696,20 +686,7 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.searchQuery) {
-      if (this.db.client.config.client === 'pg') {
-        query.whereRaw(
-          `(to_tsvector('english', answers.content) @@ websearch_to_tsquery('english', quote_literal(?))
-          or to_tsvector('english', answers.content) @@ to_tsquery('english',quote_literal(?)))`,
-          [
-            `${options.searchQuery}`,
-            `${options.searchQuery.replaceAll(/\s/g, '+')}:*`,
-          ],
-        );
-      } else {
-        query.whereRaw(`LOWER(answers.content) LIKE LOWER(?)`, [
-          `%${options.searchQuery}%`,
-        ]);
-      }
+      this.applySearchQuery(query, ['answers.content'], options.searchQuery);
     }
 
     const totalQuery = query.clone();
@@ -869,21 +846,11 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options?.searchQuery) {
-      if (this.db.client.config.client === 'pg') {
-        query.whereRaw(
-          `(to_tsvector('english', tags.tag || ' ' || tags.description) @@ websearch_to_tsquery('english', quote_literal(?))
-          or to_tsvector('english', tags.tag || ' ' || tags.description) @@ to_tsquery('english',quote_literal(?)))`,
-          [
-            `${options.searchQuery}`,
-            `${options.searchQuery.replaceAll(/\s/g, '+')}:*`,
-          ],
-        );
-      } else {
-        query.whereRaw(
-          `LOWER(tags.tag || ' ' || tags.description) LIKE LOWER(?)`,
-          [`%${options.searchQuery}%`],
-        );
-      }
+      this.applySearchQuery(
+        query,
+        ['tags.tag', 'tags.description'],
+        options.searchQuery,
+      );
     }
 
     const totalQuery = query.clone();
@@ -1552,21 +1519,11 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.searchQuery) {
-      if (this.db.client.config.client === 'pg') {
-        query.whereRaw(
-          `(to_tsvector('english', collections.title || ' ' || collections.description) @@ websearch_to_tsquery('english', quote_literal(?))
-          or to_tsvector('english', collections.title || ' ' || collections.description) @@ to_tsquery('english',quote_literal(?)))`,
-          [
-            `${options.searchQuery}`,
-            `${options.searchQuery.replaceAll(/\s/g, '+')}:*`,
-          ],
-        );
-      } else {
-        query.whereRaw(
-          `LOWER(collections.title || ' ' || collections.content) LIKE LOWER(?)`,
-          [`%${options.searchQuery}%`],
-        );
-      }
+      this.applySearchQuery(
+        query,
+        ['collections.title', 'collections.description'],
+        options.searchQuery,
+      );
     }
 
     query.where('owner', user_ref).orWhere('readAccess', 'public');
@@ -2412,5 +2369,33 @@ export class DatabaseQetaStore implements QetaStore {
     await this.db<Attachment>('attachments')
       .whereIn('uuid', toRemove)
       .update({ [key]: null });
+  }
+
+  private applySearchQuery(
+    query: Knex.QueryBuilder,
+    columns: string[],
+    searchQuery: string,
+  ) {
+    if (this.db.client.config.client === 'pg') {
+      query.whereRaw(
+        `(to_tsvector('english', ${columns.join(
+          ` || ' ' || `,
+        )}) @@ websearch_to_tsquery('english', quote_literal(?))
+          or to_tsvector('english', ${columns.join(
+            ` || ' ' || `,
+          )}) @@ to_tsquery('english',quote_literal(?))) or LOWER(${columns.join(
+          ` || ' ' || `,
+        )}) LIKE LOWER(?)`,
+        [
+          `${searchQuery}`,
+          `${searchQuery.replaceAll(/\s/g, '+')}:*`,
+          `%${searchQuery}%`,
+        ],
+      );
+    } else {
+      query.whereRaw(`LOWER(${columns.join(` || ' ' || `)}) LIKE LOWER(?)`, [
+        `%${searchQuery}%`,
+      ]);
+    }
   }
 }
