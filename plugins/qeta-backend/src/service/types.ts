@@ -17,9 +17,11 @@ import { NotificationManager } from './NotificationManager';
 import {
   AnswersQuery,
   CollectionsQuery,
+  EntitiesQuery,
   PostsQuery,
   PostType,
   TagsQuery,
+  UsersQuery,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CatalogApi } from '@backstage/catalog-client';
 
@@ -139,6 +141,40 @@ export const TagsQuerySchema: JSONSchemaType<TagsQuery> = {
     orderBy: {
       type: 'string',
       enum: ['tag', 'postsCount', 'followersCount'],
+      nullable: true,
+    },
+    order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
+    searchQuery: { type: 'string', nullable: true },
+  },
+  required: [],
+  additionalProperties: false,
+};
+
+export const UsersQuerySchema: JSONSchemaType<UsersQuery> = {
+  type: 'object',
+  properties: {
+    limit: { type: 'integer', nullable: true },
+    offset: { type: 'integer', nullable: true },
+    orderBy: {
+      type: 'string',
+      enum: ['userRef'],
+      nullable: true,
+    },
+    order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
+    searchQuery: { type: 'string', nullable: true },
+  },
+  required: [],
+  additionalProperties: false,
+};
+
+export const EntitiesQuerySchema: JSONSchemaType<EntitiesQuery> = {
+  type: 'object',
+  properties: {
+    limit: { type: 'integer', nullable: true },
+    offset: { type: 'integer', nullable: true },
+    orderBy: {
+      type: 'string',
+      enum: ['entityRef'],
       nullable: true,
     },
     order: { type: 'string', enum: ['desc', 'asc'], nullable: true },

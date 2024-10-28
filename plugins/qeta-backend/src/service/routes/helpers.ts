@@ -1,7 +1,12 @@
 import { Router } from 'express';
-import { RouteOptions, TagsQuerySchema } from '../types';
+import {
+  EntitiesQuerySchema,
+  RouteOptions,
+  TagsQuerySchema,
+  UsersQuerySchema,
+} from '../types';
 import { getUsername } from '../util';
-import { parseEntityRef } from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 
@@ -9,7 +14,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const helperRoutes = (router: Router, options: RouteOptions) => {
-  const { database } = options;
+  const { database, catalog, auth, httpAuth } = options;
 
   const validateEntityRef = (entityRef: string, kind?: string) => {
     try {
@@ -26,8 +31,39 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     }
   };
 
-  router.get('/users', async (_req, response) => {
-    const users = await database.getUsers();
+  router.get('/users', async (request, response) => {
+    const validateQuery = ajv.compile(UsersQuerySchema);
+    if (!validateQuery(request.query)) {
+      response
+        .status(400)
+        .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+
+    let entityRefs: string[] | undefined;
+    if (request.query.searchQuery) {
+      const { token } = await auth.getPluginRequestToken({
+        onBehalfOf: await httpAuth.credentials(request),
+        targetPluginId: 'catalog',
+      });
+      const users = await catalog.queryEntities(
+        {
+          filter: { kind: 'User' },
+          fullTextFilter: {
+            term: String(request.query.searchQuery),
+            fields: [
+              'metadata.name',
+              'metadata.title',
+              'spec.profile.displayName',
+            ],
+          },
+        },
+        { token },
+      );
+      entityRefs = users.items.map(user => stringifyEntityRef(user));
+    }
+
+    const users = await database.getUsers({ entityRefs, ...request.query });
     response.json(users);
   });
 
@@ -106,8 +142,37 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     response.json(tag);
   });
 
-  router.get('/entities', async (_request, response) => {
-    const entities = await database.getEntities();
+  router.get('/entities', async (request, response) => {
+    const validateQuery = ajv.compile(EntitiesQuerySchema);
+    if (!validateQuery(request.query)) {
+      response
+        .status(400)
+        .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+
+    let entityRefs: string[] | undefined;
+    if (request.query.searchQuery) {
+      const { token } = await auth.getPluginRequestToken({
+        onBehalfOf: await httpAuth.credentials(request),
+        targetPluginId: 'catalog',
+      });
+      const entities = await catalog.queryEntities(
+        {
+          fullTextFilter: {
+            term: String(request.query.searchQuery),
+            fields: ['metadata.name', 'metadata.title', 'metadata.description'],
+          },
+        },
+        { token },
+      );
+      entityRefs = entities.items.map(user => stringifyEntityRef(user));
+    }
+
+    const entities = await database.getEntities({
+      entityRefs,
+      ...request.query,
+    });
     response.json(entities);
   });
 

@@ -276,6 +276,11 @@ export interface EntityResponse {
   followerCount: number;
 }
 
+export interface EntitiesResponse {
+  entities: EntityResponse[];
+  total: number;
+}
+
 export interface UserResponse {
   userRef: string;
   totalViews: number;
@@ -284,6 +289,11 @@ export interface UserResponse {
   totalComments: number;
   totalVotes: number;
   totalArticles: number;
+}
+
+export interface UsersResponse {
+  users: UserResponse[];
+  total: number;
 }
 
 export type AttachmentResponseBody = Attachment | ErrorResponse;

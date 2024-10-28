@@ -104,8 +104,8 @@ export const FilterPanel = (props: FilterPanelProps) => {
     if (filters.entity && !Array.isArray(filters.entity)) {
       entityRefs.push(filters.entity);
     }
-    if (refs && refs?.length > 0) {
-      refs?.forEach(ref => {
+    if (refs && refs.entities && refs.total > 0) {
+      refs.entities.forEach(ref => {
         // ignore currently selected entity if exist in refs
         if (ref.entityRef !== filters.entity) {
           entityRefs.push(ref.entityRef);

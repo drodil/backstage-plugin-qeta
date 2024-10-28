@@ -7,6 +7,7 @@ import {
   CollectionRequest,
   CollectionResponse,
   CollectionsResponse,
+  EntitiesResponse,
   EntityResponse,
   GlobalStat,
   ImpactResponse,
@@ -24,7 +25,7 @@ import {
   TemplatesResponse,
   UserCollectionsResponse,
   UserEntitiesResponse,
-  UserResponse,
+  UsersResponse,
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
@@ -83,6 +84,14 @@ export interface TagsQuery extends PaginatedQuery {
   orderBy?: 'tag' | 'postsCount' | 'followersCount';
 }
 
+export interface UsersQuery extends PaginatedQuery {
+  orderBy?: 'userRef';
+}
+
+export interface EntitiesQuery extends PaginatedQuery {
+  orderBy?: 'entityRef';
+}
+
 export type RequestOptions = {
   token?: string;
 };
@@ -135,13 +144,19 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<TagResponse | null>;
 
-  getEntities(requestOptions?: RequestOptions): Promise<EntityResponse[]>;
+  getEntities(
+    options?: EntitiesQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<EntitiesResponse>;
   getEntity(
     entityRef: string,
     requestOptions?: RequestOptions,
   ): Promise<EntityResponse | null>;
 
-  getUsers(requestOptions?: RequestOptions): Promise<UserResponse[]>;
+  getUsers(
+    options?: UsersQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<UsersResponse>;
 
   getMostUpvotedPosts({
     author,

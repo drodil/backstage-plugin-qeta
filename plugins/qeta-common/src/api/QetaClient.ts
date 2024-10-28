@@ -2,10 +2,12 @@
 import {
   AnswersQuery,
   CollectionsQuery,
+  EntitiesQuery,
   PostsQuery,
   QetaApi,
   RequestOptions,
   TagsQuery,
+  UsersQuery,
 } from './QetaApi';
 import { CustomErrorBase } from '@backstage/errors';
 import {
@@ -20,6 +22,7 @@ import {
   CollectionResponseBody,
   CollectionsResponse,
   CollectionsResponseBody,
+  EntitiesResponse,
   EntityResponse,
   GlobalStat,
   ImpactResponse,
@@ -38,7 +41,7 @@ import {
   TemplatesResponse,
   UserCollectionsResponse,
   UserEntitiesResponse,
-  UserResponse,
+  UsersResponse,
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
@@ -232,16 +235,26 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as TagResponse;
   }
 
-  async getUsers(requestOptions?: RequestOptions): Promise<UserResponse[]> {
-    const response = await this.fetch('/users', { requestOptions });
-    return (await response.json()) as UserResponse[];
+  async getUsers(
+    options?: UsersQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<UsersResponse> {
+    const response = await this.fetch('/users', {
+      requestOptions,
+      queryParams: options,
+    });
+    return (await response.json()) as UsersResponse;
   }
 
   async getEntities(
+    options?: EntitiesQuery,
     requestOptions?: RequestOptions,
-  ): Promise<EntityResponse[]> {
-    const response = await this.fetch('/entities', { requestOptions });
-    return (await response.json()) as EntityResponse[];
+  ): Promise<EntitiesResponse> {
+    const response = await this.fetch('/entities', {
+      requestOptions,
+      queryParams: options,
+    });
+    return (await response.json()) as EntitiesResponse;
   }
 
   async getEntity(

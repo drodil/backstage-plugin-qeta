@@ -79,7 +79,7 @@ describe('TagsUpdater', () => {
 
   describe('updateTags', () => {
     it('should update tags without description', async () => {
-      const tagsWithoutDescription = [{ tag: 'java' }];
+      const tagsWithoutDescription = { tags: [{ tag: 'java' }], total: 1 };
       mockDatabase.getTags = jest
         .fn()
         .mockResolvedValue(tagsWithoutDescription);
@@ -98,7 +98,9 @@ describe('TagsUpdater', () => {
     });
 
     it('should not update tags if no tags without description are found', async () => {
-      mockDatabase.getTags = jest.fn().mockResolvedValue([]);
+      mockDatabase.getTags = jest
+        .fn()
+        .mockResolvedValue({ tags: [], total: 0 });
 
       await TagsUpdater.updateTags(mockLogger, mockDatabase);
 

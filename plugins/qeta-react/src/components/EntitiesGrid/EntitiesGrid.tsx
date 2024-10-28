@@ -1,42 +1,61 @@
-import { Grid, IconButton, TextField, Typography } from '@material-ui/core';
-import React from 'react';
-import { Progress, WarningPanel } from '@backstage/core-components';
-import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
-import { EntitiesGridItem } from './EntitiesGridItem';
+import { Grid, IconButton, TextField } from '@material-ui/core';
+import React, { useEffect } from 'react';
 import { useQetaApi, useTranslation } from '../../hooks';
+import useDebounce from 'react-use/lib/useDebounce';
+import { QetaPagination } from '../QetaPagination/QetaPagination';
+import { EntitiesGridContent } from './EntitiesGridContent';
+
+type EntityFilters = {
+  order: 'asc' | 'desc';
+  orderBy?: 'entityRef';
+  searchQuery: string;
+};
 
 export const EntitiesGrid = () => {
+  const [page, setPage] = React.useState(1);
+  const [pageCount, setPageCount] = React.useState(1);
+  const [entitiesPerPage, setEntitiesPerPage] = React.useState(25);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [filters, setFilters] = React.useState<EntityFilters>({
+    order: 'desc',
+    searchQuery: '',
+  });
   const { t } = useTranslation();
 
   const {
     value: response,
     loading,
     error,
-  } = useQetaApi(api => api.getEntities(), []);
+  } = useQetaApi(
+    api =>
+      api.getEntities({
+        limit: entitiesPerPage,
+        offset: (page - 1) * entitiesPerPage,
+        ...filters,
+      }),
+    [entitiesPerPage, page, filters],
+  );
 
-  if (loading) {
-    return <Progress />;
-  }
-
-  if (error || response === undefined) {
-    return (
-      <WarningPanel severity="error" title={t('entitiesPage.errorLoading')}>
-        {error?.message}
-      </WarningPanel>
-    );
-  }
-
-  const filterData = (query: string, data: EntityResponse[]) => {
-    if (!query) {
-      return data;
-    }
-    return data.filter(entity =>
-      entity.entityRef.toLowerCase().includes(query),
-    );
+  const onSearchQueryChange = (val: string) => {
+    setPage(1);
+    setSearchQuery(val);
   };
 
-  const entities = filterData(searchQuery, response);
+  useDebounce(
+    () => {
+      if (filters.searchQuery !== searchQuery) {
+        setFilters({ ...filters, searchQuery: searchQuery });
+      }
+    },
+    400,
+    [searchQuery],
+  );
+
+  useEffect(() => {
+    if (response) {
+      setPageCount(Math.ceil(response.total / entitiesPerPage));
+    }
+  }, [response, entitiesPerPage]);
 
   return (
     <Grid container className="qetaEntitiesContainer">
@@ -46,7 +65,7 @@ export const EntitiesGrid = () => {
           className="text qetaEntitiesContainerSearchInput"
           onChange={(
             event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-          ) => setSearchQuery(event.target.value)}
+          ) => onSearchQueryChange(event.target.value)}
           label={t('entitiesPage.search.label')}
           variant="outlined"
           placeholder={t('entitiesPage.search.placeholder')}
@@ -54,16 +73,18 @@ export const EntitiesGrid = () => {
         />
         <IconButton type="submit" aria-label="search" />
       </Grid>
-      <Grid item xs={12}>
-        <Typography variant="h6" className="qetaEntitiesContainerTitle">
-          {t('entitiesPage.entities', { count: entities.length })}
-        </Typography>
-      </Grid>
-      <Grid container item xs={12} alignItems="stretch">
-        {entities.map(entity => (
-          <EntitiesGridItem entity={entity} key={entity.entityRef} />
-        ))}
-      </Grid>
+      <EntitiesGridContent
+        response={response}
+        loading={loading}
+        error={error}
+      />
+      <QetaPagination
+        pageSize={entitiesPerPage}
+        handlePageChange={(_e, p) => setPage(p)}
+        handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
+        page={page}
+        pageCount={pageCount}
+      />
     </Grid>
   );
 };

@@ -32,7 +32,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       totalComments: results[3] + results[4],
       totalVotes: results[5] + results[6],
       totalArticles: results[7],
-      totalUsers: results[8] ? results[8].length : undefined,
+      totalUsers: results[8] ? results[8].total : undefined,
       totalTags: results[9],
     };
   };

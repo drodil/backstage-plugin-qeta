@@ -10,6 +10,7 @@ import {
   AttachmentParameters,
   CollectionOptions,
   Collections,
+  EntitiesResponse,
   EntityResponse,
   MaybeAnswer,
   MaybeCollection,
@@ -23,12 +24,14 @@ import {
   TagsResponse,
   Templates,
   UserResponse,
+  UsersResponse,
 } from './QetaStore';
 import {
   Answer,
   Attachment,
   Collection,
   Comment,
+  EntitiesQuery,
   filterTags,
   GlobalStat,
   Post,
@@ -39,6 +42,7 @@ import {
   Template,
   UserCollectionsResponse,
   UserEntitiesResponse,
+  UsersQuery,
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
@@ -915,21 +919,53 @@ export class DatabaseQetaStore implements QetaStore {
     return this.getTag(tag);
   }
 
-  async getUsers(): Promise<UserResponse[]> {
-    const rows = await this.getUserBaseQuery();
+  async getUsers(
+    options?: { entityRefs?: string[] } & UsersQuery,
+  ): Promise<UsersResponse> {
+    const query = this.getUserBaseQuery();
 
-    return rows.map(r => ({
-      userRef: r.author,
-      totalViews: this.mapToInteger(r.totalViews),
-      totalQuestions: this.mapToInteger(r.totalQuestions),
-      totalAnswers: this.mapToInteger(r.totalAnswers),
-      totalComments:
-        this.mapToInteger(r.postComments) + this.mapToInteger(r.answerComments),
-      totalVotes:
-        this.mapToInteger(r.postVotes) + this.mapToInteger(r.answerVotes),
-      totalArticles: this.mapToInteger(r.totalArticles),
-      totalFollowers: this.mapToInteger(r.totalFollowers),
-    }));
+    if (options?.entityRefs) {
+      query.whereIn('unique_authors.author', options.entityRefs);
+    }
+
+    const totalQuery = query.clone();
+
+    if (options?.orderBy) {
+      query.orderBy(options?.orderBy, options?.order || 'desc');
+    }
+
+    if (options?.limit) {
+      query.limit(options.limit);
+    }
+
+    if (options?.offset) {
+      query.offset(options.offset);
+    }
+
+    const results = await Promise.all([
+      query,
+      this.db(totalQuery.as('totalQuery')).count('* as CNT').first(),
+    ]);
+
+    const rows = results[0];
+    const total = this.mapToInteger((results[1] as any)?.CNT);
+
+    return {
+      total,
+      users: rows.map(r => ({
+        userRef: r.author,
+        totalViews: this.mapToInteger(r.totalViews),
+        totalQuestions: this.mapToInteger(r.totalQuestions),
+        totalAnswers: this.mapToInteger(r.totalAnswers),
+        totalComments:
+          this.mapToInteger(r.postComments) +
+          this.mapToInteger(r.answerComments),
+        totalVotes:
+          this.mapToInteger(r.postVotes) + this.mapToInteger(r.answerVotes),
+        totalArticles: this.mapToInteger(r.totalArticles),
+        totalFollowers: this.mapToInteger(r.totalFollowers),
+      })),
+    };
   }
 
   async getUser(user_ref: string): Promise<UserResponse | null> {
@@ -1064,16 +1100,47 @@ export class DatabaseQetaStore implements QetaStore {
     return true;
   }
 
-  async getEntities(): Promise<EntityResponse[]> {
-    const entities = await this.getEntitiesBaseQuery();
-    return entities.map(entity => {
-      return {
-        id: entity.id,
-        entityRef: entity.entity_ref,
-        postsCount: this.mapToInteger(entity.postsCount),
-        followerCount: this.mapToInteger(entity.followerCount),
-      };
-    });
+  async getEntities(
+    options?: { entityRefs?: string[] } & EntitiesQuery,
+  ): Promise<EntitiesResponse> {
+    const query = this.getEntitiesBaseQuery();
+    if (options?.entityRefs) {
+      query.whereIn('entities.entity_ref', options.entityRefs);
+    }
+
+    const totalQuery = query.clone();
+
+    if (options?.orderBy) {
+      query.orderBy(options?.orderBy, options?.order || 'desc');
+    }
+
+    if (options?.limit) {
+      query.limit(options.limit);
+    }
+
+    if (options?.offset) {
+      query.offset(options.offset);
+    }
+
+    const results = await Promise.all([
+      query,
+      this.db(totalQuery.as('totalQuery')).count('* as CNT').first(),
+    ]);
+
+    const rows = results[0];
+    const total = this.mapToInteger((results[1] as any)?.CNT);
+
+    return {
+      total,
+      entities: rows.map(entity => {
+        return {
+          id: entity.id,
+          entityRef: entity.entity_ref,
+          postsCount: this.mapToInteger(entity.postsCount),
+          followerCount: this.mapToInteger(entity.followerCount),
+        };
+      }),
+    };
   }
 
   async getEntity(entity_ref: string): Promise<EntityResponse | null> {
@@ -1459,7 +1526,7 @@ export class DatabaseQetaStore implements QetaStore {
       .insert({
         totalQuestions: await this.getCount('posts', { type: 'question' }),
         totalAnswers: await this.getCount('answers'),
-        totalUsers: (await this.getUsers()).length,
+        totalUsers: (await this.getUsers()).total,
         totalTags: await this.getCount('tags'),
         totalViews: await this.getCount('post_views'),
         totalComments:

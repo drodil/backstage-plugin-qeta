@@ -3,6 +3,7 @@ import {
   Attachment,
   Collection,
   Comment,
+  EntitiesQuery,
   GlobalStat,
   Post,
   PostType,
@@ -12,6 +13,7 @@ import {
   Template,
   UserCollectionsResponse,
   UserEntitiesResponse,
+  UsersQuery,
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
@@ -133,6 +135,11 @@ export interface EntityResponse {
   followerCount: number;
 }
 
+export interface EntitiesResponse {
+  entities: EntityResponse[];
+  total: number;
+}
+
 export interface UserResponse {
   userRef: string;
   totalViews: number;
@@ -142,6 +149,11 @@ export interface UserResponse {
   totalVotes: number;
   totalArticles: number;
   totalFollowers: number;
+}
+
+export interface UsersResponse {
+  users: UserResponse[];
+  total: number;
 }
 
 export interface AttachmentParameters {
@@ -409,7 +421,9 @@ export interface QetaStore {
   getTag(tag: string): Promise<TagResponse | null>;
   updateTag(tag: string, description?: string): Promise<TagResponse | null>;
 
-  getUsers(): Promise<UserResponse[]>;
+  getUsers(
+    options?: { entityRefs?: string[] } & UsersQuery,
+  ): Promise<UsersResponse>;
   getUser(user_ref: string): Promise<UserResponse | null>;
   /**
    * Gets all tags user is following
@@ -433,7 +447,9 @@ export interface QetaStore {
   followUser(user_ref: string, followedUserRef: string): Promise<boolean>;
   unfollowUser(user_ref: string, followedUserRef: string): Promise<boolean>;
 
-  getEntities(): Promise<EntityResponse[]>;
+  getEntities(
+    options?: { entityRefs?: string[] } & EntitiesQuery,
+  ): Promise<EntitiesResponse>;
   getEntity(entity_ref: string): Promise<EntityResponse | null>;
 
   getUserCollections(
