@@ -4,6 +4,7 @@ import { CollectionsGridContent } from './CollectionsGridContent';
 import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
+import { NoCollectionsCard } from './NoCollectionsCard';
 
 export type CollectionsGridProps = {
   owner?: string;
@@ -58,6 +59,10 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
       setPageCount(Math.ceil(response.total / collectionsPerPage));
     }
   }, [response, collectionsPerPage]);
+
+  if (!response?.collections || response.collections.length === 0) {
+    return <NoCollectionsCard />;
+  }
 
   return (
     <Grid container>

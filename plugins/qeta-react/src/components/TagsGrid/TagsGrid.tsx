@@ -4,6 +4,7 @@ import { useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import useDebounce from 'react-use/lib/useDebounce';
 import { TagsGridContent } from './TagsGridContent';
+import { NoTagsCard } from './NoTagsCard';
 
 type TagFilters = {
   order: 'asc' | 'desc';
@@ -62,6 +63,10 @@ export const TagsGrid = () => {
   const onTagEdit = () => {
     retry();
   };
+
+  if (!response?.tags || response.tags.length === 0) {
+    return <NoTagsCard />;
+  }
 
   return (
     <Grid container className="qetaTagsContainer">

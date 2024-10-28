@@ -4,6 +4,7 @@ import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { EntitiesGridContent } from './EntitiesGridContent';
+import { NoEntitiesCard } from './NoEntitiesCard';
 
 type EntityFilters = {
   order: 'asc' | 'desc';
@@ -56,6 +57,10 @@ export const EntitiesGrid = () => {
       setPageCount(Math.ceil(response.total / entitiesPerPage));
     }
   }, [response, entitiesPerPage]);
+
+  if (!response?.entities || response.entities.length === 0) {
+    return <NoEntitiesCard />;
+  }
 
   return (
     <Grid container className="qetaEntitiesContainer">
