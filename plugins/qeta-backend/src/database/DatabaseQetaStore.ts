@@ -1931,6 +1931,24 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   private getUserBaseQuery() {
+    if (this.db.client.config.client !== 'pg') {
+      // Subqueries do not work in sqlite so we just return all stats as empty, at least for now
+      return this.db('posts')
+        .select([
+          'author',
+          this.db.raw('0 as totalViews'),
+          this.db.raw('0 as totalQuestions'),
+          this.db.raw('0 as totalArticles'),
+          this.db.raw('0 as totalAnswers'),
+          this.db.raw('0 as answerComments'),
+          this.db.raw('0 as postComments'),
+          this.db.raw('0 as answerVotes'),
+          this.db.raw('0 as postVotes'),
+          this.db.raw('0 as totalFollowers'),
+        ])
+        .distinct();
+    }
+
     const authorRef = this.db.ref('unique_authors.author');
 
     const views = this.db('post_views')
