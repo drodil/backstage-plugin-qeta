@@ -11,6 +11,7 @@ import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { useParams, useSearchParams } from 'react-router-dom';
 import {
   AddToCollectionButton,
+  AiAnswerCard,
   AnswerCard,
   AnswerForm,
   AskQuestionButton,
@@ -160,6 +161,7 @@ export const QuestionPage = () => {
         <AddToCollectionButton post={question} />
       </ContentHeader>
       <QuestionCard question={question} />
+      <AiAnswerCard question={question} />
       <Box sx={{ mt: 3, mb: 2 }}>
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>

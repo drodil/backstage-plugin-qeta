@@ -24,6 +24,7 @@ import {
   UsersQuery,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CatalogApi } from '@backstage/catalog-client';
+import { AIHandler } from '@drodil/backstage-plugin-qeta-node';
 
 export interface RouterOptions {
   database: QetaStore;
@@ -39,6 +40,7 @@ export interface RouterOptions {
   events?: EventsService;
   signals?: SignalsService;
   notifications?: NotificationService;
+  aiHandler?: AIHandler;
 }
 
 export interface RouteOptions extends RouterOptions {

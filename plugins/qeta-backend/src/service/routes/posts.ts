@@ -18,6 +18,7 @@ import {
   qetaDeletePostPermission,
   qetaEditPostPermission,
   qetaReadPostPermission,
+  Question,
 } from '@drodil/backstage-plugin-qeta-common';
 import addFormats from 'ajv-formats';
 import {
@@ -38,7 +39,8 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const postsRoutes = (router: Router, options: RouteOptions) => {
-  const { database, events, config, signals, notificationMgr } = options;
+  const { database, events, config, signals, notificationMgr, aiHandler } =
+    options;
   // GET /posts
   router.get(`/posts`, async (request, response) => {
     // Validation
@@ -166,6 +168,34 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     // Response
     response.json(post);
+  });
+
+  router.get('/posts/:id/ai', async (request, response) => {
+    if (!aiHandler || !aiHandler.recommendAnswer) {
+      response.send({ response: '' });
+      return;
+    }
+
+    const questionId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(questionId)) {
+      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
+      return;
+    }
+
+    const username = await getUsername(request, options);
+    const post = await database.getPost(
+      username,
+      Number.parseInt(request.params.id, 10),
+      false,
+    );
+
+    if (!post || post.type !== 'question') {
+      response.sendStatus(404);
+      return;
+    }
+
+    const aiResponse = await aiHandler.recommendAnswer(post as Question);
+    response.json(aiResponse);
   });
 
   // POST /posts/:id/comments

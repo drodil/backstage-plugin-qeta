@@ -32,6 +32,7 @@
       "@drodil/backstage-plugin-qeta",
       "@drodil/backstage-plugin-qeta-backend",
       "@drodil/backstage-plugin-qeta-common",
+      "@drodil/backstage-plugin-qeta-node",
       "@drodil/backstage-plugin-qeta-react"
     ]
   },

@@ -32,6 +32,7 @@
       "@drodil/backstage-plugin-qeta",
       "@drodil/backstage-plugin-qeta-backend",
       "@drodil/backstage-plugin-qeta-common",
+      "@drodil/backstage-plugin-qeta-node",
       "@drodil/backstage-plugin-qeta-react"
     ]
   },
@@ -60,6 +61,7 @@
     "@backstage/plugin-permission-node": "backstage:^",
     "@backstage/plugin-signals-node": "backstage:^",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",
+    "@drodil/backstage-plugin-qeta-node": "workspace:^",
     "@types/express": "*",
     "@types/multiparty": "^0.0.33",
     "ajv": "^8.11.0",

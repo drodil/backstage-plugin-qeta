@@ -485,6 +485,9 @@ export const qetaTranslationRef = createTranslationRef({
       entities_one: 'Showing {{count}} entity',
       entities_other: 'Showing {{count}} entities',
     },
+    aiAnswerCard: {
+      title: 'Answer from AI',
+    },
     usersPage: {
       title: 'Users',
       errorLoading: 'Could not load users',

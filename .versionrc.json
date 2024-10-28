@@ -4,6 +4,7 @@
     "plugins/qeta-backend/package.json",
     "plugins/qeta-common/package.json",
     "plugins/qeta-react/package.json",
+    "plugins/qeta-node/package.json",
     "plugins/search-backend-module-qeta/package.json",
     "plugins/scaffolder-backend-module-qeta/package.json"
   ],
@@ -22,6 +23,10 @@
     },
     {
       "filename": "plugins/qeta-react/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "plugins/qeta-node/package.json",
       "type": "json"
     },
     {

@@ -11,6 +11,7 @@ import {
 } from './QetaApi';
 import { CustomErrorBase } from '@backstage/errors';
 import {
+  AiResponse,
   Answer,
   AnswerRequest,
   AnswerResponse,
@@ -194,6 +195,19 @@ export class QetaClient implements QetaApi {
     }
 
     return data;
+  }
+
+  async getAiAnswer(
+    question: string | number,
+    requestOptions?: RequestOptions,
+  ): Promise<AiResponse | null> {
+    const response = await this.fetch(`/posts/${question}/ai`, {
+      requestOptions,
+    });
+    if (!response.ok) {
+      return null;
+    }
+    return (await response.json()) as AiResponse;
   }
 
   async getTags(

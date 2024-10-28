@@ -2925,7 +2925,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/cli@backstage:1.32.3":
+"@backstage/cli@backstage:1.32.3, @backstage/cli@npm:^0.28.1":
   version: 0.28.1
   resolution: "@backstage/cli@npm:0.28.1"
   dependencies:
@@ -4824,6 +4824,7 @@ __metadata:
     "@backstage/plugin-signals-backend": "backstage:^"
     "@backstage/plugin-signals-node": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
+    "@drodil/backstage-plugin-qeta-node": "workspace:^"
     "@types/express": "npm:*"
     "@types/multiparty": "npm:^0.0.33"
     "@types/supertest": "npm:^2.0.12"
@@ -4860,6 +4861,16 @@ __metadata:
     qs: "npm:^6.13.0"
   peerDependencies:
     "@backstage/catalog-model": ^1.7.0
+  languageName: unknown
+  linkType: soft
+
+"@drodil/backstage-plugin-qeta-node@workspace:^, @drodil/backstage-plugin-qeta-node@workspace:plugins/qeta-node":
+  version: 0.0.0-use.local
+  resolution: "@drodil/backstage-plugin-qeta-node@workspace:plugins/qeta-node"
+  dependencies:
+    "@backstage/backend-plugin-api": "backstage:^"
+    "@backstage/cli": "npm:^0.28.1"
+    "@drodil/backstage-plugin-qeta-common": "workspace:^"
   languageName: unknown
   linkType: soft
 

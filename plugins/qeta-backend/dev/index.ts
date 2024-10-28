@@ -5,6 +5,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 import { PermissionPolicy } from './PermissionPolicy';
+import { qetaAIExtensionPoint } from '@drodil/backstage-plugin-qeta-node';
 
 const backend = createBackend();
 backend.add(import('@backstage/plugin-catalog-backend'));
@@ -27,6 +28,30 @@ backend.add(
         },
         async init({ policy, auth, discovery }) {
           policy.setPolicy(new PermissionPolicy(auth, discovery));
+        },
+      });
+    },
+  }),
+);
+backend.add(
+  createBackendModule({
+    pluginId: 'qeta',
+    moduleId: 'example-ai-handler',
+    register(reg) {
+      reg.registerInit({
+        deps: {
+          ai: qetaAIExtensionPoint,
+        },
+        async init({ ai }) {
+          ai.setAIHandler({
+            async recommendAnswer(question) {
+              // Wait for AI to think...
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              return {
+                response: `42 is the "Answer to the Ultimate Question of Life, the Universe, and Everything", just like to ${question.title}`,
+              };
+            },
+          });
         },
       });
     },

@@ -1,4 +1,5 @@
 import {
+  AiResponse,
   AnswerRequest,
   AnswerResponse,
   AnswerResponseBody,
@@ -129,6 +130,11 @@ export interface QetaApi {
     id: string | number | undefined,
     requestOptions?: RequestOptions,
   ): Promise<PostResponse>;
+
+  getAiAnswer(
+    question: string | number,
+    requestOptions?: RequestOptions,
+  ): Promise<AiResponse | null>;
 
   getTags(
     options?: TagsQuery,

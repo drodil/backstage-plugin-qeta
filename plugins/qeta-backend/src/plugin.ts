@@ -11,6 +11,23 @@ import { StatsCollector } from './service/StatsCollector';
 import { TagsUpdater } from './service/TagsUpdater';
 import { AttachmentCleaner } from './service/AttachmentCleaner';
 import { CatalogClient } from '@backstage/catalog-client';
+import {
+  AIHandler,
+  qetaAIExtensionPoint,
+  QetaAIExtensionPoint,
+} from '@drodil/backstage-plugin-qeta-node';
+
+class QetaAIExtensionPointImpl implements QetaAIExtensionPoint {
+  #aiHandler?: AIHandler;
+
+  get aiHandler() {
+    return this.#aiHandler;
+  }
+
+  setAIHandler(handler: AIHandler) {
+    this.#aiHandler = handler;
+  }
+}
 
 /**
  * Qeta backend plugin
@@ -20,6 +37,9 @@ import { CatalogClient } from '@backstage/catalog-client';
 export const qetaPlugin = createBackendPlugin({
   pluginId: 'qeta',
   register(env) {
+    const aiExtension = new QetaAIExtensionPointImpl();
+    env.registerExtensionPoint(qetaAIExtensionPoint, aiExtension);
+
     env.registerInit({
       deps: {
         logger: coreServices.logger,
@@ -77,6 +97,7 @@ export const qetaPlugin = createBackendPlugin({
             userInfo,
             signals,
             notifications,
+            aiHandler: aiExtension.aiHandler,
           }),
         );
         // Allowing attachments download
