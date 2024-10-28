@@ -23,6 +23,8 @@ const mockQetaApi = {
   voteAnswerDown: jest.fn(),
   markAnswerCorrect: jest.fn(),
   markAnswerIncorrect: jest.fn(),
+  deletePostVote: jest.fn(),
+  deleteAnswerVote: jest.fn(),
 };
 
 describe('useVoting', () => {
@@ -39,7 +41,7 @@ describe('useVoting', () => {
     id: 1,
     title: 'Test Post',
     score: 10,
-    ownVote: 1,
+    ownVote: 0,
     own: true,
   };
 
@@ -82,7 +84,7 @@ describe('useVoting', () => {
     const { result } = renderHook(() => useVoting(testPost), { wrapper });
 
     expect(result.current.entity).toEqual(testPost);
-    expect(result.current.ownVote).toBe(1);
+    expect(result.current.ownVote).toBe(0);
     expect(result.current.score).toBe(10);
   });
 
@@ -91,6 +93,12 @@ describe('useVoting', () => {
       ...testPost,
       ownVote: 1,
       score: 11,
+    });
+
+    mockQetaApi.deletePostVote.mockResolvedValue({
+      ...testPost,
+      ownVote: 0,
+      score: 10,
     });
 
     const { result } = renderHook(() => useVoting(testPost), { wrapper });
@@ -107,6 +115,18 @@ describe('useVoting', () => {
     expect(mockQetaApi.votePostUp).toHaveBeenCalledWith(1);
     expect(result.current.ownVote).toBe(1);
     expect(result.current.score).toBe(11);
+
+    // Should clean vote if voting again
+    act(() => {
+      result.current.voteUp();
+    });
+    const afterVotingValue = result.current;
+    await waitFor(() => {
+      expect(result.current).not.toBe(afterVotingValue);
+    });
+    expect(mockQetaApi.deletePostVote).toHaveBeenCalledWith(1);
+    expect(result.current.ownVote).toBe(0);
+    expect(result.current.score).toBe(10);
   });
 
   it('should handle vote down for an answer', async () => {
@@ -114,6 +134,12 @@ describe('useVoting', () => {
       ...testAnswer,
       ownVote: -1,
       score: 4,
+    });
+
+    mockQetaApi.deleteAnswerVote.mockResolvedValue({
+      ...testAnswer,
+      ownVote: 0,
+      score: 5,
     });
 
     const { result } = renderHook(() => useVoting(testAnswer), { wrapper });
@@ -130,6 +156,18 @@ describe('useVoting', () => {
     expect(mockQetaApi.voteAnswerDown).toHaveBeenCalledWith(2, 1);
     expect(result.current.ownVote).toBe(-1);
     expect(result.current.score).toBe(4);
+
+    // Should clean vote if voting again
+    act(() => {
+      result.current.voteDown();
+    });
+    const afterVotingValue = result.current;
+    await waitFor(() => {
+      expect(result.current).not.toBe(afterVotingValue);
+    });
+    expect(mockQetaApi.deleteAnswerVote).toHaveBeenCalledWith(2, 1);
+    expect(result.current.ownVote).toBe(0);
+    expect(result.current.score).toBe(5);
   });
 
   it('should toggle correct answer', async () => {
