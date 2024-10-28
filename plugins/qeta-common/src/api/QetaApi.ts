@@ -18,6 +18,9 @@ import {
   StatisticsRequestParameters,
   StatisticsResponse,
   TagResponse,
+  TemplateRequest,
+  TemplateResponse,
+  TemplatesResponse,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UserResponse,
@@ -343,4 +346,23 @@ export interface QetaApi {
     postId: number,
     requestOptions?: RequestOptions,
   ): Promise<CollectionResponse>;
+
+  getTemplates(requestOptions?: RequestOptions): Promise<TemplatesResponse>;
+  getTemplate(
+    id: string | number,
+    requestOptions?: RequestOptions,
+  ): Promise<TemplateResponse>;
+  createTemplate(
+    template: TemplateRequest,
+    requestOptions?: RequestOptions,
+  ): Promise<TemplateResponse>;
+  updateTemplate(
+    id: string | number,
+    template: TemplateRequest,
+    requestOptions?: RequestOptions,
+  ): Promise<TemplateResponse>;
+  deleteTemplate(
+    templateId: number,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
 }

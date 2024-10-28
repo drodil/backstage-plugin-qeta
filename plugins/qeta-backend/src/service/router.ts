@@ -21,6 +21,7 @@ import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { answerRules, commentRules, postRules } from './postRules';
 import { postsRoutes } from './routes/posts';
 import { collectionsRoutes } from './routes/collections';
+import { templateRoutes } from './routes/templates';
 
 export async function createRouter(
   options: RouterOptions,
@@ -110,6 +111,7 @@ export async function createRouter(
   attachmentsRoutes(router, routeOptions);
   statisticRoutes(router, routeOptions);
   collectionsRoutes(router, routeOptions);
+  templateRoutes(router, routeOptions);
 
   router.use(MiddlewareFactory.create({ config, logger }).error());
   return router;

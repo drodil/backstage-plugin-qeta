@@ -15,10 +15,12 @@ import {
   MaybeCollection,
   MaybeComment,
   MaybePost,
+  MaybeTemplate,
   PostOptions,
   Posts,
   QetaStore,
   TagResponse,
+  Templates,
   UserResponse,
 } from './QetaStore';
 import {
@@ -32,6 +34,7 @@ import {
   PostType,
   Statistic,
   StatisticsRequestParameters,
+  Template,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UserStat,
@@ -129,6 +132,14 @@ export type RawUserImpact = {
   userRef: string;
   impact: number;
   date: Date;
+};
+
+export type RawTemplate = {
+  id: number;
+  title: string;
+  description: string;
+  questionTitle: string | null;
+  questionContent: string | null;
 };
 
 function isQetaFilter(filter: any): filter is QetaFilter {
@@ -450,8 +461,8 @@ export class DatabaseQetaStore implements QetaStore {
       ]);
 
     await Promise.all([
-      this.addPostTags(posts[0].id, tags),
-      this.addPostEntities(posts[0].id, entities),
+      this.addTags(posts[0].id, tags),
+      this.addEntities(posts[0].id, entities),
     ]);
 
     await this.updateAttachments(
@@ -558,8 +569,8 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     await Promise.all([
-      this.addPostTags(id, tags, true),
-      this.addPostEntities(id, entities, true),
+      this.addTags(id, tags, true),
+      this.addEntities(id, entities, true),
     ]);
 
     await this.updateAttachments(
@@ -1687,6 +1698,115 @@ export class DatabaseQetaStore implements QetaStore {
     return await this.getCollection(user_ref, id, filters);
   }
 
+  async getTemplates(): Promise<Templates> {
+    const templates = await this.db('templates').select('*');
+    return {
+      templates: await Promise.all(
+        templates.map(t => this.mapTemplateEntity(t)),
+      ),
+      total: templates.length,
+    };
+  }
+
+  async createTemplate(options: {
+    title: string;
+    description: string;
+    questionTitle?: string;
+    questionContent?: string;
+    tags?: string[];
+    entities?: string[];
+  }): Promise<Template> {
+    const {
+      title,
+      questionTitle,
+      questionContent,
+      description,
+      tags,
+      entities,
+    } = options;
+    const templates = await this.db
+      .insert(
+        {
+          title,
+          description,
+          questionTitle,
+          questionContent,
+        },
+        ['id'],
+      )
+      .into('templates')
+      .returning([
+        'id',
+        'title',
+        'description',
+        'questionTitle',
+        'questionContent',
+      ]);
+    await Promise.all([
+      this.addTags(templates[0].id, tags, true, 'template_tags', 'templateId'),
+      this.addEntities(
+        templates[0].id,
+        entities,
+        true,
+        'template_entities',
+        'templateId',
+      ),
+    ]);
+
+    return this.mapTemplateEntity(templates[0]);
+  }
+
+  async getTemplate(id: number): Promise<MaybeTemplate> {
+    const templates = await this.db('templates').where('id', '=', id);
+    if (templates.length === 0) {
+      return null;
+    }
+    return this.mapTemplateEntity(templates[0]);
+  }
+
+  async deleteTemplate(id: number): Promise<boolean> {
+    const query = this.db('templates').where('id', '=', id);
+    return !!(await query.delete());
+  }
+
+  async updateTemplate(options: {
+    id: number;
+    title: string;
+    description: string;
+    questionTitle?: string;
+    questionContent?: string;
+    tags?: string[];
+    entities?: string[];
+  }): Promise<MaybeTemplate> {
+    const {
+      id,
+      title,
+      description,
+      questionTitle,
+      questionContent,
+      tags,
+      entities,
+    } = options;
+    const query = this.db('templates').where('templates.id', '=', id);
+    const rows = await query.update({
+      title,
+      description,
+      questionTitle,
+      questionContent,
+    });
+
+    if (!rows) {
+      return null;
+    }
+
+    await Promise.all([
+      this.addTags(id, tags, true, 'template_tags', 'templateId'),
+      this.addEntities(id, entities, true, 'template_entities', 'templateId'),
+    ]);
+
+    return await this.getTemplate(id);
+  }
+
   private getEntitiesBaseQuery() {
     const entityId = this.db.ref('entities.id');
     const entityRef = this.db.ref('entities.entity_ref');
@@ -1845,6 +1965,22 @@ export class DatabaseQetaStore implements QetaStore {
     };
   }
 
+  private async mapTemplateEntity(val: RawTemplate): Promise<Template> {
+    const additionalInfo = await Promise.all([
+      this.getRelatedTags(val.id, 'template_tags', 'templateId'),
+      this.getRelatedEntities(val.id, 'template_entities', 'templateId'),
+    ]);
+    return {
+      id: val.id,
+      title: val.title,
+      description: val.description,
+      questionTitle: val.questionTitle ?? undefined,
+      questionContent: val.questionContent ?? undefined,
+      tags: additionalInfo[0],
+      entities: additionalInfo[1],
+    };
+  }
+
   private async mapPostEntity(
     val: RawPostEntity,
     user_ref: string,
@@ -1855,12 +1991,12 @@ export class DatabaseQetaStore implements QetaStore {
   ): Promise<Post> {
     // TODO: This could maybe done with join
     const additionalInfo = await Promise.all([
-      this.getPostTags(val.id),
+      this.getRelatedTags(val.id),
       addAnswers
         ? this.getPostAnswers(val.id, user_ref, addVotes, addComments)
         : undefined,
       addVotes !== false ? this.getPostVotes(val.id) : undefined,
-      addEntities ? this.getPostEntities(val.id) : undefined,
+      addEntities ? this.getRelatedEntities(val.id) : undefined,
       addComments ? this.getPostComments(val.id) : undefined,
       this.db('attachments').select('id').where('postId', val.id),
     ]);
@@ -1944,10 +2080,14 @@ export class DatabaseQetaStore implements QetaStore {
     };
   }
 
-  private async getPostTags(postId: number): Promise<string[]> {
-    const rows = await this.db<RawTagEntity>('tags') // nosonar
-      .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
-      .where('post_tags.postId', '=', postId)
+  private async getRelatedTags(
+    id: number,
+    tableName: string = 'post_tags',
+    columnName: string = 'postId',
+  ): Promise<string[]> {
+    const rows = await this.db<RawTagEntity>('tags')
+      .leftJoin(tableName, 'tags.id', `${tableName}.tagId`)
+      .where(`${tableName}.${columnName}`, '=', id)
       .select();
     return rows.map(val => val.tag);
   }
@@ -1966,10 +2106,14 @@ export class DatabaseQetaStore implements QetaStore {
       .select();
   }
 
-  private async getPostEntities(postId: number): Promise<string[]> {
+  private async getRelatedEntities(
+    id: number,
+    tableName: string = 'post_entities',
+    columnName: string = 'postId',
+  ): Promise<string[]> {
     const rows = await this.db<RawTagEntity>('entities') // nosonar
-      .leftJoin('post_entities', 'entities.id', 'post_entities.entityId')
-      .where('post_entities.postId', '=', postId)
+      .leftJoin(tableName, 'entities.id', `${tableName}.entityId`)
+      .where(`${tableName}.${columnName}`, '=', id)
       .select();
     return rows.map(val => val.entity_ref);
   }
@@ -2071,14 +2215,16 @@ export class DatabaseQetaStore implements QetaStore {
       .groupBy('posts.id');
   }
 
-  private async addPostTags(
-    postId: number,
+  private async addTags(
+    id: number,
     tagsInput?: string[],
     removeOld?: boolean,
+    tableName: string = 'post_tags',
+    columnName: string = 'postId',
   ) {
     const tags = filterTags(tagsInput);
     if (removeOld) {
-      await this.db('post_tags').where('postId', '=', postId).delete();
+      await this.db(tableName).where(columnName, '=', id).delete();
     }
 
     if (!tags || tags.length === 0) {
@@ -2111,21 +2257,23 @@ export class DatabaseQetaStore implements QetaStore {
     await Promise.all(
       tagIds.map(async tagId => {
         await this.db
-          .insert({ postId, tagId })
-          .into('post_tags')
+          .insert({ [columnName]: id, tagId })
+          .into(tableName)
           .onConflict()
           .ignore();
       }),
     );
   }
 
-  private async addPostEntities(
-    postId: number,
+  private async addEntities(
+    id: number,
     entitiesInput?: string[],
     removeOld?: boolean,
+    tableName: string = 'post_entities',
+    columnName: string = 'postId',
   ) {
     if (removeOld) {
-      await this.db('post_entities').where('postId', '=', postId).delete();
+      await this.db(tableName).where(columnName, '=', id).delete();
     }
 
     const regex = /\w+:\w+\/\w+/g;
@@ -2161,8 +2309,8 @@ export class DatabaseQetaStore implements QetaStore {
     await Promise.all(
       entityIds.map(async entityId => {
         await this.db
-          .insert({ postId, entityId })
-          .into('post_entities')
+          .insert({ [columnName]: id, entityId })
+          .into(tableName)
           .onConflict()
           .ignore();
       }),

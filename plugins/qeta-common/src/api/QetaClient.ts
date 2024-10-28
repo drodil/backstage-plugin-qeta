@@ -31,6 +31,9 @@ import {
   StatisticsRequestParameters,
   StatisticsResponse,
   TagResponse,
+  TemplateRequest,
+  TemplateResponse,
+  TemplatesResponse,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UserResponse,
@@ -974,6 +977,63 @@ export class QetaClient implements QetaApi {
     }
 
     return data;
+  }
+
+  async getTemplates(
+    requestOptions?: RequestOptions,
+  ): Promise<TemplatesResponse> {
+    const response = await this.fetch('/templates', { requestOptions });
+    return (await response.json()) as TemplatesResponse;
+  }
+
+  async getTemplate(
+    id: string | number,
+    requestOptions?: RequestOptions,
+  ): Promise<TemplateResponse> {
+    const response = await this.fetch(`/templates/${id}`, { requestOptions });
+    return (await response.json()) as TemplateResponse;
+  }
+
+  async createTemplate(
+    template: TemplateRequest,
+    requestOptions?: RequestOptions,
+  ): Promise<TemplateResponse> {
+    const response = await this.fetch(`/templates`, {
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify(template),
+        headers: { 'Content-Type': 'application/json' },
+      },
+      requestOptions,
+    });
+    return (await response.json()) as TemplateResponse;
+  }
+
+  async updateTemplate(
+    id: string | number,
+    template: TemplateRequest,
+    requestOptions?: RequestOptions,
+  ): Promise<TemplateResponse> {
+    const response = await this.fetch(`/templates/${id}`, {
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify(template),
+        headers: { 'Content-Type': 'application/json' },
+      },
+      requestOptions,
+    });
+    return (await response.json()) as TemplateResponse;
+  }
+
+  async deleteTemplate(
+    templateId: number,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean> {
+    const response = await this.fetch(`/templates/${templateId}`, {
+      reqInit: { method: 'DELETE' },
+      requestOptions,
+    });
+    return response.ok;
   }
 
   private async getBaseUrl(): Promise<string> {

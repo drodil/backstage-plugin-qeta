@@ -8,6 +8,7 @@ import {
   PostType,
   Statistic,
   StatisticsRequestParameters,
+  Template,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UserStat,
@@ -29,6 +30,7 @@ export type MaybeAnswer = Answer | null;
 export type MaybePost = Post | null;
 export type MaybeComment = Comment | null;
 export type MaybeCollection = Collection | null;
+export type MaybeTemplate = Template | null;
 
 export interface Posts {
   posts: Post[];
@@ -42,6 +44,11 @@ export interface Answers {
 
 export interface Collections {
   collections: Collection[];
+  total: number;
+}
+
+export interface Templates {
+  templates: Template[];
   total: number;
 }
 
@@ -528,4 +535,25 @@ export interface QetaStore {
     postId: number,
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<MaybeCollection>;
+
+  getTemplates(): Promise<Templates>;
+  getTemplate(id: number): Promise<MaybeTemplate>;
+  createTemplate(options: {
+    title: string;
+    description: string;
+    questionTitle?: string;
+    questionContent?: string;
+    tags?: string[];
+    entities?: string[];
+  }): Promise<Template>;
+  deleteTemplate(id: number): Promise<boolean>;
+  updateTemplate(options: {
+    id: number;
+    title: string;
+    description: string;
+    questionTitle?: string;
+    questionContent?: string;
+    tags?: string[];
+    entities?: string[];
+  }): Promise<MaybeTemplate>;
 }

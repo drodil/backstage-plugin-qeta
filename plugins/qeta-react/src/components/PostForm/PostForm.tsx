@@ -7,13 +7,14 @@ import {
 import { Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useCallback, useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Control, Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   PostRequest,
   PostResponse,
   PostType,
   QetaApi,
+  Template,
 } from '@drodil/backstage-plugin-qeta-common';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -21,7 +22,7 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { compact } from 'lodash';
 import { TagInput } from './TagInput';
-import { QuestionForm } from './types';
+import { QuestionFormValues, TagAndEntitiesFormValues } from './types';
 import { EntitiesInput } from './EntitiesInput';
 import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
@@ -31,7 +32,10 @@ import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 import { useFormStyles } from '../../hooks/useFormStyles';
 import { useTranslation } from '../../hooks';
 
-const formToRequest = (form: QuestionForm, images: number[]): PostRequest => {
+const formToRequest = (
+  form: QuestionFormValues,
+  images: number[],
+): PostRequest => {
   return {
     ...form,
     entities: form.entities?.map(stringifyEntityRef),
@@ -46,9 +50,21 @@ export type PostFormProps = {
   tags?: string[];
   onPost?: (question: PostResponse) => void;
   entityPage?: boolean;
+  template?: Template | null;
 };
 
-const getDefaultValues = (props: PostFormProps): QuestionForm => {
+const getDefaultValues = (props: PostFormProps): QuestionFormValues => {
+  if (props.template) {
+    return {
+      title: props.template.questionTitle ?? '',
+      content: props.template.questionContent ?? '',
+      tags: props.template.tags ?? [],
+      entities: [],
+      type: props.type,
+      images: [],
+    };
+  }
+
   return {
     title: '',
     content: '',
@@ -64,7 +80,7 @@ const getValues = async (
   catalogApi: CatalogApi,
   type: PostType,
   id?: string,
-): Promise<QuestionForm> => {
+): Promise<QuestionFormValues> => {
   if (!id) {
     return getDefaultValues({ type });
   }
@@ -93,10 +109,8 @@ const getValues = async (
   };
 };
 
-export type QetaPostFormClassKey = 'headerImage' | 'postButton' | 'postForm';
-
 export const PostForm = (props: PostFormProps) => {
-  const { id, entity, onPost, entityPage, type } = props;
+  const { id, entity, onPost, entityPage, type, template } = props;
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
   const navigate = useNavigate();
@@ -122,12 +136,12 @@ export const PostForm = (props: PostFormProps) => {
     control,
     reset,
     formState: { errors },
-  } = useForm<QuestionForm>({
+  } = useForm<QuestionFormValues>({
     values,
     defaultValues: getDefaultValues(props),
   });
 
-  const postQuestion = (data: QuestionForm) => {
+  const postQuestion = (data: QuestionFormValues) => {
     setPosting(true);
     const route = type === 'question' ? questionRoute : articleRoute;
 
@@ -217,12 +231,27 @@ export const PostForm = (props: PostFormProps) => {
       catalogApi.getEntityByRef(entityRef).then(data => {
         if (data) {
           setValues(v => {
-            return { ...v, entities: [data] };
+            return { ...v, entities: [...(v.entities ?? []), data] };
           });
         }
       });
     }
   }, [catalogApi, entityRef]);
+
+  useEffect(() => {
+    if (template && template.entities && template.entities.length > 0) {
+      catalogApi
+        .getEntitiesByRefs({ entityRefs: template.entities })
+        .then(data => {
+          setValues(v => {
+            return {
+              ...v,
+              entities: compact([...(v.entities ?? []), ...data.items]),
+            };
+          });
+        });
+    }
+  }, [catalogApi, template]);
 
   useEffect(() => {
     reset(values);
@@ -294,8 +323,13 @@ export const PostForm = (props: PostFormProps) => {
         )}
         name="content"
       />
-      <TagInput control={control} />
-      <EntitiesInput control={control} entityRef={entityRef} />
+      <TagInput
+        control={control as unknown as Control<TagAndEntitiesFormValues>}
+      />
+      <EntitiesInput
+        control={control as unknown as Control<TagAndEntitiesFormValues>}
+        entityRef={entityRef}
+      />
       {allowAnonymouns && !id && (
         <PostAnonymouslyCheckbox
           control={control}

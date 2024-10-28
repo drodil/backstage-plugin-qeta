@@ -55,6 +55,15 @@ export interface PostContent {
   type: PostType;
 }
 
+export interface TemplateContent {
+  title: string;
+  description: string;
+  questionTitle?: string;
+  questionContent?: string;
+  tags?: string[];
+  entities?: string[];
+}
+
 export interface CollectionContent {
   title: string;
   description?: string;
@@ -163,6 +172,20 @@ export const PostSchema: JSONSchemaType<PostContent> = {
     type: { type: 'string', enum: ['question', 'article'] },
   },
   required: ['title', 'content'],
+  additionalProperties: false,
+};
+
+export const TemplateSchema: JSONSchemaType<TemplateContent> = {
+  type: 'object',
+  properties: {
+    title: { type: 'string', minLength: 1 },
+    description: { type: 'string', minLength: 1 },
+    questionTitle: { type: 'string', nullable: true },
+    questionContent: { type: 'string', nullable: true },
+    tags: { type: 'array', items: { type: 'string' }, nullable: true },
+    entities: { type: 'array', items: { type: 'string' }, nullable: true },
+  },
+  required: ['title', 'description'],
   additionalProperties: false,
 };
 

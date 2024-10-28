@@ -3,12 +3,14 @@ import { Autocomplete } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { qetaApiRef } from '../../api';
-import { QuestionForm } from './types';
+import { TagAndEntitiesFormValues } from './types';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslation } from '../../hooks';
 
-export const TagInput = (props: { control: Control<QuestionForm> }) => {
+export const TagInput = (props: {
+  control: Control<TagAndEntitiesFormValues>;
+}) => {
   const { control } = props;
   const qetaApi = useApi(qetaApiRef);
   const config = useApi(configApiRef);

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  TemplateList,
   useIsModerator,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
@@ -32,8 +33,8 @@ export const ModeratorPage = () => {
             <Tab label={t('moderatorPage.templates')} value="templates" />
           </TabList>
         </Box>
-        <TabPanel value="statistics">
-          <h1>Templates</h1>
+        <TabPanel value="templates">
+          <TemplateList />
         </TabPanel>
       </TabContext>
     </>

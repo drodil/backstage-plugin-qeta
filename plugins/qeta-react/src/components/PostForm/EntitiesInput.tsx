@@ -1,5 +1,5 @@
 import { Control, Controller } from 'react-hook-form';
-import { QuestionForm } from './types';
+import { TagAndEntitiesFormValues } from './types';
 import { Autocomplete } from '@material-ui/lab';
 import { getEntityTitle } from '../../utils/utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
@@ -10,7 +10,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useTranslation } from '../../hooks';
 
 export const EntitiesInput = (props: {
-  control: Control<QuestionForm>;
+  control: Control<TagAndEntitiesFormValues>;
   entityRef?: string;
 }) => {
   const { control, entityRef } = props;

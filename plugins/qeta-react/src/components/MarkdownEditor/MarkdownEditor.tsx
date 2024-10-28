@@ -104,7 +104,7 @@ export const useStyles = makeStyles(
 );
 
 export const MarkdownEditor = (props: {
-  config: Config;
+  config?: Config;
   value: string;
   onChange: (value: string) => void;
   height: number;

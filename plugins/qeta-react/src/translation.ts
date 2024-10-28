@@ -260,6 +260,42 @@ export const qetaTranslationRef = createTranslationRef({
       editButton: 'Edit this article',
       deleteButton: 'Delete this article',
     },
+    templateList: {
+      errorLoading: 'Could not load templates',
+      editButton: 'Edit',
+      deleteButton: 'Delete',
+      createButton: 'Create',
+      errorPosting: 'Could not post template',
+      noTemplates: 'No templates',
+      noTemplatesDescription: 'Create a new template to get started',
+      titleInput: {
+        label: 'Title',
+        helperText: 'Name of the template',
+      },
+      descriptionInput: {
+        label: 'Description',
+        helperText: 'Template description, what is it used for?',
+      },
+      questionTitleInput: {
+        label: 'Default question title',
+        helperText:
+          'Question title to be used when creating a question with this template',
+      },
+      questionContentInput: {
+        placeholder:
+          'Question content to be used when creating a question with this template',
+      },
+      submit: {
+        existingTemplate: 'Save',
+        newTemplate: 'Create',
+      },
+    },
+    templateSelectList: {
+      selectButton: 'Choose',
+      title: 'Create a question from template',
+      genericQuestion: 'Generic question',
+      genericQuestionDescription: 'Create a generic question',
+    },
     collectionsPage: {
       title: 'Collections',
     },

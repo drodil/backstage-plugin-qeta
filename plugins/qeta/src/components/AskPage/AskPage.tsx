@@ -1,14 +1,24 @@
-import { ContentHeader, InfoCard } from '@backstage/core-components';
+import { ContentHeader, InfoCard, Progress } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
-import React from 'react';
-import { PostForm, useTranslation } from '@drodil/backstage-plugin-qeta-react';
+import React, { useState } from 'react';
+import {
+  PostForm,
+  SelectTemplateList,
+  useQetaApi,
+  useTranslation,
+} from '@drodil/backstage-plugin-qeta-react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
-import { filterTags } from '@drodil/backstage-plugin-qeta-common';
+import { filterTags, Template } from '@drodil/backstage-plugin-qeta-common';
 
 export const AskPage = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
+  const { value, loading } = useQetaApi(api => api.getTemplates());
+  const [template, setTemplate] = useState<Template | null | undefined>(
+    undefined,
+  );
+
   const entity = searchParams.get('entity') ?? undefined;
   const entityPage = searchParams.get('entityPage') === 'true';
   const tags = filterTags(searchParams.get('tags'));
@@ -26,6 +36,25 @@ export const AskPage = () => {
     title = t('askPage.title.newQuestion');
   }
 
+  if (loading) {
+    return <Progress />;
+  }
+
+  if (
+    !id &&
+    value &&
+    value.templates &&
+    value.total > 0 &&
+    template === undefined
+  ) {
+    return (
+      <SelectTemplateList
+        templates={value}
+        onTemplateSelect={temp => setTemplate(temp)}
+      />
+    );
+  }
+
   return (
     <>
       <ContentHeader title={title} />
@@ -38,6 +67,7 @@ export const AskPage = () => {
               entityPage={entityPage}
               tags={tags}
               type="question"
+              template={template}
             />
           </InfoCard>
         </Grid>

@@ -93,6 +93,16 @@ export interface Post extends PostAnswerEntity {
   images: number[];
 }
 
+export interface Template {
+  id: number;
+  title: string;
+  description: string;
+  questionTitle?: string;
+  questionContent?: string;
+  tags: string[];
+  entities: string[];
+}
+
 export interface Question extends Post {
   type: 'question';
 }
@@ -191,6 +201,11 @@ export interface CollectionsResponse {
   total: number;
 }
 
+export interface TemplatesResponse {
+  templates: Template[];
+  total: number;
+}
+
 export type PostsResponseBody = PostsResponse | ErrorResponse;
 
 export type PostResponseBody = Question | ErrorResponse;
@@ -214,6 +229,15 @@ export interface PostRequest {
   images?: number[];
   headerImage?: string;
   type: PostType;
+}
+
+export interface TemplateRequest {
+  title: string;
+  description: string;
+  questionTitle?: string;
+  questionContent?: string;
+  tags?: string[];
+  entities?: string[];
 }
 
 export interface AnswerRequest {
@@ -262,6 +286,7 @@ export type AttachmentResponseBody = Attachment | ErrorResponse;
 export type PostResponse = Post;
 export type AnswerResponse = Answer;
 export type CollectionResponse = Collection;
+export type TemplateResponse = Template;
 
 export type CollectionResponseBody = CollectionResponse | ErrorResponse;
 
