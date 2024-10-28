@@ -13,8 +13,9 @@ within Backstage. This plugin provides:
 - Support to write articles
 - Support to vote questions, articles and answers
 - Support to create collections containing questions and articles
-- Support to favorie questions and articles
+- Support to favorite questions and articles
 - Support to subscribe to entities and tags
+- Question template support for predefined questions
 - Views for users, entities and tags with their stats
 - Global and user statistics
 - Backend that saves questions and answers to desired database
@@ -26,6 +27,8 @@ within Backstage. This plugin provides:
 - Integration with the [`@backstage/plugin-signals`](https://github.com/backstage/backstage/tree/master/plugins/signals) plugin
 - Integration with the [`@backstage/plugin-notifications`](https://github.com/backstage/backstage/tree/master/plugins/notifications) plugin
 - Integration with the [`@backstage/plugin-scaffolder`](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend) plugin
+
+See more information from our [documentation](./docs/index.md).
 
 ## Setup
 
