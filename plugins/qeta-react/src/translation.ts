@@ -209,6 +209,8 @@ export const qetaTranslationRef = createTranslationRef({
       title: 'Moderate',
       tools: 'Tools',
       templates: 'Templates',
+      templatesInfo:
+        'Templates can be used to prefill question content for the user',
     },
     homePage: {
       title: 'Home',

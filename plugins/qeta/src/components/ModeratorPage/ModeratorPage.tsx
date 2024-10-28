@@ -6,7 +6,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { Box, Tab } from '@material-ui/core';
 import { ContentHeader } from '@backstage/core-components';
-import { TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { Alert, TabContext, TabList, TabPanel } from '@material-ui/lab';
 
 export const ModeratorPage = () => {
   const { isModerator } = useIsModerator();
@@ -34,6 +34,7 @@ export const ModeratorPage = () => {
           </TabList>
         </Box>
         <TabPanel value="templates">
+          <Alert severity="info">{t('moderatorPage.templatesInfo')}</Alert>
           <TemplateList />
         </TabPanel>
       </TabContext>
