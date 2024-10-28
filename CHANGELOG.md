@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.4.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.3.0...v3.4.0) (2024-10-28)
+
+
+### Features
+
+* add collections tab to user page ([dd88395](https://github.com/drodil/backstage-plugin-qeta/commit/dd8839536a5fcc3b77e6f56b9a9f4a07a2d5d1f5)), closes [#212](https://github.com/drodil/backstage-plugin-qeta/issues/212)
+* add collections to search documents ([3b632f6](https://github.com/drodil/backstage-plugin-qeta/commit/3b632f652acd970451f9f9ef24a2a5272bb7a958)), closes [#217](https://github.com/drodil/backstage-plugin-qeta/issues/217)
+* add moderator panel ([de31304](https://github.com/drodil/backstage-plugin-qeta/commit/de3130463c756f49a620a7f9a2b80f717f30f72c)), closes [#192](https://github.com/drodil/backstage-plugin-qeta/issues/192)
+* add pagination to tags page ([c26d045](https://github.com/drodil/backstage-plugin-qeta/commit/c26d045b77a5fcfac3e2b7f246b6da1a8f284a31)), closes [#211](https://github.com/drodil/backstage-plugin-qeta/issues/211)
+* add support for question templates ([14a499f](https://github.com/drodil/backstage-plugin-qeta/commit/14a499fb96cedb475696bcfbec403e693cacdc56)), closes [#109](https://github.com/drodil/backstage-plugin-qeta/issues/109)
+* allow following collections ([bd8fed4](https://github.com/drodil/backstage-plugin-qeta/commit/bd8fed4495f30fefc1fce1357b1f4e42d621f4e8)), closes [#214](https://github.com/drodil/backstage-plugin-qeta/issues/214)
+* collect followers stats for users ([2042e52](https://github.com/drodil/backstage-plugin-qeta/commit/2042e52d93563fa07d80e0cea045807d6b9d9617))
+* resolve user's display name for notifications ([8029470](https://github.com/drodil/backstage-plugin-qeta/commit/802947097d8fa099243fc41b17b9604c22d1dd05)), closes [#215](https://github.com/drodil/backstage-plugin-qeta/issues/215)
+* support pagination in tags & entities ([9933040](https://github.com/drodil/backstage-plugin-qeta/commit/9933040cbd78aa576a50ffe10fb7637b3c9d52be)), closes [#211](https://github.com/drodil/backstage-plugin-qeta/issues/211)
+* wrap notification sending to async method not to wait for response ([1b9f950](https://github.com/drodil/backstage-plugin-qeta/commit/1b9f95067f3e441d1fd0b6f75ce8b387d29476f3))
+
+
+### Bug Fixes
+
+* show tag and entity related highlights ([15cebc9](https://github.com/drodil/backstage-plugin-qeta/commit/15cebc9d5891bee6b460079f5d34e01b8d2a63e0))
+* typescript errors ([afd2785](https://github.com/drodil/backstage-plugin-qeta/commit/afd2785c1d422d3c5fe3b43afb8bc45288857905))
+
 ## [3.3.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.2.1...v3.3.0) (2024-10-24)
 
 
