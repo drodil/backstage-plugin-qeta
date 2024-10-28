@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.4.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.4.0...v3.4.1) (2024-10-28)
+
+
+### Bug Fixes
+
+* allow removing vote from posts and answers ([2a38108](https://github.com/drodil/backstage-plugin-qeta/commit/2a38108e8da0a7232f82365778f35e03dc97b1ab)), closes [#221](https://github.com/drodil/backstage-plugin-qeta/issues/221)
+* return zero stats for sqlite as it doesn't work with subqueries ([74105a5](https://github.com/drodil/backstage-plugin-qeta/commit/74105a59cef4284cc006178ff0ae8f45d3958cf7))
+
 ## [3.4.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.3.0...v3.4.0) (2024-10-28)
 
 
