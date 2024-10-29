@@ -153,12 +153,6 @@ export const qetaTranslationRef = createTranslationRef({
     createCollectionButton: {
       title: 'Create collection',
     },
-    backToQuestionsButton: {
-      title: 'Back',
-    },
-    backToCollectionsButton: {
-      title: 'Back',
-    },
     commentList: {
       deleteLink: 'delete',
     },

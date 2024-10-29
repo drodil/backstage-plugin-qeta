@@ -1,7 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import {
-  BackToCollectionsButton,
   CollectionCard,
   CollectionFollowButton,
   CreateCollectionButton,
@@ -48,7 +47,6 @@ export const CollectionPage = () => {
         titleComponent={title}
         description={t('collectionPage.info')}
       >
-        <BackToCollectionsButton />
         <CreateCollectionButton />
       </ContentHeader>
       <Grid container>

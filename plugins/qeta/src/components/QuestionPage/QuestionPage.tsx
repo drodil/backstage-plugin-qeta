@@ -8,14 +8,13 @@ import {
   Typography,
 } from '@material-ui/core';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   AddToCollectionButton,
   AIAnswerCard,
   AnswerCard,
   AnswerForm,
   AskQuestionButton,
-  BackToQuestionsButton,
   QuestionCard,
   RelativeTimeWithTooltip,
   UpdatedByLink,
@@ -38,7 +37,6 @@ export const QuestionPage = () => {
   const { t } = useTranslation();
   const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
   const [answerSort, setAnswerSort] = React.useState<string>('default');
-  const [searchParams] = useSearchParams();
 
   const [answersCount, setAnswersCount] = useState(0);
   const [views, setViews] = useState(0);
@@ -154,9 +152,6 @@ export const QuestionPage = () => {
         // @ts-ignore
         description={getDescription(question)}
       >
-        <BackToQuestionsButton
-          entityPage={searchParams.get('entityPage') === 'true'}
-        />
         <AskQuestionButton />
         <AddToCollectionButton post={question} />
       </ContentHeader>

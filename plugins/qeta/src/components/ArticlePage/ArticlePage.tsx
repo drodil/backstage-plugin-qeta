@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { Skeleton } from '@material-ui/lab';
@@ -7,7 +7,6 @@ import { QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import {
   AddToCollectionButton,
   ArticleContent,
-  BackToArticlesButton,
   useQetaApi,
   useTranslation,
   WriteArticleButton,
@@ -17,7 +16,6 @@ import { Container } from '@material-ui/core';
 export const ArticlePage = () => {
   const { id } = useParams();
   const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
 
   const [views, setViews] = useState(0);
 
@@ -56,9 +54,6 @@ export const ArticlePage = () => {
   return (
     <>
       <ContentHeader>
-        <BackToArticlesButton
-          entityPage={searchParams.get('entityPage') === 'true'}
-        />
         <WriteArticleButton />
         <AddToCollectionButton post={post} />
       </ContentHeader>
