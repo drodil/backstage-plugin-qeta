@@ -47,6 +47,13 @@ export class OpenAIHandler implements AIHandler {
       credentials?: BackstageCredentials<BackstageUserPrincipal>;
     },
   ): Promise<AIResponse> {
+    const enabled = this.config.getOptionalBoolean(
+      'qeta.openai.answer.existingQuestions',
+    );
+    if (enabled === false) {
+      throw new Error('OpenAI is disabled for existing questions');
+    }
+
     const cached = await this.cache?.get<string>(
       `openai:question_${question.id}`,
     );
@@ -78,6 +85,13 @@ export class OpenAIHandler implements AIHandler {
     content: string,
     options?: { credentials?: BackstageCredentials<BackstageUserPrincipal> },
   ): Promise<AIResponse> {
+    const enabled = this.config.getOptionalBoolean(
+      'qeta.openai.answer.newQuestions',
+    );
+    if (enabled === false) {
+      throw new Error('OpenAI is disabled for new questions');
+    }
+
     this.logger.info(`Answering question ${title} using OpenAI`);
 
     const prompt = `${title}\n${content}`;

@@ -93,9 +93,19 @@ The config also allows to set the model, temperature, max tokens, and custom end
 ```yaml
 qeta:
   openai:
+    answer:
+      newQuestions: false # disables/enables answer in ask a question page
+      existingQuestions: true # disables/enables answer in question page
     project: 'your-open-ai-project'
     organization: 'your-open-ai-organization'
     model: 'gpt-4o-mini' # defaults to gpt-3.5-turbo
     temperature: 0.5
     maxTokens: 100
+    prompts:
+      # System prompt to add for the AI to answer the question
+      system: 'You are a chat bot called Mylly. You should behave. You should be helpful. You should be polite.'
+      # Additional prefix to add to the user input
+      userPrefix: 'My question is this:\n'
+      # Additional suffix to add to the user input
+      userSuffix: '\nMylly, what is the answer?'
 ```

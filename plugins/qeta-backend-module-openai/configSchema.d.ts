@@ -5,6 +5,18 @@
 export interface Config {
   qeta?: {
     openai?: {
+      answer?: {
+        /**
+         * Whether to enable OpenAI for existing questions. Defaults to true.
+         * Setting this false will disable AI answers in the question page.
+         */
+        existingQuestions?: boolean;
+        /**
+         * Whether to enable OpenAI for new questions. Defaults to true.
+         * Setting this false will disable AI answers in the Ask a question form.
+         */
+        newQuestions?: boolean;
+      };
       /**
        * The endpoint for accessing OpenAI services. Defaults to process.env.OPENAI_BASE_URL or
        * https://api.openai.com/v1.
