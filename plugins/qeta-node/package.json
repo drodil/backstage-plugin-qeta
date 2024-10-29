@@ -43,7 +43,8 @@
     "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "tsc": "tsc"
   },
   "devDependencies": {
     "@backstage/cli": "^0.28.1"
