@@ -1,5 +1,5 @@
 import { Post } from '@drodil/backstage-plugin-qeta-common';
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Card,
   CardContent,
@@ -12,6 +12,7 @@ import {
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useAI, useTranslation } from '../../hooks';
 import FlareIcon from '@material-ui/icons/Flare';
+import useDebounce from 'react-use/lib/useDebounce';
 
 export type QetaAIAnswerCardClassKey = 'card';
 
@@ -34,44 +35,43 @@ export type AIAnswerCardProps = {
     title: string;
     content: string;
   };
+  debounceMs?: number;
 };
 
 export const AIAnswerCard = (props: AIAnswerCardProps) => {
-  const { question, draft } = props;
+  const { question, draft, debounceMs = 3000 } = props;
   const [answer, setAnswer] = React.useState<string | undefined>(undefined);
   const styles = useStyles();
   const { t } = useTranslation();
 
   const { isAIEnabled, answerExistingQuestion, answerDraftQuestion } = useAI();
 
-  useEffect(() => {
-    if (!isAIEnabled) {
-      return;
-    }
+  useDebounce(
+    () => {
+      if (!isAIEnabled) {
+        return;
+      }
 
-    if (question) {
-      answerExistingQuestion(question.id).then(res => {
-        setAnswer(res?.answer);
-      });
-    } else if (
-      draft &&
-      draft.title &&
-      draft.content &&
-      draft.title.length + draft.content.length > 30
-    ) {
-      answerDraftQuestion(draft).then(res => {
-        setAnswer(res?.answer);
-      });
-    } else {
-      setAnswer(undefined);
-    }
-  }, [
-    answerExistingQuestion,
-    answerDraftQuestion,
-    isAIEnabled,
-    question,
-    draft,
-  ]);
+      if (question) {
+        answerExistingQuestion(question.id).then(res => {
+          setAnswer(res?.answer);
+        });
+      } else if (
+        draft &&
+        draft.title &&
+        draft.content &&
+        draft.title.length + draft.content.length > 30
+      ) {
+        answerDraftQuestion(draft).then(res => {
+          setAnswer(res?.answer);
+        });
+      } else {
+        setAnswer(undefined);
+      }
+    },
+    debounceMs,
+    [answerExistingQuestion, answerDraftQuestion, isAIEnabled, question, draft],
+  );
 
   if (!isAIEnabled || !answer) {
     return null;

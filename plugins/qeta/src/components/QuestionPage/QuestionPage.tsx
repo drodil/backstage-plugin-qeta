@@ -161,7 +161,7 @@ export const QuestionPage = () => {
         <AddToCollectionButton post={question} />
       </ContentHeader>
       <QuestionCard question={question} />
-      <AIAnswerCard question={question} />
+      <AIAnswerCard question={question} debounceMs={0} />
       <Box sx={{ mt: 3, mb: 2 }}>
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>

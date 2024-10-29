@@ -31,7 +31,9 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const credentials = await httpAuth.credentials(request);
+    const credentials = await httpAuth.credentials(request, {
+      allow: ['user'],
+    });
     const username = await getUsername(request, options);
     const post = await database.getPost(
       username,
@@ -63,7 +65,9 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const credentials = await httpAuth.credentials(request);
+    const credentials = await httpAuth.credentials(request, {
+      allow: ['user'],
+    });
     const aiResponse = await aiHandler.answerNewQuestion(
       request.body.title,
       request.body.content,

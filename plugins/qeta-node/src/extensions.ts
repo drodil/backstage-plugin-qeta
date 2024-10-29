@@ -1,5 +1,6 @@
 import {
   BackstageCredentials,
+  BackstageUserPrincipal,
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { AIResponse, Question } from '@drodil/backstage-plugin-qeta-common';
@@ -10,7 +11,7 @@ export interface AIHandler {
    */
   answerExistingQuestion?(
     question: Question,
-    options?: { credentials?: BackstageCredentials },
+    options?: { credentials?: BackstageCredentials<BackstageUserPrincipal> },
   ): Promise<AIResponse>;
 
   /**
@@ -19,7 +20,7 @@ export interface AIHandler {
   answerNewQuestion?(
     title: string,
     content: string,
-    options?: { credentials?: BackstageCredentials },
+    options?: { credentials?: BackstageCredentials<BackstageUserPrincipal> },
   ): Promise<AIResponse>;
 }
 

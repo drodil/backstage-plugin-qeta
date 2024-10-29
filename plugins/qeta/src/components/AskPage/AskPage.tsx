@@ -12,7 +12,6 @@ import {
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags, Template } from '@drodil/backstage-plugin-qeta-common';
-import useDebounce from 'react-use/lib/useDebounce';
 
 export const AskPage = () => {
   const { id } = useParams();
@@ -22,19 +21,8 @@ export const AskPage = () => {
   const [draft, setDraft] = useState<
     { title: string; content: string } | undefined
   >(undefined);
-  const [aiDraft, setAIDraft] = useState<
-    { title: string; content: string } | undefined
-  >(undefined);
   const [template, setTemplate] = useState<Template | null | undefined>(
     undefined,
-  );
-
-  useDebounce(
-    () => {
-      setAIDraft(draft);
-    },
-    3000,
-    [draft],
   );
 
   const entity = searchParams.get('entity') ?? undefined;
@@ -98,7 +86,7 @@ export const AskPage = () => {
               template={template}
               onFormChange={handleFormChange}
             />
-            <AIAnswerCard draft={aiDraft} />
+            <AIAnswerCard draft={draft} />
           </InfoCard>
         </Grid>
       </Grid>
