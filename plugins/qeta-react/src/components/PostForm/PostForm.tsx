@@ -51,6 +51,7 @@ export type PostFormProps = {
   onPost?: (question: PostResponse) => void;
   entityPage?: boolean;
   template?: Template | null;
+  onFormChange?: (data: QuestionFormValues) => void;
 };
 
 const getDefaultValues = (props: PostFormProps): QuestionFormValues => {
@@ -110,7 +111,8 @@ const getValues = async (
 };
 
 export const PostForm = (props: PostFormProps) => {
-  const { id, entity, onPost, entityPage, type, template } = props;
+  const { id, entity, onPost, entityPage, type, template, onFormChange } =
+    props;
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
   const navigate = useNavigate();
@@ -273,6 +275,7 @@ export const PostForm = (props: PostFormProps) => {
       onSubmit={handleSubmit(postQuestion)}
       onChange={() => {
         setEdited(true);
+        onFormChange?.(control._formValues as QuestionFormValues);
       }}
       className={`${styles.form} qetaAskForm`}
     >

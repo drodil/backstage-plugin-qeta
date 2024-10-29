@@ -11,7 +11,7 @@ import {
 } from './QetaApi';
 import { CustomErrorBase } from '@backstage/errors';
 import {
-  AiResponse,
+  AIResponse,
   Answer,
   AnswerRequest,
   AnswerResponse,
@@ -197,17 +197,45 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async getAiAnswer(
-    question: string | number,
+  async getAIAnswerForQuestion(
+    questionId: string | number,
     requestOptions?: RequestOptions,
-  ): Promise<AiResponse | null> {
-    const response = await this.fetch(`/posts/${question}/ai`, {
+  ): Promise<AIResponse | null> {
+    const response = await this.fetch(`/ai/question/${questionId}`, {
       requestOptions,
     });
     if (!response.ok) {
       return null;
     }
-    return (await response.json()) as AiResponse;
+    return (await response.json()) as AIResponse;
+  }
+
+  async getAIAnswerForDraft(
+    title: string,
+    content: string,
+    requestOptions?: RequestOptions,
+  ): Promise<AIResponse | null> {
+    const response = await this.fetch('/ai/question', {
+      requestOptions,
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify({ title, content }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    });
+    if (!response.ok) {
+      return null;
+    }
+    return (await response.json()) as AIResponse;
+  }
+
+  async isAIEnabled(): Promise<boolean> {
+    const response = await this.fetch('/ai/status');
+    if (!response.ok) {
+      return false;
+    }
+    const data = await response.json();
+    return Boolean(data.enabled);
   }
 
   async getTags(

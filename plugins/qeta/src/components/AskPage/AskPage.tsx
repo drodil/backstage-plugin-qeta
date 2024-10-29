@@ -2,21 +2,39 @@ import { ContentHeader, InfoCard, Progress } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import React, { useState } from 'react';
 import {
+  AIAnswerCard,
   PostForm,
   SelectTemplateList,
+  useAI,
   useQetaApi,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags, Template } from '@drodil/backstage-plugin-qeta-common';
+import useDebounce from 'react-use/lib/useDebounce';
 
 export const AskPage = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
+  const { isAIEnabled } = useAI();
   const { value, loading } = useQetaApi(api => api.getTemplates());
+  const [draft, setDraft] = useState<
+    { title: string; content: string } | undefined
+  >(undefined);
+  const [aiDraft, setAIDraft] = useState<
+    { title: string; content: string } | undefined
+  >(undefined);
   const [template, setTemplate] = useState<Template | null | undefined>(
     undefined,
+  );
+
+  useDebounce(
+    () => {
+      setAIDraft(draft);
+    },
+    3000,
+    [draft],
   );
 
   const entity = searchParams.get('entity') ?? undefined;
@@ -55,6 +73,16 @@ export const AskPage = () => {
     );
   }
 
+  const handleFormChange = (data: { title: string; content: string }) => {
+    if (!isAIEnabled) {
+      return;
+    }
+    setDraft({
+      title: data.title,
+      content: data.content,
+    });
+  };
+
   return (
     <>
       <ContentHeader title={title} />
@@ -68,7 +96,9 @@ export const AskPage = () => {
               tags={tags}
               type="question"
               template={template}
+              onFormChange={handleFormChange}
             />
+            <AIAnswerCard draft={aiDraft} />
           </InfoCard>
         </Grid>
       </Grid>

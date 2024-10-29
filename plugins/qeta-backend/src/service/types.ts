@@ -307,6 +307,21 @@ export const CommentSchema: JSONSchemaType<Comment> = {
   additionalProperties: false,
 };
 
+export interface DraftQuestion {
+  title: string;
+  content: string;
+}
+
+export const DraftQuestionSchema: JSONSchemaType<DraftQuestion> = {
+  type: 'object',
+  properties: {
+    title: { type: 'string', minLength: 1 },
+    content: { type: 'string', minLength: 1 },
+  },
+  required: ['title', 'content'],
+  additionalProperties: false,
+};
+
 export interface File {
   name: string;
   path: string;

@@ -303,8 +303,8 @@ export type AnswerResponse = Answer;
 export type CollectionResponse = Collection;
 export type TemplateResponse = Template;
 
-export type AiResponse = {
-  response: string;
+export type AIResponse = {
+  answer: string;
 };
 
 export type CollectionResponseBody = CollectionResponse | ErrorResponse;

@@ -44,11 +44,18 @@ backend.add(
         },
         async init({ ai }) {
           ai.setAIHandler({
-            async recommendAnswer(question) {
+            async answerExistingQuestion(question) {
               // Wait for AI to think...
               await new Promise(resolve => setTimeout(resolve, 1000));
               return {
-                response: `42 is the "Answer to the Ultimate Question of Life, the Universe, and Everything", just like to ${question.title}`,
+                answer: `42 is the "Answer to the Ultimate Question of Life, the Universe, and Everything", just like to ${question.title}`,
+              };
+            },
+            async answerNewQuestion(title, _content) {
+              // Wait for AI to think...
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              return {
+                answer: `42 is the "Answer to the Ultimate Question of Life, the Universe, and Everything", just like to ${title}`,
               };
             },
           });

@@ -9,7 +9,7 @@ import { QetaLeftMenuClassKey } from './components';
 import { QetaMarkdownEditorClassKey } from './components/MarkdownEditor/MarkdownEditor';
 import { QetaAuthorBoxClassKey } from './components/AuthorBox/AuthorBox';
 import { QetaFormClassKey } from './hooks/useFormStyles';
-import { QetaAiAnswerCardClassKey } from './components/AiAnswerCard/AiAnswerCard';
+import { QetaAIAnswerCardClassKey } from './components/AIAnswerCard/AIAnswerCard';
 
 type QetaComponentsNameToClassKey = {
   QetaLeftMenu: QetaLeftMenuClassKey;
@@ -21,7 +21,7 @@ type QetaComponentsNameToClassKey = {
   QetaMarkdownEditor: QetaMarkdownEditorClassKey;
   QetaAuthorBox: QetaAuthorBoxClassKey;
   QetaForm: QetaFormClassKey;
-  QetaAiAnswerCard: QetaAiAnswerCardClassKey;
+  QetaAIAnswerCard: QetaAIAnswerCardClassKey;
 };
 
 export type QetaOverrides = Overrides & {

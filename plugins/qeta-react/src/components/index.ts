@@ -27,4 +27,4 @@ export * from './CollectionCard';
 export * from './LeftMenu';
 export * from './TemplateList';
 export * from './SelectTemplateList';
-export * from './AiAnswerCard';
+export * from './AIAnswerCard';

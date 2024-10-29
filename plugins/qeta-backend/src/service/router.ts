@@ -22,6 +22,7 @@ import { answerRules, commentRules, postRules } from './postRules';
 import { postsRoutes } from './routes/posts';
 import { collectionsRoutes } from './routes/collections';
 import { templateRoutes } from './routes/templates';
+import { aiRoutes } from './routes/ai';
 
 export async function createRouter(
   options: RouterOptions,
@@ -112,6 +113,7 @@ export async function createRouter(
   statisticRoutes(router, routeOptions);
   collectionsRoutes(router, routeOptions);
   templateRoutes(router, routeOptions);
+  aiRoutes(router, routeOptions);
 
   router.use(MiddlewareFactory.create({ config, logger }).error());
   return router;

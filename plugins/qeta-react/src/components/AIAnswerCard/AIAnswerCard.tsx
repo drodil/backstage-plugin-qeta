@@ -1,6 +1,4 @@
 import { Post } from '@drodil/backstage-plugin-qeta-common';
-import { useApi } from '@backstage/core-plugin-api';
-import { qetaApiRef } from '../../api';
 import React, { useEffect } from 'react';
 import {
   Card,
@@ -12,10 +10,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import { MarkdownRenderer } from '../MarkdownRenderer';
-import { useTranslation } from '../../hooks';
+import { useAI, useTranslation } from '../../hooks';
 import FlareIcon from '@material-ui/icons/Flare';
 
-export type QetaAiAnswerCardClassKey = 'card';
+export type QetaAIAnswerCardClassKey = 'card';
 
 const useStyles = makeStyles(
   (theme: Theme) =>
@@ -27,27 +25,55 @@ const useStyles = makeStyles(
       },
       markdown: {},
     }),
-  { name: 'QetaAiAnswerCard' },
+  { name: 'QetaAIAnswerCard' },
 );
 
-export const AiAnswerCard = (props: { question: Post }) => {
-  const { question } = props;
+export type AIAnswerCardProps = {
+  question?: Post;
+  draft?: {
+    title: string;
+    content: string;
+  };
+};
+
+export const AIAnswerCard = (props: AIAnswerCardProps) => {
+  const { question, draft } = props;
   const [answer, setAnswer] = React.useState<string | undefined>(undefined);
-  const qetaApi = useApi(qetaApiRef);
   const styles = useStyles();
   const { t } = useTranslation();
 
+  const { isAIEnabled, answerExistingQuestion, answerDraftQuestion } = useAI();
+
   useEffect(() => {
-    if (question.type !== 'question') {
+    if (!isAIEnabled) {
       return;
     }
 
-    qetaApi.getAiAnswer(question.id).then(resp => {
-      setAnswer(resp?.response);
-    });
-  }, [qetaApi, question.id, question.type]);
+    if (question) {
+      answerExistingQuestion(question.id).then(res => {
+        setAnswer(res?.answer);
+      });
+    } else if (
+      draft &&
+      draft.title &&
+      draft.content &&
+      draft.title.length + draft.content.length > 30
+    ) {
+      answerDraftQuestion(draft).then(res => {
+        setAnswer(res?.answer);
+      });
+    } else {
+      setAnswer(undefined);
+    }
+  }, [
+    answerExistingQuestion,
+    answerDraftQuestion,
+    isAIEnabled,
+    question,
+    draft,
+  ]);
 
-  if (question.type !== 'question' || !answer) {
+  if (!isAIEnabled || !answer) {
     return null;
   }
 
