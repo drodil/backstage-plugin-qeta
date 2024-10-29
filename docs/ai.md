@@ -4,7 +4,7 @@ To utilize the AI capabilities of the plugin, you must create a new backend modu
 In short, it should look like this:
 
 ```ts
-import { qetaAiExtensionPoint } from '@drodil/backstage-plugin-qeta-node';
+import { qetaAIExtensionPoint } from '@drodil/backstage-plugin-qeta-node';
 
 backend.add(
   createBackendModule({
