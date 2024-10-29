@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.6.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.6.0...v3.6.1) (2024-10-29)
+
+
+### Bug Fixes
+
+* remove private flag from openai package ([b97d59b](https://github.com/drodil/backstage-plugin-qeta/commit/b97d59bebc036758ec11181a02c8df6716c9ecd2))
+
 ## [3.6.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.5.1...v3.6.0) (2024-10-29)
 
 
