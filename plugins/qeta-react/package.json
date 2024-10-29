@@ -81,7 +81,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "backstage:^",
-    "@backstage/test-utils": "^1.7.0",
+    "@backstage/test-utils": "backstage:^",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^16.0.1",

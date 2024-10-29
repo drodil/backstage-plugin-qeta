@@ -2828,7 +2828,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/backend-test-utils@backstage:1.32.3, @backstage/backend-test-utils@npm:^1.0.2":
+"@backstage/backend-test-utils@backstage:1.32.3":
   version: 1.0.2
   resolution: "@backstage/backend-test-utils@npm:1.0.2"
   dependencies:
@@ -2925,7 +2925,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/cli@backstage:1.32.3, @backstage/cli@npm:^0.28.1":
+"@backstage/cli@backstage:1.32.3":
   version: 0.28.1
   resolution: "@backstage/cli@npm:0.28.1"
   dependencies:
@@ -4447,7 +4447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/test-utils@npm:^1.7.0":
+"@backstage/test-utils@backstage:1.32.3, @backstage/test-utils@npm:^1.7.0":
   version: 1.7.0
   resolution: "@backstage/test-utils@npm:1.7.0"
   dependencies:
@@ -4800,9 +4800,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@drodil/backstage-plugin-qeta-backend-module-openai@workspace:plugins/qeta-backend-module-openai"
   dependencies:
-    "@backstage/backend-plugin-api": "npm:^1.0.0"
-    "@backstage/backend-test-utils": "npm:^1.0.2"
-    "@backstage/cli": "npm:^0.28.1"
+    "@backstage/backend-plugin-api": "backstage:^"
+    "@backstage/backend-test-utils": "backstage:^"
+    "@backstage/cli": "backstage:^"
     "@backstage/config": "backstage:^"
     "@backstage/types": "npm:^1.1.1"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
@@ -4876,7 +4876,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     qs: "npm:^6.13.0"
   peerDependencies:
-    "@backstage/catalog-model": ^1.7.0
+    "@backstage/catalog-model": "*"
   languageName: unknown
   linkType: soft
 
@@ -4885,7 +4885,7 @@ __metadata:
   resolution: "@drodil/backstage-plugin-qeta-node@workspace:plugins/qeta-node"
   dependencies:
     "@backstage/backend-plugin-api": "backstage:^"
-    "@backstage/cli": "npm:^0.28.1"
+    "@backstage/cli": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
   languageName: unknown
   linkType: soft
@@ -4903,7 +4903,7 @@ __metadata:
     "@backstage/plugin-catalog-react": "backstage:^"
     "@backstage/plugin-permission-react": "backstage:^"
     "@backstage/plugin-signals-react": "backstage:^"
-    "@backstage/test-utils": "npm:^1.7.0"
+    "@backstage/test-utils": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.11.3"

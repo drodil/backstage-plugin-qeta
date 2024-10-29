@@ -27,7 +27,7 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-plugin-api": "^1.0.0",
+    "@backstage/backend-plugin-api": "backstage:^",
     "@backstage/config": "backstage:^",
     "@backstage/types": "^1.1.1",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",
@@ -35,8 +35,8 @@
     "openai": "^4.68.4"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^1.0.2",
-    "@backstage/cli": "^0.28.1"
+    "@backstage/backend-test-utils": "backstage:^",
+    "@backstage/cli": "backstage:^"
   },
   "files": [
     "dist",
