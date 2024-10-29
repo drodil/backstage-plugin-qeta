@@ -3,6 +3,8 @@ import { qetaApiRef } from '../api';
 import React, { useCallback, useEffect } from 'react';
 
 let aiEnabled: boolean | undefined = undefined;
+let aiForQuestionEnabled: boolean | undefined = undefined;
+let aiForDraftEnabled: boolean | undefined = undefined;
 
 export const useAI = () => {
   const qetaApi = useApi(qetaApiRef);
@@ -22,14 +24,28 @@ export const useAI = () => {
 
   const answerExistingQuestion = useCallback(
     async (questionId: number) => {
-      return qetaApi.getAIAnswerForQuestion(questionId);
+      if (aiForQuestionEnabled === false) {
+        return null;
+      }
+      const ret = await qetaApi.getAIAnswerForQuestion(questionId);
+      if (ret === null) {
+        aiForQuestionEnabled = false;
+      }
+      return ret;
     },
     [qetaApi],
   );
 
   const answerDraftQuestion = useCallback(
     async (draft: { title: string; content: string }) => {
-      return qetaApi.getAIAnswerForDraft(draft.title, draft.content);
+      if (aiForDraftEnabled === false) {
+        return null;
+      }
+      const ret = await qetaApi.getAIAnswerForDraft(draft.title, draft.content);
+      if (ret === null) {
+        aiForDraftEnabled = false;
+      }
+      return ret;
     },
     [qetaApi],
   );
