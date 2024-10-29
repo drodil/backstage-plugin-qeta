@@ -11,8 +11,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { AIResponse, Question } from '@drodil/backstage-plugin-qeta-common';
 import { Config } from '@backstage/config';
-import OpenAI from 'openai';
-import { ChatCompletionMessageParam } from 'openai/src/resources/chat/completions';
+import { OpenAI } from 'openai';
 
 export class OpenAIHandler implements AIHandler {
   private readonly model: string;
@@ -94,12 +93,12 @@ export class OpenAIHandler implements AIHandler {
 
     let completion;
     try {
-      const messages: Array<ChatCompletionMessageParam> =
-        new Array<ChatCompletionMessageParam>();
+      const messages: Array<OpenAI.ChatCompletionMessageParam> =
+        new Array<OpenAI.ChatCompletionMessageParam>();
       if (this.systemPrompt) {
         messages.push({ role: 'system', content: this.systemPrompt });
       }
-      const userPrompt: ChatCompletionMessageParam = {
+      const userPrompt: OpenAI.ChatCompletionMessageParam = {
         role: 'user',
         content: `${this.userPromptPrefix ?? ''}${prompt}${
           this.userPromptSuffix ?? ''
