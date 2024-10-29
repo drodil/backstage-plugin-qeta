@@ -1,41 +1,26 @@
 # Getting started
 
+This document provides an overview of the Backstage Q&A plugin, including installation instructions,
+configuration options, and usage examples.
+
 ## Installation
 
 - [Plugin setup](setup.md)
 - [Configuration](config.md)
+- [Migration guide](migration.md)
 
 ## Usage
 
 - [Templates](templates.md)
 - [AI](ai.md)
-- [Integration with `@backstage/plugin-search`](search.md)
-- [Integration with `@backstage/plugin-events-backend`](events.md)
+
+### Integrations
+
+- [Integration with Backstage search](search.md)
+- [Integration with Backstage events service](events.md)
 - [Integration with Backstage catalog](catalog.md)
-- [Integration with permissions](permissions.md)
-- [Integration with homepage](home.md)
-- [Integration with signals](signals.md)
-- [Integration with notifications](notifications.md)
-- [Integration with translations](translations.md)
-
-## Migration from 2.x to 3.x
-
-There are a couple of things that have changed in the 3.x version of the plugin.
-
-Most of the frontend components have been moved to the `@drodil/backstage-plugin-qeta-react` package allowing
-to use them from other frontend plugins without breaking the rule of two frontend plugins depending on each
-other.
-
-Additionally, the questions have been renamed to `posts` in many places as the version 3.x supports more
-than just questions.
-
-For example the `QuestionsContainer` component is now `PostsContainer` and is located in the
-`@drodil/backstage-plugin-qeta-react` package. Renaming changes relate to:
-
-- [Permissions](permissions.md)
-- [Notifications](notifications.md)
-- [Events](events.md)
-
-Additionally, the `QetaApi` and `QetaClient` have been moved to the `@drodil/backstage-plugin-qeta-common` package.
-This allows to utilize the client in the backend as well. The `qetaApiRef` now lives in the
-`@drodil/backstage-plugin-qeta-react` package so that it can be utilized by other frontend plugins.
+- [Integration with Backstage permission framework](permissions.md)
+- [Integration with Backstage home page](home.md)
+- [Integration with Backstage signals](signals.md)
+- [Integration with Backstage notifications](notifications.md)
+- [Integration with Backstage (experimental) translations](translations.md)

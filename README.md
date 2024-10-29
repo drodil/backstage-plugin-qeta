@@ -7,26 +7,28 @@
 [![CI](https://github.com/drodil/backstage-plugin-qeta/actions/workflows/ci.yaml/badge.svg)](https://github.com/drodil/backstage-plugin-qeta/actions/workflows/ci.yaml)
 
 Backstage.io plugin for Q&A. This plugin is both frontend and backend that manages and displays questions and answers
-within Backstage. This plugin provides:
+within Backstage. This plugin allows users to:
 
-- Support to ask and answer questions
-- Support to write articles
-- Support to vote questions, articles and answers
-- Support to create collections containing questions and articles
-- Support to favorite questions and articles
-- Support to subscribe to entities and tags
-- Question template support for predefined questions
-- Views for users, entities and tags with their stats
-- Global and user statistics
-- Backend that saves questions and answers to desired database
-- Integration with the [`@backstage/plugin-search`](https://github.com/backstage/backstage/tree/master/plugins/search) plugin
-- Integration with the [`@backstage/plugin-catalog-react`](https://github.com/backstage/backstage/tree/master/plugins/catalog-react) plugin
-- Integration with the [`@backstage/plugin-permission-react`](https://github.com/backstage/backstage/tree/master/plugins/permission-react) plugin
-- Integration with the [`@backstage/plugin-permission-common`](https://github.com/backstage/backstage/tree/master/plugins/permission-common) plugin
-- Integration with the [`@backstage/plugin-home`](https://github.com/backstage/backstage/tree/master/plugins/home) plugin
-- Integration with the [`@backstage/plugin-signals`](https://github.com/backstage/backstage/tree/master/plugins/signals) plugin
-- Integration with the [`@backstage/plugin-notifications`](https://github.com/backstage/backstage/tree/master/plugins/notifications) plugin
-- Integration with the [`@backstage/plugin-scaffolder`](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend) plugin
+- Ask and answer questions
+- Write articles
+- Vote questions, articles and answers
+- Create custom collections containing questions and articles
+- Favorite questions and articles
+- Subscribe to entities, tags, collections and users and get notifications of activity
+- Integrate with [AI helpers](./docs/ai.md) to answer questions
+- Create question templates for predefined questions
+- See contributing users, entities and tags including statistics
+
+Backstage integrations:
+
+- [`@backstage/plugin-search`](https://github.com/backstage/backstage/tree/master/plugins/search) plugin
+- [`@backstage/plugin-catalog-react`](https://github.com/backstage/backstage/tree/master/plugins/catalog-react) plugin
+- [`@backstage/plugin-permission-react`](https://github.com/backstage/backstage/tree/master/plugins/permission-react) plugin
+- [`@backstage/plugin-permission-common`](https://github.com/backstage/backstage/tree/master/plugins/permission-common) plugin
+- [`@backstage/plugin-home`](https://github.com/backstage/backstage/tree/master/plugins/home) plugin
+- [`@backstage/plugin-signals`](https://github.com/backstage/backstage/tree/master/plugins/signals) plugin
+- [`@backstage/plugin-notifications`](https://github.com/backstage/backstage/tree/master/plugins/notifications) plugin
+- [`@backstage/plugin-scaffolder`](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend) plugin
 
 See more information from our [documentation](./docs/index.md).
 
@@ -37,9 +39,12 @@ Find [installation instructions](./docs/index.md#installation) in our documentat
 **IMPORTANT**: From version 2.0.0 forward, this plugin only works with the new backend system. If you are still
 using the old backend system, please use version 1.24.5.
 
+**IMPORTANT**: Migrating from 2.x to 3.x has been briefly explained in this [document](./docs/migration.md).
+
 ## Examples
 
 Home page:
+
 ![Home page](./docs/images/homePage.png)
 
 Questions page:
@@ -49,6 +54,10 @@ Questions page:
 Posting question:
 
 ![Ask page](./docs/images/askPage.png)
+
+OpenAI answer:
+
+![OpenAI](./docs/images/openAi.png)
 
 Answering question:
 

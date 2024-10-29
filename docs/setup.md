@@ -5,7 +5,7 @@
 Add the plugin to your backend app:
 
 ```bash
-cd packages/backend && yarn add @drodil/backstage-plugin-qeta-backend
+yarn workspace backend add  @drodil/backstage-plugin-qeta-backend
 ```
 
 In your `packages/backend/src/index.ts` make the following changes:
@@ -25,7 +25,7 @@ For additional features, see [permissions](permissions.md), [events](events.md),
 Add the plugin to your frontend app:
 
 ```bash
-cd packages/app && yarn add @drodil/backstage-plugin-qeta
+yarn workspace app add @drodil/backstage-plugin-qeta
 ```
 
 Expose the questions page:

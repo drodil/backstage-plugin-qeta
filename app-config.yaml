@@ -99,3 +99,6 @@ qeta:
       timeout: { minutes: 10 }
       scope: global
     dayLimit: 1
+  openai:
+    apiKey: ${OPENAI_API_KEY}
+    organization: ${OPENAI_ORGANIZATION}

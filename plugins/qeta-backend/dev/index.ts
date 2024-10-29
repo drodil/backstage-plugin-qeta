@@ -5,7 +5,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 import { PermissionPolicy } from './PermissionPolicy';
-import { qetaAIExtensionPoint } from '@drodil/backstage-plugin-qeta-node';
 
 const backend = createBackend();
 backend.add(import('@backstage/plugin-catalog-backend'));
@@ -33,6 +32,14 @@ backend.add(
     },
   }),
 );
+
+// To use the OpenAI, you must export the following environment variables:
+// export OPENAI_API_KEY=your-api-key
+// export OPENAI_ORGANIZATION=your-organization-id
+backend.add(import('@drodil/backstage-plugin-qeta-backend-module-openai'));
+
+/**
+// Reference implementation of AIHandler
 backend.add(
   createBackendModule({
     pluginId: 'qeta',
@@ -64,6 +71,7 @@ backend.add(
     },
   }),
 );
+*/
 
 backend.add(import('../src'));
 

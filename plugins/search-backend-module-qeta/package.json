@@ -55,9 +55,9 @@
   },
   "files": [
     "dist",
-    "config.d.ts"
+    "configSchema.d.ts"
   ],
-  "configSchema": "config.d.ts",
+  "configSchema": "configSchema.d.ts",
   "peerDependencies": {
     "react-router-dom": "^6.3.0"
   }

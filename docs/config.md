@@ -42,3 +42,5 @@ The configuration values are:
 - storage.secretAccessKey, string, secret access key for S3 storage, optional
 - storage.region, string, region for S3 storage, optional
 - storage.sessionToken, string, AWS session token, optional
+
+Additionally, there are more config values for the [OpenAI module](ai.md).
