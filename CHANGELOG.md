@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.5.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.4.1...v3.5.0) (2024-10-29)
+
+
+### Features
+
+* get AI response for draft questions as well ([26cae2b](https://github.com/drodil/backstage-plugin-qeta/commit/26cae2ba917ae71d330d513d788a1cd42c09b56e)), closes [#220](https://github.com/drodil/backstage-plugin-qeta/issues/220)
+* initial AI integration with extension point ([e658144](https://github.com/drodil/backstage-plugin-qeta/commit/e658144dac8bf1470359bd772143b1a9ecc9ed7f)), closes [#220](https://github.com/drodil/backstage-plugin-qeta/issues/220)
+
+
+### Bug Fixes
+
+* do not retry AI answer if it fails first time ([4cd82a2](https://github.com/drodil/backstage-plugin-qeta/commit/4cd82a22817189003613977d5625bf57281c3e8e))
+* remove also back to questions page ([dce2d18](https://github.com/drodil/backstage-plugin-qeta/commit/dce2d182d8d14b720085fd6688cc2d11c9b47b9f))
+
 ### [3.4.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.4.0...v3.4.1) (2024-10-28)
 
 
