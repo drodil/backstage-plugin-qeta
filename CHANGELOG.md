@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.6.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.5.1...v3.6.0) (2024-10-29)
+
+
+### Features
+
+* add openai backend module for question answers ([8db3b1c](https://github.com/drodil/backstage-plugin-qeta/commit/8db3b1cb47bcf15ae72ea2074b298d1bff8df9db))
+* add support to summarize articles with AI ([3cd4713](https://github.com/drodil/backstage-plugin-qeta/commit/3cd47137653b5c9fe545ab81ccee99622e4515ec))
+* allow disabling openai based on question type ([1c88dff](https://github.com/drodil/backstage-plugin-qeta/commit/1c88dffa032db86136d5869a03993450bdaeef83))
+
+
+### Bug Fixes
+
+* backstage versions in plugins ([b366631](https://github.com/drodil/backstage-plugin-qeta/commit/b366631d1d1d60acc31dab2f9d726b02e747631d))
+* typescript errors from OpenAI import ([24e2912](https://github.com/drodil/backstage-plugin-qeta/commit/24e291206d7fb1953e55d853c9932c45a764709f))
+
 ### [3.5.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.5.0...v3.5.1) (2024-10-29)
 
 
