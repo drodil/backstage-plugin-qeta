@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.5.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.5.0...v3.5.1) (2024-10-29)
+
+
+### Bug Fixes
+
+* add missing node package tsc script ([f7982c8](https://github.com/drodil/backstage-plugin-qeta/commit/f7982c8cfb831c2b396e97dbde5be2e3267068b2))
+
 ## [3.5.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.4.1...v3.5.0) (2024-10-29)
 
 
