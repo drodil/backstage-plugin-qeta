@@ -2,6 +2,8 @@
  * SPDX-FileCopyrightText: Copyright 2023 - 2024 OP Financial Group (https://op.fi). All Rights Reserved.
  * SPDX-License-Identifier: LicenseRef-OpAllRightsReserved
  */
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   qeta?: {
     openai?: {
@@ -16,7 +18,16 @@ export interface Config {
          * Setting this false will disable AI answers in the Ask a question form.
          */
         newQuestions?: boolean;
+        /**
+         * Whether to enable OpenAI for article summaries. Defaults to true.
+         * Setting this false will disable AI summary in the article page.
+         */
+        articleSummary?: boolean;
       };
+      /**
+       * Cache time-to-live for OpenAI responses. Defaults to 1 hour.
+       */
+      cacheTtl?: number | HumanDuration;
       /**
        * The endpoint for accessing OpenAI services. Defaults to process.env.OPENAI_BASE_URL or
        * https://api.openai.com/v1.

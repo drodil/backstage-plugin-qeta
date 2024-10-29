@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { Skeleton } from '@material-ui/lab';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
-import { QetaSignal } from '@drodil/backstage-plugin-qeta-common';
+import { Article, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import {
   AddToCollectionButton,
+  AIAnswerCard,
   ArticleContent,
   useQetaApi,
   useTranslation,
@@ -51,6 +52,12 @@ export const ArticlePage = () => {
     );
   }
 
+  if (post.type !== 'article') {
+    return (
+      <WarningPanel title="Not found" message={t('articlePage.notFound')} />
+    );
+  }
+
   return (
     <>
       <ContentHeader>
@@ -58,6 +65,10 @@ export const ArticlePage = () => {
         <AddToCollectionButton post={post} />
       </ContentHeader>
       <Container maxWidth="md">
+        <AIAnswerCard
+          article={post as Article}
+          style={{ marginBottom: '2rem' }}
+        />
         <ArticleContent post={post} views={views} />
       </Container>
     </>

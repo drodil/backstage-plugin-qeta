@@ -4804,6 +4804,7 @@ __metadata:
     "@backstage/backend-test-utils": "npm:^1.0.2"
     "@backstage/cli": "npm:^0.28.1"
     "@backstage/config": "backstage:^"
+    "@backstage/types": "npm:^1.1.1"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@drodil/backstage-plugin-qeta-node": "workspace:^"
     openai: "npm:^4.68.4"

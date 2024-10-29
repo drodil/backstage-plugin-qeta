@@ -142,6 +142,11 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<AIResponse | null>;
 
+  getAISummaryForArticle(
+    articleId: string | number,
+    requestOptions?: RequestOptions,
+  ): Promise<AIResponse | null>;
+
   isAIEnabled(): Promise<boolean>;
 
   getTags(

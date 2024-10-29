@@ -252,6 +252,7 @@ export const qetaTranslationRef = createTranslationRef({
       anonymous: 'Anonymous',
     },
     articlePage: {
+      notFound: 'Could not find the article',
       errorLoading: 'Could not load article',
       editButton: 'Edit this article',
       deleteButton: 'Delete this article',
@@ -309,6 +310,7 @@ export const qetaTranslationRef = createTranslationRef({
     questionPage: {
       errorLoading: 'Could not load question',
       editButton: 'Edit',
+      notFound: 'Could not find the question',
       sortAnswers: {
         label: 'Sort answers',
         default: 'Default',
@@ -480,7 +482,8 @@ export const qetaTranslationRef = createTranslationRef({
       entities_other: 'Showing {{count}} entities',
     },
     aiAnswerCard: {
-      title: 'Answer from AI',
+      answer: 'Answer from AI',
+      summary: 'Summary by AI',
     },
     usersPage: {
       title: 'Users',

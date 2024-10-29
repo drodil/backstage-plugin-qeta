@@ -3,7 +3,7 @@ import { DraftQuestionSchema, RouteOptions } from '../types';
 import { getUsername } from '../util';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import { Question } from '@drodil/backstage-plugin-qeta-common';
+import { Article, Question } from '@drodil/backstage-plugin-qeta-common';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -73,6 +73,39 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       request.body.content,
       { credentials },
     );
+    response.json(aiResponse);
+  });
+
+  router.get('/ai/article/:id', async (request, response) => {
+    if (!aiHandler.summarizeArticle) {
+      response.sendStatus(404);
+      return;
+    }
+
+    const articleId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(articleId)) {
+      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
+      return;
+    }
+
+    const credentials = await httpAuth.credentials(request, {
+      allow: ['user'],
+    });
+    const username = await getUsername(request, options);
+    const post = await database.getPost(
+      username,
+      Number.parseInt(request.params.id, 10),
+      false,
+    );
+
+    if (!post || post.type !== 'article') {
+      response.sendStatus(404);
+      return;
+    }
+
+    const aiResponse = await aiHandler.summarizeArticle(post as Article, {
+      credentials,
+    });
     response.json(aiResponse);
   });
 };

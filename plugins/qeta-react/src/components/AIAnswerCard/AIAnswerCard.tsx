@@ -1,4 +1,4 @@
-import { Post } from '@drodil/backstage-plugin-qeta-common';
+import { Article, Post } from '@drodil/backstage-plugin-qeta-common';
 import React from 'react';
 import {
   Card,
@@ -35,16 +35,23 @@ export type AIAnswerCardProps = {
     title: string;
     content: string;
   };
+  article?: Article;
   debounceMs?: number;
+  style?: React.CSSProperties;
 };
 
 export const AIAnswerCard = (props: AIAnswerCardProps) => {
-  const { question, draft, debounceMs = 3000 } = props;
+  const { question, draft, article, style, debounceMs = 3000 } = props;
   const [answer, setAnswer] = React.useState<string | undefined>(undefined);
   const styles = useStyles();
   const { t } = useTranslation();
 
-  const { isAIEnabled, answerExistingQuestion, answerDraftQuestion } = useAI();
+  const {
+    isAIEnabled,
+    answerExistingQuestion,
+    answerDraftQuestion,
+    summarizeArticle,
+  } = useAI();
 
   useDebounce(
     () => {
@@ -54,6 +61,10 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
 
       if (question) {
         answerExistingQuestion(question.id).then(res => {
+          setAnswer(res?.answer);
+        });
+      } else if (article) {
+        summarizeArticle(article.id).then(res => {
           setAnswer(res?.answer);
         });
       } else if (
@@ -78,10 +89,14 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   }
 
   return (
-    <Card className={styles.card}>
+    <Card className={styles.card} style={style}>
       <CardHeader
         avatar={<FlareIcon />}
-        title={<Typography variant="h5">{t('aiAnswerCard.title')}</Typography>}
+        title={
+          <Typography variant="h5">
+            {article ? t('aiAnswerCard.summary') : t('aiAnswerCard.answer')}
+          </Typography>
+        }
       />
       <CardContent>
         <MarkdownRenderer content={answer} className={styles.markdown} />

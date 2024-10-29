@@ -229,6 +229,19 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as AIResponse;
   }
 
+  async getAISummaryForArticle(
+    articleId: string | number,
+    requestOptions?: RequestOptions,
+  ): Promise<AIResponse | null> {
+    const response = await this.fetch(`/ai/article/${articleId}`, {
+      requestOptions,
+    });
+    if (!response.ok) {
+      return null;
+    }
+    return (await response.json()) as AIResponse;
+  }
+
   async isAIEnabled(): Promise<boolean> {
     const response = await this.fetch('/ai/status');
     if (!response.ok) {

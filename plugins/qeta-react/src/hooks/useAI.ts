@@ -5,6 +5,7 @@ import React, { useCallback, useEffect } from 'react';
 let aiEnabled: boolean | undefined = undefined;
 let aiForQuestionEnabled: boolean | undefined = undefined;
 let aiForDraftEnabled: boolean | undefined = undefined;
+let aiForSummarizeEnabled: boolean | undefined = undefined;
 
 export const useAI = () => {
   const qetaApi = useApi(qetaApiRef);
@@ -50,5 +51,24 @@ export const useAI = () => {
     [qetaApi],
   );
 
-  return { isAIEnabled, answerExistingQuestion, answerDraftQuestion };
+  const summarizeArticle = useCallback(
+    async (articleId: number) => {
+      if (aiForSummarizeEnabled === false) {
+        return null;
+      }
+      const ret = await qetaApi.getAISummaryForArticle(articleId);
+      if (ret === null) {
+        aiForSummarizeEnabled = false;
+      }
+      return ret;
+    },
+    [qetaApi],
+  );
+
+  return {
+    isAIEnabled,
+    answerExistingQuestion,
+    answerDraftQuestion,
+    summarizeArticle,
+  };
 };

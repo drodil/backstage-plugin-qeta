@@ -40,6 +40,18 @@ backend.add(
                 answer: 'Answer',
               };
             },
+            /**
+             This function is used to summarize articles in the article page. The result
+             will be shown before the article contents once loaded.
+            */
+            async summarizeArticle(
+              article: Article,
+              options?: {
+                credentials?: BackstageCredentials<BackstageUserPrincipal>;
+              },
+            ): Promise<AIResponse> {
+              return { answer: 'This article is about the meaning of life' };
+            },
           });
         },
       });
@@ -57,9 +69,13 @@ This is how the UI will look like for new questions (`answerNewQuestion`):
 
 ![OpenAI](./images/openAi.png)
 
-And for the question page (`answerExistingQuestion`):
+Existing questions (`answerExistingQuestion`):
 
 ![OpenAI](./images/openAiQuestionPage.png)
+
+Summarizing articles (`summarizeArticle`):
+
+![OpenAI](./images/openAiArticleSummary.png)
 
 ## OpenAI module
 
@@ -96,11 +112,14 @@ qeta:
     answer:
       newQuestions: false # disables/enables answer in ask a question page
       existingQuestions: true # disables/enables answer in question page
+      articleSummary: false # disables/enables article summaries by AI
     project: 'your-open-ai-project'
     organization: 'your-open-ai-organization'
     model: 'gpt-4o-mini' # defaults to gpt-3.5-turbo
     temperature: 0.5
     maxTokens: 100
+    cacheTtl: # Time answers for existing questions and article summaries are cached
+      hours: 12
     prompts:
       # System prompt to add for the AI to answer the question
       system: 'You are a chat bot called Mylly. You should behave. You should be helpful. You should be polite.'

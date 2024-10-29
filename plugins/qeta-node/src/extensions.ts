@@ -3,7 +3,11 @@ import {
   BackstageUserPrincipal,
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
-import { AIResponse, Question } from '@drodil/backstage-plugin-qeta-common';
+import {
+  AIResponse,
+  Article,
+  Question,
+} from '@drodil/backstage-plugin-qeta-common';
 
 export interface AIHandler {
   /**
@@ -20,6 +24,14 @@ export interface AIHandler {
   answerNewQuestion?(
     title: string,
     content: string,
+    options?: { credentials?: BackstageCredentials<BackstageUserPrincipal> },
+  ): Promise<AIResponse>;
+
+  /**
+   * Summarize article
+   */
+  summarizeArticle?(
+    article: Article,
     options?: { credentials?: BackstageCredentials<BackstageUserPrincipal> },
   ): Promise<AIResponse>;
 }

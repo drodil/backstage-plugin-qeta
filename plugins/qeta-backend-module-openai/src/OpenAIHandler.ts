@@ -9,17 +9,23 @@ import {
   CacheService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { AIResponse, Question } from '@drodil/backstage-plugin-qeta-common';
+import {
+  AIResponse,
+  Article,
+  Question,
+} from '@drodil/backstage-plugin-qeta-common';
 import { Config } from '@backstage/config';
 import { OpenAI } from 'openai';
+import { durationToMilliseconds } from '@backstage/types';
 
 export class OpenAIHandler implements AIHandler {
   private readonly model: string;
-  private readonly maxTokens: number | undefined;
-  private readonly temperature: number | undefined;
-  private readonly systemPrompt: string | undefined;
-  private readonly userPromptPrefix: string | undefined;
-  private readonly userPromptSuffix: string | undefined;
+  private readonly maxTokens?: number;
+  private readonly temperature?: number;
+  private readonly systemPrompt?: string;
+  private readonly userPromptPrefix?: string;
+  private readonly userPromptSuffix?: string;
+  private readonly cacheTtl?: number;
 
   constructor(
     private readonly logger: LoggerService,
@@ -39,6 +45,24 @@ export class OpenAIHandler implements AIHandler {
     this.userPromptSuffix = this.config.getOptionalString(
       'qeta.openai.prompts.userSuffix',
     );
+
+    const cacheTtlConfig = config.getOptional('qeta.openai.cacheTtl');
+    let ttl: number | undefined;
+    if (cacheTtlConfig !== undefined && cacheTtlConfig !== null) {
+      if (typeof cacheTtlConfig === 'number') {
+        ttl = cacheTtlConfig;
+      } else if (
+        typeof cacheTtlConfig === 'object' &&
+        !Array.isArray(cacheTtlConfig)
+      ) {
+        ttl = durationToMilliseconds(cacheTtlConfig);
+      } else {
+        throw new Error(
+          `Invalid configuration qeta.openai.cacheTtl: ${cacheTtlConfig}, expected milliseconds number or HumanDuration object`,
+        );
+      }
+    }
+    this.cacheTtl = ttl ?? durationToMilliseconds({ hours: 1 });
   }
 
   async answerExistingQuestion(
@@ -74,7 +98,7 @@ export class OpenAIHandler implements AIHandler {
       `openai:question_${question.id}`,
       JSON.stringify(ret),
       {
-        ttl: { minutes: 10 },
+        ttl: this.cacheTtl,
       },
     );
     return ret;
@@ -100,6 +124,42 @@ export class OpenAIHandler implements AIHandler {
       options?.credentials?.principal.userEntityRef,
     );
     return { answer: completion };
+  }
+
+  async summarizeArticle(
+    article: Article,
+    options?: { credentials?: BackstageCredentials<BackstageUserPrincipal> },
+  ): Promise<AIResponse> {
+    const enabled = this.config.getOptionalBoolean(
+      'qeta.openai.answer.articleSummary',
+    );
+    if (enabled === false) {
+      throw new Error('OpenAI is disabled for article summaries');
+    }
+
+    const cached = await this.cache?.get<string>(
+      `openai:article_summary_${article.id}`,
+    );
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    this.logger.info(`Summarizing article ${article.id} using OpenAI`);
+    const prompt = `Can you summarize this article?\nTitle: ${article.title}\nContent: ${article.content}`;
+    const completion = await this.getCompletion(
+      prompt,
+      options?.credentials?.principal.userEntityRef,
+    );
+
+    const ret = { answer: completion };
+    await this.cache?.set(
+      `openai:article_summary_${article.id}`,
+      JSON.stringify(ret),
+      {
+        ttl: this.cacheTtl,
+      },
+    );
+    return ret;
   }
 
   private async getCompletion(prompt: string, user?: string) {
