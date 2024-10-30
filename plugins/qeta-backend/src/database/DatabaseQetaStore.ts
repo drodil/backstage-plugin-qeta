@@ -27,6 +27,7 @@ import {
   UsersResponse,
 } from './QetaStore';
 import {
+  AIResponse,
   Answer,
   Attachment,
   Collection,
@@ -146,6 +147,12 @@ export type RawTemplate = {
   description: string;
   questionTitle: string | null;
   questionContent: string | null;
+};
+
+export type RawPostAIAnswer = {
+  id: number;
+  answer: string;
+  created: Date;
 };
 
 function isQetaFilter(filter: any): filter is QetaFilter {
@@ -1889,6 +1896,38 @@ export class DatabaseQetaStore implements QetaStore {
     ]);
 
     return await this.getTemplate(id);
+  }
+
+  async getAIAnswer(postId: number): Promise<AIResponse | null> {
+    const row = await this.db<RawPostAIAnswer>('post_ai_answers')
+      .where('postId', postId)
+      .select()
+      .first();
+    if (!row) {
+      return null;
+    }
+    return {
+      answer: row.answer,
+      created: row.created,
+    };
+  }
+
+  async saveAIAnswer(postId: number, response: AIResponse): Promise<void> {
+    await this.db
+      .insert({
+        postId,
+        answer: response.answer,
+        created: new Date(),
+      })
+      .into('post_ai_answers')
+      .onConflict()
+      .ignore();
+  }
+
+  async deleteAIAnswer(postId: number): Promise<boolean> {
+    return !!(await this.db('post_ai_answers')
+      .where('postId', postId)
+      .delete());
   }
 
   private getEntitiesBaseQuery() {

@@ -6,7 +6,6 @@ import { AIHandler } from '@drodil/backstage-plugin-qeta-node';
 import {
   BackstageCredentials,
   BackstageUserPrincipal,
-  CacheService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import {
@@ -16,7 +15,6 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { Config } from '@backstage/config';
 import { OpenAI } from 'openai';
-import { durationToMilliseconds } from '@backstage/types';
 
 export class OpenAIHandler implements AIHandler {
   private readonly model: string;
@@ -25,12 +23,10 @@ export class OpenAIHandler implements AIHandler {
   private readonly systemPrompt?: string;
   private readonly userPromptPrefix?: string;
   private readonly userPromptSuffix?: string;
-  private readonly cacheTtl?: number;
 
   constructor(
     private readonly logger: LoggerService,
     private readonly config: Config,
-    private readonly cache?: CacheService,
   ) {
     this.model =
       this.config.getOptionalString('qeta.openai.model') ?? 'gpt-3.5-turbo';
@@ -45,24 +41,6 @@ export class OpenAIHandler implements AIHandler {
     this.userPromptSuffix = this.config.getOptionalString(
       'qeta.openai.prompts.userSuffix',
     );
-
-    const cacheTtlConfig = config.getOptional('qeta.openai.cacheTtl');
-    let ttl: number | undefined;
-    if (cacheTtlConfig !== undefined && cacheTtlConfig !== null) {
-      if (typeof cacheTtlConfig === 'number') {
-        ttl = cacheTtlConfig;
-      } else if (
-        typeof cacheTtlConfig === 'object' &&
-        !Array.isArray(cacheTtlConfig)
-      ) {
-        ttl = durationToMilliseconds(cacheTtlConfig);
-      } else {
-        throw new Error(
-          `Invalid configuration qeta.openai.cacheTtl: ${cacheTtlConfig}, expected milliseconds number or HumanDuration object`,
-        );
-      }
-    }
-    this.cacheTtl = ttl ?? durationToMilliseconds({ hours: 1 });
   }
 
   async answerExistingQuestion(
@@ -78,13 +56,6 @@ export class OpenAIHandler implements AIHandler {
       throw new Error('OpenAI is disabled for existing questions');
     }
 
-    const cached = await this.cache?.get<string>(
-      `openai:question_${question.id}`,
-    );
-    if (cached) {
-      return JSON.parse(cached);
-    }
-
     this.logger.info(`Answering question ${question.id} using OpenAI`);
 
     const prompt = `${question.title}\n${question.content}`;
@@ -93,15 +64,7 @@ export class OpenAIHandler implements AIHandler {
       options?.credentials?.principal.userEntityRef,
     );
 
-    const ret = { answer: completion };
-    await this.cache?.set(
-      `openai:question_${question.id}`,
-      JSON.stringify(ret),
-      {
-        ttl: this.cacheTtl,
-      },
-    );
-    return ret;
+    return { answer: completion };
   }
 
   async answerNewQuestion(
@@ -137,13 +100,6 @@ export class OpenAIHandler implements AIHandler {
       throw new Error('OpenAI is disabled for article summaries');
     }
 
-    const cached = await this.cache?.get<string>(
-      `openai:article_summary_${article.id}`,
-    );
-    if (cached) {
-      return JSON.parse(cached);
-    }
-
     this.logger.info(`Summarizing article ${article.id} using OpenAI`);
     const prompt = `Can you summarize this article?\nTitle: ${article.title}\nContent: ${article.content}`;
     const completion = await this.getCompletion(
@@ -151,15 +107,7 @@ export class OpenAIHandler implements AIHandler {
       options?.credentials?.principal.userEntityRef,
     );
 
-    const ret = { answer: completion };
-    await this.cache?.set(
-      `openai:article_summary_${article.id}`,
-      JSON.stringify(ret),
-      {
-        ttl: this.cacheTtl,
-      },
-    );
-    return ret;
+    return { answer: completion };
   }
 
   private async getCompletion(prompt: string, user?: string) {

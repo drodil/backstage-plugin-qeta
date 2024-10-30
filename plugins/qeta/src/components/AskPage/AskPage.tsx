@@ -16,7 +16,7 @@ import { filterTags, Template } from '@drodil/backstage-plugin-qeta-common';
 export const AskPage = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const { isAIEnabled } = useAI();
+  const { isNewQuestionsEnabled } = useAI();
   const { value, loading } = useQetaApi(api => api.getTemplates());
   const [draft, setDraft] = useState<
     { title: string; content: string } | undefined
@@ -62,7 +62,7 @@ export const AskPage = () => {
   }
 
   const handleFormChange = (data: { title: string; content: string }) => {
-    if (!isAIEnabled) {
+    if (!isNewQuestionsEnabled) {
       return;
     }
     setDraft({

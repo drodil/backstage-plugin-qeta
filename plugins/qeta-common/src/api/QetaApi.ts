@@ -1,5 +1,6 @@
 import {
   AIResponse,
+  AIStatusResponse,
   AnswerRequest,
   AnswerResponse,
   AnswerResponseBody,
@@ -93,6 +94,10 @@ export interface EntitiesQuery extends PaginatedQuery {
   orderBy?: 'entityRef';
 }
 
+export interface AIQuery {
+  regenerate?: boolean;
+}
+
 export type RequestOptions = {
   token?: string;
 };
@@ -133,6 +138,7 @@ export interface QetaApi {
 
   getAIAnswerForQuestion(
     questionId: string | number,
+    options?: AIQuery,
     requestOptions?: RequestOptions,
   ): Promise<AIResponse | null>;
 
@@ -144,10 +150,11 @@ export interface QetaApi {
 
   getAISummaryForArticle(
     articleId: string | number,
+    options?: AIQuery,
     requestOptions?: RequestOptions,
   ): Promise<AIResponse | null>;
 
-  isAIEnabled(): Promise<boolean>;
+  isAIEnabled(): Promise<AIStatusResponse>;
 
   getTags(
     options?: TagsQuery,

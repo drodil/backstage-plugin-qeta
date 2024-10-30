@@ -1,9 +1,13 @@
 import { Router } from 'express';
-import { DraftQuestionSchema, RouteOptions } from '../types';
+import { AIQuerySchema, DraftQuestionSchema, RouteOptions } from '../types';
 import { getUsername } from '../util';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import { Article, Question } from '@drodil/backstage-plugin-qeta-common';
+import {
+  AIQuery,
+  Article,
+  Question,
+} from '@drodil/backstage-plugin-qeta-common';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -12,7 +16,16 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
   const { database, httpAuth, aiHandler } = options;
 
   router.get('/ai/status', async (_request, response) => {
-    response.json({ enabled: !!aiHandler });
+    const enabled = !!aiHandler;
+    const existingQuestions = !!aiHandler?.answerExistingQuestion;
+    const newQuestions = !!aiHandler?.answerNewQuestion;
+    const articleSummaries = !!aiHandler?.summarizeArticle;
+    response.json({
+      enabled,
+      existingQuestions,
+      newQuestions,
+      articleSummaries,
+    });
   });
 
   if (!aiHandler) {
@@ -25,6 +38,15 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    const validateQuery = ajv.compile(AIQuerySchema);
+    if (!validateQuery(request.query)) {
+      response
+        .status(400)
+        .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+
+    const query = request.query as AIQuery;
     const questionId = Number.parseInt(request.params.id, 10);
     if (Number.isNaN(questionId)) {
       response.status(400).send({ errors: 'Invalid post id', type: 'body' });
@@ -46,10 +68,24 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    if (!query.regenerate) {
+      const saved = await database.getAIAnswer(post.id);
+      if (saved) {
+        response.json(saved);
+        return;
+      }
+    } else {
+      await database.deleteAIAnswer(post.id);
+    }
+
     const aiResponse = await aiHandler.answerExistingQuestion(
       post as Question,
       { credentials },
     );
+    await database.saveAIAnswer(post.id, {
+      ...aiResponse,
+      created: new Date(),
+    });
     response.json(aiResponse);
   });
 
@@ -82,6 +118,16 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    const validateQuery = ajv.compile(AIQuerySchema);
+    if (!validateQuery(request.query)) {
+      response
+        .status(400)
+        .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+
+    const query = request.query as AIQuery;
+
     const articleId = Number.parseInt(request.params.id, 10);
     if (Number.isNaN(articleId)) {
       response.status(400).send({ errors: 'Invalid post id', type: 'body' });
@@ -103,8 +149,22 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    if (!query.regenerate) {
+      const saved = await database.getAIAnswer(post.id);
+      if (saved) {
+        response.json(saved);
+        return;
+      }
+    } else {
+      await database.deleteAIAnswer(post.id);
+    }
+
     const aiResponse = await aiHandler.summarizeArticle(post as Article, {
       credentials,
+    });
+    await database.saveAIAnswer(post.id, {
+      ...aiResponse,
+      created: new Date(),
     });
     response.json(aiResponse);
   });

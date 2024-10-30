@@ -303,8 +303,16 @@ export type AnswerResponse = Answer;
 export type CollectionResponse = Collection;
 export type TemplateResponse = Template;
 
+export type AIStatusResponse = {
+  enabled: boolean;
+  existingQuestions: boolean;
+  newQuestions: boolean;
+  articleSummaries: boolean;
+};
+
 export type AIResponse = {
   answer: string;
+  created?: Date;
 };
 
 export type CollectionResponseBody = CollectionResponse | ErrorResponse;

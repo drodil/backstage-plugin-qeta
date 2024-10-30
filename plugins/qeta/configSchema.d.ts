@@ -79,5 +79,10 @@ export interface Config {
        */
       disabled?: boolean;
     };
+    /**
+     * Name of the AI bot that responds to users questions. Defaults to 'AI'
+     * @visibility frontend
+     */
+    aiBotName?: string;
   };
 }

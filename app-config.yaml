@@ -80,6 +80,7 @@ qeta:
     - Resource
     - Group
     - System
+  aiBotName: 'Q&A Bot'
   stats:
     schedule:
       frequency: { minutes: 1 }

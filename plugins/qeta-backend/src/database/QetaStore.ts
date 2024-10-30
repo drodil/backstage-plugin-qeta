@@ -1,4 +1,5 @@
 import {
+  AIResponse,
   Answer,
   Attachment,
   Collection,
@@ -580,4 +581,8 @@ export interface QetaStore {
     tags?: string[];
     entities?: string[];
   }): Promise<MaybeTemplate>;
+
+  getAIAnswer(postId: number): Promise<AIResponse | null>;
+  saveAIAnswer(postId: number, response: AIResponse): Promise<void>;
+  deleteAIAnswer(postId: number): Promise<boolean>;
 }

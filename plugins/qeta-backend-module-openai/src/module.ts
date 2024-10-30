@@ -18,10 +18,9 @@ export const qetaModuleOpenai = createBackendModule({
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         ai: qetaAIExtensionPoint,
-        cache: coreServices.cache,
       },
-      async init({ logger, config, ai, cache }) {
-        const handler = new OpenAIHandler(logger, config, cache);
+      async init({ logger, config, ai }) {
+        const handler = new OpenAIHandler(logger, config);
         ai.setAIHandler(handler);
       },
     });

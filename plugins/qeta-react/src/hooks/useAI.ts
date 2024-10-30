@@ -1,72 +1,87 @@
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../api';
 import React, { useCallback, useEffect } from 'react';
+import {
+  AIQuery,
+  AIStatusResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 
-let aiEnabled: boolean | undefined = undefined;
-let aiForQuestionEnabled: boolean | undefined = undefined;
-let aiForDraftEnabled: boolean | undefined = undefined;
-let aiForSummarizeEnabled: boolean | undefined = undefined;
+let cache: AIStatusResponse | undefined = undefined;
 
 export const useAI = () => {
   const qetaApi = useApi(qetaApiRef);
   const [isAIEnabled, setIsAIEnabled] = React.useState<boolean | undefined>(
-    aiEnabled,
+    cache?.enabled,
   );
+  const [isExistingQuestionsEnabled, setIsExistingQuestionsEnabled] =
+    React.useState<boolean | undefined>(cache?.existingQuestions);
+  const [isNewQuestionsEnabled, setIsNewQuestionsEnabled] = React.useState<
+    boolean | undefined
+  >(cache?.newQuestions);
+  const [isArticleSummaryEnabled, setIsArticleSummaryEnabled] = React.useState<
+    boolean | undefined
+  >(cache?.articleSummaries);
 
   useEffect(() => {
-    if (aiEnabled !== undefined) {
+    if (cache?.enabled !== undefined) {
       return;
     }
     qetaApi.isAIEnabled().then(resp => {
-      setIsAIEnabled(resp);
-      aiEnabled = resp;
+      setIsAIEnabled(resp.enabled);
+      setIsExistingQuestionsEnabled(resp.existingQuestions);
+      setIsNewQuestionsEnabled(resp.newQuestions);
+      setIsArticleSummaryEnabled(resp.articleSummaries);
+      cache = resp;
     });
   }, [qetaApi]);
 
   const answerExistingQuestion = useCallback(
-    async (questionId: number) => {
-      if (aiForQuestionEnabled === false) {
+    async (questionId: number, options?: AIQuery) => {
+      if (isExistingQuestionsEnabled === false) {
         return null;
       }
-      const ret = await qetaApi.getAIAnswerForQuestion(questionId);
+      const ret = await qetaApi.getAIAnswerForQuestion(questionId, options);
       if (ret === null) {
-        aiForQuestionEnabled = false;
+        setIsExistingQuestionsEnabled(false);
       }
       return ret;
     },
-    [qetaApi],
+    [isExistingQuestionsEnabled, qetaApi],
   );
 
   const answerDraftQuestion = useCallback(
     async (draft: { title: string; content: string }) => {
-      if (aiForDraftEnabled === false) {
+      if (isNewQuestionsEnabled === false) {
         return null;
       }
       const ret = await qetaApi.getAIAnswerForDraft(draft.title, draft.content);
       if (ret === null) {
-        aiForDraftEnabled = false;
+        setIsNewQuestionsEnabled(false);
       }
       return ret;
     },
-    [qetaApi],
+    [isNewQuestionsEnabled, qetaApi],
   );
 
   const summarizeArticle = useCallback(
-    async (articleId: number) => {
-      if (aiForSummarizeEnabled === false) {
+    async (articleId: number, options?: AIQuery) => {
+      if (isArticleSummaryEnabled === false) {
         return null;
       }
-      const ret = await qetaApi.getAISummaryForArticle(articleId);
+      const ret = await qetaApi.getAISummaryForArticle(articleId, options);
       if (ret === null) {
-        aiForSummarizeEnabled = false;
+        setIsArticleSummaryEnabled(false);
       }
       return ret;
     },
-    [qetaApi],
+    [isArticleSummaryEnabled, qetaApi],
   );
 
   return {
     isAIEnabled,
+    isArticleSummaryEnabled,
+    isExistingQuestionsEnabled,
+    isNewQuestionsEnabled,
     answerExistingQuestion,
     answerDraftQuestion,
     summarizeArticle,

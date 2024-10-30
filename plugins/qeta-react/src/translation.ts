@@ -482,8 +482,9 @@ export const qetaTranslationRef = createTranslationRef({
       entities_other: 'Showing {{count}} entities',
     },
     aiAnswerCard: {
-      answer: 'Answer from AI',
-      summary: 'Summary by AI',
+      regenerate: 'Regenerate this answer',
+      answer: 'Answer from {{name}}',
+      summary: 'Summary by {{name}}',
     },
     usersPage: {
       title: 'Users',

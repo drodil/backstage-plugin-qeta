@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import {
+  AIQuery,
   AnswersQuery,
   CollectionsQuery,
   EntitiesQuery,
@@ -12,6 +13,7 @@ import {
 import { CustomErrorBase } from '@backstage/errors';
 import {
   AIResponse,
+  AIStatusResponse,
   Answer,
   AnswerRequest,
   AnswerResponse,
@@ -199,9 +201,11 @@ export class QetaClient implements QetaApi {
 
   async getAIAnswerForQuestion(
     questionId: string | number,
+    options?: AIQuery,
     requestOptions?: RequestOptions,
   ): Promise<AIResponse | null> {
     const response = await this.fetch(`/ai/question/${questionId}`, {
+      queryParams: options,
       requestOptions,
     });
     if (!response.ok) {
@@ -231,9 +235,11 @@ export class QetaClient implements QetaApi {
 
   async getAISummaryForArticle(
     articleId: string | number,
+    options?: AIQuery,
     requestOptions?: RequestOptions,
   ): Promise<AIResponse | null> {
     const response = await this.fetch(`/ai/article/${articleId}`, {
+      queryParams: options,
       requestOptions,
     });
     if (!response.ok) {
@@ -242,13 +248,17 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as AIResponse;
   }
 
-  async isAIEnabled(): Promise<boolean> {
+  async isAIEnabled(): Promise<AIStatusResponse> {
     const response = await this.fetch('/ai/status');
     if (!response.ok) {
-      return false;
+      return {
+        enabled: false,
+        articleSummaries: false,
+        existingQuestions: false,
+        newQuestions: false,
+      };
     }
-    const data = await response.json();
-    return Boolean(data.enabled);
+    return (await response.json()) as AIStatusResponse;
   }
 
   async getTags(

@@ -15,6 +15,7 @@ import { SignalsService } from '@backstage/plugin-signals-node';
 import { NotificationService } from '@backstage/plugin-notifications-node';
 import { NotificationManager } from './NotificationManager';
 import {
+  AIQuery,
   AnswersQuery,
   CollectionsQuery,
   EntitiesQuery,
@@ -319,6 +320,15 @@ export const DraftQuestionSchema: JSONSchemaType<DraftQuestion> = {
     content: { type: 'string', minLength: 1 },
   },
   required: ['title', 'content'],
+  additionalProperties: false,
+};
+
+export const AIQuerySchema: JSONSchemaType<AIQuery> = {
+  type: 'object',
+  properties: {
+    regenerate: { type: 'boolean', default: false, nullable: true },
+  },
+  required: [],
   additionalProperties: false,
 };
 
