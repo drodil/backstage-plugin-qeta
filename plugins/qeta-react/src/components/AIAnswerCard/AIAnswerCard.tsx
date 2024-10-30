@@ -9,6 +9,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Collapse,
   createStyles,
   IconButton,
   makeStyles,
@@ -24,6 +25,7 @@ import { Skeleton } from '@material-ui/lab';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 export type QetaAIAnswerCardClassKey = 'card';
 
@@ -56,6 +58,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   const [answer, setAnswer] = React.useState<AIResponse | null | undefined>(
     undefined,
   );
+  const [expanded, setExpanded] = React.useState(false);
   const styles = useStyles();
   const { t } = useTranslation();
   const config = useApi(configApiRef);
@@ -142,6 +145,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
     <Card className={styles.card} style={style}>
       <CardHeader
         avatar={<FlareIcon />}
+        style={!expanded ? { paddingBottom: '1rem' } : {}}
         title={
           <Typography variant="h5">
             {article
@@ -150,18 +154,30 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
           </Typography>
         }
         action={
-          canEdit && (
-            <Tooltip title={t('aiAnswerCard.regenerate')}>
+          <>
+            {canEdit && (
+              <Tooltip title={t('aiAnswerCard.regenerate')}>
+                <IconButton
+                  onClick={() => {
+                    setAnswer(undefined);
+                    fetchAnswer({ regenerate: true });
+                  }}
+                >
+                  <RefreshIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            <Tooltip
+              title={expanded ? t('aiAnswerCard.hide') : t('aiAnswerCard.show')}
+            >
               <IconButton
-                onClick={() => {
-                  setAnswer(undefined);
-                  fetchAnswer({ regenerate: true });
-                }}
+                onClick={() => setExpanded(!expanded)}
+                aria-expanded={expanded}
               >
-                <RefreshIcon />
+                <KeyboardArrowDownIcon />
               </IconButton>
             </Tooltip>
-          )
+          </>
         }
         subheader={
           answer && (
@@ -169,17 +185,19 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
           )
         }
       />
-      <CardContent>
-        {answer === undefined && (
-          <Skeleton variant="rect" height={200} animation="wave" />
-        )}
-        {answer && (
-          <MarkdownRenderer
-            content={answer.answer}
-            className={styles.markdown}
-          />
-        )}
-      </CardContent>
+      <Collapse in={expanded} timeout={0} unmountOnExit mountOnEnter>
+        <CardContent>
+          {answer === undefined && (
+            <Skeleton variant="rect" height={200} animation="wave" />
+          )}
+          {answer && (
+            <MarkdownRenderer
+              content={answer.answer}
+              className={styles.markdown}
+            />
+          )}
+        </CardContent>
+      </Collapse>
     </Card>
   );
 };

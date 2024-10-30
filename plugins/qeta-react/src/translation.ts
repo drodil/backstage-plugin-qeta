@@ -485,6 +485,8 @@ export const qetaTranslationRef = createTranslationRef({
       regenerate: 'Regenerate this answer',
       answer: 'Answer from {{name}}',
       summary: 'Summary by {{name}}',
+      show: 'Show',
+      hide: 'Hide',
     },
     usersPage: {
       title: 'Users',
