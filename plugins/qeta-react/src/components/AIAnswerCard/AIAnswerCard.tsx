@@ -152,7 +152,12 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
         action={
           canEdit && (
             <Tooltip title={t('aiAnswerCard.regenerate')}>
-              <IconButton onClick={() => fetchAnswer({ regenerate: true })}>
+              <IconButton
+                onClick={() => {
+                  setAnswer(undefined);
+                  fetchAnswer({ regenerate: true });
+                }}
+              >
                 <RefreshIcon />
               </IconButton>
             </Tooltip>
