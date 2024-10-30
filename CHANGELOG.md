@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.6.1...v3.7.0) (2024-10-30)
+
+
+### Features
+
+* improve comment writing with autofocus and bigger textarea ([e64067a](https://github.com/drodil/backstage-plugin-qeta/commit/e64067a5528e519102537567fd44f0f285cabfc5))
+* more AI features ([8a97ec4](https://github.com/drodil/backstage-plugin-qeta/commit/8a97ec4388361b25988b5d085f084de8bf26fd98)), closes [#225](https://github.com/drodil/backstage-plugin-qeta/issues/225) [#226](https://github.com/drodil/backstage-plugin-qeta/issues/226) [#227](https://github.com/drodil/backstage-plugin-qeta/issues/227)
+
+
+### Bug Fixes
+
+* article styling ([ea9bf14](https://github.com/drodil/backstage-plugin-qeta/commit/ea9bf1473a2d9adb85fc315f51ab1d8938978c60))
+
 ### [3.6.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.6.0...v3.6.1) (2024-10-29)
 
 
