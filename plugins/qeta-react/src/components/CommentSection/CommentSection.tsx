@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-autofocus */
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Grid } from '@material-ui/core';
 import {
@@ -72,15 +73,19 @@ export const CommentSection = (props: {
         errorPage={<></>}
       >
         {!formVisible && (
-          <Button
-            size="small"
-            variant="outlined"
-            className="qetaAddCommentBtn"
-            startIcon={<AddCommentIcon />}
-            onClick={() => setFormVisible(true)}
-          >
-            {t('commentSection.addComment')}
-          </Button>
+          <Grid container justifyContent="flex-end">
+            <Grid item>
+              <Button
+                size="small"
+                variant="outlined"
+                className="qetaAddCommentBtn"
+                startIcon={<AddCommentIcon />}
+                onClick={() => setFormVisible(true)}
+              >
+                {t('commentSection.addComment')}
+              </Button>
+            </Grid>
+          </Grid>
         )}
         {formVisible && (
           <form
@@ -101,9 +106,10 @@ export const CommentSection = (props: {
                   render={({ field: { onChange, value } }) => (
                     <MarkdownEditor
                       config={configApi}
+                      autoFocus
                       value={value}
                       onChange={onChange}
-                      height={60}
+                      height={100}
                       disablePreview
                       disableAttachments
                       disableToolbar

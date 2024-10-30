@@ -103,7 +103,7 @@ export const useStyles = makeStyles(
   { name: 'QetaMarkdownEditor' },
 );
 
-export const MarkdownEditor = (props: {
+export type MarkdownEditorProps = {
   config?: Config;
   value: string;
   onChange: (value: string) => void;
@@ -117,7 +117,11 @@ export const MarkdownEditor = (props: {
   postId?: number;
   answerId?: number;
   collectionId?: number;
-}) => {
+  autoFocus?: boolean;
+  required?: boolean;
+};
+
+export const MarkdownEditor = (props: MarkdownEditorProps) => {
   const {
     config,
     value,
@@ -131,6 +135,8 @@ export const MarkdownEditor = (props: {
     postId,
     answerId,
     collectionId,
+    autoFocus,
+    required = true,
   } = props;
   const [selectedTab, setSelectedTab] = React.useState<'write' | 'preview'>(
     'write',
@@ -202,8 +208,9 @@ export const MarkdownEditor = (props: {
       minPreviewHeight={height - 10}
       childProps={{
         textArea: {
-          required: true,
+          required,
           placeholder,
+          autoFocus,
         },
       }}
       suggestionTriggerCharacters={['@']}

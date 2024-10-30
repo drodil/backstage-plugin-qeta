@@ -13,10 +13,16 @@ import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
 
 export const useStyles = makeStyles(
-  _theme => {
+  theme => {
     return {
-      inline: {
-        display: 'inline-block',
+      commentBox: {
+        paddingBottom: theme.spacing(2),
+      },
+      markdown: {
+        display: 'inline',
+        '& *:last-child': {
+          display: 'inline',
+        },
       },
     };
   },
@@ -52,30 +58,33 @@ export const CommentList = (props: {
     <Box marginBottom={2}>
       {entity.comments?.map(c => {
         return (
-          <>
-            <Box key={c.id} className="qetaCommentBox">
-              <MarkdownRenderer content={c.content} className={styles.inline} />
-              {' – '}
-              <AuthorLink entity={c} />{' '}
-              <Typography variant="caption" className="qetaCommentTime">
+          <div key={c.id}>
+            <Box className={`${styles.commentBox} qetaCommentBox`}>
+              <MarkdownRenderer
+                content={c.content}
+                className={styles.markdown}
+              />
+              <Typography variant="caption" className="qetaCommentMetadata">
+                {' – '}
+                <AuthorLink entity={c} />{' '}
                 <RelativeTimeWithTooltip value={c.created} />
+                {(c.own || c.canDelete) && (
+                  <>
+                    {' / '}
+                    <Link
+                      underline="none"
+                      to="#"
+                      className="qetaCommentDeleteBtn"
+                      onClick={() => deleteComment(c.id)}
+                    >
+                      {t('commentList.deleteLink')}
+                    </Link>
+                  </>
+                )}
               </Typography>
-              {(c.own || c.canDelete) && (
-                <>
-                  {' / '}
-                  <Link
-                    underline="none"
-                    to="#"
-                    className="qetaCommentDeleteBtn"
-                    onClick={() => deleteComment(c.id)}
-                  >
-                    {t('commentList.deleteLink')}
-                  </Link>
-                </>
-              )}
             </Box>
             <Divider />
-          </>
+          </div>
         );
       })}
     </Box>
