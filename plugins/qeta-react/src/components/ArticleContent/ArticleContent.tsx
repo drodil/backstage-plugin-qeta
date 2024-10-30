@@ -22,16 +22,15 @@ export const useStyles = makeStyles(
   theme => {
     return {
       content: {
-        fontSize: '1.1rem',
-        lineHeight: '1.5rem',
-        paddingTop: '1rem',
-        paddingBottom: '1rem',
-        marginBottom: '1rem',
+        fontSize: '110%',
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
+        marginBottom: theme.spacing(2),
         borderBottom: `1px solid ${theme.palette.background.paper}`,
       },
       headerImage: {
-        marginBottom: '1rem',
-        marginTop: '1rem',
+        marginBottom: theme.spacing(2),
+        marginTop: theme.spacing(2),
         height: '250px',
         objectFit: 'cover',
         width: '100%',
@@ -40,8 +39,8 @@ export const useStyles = makeStyles(
       },
       commentSection: {
         borderBottom: `1px solid ${theme.palette.background.paper}`,
-        paddingBottom: '1rem',
-        marginBottom: '1rem',
+        paddingBottom: theme.spacing(2),
+        marginBottom: theme.spacing(2),
         marginLeft: 0,
       },
     };
