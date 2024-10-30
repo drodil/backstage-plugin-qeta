@@ -111,6 +111,8 @@ Tags page:
 
 All contributions are very welcome. See [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
+If your organization uses this plugin, we'd love to have you listed in our [ADOPTERS](ADOPTERS.md) list! ❤️
+
 ## License
 
 This library is under the [MIT](LICENSE) license.
