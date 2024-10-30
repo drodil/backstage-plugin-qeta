@@ -160,7 +160,7 @@ export const qetaTranslationRef = createTranslationRef({
       input: {
         placeholder: 'Your comment',
       },
-      addComment: 'Add comment',
+      addComment: 'Add a comment',
       post: 'Post',
     },
     editTagModal: {

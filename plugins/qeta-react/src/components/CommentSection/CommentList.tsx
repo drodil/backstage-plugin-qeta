@@ -44,8 +44,12 @@ export const CommentList = (props: {
     qetaApi.deletePostComment(question.id, id).then(q => onCommentDelete(q));
   };
 
+  if (!entity.comments || entity.comments.length === 0) {
+    return null;
+  }
+
   return (
-    <>
+    <Box marginBottom={2}>
       {entity.comments?.map(c => {
         return (
           <>
@@ -74,6 +78,6 @@ export const CommentList = (props: {
           </>
         );
       })}
-    </>
+    </Box>
   );
 };

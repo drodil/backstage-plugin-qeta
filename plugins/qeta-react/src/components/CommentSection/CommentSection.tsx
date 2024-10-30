@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Grid } from '@material-ui/core';
-import { Link } from '@backstage/core-components';
 import {
   AnswerResponse,
   PostResponse,
@@ -14,6 +13,7 @@ import { confirmNavigationIfEdited } from '../../utils/utils';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { useTranslation } from '../../hooks';
+import AddCommentIcon from '@material-ui/icons/AddComment';
 
 export const CommentSection = (props: {
   onCommentPost: (question: PostResponse, answer?: AnswerResponse) => void;
@@ -72,14 +72,15 @@ export const CommentSection = (props: {
         errorPage={<></>}
       >
         {!formVisible && (
-          <Link
-            underline="none"
-            to="#"
+          <Button
+            size="small"
+            variant="outlined"
             className="qetaAddCommentBtn"
+            startIcon={<AddCommentIcon />}
             onClick={() => setFormVisible(true)}
           >
             {t('commentSection.addComment')}
-          </Link>
+          </Button>
         )}
         {formVisible && (
           <form
