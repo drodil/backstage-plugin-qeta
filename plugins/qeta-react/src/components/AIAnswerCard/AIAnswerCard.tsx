@@ -180,8 +180,10 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
           </>
         }
         subheader={
-          answer && (
-            <RelativeTimeWithTooltip value={answer?.created ?? new Date()} />
+          answer ? (
+            <RelativeTimeWithTooltip value={answer.created ?? new Date()} />
+          ) : (
+            <>{t('aiAnswerCard.loading')}</>
           )
         }
       />

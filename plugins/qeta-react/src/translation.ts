@@ -487,6 +487,7 @@ export const qetaTranslationRef = createTranslationRef({
       summary: 'Summary by {{name}}',
       show: 'Show',
       hide: 'Hide',
+      loading: 'Thinking...',
     },
     usersPage: {
       title: 'Users',
