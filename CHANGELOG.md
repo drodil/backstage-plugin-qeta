@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.7.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.7.1...v3.7.2) (2024-10-31)
+
+
+### Bug Fixes
+
+* do not show regenerate button if ai is not enabled ([7c56082](https://github.com/drodil/backstage-plugin-qeta/commit/7c56082752fdddda493dbc82861cd1d671e7d464))
+* show loading for ai answer time ([e7c6f17](https://github.com/drodil/backstage-plugin-qeta/commit/e7c6f17d5b29493b333d08a718f69fbb1458dbb4))
+
 ### [3.7.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.7.0...v3.7.1) (2024-10-30)
 
 
