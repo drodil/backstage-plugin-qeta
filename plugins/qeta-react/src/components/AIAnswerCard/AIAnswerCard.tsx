@@ -159,7 +159,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
         }
         action={
           <>
-            {canEdit && (
+            {canEdit && isEnabled() && (
               <Tooltip title={t('aiAnswerCard.regenerate')}>
                 <IconButton
                   onClick={() => {
