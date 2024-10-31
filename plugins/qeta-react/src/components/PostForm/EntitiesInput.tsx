@@ -3,7 +3,7 @@ import { TagAndEntitiesFormValues } from './types';
 import { Autocomplete } from '@material-ui/lab';
 import { getEntityTitle } from '../../utils/utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { TextField } from '@material-ui/core';
+import { TextField, Tooltip } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -90,6 +90,15 @@ export const EntitiesInput = (props: {
             if (!value || value.length < max) {
               onChange(newValue);
             }
+          }}
+          renderOption={option => {
+            return (
+              <>
+                <Tooltip title={stringifyEntityRef(option)}>
+                  <span>{getEntityTitle(option)}</span>
+                </Tooltip>
+              </>
+            );
           }}
           renderInput={params => (
             <TextField

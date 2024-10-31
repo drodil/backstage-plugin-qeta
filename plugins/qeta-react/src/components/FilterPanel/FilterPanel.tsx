@@ -11,6 +11,7 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  Tooltip,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
@@ -276,6 +277,15 @@ export const FilterPanel = (props: FilterPanelProps) => {
                 value={selectedEntity ?? null}
                 id="entities-select"
                 options={availableEntities}
+                renderOption={option => {
+                  return (
+                    <>
+                      <Tooltip title={stringifyEntityRef(option)}>
+                        <span>{getEntityTitle(option)}</span>
+                      </Tooltip>
+                    </>
+                  );
+                }}
                 getOptionLabel={getEntityTitle}
                 getOptionSelected={(o, v) => {
                   if (!o || !v) {
