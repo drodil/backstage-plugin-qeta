@@ -21,6 +21,7 @@ export const useStyles = makeStyles(
       },
       questionCardContent: {
         minHeight: '160px',
+        flexGrow: 1,
       },
       questionListItem: {
         padding: '0.7rem',

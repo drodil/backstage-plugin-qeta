@@ -62,17 +62,19 @@ export const QuestionCard = (props: { question: PostResponse }) => {
       >
         <CardContent>
           <Grid container spacing={0} justifyContent="flex-start">
-            <Grid container item xs={1} justifyContent="center">
+            <Grid item justifyContent="center">
               <div className={styles.questionCardVote}>
                 <VoteButtons entity={questionEntity} />
                 <FavoriteButton entity={questionEntity} />
                 <LinkButton entity={questionEntity} />
               </div>
             </Grid>
-            <Grid item xs={11} className={styles.questionCardContent}>
-              <Typography variant="body1" gutterBottom>
-                <MarkdownRenderer content={questionEntity.content} />
-              </Typography>
+            <Grid item className={styles.questionCardContent}>
+              <Grid item>
+                <Typography variant="body1" gutterBottom>
+                  <MarkdownRenderer content={questionEntity.content} />
+                </Typography>
+              </Grid>
               <Grid
                 container
                 item
@@ -81,7 +83,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                 alignItems="flex-end"
                 className={styles.questionCardMetadata}
               >
-                <Grid item xs={9} style={{ alignSelf: 'flex-end' }}>
+                <Grid item style={{ alignSelf: 'flex-end' }}>
                   <TagsAndEntities entity={questionEntity} />
                   {(question.canEdit || question.canDelete) && (
                     <Box className={styles.questionCardActions}>
