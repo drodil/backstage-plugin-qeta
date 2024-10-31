@@ -46,6 +46,7 @@ export interface PostsQuery extends PaginatedQuery {
   entity?: string;
   author?: string;
   orderBy?:
+    | 'rank'
     | 'views'
     | 'title'
     | 'score'
@@ -410,6 +411,12 @@ export interface QetaApi {
     postId: number,
     requestOptions?: RequestOptions,
   ): Promise<CollectionResponse>;
+  rankPostInCollection(
+    collectionId: number,
+    postId: number,
+    rank: 'top' | 'bottom' | 'up' | 'down',
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
 
   getTemplates(requestOptions?: RequestOptions): Promise<TemplatesResponse>;
   getTemplate(

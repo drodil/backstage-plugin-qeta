@@ -24,7 +24,9 @@ import {
 } from '../../hooks/usePaginatedPosts';
 import { useTranslation } from '../../hooks';
 
-export const PostsGrid = (props: PaginatedPostsProps) => {
+export type PostGridProps = PaginatedPostsProps & { allowRanking?: boolean };
+
+export const PostsGrid = (props: PostGridProps) => {
   const {
     type,
     tags,
@@ -37,6 +39,7 @@ export const PostsGrid = (props: PaginatedPostsProps) => {
     showAskButton,
     showWriteButton,
     showNoQuestionsBtn,
+    allowRanking,
   } = props;
   const { t } = useTranslation();
   const {
@@ -53,6 +56,7 @@ export const PostsGrid = (props: PaginatedPostsProps) => {
     page,
     pageCount,
     onPageChange,
+    retry,
   } = usePaginatedPosts(props);
 
   const itemType = capitalize(t(`common.${type ?? 'post'}`, {}));
@@ -148,6 +152,7 @@ export const PostsGrid = (props: PaginatedPostsProps) => {
             onChange={onFilterChange}
             filters={filters}
             type={type}
+            showRankOrder={props.collectionId !== undefined}
           />
         </Collapse>
       )}
@@ -165,6 +170,9 @@ export const PostsGrid = (props: PaginatedPostsProps) => {
         page={page}
         pageCount={pageCount}
         onPageChange={onPageChange}
+        onRankUpdate={() => retry()}
+        collectionId={props.collectionId}
+        allowRanking={allowRanking}
       />
     </Box>
   );

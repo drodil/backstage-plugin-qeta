@@ -15,6 +15,7 @@ import {
 import addFormats from 'ajv-formats';
 import {
   CollectionPostSchema,
+  CollectionRankPostSchema,
   CollectionSchema,
   CollectionsQuerySchema,
   RouteOptions,
@@ -463,5 +464,119 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     // Response
     response.status(200);
     response.json(collection);
+  });
+
+  router.post('/collections/:id/rank/', async (request, response) => {
+    const validateRequestBody = ajv.compile(CollectionRankPostSchema);
+    if (!validateRequestBody(request.body)) {
+      response
+        .status(400)
+        .json({ errors: validateRequestBody.errors, type: 'body' });
+      return;
+    }
+
+    const collectionId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(collectionId)) {
+      response
+        .status(400)
+        .send({ errors: 'Invalid collection id', type: 'body' });
+      return;
+    }
+
+    const username = await getUsername(request, options);
+    const collection = await database.getCollection(
+      username,
+      Number.parseInt(request.params.id, 10),
+    );
+
+    if (!collection?.canEdit) {
+      response.sendStatus(401);
+      return;
+    }
+
+    const post = await database.getPost(username, request.body.postId, false);
+
+    if (!post) {
+      response.status(404).send({ errors: 'Post not found', type: 'body' });
+      return;
+    }
+
+    await authorize(request, qetaReadPostPermission, options, post);
+
+    const currentRank = await database.getPostRank(
+      collection.id,
+      request.body.postId,
+    );
+    if (!currentRank) {
+      response.status(404).send();
+      return;
+    }
+
+    if (request.body.rank === 'up') {
+      const higherRankPostId = await database.getNextRankedPostId(
+        collection.id,
+        request.body.postId,
+      );
+      if (higherRankPostId) {
+        await database.updatePostRank(
+          collection.id,
+          higherRankPostId.postId,
+          currentRank,
+        );
+        await database.updatePostRank(
+          collection.id,
+          request.body.postId,
+          higherRankPostId.rank,
+        );
+      }
+    } else if (request.body.rank === 'down') {
+      const lowerRankPostId = await database.getPreviousRankedPostId(
+        collection.id,
+        request.body.postId,
+      );
+      if (lowerRankPostId) {
+        await database.updatePostRank(
+          collection.id,
+          lowerRankPostId.postId,
+          currentRank,
+        );
+        await database.updatePostRank(
+          collection.id,
+          request.body.postId,
+          lowerRankPostId.rank,
+        );
+      }
+    } else if (request.body.rank === 'top') {
+      const topRankPostId = await database.getTopRankedPostId(collectionId);
+      if (topRankPostId) {
+        await database.updatePostRank(
+          collection.id,
+          topRankPostId.postId,
+          currentRank,
+        );
+        await database.updatePostRank(
+          collection.id,
+          request.body.postId,
+          topRankPostId.rank,
+        );
+      }
+    } else if (request.body.rank === 'bottom') {
+      const bottomRankPostId = await database.getBottomRankedPostId(
+        collection.id,
+      );
+      if (bottomRankPostId) {
+        await database.updatePostRank(
+          collection.id,
+          bottomRankPostId.postId,
+          currentRank,
+        );
+        await database.updatePostRank(
+          collection.id,
+          request.body.postId,
+          bottomRankPostId.rank,
+        );
+      }
+    }
+    response.sendStatus(200);
   });
 };

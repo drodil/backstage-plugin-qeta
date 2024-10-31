@@ -72,6 +72,7 @@ export interface PostOptions {
   author?: string | string[];
   orderBy?:
     | 'views'
+    | 'rank'
     | 'title'
     | 'score'
     | 'answersCount'
@@ -170,6 +171,11 @@ export interface AttachmentParameters {
   postId?: number;
   answerId?: number;
   collectionId?: number;
+}
+
+export interface CollectionPostRank {
+  postId: number;
+  rank: number;
 }
 
 /**
@@ -586,4 +592,23 @@ export interface QetaStore {
   getAIAnswer(postId: number): Promise<AIResponse | null>;
   saveAIAnswer(postId: number, response: AIResponse): Promise<void>;
   deleteAIAnswer(postId: number): Promise<boolean>;
+
+  getPostRank(collectionId: number, postId: number): Promise<number | null>;
+  getTopRankedPostId(collectionId: number): Promise<CollectionPostRank | null>;
+  getBottomRankedPostId(
+    collectionId: number,
+  ): Promise<CollectionPostRank | null>;
+  getNextRankedPostId(
+    collectionId: number,
+    postId: number,
+  ): Promise<CollectionPostRank | null>;
+  getPreviousRankedPostId(
+    collectionId: number,
+    postId: number,
+  ): Promise<CollectionPostRank | null>;
+  updatePostRank(
+    collectionId: number,
+    postId: number,
+    rank: number,
+  ): Promise<void>;
 }

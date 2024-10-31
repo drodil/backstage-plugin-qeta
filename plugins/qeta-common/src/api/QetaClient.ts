@@ -1106,6 +1106,23 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
+  async rankPostInCollection(
+    collectionId: number,
+    postId: number,
+    rank: 'top' | 'bottom' | 'up' | 'down',
+    requestOptions?: RequestOptions,
+  ): Promise<boolean> {
+    const response = await this.fetch(`/collections/${collectionId}/rank`, {
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify({ postId, rank }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+      requestOptions,
+    });
+    return response.ok;
+  }
+
   async getTemplates(
     requestOptions?: RequestOptions,
   ): Promise<TemplatesResponse> {

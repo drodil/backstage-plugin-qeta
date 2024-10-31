@@ -7,7 +7,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import React, { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef, userRouteRef } from '../../routes';
 import {
   Avatar,
@@ -16,6 +16,8 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  IconButton,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
 import DOMPurify from 'dompurify';
@@ -25,16 +27,25 @@ import { Link } from '@backstage/core-components';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { useStyles, useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
+import { qetaApiRef } from '../../api';
+import VerticalAlignTopIcon from '@material-ui/icons/VerticalAlignTop';
+import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 export interface PostsGridItemProps {
   post: PostResponse;
   entity?: string;
   type?: PostType;
+  allowRanking?: boolean;
+  onRankUpdate?: () => void;
+  collectionId?: number;
 }
 
 export const PostsGridItem = (props: PostsGridItemProps) => {
-  const { post, entity } = props;
+  const { post, entity, allowRanking, onRankUpdate, collectionId } = props;
   const [views, setViews] = useState(post.views);
+  const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslation();
 
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
@@ -58,6 +69,17 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
         id: post.id.toString(10),
       })}?entity=${entity}`
     : route({ id: post.id.toString(10) });
+
+  const rank = (direction: 'top' | 'bottom' | 'up' | 'down') => {
+    if (!collectionId) {
+      return;
+    }
+    qetaApi.rankPostInCollection(collectionId, post.id, direction).then(res => {
+      if (res) {
+        onRankUpdate?.();
+      }
+    });
+  };
 
   return (
     <Card style={{ height: '100%' }}>
@@ -105,6 +127,36 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             {t('common.views', { count: views })}
           </Typography>
         </Box>
+        {allowRanking && (
+          <Box
+            style={{
+              paddingRight: '0.2rem',
+              paddingTop: '0.5rem',
+              float: 'right',
+            }}
+          >
+            <Tooltip title={t('ranking.top')}>
+              <IconButton size="small" onClick={() => rank('top')}>
+                <VerticalAlignTopIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t('ranking.up')}>
+              <IconButton size="small" onClick={() => rank('up')}>
+                <KeyboardArrowUpIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t('ranking.down')}>
+              <IconButton size="small" onClick={() => rank('down')}>
+                <KeyboardArrowDownIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t('ranking.bottom')}>
+              <IconButton size="small" onClick={() => rank('bottom')}>
+                <VerticalAlignBottomIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
       </CardContent>
     </Card>
   );

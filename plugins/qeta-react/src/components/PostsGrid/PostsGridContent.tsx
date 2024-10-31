@@ -22,6 +22,9 @@ export const PostsGridContent = (props: {
   onPageChange: (page: number) => void;
   page: number;
   pageCount: number;
+  allowRanking?: boolean;
+  onRankUpdate?: () => void;
+  collectionId?: number;
 }) => {
   const {
     loading,
@@ -111,7 +114,14 @@ export const PostsGridContent = (props: {
           {response.posts.map(p => {
             return (
               <Grid item xs={12} xl={6} key={p.id}>
-                <PostsGridItem post={p} type={type} entity={entity} />
+                <PostsGridItem
+                  post={p}
+                  type={type}
+                  entity={entity}
+                  allowRanking={props.allowRanking}
+                  onRankUpdate={props.onRankUpdate}
+                  collectionId={props.collectionId}
+                />
               </Grid>
             );
           })}

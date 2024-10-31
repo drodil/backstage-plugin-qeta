@@ -9,6 +9,7 @@ import {
   AnswersOptions,
   AttachmentParameters,
   CollectionOptions,
+  CollectionPostRank,
   Collections,
   EntitiesResponse,
   EntityResponse,
@@ -290,8 +291,21 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.collectionId) {
-      query.leftJoin('collection_posts', 'posts.id', 'collection_posts.postId');
+      query.innerJoin(
+        'collection_posts',
+        'posts.id',
+        'collection_posts.postId',
+      );
       query.where('collection_posts.collectionId', options.collectionId);
+    } else if (options.orderBy === 'rank') {
+      query.innerJoin(
+        'collection_posts',
+        'posts.id',
+        'collection_posts.postId',
+      );
+    }
+    if (options.orderBy === 'rank') {
+      query.groupBy('rank');
     }
 
     if (options.noAnswers) {
@@ -1928,6 +1942,85 @@ export class DatabaseQetaStore implements QetaStore {
     return !!(await this.db('post_ai_answers')
       .where('postId', postId)
       .delete());
+  }
+
+  async getPostRank(
+    collectionId: number,
+    postId: number,
+  ): Promise<number | null> {
+    const rank = await this.db('collection_posts')
+      .where('collectionId', collectionId)
+      .where('postId', postId)
+      .select('rank')
+      .first();
+    return rank?.rank ?? null;
+  }
+
+  async getTopRankedPostId(
+    collectionId: number,
+  ): Promise<CollectionPostRank | null> {
+    const post = await this.db('collection_posts')
+      .where('collectionId', collectionId)
+      .orderBy('rank', 'desc')
+      .limit(1)
+      .select(['postId', 'rank']);
+    return post[0] ? { postId: post[0].postId, rank: post[0].rank } : null;
+  }
+
+  async getBottomRankedPostId(
+    collectionId: number,
+  ): Promise<CollectionPostRank | null> {
+    const post = await this.db('collection_posts')
+      .where('collectionId', collectionId)
+      .orderBy('rank', 'asc')
+      .limit(1)
+      .select(['postId', 'rank']);
+    return post[0] ? { postId: post[0].postId, rank: post[0].rank } : null;
+  }
+
+  async getNextRankedPostId(
+    collectionId: number,
+    postId: number,
+  ): Promise<CollectionPostRank | null> {
+    const rank = await this.getPostRank(collectionId, postId);
+    if (rank === null) {
+      return null;
+    }
+    const post = await this.db('collection_posts')
+      .where('collectionId', collectionId)
+      .where('rank', '>', rank)
+      .orderBy('rank', 'asc')
+      .select(['postId', 'rank'])
+      .first();
+    return post ? { postId: post.postId, rank: post.rank } : null;
+  }
+
+  async getPreviousRankedPostId(
+    collectionId: number,
+    postId: number,
+  ): Promise<CollectionPostRank | null> {
+    const rank = await this.getPostRank(collectionId, postId);
+    if (rank === null) {
+      return null;
+    }
+    const post = await this.db('collection_posts')
+      .where('collectionId', collectionId)
+      .where('rank', '<', rank)
+      .orderBy('rank', 'desc')
+      .select(['postId', 'rank'])
+      .first();
+    return post ? { postId: post.postId, rank: post.rank } : null;
+  }
+
+  async updatePostRank(
+    collectionId: number,
+    postId: number,
+    rank: number,
+  ): Promise<void> {
+    await this.db('collection_posts')
+      .where('collectionId', collectionId)
+      .where('postId', postId)
+      .update({ rank });
   }
 
   private getEntitiesBaseQuery() {

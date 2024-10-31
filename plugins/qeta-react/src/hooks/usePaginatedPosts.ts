@@ -25,6 +25,8 @@ export type PaginatedPostsProps = {
   showNoQuestionsBtn?: boolean;
   initialPageSize?: number;
   collectionId?: number;
+  orderBy?: string;
+  order?: string;
 };
 
 export function usePaginatedPosts(props: PaginatedPostsProps) {
@@ -37,8 +39,8 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filters, setFilters] = React.useState<Filters>({
-    order: 'desc',
-    orderBy: 'created',
+    order: props.order ?? 'desc',
+    orderBy: props.orderBy ?? 'created',
     noAnswers: 'false',
     noCorrectAnswer: 'false',
     noVotes: 'false',
@@ -143,6 +145,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     value: response,
     loading,
     error,
+    retry,
   } = useQetaApi(
     api => {
       return api.getPosts({
@@ -202,5 +205,6 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     error,
     loadNextPage,
     pageCount,
+    retry,
   };
 }

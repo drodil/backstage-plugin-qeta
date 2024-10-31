@@ -368,6 +368,12 @@ export const qetaTranslationRef = createTranslationRef({
         custom: 'Custom',
       },
     },
+    ranking: {
+      top: 'Rank this question to the top in this collection',
+      bottom: 'Rank this question to the bottom in this collection',
+      up: 'Rank this question up in this collection',
+      down: 'Rank this question down in this collection',
+    },
     filterPanel: {
       filterButton: 'Filter',
       noAnswers: {
@@ -383,6 +389,7 @@ export const qetaTranslationRef = createTranslationRef({
         label: 'Quick filters',
       },
       orderBy: {
+        rank: 'Rank',
         label: 'Order by',
         title: 'Title',
         created: 'Created',

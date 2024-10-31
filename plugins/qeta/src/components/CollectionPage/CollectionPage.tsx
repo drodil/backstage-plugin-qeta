@@ -54,7 +54,11 @@ export const CollectionPage = () => {
           <CollectionCard collection={collection} />
         </Grid>
         <Grid item xs={12}>
-          <PostsGrid collectionId={collection.id} />
+          <PostsGrid
+            collectionId={collection.id}
+            orderBy="rank"
+            allowRanking={collection.canEdit}
+          />
         </Grid>
       </Grid>
     </>

@@ -65,6 +65,7 @@ export interface FilterPanelProps {
   showTagFilter?: boolean;
   answerFilters?: boolean;
   type?: PostType;
+  showRankOrder?: boolean;
 }
 
 export const FilterPanel = (props: FilterPanelProps) => {
@@ -75,6 +76,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
     showTagFilter = true,
     answerFilters = false,
     type,
+    showRankOrder = false,
   } = props;
   const styles = useStyles();
   const { value: refs } = useQetaApi(api => api.getEntities(), []);
@@ -241,6 +243,8 @@ export const FilterPanel = (props: FilterPanelProps) => {
                 gap: '0 1rem',
               }}
             >
+              {showRankOrder &&
+                radioSelect('rank', t('filterPanel.orderBy.rank'))}
               {radioSelect('created', t('filterPanel.orderBy.created'))}
               {radioSelect('title', t('filterPanel.orderBy.title'))}
               {!answerFilters &&

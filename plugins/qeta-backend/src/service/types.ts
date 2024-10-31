@@ -84,6 +84,11 @@ export interface CollectionPostContent {
   postId: number;
 }
 
+export interface CollectionRankContent {
+  postId: number;
+  rank: 'top' | 'bottom' | 'up' | 'down';
+}
+
 export const CollectionsQuerySchema: JSONSchemaType<CollectionsQuery> = {
   type: 'object',
   properties: {
@@ -111,6 +116,7 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     orderBy: {
       type: 'string',
       enum: [
+        'rank',
         'views',
         'title',
         'trend',
@@ -275,6 +281,16 @@ export const CollectionPostSchema: JSONSchemaType<CollectionPostContent> = {
     postId: { type: 'integer' },
   },
   required: ['postId'],
+  additionalProperties: false,
+};
+
+export const CollectionRankPostSchema: JSONSchemaType<CollectionRankContent> = {
+  type: 'object',
+  properties: {
+    postId: { type: 'integer' },
+    rank: { type: 'string', enum: ['top', 'bottom', 'up', 'down'] },
+  },
+  required: ['postId', 'rank'],
   additionalProperties: false,
 };
 
