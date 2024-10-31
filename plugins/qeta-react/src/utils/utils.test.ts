@@ -1,4 +1,4 @@
-import { Filters } from '../components/FilterPanel/FilterPanel';
+import { Filters, PostFilters } from '../components/FilterPanel/FilterPanel';
 import {
   confirmNavigationIfEdited,
   FiltersWithDateRange,
@@ -20,7 +20,7 @@ describe('formatDate', () => {
 });
 
 describe('getFiltersWithDateRange', () => {
-  const filters: Filters = {
+  const filters: PostFilters = {
     order: 'desc',
     orderBy: 'created',
     noAnswers: 'false',

@@ -12,7 +12,7 @@ import { CollectionsGridContent } from './CollectionsGridContent';
 import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
-import { FilterKey, FilterPanel, Filters } from '../FilterPanel/FilterPanel';
+import { CollectionFilters, FilterPanel } from '../FilterPanel/FilterPanel';
 import FilterList from '@material-ui/icons/FilterList';
 import { getFiltersWithDateRange } from '../../utils';
 
@@ -29,7 +29,7 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [collectionsPerPage, setCollectionsPerPage] = React.useState(25);
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
-  const [filters, setFilters] = React.useState<Filters>({
+  const [filters, setFilters] = React.useState<CollectionFilters>({
     order: 'desc',
     searchQuery: '',
     orderBy: 'created',
@@ -66,7 +66,10 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
     }
   }, [response, collectionsPerPage]);
 
-  const onFilterChange = (key: FilterKey, value: string | string[]) => {
+  const onFilterChange = (
+    key: keyof CollectionFilters,
+    value: string | string[],
+  ) => {
     if (filters[key] === value) {
       return;
     }
@@ -114,17 +117,9 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
       </Grid>
       {(showFilters ?? true) && (
         <Collapse in={showFilterPanel}>
-          <FilterPanel
+          <FilterPanel<CollectionFilters>
             onChange={onFilterChange}
             filters={filters}
-            orderByFilters={{
-              showTitleOrder: true,
-            }}
-            quickFilters={{
-              showNoAnswers: false,
-              showNoCorrectAnswer: false,
-              showNoVotes: false,
-            }}
           />
         </Collapse>
       )}

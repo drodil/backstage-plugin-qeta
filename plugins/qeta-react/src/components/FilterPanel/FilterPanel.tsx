@@ -45,63 +45,71 @@ export const filterKeys = [
 export type FilterKey = (typeof filterKeys)[number];
 
 export type Filters = {
-  order: string;
-  orderBy: string;
-  noAnswers?: string;
-  noCorrectAnswer?: string;
-  noVotes?: string;
-  searchQuery: string;
+  order?: 'asc' | 'desc';
+  orderBy?: string;
+  searchQuery?: string;
   entity?: string;
   tags?: string[];
   dateRange?: string;
+};
+
+export type PostFilters = Filters & {
+  orderBy?:
+    | 'rank'
+    | 'created'
+    | 'title'
+    | 'views'
+    | 'score'
+    | 'trend'
+    | 'answersCount'
+    | 'updated';
+  noAnswers?: 'true' | 'false';
+  noCorrectAnswer?: 'true' | 'false';
+  noVotes?: 'true' | 'false';
   collectionId?: number;
   type?: PostType;
 };
 
-export interface FilterPanelProps {
-  onChange: (key: FilterKey, value: string | string[]) => void;
-  filters: Filters;
+export type AnswerFilters = Filters & {
+  orderBy?: 'created' | 'score' | 'updated';
+  noVotes?: 'true' | 'false';
+};
+
+export type CollectionFilters = Filters & {
+  orderBy?: 'created' | 'title';
+};
+
+function isPostFilters(filters: Filters): filters is PostFilters {
+  return (filters as PostFilters).noAnswers !== undefined;
+}
+
+function isAnswerFilters(filters: Filters): filters is AnswerFilters {
+  return (
+    (filters as AnswerFilters).noVotes !== undefined &&
+    (filters as PostFilters).noAnswers === undefined
+  );
+}
+
+function isCollectionFilters(filters: Filters): filters is CollectionFilters {
+  return (filters as PostFilters).noAnswers === undefined;
+}
+
+export interface FilterPanelProps<T extends Filters> {
+  onChange: (key: keyof T, value: string | string[]) => void;
+  filters: T;
   showEntityFilter?: boolean;
   showTagFilter?: boolean;
   answerFilters?: boolean;
   type?: PostType;
-  orderByFilters?: {
-    showRankOrder?: boolean;
-    showViewsOrder?: boolean;
-    showTrendsOrder?: boolean;
-    showAnswersOrder?: boolean;
-    showUpdatedOrder?: boolean;
-    showScoreOrder?: boolean;
-    showTitleOrder?: boolean;
-  };
-  quickFilters?: {
-    showNoAnswers?: boolean;
-    showNoCorrectAnswer?: boolean;
-    showNoVotes?: boolean;
-  };
 }
 
-export const FilterPanel = (props: FilterPanelProps) => {
+export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const {
     onChange,
     filters,
     showEntityFilter = true,
     showTagFilter = true,
     type,
-    orderByFilters = {
-      showRankOrder: false,
-      showViewsOrder: true,
-      showTrendsOrder: true,
-      showAnswersOrder: true,
-      showUpdatedOrder: true,
-      showScoreOrder: true,
-      showTitleOrder: true,
-    },
-    quickFilters = {
-      showNoAnswers: true,
-      showNoCorrectAnswer: true,
-      showNoVotes: true,
-    },
   } = props;
   const styles = useStyles();
   const { value: refs } = useQetaApi(api => api.getEntities(), []);
@@ -197,8 +205,12 @@ export const FilterPanel = (props: FilterPanelProps) => {
     if (event.target.type === 'checkbox') {
       value = event.target.checked ? 'true' : 'false';
     }
-    onChange(event.target.name as FilterKey, value);
+    onChange(event.target.name as keyof T, value);
   };
+
+  const postFilters = isPostFilters(filters);
+  const answerFilters = isAnswerFilters(filters);
+  const collectionFilters = isCollectionFilters(filters);
 
   return (
     <Box className={`qetaFilterPanel ${styles.filterPanel}`}>
@@ -208,15 +220,13 @@ export const FilterPanel = (props: FilterPanelProps) => {
         alignItems="stretch"
         justifyContent="space-evenly"
       >
-        {(quickFilters.showNoVotes ||
-          quickFilters.showNoAnswers ||
-          quickFilters.showNoCorrectAnswer) && (
+        {(postFilters || answerFilters) && (
           <Grid item>
             <FormGroup>
               <FormLabel id="qeta-filter-quick">
                 {t('filterPanel.quickFilters.label')}
               </FormLabel>
-              {quickFilters.showNoAnswers && type !== 'article' && (
+              {postFilters && type !== 'article' && (
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -229,7 +239,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
                   label={t('filterPanel.noAnswers.label')}
                 />
               )}
-              {quickFilters.showNoCorrectAnswer && type !== 'article' && (
+              {postFilters && type !== 'article' && (
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -242,7 +252,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
                   label={t('filterPanel.noCorrectAnswers.label')}
                 />
               )}
-              {quickFilters.showNoVotes && (
+              {(postFilters || answerFilters) && (
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -274,20 +284,22 @@ export const FilterPanel = (props: FilterPanelProps) => {
                 gap: '0 1rem',
               }}
             >
-              {orderByFilters.showRankOrder &&
+              {postFilters &&
+                filters.collectionId !== undefined &&
                 radioSelect('rank', t('filterPanel.orderBy.rank'))}
               {radioSelect('created', t('filterPanel.orderBy.created'))}
-              {orderByFilters.showTitleOrder &&
+              {(postFilters || collectionFilters) &&
                 radioSelect('title', t('filterPanel.orderBy.title'))}
-              {orderByFilters.showViewsOrder &&
+              {postFilters &&
                 radioSelect('views', t('filterPanel.orderBy.views'))}
-              {orderByFilters.showScoreOrder &&
+              {(postFilters || answerFilters) &&
                 radioSelect('score', t('filterPanel.orderBy.score'))}
-              {orderByFilters.showTrendsOrder &&
+              {postFilters &&
                 radioSelect('trend', t('filterPanel.orderBy.trend'))}
-              {orderByFilters.showAnswersOrder &&
+              {postFilters &&
+                type !== 'article' &&
                 radioSelect('answersCount', t('filterPanel.orderBy.answers'))}
-              {orderByFilters.showUpdatedOrder &&
+              {(postFilters || answerFilters) &&
                 radioSelect('updated', t('filterPanel.orderBy.updated'))}
             </RadioGroup>
           </FormControl>

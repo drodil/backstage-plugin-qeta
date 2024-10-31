@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { FilterPanel } from '../FilterPanel/FilterPanel';
+import { FilterPanel, PostFilters } from '../FilterPanel/FilterPanel';
 import { PostList } from './PostList';
 import FilterList from '@material-ui/icons/FilterList';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
@@ -144,7 +144,7 @@ export const PostsContainer = (props: PaginatedPostsProps) => {
       </Grid>
       {(showFilters ?? true) && (
         <Collapse in={showFilterPanel}>
-          <FilterPanel
+          <FilterPanel<PostFilters>
             onChange={onFilterChange}
             filters={filters}
             type={type}

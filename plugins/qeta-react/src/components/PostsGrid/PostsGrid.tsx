@@ -15,7 +15,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import FilterList from '@material-ui/icons/FilterList';
-import { FilterPanel } from '../FilterPanel/FilterPanel';
+import { FilterPanel, PostFilters } from '../FilterPanel/FilterPanel';
 import { PostsGridContent } from './PostsGridContent';
 import { capitalize } from 'lodash';
 import {
@@ -148,19 +148,10 @@ export const PostsGrid = (props: PostGridProps) => {
       </Grid>
       {(showFilters ?? true) && (
         <Collapse in={showFilterPanel}>
-          <FilterPanel
+          <FilterPanel<PostFilters>
             onChange={onFilterChange}
             filters={filters}
             type={type}
-            orderByFilters={{
-              showRankOrder: props.collectionId !== undefined,
-              showTrendsOrder: true,
-              showAnswersOrder: type === 'question',
-              showViewsOrder: true,
-              showTitleOrder: true,
-              showScoreOrder: true,
-              showUpdatedOrder: true,
-            }}
           />
         </Collapse>
       )}

@@ -4,18 +4,15 @@ import { useSearchParams } from 'react-router-dom';
 import {
   FilterKey,
   filterKeys,
-  Filters,
+  PostFilters,
 } from '../components/FilterPanel/FilterPanel';
 import useDebounce from 'react-use/lib/useDebounce';
 import { getFiltersWithDateRange } from '../utils';
-import { filterTags, PostType } from '@drodil/backstage-plugin-qeta-common';
+import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from './useQetaApi';
 
-export type PaginatedPostsProps = {
-  type?: PostType;
-  tags?: string[];
+export type PaginatedPostsProps = PostFilters & {
   author?: string;
-  entity?: string;
   showFilters?: boolean;
   showTitle?: boolean;
   title?: string;
@@ -25,15 +22,6 @@ export type PaginatedPostsProps = {
   showNoQuestionsBtn?: boolean;
   initialPageSize?: number;
   collectionId?: number;
-  orderBy?:
-    | 'created'
-    | 'title'
-    | 'views'
-    | 'score'
-    | 'trend'
-    | 'answersCount'
-    | 'updated';
-  order?: 'asc' | 'desc';
 };
 
 export function usePaginatedPosts(props: PaginatedPostsProps) {
@@ -45,13 +33,13 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [filters, setFilters] = React.useState<Filters>({
+  const [filters, setFilters] = React.useState<PostFilters>({
     order: props.order ?? 'desc',
     orderBy: props.orderBy ?? 'created',
-    noAnswers: 'false',
-    noCorrectAnswer: 'false',
-    noVotes: 'false',
-    searchQuery: '',
+    noAnswers: props.noAnswers ?? 'false',
+    noCorrectAnswer: props.noCorrectAnswer ?? 'false',
+    noVotes: props.noVotes ?? 'false',
+    searchQuery: props.searchQuery ?? '',
     entity: entity ?? '',
     tags: tags ?? [],
     dateRange: '',
@@ -72,7 +60,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     setPage(prev => prev + 1);
   };
 
-  const onFilterChange = (key: FilterKey, value: string | string[]) => {
+  const onFilterChange = (key: keyof PostFilters, value: string | string[]) => {
     if (filters[key] === value) {
       return;
     }

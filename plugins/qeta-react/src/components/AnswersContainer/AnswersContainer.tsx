@@ -15,10 +15,10 @@ import { useAnalytics } from '@backstage/core-plugin-api';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { getFiltersWithDateRange } from '../../utils/utils';
 import {
+  AnswerFilters,
   FilterKey,
   filterKeys,
   FilterPanel,
-  Filters,
 } from '../FilterPanel/FilterPanel';
 import { AnswerList } from './AnswerList';
 import { useQetaApi, useTranslation } from '../../hooks';
@@ -40,12 +40,11 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [filters, setFilters] = React.useState<Filters>({
+  const [filters, setFilters] = React.useState<AnswerFilters>({
     order: 'desc',
     orderBy: 'created',
     searchQuery: '',
     dateRange: '',
-    noCorrectAnswer: 'false',
     entity: entity ?? '',
     tags: tags ?? [],
     noVotes: 'false',
@@ -61,7 +60,10 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
     });
   };
 
-  const onFilterChange = (key: FilterKey, value: string | string[]) => {
+  const onFilterChange = (
+    key: keyof AnswerFilters,
+    value: string | string[],
+  ) => {
     if (filters[key] === value) {
       return;
     }
@@ -229,21 +231,9 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
       </Grid>
       {(showFilters ?? true) && (
         <Collapse in={showFilterPanel}>
-          <FilterPanel
+          <FilterPanel<AnswerFilters>
             onChange={onFilterChange}
             filters={filters}
-            orderByFilters={{
-              showTrendsOrder: false,
-              showViewsOrder: false,
-              showAnswersOrder: false,
-              showUpdatedOrder: true,
-              showScoreOrder: true,
-            }}
-            quickFilters={{
-              showNoVotes: true,
-              showNoCorrectAnswer: false,
-              showNoAnswers: false,
-            }}
           />
         </Collapse>
       )}
