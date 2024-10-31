@@ -3,7 +3,11 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('collection_posts', table => {
-    table.increments('rank', { primaryKey: false });
+    if (knex.client.config.client === 'pg') {
+      table.increments('rank', { primaryKey: false });
+    } else {
+      table.integer('rank').defaultTo(0).notNullable();
+    }
   });
 };
 
