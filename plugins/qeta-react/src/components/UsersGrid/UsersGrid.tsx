@@ -4,7 +4,6 @@ import { useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { UsersGridContent } from './UsersGridContent';
 import useDebounce from 'react-use/lib/useDebounce';
-import { NoUsersCard } from './NoUsersCard';
 
 type EntityFilters = {
   order: 'asc' | 'desc';
@@ -53,10 +52,6 @@ export const UsersGrid = () => {
     }
   }, [response, entitiesPerPage]);
 
-  if (!response?.users || response.users.length === 0) {
-    return <NoUsersCard />;
-  }
-
   return (
     <Grid container className="qetaUsersContainer">
       <Grid item xs={12}>
@@ -74,13 +69,15 @@ export const UsersGrid = () => {
         <IconButton type="submit" aria-label="search" />
       </Grid>
       <UsersGridContent response={response} loading={loading} error={error} />
-      <QetaPagination
-        pageSize={entitiesPerPage}
-        handlePageChange={(_e, p) => setPage(p)}
-        handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
-        page={page}
-        pageCount={pageCount}
-      />
+      {response && response?.total > 0 && (
+        <QetaPagination
+          pageSize={entitiesPerPage}
+          handlePageChange={(_e, p) => setPage(p)}
+          handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
+          page={page}
+          pageCount={pageCount}
+        />
+      )}
     </Grid>
   );
 };

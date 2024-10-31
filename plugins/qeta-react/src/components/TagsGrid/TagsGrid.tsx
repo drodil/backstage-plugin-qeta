@@ -4,7 +4,6 @@ import { useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import useDebounce from 'react-use/lib/useDebounce';
 import { TagsGridContent } from './TagsGridContent';
-import { NoTagsCard } from './NoTagsCard';
 
 type TagFilters = {
   order: 'asc' | 'desc';
@@ -64,10 +63,6 @@ export const TagsGrid = () => {
     retry();
   };
 
-  if (!response?.tags || response.tags.length === 0) {
-    return <NoTagsCard />;
-  }
-
   return (
     <Grid container className="qetaTagsContainer">
       <Grid item xs={12}>
@@ -92,13 +87,15 @@ export const TagsGrid = () => {
         loading={loading}
         error={error}
       />
-      <QetaPagination
-        pageSize={tagsPerPage}
-        handlePageChange={(_e, p) => setPage(p)}
-        handlePageSizeChange={e => setTagsPerPage(Number(e.target.value))}
-        page={page}
-        pageCount={pageCount}
-      />
+      {response && response?.total > 0 && (
+        <QetaPagination
+          pageSize={tagsPerPage}
+          handlePageChange={(_e, p) => setPage(p)}
+          handlePageSizeChange={e => setTagsPerPage(Number(e.target.value))}
+          page={page}
+          pageCount={pageCount}
+        />
+      )}
     </Grid>
   );
 };

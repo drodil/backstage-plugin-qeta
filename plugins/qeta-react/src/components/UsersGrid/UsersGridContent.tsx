@@ -1,35 +1,43 @@
 import { Grid, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { UsersResponse } from '@drodil/backstage-plugin-qeta-common';
-import { Progress, WarningPanel } from '@backstage/core-components';
+import { WarningPanel } from '@backstage/core-components';
 import { useTranslation } from '../../hooks';
 import { UsersGridItem } from './UsersGridItem';
+import { NoUsersCard } from './NoUsersCard';
+import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 
 export const UsersGridContent = (props: {
   loading: boolean;
   error: any;
   response?: UsersResponse;
 }) => {
-  const { response, loading, error } = props;
+  const { response, error, loading } = props;
   const { t } = useTranslation();
   const [initialLoad, setInitialLoad] = useState(true);
-
   useEffect(() => {
-    if (!initialLoad) {
+    if (!loading) {
       setInitialLoad(false);
     }
   }, [initialLoad, loading]);
 
-  if (loading && initialLoad) {
-    return <Progress />;
+  if (loading) {
+    if (initialLoad) {
+      return <LoadingGrid />;
+    }
+    return null;
   }
 
   if (error || response === undefined) {
     return (
-      <WarningPanel severity="error" title={t('tagPage.errorLoading')}>
+      <WarningPanel severity="error" title={t('usersPage.errorLoading')}>
         {error?.message}
       </WarningPanel>
     );
+  }
+
+  if (!response?.users || response.users.length === 0) {
+    return <NoUsersCard />;
   }
 
   return (

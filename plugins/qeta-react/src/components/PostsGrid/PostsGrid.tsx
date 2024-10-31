@@ -120,12 +120,17 @@ export const PostsGrid = (props: PaginatedPostsProps) => {
         )}
       </Grid>
       <Grid container justifyContent="space-between">
-        <Grid item>
-          <Typography variant="h6" className="qetaPostsContainerQuestionCount">
-            {t('common.posts', { count: response?.total ?? 0, itemType })}
-          </Typography>
-        </Grid>
-        {(showFilters ?? true) && (
+        {response && (
+          <Grid item>
+            <Typography
+              variant="h6"
+              className="qetaPostsContainerQuestionCount"
+            >
+              {t('common.posts', { count: response?.total ?? 0, itemType })}
+            </Typography>
+          </Grid>
+        )}
+        {response && (showFilters ?? true) && (
           <Grid item>
             <Button
               onClick={() => setShowFilterPanel(!showFilterPanel)}

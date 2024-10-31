@@ -2,8 +2,10 @@ import { Grid, Typography } from '@material-ui/core';
 import { TagGridItem } from './TagGridItem';
 import React, { useEffect, useState } from 'react';
 import { TagsResponse } from '@drodil/backstage-plugin-qeta-common';
-import { Progress, WarningPanel } from '@backstage/core-components';
+import { WarningPanel } from '@backstage/core-components';
 import { useTranslation } from '../../hooks';
+import { NoTagsCard } from './NoTagsCard';
+import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 
 export const TagsGridContent = (props: {
   loading: boolean;
@@ -14,15 +16,17 @@ export const TagsGridContent = (props: {
   const { response, onTagEdit, loading, error } = props;
   const { t } = useTranslation();
   const [initialLoad, setInitialLoad] = useState(true);
-
   useEffect(() => {
-    if (!initialLoad) {
+    if (!loading) {
       setInitialLoad(false);
     }
   }, [initialLoad, loading]);
 
-  if (loading && initialLoad) {
-    return <Progress />;
+  if (loading) {
+    if (initialLoad) {
+      return <LoadingGrid />;
+    }
+    return null;
   }
 
   if (error || response === undefined) {
@@ -31,6 +35,10 @@ export const TagsGridContent = (props: {
         {error?.message}
       </WarningPanel>
     );
+  }
+
+  if (!response?.tags || response.tags.length === 0) {
+    return <NoTagsCard />;
   }
 
   return (

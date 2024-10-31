@@ -1,11 +1,12 @@
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
 import React, { useEffect, useRef, useState } from 'react';
-import { Progress, WarningPanel } from '@backstage/core-components';
+import { WarningPanel } from '@backstage/core-components';
 import { NoPostsCard } from '../PostsContainer/NoPostsCard';
 import { Box, Grid } from '@material-ui/core';
 import { PostsGridItem } from './PostsGridItem';
 import { useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
+import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 
 export const PostsGridContent = (props: {
   loading: boolean;
@@ -42,7 +43,7 @@ export const PostsGridContent = (props: {
   const gridRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!initialLoad) {
+    if (!loading) {
       setInitialLoad(false);
     }
   }, [initialLoad, loading]);
@@ -66,8 +67,11 @@ export const PostsGridContent = (props: {
     onPageSizeChange(Number.parseInt(event.target.value as string, 10));
   };
 
-  if (loading && initialLoad) {
-    return <Progress />;
+  if (loading) {
+    if (initialLoad) {
+      return <LoadingGrid />;
+    }
+    return null;
   }
 
   const itemType = (type ?? 'post') as any;
@@ -83,7 +87,7 @@ export const PostsGridContent = (props: {
     );
   }
 
-  if (initialLoad && (!response.posts || response.posts.length === 0)) {
+  if (!response.posts || response.posts.length === 0) {
     return (
       <NoPostsCard
         showNoPostsBtn={showNoQuestionsBtn}

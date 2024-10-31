@@ -4,7 +4,6 @@ import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { EntitiesGridContent } from './EntitiesGridContent';
-import { NoEntitiesCard } from './NoEntitiesCard';
 
 type EntityFilters = {
   order: 'asc' | 'desc';
@@ -58,10 +57,6 @@ export const EntitiesGrid = () => {
     }
   }, [response, entitiesPerPage]);
 
-  if (!response?.entities || response.entities.length === 0) {
-    return <NoEntitiesCard />;
-  }
-
   return (
     <Grid container className="qetaEntitiesContainer">
       <Grid item xs={12}>
@@ -83,13 +78,15 @@ export const EntitiesGrid = () => {
         loading={loading}
         error={error}
       />
-      <QetaPagination
-        pageSize={entitiesPerPage}
-        handlePageChange={(_e, p) => setPage(p)}
-        handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
-        page={page}
-        pageCount={pageCount}
-      />
+      {response && response?.total > 0 && (
+        <QetaPagination
+          pageSize={entitiesPerPage}
+          handlePageChange={(_e, p) => setPage(p)}
+          handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
+          page={page}
+          pageCount={pageCount}
+        />
+      )}
     </Grid>
   );
 };
