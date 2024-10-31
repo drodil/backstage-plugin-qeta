@@ -61,7 +61,12 @@ export const QuestionCard = (props: { question: PostResponse }) => {
         className={`qetaQuestionCard ${styles.questionCard}`}
       >
         <CardContent>
-          <Grid container spacing={0} justifyContent="flex-start">
+          <Grid
+            container
+            spacing={0}
+            justifyContent="flex-start"
+            style={{ flexWrap: 'nowrap' }}
+          >
             <Grid item justifyContent="center">
               <div className={styles.questionCardVote}>
                 <VoteButtons entity={questionEntity} />
