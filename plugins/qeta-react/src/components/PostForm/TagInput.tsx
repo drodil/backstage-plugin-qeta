@@ -1,6 +1,6 @@
 import { Control, Controller } from 'react-hook-form';
 import { Autocomplete } from '@material-ui/lab';
-import { TextField } from '@material-ui/core';
+import { TextField, Tooltip } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { qetaApiRef } from '../../api';
 import { TagAndEntitiesFormValues } from './types';
@@ -28,16 +28,28 @@ export const TagInput = (props: {
     [config],
   );
   const [availableTags, setAvailableTags] = React.useState<string[] | null>([]);
+  const [tagDescriptions, setTagDescriptions] = React.useState<
+    Record<string, string>
+  >({});
   useEffect(() => {
     if (allowCreation) {
       qetaApi
         .getTags()
         .catch(_ => setAvailableTags(null))
-        .then(data =>
-          data
-            ? setAvailableTags(data.tags.map(tag => tag.tag))
-            : setAvailableTags(null),
-        );
+        .then(data => {
+          if (data) {
+            setAvailableTags(data.tags.map(tag => tag.tag));
+            setTagDescriptions(
+              data.tags.reduce((acc, tag) => {
+                if (!tag.description) {
+                  return acc;
+                }
+                acc[tag.tag] = tag.description;
+                return acc;
+              }, {} as Record<string, string>),
+            );
+          }
+        });
     } else {
       setAvailableTags(allowedTags);
     }
@@ -58,6 +70,18 @@ export const TagInput = (props: {
           value={value}
           options={availableTags ?? []}
           freeSolo={allowCreation}
+          renderOption={option => {
+            if (tagDescriptions[option]) {
+              return (
+                <>
+                  <Tooltip title={tagDescriptions[option]}>
+                    <span>{option}</span>
+                  </Tooltip>
+                </>
+              );
+            }
+            return option;
+          }}
           onChange={(_e, newValue) => {
             const tags = filterTags(newValue);
             if (

@@ -89,6 +89,9 @@ export const FilterPanel = (props: FilterPanelProps) => {
   const [availableTags, setAvailableTags] = React.useState<string[] | null>(
     null,
   );
+  const [tagDescriptions, setTagDescriptions] = React.useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     if ((tags && tags.tags && tags.total > 0) || filters.tags) {
@@ -97,6 +100,15 @@ export const FilterPanel = (props: FilterPanelProps) => {
         ts.push(...filters.tags);
       }
       setAvailableTags([...new Set(ts)]);
+      setTagDescriptions(
+        tags?.tags.reduce((acc, tag) => {
+          if (!tag.description) {
+            return acc;
+          }
+          acc[tag.tag] = tag.description;
+          return acc;
+        }, {} as Record<string, string>) ?? {},
+      );
     }
   }, [tags, filters.tags]);
 
@@ -324,6 +336,18 @@ export const FilterPanel = (props: FilterPanelProps) => {
               value={filters.tags}
               id="tags-select"
               options={availableTags}
+              renderOption={option => {
+                if (tagDescriptions[option]) {
+                  return (
+                    <>
+                      <Tooltip title={tagDescriptions[option]}>
+                        <span>{option}</span>
+                      </Tooltip>
+                    </>
+                  );
+                }
+                return option;
+              }}
               onChange={(_e, newValue) => {
                 handleChange({
                   target: {
