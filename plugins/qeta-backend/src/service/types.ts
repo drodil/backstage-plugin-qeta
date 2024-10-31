@@ -110,7 +110,15 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     author: { type: 'string', nullable: true },
     orderBy: {
       type: 'string',
-      enum: ['views', 'score', 'answersCount', 'created', 'updated'],
+      enum: [
+        'views',
+        'title',
+        'trend',
+        'score',
+        'answersCount',
+        'created',
+        'updated',
+      ],
       nullable: true,
     },
     collectionId: { type: 'number', nullable: true },

@@ -316,7 +316,7 @@ export class DatabaseQetaStore implements QetaStore {
       query.whereNotNull('user_favorite.postId');
     }
 
-    if (options.includeTrend) {
+    if (options.includeTrend || options.orderBy === 'trend') {
       query.select(
         this.db.raw(
           '((EXTRACT(EPOCH FROM posts.created) / EXTRACT(EPOCH FROM now())) * (SELECT coalesce(NULLIF(COUNT(*),0), 1) FROM post_views WHERE ?? = ??) * (SELECT coalesce(NULLIF(COUNT(*),0), 1) FROM answers WHERE ?? = ??) * (SELECT coalesce(NULLIF(SUM(score),0), 1) FROM post_votes WHERE ?? = ??)) as trend',

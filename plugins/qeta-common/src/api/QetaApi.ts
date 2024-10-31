@@ -45,7 +45,14 @@ export interface PostsQuery extends PaginatedQuery {
   tags?: string[];
   entity?: string;
   author?: string;
-  orderBy?: 'views' | 'score' | 'answersCount' | 'created' | 'updated';
+  orderBy?:
+    | 'views'
+    | 'title'
+    | 'score'
+    | 'trend'
+    | 'answersCount'
+    | 'created'
+    | 'updated';
   order?: 'desc' | 'asc';
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;

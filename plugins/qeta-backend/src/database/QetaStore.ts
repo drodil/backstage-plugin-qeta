@@ -72,6 +72,7 @@ export interface PostOptions {
   author?: string | string[];
   orderBy?:
     | 'views'
+    | 'title'
     | 'score'
     | 'answersCount'
     | 'created'

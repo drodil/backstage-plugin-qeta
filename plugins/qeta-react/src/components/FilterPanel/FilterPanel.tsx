@@ -161,9 +161,17 @@ export const FilterPanel = (props: FilterPanelProps) => {
 
   return (
     <Box className={`qetaFilterPanel ${styles.filterPanel}`}>
-      <Grid container spacing={4}>
-        <Grid item md={3} xs={4}>
+      <Grid
+        container
+        spacing={4}
+        alignItems="stretch"
+        justifyContent="space-evenly"
+      >
+        <Grid item>
           <FormGroup>
+            <FormLabel id="qeta-filter-quick">
+              {t('filterPanel.quickFilters.label')}
+            </FormLabel>
             {!answerFilters && type !== 'article' && (
               <FormControlLabel
                 control={
@@ -203,7 +211,7 @@ export const FilterPanel = (props: FilterPanelProps) => {
             />
           </FormGroup>
         </Grid>
-        <Grid item md={2} xs={4}>
+        <Grid item>
           <FormControl>
             <FormLabel id="qeta-filter-order-by">
               {t('filterPanel.orderBy.label')}
@@ -213,18 +221,26 @@ export const FilterPanel = (props: FilterPanelProps) => {
               name="orderBy"
               value={filters.orderBy}
               onChange={handleChange}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '0 1rem',
+              }}
             >
               {radioSelect('created', t('filterPanel.orderBy.created'))}
+              {radioSelect('title', t('filterPanel.orderBy.title'))}
               {!answerFilters &&
                 radioSelect('views', t('filterPanel.orderBy.views'))}
               {radioSelect('score', t('filterPanel.orderBy.score'))}
+              {!answerFilters &&
+                radioSelect('trend', t('filterPanel.orderBy.trend'))}
               {!answerFilters &&
                 radioSelect('answersCount', t('filterPanel.orderBy.answers'))}
               {radioSelect('updated', t('filterPanel.orderBy.updated'))}
             </RadioGroup>
           </FormControl>
         </Grid>
-        <Grid item md={2} xs={4}>
+        <Grid item>
           <FormControl>
             <FormLabel id="qeta-filter-order">
               {t('filterPanel.order.label')}
@@ -240,83 +256,85 @@ export const FilterPanel = (props: FilterPanelProps) => {
             </RadioGroup>
           </FormControl>
         </Grid>
-        {((availableEntities && availableEntities.length > 0) ||
-          (availableTags && availableTags.length > 0)) &&
-          (showEntityFilter || showTagFilter) && (
-            <Grid item md={4} xs={8}>
-              <FormLabel id="qeta-filter-entity">
-                {t('filterPanel.filters.label')}
-              </FormLabel>
-              {showEntityFilter &&
-                availableEntities &&
-                availableEntities.length > 0 && (
-                  <Autocomplete
-                    multiple={false}
-                    className="qetaEntityFilter"
-                    value={selectedEntity ?? null}
-                    id="entities-select"
-                    options={availableEntities}
-                    getOptionLabel={getEntityTitle}
-                    getOptionSelected={(o, v) => {
-                      if (!o || !v) {
-                        return false;
-                      }
-                      return stringifyEntityRef(o) === stringifyEntityRef(v);
-                    }}
-                    onChange={(_e, newValue) => {
-                      handleChange({
-                        target: {
-                          name: 'entity',
-                          value: newValue ? stringifyEntityRef(newValue) : '',
-                        },
-                      });
-                    }}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        margin="normal"
-                        label={t('filterPanel.filters.entity.label')}
-                        placeholder={t(
-                          'filterPanel.filters.entity.placeholder',
-                        )}
-                      />
-                    )}
-                  />
-                )}
-              {showTagFilter && availableTags && availableTags.length > 0 && (
-                <Autocomplete
-                  multiple
-                  className="qetaTagFilter"
-                  value={filters.tags}
-                  id="tags-select"
-                  options={availableTags}
-                  onChange={(_e, newValue) => {
-                    handleChange({
-                      target: {
-                        name: 'tags',
-                        value: newValue,
-                      },
-                    });
-                  }}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      margin="normal"
-                      label={t('filterPanel.filters.tag.label')}
-                      placeholder={t('filterPanel.filters.tag.placeholder')}
-                    />
-                  )}
-                />
-              )}
-            </Grid>
-          )}
       </Grid>
       <Box marginY="24px">
         <Divider />
       </Box>
-      <DateRangeFilter value={filters.dateRange} onChange={onChange} />
+      <Grid container alignItems="stretch" justifyContent="space-evenly">
+        <Grid item>
+          <DateRangeFilter value={filters.dateRange} onChange={onChange} />
+        </Grid>
+
+        {showEntityFilter &&
+          availableEntities &&
+          availableEntities.length > 0 && (
+            <Grid item>
+              <Autocomplete
+                multiple={false}
+                disablePortal
+                className="qetaEntityFilter"
+                value={selectedEntity ?? null}
+                id="entities-select"
+                options={availableEntities}
+                getOptionLabel={getEntityTitle}
+                getOptionSelected={(o, v) => {
+                  if (!o || !v) {
+                    return false;
+                  }
+                  return stringifyEntityRef(o) === stringifyEntityRef(v);
+                }}
+                onChange={(_e, newValue) => {
+                  handleChange({
+                    target: {
+                      name: 'entity',
+                      value: newValue ? stringifyEntityRef(newValue) : '',
+                    },
+                  });
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    style={{ minWidth: '200px' }}
+                    variant="outlined"
+                    margin="normal"
+                    label={t('filterPanel.filters.entity.label')}
+                    placeholder={t('filterPanel.filters.entity.placeholder')}
+                  />
+                )}
+              />
+            </Grid>
+          )}
+        {showTagFilter && availableTags && availableTags.length > 0 && (
+          <Grid item>
+            <Autocomplete
+              multiple
+              style={{ minWidth: '200px' }}
+              disablePortal
+              className="qetaTagFilter"
+              value={filters.tags}
+              id="tags-select"
+              options={availableTags}
+              onChange={(_e, newValue) => {
+                handleChange({
+                  target: {
+                    name: 'tags',
+                    value: newValue,
+                  },
+                });
+              }}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  margin="normal"
+                  label={t('filterPanel.filters.tag.label')}
+                  placeholder={t('filterPanel.filters.tag.placeholder')}
+                />
+              )}
+            />
+          </Grid>
+        )}
+      </Grid>
     </Box>
   );
 };

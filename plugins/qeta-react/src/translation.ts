@@ -379,11 +379,16 @@ export const qetaTranslationRef = createTranslationRef({
       noVotes: {
         label: 'No votes',
       },
+      quickFilters: {
+        label: 'Quick filters',
+      },
       orderBy: {
         label: 'Order by',
+        title: 'Title',
         created: 'Created',
         views: 'Views',
         score: 'Score',
+        trend: 'Trend',
         answers: 'Answers',
         updated: 'Updated',
       },
