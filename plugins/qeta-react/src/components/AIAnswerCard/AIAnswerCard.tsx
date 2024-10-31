@@ -53,12 +53,16 @@ export type AIAnswerCardProps = {
   style?: React.CSSProperties;
 };
 
+const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-ai-expanded';
+
 export const AIAnswerCard = (props: AIAnswerCardProps) => {
   const { question, draft, article, style, debounceMs = 3000 } = props;
   const [answer, setAnswer] = React.useState<AIResponse | null | undefined>(
     undefined,
   );
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(
+    localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
+  );
   const styles = useStyles();
   const { t } = useTranslation();
   const config = useApi(configApiRef);
@@ -171,7 +175,14 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
               title={expanded ? t('aiAnswerCard.hide') : t('aiAnswerCard.show')}
             >
               <IconButton
-                onClick={() => setExpanded(!expanded)}
+                color="primary"
+                onClick={() => {
+                  setExpanded(!expanded);
+                  localStorage.setItem(
+                    EXPANDED_LOCAL_STORAGE_KEY,
+                    expanded ? 'false' : 'true',
+                  );
+                }}
                 aria-expanded={expanded}
               >
                 <KeyboardArrowDownIcon />
