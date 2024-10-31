@@ -16,10 +16,16 @@ export const useStyles = makeStyles(
   theme => {
     return {
       commentBox: {
-        paddingBottom: theme.spacing(2),
+        padding: theme.spacing(2),
+        '&:hover': {
+          backgroundColor: theme.palette.background.paper,
+        },
       },
       markdown: {
         display: 'inline',
+        '& *:first-child': {
+          marginTop: 0,
+        },
         '& *:last-child': {
           display: 'inline',
         },
