@@ -55,6 +55,7 @@ export type Filters = {
   tags?: string[];
   dateRange?: string;
   collectionId?: number;
+  type?: PostType;
 };
 
 export interface FilterPanelProps {

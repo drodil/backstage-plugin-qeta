@@ -47,6 +47,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     tags: tags ?? [],
     dateRange: '',
     collectionId: props.collectionId,
+    type,
   });
 
   const onPageChange = (value: number) => {
