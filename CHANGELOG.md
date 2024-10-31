@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.8.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.7.2...v3.8.0) (2024-10-31)
+
+
+### Features
+
+* add cache-control for attachments ([af2e24f](https://github.com/drodil/backstage-plugin-qeta/commit/af2e24f2fce27fd15609e84b0e10112ab0d82888)), closes [#231](https://github.com/drodil/backstage-plugin-qeta/issues/231)
+* add proper loading icon for containers ([9236fb1](https://github.com/drodil/backstage-plugin-qeta/commit/9236fb12561946e5ab50bf84c2ee949e10f467c7))
+* allow ordering by title and trend ([fde94d5](https://github.com/drodil/backstage-plugin-qeta/commit/fde94d5c9f78059cee5b4f20335a0ec1a2b5f83d))
+* allow ranking posts inside collection ([e81f728](https://github.com/drodil/backstage-plugin-qeta/commit/e81f728be6b2c43bf28c2f9e31ab4f71e7f03e5a))
+* show also tag descriptions as tooltip in inputs ([de0fae5](https://github.com/drodil/backstage-plugin-qeta/commit/de0fae5afeb1bcd058f2fa0dfe5042a5f5d3abcf))
+
+
+### Bug Fixes
+
+* add type to filters so changing filters doesn't override it ([f2cd96e](https://github.com/drodil/backstage-plugin-qeta/commit/f2cd96e1269ae9e427328f3c9f937dad253f3271))
+* fix flex wrap in question card ([9d98989](https://github.com/drodil/backstage-plugin-qeta/commit/9d98989d4066987f296a5a919891e835be52058e))
+* question content styling ([4fae219](https://github.com/drodil/backstage-plugin-qeta/commit/4fae219a8021ac8bfa77056d6635071370e95942))
+* sqlite tests with rank column ([09f5c5a](https://github.com/drodil/backstage-plugin-qeta/commit/09f5c5a2cda5dc219d250c08eaa4b4406f99dd68))
+
 ### [3.7.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.7.1...v3.7.2) (2024-10-31)
 
 
