@@ -160,6 +160,8 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
     response.writeHead(200, {
       'Content-Type': attachment.mimeType,
       'Content-Length': imageBuffer ? imageBuffer.byteLength : '',
+      'Cache-Control': 'public, max-age=31536000',
+      'Last-Modified': attachment.created.toUTCString(),
     });
 
     response.end(imageBuffer);
