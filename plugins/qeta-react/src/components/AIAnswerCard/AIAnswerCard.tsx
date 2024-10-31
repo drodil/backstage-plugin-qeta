@@ -26,6 +26,7 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 export type QetaAIAnswerCardClassKey = 'card';
 
@@ -175,7 +176,6 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
               title={expanded ? t('aiAnswerCard.hide') : t('aiAnswerCard.show')}
             >
               <IconButton
-                color="primary"
                 onClick={() => {
                   setExpanded(!expanded);
                   localStorage.setItem(
@@ -185,7 +185,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
                 }}
                 aria-expanded={expanded}
               >
-                <KeyboardArrowDownIcon />
+                {expanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
               </IconButton>
             </Tooltip>
           </>
