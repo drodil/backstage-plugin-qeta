@@ -8,7 +8,6 @@ import {
   Answers,
   AnswersOptions,
   AttachmentParameters,
-  CollectionOptions,
   CollectionPostRank,
   Collections,
   EntitiesResponse,
@@ -32,6 +31,7 @@ import {
   Answer,
   Attachment,
   Collection,
+  CollectionsQuery,
   Comment,
   EntitiesQuery,
   filterTags,
@@ -1612,12 +1612,27 @@ export class DatabaseQetaStore implements QetaStore {
 
   async getCollections(
     user_ref: string,
-    options: CollectionOptions,
+    options: CollectionsQuery,
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Collections> {
-    const query = this.db('collections');
+    const query = this.db('collections')
+      .select('collections.*')
+      .leftJoin(
+        'collection_posts',
+        'collections.id',
+        'collection_posts.collectionId',
+      )
+      .groupBy('collections.id');
+
     if (options.owner) {
       query.where('owner', options.owner);
+    }
+
+    if (options.fromDate && options.toDate) {
+      query.whereBetween('collections.created', [
+        `${options.fromDate} 00:00:00.000+00`,
+        `${options.toDate} 23:59:59.999+00`,
+      ]);
     }
 
     if (options.searchQuery) {
@@ -1628,11 +1643,36 @@ export class DatabaseQetaStore implements QetaStore {
       );
     }
 
+    if (options.tags) {
+      const tags = filterTags(options.tags);
+      tags.forEach((t, i) => {
+        query.innerJoin(
+          `post_tags AS qt${i}`,
+          'collection_posts.postId',
+          `qt${i}.postId`,
+        );
+        query.innerJoin(`tags AS t${i}`, `qt${i}.tagId`, `t${i}.id`);
+        query.where(`t${i}.tag`, '=', t);
+      });
+    }
+
+    if (options.entity) {
+      query.leftJoin(
+        'post_entities',
+        'collection_posts.postId',
+        'post_entities.postId',
+      );
+      query.leftJoin('entities', 'post_entities.entityId', 'entities.id');
+      query.where('entities.entity_ref', '=', options.entity);
+    }
+
     query.where('owner', user_ref).orWhere('readAccess', 'public');
     const totalQuery = query.clone();
 
     if (options.orderBy) {
       query.orderBy(options.orderBy, options.order || 'desc');
+    } else {
+      query.orderBy('created', 'desc');
     }
 
     if (options.limit) {

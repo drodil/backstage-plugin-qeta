@@ -1,9 +1,11 @@
 import { CollectionsResponse } from '@drodil/backstage-plugin-qeta-common';
 import React, { useEffect, useState } from 'react';
-import { Progress, WarningPanel } from '@backstage/core-components';
-import { Grid, Typography } from '@material-ui/core';
+import { WarningPanel } from '@backstage/core-components';
+import { Grid } from '@material-ui/core';
 import { CollectionsGridItem } from './CollectionsGridItem';
 import { useTranslation } from '../../hooks';
+import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
+import { NoCollectionsCard } from './NoCollectionsCard';
 
 export const CollectionsGridContent = (props: {
   loading: boolean;
@@ -15,13 +17,13 @@ export const CollectionsGridContent = (props: {
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (!initialLoad) {
+    if (!loading) {
       setInitialLoad(false);
     }
   }, [initialLoad, loading]);
 
   if (loading && initialLoad) {
-    return <Progress />;
+    return <LoadingGrid />;
   }
 
   if (error || response === undefined) {
@@ -35,20 +37,12 @@ export const CollectionsGridContent = (props: {
     );
   }
 
-  if (
-    initialLoad &&
-    (!response.collections || response.collections.length === 0)
-  ) {
-    return <Progress />;
+  if (!response.collections || response.collections.length === 0) {
+    return <NoCollectionsCard />;
   }
 
   return (
     <>
-      <Grid item>
-        <Typography variant="h6" className="qetaPostsContainerQuestionCount">
-          {t('common.collections', { count: response?.total ?? 0 })}
-        </Typography>
-      </Grid>
       <Grid
         container
         item

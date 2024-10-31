@@ -80,7 +80,6 @@ export const TagsGrid = () => {
         />
         <IconButton type="submit" aria-label="search" />
       </Grid>
-
       <TagsGridContent
         response={response}
         onTagEdit={onTagEdit}

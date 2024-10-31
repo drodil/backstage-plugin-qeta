@@ -25,8 +25,15 @@ export type PaginatedPostsProps = {
   showNoQuestionsBtn?: boolean;
   initialPageSize?: number;
   collectionId?: number;
-  orderBy?: string;
-  order?: string;
+  orderBy?:
+    | 'created'
+    | 'title'
+    | 'views'
+    | 'score'
+    | 'trend'
+    | 'answersCount'
+    | 'updated';
+  order?: 'asc' | 'desc';
 };
 
 export function usePaginatedPosts(props: PaginatedPostsProps) {

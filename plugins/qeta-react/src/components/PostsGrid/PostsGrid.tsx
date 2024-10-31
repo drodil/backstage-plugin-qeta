@@ -152,7 +152,15 @@ export const PostsGrid = (props: PostGridProps) => {
             onChange={onFilterChange}
             filters={filters}
             type={type}
-            showRankOrder={props.collectionId !== undefined}
+            orderByFilters={{
+              showRankOrder: props.collectionId !== undefined,
+              showTrendsOrder: true,
+              showAnswersOrder: type === 'question',
+              showViewsOrder: true,
+              showTitleOrder: true,
+              showScoreOrder: true,
+              showUpdatedOrder: true,
+            }}
           />
         </Collapse>
       )}

@@ -3,6 +3,7 @@ import {
   Answer,
   Attachment,
   Collection,
+  CollectionsQuery,
   Comment,
   EntitiesQuery,
   GlobalStat,
@@ -54,15 +55,6 @@ export interface Collections {
 export interface Templates {
   templates: Template[];
   total: number;
-}
-
-export interface CollectionOptions {
-  limit?: number;
-  offset?: number;
-  owner?: string;
-  searchQuery?: string;
-  orderBy?: 'created' | 'owner';
-  order?: 'desc' | 'asc';
 }
 
 export interface PostOptions {
@@ -521,7 +513,7 @@ export interface QetaStore {
 
   getCollections(
     user_ref: string,
-    options: CollectionOptions,
+    options: CollectionsQuery,
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Collections>;
 

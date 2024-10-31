@@ -232,7 +232,18 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
           <FilterPanel
             onChange={onFilterChange}
             filters={filters}
-            answerFilters
+            orderByFilters={{
+              showTrendsOrder: false,
+              showViewsOrder: false,
+              showAnswersOrder: false,
+              showUpdatedOrder: true,
+              showScoreOrder: true,
+            }}
+            quickFilters={{
+              showNoVotes: true,
+              showNoCorrectAnswer: false,
+              showNoAnswers: false,
+            }}
           />
         </Collapse>
       )}

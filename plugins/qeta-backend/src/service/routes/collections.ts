@@ -24,7 +24,7 @@ import {
   AuthorizeResult,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import { wrapAsync } from './util';
+import { validateDateRange, wrapAsync } from './util';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -40,6 +40,15 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       response
         .status(400)
         .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+
+    const validDate = validateDateRange(
+      request.query.fromDate as string,
+      request.query.toDate as string,
+    );
+    if (!validDate?.isValid) {
+      response.status(400).send(validDate);
       return;
     }
 

@@ -48,8 +48,8 @@ export type Filters = {
   order: string;
   orderBy: string;
   noAnswers?: string;
-  noCorrectAnswer: string;
-  noVotes: string;
+  noCorrectAnswer?: string;
+  noVotes?: string;
   searchQuery: string;
   entity?: string;
   tags?: string[];
@@ -65,7 +65,20 @@ export interface FilterPanelProps {
   showTagFilter?: boolean;
   answerFilters?: boolean;
   type?: PostType;
-  showRankOrder?: boolean;
+  orderByFilters?: {
+    showRankOrder?: boolean;
+    showViewsOrder?: boolean;
+    showTrendsOrder?: boolean;
+    showAnswersOrder?: boolean;
+    showUpdatedOrder?: boolean;
+    showScoreOrder?: boolean;
+    showTitleOrder?: boolean;
+  };
+  quickFilters?: {
+    showNoAnswers?: boolean;
+    showNoCorrectAnswer?: boolean;
+    showNoVotes?: boolean;
+  };
 }
 
 export const FilterPanel = (props: FilterPanelProps) => {
@@ -74,9 +87,21 @@ export const FilterPanel = (props: FilterPanelProps) => {
     filters,
     showEntityFilter = true,
     showTagFilter = true,
-    answerFilters = false,
     type,
-    showRankOrder = false,
+    orderByFilters = {
+      showRankOrder: false,
+      showViewsOrder: true,
+      showTrendsOrder: true,
+      showAnswersOrder: true,
+      showUpdatedOrder: true,
+      showScoreOrder: true,
+      showTitleOrder: true,
+    },
+    quickFilters = {
+      showNoAnswers: true,
+      showNoCorrectAnswer: true,
+      showNoVotes: true,
+    },
   } = props;
   const styles = useStyles();
   const { value: refs } = useQetaApi(api => api.getEntities(), []);
@@ -183,50 +208,56 @@ export const FilterPanel = (props: FilterPanelProps) => {
         alignItems="stretch"
         justifyContent="space-evenly"
       >
-        <Grid item>
-          <FormGroup>
-            <FormLabel id="qeta-filter-quick">
-              {t('filterPanel.quickFilters.label')}
-            </FormLabel>
-            {!answerFilters && type !== 'article' && (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    size="small"
-                    name="noAnswers"
-                    onChange={handleChange}
-                    checked={filters.noAnswers === 'true'}
-                  />
-                }
-                label={t('filterPanel.noAnswers.label')}
-              />
-            )}
-            {type !== 'article' && (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    size="small"
-                    name="noCorrectAnswer"
-                    checked={filters.noCorrectAnswer === 'true'}
-                    onChange={handleChange}
-                  />
-                }
-                label={t('filterPanel.noCorrectAnswers.label')}
-              />
-            )}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  name="noVotes"
-                  checked={filters.noVotes === 'true'}
-                  onChange={handleChange}
+        {(quickFilters.showNoVotes ||
+          quickFilters.showNoAnswers ||
+          quickFilters.showNoCorrectAnswer) && (
+          <Grid item>
+            <FormGroup>
+              <FormLabel id="qeta-filter-quick">
+                {t('filterPanel.quickFilters.label')}
+              </FormLabel>
+              {quickFilters.showNoAnswers && type !== 'article' && (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      name="noAnswers"
+                      onChange={handleChange}
+                      checked={filters.noAnswers === 'true'}
+                    />
+                  }
+                  label={t('filterPanel.noAnswers.label')}
                 />
-              }
-              label={t('filterPanel.noVotes.label')}
-            />
-          </FormGroup>
-        </Grid>
+              )}
+              {quickFilters.showNoCorrectAnswer && type !== 'article' && (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      name="noCorrectAnswer"
+                      checked={filters.noCorrectAnswer === 'true'}
+                      onChange={handleChange}
+                    />
+                  }
+                  label={t('filterPanel.noCorrectAnswers.label')}
+                />
+              )}
+              {quickFilters.showNoVotes && (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      name="noVotes"
+                      checked={filters.noVotes === 'true'}
+                      onChange={handleChange}
+                    />
+                  }
+                  label={t('filterPanel.noVotes.label')}
+                />
+              )}
+            </FormGroup>
+          </Grid>
+        )}
         <Grid item>
           <FormControl>
             <FormLabel id="qeta-filter-order-by">
@@ -243,18 +274,21 @@ export const FilterPanel = (props: FilterPanelProps) => {
                 gap: '0 1rem',
               }}
             >
-              {showRankOrder &&
+              {orderByFilters.showRankOrder &&
                 radioSelect('rank', t('filterPanel.orderBy.rank'))}
               {radioSelect('created', t('filterPanel.orderBy.created'))}
-              {radioSelect('title', t('filterPanel.orderBy.title'))}
-              {!answerFilters &&
+              {orderByFilters.showTitleOrder &&
+                radioSelect('title', t('filterPanel.orderBy.title'))}
+              {orderByFilters.showViewsOrder &&
                 radioSelect('views', t('filterPanel.orderBy.views'))}
-              {radioSelect('score', t('filterPanel.orderBy.score'))}
-              {!answerFilters &&
+              {orderByFilters.showScoreOrder &&
+                radioSelect('score', t('filterPanel.orderBy.score'))}
+              {orderByFilters.showTrendsOrder &&
                 radioSelect('trend', t('filterPanel.orderBy.trend'))}
-              {!answerFilters &&
+              {orderByFilters.showAnswersOrder &&
                 radioSelect('answersCount', t('filterPanel.orderBy.answers'))}
-              {radioSelect('updated', t('filterPanel.orderBy.updated'))}
+              {orderByFilters.showUpdatedOrder &&
+                radioSelect('updated', t('filterPanel.orderBy.updated'))}
             </RadioGroup>
           </FormControl>
         </Grid>

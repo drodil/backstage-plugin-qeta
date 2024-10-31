@@ -1,32 +1,38 @@
 import React, { useEffect } from 'react';
-import { Grid, IconButton, TextField } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Collapse,
+  Grid,
+  IconButton,
+  TextField,
+  Typography,
+} from '@material-ui/core';
 import { CollectionsGridContent } from './CollectionsGridContent';
 import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
-import { NoCollectionsCard } from './NoCollectionsCard';
+import { FilterKey, FilterPanel, Filters } from '../FilterPanel/FilterPanel';
+import FilterList from '@material-ui/icons/FilterList';
+import { getFiltersWithDateRange } from '../../utils';
 
 export type CollectionsGridProps = {
   owner?: string;
-};
-
-type CollectionFilters = {
-  order: 'asc' | 'desc';
-  orderBy?: 'created' | 'owner';
-  searchQuery: string;
-  owner?: string;
+  showFilters?: boolean;
 };
 
 export const CollectionsGrid = (props: CollectionsGridProps) => {
+  const { showFilters } = props;
   const { t } = useTranslation();
   const [page, setPage] = React.useState(1);
   const [pageCount, setPageCount] = React.useState(1);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [collectionsPerPage, setCollectionsPerPage] = React.useState(25);
-  const [filters, setFilters] = React.useState<CollectionFilters>({
+  const [showFilterPanel, setShowFilterPanel] = React.useState(false);
+  const [filters, setFilters] = React.useState<Filters>({
     order: 'desc',
     searchQuery: '',
-    owner: props.owner,
+    orderBy: 'created',
   });
 
   const {
@@ -38,7 +44,7 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
       return api.getCollections({
         limit: collectionsPerPage,
         offset: (page - 1) * collectionsPerPage,
-        ...filters,
+        ...(getFiltersWithDateRange(filters) as any),
       });
     },
     [collectionsPerPage, page, filters],
@@ -60,41 +66,84 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
     }
   }, [response, collectionsPerPage]);
 
-  if (!response?.collections || response.collections.length === 0) {
-    return <NoCollectionsCard />;
-  }
+  const onFilterChange = (key: FilterKey, value: string | string[]) => {
+    if (filters[key] === value) {
+      return;
+    }
+    setPage(1);
+    setFilters({ ...filters, ...{ [key]: value } });
+  };
 
   return (
-    <Grid container>
-      <Grid item xs={12}>
-        <TextField
-          id="search-bar"
-          className="text qetaUsersContainerSearchInput"
-          onChange={(
-            event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-          ) => setSearchQuery(event.target.value)}
-          label={t('collectionsPage.search.label')}
-          variant="outlined"
-          placeholder={t('collectionsPage.search.placeholder')}
-          size="small"
-        />
-        <IconButton type="submit" aria-label="search" />
+    <Box>
+      <Grid container justifyContent="space-between">
+        <Grid item xs={12} md={4}>
+          <TextField
+            id="search-bar"
+            className="text qetaUsersContainerSearchInput"
+            onChange={(
+              event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => setSearchQuery(event.target.value)}
+            label={t('collectionsPage.search.label')}
+            variant="outlined"
+            placeholder={t('collectionsPage.search.placeholder')}
+            size="small"
+          />
+          <IconButton type="submit" aria-label="search" />
+        </Grid>
       </Grid>
-
+      <Grid container justifyContent="space-between">
+        {response && (
+          <Grid item>
+            <Typography variant="h6" className="qetaCollectionsContainerdCount">
+              {t('common.collections', { count: response?.total ?? 0 })}
+            </Typography>
+          </Grid>
+        )}
+        {response && (showFilters ?? true) && (
+          <Grid item>
+            <Button
+              onClick={() => setShowFilterPanel(!showFilterPanel)}
+              className="qetaCollectionsContainerFilterPanelBtn"
+              startIcon={<FilterList />}
+            >
+              {t('filterPanel.filterButton')}
+            </Button>
+          </Grid>
+        )}
+      </Grid>
+      {(showFilters ?? true) && (
+        <Collapse in={showFilterPanel}>
+          <FilterPanel
+            onChange={onFilterChange}
+            filters={filters}
+            orderByFilters={{
+              showTitleOrder: true,
+            }}
+            quickFilters={{
+              showNoAnswers: false,
+              showNoCorrectAnswer: false,
+              showNoVotes: false,
+            }}
+          />
+        </Collapse>
+      )}
       <CollectionsGridContent
         loading={loading}
         error={error}
         response={response}
       />
-      <QetaPagination
-        pageSize={collectionsPerPage}
-        handlePageChange={(_e, p) => setPage(p)}
-        handlePageSizeChange={e =>
-          setCollectionsPerPage(Number(e.target.value))
-        }
-        page={page}
-        pageCount={pageCount}
-      />
-    </Grid>
+      {response && response?.total > 0 && (
+        <QetaPagination
+          pageSize={collectionsPerPage}
+          handlePageChange={(_e, p) => setPage(p)}
+          handlePageSizeChange={e =>
+            setCollectionsPerPage(Number(e.target.value))
+          }
+          page={page}
+          pageCount={pageCount}
+        />
+      )}
+    </Box>
   );
 };

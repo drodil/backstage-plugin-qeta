@@ -37,7 +37,7 @@ export interface PaginatedQuery {
   limit?: number;
   offset?: number;
   orderBy?: string;
-  order?: 'desc' | 'asc';
+  order?: string;
   searchQuery?: string;
 }
 
@@ -45,16 +45,6 @@ export interface PostsQuery extends PaginatedQuery {
   tags?: string[];
   entity?: string;
   author?: string;
-  orderBy?:
-    | 'rank'
-    | 'views'
-    | 'title'
-    | 'score'
-    | 'trend'
-    | 'answersCount'
-    | 'created'
-    | 'updated';
-  order?: 'desc' | 'asc';
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
   favorite?: boolean;
@@ -73,7 +63,10 @@ export interface PostsQuery extends PaginatedQuery {
 
 export interface CollectionsQuery extends PaginatedQuery {
   owner?: string;
-  orderBy?: 'created' | 'owner';
+  entity?: string;
+  tags?: string[];
+  fromDate?: string;
+  toDate?: string;
 }
 
 export interface AnswersQuery extends PaginatedQuery {
