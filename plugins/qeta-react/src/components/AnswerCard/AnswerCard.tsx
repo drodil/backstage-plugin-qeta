@@ -59,14 +59,19 @@ export const AnswerCard = (props: {
         }`}
       >
         <CardContent>
-          <Grid container spacing={0} justifyContent="flex-start">
-            <Grid container item xs={1} justifyContent="center">
+          <Grid
+            container
+            spacing={0}
+            justifyContent="flex-start"
+            style={{ flexWrap: 'nowrap' }}
+          >
+            <Grid item justifyContent="center">
               <div className={styles.questionCardVote}>
                 <VoteButtons entity={answerEntity} post={question} />
                 <LinkButton entity={answerEntity} />
               </div>
             </Grid>
-            <Grid item xs={11} className={styles.answerCardContent}>
+            <Grid item className={styles.answerCardContent}>
               {editMode ? (
                 <AnswerForm
                   post={question}
@@ -75,12 +80,14 @@ export const AnswerCard = (props: {
                 />
               ) : (
                 <>
-                  <Typography variant="body1" gutterBottom>
-                    <MarkdownRenderer
-                      className="qetaAndwerCardAnswerContent"
-                      content={answerEntity.content}
-                    />
-                  </Typography>
+                  <Grid item>
+                    <Typography variant="body1" gutterBottom>
+                      <MarkdownRenderer
+                        className="qetaAndwerCardAnswerContent"
+                        content={answerEntity.content}
+                      />
+                    </Typography>
+                  </Grid>
                   <Grid
                     container
                     item
@@ -89,7 +96,7 @@ export const AnswerCard = (props: {
                     alignItems="flex-end"
                     className={styles.questionCardMetadata}
                   >
-                    <Grid item xs={9} style={{ alignSelf: 'flex-end' }}>
+                    <Grid item style={{ alignSelf: 'flex-end' }}>
                       {(answerEntity.own ||
                         answerEntity.canDelete ||
                         answerEntity.canEdit) && (

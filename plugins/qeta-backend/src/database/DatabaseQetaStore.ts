@@ -2385,7 +2385,7 @@ export class DatabaseQetaStore implements QetaStore {
     addPost?: boolean,
   ): Promise<Answer> {
     const additionalInfo = await Promise.all([
-      addVotes ? this.getAnswerVotes(val.id) : undefined,
+      addVotes !== false ? this.getAnswerVotes(val.id) : undefined,
       addComments ? this.getAnswerComments(val.id) : undefined,
       addPost ? this.getPost(user_ref, val.postId, false) : undefined,
       this.db('attachments').select('id').where('answerId', val.id),
@@ -2393,6 +2393,7 @@ export class DatabaseQetaStore implements QetaStore {
     return {
       id: val.id,
       postId: val.postId,
+      own: val.author === user_ref,
       author:
         val.anonymous && val.author !== user_ref ? 'anonymous' : val.author,
       content: val.content,

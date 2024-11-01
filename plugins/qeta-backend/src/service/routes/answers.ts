@@ -75,7 +75,12 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       const filter: PermissionCriteria<QetaFilters> = transformConditions(
         decision.conditions,
       );
-      await database.getAnswers(username, request.query, filter);
+      const answers = await database.getAnswers(
+        username,
+        request.query,
+        filter,
+      );
+      response.json(answers);
     } else {
       response.json(await database.getAnswers(username, request.query));
     }
@@ -448,6 +453,12 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
     await authorize(request, qetaReadPostPermission, options, post);
     await authorize(request, qetaReadAnswerPermission, options, answer);
+    if (answer.own) {
+      response
+        .status(400)
+        .send({ errors: 'Cannot vote on own answer', type: 'body' });
+      return;
+    }
 
     // Act
     const voted = await database.voteAnswer(username, answerId, score);

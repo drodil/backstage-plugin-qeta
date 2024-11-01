@@ -488,6 +488,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await authorize(request, qetaReadPostPermission, options, post);
+    if (post.own) {
+      response
+        .status(400)
+        .send({ errors: 'You cannot vote your own post', type: 'body' });
+      return;
+    }
 
     const voted = await database.votePost(username, postId, score);
 

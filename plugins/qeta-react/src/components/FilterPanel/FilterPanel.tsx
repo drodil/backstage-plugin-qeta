@@ -80,6 +80,7 @@ export type PostFilters = Filters & {
 export type AnswerFilters = Filters & {
   orderBy?: 'created' | 'score' | 'updated';
   noVotes?: 'true' | 'false';
+  noCorrectAnswer?: 'true' | 'false';
 };
 
 export type CollectionFilters = Filters & {
@@ -221,7 +222,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                   label={t('filterPanel.noAnswers.label')}
                 />
               )}
-              {postFilters && type !== 'article' && (
+              {(postFilters || answerFilters) && type !== 'article' && (
                 <FormControlLabel
                   control={
                     <Checkbox
