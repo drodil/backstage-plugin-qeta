@@ -1,17 +1,18 @@
-import { Control, Controller } from 'react-hook-form';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField, Tooltip } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { qetaApiRef } from '../../api';
-import { TagAndEntitiesFormValues } from './types';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslation } from '../../hooks';
+import { FieldError } from 'react-hook-form';
 
 export const TagInput = (props: {
-  control: Control<TagAndEntitiesFormValues>;
+  value?: string[];
+  onChange: (value: string[]) => void;
+  error?: FieldError;
 }) => {
-  const { control } = props;
+  const { value, onChange, error } = props;
   const qetaApi = useApi(qetaApiRef);
   const config = useApi(configApiRef);
   const { t } = useTranslation();
@@ -60,54 +61,48 @@ export const TagInput = (props: {
   }
 
   return (
-    <Controller
-      control={control}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <Autocomplete
-          multiple
-          id="tags-select"
-          className="qetaAskFormTags"
-          value={value}
-          options={availableTags ?? []}
-          freeSolo={allowCreation}
-          renderOption={option => {
-            if (tagDescriptions[option]) {
-              return (
-                <>
-                  <Tooltip title={tagDescriptions[option]}>
-                    <span>{option}</span>
-                  </Tooltip>
-                </>
-              );
-            }
-            return option;
-          }}
-          onChange={(_e, newValue) => {
-            const tags = filterTags(newValue);
-            if (
-              tags &&
-              tags.length <= maximumTags &&
-              tags.length === newValue.length
-            ) {
-              onChange(newValue);
-            }
-          }}
-          renderInput={params => (
-            <TextField
-              {...params}
-              variant="outlined"
-              margin="normal"
-              label={t('tagsInput.label')}
-              placeholder={t('tagsInput.placeholder')}
-              helperText={t('tagsInput.helperText', {
-                max: maximumTags.toString(10),
-              })}
-              error={error !== undefined}
-            />
-          )}
+    <Autocomplete
+      multiple
+      id="tags-select"
+      className="qetaTagInput"
+      value={value}
+      options={availableTags ?? []}
+      freeSolo={allowCreation}
+      renderOption={option => {
+        if (tagDescriptions[option]) {
+          return (
+            <>
+              <Tooltip title={tagDescriptions[option]}>
+                <span>{option}</span>
+              </Tooltip>
+            </>
+          );
+        }
+        return option;
+      }}
+      onChange={(_e, newValue) => {
+        const tags = filterTags(newValue);
+        if (
+          tags &&
+          tags.length <= maximumTags &&
+          tags.length === newValue.length
+        ) {
+          onChange(newValue);
+        }
+      }}
+      renderInput={params => (
+        <TextField
+          {...params}
+          variant="outlined"
+          margin="normal"
+          label={t('tagsInput.label')}
+          placeholder={t('tagsInput.placeholder')}
+          helperText={t('tagsInput.helperText', {
+            max: maximumTags.toString(10),
+          })}
+          error={error !== undefined}
         />
       )}
-      name="tags"
     />
   );
 };

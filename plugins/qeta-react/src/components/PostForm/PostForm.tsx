@@ -7,7 +7,7 @@ import {
 import { Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useCallback, useEffect } from 'react';
-import { Control, Controller, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   PostRequest,
@@ -22,7 +22,7 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { compact } from 'lodash';
 import { TagInput } from './TagInput';
-import { QuestionFormValues, TagAndEntitiesFormValues } from './types';
+import { QuestionFormValues } from './types';
 import { EntitiesInput } from './EntitiesInput';
 import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
@@ -326,12 +326,24 @@ export const PostForm = (props: PostFormProps) => {
         )}
         name="content"
       />
-      <TagInput
-        control={control as unknown as Control<TagAndEntitiesFormValues>}
+      <Controller
+        control={control}
+        render={({
+          field: { onChange, value },
+          fieldState: { error: tagError },
+        }) => <TagInput value={value} onChange={onChange} error={tagError} />}
+        name="tags"
       />
-      <EntitiesInput
-        control={control as unknown as Control<TagAndEntitiesFormValues>}
-        entityRef={entityRef}
+      <Controller
+        control={control}
+        render={({ field: { onChange, value } }) => (
+          <EntitiesInput
+            value={value}
+            onChange={onChange}
+            singleValue={entityRef}
+          />
+        )}
+        name="entities"
       />
       {allowAnonymouns && !id && (
         <PostAnonymouslyCheckbox
