@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.9.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.9.0...v3.9.1) (2024-11-01)
+
+
+### Bug Fixes
+
+* remove favorite filter from hot articles list ([e984c30](https://github.com/drodil/backstage-plugin-qeta/commit/e984c301c9be409940adc51bc92d43c1a7dd5325))
+
 ## [3.9.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.8.0...v3.9.0) (2024-11-01)
 
 
