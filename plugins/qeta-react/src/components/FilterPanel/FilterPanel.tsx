@@ -17,6 +17,7 @@ import { PostType } from '@drodil/backstage-plugin-qeta-common';
 import { useStyles, useTranslation } from '../../hooks';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { TagInput } from '../PostForm/TagInput';
+import { useStarredEntities } from '@backstage/plugin-catalog-react';
 
 const radioSelect = (value: string, label: string) => {
   return (
@@ -113,6 +114,8 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const [entities, setEntities] = React.useState<Entity[] | undefined>(
     undefined,
   );
+  const [starredEntities, setStarredEntities] = React.useState(false);
+  const starredEntitiesApi = useStarredEntities();
 
   const handleChange = (event: {
     target: {
@@ -127,6 +130,16 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
       value = event.target.checked ? 'true' : 'false';
     }
     onChange(event.target.name as keyof T, value);
+  };
+
+  const handleStarredEntities = (checked: boolean) => {
+    setStarredEntities(checked);
+    setEntities([]);
+    if (checked) {
+      onChange('entities', [...starredEntitiesApi.starredEntities]);
+    } else {
+      onChange('entities', []);
+    }
   };
 
   const postFilters = isPostFilters(filters);
@@ -184,6 +197,19 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                     />
                   }
                   label={t('filterPanel.noVotes.label')}
+                />
+              )}
+              {starredEntitiesApi.starredEntities.size > 0 && (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      name="starredEntities"
+                      onChange={e => handleStarredEntities(e.target.checked)}
+                      checked={starredEntities}
+                    />
+                  }
+                  label={t('filterPanel.starredEntities.label')}
                 />
               )}
             </FormGroup>
@@ -252,6 +278,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
         {showEntityFilter && (
           <Grid item>
             <EntitiesInput
+              disabled={starredEntities}
               style={{ minWidth: '200px' }}
               onChange={(newEntities?: Entity[]) => {
                 const entityRefs = (newEntities ?? []).map(e =>

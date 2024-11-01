@@ -388,6 +388,9 @@ export const qetaTranslationRef = createTranslationRef({
       quickFilters: {
         label: 'Quick filters',
       },
+      starredEntities: {
+        label: 'Starred entities',
+      },
       orderBy: {
         rank: 'Rank',
         label: 'Order by',

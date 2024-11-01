@@ -16,6 +16,7 @@ export const EntitiesInput = (props: {
   useOnlyUsedEntities?: boolean;
   hideHelpText?: boolean;
   style?: React.CSSProperties;
+  disabled?: boolean;
 }) => {
   const {
     value,
@@ -24,6 +25,7 @@ export const EntitiesInput = (props: {
     useOnlyUsedEntities = false,
     hideHelpText = false,
     style,
+    disabled,
   } = props;
   const configApi = useApi(configApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -105,6 +107,7 @@ export const EntitiesInput = (props: {
       multiple
       className="qetaEntitiesInput"
       value={value}
+      disabled={disabled}
       groupBy={entityKinds.length > 1 ? option => option.kind : undefined}
       id="entities-select"
       options={availableEntities}
