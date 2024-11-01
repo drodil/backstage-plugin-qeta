@@ -38,7 +38,6 @@ export const ArticlesPage = () => {
           title={t('highlights.hotArticles.title')}
           noQuestionsLabel={t('highlights.hotArticles.noArticlesLabel')}
           icon={<Whatshot fontSize="small" />}
-          options={{ favorite: true }}
           postType="article"
         />
       </Grid>
