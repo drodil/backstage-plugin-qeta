@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.9.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.8.0...v3.9.0) (2024-11-01)
+
+
+### Features
+
+* add collection filters ([0ef70d1](https://github.com/drodil/backstage-plugin-qeta/commit/0ef70d19d1e6ce71d6c9626ff10a26584ee36f62))
+* add filter for owned entities ([3e7f4b0](https://github.com/drodil/backstage-plugin-qeta/commit/3e7f4b0c340db89cf4a13ef21687790bdfd59144)), closes [#202](https://github.com/drodil/backstage-plugin-qeta/issues/202)
+* add starred entities filter ([75dd8bb](https://github.com/drodil/backstage-plugin-qeta/commit/75dd8bb27cd07a6e149f51d5761eccce0c9a38f7)), closes [#202](https://github.com/drodil/backstage-plugin-qeta/issues/202)
+* allow filtering by multiple entities ([3342c67](https://github.com/drodil/backstage-plugin-qeta/commit/3342c670c0638225542ef4dcf0e50ee6b6be69ef))
+
+
+### Bug Fixes
+
+* minor fixes here and there ([1dc5fc8](https://github.com/drodil/backstage-plugin-qeta/commit/1dc5fc8737af1b815a0c2392c7fa48d0448cca8b))
+
 ## [3.8.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.7.2...v3.8.0) (2024-10-31)
 
 
