@@ -2,6 +2,8 @@ import { useSearchParams } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import {
+  FollowedEntitiesList,
+  FollowedTagsList,
   PostHighlightList,
   PostsGrid,
   useTranslation,
@@ -40,6 +42,8 @@ export const ArticlesPage = () => {
           icon={<Whatshot fontSize="small" />}
           postType="article"
         />
+        <FollowedTagsList />
+        <FollowedEntitiesList />
       </Grid>
     </Grid>
   );
