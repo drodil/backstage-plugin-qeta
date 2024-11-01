@@ -43,7 +43,7 @@ export interface PaginatedQuery {
 
 export interface PostsQuery extends PaginatedQuery {
   tags?: string[];
-  entity?: string;
+  entities?: string[];
   author?: string;
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
@@ -63,7 +63,7 @@ export interface PostsQuery extends PaginatedQuery {
 
 export interface CollectionsQuery extends PaginatedQuery {
   owner?: string;
-  entity?: string;
+  entities?: string[];
   tags?: string[];
   fromDate?: string;
   toDate?: string;
@@ -71,7 +71,7 @@ export interface CollectionsQuery extends PaginatedQuery {
 
 export interface AnswersQuery extends PaginatedQuery {
   tags?: string[];
-  entity?: string;
+  entities?: string[];
   author?: string;
   orderBy?: 'score' | 'created' | 'updated';
   noCorrectAnswer?: boolean;

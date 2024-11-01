@@ -284,10 +284,12 @@ export class DatabaseQetaStore implements QetaStore {
       });
     }
 
-    if (options.entity) {
-      query.leftJoin('post_entities', 'posts.id', 'post_entities.postId');
-      query.leftJoin('entities', 'post_entities.entityId', 'entities.id');
-      query.where('entities.entity_ref', '=', options.entity);
+    if (options.entities) {
+      options.entities.forEach((t, i) => {
+        query.innerJoin(`post_entities AS pe${i}`, 'posts.id', `pe${i}.postId`);
+        query.innerJoin(`entities AS e${i}`, `pe${i}.entityId`, `e${i}.id`);
+        query.where(`e${i}.entity_ref`, '=', t);
+      });
     }
 
     if (options.collectionId) {
@@ -696,10 +698,16 @@ export class DatabaseQetaStore implements QetaStore {
       });
     }
 
-    if (options.entity) {
-      query.leftJoin('post_entities', 'answers.postId', 'post_entities.postId');
-      query.leftJoin('entities', 'post_entities.entityId', 'entities.id');
-      query.where('entities.entity_ref', '=', options.entity);
+    if (options.entities) {
+      options.entities.forEach((t, i) => {
+        query.innerJoin(
+          `post_entities AS pe${i}`,
+          'answers.postId',
+          `pe${i}.postId`,
+        );
+        query.innerJoin(`entities AS e${i}`, `pe${i}.entityId`, `e${i}.id`);
+        query.where(`e${i}.entity_ref`, '=', t);
+      });
     }
 
     if (options.noCorrectAnswer) {
@@ -1656,14 +1664,16 @@ export class DatabaseQetaStore implements QetaStore {
       });
     }
 
-    if (options.entity) {
-      query.leftJoin(
-        'post_entities',
-        'collection_posts.postId',
-        'post_entities.postId',
-      );
-      query.leftJoin('entities', 'post_entities.entityId', 'entities.id');
-      query.where('entities.entity_ref', '=', options.entity);
+    if (options.entities) {
+      options.entities.forEach((t, i) => {
+        query.innerJoin(
+          `post_entities AS pe${i}`,
+          'collection_posts.postId',
+          `pe${i}.postId`,
+        );
+        query.innerJoin(`entities AS e${i}`, `pe${i}.entityId`, `e${i}.id`);
+        query.where(`e${i}.entity_ref`, '=', t);
+      });
     }
 
     query.where('owner', user_ref).orWhere('readAccess', 'public');

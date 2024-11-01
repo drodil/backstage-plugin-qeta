@@ -11,14 +11,24 @@ export const TagInput = (props: {
   value?: string[];
   onChange: (value: string[]) => void;
   error?: FieldError;
+  allowCreate?: boolean;
+  hideHelpText?: boolean;
+  style?: React.CSSProperties;
 }) => {
-  const { value, onChange, error } = props;
+  const {
+    value,
+    onChange,
+    error,
+    allowCreate = true,
+    hideHelpText = false,
+    style,
+  } = props;
   const qetaApi = useApi(qetaApiRef);
   const config = useApi(configApiRef);
   const { t } = useTranslation();
   const allowCreation = useMemo(
-    () => config.getOptionalBoolean('qeta.tags.allowCreation') ?? true,
-    [config],
+    () => config.getOptionalBoolean('qeta.tags.allowCreation') ?? allowCreate,
+    [config, allowCreate],
   );
   const allowedTags = useMemo(
     () => config.getOptionalStringArray('qeta.tags.allowedTags') ?? null,
@@ -33,30 +43,32 @@ export const TagInput = (props: {
     Record<string, string>
   >({});
   useEffect(() => {
-    if (allowCreation) {
-      qetaApi
-        .getTags()
-        .catch(_ => setAvailableTags(null))
-        .then(data => {
-          if (data) {
-            setAvailableTags(data.tags.map(tag => tag.tag));
-            setTagDescriptions(
-              data.tags.reduce((acc, tag) => {
-                if (!tag.description) {
-                  return acc;
-                }
-                acc[tag.tag] = tag.description;
+    qetaApi
+      .getTags()
+      .catch(_ => setAvailableTags(null))
+      .then(data => {
+        if (data) {
+          const uniqueTags = [
+            ...new Set([
+              ...(allowedTags ?? []),
+              ...data.tags.map(tag => tag.tag),
+            ]),
+          ];
+          setAvailableTags(uniqueTags);
+          setTagDescriptions(
+            data.tags.reduce((acc, tag) => {
+              if (!tag.description) {
                 return acc;
-              }, {} as Record<string, string>),
-            );
-          }
-        });
-    } else {
-      setAvailableTags(allowedTags);
-    }
+              }
+              acc[tag.tag] = tag.description;
+              return acc;
+            }, {} as Record<string, string>),
+          );
+        }
+      });
   }, [qetaApi, allowCreation, allowedTags]);
 
-  if (!allowCreation && (allowedTags === null || allowedTags.length === 0)) {
+  if (!availableTags || availableTags.length === 0) {
     return null;
   }
 
@@ -68,6 +80,7 @@ export const TagInput = (props: {
       value={value}
       options={availableTags ?? []}
       freeSolo={allowCreation}
+      style={style}
       renderOption={option => {
         if (tagDescriptions[option]) {
           return (
@@ -97,9 +110,13 @@ export const TagInput = (props: {
           margin="normal"
           label={t('tagsInput.label')}
           placeholder={t('tagsInput.placeholder')}
-          helperText={t('tagsInput.helperText', {
-            max: maximumTags.toString(10),
-          })}
+          helperText={
+            hideHelpText
+              ? ''
+              : t('tagsInput.helperText', {
+                  max: maximumTags.toString(10),
+                })
+          }
           error={error !== undefined}
         />
       )}

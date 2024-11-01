@@ -3,7 +3,7 @@ import { useIsModerator, useTranslation } from '../../hooks';
 import { QetaApi, TemplateRequest } from '@drodil/backstage-plugin-qeta-common';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
-import { Control, Controller, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { compact } from 'lodash';
@@ -14,10 +14,7 @@ import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { TagInput } from '../PostForm/TagInput';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { useFormStyles } from '../../hooks/useFormStyles';
-import {
-  TagAndEntitiesFormValues,
-  TemplateFormValues,
-} from '../PostForm/types';
+import { TemplateFormValues } from '../PostForm/types';
 
 const formToRequest = (form: TemplateFormValues): TemplateRequest => {
   return {
@@ -198,11 +195,20 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
         )}
         name="questionContent"
       />
-      <TagInput
-        control={control as unknown as Control<TagAndEntitiesFormValues>}
+      <Controller
+        control={control}
+        render={({
+          field: { onChange, value },
+          fieldState: { error: tagError },
+        }) => <TagInput value={value} onChange={onChange} error={tagError} />}
+        name="tags"
       />
-      <EntitiesInput
-        control={control as unknown as Control<TagAndEntitiesFormValues>}
+      <Controller
+        control={control}
+        render={({ field: { onChange, value } }) => (
+          <EntitiesInput value={value} onChange={onChange} />
+        )}
+        name="entities"
       />
       <Button
         color="primary"

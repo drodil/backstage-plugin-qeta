@@ -42,6 +42,9 @@ export const useAI = () => {
       }
       const ret = await qetaApi.getAIAnswerForQuestion(questionId, options);
       if (ret === null) {
+        if (cache) {
+          cache.existingQuestions = false;
+        }
         setIsExistingQuestionsEnabled(false);
       }
       return ret;
@@ -56,6 +59,9 @@ export const useAI = () => {
       }
       const ret = await qetaApi.getAIAnswerForDraft(draft.title, draft.content);
       if (ret === null) {
+        if (cache) {
+          cache.newQuestions = false;
+        }
         setIsNewQuestionsEnabled(false);
       }
       return ret;
@@ -70,6 +76,9 @@ export const useAI = () => {
       }
       const ret = await qetaApi.getAISummaryForArticle(articleId, options);
       if (ret === null) {
+        if (cache) {
+          cache.articleSummaries = false;
+        }
         setIsArticleSummaryEnabled(false);
       }
       return ret;

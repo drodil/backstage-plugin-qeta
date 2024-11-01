@@ -22,7 +22,9 @@ import {
 } from '../../hooks/usePaginatedPosts';
 import { useTranslation } from '../../hooks';
 
-export const PostsContainer = (props: PaginatedPostsProps) => {
+export const PostsContainer = (
+  props: PaginatedPostsProps & { entity?: string },
+) => {
   const {
     type,
     tags,

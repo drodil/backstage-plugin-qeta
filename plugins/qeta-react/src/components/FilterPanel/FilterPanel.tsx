@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Box,
   Checkbox,
@@ -10,17 +10,13 @@ import {
   Grid,
   Radio,
   RadioGroup,
-  TextField,
-  Tooltip,
 } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { getEntityTitle } from '../../utils/utils';
 import { DateRangeFilter } from './DateRangeFilter';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
-import { useQetaApi, useStyles, useTranslation } from '../../hooks';
+import { useStyles, useTranslation } from '../../hooks';
+import { EntitiesInput } from '../PostForm/EntitiesInput';
+import { TagInput } from '../PostForm/TagInput';
 
 const radioSelect = (value: string, label: string) => {
   return (
@@ -48,6 +44,7 @@ export type Filters = {
   order?: 'asc' | 'desc';
   orderBy?: string;
   searchQuery?: string;
+  entities?: string[];
   entity?: string;
   tags?: string[];
   dateRange?: string;
@@ -112,86 +109,10 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     type,
   } = props;
   const styles = useStyles();
-  const { value: refs } = useQetaApi(api => api.getEntities(), []);
-  const { value: tags } = useQetaApi(api => api.getTags(), []);
-  const catalogApi = useApi(catalogApiRef);
   const { t } = useTranslation();
-  const [availableEntities, setAvailableEntities] = React.useState<
-    Entity[] | null
-  >(null);
-  const [selectedEntity, setSelectedEntity] = React.useState<
-    Entity | undefined
-  >(undefined);
-  const [availableTags, setAvailableTags] = React.useState<string[] | null>(
-    null,
+  const [entities, setEntities] = React.useState<Entity[] | undefined>(
+    undefined,
   );
-  const [tagDescriptions, setTagDescriptions] = React.useState<
-    Record<string, string>
-  >({});
-
-  useEffect(() => {
-    if ((tags && tags.tags && tags.total > 0) || filters.tags) {
-      const ts = (tags?.tags ?? []).map(tag => tag.tag);
-      if (filters.tags) {
-        ts.push(...filters.tags);
-      }
-      setAvailableTags([...new Set(ts)]);
-      setTagDescriptions(
-        tags?.tags.reduce((acc, tag) => {
-          if (!tag.description) {
-            return acc;
-          }
-          acc[tag.tag] = tag.description;
-          return acc;
-        }, {} as Record<string, string>) ?? {},
-      );
-    }
-  }, [tags, filters.tags]);
-
-  useEffect(() => {
-    const entityRefs: string[] = [];
-    if (filters.entity && !Array.isArray(filters.entity)) {
-      entityRefs.push(filters.entity);
-    }
-    if (refs && refs.entities && refs.total > 0) {
-      refs.entities.forEach(ref => {
-        // ignore currently selected entity if exist in refs
-        if (ref.entityRef !== filters.entity) {
-          entityRefs.push(ref.entityRef);
-        }
-      });
-    }
-    if (entityRefs.length > 0) {
-      catalogApi
-        .getEntitiesByRefs({
-          entityRefs,
-          fields: [
-            'kind',
-            'metadata.name',
-            'metadata.namespace',
-            'metadata.title',
-          ],
-        })
-        .then(resp => {
-          const filtered = resp.items.filter(i => i !== undefined) as Entity[];
-          setAvailableEntities(filtered);
-        });
-    }
-  }, [filters.entity, catalogApi, refs]);
-
-  useEffect(() => {
-    if (filters.entity && availableEntities) {
-      const value = availableEntities.find(
-        e => stringifyEntityRef(e) === filters.entity,
-      );
-      setSelectedEntity(value);
-      if (!value) {
-        onChange('entity', '');
-      }
-    } else {
-      setSelectedEntity(undefined);
-    }
-  }, [availableEntities, filters.entity, onChange]);
 
   const handleChange = (event: {
     target: {
@@ -328,94 +249,33 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
         <Grid item>
           <DateRangeFilter value={filters.dateRange} onChange={onChange} />
         </Grid>
-
-        {showEntityFilter &&
-          availableEntities &&
-          availableEntities.length > 0 && (
-            <Grid item>
-              <Autocomplete
-                multiple={false}
-                disablePortal
-                className="qetaEntityFilter"
-                value={selectedEntity ?? null}
-                id="entities-select"
-                options={availableEntities}
-                renderOption={option => {
-                  return (
-                    <>
-                      <Tooltip title={stringifyEntityRef(option)}>
-                        <span>{getEntityTitle(option)}</span>
-                      </Tooltip>
-                    </>
-                  );
-                }}
-                getOptionLabel={getEntityTitle}
-                getOptionSelected={(o, v) => {
-                  if (!o || !v) {
-                    return false;
-                  }
-                  return stringifyEntityRef(o) === stringifyEntityRef(v);
-                }}
-                onChange={(_e, newValue) => {
-                  handleChange({
-                    target: {
-                      name: 'entity',
-                      value: newValue ? stringifyEntityRef(newValue) : '',
-                    },
-                  });
-                }}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    style={{ minWidth: '200px' }}
-                    variant="outlined"
-                    margin="normal"
-                    label={t('filterPanel.filters.entity.label')}
-                    placeholder={t('filterPanel.filters.entity.placeholder')}
-                  />
-                )}
-              />
-            </Grid>
-          )}
-        {showTagFilter && availableTags && availableTags.length > 0 && (
+        {showEntityFilter && (
           <Grid item>
-            <Autocomplete
-              multiple
+            <EntitiesInput
               style={{ minWidth: '200px' }}
-              disablePortal
-              className="qetaTagFilter"
-              value={filters.tags}
-              id="tags-select"
-              options={availableTags}
-              renderOption={option => {
-                if (tagDescriptions[option]) {
-                  return (
-                    <>
-                      <Tooltip title={tagDescriptions[option]}>
-                        <span>{option}</span>
-                      </Tooltip>
-                    </>
-                  );
-                }
-                return option;
-              }}
-              onChange={(_e, newValue) => {
+              onChange={(newEntities?: Entity[]) => {
+                const entityRefs = (newEntities ?? []).map(e =>
+                  stringifyEntityRef(e),
+                );
                 handleChange({
-                  target: {
-                    name: 'tags',
-                    value: newValue,
-                  },
+                  target: { name: 'entities', value: entityRefs },
                 });
+                setEntities(newEntities);
               }}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  margin="normal"
-                  label={t('filterPanel.filters.tag.label')}
-                  placeholder={t('filterPanel.filters.tag.placeholder')}
-                />
-              )}
+              value={entities}
+              useOnlyUsedEntities
+              hideHelpText
+            />
+          </Grid>
+        )}
+        {showTagFilter && (
+          <Grid item>
+            <TagInput
+              style={{ minWidth: '200px' }}
+              onChange={(newTags: string[]) => onChange('tags', newTags)}
+              value={filters.tags}
+              hideHelpText
+              allowCreate={false}
             />
           </Grid>
         )}

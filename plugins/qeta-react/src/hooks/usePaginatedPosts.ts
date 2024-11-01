@@ -25,7 +25,8 @@ export type PaginatedPostsProps = PostFilters & {
 };
 
 export function usePaginatedPosts(props: PaginatedPostsProps) {
-  const { type, tags, author, entity, favorite, initialPageSize } = props;
+  const { type, tags, author, entities, entity, favorite, initialPageSize } =
+    props;
   const analytics = useAnalytics();
   const [page, setPage] = React.useState(1);
   const [pageCount, setPageCount] = React.useState(1);
@@ -40,8 +41,8 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     noCorrectAnswer: props.noCorrectAnswer ?? 'false',
     noVotes: props.noVotes ?? 'false',
     searchQuery: props.searchQuery ?? '',
-    entity: entity ?? '',
-    tags: tags ?? [],
+    entities: entities ?? (entity ? [entity] : undefined),
+    tags: tags,
     dateRange: '',
     collectionId: props.collectionId,
     type,

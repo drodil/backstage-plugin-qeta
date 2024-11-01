@@ -6,15 +6,28 @@ import React, { useEffect, useMemo } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useTranslation } from '../../hooks';
+import { qetaApiRef } from '../../api';
+import { compact } from 'lodash';
 
 export const EntitiesInput = (props: {
   value?: Entity[];
   singleValue?: string;
   onChange: (value: Entity[]) => void;
+  useOnlyUsedEntities?: boolean;
+  hideHelpText?: boolean;
+  style?: React.CSSProperties;
 }) => {
-  const { value, singleValue, onChange } = props;
+  const {
+    value,
+    singleValue,
+    onChange,
+    useOnlyUsedEntities = false,
+    hideHelpText = false,
+    style,
+  } = props;
   const configApi = useApi(configApiRef);
   const catalogApi = useApi(catalogApiRef);
+  const qetaApi = useApi(qetaApiRef);
   const [availableEntities, setAvailableEntities] = React.useState<
     Entity[] | null
   >([]);
@@ -47,6 +60,16 @@ export const EntitiesInput = (props: {
       return;
     }
 
+    if (useOnlyUsedEntities) {
+      qetaApi.getEntities().then(data => {
+        const refs = data.entities.map(r => r.entityRef);
+        catalogApi.getEntitiesByRefs({ entityRefs: refs }).then(catalogData => {
+          setAvailableEntities(compact(catalogData.items));
+        });
+      });
+      return;
+    }
+
     if (entityKinds && entityKinds.length > 0) {
       catalogApi
         .getEntities({
@@ -64,7 +87,14 @@ export const EntitiesInput = (props: {
           data ? setAvailableEntities(data.items) : setAvailableEntities(null),
         );
     }
-  }, [catalogApi, singleValue, configApi, entityKinds]);
+  }, [
+    catalogApi,
+    singleValue,
+    configApi,
+    entityKinds,
+    useOnlyUsedEntities,
+    qetaApi,
+  ]);
 
   if (!availableEntities || availableEntities.length === 0) {
     return null;
@@ -73,17 +103,18 @@ export const EntitiesInput = (props: {
   return (
     <Autocomplete
       multiple
-      className="qetaAskFormEntities"
+      className="qetaEntitiesInput"
       value={value}
       groupBy={entityKinds.length > 1 ? option => option.kind : undefined}
       id="entities-select"
       options={availableEntities}
       getOptionLabel={getEntityTitle}
+      style={style}
       getOptionSelected={(o, v) =>
         stringifyEntityRef(o) === stringifyEntityRef(v)
       }
       onChange={(_e, newValue) => {
-        if (!value || value.length < max) {
+        if (!newValue || newValue.length <= max) {
           onChange(newValue);
         }
       }}
@@ -103,9 +134,13 @@ export const EntitiesInput = (props: {
           margin="normal"
           label={t('entitiesInput.label')}
           placeholder={t('entitiesInput.placeholder')}
-          helperText={t('entitiesInput.helperText', {
-            max: max.toString(10),
-          })}
+          helperText={
+            hideHelpText
+              ? ''
+              : t('entitiesInput.helperText', {
+                  max: max.toString(10),
+                })
+          }
         />
       )}
     />
