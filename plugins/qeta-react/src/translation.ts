@@ -391,6 +391,20 @@ export const qetaTranslationRef = createTranslationRef({
       starredEntities: {
         label: 'Starred entities',
       },
+      ownedEntities: {
+        label: 'Owned entities',
+      },
+      entitiesRelation: {
+        label: 'Entities relation',
+      },
+      toggleEntityRelation: {
+        and: 'Change to only with all selected entities (AND)',
+        or: 'Change to with any selected entities (OR)',
+      },
+      toggleTagRelation: {
+        and: 'Change to only with all selected tags (AND)',
+        or: 'Change to with any selected tags (OR)',
+      },
       orderBy: {
         rank: 'Rank',
         label: 'Order by',

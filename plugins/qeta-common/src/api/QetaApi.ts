@@ -43,7 +43,9 @@ export interface PaginatedQuery {
 
 export interface PostsQuery extends PaginatedQuery {
   tags?: string[];
+  tagsRelation?: 'and' | 'or';
   entities?: string[];
+  entitiesRelation?: 'and' | 'or';
   author?: string;
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
@@ -64,14 +66,18 @@ export interface PostsQuery extends PaginatedQuery {
 export interface CollectionsQuery extends PaginatedQuery {
   owner?: string;
   entities?: string[];
+  entitiesRelation?: 'and' | 'or';
   tags?: string[];
+  tagsRelation?: 'and' | 'or';
   fromDate?: string;
   toDate?: string;
 }
 
 export interface AnswersQuery extends PaginatedQuery {
   tags?: string[];
+  tagsRelation?: 'and' | 'or';
   entities?: string[];
+  entitiesRelation?: 'and' | 'or';
   author?: string;
   orderBy?: 'score' | 'created' | 'updated';
   noCorrectAnswer?: boolean;

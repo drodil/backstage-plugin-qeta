@@ -84,21 +84,21 @@ export const EntityPage = () => {
               title={t('highlights.hotQuestions.title')}
               noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
               icon={<Whatshot fontSize="small" />}
-              options={{ entity: resp.entityRef }}
+              options={{ entities: [resp.entityRef] }}
               postType="question"
             />
             <PostHighlightList
               type="unanswered"
               title={t('highlights.unanswered.title')}
               noQuestionsLabel={t('highlights.unanswered.noQuestionsLabel')}
-              options={{ entity: resp.entityRef }}
+              options={{ entities: [resp.entityRef] }}
               postType="question"
             />
             <PostHighlightList
               type="incorrect"
               title={t('highlights.incorrect.title')}
               noQuestionsLabel={t('highlights.incorrect.noQuestionsLabel')}
-              options={{ entity: resp.entityRef }}
+              options={{ entities: [resp.entityRef] }}
               postType="question"
             />
           </>

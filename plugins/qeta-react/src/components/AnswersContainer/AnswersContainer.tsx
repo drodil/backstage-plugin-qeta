@@ -32,6 +32,11 @@ export interface AnswersContainerProps {
   title?: string;
 }
 
+export type AnswerFilterChange = {
+  key: keyof AnswerFilters;
+  value?: AnswerFilters[keyof AnswerFilters];
+};
+
 export const AnswersContainer = (props: AnswersContainerProps) => {
   const { tags, author, entity, showFilters, showTitle, title } = props;
   const analytics = useAnalytics();
@@ -61,29 +66,33 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
   };
 
   const onFilterChange = (
-    key: keyof AnswerFilters,
-    value: string | string[],
+    changes: AnswerFilterChange | AnswerFilterChange[],
   ) => {
-    if (filters[key] === value) {
-      return;
-    }
-
+    const changesArray = Array.isArray(changes) ? changes : [changes];
     setPage(1);
-    setFilters({ ...filters, ...{ [key]: value } });
+    setFilters(prev => {
+      const newValue = { ...prev };
+      for (const { key, value } of changesArray) {
+        (newValue as any)[key] = value;
+      }
+      return newValue;
+    });
     setSearchParams(prev => {
       const newValue = prev;
-      if (!value || value === 'false') {
-        newValue.delete(key);
-      } else if (Array.isArray(value)) {
-        if (value.length === 0) {
+      for (const { key, value } of changesArray) {
+        if (!value || value === 'false') {
           newValue.delete(key);
+        } else if (Array.isArray(value)) {
+          if (value.length === 0) {
+            newValue.delete(key);
+          } else {
+            newValue.set(key, value.join(','));
+          }
+        } else if (value.length > 0) {
+          newValue.set(key, value);
         } else {
-          newValue.set(key, value.join(','));
+          newValue.delete(key);
         }
-      } else if (value.length > 0) {
-        newValue.set(key, value);
-      } else {
-        newValue.delete(key);
       }
       return newValue;
     });

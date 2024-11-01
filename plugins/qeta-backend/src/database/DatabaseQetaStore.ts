@@ -277,19 +277,36 @@ export class DatabaseQetaStore implements QetaStore {
 
     if (options.tags) {
       const tags = filterTags(options.tags);
-      tags.forEach((t, i) => {
-        query.innerJoin(`post_tags AS qt${i}`, 'posts.id', `qt${i}.postId`);
-        query.innerJoin(`tags AS t${i}`, `qt${i}.tagId`, `t${i}.id`);
-        query.where(`t${i}.tag`, '=', t);
-      });
+      if (options.tagsRelation === 'or') {
+        query.innerJoin('post_tags', 'posts.id', 'post_tags.postId');
+        query.innerJoin('tags', 'post_tags.tagId', 'tags.id');
+        query.whereIn('tags.tag', tags);
+      } else {
+        tags.forEach((t, i) => {
+          query.innerJoin(`post_tags AS qt${i}`, 'posts.id', `qt${i}.postId`);
+          query.innerJoin(`tags AS t${i}`, `qt${i}.tagId`, `t${i}.id`);
+          query.where(`t${i}.tag`, '=', t);
+        });
+      }
     }
 
     if (options.entities) {
-      options.entities.forEach((t, i) => {
-        query.innerJoin(`post_entities AS pe${i}`, 'posts.id', `pe${i}.postId`);
-        query.innerJoin(`entities AS e${i}`, `pe${i}.entityId`, `e${i}.id`);
-        query.where(`e${i}.entity_ref`, '=', t);
-      });
+      if (options.entitiesRelation === 'or') {
+        query
+          .innerJoin('post_entities', 'posts.id', 'post_entities.postId')
+          .innerJoin('entities', 'post_entities.entityId', 'entities.id')
+          .whereIn('entities.entity_ref', options.entities);
+      } else {
+        options.entities.forEach((t, i) => {
+          query.innerJoin(
+            `post_entities AS pe${i}`,
+            'posts.id',
+            `pe${i}.postId`,
+          );
+          query.innerJoin(`entities AS e${i}`, `pe${i}.entityId`, `e${i}.id`);
+          query.where(`e${i}.entity_ref`, '=', t);
+        });
+      }
     }
 
     if (options.collectionId) {
@@ -687,27 +704,43 @@ export class DatabaseQetaStore implements QetaStore {
 
     if (options.tags) {
       const tags = filterTags(options.tags);
-      tags.forEach((t, i) => {
-        query.innerJoin(
-          `post_tags AS at${i}`,
-          'answers.postId',
-          `at${i}.postId`,
-        );
-        query.innerJoin(`tags AS t${i}`, `at${i}.tagId`, `t${i}.id`);
-        query.where(`t${i}.tag`, '=', t);
-      });
+      if (options.tagsRelation === 'or') {
+        query.innerJoin('post_tags', 'answers.postId', 'post_tags.postId');
+        query.innerJoin('tags', 'post_tags.tagId', 'tags.id');
+        query.whereIn('tags.tag', tags);
+      } else {
+        tags.forEach((t, i) => {
+          query.innerJoin(
+            `post_tags AS at${i}`,
+            'answers.postId',
+            `at${i}.postId`,
+          );
+          query.innerJoin(`tags AS t${i}`, `at${i}.tagId`, `t${i}.id`);
+          query.where(`t${i}.tag`, '=', t);
+        });
+      }
     }
 
     if (options.entities) {
-      options.entities.forEach((t, i) => {
+      if (options.entitiesRelation === 'or') {
         query.innerJoin(
-          `post_entities AS pe${i}`,
+          'post_entities',
           'answers.postId',
-          `pe${i}.postId`,
+          'post_entities.postId',
         );
-        query.innerJoin(`entities AS e${i}`, `pe${i}.entityId`, `e${i}.id`);
-        query.where(`e${i}.entity_ref`, '=', t);
-      });
+        query.innerJoin('entities', 'post_entities.entityId', 'entities.id');
+        query.whereIn('entities.entity_ref', options.entities);
+      } else {
+        options.entities.forEach((t, i) => {
+          query.innerJoin(
+            `post_entities AS pe${i}`,
+            'answers.postId',
+            `pe${i}.postId`,
+          );
+          query.innerJoin(`entities AS e${i}`, `pe${i}.entityId`, `e${i}.id`);
+          query.where(`e${i}.entity_ref`, '=', t);
+        });
+      }
     }
 
     if (options.noCorrectAnswer) {
@@ -1653,27 +1686,47 @@ export class DatabaseQetaStore implements QetaStore {
 
     if (options.tags) {
       const tags = filterTags(options.tags);
-      tags.forEach((t, i) => {
+      if (options.tagsRelation === 'or') {
         query.innerJoin(
-          `post_tags AS qt${i}`,
+          'post_tags',
           'collection_posts.postId',
-          `qt${i}.postId`,
+          'post_tags.postId',
         );
-        query.innerJoin(`tags AS t${i}`, `qt${i}.tagId`, `t${i}.id`);
-        query.where(`t${i}.tag`, '=', t);
-      });
+        query.innerJoin('tags', 'post_tags.tagId', 'tags.id');
+        query.whereIn('tags.tag', tags);
+      } else {
+        tags.forEach((t, i) => {
+          query.innerJoin(
+            `post_tags AS qt${i}`,
+            'collection_posts.postId',
+            `qt${i}.postId`,
+          );
+          query.innerJoin(`tags AS t${i}`, `qt${i}.tagId`, `t${i}.id`);
+          query.where(`t${i}.tag`, '=', t);
+        });
+      }
     }
 
     if (options.entities) {
-      options.entities.forEach((t, i) => {
+      if (options.entitiesRelation === 'or') {
         query.innerJoin(
-          `post_entities AS pe${i}`,
+          'post_entities',
           'collection_posts.postId',
-          `pe${i}.postId`,
+          'post_entities.postId',
         );
-        query.innerJoin(`entities AS e${i}`, `pe${i}.entityId`, `e${i}.id`);
-        query.where(`e${i}.entity_ref`, '=', t);
-      });
+        query.innerJoin('entities', 'post_entities.entityId', 'entities.id');
+        query.whereIn('entities.entity_ref', options.entities);
+      } else {
+        options.entities.forEach((t, i) => {
+          query.innerJoin(
+            `post_entities AS pe${i}`,
+            'collection_posts.postId',
+            `pe${i}.postId`,
+          );
+          query.innerJoin(`entities AS e${i}`, `pe${i}.entityId`, `e${i}.id`);
+          query.where(`e${i}.entity_ref`, '=', t);
+        });
+      }
     }
 
     query.where('owner', user_ref).orWhere('readAccess', 'public');

@@ -21,6 +21,11 @@ export type CollectionsGridProps = {
   showFilters?: boolean;
 };
 
+export type CollectionFilterChange = {
+  key: keyof CollectionFilters;
+  value?: CollectionFilters[keyof CollectionFilters];
+};
+
 export const CollectionsGrid = (props: CollectionsGridProps) => {
   const { showFilters } = props;
   const { t } = useTranslation();
@@ -67,14 +72,17 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
   }, [response, collectionsPerPage]);
 
   const onFilterChange = (
-    key: keyof CollectionFilters,
-    value: string | string[],
+    changes: CollectionFilterChange | CollectionFilterChange[],
   ) => {
-    if (filters[key] === value) {
-      return;
-    }
+    const changesArray = Array.isArray(changes) ? changes : [changes];
     setPage(1);
-    setFilters({ ...filters, ...{ [key]: value } });
+    setFilters(prev => {
+      const newValue = { ...prev };
+      for (const { key, value } of changesArray) {
+        (newValue as any)[key] = value;
+      }
+      return newValue;
+    });
   };
 
   return (

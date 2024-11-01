@@ -8,8 +8,10 @@ import {
   FormGroup,
   FormLabel,
   Grid,
+  IconButton,
   Radio,
   RadioGroup,
+  Tooltip,
 } from '@material-ui/core';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { DateRangeFilter } from './DateRangeFilter';
@@ -17,7 +19,13 @@ import { PostType } from '@drodil/backstage-plugin-qeta-common';
 import { useStyles, useTranslation } from '../../hooks';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { TagInput } from '../PostForm/TagInput';
-import { useStarredEntities } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  useStarredEntities,
+} from '@backstage/plugin-catalog-react';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import AdjustIcon from '@material-ui/icons/Adjust';
 
 const radioSelect = (value: string, label: string) => {
   return (
@@ -35,7 +43,6 @@ export const filterKeys = [
   'noAnswers',
   'noCorrectAnswer',
   'noVotes',
-  'entity',
   'tags',
   'dateRange',
 ] as const;
@@ -46,8 +53,10 @@ export type Filters = {
   orderBy?: string;
   searchQuery?: string;
   entities?: string[];
+  entitiesRelation?: 'and' | 'or';
   entity?: string;
   tags?: string[];
+  tagsRelation?: 'and' | 'or';
   dateRange?: string;
 };
 
@@ -92,8 +101,13 @@ function isCollectionFilters(filters: Filters): filters is CollectionFilters {
   return (filters as PostFilters).noAnswers === undefined;
 }
 
+export type Change<T extends Filters> = {
+  key: keyof T;
+  value: string | string[];
+};
+
 export interface FilterPanelProps<T extends Filters> {
-  onChange: (key: keyof T, value: string | string[]) => void;
+  onChange: (changes: Change<T> | Change<T>[]) => void;
   filters: T;
   showEntityFilter?: boolean;
   showTagFilter?: boolean;
@@ -115,7 +129,10 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     undefined,
   );
   const [starredEntities, setStarredEntities] = React.useState(false);
+  const [ownedEntities, setOwnedEntities] = React.useState(false);
   const starredEntitiesApi = useStarredEntities();
+  const catalogApi = useApi(catalogApiRef);
+  const identityApi = useApi(identityApiRef);
 
   const handleChange = (event: {
     target: {
@@ -129,16 +146,47 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     if (event.target.type === 'checkbox') {
       value = event.target.checked ? 'true' : 'false';
     }
-    onChange(event.target.name as keyof T, value);
+    onChange({ key: event.target.name as keyof T, value });
   };
 
   const handleStarredEntities = (checked: boolean) => {
     setStarredEntities(checked);
     setEntities([]);
     if (checked) {
-      onChange('entities', [...starredEntitiesApi.starredEntities]);
+      onChange({
+        key: 'entities',
+        value: [...starredEntitiesApi.starredEntities],
+      });
     } else {
-      onChange('entities', []);
+      onChange({ key: 'entities', value: [] });
+    }
+  };
+
+  const handleOwnedEntities = (checked: boolean) => {
+    setOwnedEntities(checked);
+    setEntities([]);
+    if (checked) {
+      identityApi.getBackstageIdentity().then(identity => {
+        catalogApi
+          .getEntities({
+            filter: {
+              'spec.owner': identity.ownershipEntityRefs,
+            },
+            fields: ['kind', 'metadata.name', 'metadata.namespace'],
+          })
+          .then(data => {
+            const entityRefs = data.items.map(e => stringifyEntityRef(e));
+            onChange([
+              { key: 'entities', value: entityRefs },
+              { key: 'entitiesRelation', value: 'or' },
+            ]);
+          });
+      });
+    } else {
+      onChange([
+        { key: 'entities', value: [] },
+        { key: 'entitiesRelation', value: 'and' },
+      ]);
     }
   };
 
@@ -212,6 +260,17 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                   label={t('filterPanel.starredEntities.label')}
                 />
               )}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    size="small"
+                    name="ownedEntities"
+                    onChange={e => handleOwnedEntities(e.target.checked)}
+                    checked={ownedEntities}
+                  />
+                }
+                label={t('filterPanel.ownedEntities.label')}
+              />
             </FormGroup>
           </Grid>
         )}
@@ -273,37 +332,104 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
       </Box>
       <Grid container alignItems="stretch" justifyContent="space-evenly">
         <Grid item>
-          <DateRangeFilter value={filters.dateRange} onChange={onChange} />
+          <DateRangeFilter
+            value={filters.dateRange}
+            onChange={e => onChange({ key: 'dateRange', value: e })}
+          />
         </Grid>
         {showEntityFilter && (
           <Grid item>
-            <EntitiesInput
-              disabled={starredEntities}
-              style={{ minWidth: '200px' }}
-              onChange={(newEntities?: Entity[]) => {
-                const entityRefs = (newEntities ?? []).map(e =>
-                  stringifyEntityRef(e),
-                );
-                handleChange({
-                  target: { name: 'entities', value: entityRefs },
-                });
-                setEntities(newEntities);
-              }}
-              value={entities}
-              useOnlyUsedEntities
-              hideHelpText
-            />
+            <Grid container alignItems="center">
+              <Grid item>
+                <EntitiesInput
+                  disabled={starredEntities || ownedEntities}
+                  style={{ minWidth: '200px' }}
+                  onChange={(newEntities?: Entity[]) => {
+                    const entityRefs = (newEntities ?? []).map(e =>
+                      stringifyEntityRef(e),
+                    );
+                    handleChange({
+                      target: { name: 'entities', value: entityRefs },
+                    });
+                    setEntities(newEntities);
+                  }}
+                  value={entities}
+                  useOnlyUsedEntities
+                  hideHelpText
+                />
+              </Grid>
+              {filters.entities && filters.entities?.length > 1 && (
+                <Grid item>
+                  <Tooltip
+                    title={
+                      filters.entitiesRelation === 'or'
+                        ? t('filterPanel.toggleEntityRelation.and')
+                        : t('filterPanel.toggleEntityRelation.or')
+                    }
+                  >
+                    <IconButton
+                      onClick={() => {
+                        if (filters.entitiesRelation === 'or') {
+                          onChange({ key: 'entitiesRelation', value: 'and' });
+                        } else {
+                          onChange({ key: 'entitiesRelation', value: 'or' });
+                        }
+                      }}
+                    >
+                      {filters.entitiesRelation === 'or' ? (
+                        <AdjustIcon />
+                      ) : (
+                        <FiberManualRecordIcon />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              )}
+            </Grid>
           </Grid>
         )}
         {showTagFilter && (
           <Grid item>
-            <TagInput
-              style={{ minWidth: '200px' }}
-              onChange={(newTags: string[]) => onChange('tags', newTags)}
-              value={filters.tags}
-              hideHelpText
-              allowCreate={false}
-            />
+            <Grid container alignItems="center">
+              <Grid item>
+                <TagInput
+                  style={{ minWidth: '200px' }}
+                  onChange={(newTags: string[]) =>
+                    onChange({ key: 'tags', value: newTags })
+                  }
+                  value={filters.tags}
+                  hideHelpText
+                  allowCreate={false}
+                />
+              </Grid>
+              {filters.tags && filters.tags?.length > 1 && (
+                <Grid item>
+                  <Tooltip
+                    title={
+                      filters.tagsRelation === 'or'
+                        ? t('filterPanel.toggleTagRelation.and')
+                        : t('filterPanel.toggleTagRelation.or')
+                    }
+                  >
+                    <IconButton
+                      onClick={() => {
+                        if (filters.tagsRelation === 'or') {
+                          onChange({ key: 'tagsRelation', value: 'and' });
+                        } else {
+                          onChange({ key: 'tagsRelation', value: 'or' });
+                        }
+                      }}
+                    >
+                      {filters.tagsRelation === 'or' ? (
+                        <AdjustIcon />
+                      ) : (
+                        <FiberManualRecordIcon />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              )}
+            </Grid>
           </Grid>
         )}
       </Grid>

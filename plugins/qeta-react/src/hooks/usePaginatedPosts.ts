@@ -24,6 +24,11 @@ export type PaginatedPostsProps = PostFilters & {
   collectionId?: number;
 };
 
+export type PostFilterChange = {
+  key: keyof PostFilters;
+  value?: PostFilters[keyof PostFilters];
+};
+
 export function usePaginatedPosts(props: PaginatedPostsProps) {
   const { type, tags, author, entities, entity, favorite, initialPageSize } =
     props;
@@ -61,27 +66,37 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     setPage(prev => prev + 1);
   };
 
-  const onFilterChange = (key: keyof PostFilters, value: string | string[]) => {
-    if (filters[key] === value) {
-      return;
-    }
-
+  const onFilterChange = (changes: PostFilterChange | PostFilterChange[]) => {
+    const changesArray = Array.isArray(changes) ? changes : [changes];
     setPage(1);
-    setFilters({ ...filters, ...{ [key]: value } });
+    setFilters(prev => {
+      const newValue = { ...prev };
+      for (const { key, value } of changesArray) {
+        (newValue as any)[key] = value;
+      }
+      return newValue;
+    });
     setSearchParams(prev => {
       const newValue = prev;
-      if (!value || value === 'false') {
-        newValue.delete(key);
-      } else if (Array.isArray(value)) {
-        if (value.length === 0) {
-          newValue.delete(key);
-        } else {
-          newValue.set(key, value.join(','));
+      for (const { key, value } of changesArray) {
+        if (!filterKeys.includes(key as FilterKey)) {
+          continue;
         }
-      } else if (value.length > 0) {
-        newValue.set(key, value);
-      } else {
-        newValue.delete(key);
+        if (!value || value === 'false') {
+          newValue.delete(key);
+        } else if (Array.isArray(value)) {
+          if (value.length === 0) {
+            newValue.delete(key);
+          } else {
+            newValue.set(key, value.join(','));
+          }
+        } else if (typeof value === 'number') {
+          newValue.set(key, String(value));
+        } else if (value.length > 0) {
+          newValue.set(key, value);
+        } else {
+          newValue.delete(key);
+        }
       }
       return newValue;
     });

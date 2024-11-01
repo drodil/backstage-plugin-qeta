@@ -235,14 +235,14 @@ describe.each(databases.eachSupportedId())(
         });
 
         const ret1 = await storage.getPosts('user1', {
-          entity: 'component:default/comp1',
+          entities: ['component:default/comp1'],
           type: 'question',
         });
         expect(ret1.posts.length).toEqual(1);
         expect(ret1.posts.at(0)?.id).toEqual(q1.id);
 
         const ret2 = await storage.getPosts('user1', {
-          entity: 'component:default/comp2',
+          entities: ['component:default/comp2'],
           type: 'question',
         });
 

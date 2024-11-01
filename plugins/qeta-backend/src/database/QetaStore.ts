@@ -77,7 +77,9 @@ export interface PostOptions {
   noVotes?: boolean;
   favorite?: boolean;
   tags?: string[];
+  tagsRelation?: 'and' | 'or';
   entities?: string[];
+  entitiesRelation?: 'and' | 'or';
   includeAnswers?: boolean;
   includeVotes?: boolean;
   includeEntities?: boolean;
@@ -104,7 +106,9 @@ export interface AnswersOptions {
     | 'trend';
   order?: 'desc' | 'asc';
   tags?: string[];
+  tagsRelation?: 'and' | 'or';
   entities?: string[];
+  entitiesRelation?: 'and' | 'or';
   searchQuery?: string;
   fromDate?: string;
   toDate?: string;
