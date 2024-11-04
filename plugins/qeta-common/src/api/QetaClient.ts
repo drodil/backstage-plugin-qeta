@@ -1215,10 +1215,15 @@ export class QetaClient implements QetaApi {
 
     return this.fetchApi.fetch(url, {
       method: 'GET',
-      ...(requestOptions?.token
-        ? { headers: { Authorization: `Bearer ${requestOptions.token}` } }
-        : undefined),
       ...reqInit,
+      ...(requestOptions?.token
+        ? {
+            headers: {
+              Authorization: `Bearer ${requestOptions.token}`,
+              ...reqInit.headers,
+            },
+          }
+        : undefined),
     });
   };
 

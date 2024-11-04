@@ -27,8 +27,10 @@ describe('QetaClient', () => {
 
       const result = await client.getPosts({});
       expect(result).toEqual({ posts: [], total: 0 });
-      expect(mockFetch).toHaveBeenCalledWith('http://example.com/posts', {
-        method: 'GET',
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/posts/query', {
+        method: 'POST',
+        body: JSON.stringify({}),
+        headers: { 'Content-Type': 'application/json' },
       });
     });
 
@@ -40,9 +42,13 @@ describe('QetaClient', () => {
 
       const result = await client.getPosts({}, { token: 'token' });
       expect(result).toEqual({ posts: [], total: 0 });
-      expect(mockFetch).toHaveBeenCalledWith('http://example.com/posts', {
-        method: 'GET',
-        headers: { Authorization: 'Bearer token' },
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/posts/query', {
+        method: 'POST',
+        body: JSON.stringify({}),
+        headers: {
+          Authorization: 'Bearer token',
+          'Content-Type': 'application/json',
+        },
       });
     });
 

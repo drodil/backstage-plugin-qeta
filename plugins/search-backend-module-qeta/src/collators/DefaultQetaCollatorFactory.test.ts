@@ -90,8 +90,8 @@ describe('DefaultQetaCollatorFactory', () => {
       lastRequest = null;
 
       worker.use(
-        rest.get(
-          'http://test-backend/api/qeta/posts',
+        rest.post(
+          'http://test-backend/api/qeta/posts/query',
           (req: any, res: any, ctx: any) => {
             lastRequest = req;
             return res(ctx.status(200), ctx.json(mockPosts));
@@ -99,8 +99,8 @@ describe('DefaultQetaCollatorFactory', () => {
         ),
       );
       worker.use(
-        rest.get(
-          'http://test-backend/api/qeta/collections',
+        rest.post(
+          'http://test-backend/api/qeta/collections/query',
           (req: any, res: any, ctx: any) => {
             lastRequest = req;
             return res(ctx.status(200), ctx.json(mockCollections));
