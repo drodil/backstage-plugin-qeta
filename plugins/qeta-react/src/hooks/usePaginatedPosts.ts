@@ -29,6 +29,8 @@ export type PostFilterChange = {
   value?: PostFilters[keyof PostFilters];
 };
 
+const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-post-filters-expanded';
+
 export function usePaginatedPosts(props: PaginatedPostsProps) {
   const { type, tags, author, entities, entity, favorite, initialPageSize } =
     props;
@@ -36,7 +38,9 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
   const [page, setPage] = React.useState(1);
   const [pageCount, setPageCount] = React.useState(1);
   const [postsPerPage, setPostsPerPage] = React.useState(initialPageSize ?? 10);
-  const [showFilterPanel, setShowFilterPanel] = React.useState(false);
+  const [showFilterPanel, setShowFilterPanel] = React.useState(
+    localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filters, setFilters] = React.useState<PostFilters>({
@@ -52,6 +56,13 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     collectionId: props.collectionId,
     type,
   });
+
+  useEffect(() => {
+    localStorage.setItem(
+      EXPANDED_LOCAL_STORAGE_KEY,
+      showFilterPanel ? 'true' : 'false',
+    );
+  }, [showFilterPanel]);
 
   const onPageChange = (value: number) => {
     setPage(value);

@@ -26,6 +26,8 @@ export type CollectionFilterChange = {
   value?: CollectionFilters[keyof CollectionFilters];
 };
 
+const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-collection-filters-expanded';
+
 export const CollectionsGrid = (props: CollectionsGridProps) => {
   const { showFilters } = props;
   const { t } = useTranslation();
@@ -33,12 +35,21 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
   const [pageCount, setPageCount] = React.useState(1);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [collectionsPerPage, setCollectionsPerPage] = React.useState(25);
-  const [showFilterPanel, setShowFilterPanel] = React.useState(false);
+  const [showFilterPanel, setShowFilterPanel] = React.useState(
+    localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
+  );
   const [filters, setFilters] = React.useState<CollectionFilters>({
     order: 'desc',
     searchQuery: '',
     orderBy: 'created',
   });
+
+  useEffect(() => {
+    localStorage.setItem(
+      EXPANDED_LOCAL_STORAGE_KEY,
+      showFilterPanel ? 'true' : 'false',
+    );
+  }, [showFilterPanel]);
 
   const {
     value: response,
@@ -114,7 +125,9 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
         {response && (showFilters ?? true) && (
           <Grid item>
             <Button
-              onClick={() => setShowFilterPanel(!showFilterPanel)}
+              onClick={() => {
+                setShowFilterPanel(!showFilterPanel);
+              }}
               className="qetaCollectionsContainerFilterPanelBtn"
               startIcon={<FilterList />}
             >

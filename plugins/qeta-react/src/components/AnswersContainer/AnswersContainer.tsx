@@ -37,12 +37,16 @@ export type AnswerFilterChange = {
   value?: AnswerFilters[keyof AnswerFilters];
 };
 
+const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-answer-filters-expanded';
+
 export const AnswersContainer = (props: AnswersContainerProps) => {
   const { tags, author, entity, showFilters, showTitle, title } = props;
   const analytics = useAnalytics();
   const [page, setPage] = React.useState(1);
   const [answersPerPage, setAnswersPerPage] = React.useState(10);
-  const [showFilterPanel, setShowFilterPanel] = React.useState(false);
+  const [showFilterPanel, setShowFilterPanel] = React.useState(
+    localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filters, setFilters] = React.useState<AnswerFilters>({
@@ -55,6 +59,13 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
     noVotes: 'false',
   });
   const { t } = useTranslation();
+
+  useEffect(() => {
+    localStorage.setItem(
+      EXPANDED_LOCAL_STORAGE_KEY,
+      showFilterPanel ? 'true' : 'false',
+    );
+  }, [showFilterPanel]);
 
   const onPageChange = (value: number) => {
     setPage(value);
@@ -229,7 +240,9 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
         {(showFilters ?? true) && (
           <Grid item>
             <Button
-              onClick={() => setShowFilterPanel(!showFilterPanel)}
+              onClick={() => {
+                setShowFilterPanel(!showFilterPanel);
+              }}
               className="qetaAnswerContainerFilterPanelBtn"
               startIcon={<FilterList />}
             >

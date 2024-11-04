@@ -135,7 +135,9 @@ export const PostsContainer = (
         {response && (showFilters ?? true) && (
           <Grid item>
             <Button
-              onClick={() => setShowFilterPanel(!showFilterPanel)}
+              onClick={() => {
+                setShowFilterPanel(!showFilterPanel);
+              }}
               className="qetaPostsContainerFilterPanelBtn"
               startIcon={<FilterList />}
             >
