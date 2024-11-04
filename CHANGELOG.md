@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.9.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.9.1...v3.9.2) (2024-11-04)
+
+
+### Bug Fixes
+
+* tests for new endpoints ([9466902](https://github.com/drodil/backstage-plugin-qeta/commit/9466902917d422496c5d0954bf66547e74dc01e3))
+* use post query instead get with query parameters not to exceed max url length ([5010ced](https://github.com/drodil/backstage-plugin-qeta/commit/5010ced74b262e5590aa22fa382ecc24f783a8ac))
+
 ### [3.9.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.9.0...v3.9.1) (2024-11-01)
 
 
