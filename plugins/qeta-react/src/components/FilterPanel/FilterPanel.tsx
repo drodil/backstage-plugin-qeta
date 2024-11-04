@@ -369,6 +369,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                     }
                   >
                     <IconButton
+                      disabled={starredEntities || ownedEntities}
                       onClick={() => {
                         if (filters.entitiesRelation === 'or') {
                           onChange({ key: 'entitiesRelation', value: 'and' });

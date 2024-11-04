@@ -6,7 +6,6 @@ import {
 import { Knex } from 'knex';
 import {
   Answers,
-  AnswersOptions,
   AttachmentParameters,
   CollectionPostRank,
   Collections,
@@ -17,7 +16,6 @@ import {
   MaybeComment,
   MaybePost,
   MaybeTemplate,
-  PostOptions,
   Posts,
   QetaStore,
   TagResponse,
@@ -29,6 +27,7 @@ import {
 import {
   AIResponse,
   Answer,
+  AnswersQuery,
   Attachment,
   Collection,
   CollectionsQuery,
@@ -37,6 +36,7 @@ import {
   filterTags,
   GlobalStat,
   Post,
+  PostsQuery,
   PostType,
   Statistic,
   StatisticsRequestParameters,
@@ -240,7 +240,7 @@ export class DatabaseQetaStore implements QetaStore {
 
   async getPosts(
     user_ref: string,
-    options: PostOptions,
+    options: PostsQuery,
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Posts> {
     const query = this.getPostsBaseQuery(user_ref);
@@ -683,7 +683,7 @@ export class DatabaseQetaStore implements QetaStore {
 
   async getAnswers(
     user_ref: string,
-    options: AnswersOptions,
+    options: AnswersQuery,
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Answers> {
     const query = this.getAnswerBaseQuery();

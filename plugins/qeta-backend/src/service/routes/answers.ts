@@ -86,6 +86,43 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
   });
 
+  router.post(`/answers/query`, async (request, response) => {
+    // Validation
+    const username = await getUsername(request, options, true);
+    const validateQuery = ajv.compile(AnswersQuerySchema);
+    if (!validateQuery(request.body)) {
+      response
+        .status(400)
+        .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+
+    const validDate = validateDateRange(
+      request.body.fromDate as string,
+      request.body.toDate as string,
+    );
+    if (!validDate?.isValid) {
+      response.status(400).send(validDate);
+      return;
+    }
+
+    const decision = await authorizeConditional(
+      request,
+      qetaReadAnswerPermission,
+      options,
+    );
+
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      const filter: PermissionCriteria<QetaFilters> = transformConditions(
+        decision.conditions,
+      );
+      const answers = await database.getAnswers(username, request.body, filter);
+      response.json(answers);
+    } else {
+      response.json(await database.getAnswers(username, request.body));
+    }
+  });
+
   // POST /posts/:id/answers
   router.post(`/posts/:id/answers`, async (request, response) => {
     // Validation

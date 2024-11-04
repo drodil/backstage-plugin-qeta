@@ -83,9 +83,13 @@ export class QetaClient implements QetaApi {
     options: PostsQuery,
     requestOptions?: RequestOptions,
   ): Promise<PostsResponse> {
-    const response = await this.fetch('/posts', {
+    const response = await this.fetch('/posts/query', {
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify(options),
+        headers: { 'Content-Type': 'application/json' },
+      },
       requestOptions,
-      queryParams: options,
     });
 
     if (response.status === 403) {
@@ -682,8 +686,12 @@ export class QetaClient implements QetaApi {
     options: AnswersQuery,
     requestOptions?: RequestOptions,
   ): Promise<AnswersResponse> {
-    const response = await this.fetch('/answers', {
-      queryParams: options,
+    const response = await this.fetch('/answers/query', {
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify(options),
+        headers: { 'Content-Type': 'application/json' },
+      },
       requestOptions,
     });
     if (response.status === 403) {
@@ -968,8 +976,12 @@ export class QetaClient implements QetaApi {
     options?: CollectionsQuery,
     requestOptions?: RequestOptions,
   ): Promise<CollectionsResponse> {
-    const response = await this.fetch('/collections', {
-      queryParams: options,
+    const response = await this.fetch('/collections/query', {
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify(options),
+        headers: { 'Content-Type': 'application/json' },
+      },
       requestOptions,
     });
     if (response.status === 403) {

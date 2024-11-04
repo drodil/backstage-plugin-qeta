@@ -54,7 +54,7 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
     orderBy: 'created',
     searchQuery: '',
     dateRange: '',
-    entity: entity ?? '',
+    entities: entity ? [entity] : undefined,
     tags: tags ?? [],
     noVotes: 'false',
   });

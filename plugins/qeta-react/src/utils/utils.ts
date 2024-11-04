@@ -103,6 +103,11 @@ export const getFiltersWithDateRange = (filters: Filters) => {
       return filtersWithDateRange;
     }
   }
+
+  if ('dateRange' in filters) {
+    delete filters.dateRange;
+  }
+
   return filters;
 };
 

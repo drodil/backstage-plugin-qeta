@@ -84,6 +84,55 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
   });
 
+  router.post(`/collections/query`, async (request, response) => {
+    // Validation
+    const username = await getUsername(request, options, true);
+    const validateQuery = ajv.compile(CollectionsQuerySchema);
+    if (!validateQuery(request.body)) {
+      response
+        .status(400)
+        .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+
+    const validDate = validateDateRange(
+      request.body.fromDate as string,
+      request.body.toDate as string,
+    );
+    if (!validDate?.isValid) {
+      response.status(400).send(validDate);
+      return;
+    }
+
+    const decision = await authorizeConditional(
+      request,
+      qetaReadPostPermission,
+      options,
+    );
+
+    // Act
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      const filter: PermissionCriteria<QetaFilters> = transformConditions(
+        decision.conditions,
+      );
+      const collections = await database.getCollections(
+        username,
+        request.body,
+        filter,
+      );
+      response.json({
+        collections: collections.collections,
+        total: collections.total,
+      });
+    } else {
+      const collections = await database.getCollections(username, request.body);
+      response.json({
+        collections: collections.collections,
+        total: collections.total,
+      });
+    }
+  });
+
   // POST /collections
   router.post(`/collections`, async (request, response) => {
     // Validation

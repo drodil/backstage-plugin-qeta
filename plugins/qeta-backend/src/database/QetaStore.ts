@@ -1,6 +1,7 @@
 import {
   AIResponse,
   Answer,
+  AnswersQuery,
   Attachment,
   Collection,
   CollectionsQuery,
@@ -8,6 +9,7 @@ import {
   EntitiesQuery,
   GlobalStat,
   Post,
+  PostsQuery,
   PostType,
   Statistic,
   StatisticsRequestParameters,
@@ -55,63 +57,6 @@ export interface Collections {
 export interface Templates {
   templates: Template[];
   total: number;
-}
-
-export interface PostOptions {
-  type?: PostType;
-  limit?: number;
-  offset?: number;
-  author?: string | string[];
-  orderBy?:
-    | 'views'
-    | 'rank'
-    | 'title'
-    | 'score'
-    | 'answersCount'
-    | 'created'
-    | 'updated'
-    | 'trend';
-  order?: 'desc' | 'asc';
-  noCorrectAnswer?: boolean;
-  noAnswers?: boolean;
-  noVotes?: boolean;
-  favorite?: boolean;
-  tags?: string[];
-  tagsRelation?: 'and' | 'or';
-  entities?: string[];
-  entitiesRelation?: 'and' | 'or';
-  includeAnswers?: boolean;
-  includeVotes?: boolean;
-  includeEntities?: boolean;
-  includeTrend?: boolean;
-  random?: boolean;
-  searchQuery?: string;
-  fromDate?: string;
-  toDate?: string;
-  collectionId?: number;
-}
-
-export interface AnswersOptions {
-  limit?: number;
-  offset?: number;
-  author?: string;
-  noCorrectAnswer?: boolean;
-  noVotes?: boolean;
-  orderBy?:
-    | 'views'
-    | 'score'
-    | 'answersCount'
-    | 'created'
-    | 'updated'
-    | 'trend';
-  order?: 'desc' | 'asc';
-  tags?: string[];
-  tagsRelation?: 'and' | 'or';
-  entities?: string[];
-  entitiesRelation?: 'and' | 'or';
-  searchQuery?: string;
-  fromDate?: string;
-  toDate?: string;
 }
 
 export interface TagResponse {
@@ -186,7 +131,7 @@ export interface QetaStore {
    */
   getPosts(
     user_ref: string,
-    options: PostOptions,
+    options: PostsQuery,
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Posts>;
 
@@ -345,7 +290,7 @@ export interface QetaStore {
    */
   getAnswers(
     user_ref: string,
-    options: AnswersOptions,
+    options: AnswersQuery,
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<Answers>;
 

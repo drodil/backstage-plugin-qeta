@@ -1,4 +1,3 @@
-import { PostOptions } from '../../database/QetaStore';
 import {
   authorize,
   authorizeConditional,
@@ -12,6 +11,7 @@ import Ajv from 'ajv';
 import { Request, Router } from 'express';
 import {
   findUserMentions,
+  PostsQuery,
   qetaCreateCommentPermission,
   qetaCreatePostPermission,
   qetaDeleteCommentPermission,
@@ -79,6 +79,43 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
   });
 
+  router.post(`/posts/query`, async (request, response) => {
+    // Validation
+    const username = await getUsername(request, options, true);
+    const validateQuery = ajv.compile(PostsQuerySchema);
+    if (!validateQuery(request.body)) {
+      response.status(400).send({ errors: validateQuery.errors, type: 'body' });
+      return;
+    }
+
+    const validDate = validateDateRange(
+      request.body.fromDate as string,
+      request.body.toDate as string,
+    );
+    if (!validDate?.isValid) {
+      response.status(400).send(validDate);
+      return;
+    }
+
+    const decision = await authorizeConditional(
+      request,
+      qetaReadPostPermission,
+      options,
+    );
+
+    // Act
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      const filter: PermissionCriteria<QetaFilters> = transformConditions(
+        decision.conditions,
+      );
+      const posts = await database.getPosts(username, request.body, filter);
+      response.json({ posts: posts.posts, total: posts.total });
+    } else {
+      const posts = await database.getPosts(username, request.body);
+      response.json({ posts: posts.posts, total: posts.total });
+    }
+  });
+
   // GET /posts/list/:type
   router.get(`/posts/list/:type`, async (request, response) => {
     // Validation
@@ -91,7 +128,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const optionOverride: PostOptions = {};
+    const optionOverride: PostsQuery = {};
     const type = request.params.type;
     if (type === 'unanswered') {
       optionOverride.random = true;
