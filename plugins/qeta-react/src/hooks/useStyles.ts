@@ -87,10 +87,10 @@ export const useStyles = makeStyles(
         marginTop: theme.spacing(3),
       },
       marginRight: {
-        marginRight: theme.spacing(1),
+        marginRight: theme.spacing(2),
       },
       marginLeft: {
-        marginLeft: theme.spacing(1),
+        marginLeft: theme.spacing(2),
       },
       questionCardActions: {
         marginTop: theme.spacing(2),

@@ -51,9 +51,14 @@ export const PostHighlightList = (props: {
         subheader={
           <ListSubheader
             disableSticky
-            component="p"
+            component="div"
             id="nested-list-subheader"
             color="primary"
+            style={{
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
           >
             {props.title}
             {props.icon}

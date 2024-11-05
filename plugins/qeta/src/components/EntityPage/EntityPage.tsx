@@ -50,7 +50,7 @@ export const EntityPage = () => {
 
   return (
     <Grid container spacing={4}>
-      <Grid item md={12} lg={9} xl={10}>
+      <Grid item md={12} lg={8} xl={9}>
         <ContentHeader
           titleComponent={
             <Typography variant="h5" component="h2">
@@ -78,7 +78,7 @@ export const EntityPage = () => {
         )}
         {entityRef ? <PostsContainer entity={entityRef} /> : <EntitiesGrid />}
       </Grid>
-      <Grid item lg={3} xl={2}>
+      <Grid item lg={4} xl={3}>
         <FollowedEntitiesList />
         {resp && (
           <>

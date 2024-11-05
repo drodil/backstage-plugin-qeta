@@ -14,14 +14,14 @@ export const FavoritePage = () => {
   const { t } = useTranslation();
   return (
     <Grid container spacing={4}>
-      <Grid item md={12} lg={9} xl={10}>
+      <Grid item md={12} lg={8} xl={9}>
         <ContentHeader title={t('favoritePage.title')}>
           <AskQuestionButton />
           <WriteArticleButton />
         </ContentHeader>
         <PostsContainer favorite />
       </Grid>
-      <Grid item lg={3} xl={2}>
+      <Grid item lg={4} xl={3}>
         <PostHighlightList
           type="hot"
           title={t('highlights.hotQuestions.title')}
