@@ -14,7 +14,6 @@ export const useStyles = makeStyles(
       questionCardVote: {
         textAlign: 'center',
         width: '32px',
-        marginRight: '20px',
         marginLeft: '5px',
         display: 'inline-block',
         verticalAlign: 'top',
@@ -25,7 +24,7 @@ export const useStyles = makeStyles(
       },
       questionListItem: {
         padding: '0.7rem',
-        paddingBottom: '1.4rem',
+        paddingBottom: '1.0rem',
       },
       questionListItemStats: {
         width: '70px',

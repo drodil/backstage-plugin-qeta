@@ -67,22 +67,26 @@ export const PostListItem = (props: PostListItemProps) => {
   return (
     <Grid
       container
-      spacing={0}
+      spacing={2}
       className={styles.questionListItem}
       justifyContent="flex-start"
     >
-      <Grid container item xs={1} justifyContent="center">
+      <Grid item justifyContent="center" style={{ paddingTop: '0px' }}>
         <div className={styles.questionCardVote}>
           <VoteButtons entity={post} />
           <FavoriteButton entity={post} />
         </div>
       </Grid>
-      <Grid item xs={11} className={styles.questionListItemContent}>
-        <Grid container spacing={1}>
+      <Grid item className={styles.questionListItemContent}>
+        <Grid container>
           <Grid
             item
             xs={12}
-            style={{ marginLeft: '0px', paddingLeft: '0px', paddingTop: '0px' }}
+            style={{
+              paddingTop: '0.4rem',
+              paddingBottom: '0.4rem',
+              paddingLeft: '0.4rem',
+            }}
           >
             {type === undefined && (
               <Chip
@@ -122,12 +126,8 @@ export const PostListItem = (props: PostListItemProps) => {
               })}
             />
           </Grid>
-          <Grid item xs={12}>
-            <Typography
-              variant="h5"
-              component="div"
-              style={{ marginTop: '3px' }}
-            >
+          <Grid item xs={12} style={{ paddingTop: '0px' }}>
+            <Typography variant="h5" component="div">
               <Link to={href} className="qetaPostListItemQuestionBtn">
                 {post.title}
               </Link>

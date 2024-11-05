@@ -122,13 +122,13 @@ export const EntitiesInput = (props: {
           onChange(newValue);
         }
       }}
-      renderOption={(_props, option) => {
+      renderOption={(optionProps, option) => {
         return (
-          <>
+          <li {...optionProps}>
             <Tooltip title={stringifyEntityRef(option)}>
               <span>{getEntityTitle(option)}</span>
             </Tooltip>
-          </>
+          </li>
         );
       }}
       renderInput={params => (

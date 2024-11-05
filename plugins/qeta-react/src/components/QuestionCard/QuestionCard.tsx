@@ -61,7 +61,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
         <CardContent>
           <Grid
             container
-            spacing={0}
+            spacing={2}
             justifyContent="flex-start"
             style={{ flexWrap: 'nowrap' }}
           >

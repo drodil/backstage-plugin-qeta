@@ -49,6 +49,7 @@ export const useStyles = makeStyles(
       leftMenu: {
         top: '0',
         width: '165px',
+        paddingTop: '2rem',
       },
       inPopup: {
         marginRight: 0,

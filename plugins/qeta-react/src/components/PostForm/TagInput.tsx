@@ -82,17 +82,17 @@ export const TagInput = (props: {
       options={availableTags ?? []}
       freeSolo={allowCreation}
       style={style}
-      renderOption={(_props, option) => {
+      renderOption={(optionProps, option) => {
         if (tagDescriptions[option]) {
           return (
-            <>
+            <li {...optionProps}>
               <Tooltip title={tagDescriptions[option]}>
                 <span>{option}</span>
               </Tooltip>
-            </>
+            </li>
           );
         }
-        return option;
+        return <li {...optionProps}>{option}</li>;
       }}
       onChange={(_e, newValue) => {
         const tags = filterTags(newValue);

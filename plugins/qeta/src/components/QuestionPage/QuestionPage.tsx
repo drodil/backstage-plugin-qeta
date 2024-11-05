@@ -176,6 +176,7 @@ export const QuestionPage = () => {
                     name: 'sortAnswers',
                     id: 'sort-answers',
                   }}
+                  variant="outlined"
                 >
                   <option value="default">
                     {t('questionPage.sortAnswers.default')}

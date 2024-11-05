@@ -59,7 +59,7 @@ export const AnswerCard = (props: {
         <CardContent>
           <Grid
             container
-            spacing={0}
+            spacing={2}
             justifyContent="flex-start"
             style={{ flexWrap: 'nowrap' }}
           >
