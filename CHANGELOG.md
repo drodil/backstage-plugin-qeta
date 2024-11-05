@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.9.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.9.2...v3.9.3) (2024-11-05)
+
+
+### Bug Fixes
+
+* tag input not showing without pre-existing tags ([fda3fd4](https://github.com/drodil/backstage-plugin-qeta/commit/fda3fd4f88b760475388121806ab509c1aa05745)), closes [#235](https://github.com/drodil/backstage-plugin-qeta/issues/235)
+
 ### [3.9.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.9.1...v3.9.2) (2024-11-04)
 
 
