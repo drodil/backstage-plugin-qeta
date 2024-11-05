@@ -1,4 +1,6 @@
-import { Avatar, Grid, Typography } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import Grid from '@mui/material/Grid';
 import { Link } from '@backstage/core-components';
 import React from 'react';
 import DOMPurify from 'dompurify';

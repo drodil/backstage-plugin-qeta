@@ -1,19 +1,17 @@
 import { useIsModerator, useQetaApi, useTranslation } from '../../hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  IconButton,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from '@material-ui/core';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import List from '@mui/material/List';
+import ListItemText from '@mui/material/ListItemText';
 import { useApi } from '@backstage/core-plugin-api';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import { qetaApiRef } from '../../api';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { TemplateForm } from './TemplateForm';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-use';
@@ -111,10 +109,11 @@ export const TemplateList = () => {
                   onClick={() => {
                     navigate(`#template:${template.id}`);
                   }}
+                  size="large"
                 >
                   <EditIcon />
                 </IconButton>
-                <IconButton onClick={() => onDelete(template.id)}>
+                <IconButton onClick={() => onDelete(template.id)} size="large">
                   <DeleteIcon />
                 </IconButton>
               </ListItemSecondaryAction>

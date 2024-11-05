@@ -1,5 +1,8 @@
 import { Control, Controller } from 'react-hook-form';
-import { Box, Checkbox, FormControlLabel, Tooltip } from '@material-ui/core';
+import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import React from 'react';
 import { useTranslation } from '../../hooks';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { ContentHeader, InfoCard } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
 import {
   CollectionForm,
   useTranslation,

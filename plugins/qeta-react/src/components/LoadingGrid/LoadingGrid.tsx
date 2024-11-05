@@ -1,4 +1,5 @@
-import { CircularProgress, Grid } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
 
 export const LoadingGrid = () => {

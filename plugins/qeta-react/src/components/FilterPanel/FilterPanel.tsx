@@ -1,18 +1,16 @@
 import React from 'react';
-import {
-  Box,
-  Checkbox,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Grid,
-  IconButton,
-  Radio,
-  RadioGroup,
-  Tooltip,
-} from '@material-ui/core';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormGroup from '@mui/material/FormGroup';
+import FormLabel from '@mui/material/FormLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { DateRangeFilter } from './DateRangeFilter';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
@@ -24,8 +22,8 @@ import {
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import AdjustIcon from '@material-ui/icons/Adjust';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import AdjustIcon from '@mui/icons-material/Adjust';
 
 const radioSelect = (value: string, label: string) => {
   return (
@@ -377,6 +375,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                           onChange({ key: 'entitiesRelation', value: 'or' });
                         }
                       }}
+                      size="large"
                     >
                       {filters.entitiesRelation === 'or' ? (
                         <AdjustIcon />
@@ -421,6 +420,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                           onChange({ key: 'tagsRelation', value: 'or' });
                         }
                       }}
+                      size="large"
                     >
                       {filters.tagsRelation === 'or' ? (
                         <AdjustIcon />

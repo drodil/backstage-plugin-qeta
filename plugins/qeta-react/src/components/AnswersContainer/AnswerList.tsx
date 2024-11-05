@@ -1,17 +1,16 @@
 import { Progress, WarningPanel } from '@backstage/core-components';
-import {
-  Box,
-  Card,
-  CardContent,
-  Divider,
-  Grid,
-  Typography,
-} from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import React, { useEffect, useRef, useState } from 'react';
 import { AnswersResponse } from '@drodil/backstage-plugin-qeta-common';
 import { AnswerListItem } from './AnswerListItem';
 import { useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
+import { SelectChangeEvent } from '@mui/material/Select';
 
 export const AnswerList = (props: {
   loading: boolean;
@@ -54,9 +53,7 @@ export const AnswerList = (props: {
     onPageChange(value);
   };
 
-  const handlePageSizeChange = (
-    event: React.ChangeEvent<{ value: unknown }>,
-  ) => {
+  const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
     if (listRef.current) {
       listRef.current.scrollIntoView();
     }

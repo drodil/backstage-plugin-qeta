@@ -1,4 +1,4 @@
-import { Tooltip } from '@material-ui/core';
+import Tooltip from '@mui/material/Tooltip';
 import React, { useEffect } from 'react';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';

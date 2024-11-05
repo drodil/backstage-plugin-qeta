@@ -1,21 +1,19 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import React from 'react';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-import {
-  Grid,
-  IconButton,
-  makeStyles,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import ArrowUpward from '@mui/icons-material/ArrowUpward';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import makeStyles from '@mui/styles/makeStyles';
+import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { LinkButton } from '../Buttons/LinkButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { editArticleRouteRef } from '../../routes';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { DeleteModal } from '../DeleteModal';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import { useVoting } from '../../hooks/useVoting';
 import { useStyles, useTranslation } from '../../hooks';
 

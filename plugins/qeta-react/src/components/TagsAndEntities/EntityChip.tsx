@@ -1,5 +1,9 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { Button, Chip, Grid, Tooltip, Typography } from '@material-ui/core';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import React, { useEffect } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
@@ -88,12 +92,7 @@ export const EntityChip = (props: { entity: Entity | string }) => {
   const entityRef =
     typeof entity === 'string' ? entity : stringifyEntityRef(entity);
   return (
-    <Tooltip
-      title={<EntityTooltip entity={entity} />}
-      arrow
-      interactive
-      enterDelay={400}
-    >
+    <Tooltip title={<EntityTooltip entity={entity} />} arrow enterDelay={400}>
       <Chip
         label={primaryTitle}
         size="small"

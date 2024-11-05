@@ -5,33 +5,30 @@ import {
   Post,
 } from '@drodil/backstage-plugin-qeta-common';
 import React, { useCallback } from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Collapse,
-  createStyles,
-  IconButton,
-  makeStyles,
-  Theme,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useAI, useTranslation } from '../../hooks';
-import FlareIcon from '@material-ui/icons/Flare';
+import FlareIcon from '@mui/icons-material/Flare';
 import useDebounce from 'react-use/lib/useDebounce';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 
 export type QetaAIAnswerCardClassKey = 'card';
 
 const useStyles = makeStyles(
-  (theme: Theme) =>
+  theme =>
     createStyles({
       card: {
         marginTop: theme.spacing(3),
@@ -167,6 +164,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
                     setAnswer(undefined);
                     fetchAnswer({ regenerate: true });
                   }}
+                  size="large"
                 >
                   <RefreshIcon />
                 </IconButton>
@@ -184,6 +182,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
                   );
                 }}
                 aria-expanded={expanded}
+                size="large"
               >
                 {expanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
               </IconButton>
@@ -201,7 +200,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
       <Collapse in={expanded} timeout={0} unmountOnExit mountOnEnter>
         <CardContent>
           {answer === undefined && (
-            <Skeleton variant="rect" height={200} animation="wave" />
+            <Skeleton variant="rectangular" height={200} animation="wave" />
           )}
           {answer && (
             <MarkdownRenderer

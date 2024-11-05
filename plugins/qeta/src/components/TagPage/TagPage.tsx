@@ -13,8 +13,11 @@ import {
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Card, CardContent, Grid, Typography } from '@material-ui/core';
-import Whatshot from '@material-ui/icons/Whatshot';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Whatshot from '@mui/icons-material/Whatshot';
 import { useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 

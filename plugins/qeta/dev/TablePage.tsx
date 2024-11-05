@@ -1,7 +1,8 @@
 import React from 'react';
 import { Content, Page } from '@backstage/core-components';
 import { QuestionsTable } from '@drodil/backstage-plugin-qeta-react';
-import { Card, CardContent } from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 export const TablePage = () => {
   return (

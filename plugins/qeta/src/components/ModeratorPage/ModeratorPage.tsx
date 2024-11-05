@@ -4,9 +4,11 @@ import {
   useIsModerator,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box, Tab } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
 import { ContentHeader } from '@backstage/core-components';
-import { Alert, TabContext, TabList, TabPanel } from '@material-ui/lab';
+import Alert from '@mui/material/Alert';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 
 export const ModeratorPage = () => {
   const { isModerator } = useIsModerator();

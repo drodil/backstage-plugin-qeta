@@ -3,17 +3,15 @@ import {
   TagResponse,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
-import {
-  Button,
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Grid,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardHeader from '@mui/material/CardHeader';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import CardActions from '@mui/material/CardActions';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';

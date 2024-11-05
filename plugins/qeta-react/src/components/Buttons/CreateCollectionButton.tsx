@@ -1,4 +1,4 @@
-import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
+import PlayListAddIcon from '@mui/icons-material/PlaylistAdd';
 import React from 'react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';

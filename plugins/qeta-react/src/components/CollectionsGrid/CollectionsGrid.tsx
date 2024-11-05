@@ -1,19 +1,17 @@
 import React, { useEffect } from 'react';
-import {
-  Box,
-  Button,
-  Collapse,
-  Grid,
-  IconButton,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import { CollectionsGridContent } from './CollectionsGridContent';
 import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { CollectionFilters, FilterPanel } from '../FilterPanel/FilterPanel';
-import FilterList from '@material-ui/icons/FilterList';
+import FilterList from '@mui/icons-material/FilterList';
 import { getFiltersWithDateRange } from '../../utils';
 
 export type CollectionsGridProps = {
@@ -111,7 +109,7 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
             placeholder={t('collectionsPage.search.placeholder')}
             size="small"
           />
-          <IconButton type="submit" aria-label="search" />
+          <IconButton type="submit" aria-label="search" size="large" />
         </Grid>
       </Grid>
       <Grid container justifyContent="space-between">

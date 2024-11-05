@@ -1,5 +1,3 @@
-import { Overrides } from '@material-ui/core/styles/overrides';
-import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { QetaMarkdownContentClassKey } from './components/MarkdownRenderer/MarkdownRenderer';
 import { QetaArticleContentClassKey } from './components/ArticleContent/ArticleContent';
 import { QetaVoteButtonsClassKey } from './components/Buttons/VoteButtons';
@@ -10,6 +8,9 @@ import { QetaMarkdownEditorClassKey } from './components/MarkdownEditor/Markdown
 import { QetaAuthorBoxClassKey } from './components/AuthorBox/AuthorBox';
 import { QetaFormClassKey } from './hooks/useFormStyles';
 import { QetaAIAnswerCardClassKey } from './components/AIAnswerCard/AIAnswerCard';
+import { ComponentsOverrides } from '@mui/material/styles';
+// eslint-disable-next-line no-restricted-imports
+import { OverridesStyleRules } from '@mui/material/styles/overrides';
 
 type QetaComponentsNameToClassKey = {
   QetaLeftMenu: QetaLeftMenuClassKey;
@@ -24,8 +25,8 @@ type QetaComponentsNameToClassKey = {
   QetaAIAnswerCard: QetaAIAnswerCardClassKey;
 };
 
-export type QetaOverrides = Overrides & {
+export type QetaOverrides = ComponentsOverrides & {
   [Name in keyof QetaComponentsNameToClassKey]?: Partial<
-    StyleRules<QetaComponentsNameToClassKey[Name]>
+    OverridesStyleRules<QetaComponentsNameToClassKey[Name]>
   >;
 };

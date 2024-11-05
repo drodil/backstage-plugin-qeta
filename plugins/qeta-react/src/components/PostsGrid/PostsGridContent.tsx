@@ -2,11 +2,13 @@ import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
 import React, { useEffect, useRef, useState } from 'react';
 import { WarningPanel } from '@backstage/core-components';
 import { NoPostsCard } from '../PostsContainer/NoPostsCard';
-import { Box, Grid } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import { PostsGridItem } from './PostsGridItem';
 import { useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
+import { SelectChangeEvent } from '@mui/material/Select';
 
 export const PostsGridContent = (props: {
   loading: boolean;
@@ -61,9 +63,7 @@ export const PostsGridContent = (props: {
     onPageChange(value);
   };
 
-  const handlePageSizeChange = (
-    event: React.ChangeEvent<{ value: unknown }>,
-  ) => {
+  const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
     if (gridRef.current) {
       gridRef.current.scrollIntoView();
     }

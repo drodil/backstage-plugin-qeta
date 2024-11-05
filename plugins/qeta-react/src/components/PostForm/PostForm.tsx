@@ -4,8 +4,9 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import { Button, TextField } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Alert from '@mui/material/Alert';
 import React, { useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';

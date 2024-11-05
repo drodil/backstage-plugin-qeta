@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Divider,
-  FormControl,
-  Grid,
-  Select,
-  Typography,
-} from '@material-ui/core';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import Select from '@mui/material/Select';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
@@ -28,7 +27,6 @@ import {
   PostResponse,
   QetaSignal,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Skeleton } from '@material-ui/lab';
 import { useSignal } from '@backstage/plugin-signals-react';
 
 export const QuestionPage = () => {
@@ -91,7 +89,7 @@ export const QuestionPage = () => {
   };
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Skeleton variant="rectangular" height={200} />;
   }
 
   if (error || question === undefined) {

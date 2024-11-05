@@ -1,4 +1,4 @@
-import CreateIcon from '@material-ui/icons/Create';
+import CreateIcon from '@mui/icons-material/Create';
 import React from 'react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';

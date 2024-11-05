@@ -1,4 +1,7 @@
-import { Card, CardHeader, Divider, Grid } from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
 import React from 'react';
 import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { PostListItem } from '../PostsContainer';

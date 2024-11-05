@@ -3,9 +3,13 @@ import {
   CollectionResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Backdrop, Box, Button, Modal, Typography } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import Delete from '@material-ui/icons/Delete';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import Delete from '@mui/icons-material/Delete';
+import Modal from '@mui/material/Modal';
+import Backdrop from '@mui/material/Backdrop';
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
@@ -84,10 +88,7 @@ export const DeleteModal = (props: {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{
-        timeout: 500,
-      }}
+      slots={{ backdrop: Backdrop }}
     >
       <Box className={`qetaDeleteModalContent ${styles.deleteModal}`}>
         {error && (

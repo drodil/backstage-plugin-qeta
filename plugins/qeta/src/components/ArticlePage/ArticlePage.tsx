@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { Article, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import {
@@ -12,7 +12,7 @@ import {
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Container } from '@material-ui/core';
+import Container from '@mui/material/Container';
 
 export const ArticlePage = () => {
   const { id } = useParams();
@@ -41,7 +41,7 @@ export const ArticlePage = () => {
   }, [lastSignal]);
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Skeleton variant="rectangular" height={200} />;
   }
 
   if (error || post === undefined) {

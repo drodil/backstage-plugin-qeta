@@ -1,5 +1,6 @@
-import { Autocomplete } from '@material-ui/lab';
-import { TextField, Tooltip } from '@material-ui/core';
+import Tooltip from '@mui/material/Tooltip';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import React, { useEffect, useMemo } from 'react';
 import { qetaApiRef } from '../../api';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
@@ -81,7 +82,7 @@ export const TagInput = (props: {
       options={availableTags ?? []}
       freeSolo={allowCreation}
       style={style}
-      renderOption={option => {
+      renderOption={(_props, option) => {
         if (tagDescriptions[option]) {
           return (
             <>

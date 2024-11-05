@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 
 export type QetaFormClassKey = 'headerImage' | 'postButton' | 'postForm';
 

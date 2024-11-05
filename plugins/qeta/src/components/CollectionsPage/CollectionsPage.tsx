@@ -7,7 +7,7 @@ import {
   useCollectionsFollow,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Grid } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
 
 export const CollectionsPage = () => {
   const { t } = useTranslation();

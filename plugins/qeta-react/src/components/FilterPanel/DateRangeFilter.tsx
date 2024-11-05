@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  MenuItem,
-  TextField,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
 import { formatDate } from '../../utils/utils';
 import { useStyles, useTranslation } from '../../hooks';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import useTheme from '@mui/styles/useTheme';
 
 export interface DateRangeFilterProps {
   value?: string;
@@ -32,9 +30,8 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
   const [validation, setValidation] = useState<DateRangeValidation>({
     isValid: true,
   });
-  const isSmallScreen = useMediaQuery<Theme>(theme =>
-    theme.breakpoints.down('sm'),
-  );
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('xl'));
 
   const localDate = formatDate(new Date());
 
@@ -75,7 +72,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
   }, [t, fromDate, toDate, onChange]);
 
   return (
-    <Box display={isSmallScreen ? 'block' : 'flex'} gridGap="16px">
+    <Box display={isSmallScreen ? 'block' : 'flex'} gap="16px">
       <TextField
         id="outlined-select-currency"
         select
@@ -95,7 +92,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
       </TextField>
       {dateRangeOption === 'custom' && (
         <Box display="flex" flexDirection="column">
-          <Box display={isSmallScreen ? 'block' : 'flex'} gridGap="12px">
+          <Box display={isSmallScreen ? 'block' : 'flex'} gap="12px">
             <TextField
               variant="outlined"
               label={t('datePicker.from')}

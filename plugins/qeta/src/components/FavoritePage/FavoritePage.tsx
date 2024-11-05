@@ -7,8 +7,8 @@ import {
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Grid } from '@material-ui/core';
-import Whatshot from '@material-ui/icons/Whatshot';
+import Grid from '@mui/material/Grid';
+import Whatshot from '@mui/icons-material/Whatshot';
 
 export const FavoritePage = () => {
   const { t } = useTranslation();

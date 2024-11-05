@@ -4,16 +4,14 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import {
-  Button,
-  FormControl,
-  FormHelperText,
-  Grid,
-  MenuItem,
-  Select,
-  TextField,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Alert from '@mui/material/Alert';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import React, { useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';

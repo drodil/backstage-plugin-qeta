@@ -1,5 +1,7 @@
 import React, { ReactNode } from 'react';
-import { Box, Container, Grid } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
 import { Content, Header, Page } from '@backstage/core-components';
 import { Route, Routes } from 'react-router-dom';
 import { AskPage } from '../AskPage';

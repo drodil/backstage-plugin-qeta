@@ -1,4 +1,7 @@
-import { Avatar, Chip, Grid, Typography, useTheme } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import Grid from '@mui/material/Grid';
+import Chip from '@mui/material/Chip';
 import { Link } from '@backstage/core-components';
 import React, { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
@@ -17,10 +20,11 @@ import { useSignal } from '@backstage/plugin-signals-react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { capitalize } from 'lodash';
-import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
-import HelpOutlined from '@material-ui/icons/HelpOutlined';
+import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
+import HelpOutlined from '@mui/icons-material/HelpOutlined';
 import { useStyles, useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
+import useTheme from '@mui/styles/useTheme';
 
 export interface PostListItemProps {
   post: PostResponse;

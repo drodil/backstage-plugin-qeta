@@ -12,9 +12,11 @@ import {
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box, Tab, Typography } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
-import { TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { UserStatsContent } from './UserStatsContent';
 
 export const UserPage = () => {

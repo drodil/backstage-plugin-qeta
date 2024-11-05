@@ -1,19 +1,17 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  Typography,
-} from '@material-ui/core';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { AnswerForm } from '../AnswerForm';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { CommentSection } from '../CommentSection/CommentSection';
 import { LinkButton } from '../Buttons/LinkButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   AnswerResponse,
   PostResponse,

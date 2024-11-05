@@ -5,14 +5,12 @@ import {
   TabbedCard,
   WarningPanel,
 } from '@backstage/core-components';
-import {
-  Avatar,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Typography,
-} from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
 import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
 import { TrophyIcon } from './TrophyIcon';
 import { useStyles } from './styles';

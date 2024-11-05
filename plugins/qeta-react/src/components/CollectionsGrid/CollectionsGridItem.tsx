@@ -6,16 +6,14 @@ import {
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionRouteRef } from '../../routes';
-import {
-  Button,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Grid,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActionArea from '@mui/material/CardActionArea';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import CardMedia from '@mui/material/CardMedia';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';

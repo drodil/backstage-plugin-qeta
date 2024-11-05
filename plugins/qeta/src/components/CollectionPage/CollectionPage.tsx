@@ -8,9 +8,10 @@ import {
   useQetaApi,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
-import { Grid, Typography } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
 export const CollectionPage = () => {
   const { id } = useParams();
@@ -23,7 +24,7 @@ export const CollectionPage = () => {
   } = useQetaApi(api => api.getCollection(id), [id]);
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Skeleton variant="rectangular" height={200} />;
   }
 
   if (error || collection === undefined) {

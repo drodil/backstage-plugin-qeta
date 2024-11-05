@@ -10,8 +10,8 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { ContentHeader } from '@backstage/core-components';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import { Grid } from '@material-ui/core';
-import Whatshot from '@material-ui/icons/Whatshot';
+import Grid from '@mui/material/Grid';
+import Whatshot from '@mui/icons-material/Whatshot';
 
 export const QuestionsPage = () => {
   const [searchParams] = useSearchParams();

@@ -1,9 +1,10 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
-import { IconButton, Tooltip } from '@material-ui/core';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
-import StarIcon from '@material-ui/icons/Star';
-import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import StarIcon from '@mui/icons-material/Star';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
 

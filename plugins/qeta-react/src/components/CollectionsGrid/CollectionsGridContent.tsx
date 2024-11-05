@@ -1,7 +1,7 @@
 import { CollectionsResponse } from '@drodil/backstage-plugin-qeta-common';
 import React, { useEffect, useState } from 'react';
 import { WarningPanel } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
 import { CollectionsGridItem } from './CollectionsGridItem';
 import { useTranslation } from '../../hooks';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';

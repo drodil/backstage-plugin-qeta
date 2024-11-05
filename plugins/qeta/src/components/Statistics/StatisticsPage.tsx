@@ -6,7 +6,7 @@ import {
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { GlobalStatsContent } from './GlobalStatsContent';
-import { Grid } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
 
 export const StatisticsPage = () => {
   return (
