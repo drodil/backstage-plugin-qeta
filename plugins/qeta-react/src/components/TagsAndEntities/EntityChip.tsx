@@ -15,7 +15,7 @@ const EntityTooltip = (props: { entity: Entity | string }) => {
   const entityRef =
     typeof entity === 'string' ? entity : stringifyEntityRef(entity);
   const qetaApi = useApi(qetaApiRef);
-  const { primaryTitle } = useEntityPresentation(entity);
+  const { primaryTitle, secondaryTitle, Icon } = useEntityPresentation(entity);
   const { t } = useTranslation();
   const entitiesFollow = useEntityFollow();
   const [resp, setResp] = React.useState<undefined | EntityResponse>();
@@ -41,7 +41,10 @@ const EntityTooltip = (props: { entity: Entity | string }) => {
   return (
     <Grid container style={{ padding: '0.5rem' }} spacing={1}>
       <Grid item xs={12}>
-        <Typography variant="h6">{primaryTitle}</Typography>
+        <Typography variant="h6">
+          {Icon ? <Icon fontSize="small" /> : null} {primaryTitle}
+        </Typography>
+        <Typography variant="subtitle1">{secondaryTitle}</Typography>
       </Grid>
       <Grid item xs={12}>
         <Typography variant="subtitle2">
