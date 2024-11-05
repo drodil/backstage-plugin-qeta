@@ -21,7 +21,9 @@ export const RelativeTimeWithTooltip = (props: { value: Date | string }) => {
 
   return (
     <Tooltip title={date.toLocaleString(navigator.languages)}>
-      <RelativeTime value={date} />
+      <div>
+        <RelativeTime value={date} />
+      </div>
     </Tooltip>
   );
 };
