@@ -7,6 +7,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { TAGS } from '../tagDb';
+import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
 
 export class TagsUpdater {
   static initTagsUpdater = async (
@@ -14,6 +15,7 @@ export class TagsUpdater {
     scheduler: SchedulerService,
     logger: LoggerService,
     database: QetaStore,
+    tagDatabase?: TagDatabase,
   ): Promise<void> => {
     const schedule: SchedulerServiceTaskScheduleDefinition = config.has(
       'qeta.tagUpdater.schedule',
@@ -32,19 +34,28 @@ export class TagsUpdater {
     await taskRunner.run({
       id: 'qeta-tag-updater',
       fn: async () => {
-        await this.updateTags(logger, database);
+        await this.updateTags(logger, database, tagDatabase);
       },
     });
   };
 
-  static updateTags = async (logger: LoggerService, database: QetaStore) => {
+  static updateTags = async (
+    logger: LoggerService,
+    database: QetaStore,
+    tagDatabase?: TagDatabase,
+  ) => {
     logger.info('Updating tags');
     const tagsWithoutDescription = await database.getTags({
       noDescription: true,
     });
 
+    const allTags: Record<string, string> = {
+      ...TAGS,
+      ...(await tagDatabase?.getTags()),
+    };
+
     for (const tag of tagsWithoutDescription.tags) {
-      if (tag.tag.toLowerCase() in TAGS) {
+      if (tag.tag.toLowerCase() in allTags) {
         await database.updateTag(tag.tag, TAGS[tag.tag]);
       }
     }

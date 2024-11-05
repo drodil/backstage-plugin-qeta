@@ -20,7 +20,7 @@ export const qetaCreateCommentPermission = createPermission({
   attributes: { action: 'create' },
 });
 
-export const POST_RESOURCE_TYPE = 'question';
+export const POST_RESOURCE_TYPE = 'post';
 
 export const qetaReadPostPermission = createPermission({
   name: 'qeta.read.post',

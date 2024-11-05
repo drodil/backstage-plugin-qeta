@@ -5,6 +5,8 @@ import { Link, LinkProps } from '@backstage/core-components';
 import { userRouteRef } from '../../routes';
 import { Answer, Comment, Post } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslation } from '../../hooks';
+import { UserTooltip } from '../TagsAndEntities/UserChip';
+import { Tooltip } from '@material-ui/core';
 
 export const UserLink = (props: {
   entityRef: string;
@@ -20,9 +22,15 @@ export const UserLink = (props: {
     return <>{t('userLink.anonymous')}</>;
   }
   return (
-    <Link to={`${userRoute()}/${entityRef}`} {...linkProps}>
-      {userName}
-    </Link>
+    <Tooltip
+      arrow
+      title={<UserTooltip entityRef={entityRef} />}
+      enterDelay={400}
+    >
+      <Link to={`${userRoute()}/${entityRef}`} {...linkProps}>
+        {userName}
+      </Link>
+    </Tooltip>
   );
 };
 

@@ -82,10 +82,29 @@ export const postHasEntities = createPostPermissionRule({
 export const postHasEntitiesConditionFactory =
   createConditionFactory(postHasEntities);
 
+export const postHasType = createPostPermissionRule({
+  name: 'HAS_TYPE',
+  description: 'Should allow only if the post has the specific type',
+  resourceType: POST_RESOURCE_TYPE,
+  paramsSchema: z.object({
+    type: z.string().describe('Type to match the post'),
+  }),
+  apply: (resource: Post, { type }) => {
+    return resource.type === type;
+  },
+  toQuery: ({ type }) => {
+    return {
+      property: 'posts.type',
+      values: [type],
+    };
+  },
+});
+
 export const postRules = {
-  isQuestionAuthor: isPostAuthor,
-  questionHasTags: postHasTags,
-  questionHasEntities: postHasEntities,
+  isPostAuthor,
+  postHasTags,
+  postHasEntities,
+  postHasType,
 };
 
 export const createAnswerPermissionRule = makeCreatePermissionRule<

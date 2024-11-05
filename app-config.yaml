@@ -56,6 +56,9 @@ catalog:
     - type: file
       target: ../../local_dev.yaml
 
+events:
+  useEventBus: 'never'
+
 qeta:
   storage:
     type: database

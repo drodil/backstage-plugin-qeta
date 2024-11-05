@@ -34,12 +34,53 @@ export interface AIHandler {
     article: Article,
     options?: { credentials?: BackstageCredentials<BackstageUserPrincipal> },
   ): Promise<AIResponse>;
+
+  /**
+   * Check if answering existing questions is enabled for specific credentials. Defaults to true.
+   * Must also implement the `answerExistingQuestion` method.
+   */
+  isExistingQuestionEnabled?(options?: {
+    credentials?: BackstageCredentials;
+  }): Promise<boolean>;
+
+  /**
+   * Check if answering new questions is enabled for specific credentials. Defaults to true.
+   * Must also implement the `answerNewQuestion` method.
+   */
+  isNewQuestionEnabled?(options?: {
+    credentials?: BackstageCredentials;
+  }): Promise<boolean>;
+
+  /**
+   * Check if article summarization is enabled for specific credentials. Defaults to true.
+   * Must also implement the `summarizeArticle` method.
+   */
+  isArticleSummarizationEnabled?(options?: {
+    credentials?: BackstageCredentials;
+  }): Promise<boolean>;
 }
 
 export interface QetaAIExtensionPoint {
   setAIHandler(handler: AIHandler): void;
 }
 
+export interface TagDatabase {
+  /**
+   * Get custom tag descriptions that are updated to the plugin.
+   * The format is {`tag name`: `tag description`}.
+   */
+  getTags(): Promise<Record<string, string>>;
+}
+
+export interface QetaTagDatabaseExtensionPoint {
+  setTagDatabase(tagDatabase: TagDatabase): void;
+}
+
 export const qetaAIExtensionPoint = createExtensionPoint<QetaAIExtensionPoint>({
   id: 'qeta.ai',
 });
+
+export const qetaTagDatabaseExtensionPoint =
+  createExtensionPoint<QetaTagDatabaseExtensionPoint>({
+    id: 'qeta.tags',
+  });

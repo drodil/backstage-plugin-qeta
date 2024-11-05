@@ -1,14 +1,24 @@
 import React from 'react';
-import { UsersGrid, useTranslation } from '@drodil/backstage-plugin-qeta-react';
+import {
+  FollowedUsersList,
+  UsersGrid,
+  useTranslation,
+} from '@drodil/backstage-plugin-qeta-react';
 import { ContentHeader } from '@backstage/core-components';
+import { Grid } from '@material-ui/core';
 
 export const UsersPage = () => {
   const { t } = useTranslation();
 
   return (
-    <>
-      <ContentHeader title={t('usersPage.title')} />
-      <UsersGrid />
-    </>
+    <Grid container spacing={4}>
+      <Grid item md={12} lg={8} xl={9}>
+        <ContentHeader title={t('usersPage.title')} />
+        <UsersGrid />
+      </Grid>
+      <Grid item lg={4} xl={3}>
+        <FollowedUsersList />
+      </Grid>
+    </Grid>
   );
 };

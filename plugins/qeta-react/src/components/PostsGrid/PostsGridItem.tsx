@@ -8,7 +8,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { articleRouteRef, questionRouteRef, userRouteRef } from '../../routes';
+import { articleRouteRef, questionRouteRef } from '../../routes';
 import {
   Avatar,
   Box,
@@ -32,6 +32,7 @@ import VerticalAlignTopIcon from '@material-ui/icons/VerticalAlignTop';
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import { UserLink } from '../Links';
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -58,7 +59,6 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
 
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
-  const userRoute = useRouteRef(userRouteRef);
   const styles = useStyles();
   const { name, initials, user } = useEntityAuthor(post);
   const navigate = useNavigate();
@@ -115,11 +115,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             >
               {initials}
             </Avatar>
-            {post.author === 'anonymous' ? (
-              t('common.anonymousAuthor')
-            ) : (
-              <Link to={`${userRoute()}/${post.author}`}>{name}</Link>
-            )}{' '}
+            <UserLink entityRef={post.author} />{' '}
             <Link to={href} className="qetaPostListItemQuestionBtn">
               <RelativeTimeWithTooltip value={post.created} />
             </Link>

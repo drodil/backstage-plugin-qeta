@@ -11,8 +11,8 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { articleRouteRef, questionRouteRef, userRouteRef } from '../../routes';
-import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
+import { articleRouteRef, questionRouteRef } from '../../routes';
+import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
@@ -21,6 +21,7 @@ import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import HelpOutlined from '@material-ui/icons/HelpOutlined';
 import { useStyles, useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
+import { UserLink } from '../Links';
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -35,6 +36,8 @@ export const PostListItem = (props: PostListItemProps) => {
   const [answersCount, setAnswersCount] = useState(post.answersCount);
   const [views, setViews] = useState(post.views);
   const { t } = useTranslation();
+  const styles = useStyles();
+  const theme = useTheme();
 
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
 
@@ -48,9 +51,6 @@ export const PostListItem = (props: PostListItemProps) => {
 
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
-  const userRoute = useRouteRef(userRouteRef);
-  const theme = useTheme();
-  const styles = useStyles();
   const { name, initials, user } = useEntityAuthor(post);
 
   const route = post.type === 'question' ? questionRoute : articleRoute;
@@ -102,10 +102,14 @@ export const PostListItem = (props: PostListItemProps) => {
                   count: answersCount,
                 })}
                 style={{
+                  userSelect: 'none',
+                  // eslint-disable-next-line no-nested-ternary
                   borderColor: correctAnswer
                     ? theme.palette.success.main
+                    : answersCount === 0
+                    ? theme.palette.warning.main
                     : undefined,
-                  marginBottom: '0',
+                  marginBottom: 0,
                 }}
               />
             )}
@@ -155,11 +159,7 @@ export const PostListItem = (props: PostListItemProps) => {
               >
                 {initials}
               </Avatar>
-              {post.author === 'anonymous' ? (
-                t('common.anonymousAuthor')
-              ) : (
-                <Link to={`${userRoute()}/${post.author}`}>{name}</Link>
-              )}{' '}
+              <UserLink entityRef={post.author} />{' '}
               <Link to={href} className="qetaPostListItemQuestionBtn">
                 <RelativeTimeWithTooltip value={post.created} />
               </Link>
