@@ -68,7 +68,7 @@ export const TagInput = (props: {
       });
   }, [qetaApi, allowCreation, allowedTags]);
 
-  if (!availableTags || availableTags.length === 0) {
+  if (!allowCreate && (!availableTags || availableTags.length === 0)) {
     return null;
   }
 
