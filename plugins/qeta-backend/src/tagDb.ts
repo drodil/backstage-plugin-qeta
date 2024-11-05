@@ -363,4 +363,49 @@ export const TAGS: Record<string, string> = {
     'Web scraping is the process of extracting data from websites.',
   jar: 'A JAR (Java ARchive) is a package file format typically used to aggregate many Java class files and associated metadata and resources into one file for distribution.',
   esm: 'ESM (ECMAScript Modules) is a standard defining the import and export statements for JavaScript modules.',
+  terraform:
+    'Terraform is an open-source infrastructure as code software tool created by HashiCorp.',
+  'aws-lambda':
+    'AWS Lambda is a serverless computing service provided by Amazon Web Services.',
+  'serverless-framework':
+    'Serverless Framework is a free and open-source web framework written using Node.js.',
+  qeta: 'Q&A is a Backstage plugin for asking questions and getting answers.',
+  kaniko:
+    'Kaniko is a tool to build container images from a Dockerfile, inside a container or Kubernetes cluster.',
+  'container-registry':
+    'A container registry is a collection of repositories made to store container images.',
+  'container-runtime':
+    'A container runtime is software that executes containers.',
+  devcontainer:
+    'A devcontainer is a development environment defined in a repository.',
+  cdktf:
+    'CDK for Terraform (cdktf) is an open-source software development framework to define cloud infrastructure using familiar programming languages.',
+  commit:
+    'A commit is a snapshot of changes to a repository at a specific point in time.',
+  kanban:
+    'Kanban is a scheduling system for lean manufacturing and just-in-time manufacturing.',
+  scrum:
+    'Scrum is a framework within which people can address complex adaptive problems, while productively and creatively delivering high-value products.',
+  agile: 'Agile is a set of principles for software development.',
+  waterfall:
+    'Waterfall is a linear and sequential approach to software development.',
+  'software-architecture':
+    'Software architecture is the blueprint of a software system.',
+  'micro-frontends':
+    'Micro frontends are an architectural style where independently deliverable frontend applications are composed into a greater whole.',
+  debugging:
+    'Debugging is the process of finding and resolving defects or problems within a computer program.',
+  profiling:
+    'Profiling is a form of dynamic program analysis that measures, for example, the space (memory) or time complexity of a program, the usage of particular instructions, or frequency and duration of function calls.',
+  logging: 'Logging is the process of recording events in an application.',
+  monitoring:
+    'Monitoring is the process of observing and checking the progress or quality of a program over time.',
+  tracing:
+    "Tracing is a specialized use of logging to record information about a program's execution.",
+  plugin:
+    'A plugin is a software component that adds a specific feature to an existing computer program.',
+  unicode:
+    'Unicode is a computing industry standard for the consistent encoding, representation, and handling of text.',
+  build:
+    'A build is the process of converting source code files into standalone software artifact(s) that can be run on a computer.',
 };

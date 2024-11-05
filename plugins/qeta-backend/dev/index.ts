@@ -5,6 +5,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 import { PermissionPolicy } from './PermissionPolicy';
+import { qetaTagDatabaseExtensionPoint } from '@drodil/backstage-plugin-qeta-node';
 
 const backend = createBackend();
 backend.add(import('@backstage/plugin-catalog-backend'));
@@ -27,6 +28,32 @@ backend.add(
         },
         async init({ policy, auth, discovery }) {
           policy.setPolicy(new PermissionPolicy(auth, discovery));
+        },
+      });
+    },
+  }),
+);
+
+// Example how to add organization specific tag descriptions on the fly
+backend.add(
+  createBackendModule({
+    pluginId: 'qeta',
+    moduleId: 'example-tag-db',
+    register(reg) {
+      reg.registerInit({
+        deps: {
+          database: qetaTagDatabaseExtensionPoint,
+        },
+        async init({ database }) {
+          const tagDatabase = {
+            async getTags() {
+              return {
+                custom: 'This is custom tag description',
+                'my-tag': 'This is really my tag!',
+              };
+            },
+          };
+          database.setTagDatabase(tagDatabase);
         },
       });
     },

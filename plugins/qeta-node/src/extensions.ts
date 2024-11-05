@@ -40,6 +40,23 @@ export interface QetaAIExtensionPoint {
   setAIHandler(handler: AIHandler): void;
 }
 
+export interface TagDatabase {
+  /**
+   * Get custom tag descriptions that are updated to the plugin.
+   * The format is {`tag name`: `tag description`}.
+   */
+  getTags(): Promise<Record<string, string>>;
+}
+
+export interface QetaTagDatabaseExtensionPoint {
+  setTagDatabase(tagDatabase: TagDatabase): void;
+}
+
 export const qetaAIExtensionPoint = createExtensionPoint<QetaAIExtensionPoint>({
   id: 'qeta.ai',
 });
+
+export const qetaTagDatabaseExtensionPoint =
+  createExtensionPoint<QetaTagDatabaseExtensionPoint>({
+    id: 'qeta.tags',
+  });

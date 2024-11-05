@@ -59,6 +59,7 @@ import {
 } from '@backstage/plugin-permission-node';
 import { compact } from 'lodash';
 import { TAGS } from '../tagDb';
+import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
 
 const migrationsDir = resolvePackagePath(
   '@drodil/backstage-plugin-qeta-backend',
@@ -217,14 +218,19 @@ function parseFilter(
 }
 
 export class DatabaseQetaStore implements QetaStore {
-  private constructor(private readonly db: Knex) {}
+  private constructor(
+    private readonly db: Knex,
+    private readonly tagDatabase?: TagDatabase,
+  ) {}
 
   static async create({
     database,
     skipMigrations,
+    tagDatabase,
   }: {
     database: DatabaseService;
     skipMigrations?: boolean;
+    tagDatabase?: TagDatabase;
   }): Promise<DatabaseQetaStore> {
     const client = await database.getClient();
 
@@ -235,7 +241,7 @@ export class DatabaseQetaStore implements QetaStore {
       });
     }
 
-    return new DatabaseQetaStore(client);
+    return new DatabaseQetaStore(client, tagDatabase);
   }
 
   async getPosts(
@@ -2573,11 +2579,16 @@ export class DatabaseQetaStore implements QetaStore {
       .returning('id')
       .select();
     const newTags = tags.filter(t => !existingTags.some(e => e.tag === t));
+    const allTags: Record<string, string> = {
+      ...TAGS,
+      ...(await this.tagDatabase?.getTags()),
+    };
+
     const tagIds = (
       await Promise.all(
         [...new Set(newTags)].map(async tag => {
           const trimmed = tag.trim();
-          const description = trimmed in TAGS ? TAGS[trimmed] : undefined;
+          const description = trimmed in allTags ? allTags[trimmed] : undefined;
 
           return this.db
             .insert({ tag: trimmed, description })

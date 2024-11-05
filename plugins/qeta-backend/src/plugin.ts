@@ -15,6 +15,9 @@ import {
   AIHandler,
   qetaAIExtensionPoint,
   QetaAIExtensionPoint,
+  qetaTagDatabaseExtensionPoint,
+  QetaTagDatabaseExtensionPoint,
+  TagDatabase,
 } from '@drodil/backstage-plugin-qeta-node';
 
 class QetaAIExtensionPointImpl implements QetaAIExtensionPoint {
@@ -29,6 +32,20 @@ class QetaAIExtensionPointImpl implements QetaAIExtensionPoint {
   }
 }
 
+class QetaTagsDatabaseExtensionPointImpl
+  implements QetaTagDatabaseExtensionPoint
+{
+  #tagDatabase?: TagDatabase;
+
+  get tagDatabase() {
+    return this.#tagDatabase;
+  }
+
+  setTagDatabase(tagDatabase: TagDatabase) {
+    this.#tagDatabase = tagDatabase;
+  }
+}
+
 /**
  * Qeta backend plugin
  *
@@ -39,6 +56,9 @@ export const qetaPlugin = createBackendPlugin({
   register(env) {
     const aiExtension = new QetaAIExtensionPointImpl();
     env.registerExtensionPoint(qetaAIExtensionPoint, aiExtension);
+
+    const tagsExtension = new QetaTagsDatabaseExtensionPointImpl();
+    env.registerExtensionPoint(qetaTagDatabaseExtensionPoint, tagsExtension);
 
     env.registerInit({
       deps: {
@@ -75,6 +95,7 @@ export const qetaPlugin = createBackendPlugin({
       }) {
         const qetaStore = await DatabaseQetaStore.create({
           database,
+          tagDatabase: tagsExtension.tagDatabase,
         });
         const permissionEnabled =
           (config.getOptionalBoolean('permission.enabled') ?? false) &&
@@ -113,7 +134,13 @@ export const qetaPlugin = createBackendPlugin({
           qetaStore,
         );
 
-        await TagsUpdater.initTagsUpdater(config, scheduler, logger, qetaStore);
+        await TagsUpdater.initTagsUpdater(
+          config,
+          scheduler,
+          logger,
+          qetaStore,
+          tagsExtension.tagDatabase,
+        );
 
         await AttachmentCleaner.initAttachmentCleaner(
           config,
