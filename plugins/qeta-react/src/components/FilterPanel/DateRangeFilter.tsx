@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { formatDate } from '../../utils/utils';
 import { useStyles, useTranslation } from '../../hooks';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import useTheme from '@mui/styles/useTheme';
+import Grid from '@mui/material/Grid';
 
 export interface DateRangeFilterProps {
   value?: string;
-  onChange: (dateRange: 'dateRange', value: string | string[]) => void;
+  onChange: (value: string | string[]) => void;
 }
 
 type DateRangeValidation = {
@@ -25,15 +23,12 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
     value,
   );
   const { t } = useTranslation();
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
+  const localDate = formatDate(new Date());
+  const [fromDate, setFromDate] = useState(localDate);
+  const [toDate, setToDate] = useState(localDate);
   const [validation, setValidation] = useState<DateRangeValidation>({
     isValid: true,
   });
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('xl'));
-
-  const localDate = formatDate(new Date());
 
   useEffect(() => {
     setDateRangeOption(value || '');
@@ -44,55 +39,55 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
     }
   }, [value]);
 
-  useEffect(() => {
-    if (dateRangeOption && dateRangeOption !== 'custom') {
-      setFromDate('');
-      setToDate('');
-      onChange(
-        'dateRange',
-        !dateRangeOption || dateRangeOption === 'select' ? '' : dateRangeOption,
-      );
+  const handleCustom = (from?: string, to?: string) => {
+    const startDate = new Date(from ?? fromDate);
+    const endDate = new Date(to ?? toDate);
+    if (startDate <= endDate) {
+      setValidation({ isValid: true });
+      onChange(`${formatDate(startDate)}--${formatDate(endDate)}`);
+    } else {
+      setValidation({
+        isValid: false,
+        message: t('datePicker.invalidRange'),
+      });
     }
-  }, [dateRangeOption, onChange]);
-
-  useEffect(() => {
-    if (fromDate && toDate) {
-      const startDate = new Date(fromDate);
-      const endDate = new Date(toDate);
-      if (startDate <= endDate) {
-        setValidation({ isValid: true });
-        onChange('dateRange', `${fromDate}--${toDate}`);
-      } else {
-        setValidation({
-          isValid: false,
-          message: t('datePicker.invalidRange'),
-        });
-      }
-    }
-  }, [t, fromDate, toDate, onChange]);
+  };
 
   return (
-    <Box display={isSmallScreen ? 'block' : 'flex'} gap="16px">
-      <TextField
-        id="outlined-select-currency"
-        select
-        label={t('datePicker.range.label')}
-        value={dateRangeOption || 'select'}
-        className={styles.dateFilter}
-        onChange={_e => {
-          setDateRangeOption(_e.target.value);
-        }}
-        variant="outlined"
-        defaultValue="None"
-      >
-        <MenuItem value="select">{t('datePicker.range.default')}</MenuItem>
-        <MenuItem value="7-days">{t('datePicker.range.last7days')}</MenuItem>
-        <MenuItem value="30-days">{t('datePicker.range.last30days')}</MenuItem>
-        <MenuItem value="custom">{t('datePicker.range.custom')}</MenuItem>
-      </TextField>
+    <Grid container>
+      {validation.message && (
+        <Grid item xs={12}>
+          <Typography color="error" variant="body2">
+            {validation.message}
+          </Typography>
+        </Grid>
+      )}
+      <Grid item>
+        <TextField
+          select
+          label={t('datePicker.range.label')}
+          value={dateRangeOption || 'select'}
+          className={styles.dateFilter}
+          onChange={e => {
+            if (e.target.value !== 'custom') {
+              onChange(e.target.value === 'select' ? '' : e.target.value);
+            }
+            setDateRangeOption(e.target.value);
+          }}
+          variant="outlined"
+          defaultValue="select"
+        >
+          <MenuItem value="select">{t('datePicker.range.default')}</MenuItem>
+          <MenuItem value="7-days">{t('datePicker.range.last7days')}</MenuItem>
+          <MenuItem value="30-days">
+            {t('datePicker.range.last30days')}
+          </MenuItem>
+          <MenuItem value="custom">{t('datePicker.range.custom')}</MenuItem>
+        </TextField>
+      </Grid>
       {dateRangeOption === 'custom' && (
-        <Box display="flex" flexDirection="column">
-          <Box display={isSmallScreen ? 'block' : 'flex'} gap="12px">
+        <>
+          <Grid item>
             <TextField
               variant="outlined"
               label={t('datePicker.from')}
@@ -102,11 +97,15 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
               className={styles.dateFilter}
               InputLabelProps={{ shrink: true }}
               error={!validation.isValid}
-              onChange={_e => setFromDate(_e.target.value)}
+              onChange={e => {
+                handleCustom(e.target.value);
+              }}
               inputProps={{
                 max: toDate || localDate,
               }}
             />
+          </Grid>
+          <Grid item>
             <TextField
               variant="outlined"
               label={t('datePicker.to')}
@@ -116,20 +115,17 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
               className={styles.dateFilter}
               InputLabelProps={{ shrink: true }}
               error={!validation.isValid}
-              onChange={_e => setToDate(_e.target.value)}
+              onChange={e => {
+                handleCustom(undefined, e.target.value);
+              }}
               inputProps={{
                 min: fromDate,
                 max: localDate,
               }}
             />
-          </Box>
-          {validation.message && (
-            <Typography color="error" variant="body2">
-              {validation.message}
-            </Typography>
-          )}
-        </Box>
+          </Grid>
+        </>
       )}
-    </Box>
+    </Grid>
   );
 };

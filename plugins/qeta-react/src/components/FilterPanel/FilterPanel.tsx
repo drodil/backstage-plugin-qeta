@@ -333,7 +333,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
         <Grid item>
           <DateRangeFilter
             value={filters.dateRange}
-            onChange={e => onChange({ key: 'dateRange', value: e })}
+            onChange={val => onChange({ key: 'dateRange', value: val })}
           />
         </Grid>
         {showEntityFilter && (
