@@ -1,5 +1,8 @@
 import { WarningPanel } from '@backstage/core-components';
-import { Box, Card, Divider, Grid } from '@material-ui/core';
+import Card from '@mui/material/Card';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import React, { useEffect, useRef, useState } from 'react';
 import { PostListItem } from './PostListItem';
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
@@ -7,6 +10,7 @@ import { NoPostsCard } from './NoPostsCard';
 import { useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
+import { SelectChangeEvent } from '@mui/material/Select';
 
 export const PostList = (props: {
   loading: boolean;
@@ -56,9 +60,7 @@ export const PostList = (props: {
     onPageChange(value);
   };
 
-  const handlePageSizeChange = (
-    event: React.ChangeEvent<{ value: unknown }>,
-  ) => {
+  const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
     if (listRef.current) {
       listRef.current.scrollIntoView();
     }
@@ -107,11 +109,16 @@ export const PostList = (props: {
       <Box sx={{ mt: 2 }} className="qetaPostList">
         <Card>
           <Grid container spacing={2} style={{ paddingTop: '1rem' }}>
-            {response.posts.map(post => {
+            {response.posts.map((post, i) => {
               return (
-                <Grid item xs={12} key={post.id}>
+                <Grid
+                  item
+                  xs={12}
+                  key={post.id}
+                  style={{ paddingBottom: '1rem' }}
+                >
                   <PostListItem post={post} entity={entity} type={type} />
-                  <Divider />
+                  {i !== response.total - 1 && <Divider />}
                 </Grid>
               );
             })}

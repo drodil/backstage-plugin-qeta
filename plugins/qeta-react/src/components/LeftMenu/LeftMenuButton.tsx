@@ -1,13 +1,11 @@
-import {
-  Button,
-  ClickAwayListener,
-  Grow,
-  Paper,
-  Popper,
-} from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Popper from '@mui/material/Popper';
+import Paper from '@mui/material/Paper';
+import Grow from '@mui/material/Grow';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import React from 'react';
 import { LeftMenu } from './LeftMenu';
-import MenuIcon from '@material-ui/icons/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
 
 export const LeftMenuButton = () => {
   const [open, setOpen] = React.useState(false);
@@ -17,7 +15,9 @@ export const LeftMenuButton = () => {
     setOpen(prevOpen => !prevOpen);
   };
 
-  const handleClose = (event: React.MouseEvent<EventTarget>) => {
+  const handleClose = (
+    event: MouseEvent | TouchEvent | React.MouseEvent<EventTarget>,
+  ) => {
     if (
       anchorRef.current &&
       anchorRef.current.contains(event.target as HTMLElement)

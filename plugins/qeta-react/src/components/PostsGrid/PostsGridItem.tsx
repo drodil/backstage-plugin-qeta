@@ -9,17 +9,15 @@ import React, { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef, userRouteRef } from '../../routes';
-import {
-  Avatar,
-  Box,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  IconButton,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActionArea from '@mui/material/CardActionArea';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Avatar from '@mui/material/Avatar';
+import CardMedia from '@mui/material/CardMedia';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
@@ -28,10 +26,10 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { useStyles, useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { qetaApiRef } from '../../api';
-import VerticalAlignTopIcon from '@material-ui/icons/VerticalAlignTop';
-import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import VerticalAlignTopIcon from '@mui/icons-material/VerticalAlignTop';
+import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 export interface PostsGridItemProps {
   post: PostResponse;

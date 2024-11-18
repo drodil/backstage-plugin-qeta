@@ -1,12 +1,15 @@
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
 import { InfoCard } from '@backstage/core-components';
-import { Button, CardContent, CardMedia, Grid } from '@material-ui/core';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import CardMedia from '@mui/material/CardMedia';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import React from 'react';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { DeleteModal } from '../DeleteModal';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionEditRouteRef } from '../../routes';
 import { useStyles, useTranslation } from '../../hooks';

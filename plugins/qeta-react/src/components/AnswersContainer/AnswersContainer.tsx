@@ -1,14 +1,12 @@
-import {
-  Box,
-  Button,
-  Collapse,
-  Grid,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Collapse from '@mui/material/Collapse';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import React, { useEffect } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
-import FilterList from '@material-ui/icons/FilterList';
+import FilterList from '@mui/icons-material/FilterList';
 import { useSearchParams } from 'react-router-dom';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useAnalytics } from '@backstage/core-plugin-api';

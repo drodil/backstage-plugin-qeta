@@ -2,7 +2,10 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Avatar, Grid, makeStyles, Typography } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import Grid from '@mui/material/Grid';
+import makeStyles from '@mui/styles/makeStyles';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import React from 'react';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';

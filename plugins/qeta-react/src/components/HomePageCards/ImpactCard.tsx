@@ -1,5 +1,8 @@
 import React from 'react';
-import { Box, Card, CardContent, Typography } from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import numeral from 'numeral';
 import { useQetaApi, useTranslation } from '../../hooks';
 

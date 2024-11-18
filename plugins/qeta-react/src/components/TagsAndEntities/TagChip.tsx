@@ -1,4 +1,8 @@
-import { Button, Chip, Grid, Tooltip, Typography } from '@material-ui/core';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import React, { useEffect } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
@@ -81,12 +85,7 @@ export const TagChip = (props: { tag: string }) => {
   const navigate = useNavigate();
   const { tag } = props;
   return (
-    <Tooltip
-      arrow
-      title={<TagTooltip tag={tag} />}
-      interactive
-      enterDelay={400}
-    >
+    <Tooltip arrow title={<TagTooltip tag={tag} />} enterDelay={400}>
       <Chip
         label={tag}
         size="small"

@@ -1,13 +1,11 @@
-import {
-  Box,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  ListSubheader,
-} from '@material-ui/core';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import ListSubheader from '@mui/material/ListSubheader';
+import ListItemText from '@mui/material/ListItemText';
 import React from 'react';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
@@ -53,9 +51,14 @@ export const PostHighlightList = (props: {
         subheader={
           <ListSubheader
             disableSticky
-            component="p"
+            component="div"
             id="nested-list-subheader"
             color="primary"
+            style={{
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
           >
             {props.title}
             {props.icon}
@@ -64,7 +67,7 @@ export const PostHighlightList = (props: {
       >
         {loading && (
           <ListItem className="qetaPostHighlightListListItem" dense>
-            <Skeleton variant="rect" />
+            <Skeleton variant="rectangular" />
           </ListItem>
         )}
         {error && (

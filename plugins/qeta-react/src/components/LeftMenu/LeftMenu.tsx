@@ -1,25 +1,23 @@
-import {
-  Box,
-  ListItem,
-  ListItemIcon,
-  makeStyles,
-  MenuItem,
-  MenuList,
-  SvgIcon,
-  Typography,
-} from '@material-ui/core';
-import AccountBox from '@material-ui/icons/AccountBox';
-import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
-import StarIcon from '@material-ui/icons/Star';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import MenuItem from '@mui/material/MenuItem';
+import ListItem from '@mui/material/ListItem';
+import SvgIcon from '@mui/material/SvgIcon';
+import MenuList from '@mui/material/MenuList';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import makeStyles from '@mui/styles/makeStyles';
+import AccountBox from '@mui/icons-material/AccountBox';
+import LoyaltyOutlined from '@mui/icons-material/LoyaltyOutlined';
+import StarIcon from '@mui/icons-material/Star';
 import React, { ReactNode } from 'react';
 import { useApp, useRouteRef } from '@backstage/core-plugin-api';
-import HelpOutlined from '@material-ui/icons/HelpOutlined';
+import HelpOutlined from '@mui/icons-material/HelpOutlined';
 import { useNavigate } from 'react-router-dom';
-import Home from '@material-ui/icons/Home';
+import Home from '@mui/icons-material/Home';
 import { useLocation } from 'react-use';
-import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
-import PlaylistPlay from '@material-ui/icons/PlaylistPlay';
-import SettingsIcon from '@material-ui/icons/Settings';
+import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
+import PlaylistPlay from '@mui/icons-material/PlaylistPlay';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { GroupIcon } from '@backstage/core-components';
 import {
   articlesRouteRef,
@@ -51,6 +49,7 @@ export const useStyles = makeStyles(
       leftMenu: {
         top: '0',
         width: '165px',
+        paddingTop: '2rem',
       },
       inPopup: {
         marginRight: 0,
@@ -87,7 +86,9 @@ export const useStyles = makeStyles(
 export const LeftMenu = (props: {
   onKeyDown?: (event: React.KeyboardEvent) => void;
   autoFocusItem?: boolean;
-  onClick?: (event: React.MouseEvent<EventTarget>) => void;
+  onClick?: (
+    event: MouseEvent | TouchEvent | React.MouseEvent<EventTarget>,
+  ) => void;
   inPopup?: boolean;
 }) => {
   const rootRoute = useRouteRef(qetaRouteRef);

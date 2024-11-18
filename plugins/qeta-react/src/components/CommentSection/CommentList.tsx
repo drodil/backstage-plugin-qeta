@@ -2,7 +2,10 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Box, Divider, makeStyles, Typography } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Link } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';

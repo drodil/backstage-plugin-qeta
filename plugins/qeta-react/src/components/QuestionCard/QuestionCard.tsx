@@ -2,19 +2,17 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  Typography,
-} from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import React, { useEffect } from 'react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
@@ -63,7 +61,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
         <CardContent>
           <Grid
             container
-            spacing={0}
+            spacing={2}
             justifyContent="flex-start"
             style={{ flexWrap: 'nowrap' }}
           >

@@ -1,18 +1,16 @@
-import {
-  FormControl,
-  Grid,
-  MenuItem,
-  Select,
-  Tooltip,
-} from '@material-ui/core';
+import Tooltip from '@mui/material/Tooltip';
+import Grid from '@mui/material/Grid';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import { useStyles, useTranslation } from '../../hooks';
-import { Pagination as MuiPagination } from '@material-ui/lab';
+import Pagination from '@mui/material/Pagination';
 
 export const QetaPagination = (props: {
   pageSize: number;
   handlePageChange: (_event: React.ChangeEvent<unknown>, value: number) => void;
-  handlePageSizeChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
+  handlePageSizeChange: (event: SelectChangeEvent<number>) => void;
   page: number;
   tooltip?: string;
   pageCount: number;
@@ -45,7 +43,7 @@ export const QetaPagination = (props: {
           </Select>
         </FormControl>
       </Tooltip>
-      <MuiPagination
+      <Pagination
         page={page}
         onChange={handlePageChange}
         count={pageCount}

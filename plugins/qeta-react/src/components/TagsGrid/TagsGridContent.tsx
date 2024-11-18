@@ -1,4 +1,5 @@
-import { Grid, Typography } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import { TagGridItem } from './TagGridItem';
 import React, { useEffect, useState } from 'react';
 import { TagsResponse } from '@drodil/backstage-plugin-qeta-common';

@@ -10,8 +10,8 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { ContentHeader } from '@backstage/core-components';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import { Grid } from '@material-ui/core';
-import Whatshot from '@material-ui/icons/Whatshot';
+import Grid from '@mui/material/Grid';
+import Whatshot from '@mui/icons-material/Whatshot';
 
 export const QuestionsPage = () => {
   const [searchParams] = useSearchParams();
@@ -28,13 +28,13 @@ export const QuestionsPage = () => {
 
   return (
     <Grid container spacing={4}>
-      <Grid item md={12} lg={9} xl={10}>
+      <Grid item md={12} lg={8} xl={9}>
         <ContentHeader title={t('questionsPage.title')}>
           <AskQuestionButton entity={entityRef} tags={tags} />
         </ContentHeader>
         <PostsContainer entity={entityRef} tags={tags} type="question" />
       </Grid>
-      <Grid item lg={3} xl={2}>
+      <Grid item lg={4} xl={3}>
         <PostHighlightList
           type="hot"
           title={t('highlights.hotQuestions.title')}

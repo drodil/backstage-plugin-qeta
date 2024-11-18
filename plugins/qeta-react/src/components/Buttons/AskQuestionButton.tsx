@@ -1,4 +1,4 @@
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import React from 'react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';

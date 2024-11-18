@@ -8,20 +8,17 @@ import {
   Line,
   LineChart,
   ResponsiveContainer,
-  Tooltip,
+  Tooltip as ChartTooltip,
   XAxis,
   YAxis,
 } from 'recharts';
-import {
-  ButtonGroup,
-  createStyles,
-  IconButton,
-  makeStyles,
-  Theme,
-  Typography,
-} from '@material-ui/core';
-import ShowChartIcon from '@material-ui/icons/ShowChart';
-import BarChartIcon from '@material-ui/icons/BarChart';
+import IconButton from '@mui/material/IconButton';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Typography from '@mui/material/Typography';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { useTranslation } from '../../hooks';
 import { isGlobalStat, isUserStat } from './util';
@@ -34,7 +31,7 @@ export type QetaStatsChartClassKey =
   | 'barChart';
 
 const useStyles = makeStyles(
-  (theme: Theme) =>
+  theme =>
     createStyles({
       tooltipLabel: {
         color: theme.palette.text.primary,
@@ -192,7 +189,7 @@ const StatsBarChart = (props: { data: Stat[] }) => {
         height={300}
         className={localStyles.barChart}
       >
-        <Tooltip
+        <ChartTooltip
           labelClassName={styles.tooltipLabel}
           wrapperClassName={styles.tooltipWrapper}
           cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
@@ -250,7 +247,7 @@ const StatsLineChart = (props: { data: Stat[] }) => {
         height={300}
         className={localStyles.lineChart}
       >
-        <Tooltip
+        <ChartTooltip
           labelClassName={styles.tooltipLabel}
           wrapperClassName={styles.tooltipWrapper}
           cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
@@ -319,6 +316,7 @@ export const StatsChart = (props: { data: Stat[] }) => {
           onClick={() => {
             setChart('line');
           }}
+          size="large"
         >
           <ShowChartIcon />
         </IconButton>
@@ -327,6 +325,7 @@ export const StatsChart = (props: { data: Stat[] }) => {
           onClick={() => {
             setChart('bar');
           }}
+          size="large"
         >
           <BarChartIcon />
         </IconButton>

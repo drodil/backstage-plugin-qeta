@@ -1,16 +1,14 @@
 import { Collection, PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import React from 'react';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-} from '@material-ui/core';
-import AddCircle from '@material-ui/icons/AddCircle';
-import RemoveCircle from '@material-ui/icons/RemoveCircle';
-import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import AddCircle from '@mui/icons-material/AddCircle';
+import RemoveCircle from '@mui/icons-material/RemoveCircle';
+import PlayListAddIcon from '@mui/icons-material/PlaylistAdd';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useQetaApi, useStyles, useTranslation } from '../../hooks';

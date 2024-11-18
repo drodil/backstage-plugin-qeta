@@ -1,4 +1,8 @@
-import { Box, Divider, List, ListItem, ListSubheader } from '@material-ui/core';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import ListSubheader from '@mui/material/ListSubheader';
 import React from 'react';
 import { useStyles, useTranslation } from '../../hooks';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';

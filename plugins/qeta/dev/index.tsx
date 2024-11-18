@@ -17,9 +17,9 @@ import {
 } from '@backstage/plugin-notifications';
 import { catalogPlugin } from '@backstage/plugin-catalog';
 import { signalsPlugin } from '@backstage/plugin-signals';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
-import Box from '@material-ui/core/Box';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Box from '@mui/material/Box';
 
 const IntroElement = () => (
   <Box marginBottom={4}>

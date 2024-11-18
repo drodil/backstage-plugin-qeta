@@ -1,6 +1,8 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Grid } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import {
   AnswerResponse,
   PostResponse,
@@ -14,7 +16,7 @@ import { confirmNavigationIfEdited } from '../../utils/utils';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { useTranslation } from '../../hooks';
-import AddCommentIcon from '@material-ui/icons/AddComment';
+import AddCommentIcon from '@mui/icons-material/AddComment';
 
 export const CommentSection = (props: {
   onCommentPost: (question: PostResponse, answer?: AnswerResponse) => void;

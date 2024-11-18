@@ -1,7 +1,8 @@
-import { Autocomplete } from '@material-ui/lab';
 import { getEntityTitle } from '../../utils/utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { TextField, Tooltip } from '@material-ui/core';
+import Tooltip from '@mui/material/Tooltip';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import React, { useEffect, useMemo } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -113,7 +114,7 @@ export const EntitiesInput = (props: {
       options={availableEntities}
       getOptionLabel={getEntityTitle}
       style={style}
-      getOptionSelected={(o, v) =>
+      isOptionEqualToValue={(o, v) =>
         stringifyEntityRef(o) === stringifyEntityRef(v)
       }
       onChange={(_e, newValue) => {
@@ -121,13 +122,13 @@ export const EntitiesInput = (props: {
           onChange(newValue);
         }
       }}
-      renderOption={option => {
+      renderOption={(optionProps, option) => {
         return (
-          <>
+          <li {...optionProps}>
             <Tooltip title={stringifyEntityRef(option)}>
               <span>{getEntityTitle(option)}</span>
             </Tooltip>
-          </>
+          </li>
         );
       }}
       renderInput={params => (

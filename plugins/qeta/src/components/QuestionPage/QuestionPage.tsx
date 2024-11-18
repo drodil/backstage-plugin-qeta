@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Divider,
-  FormControl,
-  Grid,
-  Select,
-  Typography,
-} from '@material-ui/core';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
@@ -28,8 +26,9 @@ import {
   PostResponse,
   QetaSignal,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Skeleton } from '@material-ui/lab';
 import { useSignal } from '@backstage/plugin-signals-react';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 
 export const QuestionPage = () => {
   const { id } = useParams();
@@ -63,6 +62,51 @@ export const QuestionPage = () => {
     }
   }, [lastSignal]);
 
+  const sortAnswers = useCallback(
+    (a: Answer, b: Answer) => {
+      if (answerSort === 'default') {
+        return 1;
+      }
+
+      const parts = answerSort.split('_');
+      const field = parts[0];
+      const order = parts[1];
+
+      let ret = -1;
+      switch (field) {
+        case 'created':
+          ret = a.created > b.created ? -1 : 1;
+          break;
+        case 'score':
+          ret = a.score > b.score ? -1 : 1;
+          break;
+        case 'author':
+          ret = a.author > b.author ? -1 : 1;
+          break;
+        case 'comments':
+          ret = (a.comments?.length ?? 0) > (b.comments?.length ?? 0) ? -1 : 1;
+          break;
+        case 'updated':
+          ret = (a.updated ?? a.created) > (b.updated ?? b.created) ? -1 : 1;
+          break;
+        default:
+          return 1;
+      }
+
+      if (order === 'desc') {
+        ret *= -1;
+      }
+      return ret;
+    },
+    [answerSort],
+  );
+
+  const allAnswers = (question?.answers ?? []).concat(newAnswers);
+  const sortedAnswers = useMemo(
+    () => allAnswers.sort(sortAnswers),
+    [allAnswers, sortAnswers],
+  );
+
   const onAnswerPost = (answer: AnswerResponse) => {
     setNewAnswers(newAnswers.concat([answer]));
   };
@@ -91,7 +135,7 @@ export const QuestionPage = () => {
   };
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Skeleton variant="rectangular" height={200} />;
   }
 
   if (error || question === undefined) {
@@ -108,43 +152,6 @@ export const QuestionPage = () => {
     );
   }
 
-  const sortAnswers = (a: Answer, b: Answer) => {
-    if (answerSort === 'default') {
-      return 1;
-    }
-
-    const parts = answerSort.split('_');
-    const field = parts[0];
-    const order = parts[1];
-
-    let ret = -1;
-    switch (field) {
-      case 'created':
-        ret = a.created > b.created ? -1 : 1;
-        break;
-      case 'score':
-        ret = a.score > b.score ? -1 : 1;
-        break;
-      case 'author':
-        ret = a.author > b.author ? -1 : 1;
-        break;
-      case 'comments':
-        ret = (a.comments?.length ?? 0) > (b.comments?.length ?? 0) ? -1 : 1;
-        break;
-      case 'updated':
-        ret = (a.updated ?? a.created) > (b.updated ?? b.created) ? -1 : 1;
-        break;
-      default:
-        return 1;
-    }
-
-    if (order === 'desc') {
-      ret *= -1;
-    }
-    return ret;
-  };
-
-  const allAnswers = (question.answers ?? []).concat(newAnswers);
   return (
     <>
       <ContentHeader
@@ -169,8 +176,9 @@ export const QuestionPage = () => {
           {allAnswers.length > 1 && (
             <Grid item>
               <FormControl>
-                <Select
-                  native
+                <TextField
+                  select
+                  size="small"
                   label={t('questionPage.sortAnswers.label')}
                   value={answerSort}
                   onChange={val => setAnswerSort(val.target.value as string)}
@@ -178,47 +186,48 @@ export const QuestionPage = () => {
                     name: 'sortAnswers',
                     id: 'sort-answers',
                   }}
+                  variant="outlined"
                 >
-                  <option value="default">
+                  <MenuItem value="default">
                     {t('questionPage.sortAnswers.default')}
-                  </option>
-                  <option value="created_desc">
+                  </MenuItem>
+                  <MenuItem value="created_desc">
                     {t('questionPage.sortAnswers.createdDesc')}
-                  </option>
-                  <option value="created_asc">
+                  </MenuItem>
+                  <MenuItem value="created_asc">
                     {t('questionPage.sortAnswers.createdAsc')}
-                  </option>
-                  <option value="score_desc">
+                  </MenuItem>
+                  <MenuItem value="score_desc">
                     {t('questionPage.sortAnswers.scoreDesc')}
-                  </option>
-                  <option value="score_asc">
+                  </MenuItem>
+                  <MenuItem value="score_asc">
                     {t('questionPage.sortAnswers.scoreAsc')}
-                  </option>
-                  <option value="comments_desc">
+                  </MenuItem>
+                  <MenuItem value="comments_desc">
                     {t('questionPage.sortAnswers.commentsDesc')}
-                  </option>
-                  <option value="comments_asc">
+                  </MenuItem>
+                  <MenuItem value="comments_asc">
                     {t('questionPage.sortAnswers.commentsAsc')}
-                  </option>
-                  <option value="author_desc">
+                  </MenuItem>
+                  <MenuItem value="author_desc">
                     {t('questionPage.sortAnswers.authorDesc')}
-                  </option>
-                  <option value="author_asc">
+                  </MenuItem>
+                  <MenuItem value="author_asc">
                     {t('questionPage.sortAnswers.authorAsc')}
-                  </option>
-                  <option value="updated_desc">
+                  </MenuItem>
+                  <MenuItem value="updated_desc">
                     {t('questionPage.sortAnswers.updatedDesc')}
-                  </option>
-                  <option value="updated_asc">
+                  </MenuItem>
+                  <MenuItem value="updated_asc">
                     {t('questionPage.sortAnswers.updatedAsc')}
-                  </option>
-                </Select>
+                  </MenuItem>
+                </TextField>
               </FormControl>
             </Grid>
           )}
         </Grid>
       </Box>
-      {allAnswers.sort(sortAnswers).map(a => {
+      {sortedAnswers.map(a => {
         return (
           <React.Fragment key={a.id}>
             <Divider className={styles.questionDivider} />

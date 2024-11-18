@@ -1,4 +1,8 @@
-import { Avatar, Box, Grid, makeStyles, Typography } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Avatar from '@mui/material/Avatar';
+import Grid from '@mui/material/Grid';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import {
   AnswerResponse,

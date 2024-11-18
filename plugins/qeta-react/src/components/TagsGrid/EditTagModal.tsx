@@ -1,14 +1,12 @@
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
-import {
-  Backdrop,
-  Box,
-  Button,
-  Grid,
-  Modal,
-  TextField,
-  Typography,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Alert from '@mui/material/Alert';
+import Modal from '@mui/material/Modal';
+import Backdrop from '@mui/material/Backdrop';
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
@@ -49,10 +47,7 @@ export const EditTagModal = (props: {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{
-        timeout: 500,
-      }}
+      slots={{ backdrop: Backdrop }}
     >
       <Box className={`qetaEditTagContent ${styles.deleteModal}`}>
         {error && (

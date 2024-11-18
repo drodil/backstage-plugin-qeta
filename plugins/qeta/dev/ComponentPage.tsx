@@ -1,5 +1,5 @@
 import { Content, Page } from '@backstage/core-components';
-import { Container } from '@material-ui/core';
+import Container from '@mui/material/Container';
 import { PostsContainer } from '@drodil/backstage-plugin-qeta-react';
 import React from 'react';
 

@@ -3,16 +3,14 @@ import {
   TemplatesResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import React from 'react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Button from '@mui/material/Button';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
 import { useTranslation } from '../../hooks';
 
 export const SelectTemplateList = (props: {

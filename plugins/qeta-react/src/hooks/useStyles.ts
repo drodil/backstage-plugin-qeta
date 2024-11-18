@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 
 export const useStyles = makeStyles(
   theme => {
@@ -14,7 +14,6 @@ export const useStyles = makeStyles(
       questionCardVote: {
         textAlign: 'center',
         width: '32px',
-        marginRight: '20px',
         marginLeft: '5px',
         display: 'inline-block',
         verticalAlign: 'top',
@@ -25,7 +24,7 @@ export const useStyles = makeStyles(
       },
       questionListItem: {
         padding: '0.7rem',
-        paddingBottom: '1.4rem',
+        paddingBottom: '1.0rem',
       },
       questionListItemStats: {
         width: '70px',
@@ -88,10 +87,10 @@ export const useStyles = makeStyles(
         marginTop: theme.spacing(3),
       },
       marginRight: {
-        marginRight: theme.spacing(1),
+        marginRight: theme.spacing(2),
       },
       marginLeft: {
-        marginLeft: theme.spacing(1),
+        marginLeft: theme.spacing(2),
       },
       questionCardActions: {
         marginTop: theme.spacing(2),

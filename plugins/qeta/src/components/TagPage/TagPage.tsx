@@ -13,8 +13,11 @@ import {
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Card, CardContent, Grid, Typography } from '@material-ui/core';
-import Whatshot from '@material-ui/icons/Whatshot';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Whatshot from '@mui/icons-material/Whatshot';
 import { useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 
@@ -40,7 +43,7 @@ export const TagPage = () => {
 
   return (
     <Grid container spacing={4}>
-      <Grid item md={12} lg={9} xl={10}>
+      <Grid item md={12} lg={8} xl={9}>
         <ContentHeader title={tag ? `#${tag}` : t('tagPage.defaultTitle')}>
           {tag && <TagFollowButton tag={tag} />}
           <AskQuestionButton tags={tag ? [tag] : undefined} />
@@ -65,7 +68,7 @@ export const TagPage = () => {
         )}
         {tag ? <PostsContainer tags={[tag ?? '']} /> : <TagsGrid />}
       </Grid>
-      <Grid item lg={3} xl={2}>
+      <Grid item lg={4} xl={3}>
         <FollowedTagsList />
         {resp && (
           <>

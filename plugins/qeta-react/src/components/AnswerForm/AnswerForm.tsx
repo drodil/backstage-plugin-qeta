@@ -1,5 +1,6 @@
 import { WarningPanel } from '@backstage/core-components';
-import { Button, Typography } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect } from 'react';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {

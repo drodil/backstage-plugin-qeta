@@ -1,5 +1,5 @@
 import { ContentHeader, InfoCard, Progress } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import {
   AIAnswerCard,

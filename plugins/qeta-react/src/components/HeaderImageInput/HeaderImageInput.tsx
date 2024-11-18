@@ -1,4 +1,7 @@
-import { Button, Grid, TextField, Typography } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import { imageUpload } from '../../utils/utils';
 import React from 'react';
 import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';

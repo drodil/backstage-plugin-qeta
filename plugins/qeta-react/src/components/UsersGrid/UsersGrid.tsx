@@ -1,4 +1,6 @@
-import { Grid, IconButton, TextField } from '@material-ui/core';
+import IconButton from '@mui/material/IconButton';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
 import React, { useEffect } from 'react';
 import { useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
@@ -66,7 +68,7 @@ export const UsersGrid = () => {
           placeholder={t('usersPage.search.placeholder')}
           size="small"
         />
-        <IconButton type="submit" aria-label="search" />
+        <IconButton type="submit" aria-label="search" size="large" />
       </Grid>
       <UsersGridContent response={response} loading={loading} error={error} />
       {response && response?.total > 0 && (

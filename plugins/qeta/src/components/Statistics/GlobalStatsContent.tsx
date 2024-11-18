@@ -4,7 +4,9 @@ import {
   useQetaApi,
 } from '@drodil/backstage-plugin-qeta-react';
 import React from 'react';
-import { Card, CardContent, Grid } from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
 
 export const GlobalStatsContent = () => {
   const {

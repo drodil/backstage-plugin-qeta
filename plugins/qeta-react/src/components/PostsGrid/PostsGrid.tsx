@@ -6,15 +6,13 @@ import {
   TagFollowButton,
   WriteArticleButton,
 } from '../Buttons';
-import {
-  Box,
-  Button,
-  Collapse,
-  Grid,
-  TextField,
-  Typography,
-} from '@material-ui/core';
-import FilterList from '@material-ui/icons/FilterList';
+import Collapse from '@mui/material/Collapse';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import FilterList from '@mui/icons-material/FilterList';
 import { FilterPanel, PostFilters } from '../FilterPanel/FilterPanel';
 import { PostsGridContent } from './PostsGridContent';
 import { capitalize } from 'lodash';

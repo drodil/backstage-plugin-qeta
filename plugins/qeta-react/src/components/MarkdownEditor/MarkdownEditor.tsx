@@ -10,7 +10,7 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { imageUpload } from '../../utils/utils';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
 

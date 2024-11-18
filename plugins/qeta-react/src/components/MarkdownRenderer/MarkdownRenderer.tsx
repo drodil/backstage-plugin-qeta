@@ -5,7 +5,7 @@ import {
   a11yDark,
   a11yLight,
 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import { findUserMentions } from '@drodil/backstage-plugin-qeta-common';
 import gfm from 'remark-gfm';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';

@@ -1,4 +1,5 @@
-import { Grid, Typography } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { EntitiesResponse } from '@drodil/backstage-plugin-qeta-common';
 import { WarningPanel } from '@backstage/core-components';

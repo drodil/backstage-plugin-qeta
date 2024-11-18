@@ -1,4 +1,8 @@
-import { Button, Chip, Grid, Tooltip, Typography } from '@material-ui/core';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import React, { useEffect } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { collectionRouteRef } from '../../routes';
@@ -90,7 +94,6 @@ export const CollectionChip = (props: { collection: Collection }) => {
     <Tooltip
       arrow
       title={<CollectionTooltip collectionId={collection.id} />}
-      interactive
       enterDelay={400}
     >
       <Chip
