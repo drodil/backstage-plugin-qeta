@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid';
-import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
+import Skeleton from '@mui/material/Skeleton';
 
 export const LoadingGrid = () => {
   return (
@@ -11,7 +11,7 @@ export const LoadingGrid = () => {
       style={{ height: '20vh' }}
     >
       <Grid item>
-        <CircularProgress />
+        <Skeleton variant="rectangular" height={200} />
       </Grid>
     </Grid>
   );

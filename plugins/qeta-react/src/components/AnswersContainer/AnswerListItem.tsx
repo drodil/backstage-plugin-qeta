@@ -44,17 +44,17 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
   return (
     <Grid
       container
-      spacing={0}
+      spacing={2}
       className={styles.questionListItem}
       justifyContent="flex-start"
     >
-      <Grid container item xs={1} justifyContent="center">
+      <Grid item justifyContent="center" style={{ paddingTop: '0px' }}>
         <div className={styles.questionCardVote}>
           <VoteButtons entity={answer} />
         </div>
       </Grid>
-      <Grid item xs={11} className={styles.questionListItemContent}>
-        <Grid container spacing={1}>
+      <Grid item className={styles.questionListItemContent}>
+        <Grid container>
           <Grid item xs={12}>
             <Typography variant="h5" component="div">
               <Link

@@ -72,7 +72,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                 <LinkButton entity={questionEntity} />
               </div>
             </Grid>
-            <Grid item className={styles.questionCardContent}>
+            <Grid item className={styles.questionCardContent} marginLeft={1}>
               <Grid item>
                 <Typography variant="body1" gutterBottom>
                   <MarkdownRenderer content={questionEntity.content} />

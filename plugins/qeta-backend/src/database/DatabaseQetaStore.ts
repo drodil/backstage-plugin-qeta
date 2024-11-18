@@ -251,7 +251,7 @@ export class DatabaseQetaStore implements QetaStore {
   ): Promise<Posts> {
     const query = this.getPostsBaseQuery(user_ref);
     if (options.type) {
-      query.where('type', options.type);
+      query.where('posts.type', options.type);
     }
 
     if (options.fromDate && options.toDate) {
@@ -2724,14 +2724,14 @@ export class DatabaseQetaStore implements QetaStore {
   ) {
     if (this.db.client.config.client === 'pg') {
       query.whereRaw(
-        `(to_tsvector('english', ${columns.join(
+        `((to_tsvector('english', ${columns.join(
           ` || ' ' || `,
         )}) @@ websearch_to_tsquery('english', quote_literal(?))
           or to_tsvector('english', ${columns.join(
             ` || ' ' || `,
           )}) @@ to_tsquery('english',quote_literal(?))) or LOWER(${columns.join(
           ` || ' ' || `,
-        )}) LIKE LOWER(?)`,
+        )}) LIKE LOWER(?))`,
         [
           `${searchQuery}`,
           `${searchQuery.replaceAll(/\s/g, '+')}:*`,

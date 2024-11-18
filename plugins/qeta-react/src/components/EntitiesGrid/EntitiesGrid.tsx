@@ -1,11 +1,11 @@
-import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
 import React, { useEffect } from 'react';
 import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { EntitiesGridContent } from './EntitiesGridContent';
+import { SearchBar } from '../SearchBar/SearchBar';
+import Typography from '@mui/material/Typography';
 
 type EntityFilters = {
   order: 'asc' | 'desc';
@@ -60,35 +60,40 @@ export const EntitiesGrid = () => {
   }, [response, entitiesPerPage]);
 
   return (
-    <Grid container className="qetaEntitiesContainer">
-      <Grid item xs={12}>
-        <TextField
-          id="search-bar"
-          className="text qetaEntitiesContainerSearchInput"
-          onChange={(
-            event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-          ) => onSearchQueryChange(event.target.value)}
-          label={t('entitiesPage.search.label')}
-          variant="outlined"
-          placeholder={t('entitiesPage.search.placeholder')}
-          size="small"
-        />
-        <IconButton type="submit" aria-label="search" size="large" />
+    <>
+      <Grid container className="qetaEntitiesContainer">
+        <Grid item xs={12} md={4}>
+          <SearchBar
+            onSearch={onSearchQueryChange}
+            label={t('entitiesPage.search.label')}
+          />
+        </Grid>
       </Grid>
-      <EntitiesGridContent
-        response={response}
-        loading={loading}
-        error={error}
-      />
-      {response && response?.total > 0 && (
-        <QetaPagination
-          pageSize={entitiesPerPage}
-          handlePageChange={(_e, p) => setPage(p)}
-          handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
-          page={page}
-          pageCount={pageCount}
+      <Grid container justifyContent="space-between">
+        {response && (
+          <Grid item xs={12}>
+            <Typography variant="h6" className="qetaEntitiesContainerTitle">
+              {t('entitiesPage.entities', { count: response.total })}
+            </Typography>
+          </Grid>
+        )}
+        <EntitiesGridContent
+          response={response}
+          loading={loading}
+          error={error}
         />
-      )}
-    </Grid>
+        {response && response?.total > 0 && (
+          <QetaPagination
+            pageSize={entitiesPerPage}
+            handlePageChange={(_e, p) => setPage(p)}
+            handlePageSizeChange={e =>
+              setEntitiesPerPage(Number(e.target.value))
+            }
+            page={page}
+            pageCount={pageCount}
+          />
+        )}
+      </Grid>
+    </>
   );
 };

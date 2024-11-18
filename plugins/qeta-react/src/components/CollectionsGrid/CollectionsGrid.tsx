@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
 import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import { CollectionsGridContent } from './CollectionsGridContent';
 import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
@@ -13,6 +11,7 @@ import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { CollectionFilters, FilterPanel } from '../FilterPanel/FilterPanel';
 import FilterList from '@mui/icons-material/FilterList';
 import { getFiltersWithDateRange } from '../../utils';
+import { SearchBar } from '../SearchBar/SearchBar';
 
 export type CollectionsGridProps = {
   owner?: string;
@@ -98,18 +97,10 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
     <Box>
       <Grid container justifyContent="space-between">
         <Grid item xs={12} md={4}>
-          <TextField
-            id="search-bar"
-            className="text qetaUsersContainerSearchInput"
-            onChange={(
-              event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-            ) => setSearchQuery(event.target.value)}
+          <SearchBar
+            onSearch={setSearchQuery}
             label={t('collectionsPage.search.label')}
-            variant="outlined"
-            placeholder={t('collectionsPage.search.placeholder')}
-            size="small"
           />
-          <IconButton type="submit" aria-label="search" size="large" />
         </Grid>
       </Grid>
       <Grid container justifyContent="space-between">

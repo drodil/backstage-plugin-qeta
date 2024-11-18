@@ -1,11 +1,11 @@
-import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
 import React, { useEffect } from 'react';
 import { useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import useDebounce from 'react-use/lib/useDebounce';
 import { TagsGridContent } from './TagsGridContent';
+import { SearchBar } from '../SearchBar/SearchBar';
+import Typography from '@mui/material/Typography';
 
 type TagFilters = {
   order: 'asc' | 'desc';
@@ -66,37 +66,39 @@ export const TagsGrid = () => {
   };
 
   return (
-    <Grid container className="qetaTagsContainer">
-      <Grid item xs={12}>
-        <TextField
-          id="search-bar"
-          className="text qetaTagsContainerSearchInput"
-          onChange={(
-            event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-          ) => onSearchQueryChange(event.target.value)}
-          value={searchQuery}
-          label={t('tagPage.search.label')}
-          variant="outlined"
-          placeholder={t('tagPage.search.placeholder')}
-          size="small"
-        />
-        <IconButton type="submit" aria-label="search" size="large" />
+    <>
+      <Grid container className="qetaTagsContainer">
+        <Grid item xs={12} md={4}>
+          <SearchBar
+            onSearch={onSearchQueryChange}
+            label={t('tagPage.search.label')}
+          />
+        </Grid>
       </Grid>
-      <TagsGridContent
-        response={response}
-        onTagEdit={onTagEdit}
-        loading={loading}
-        error={error}
-      />
-      {response && response?.total > 0 && (
-        <QetaPagination
-          pageSize={tagsPerPage}
-          handlePageChange={(_e, p) => setPage(p)}
-          handlePageSizeChange={e => setTagsPerPage(Number(e.target.value))}
-          page={page}
-          pageCount={pageCount}
+      <Grid container justifyContent="space-between">
+        {response && (
+          <Grid item xs={12}>
+            <Typography variant="h6" className="qetaTagsContainerTitle">
+              {t('tagPage.tags', { count: response.total })}
+            </Typography>
+          </Grid>
+        )}
+        <TagsGridContent
+          response={response}
+          onTagEdit={onTagEdit}
+          loading={loading}
+          error={error}
         />
-      )}
-    </Grid>
+        {response && response?.total > 0 && (
+          <QetaPagination
+            pageSize={tagsPerPage}
+            handlePageChange={(_e, p) => setPage(p)}
+            handlePageSizeChange={e => setTagsPerPage(Number(e.target.value))}
+            page={page}
+            pageCount={pageCount}
+          />
+        )}
+      </Grid>
+    </>
   );
 };

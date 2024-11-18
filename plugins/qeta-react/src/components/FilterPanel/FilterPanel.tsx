@@ -194,7 +194,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const collectionFilters = isCollectionFilters(filters);
 
   return (
-    <Box className={`qetaFilterPanel ${styles.filterPanel}`}>
+    <Box className={`qetaFilterPanel ${styles.filterPanel}`} marginTop={2}>
       <Grid
         container
         spacing={4}

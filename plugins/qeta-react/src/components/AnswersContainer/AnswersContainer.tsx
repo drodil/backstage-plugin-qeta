@@ -3,7 +3,6 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import React, { useEffect } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import FilterList from '@mui/icons-material/FilterList';
@@ -20,6 +19,7 @@ import {
 } from '../FilterPanel/FilterPanel';
 import { AnswerList } from './AnswerList';
 import { useQetaApi, useTranslation } from '../../hooks';
+import { SearchBar } from '../SearchBar/SearchBar';
 
 export interface AnswersContainerProps {
   tags?: string[];
@@ -107,12 +107,12 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
     });
   };
 
-  const onSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onSearchQueryChange = (query: string) => {
     onPageChange(1);
-    if (event.target.value) {
-      analytics.captureEvent('qeta_search', event.target.value);
+    if (query) {
+      analytics.captureEvent('qeta_search', query);
     }
-    setSearchQuery(event.target.value);
+    setSearchQuery(query);
   };
 
   useDebounce(
@@ -216,16 +216,9 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
       )}
       <Grid container justifyContent="space-between">
         <Grid item xs={12} md={4}>
-          <TextField
-            id="search-bar"
-            fullWidth
-            onChange={onSearchQueryChange}
+          <SearchBar
+            onSearch={onSearchQueryChange}
             label={t('answerContainer.search.label')}
-            className="qetaAnswersContainerSearchInput"
-            variant="outlined"
-            placeholder={t('answerContainer.search.placeholder')}
-            size="small"
-            style={{ marginBottom: '5px' }}
           />
         </Grid>
       </Grid>

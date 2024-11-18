@@ -3,7 +3,7 @@ import Card from '@mui/material/Card';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { PostListItem } from './PostListItem';
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { NoPostsCard } from './NoPostsCard';
@@ -41,14 +41,7 @@ export const PostList = (props: {
     type,
   } = props;
   const listRef = useRef<HTMLDivElement | null>(null);
-  const [initialLoad, setInitialLoad] = useState(true);
   const { t } = useTranslation();
-
-  useEffect(() => {
-    if (!loading) {
-      setInitialLoad(false);
-    }
-  }, [initialLoad, loading]);
 
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
@@ -68,10 +61,7 @@ export const PostList = (props: {
   };
 
   if (loading) {
-    if (initialLoad) {
-      return <LoadingGrid />;
-    }
-    return null;
+    return <LoadingGrid />;
   }
 
   const itemType = (type ?? 'post') as any;

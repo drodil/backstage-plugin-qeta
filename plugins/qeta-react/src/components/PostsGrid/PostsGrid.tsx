@@ -11,7 +11,6 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import FilterList from '@mui/icons-material/FilterList';
 import { FilterPanel, PostFilters } from '../FilterPanel/FilterPanel';
 import { PostsGridContent } from './PostsGridContent';
@@ -21,6 +20,7 @@ import {
   usePaginatedPosts,
 } from '../../hooks/usePaginatedPosts';
 import { useTranslation } from '../../hooks';
+import { SearchBar } from '../SearchBar/SearchBar';
 
 export type PostGridProps = PaginatedPostsProps & { allowRanking?: boolean };
 
@@ -90,16 +90,11 @@ export const PostsGrid = (props: PostGridProps) => {
       )}
       <Grid container justifyContent="space-between">
         <Grid item xs={12} md={4}>
-          <TextField
-            id="search-bar"
-            fullWidth
-            onChange={onSearchQueryChange}
-            label={t('postsContainer.search.label', { itemType })}
-            className="qetaPostsGridSearchInput"
-            variant="outlined"
-            placeholder={t('postsContainer.search.placeholder')}
-            size="small"
-            style={{ marginBottom: '5px' }}
+          <SearchBar
+            onSearch={onSearchQueryChange}
+            label={t('postsContainer.search.label', {
+              itemType: itemType.toLowerCase(),
+            })}
           />
         </Grid>
         {showAskButton && (

@@ -19,7 +19,7 @@ export const FavoritePage = () => {
           <AskQuestionButton />
           <WriteArticleButton />
         </ContentHeader>
-        <PostsContainer favorite />
+        <PostsContainer favorite showNoQuestionsBtn={false} />
       </Grid>
       <Grid item lg={4} xl={3}>
         <PostHighlightList

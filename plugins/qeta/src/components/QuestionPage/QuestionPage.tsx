@@ -109,6 +109,7 @@ export const QuestionPage = () => {
 
   const onAnswerPost = (answer: AnswerResponse) => {
     setNewAnswers(newAnswers.concat([answer]));
+    setAnswersCount(prev => prev + 1);
   };
 
   const getDescription = (q: PostResponse) => {
@@ -169,7 +170,7 @@ export const QuestionPage = () => {
           <Grid item>
             <Typography variant="h6">
               {t('common.answers', {
-                count: answersCount + newAnswers.length,
+                count: answersCount,
               })}
             </Typography>
           </Grid>
@@ -227,10 +228,10 @@ export const QuestionPage = () => {
           )}
         </Grid>
       </Box>
+      <Divider className={styles.questionDivider} />
       {sortedAnswers.map(a => {
         return (
           <React.Fragment key={a.id}>
-            <Divider className={styles.questionDivider} />
             <Box key={a.id} sx={{ mb: 1 }}>
               <AnswerCard answer={a} question={question} />
             </Box>

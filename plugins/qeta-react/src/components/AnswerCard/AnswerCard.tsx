@@ -69,7 +69,7 @@ export const AnswerCard = (props: {
                 <LinkButton entity={answerEntity} />
               </div>
             </Grid>
-            <Grid item className={styles.answerCardContent}>
+            <Grid item className={styles.answerCardContent} marginLeft={1}>
               {editMode ? (
                 <AnswerForm
                   post={question}
@@ -109,7 +109,7 @@ export const AnswerCard = (props: {
                                   size="small"
                                   color="secondary"
                                   onClick={handleDeleteModalOpen}
-                                  className={`${styles.marginLeft} qetaAnswerCardDeleteBtn`}
+                                  className={`${styles.marginRight} qetaAnswerCardDeleteBtn`}
                                   startIcon={<DeleteIcon />}
                                 >
                                   {t('deleteModal.deleteButton')}

@@ -53,7 +53,7 @@ export const qetaTranslationRef = createTranslationRef({
         answersTagged: `Answers tagged with {{tags}}`,
       },
       search: {
-        label: 'Search for answers',
+        label: 'Search answer',
         placeholder: 'Search...',
       },
     },
@@ -151,7 +151,7 @@ export const qetaTranslationRef = createTranslationRef({
       title: 'Write an article',
     },
     createCollectionButton: {
-      title: 'Create collection',
+      title: 'Create a collection',
     },
     commentList: {
       deleteLink: 'delete',
@@ -299,7 +299,7 @@ export const qetaTranslationRef = createTranslationRef({
     collectionsPage: {
       title: 'Collections',
       search: {
-        label: 'Search for collection',
+        label: 'Search collection',
         placeholder: 'Search...',
       },
     },
@@ -445,7 +445,7 @@ export const qetaTranslationRef = createTranslationRef({
         favorite: 'Your favorite {{itemType}}s',
       },
       search: {
-        label: 'Search for {{itemType}}',
+        label: 'Search {{itemType}}',
         placeholder: 'Search...',
       },
       noItems: 'No {{itemType}}s',
@@ -466,7 +466,7 @@ export const qetaTranslationRef = createTranslationRef({
     statistics: {
       errorLoading: 'Could not load statistics',
       notAvailable: 'Statistics are unavailable',
-      ranking: 'Ranking Q&A 🏆',
+      ranking: 'User ranking 🏆',
       mostQuestions: {
         title: 'Most questions',
         description: 'People who have posted most questions',
@@ -496,8 +496,8 @@ export const qetaTranslationRef = createTranslationRef({
         placeholder: 'Search...',
       },
       tags_zero: 'No tags',
-      tags_one: 'Showing {{count}} tag',
-      tags_other: 'Showing {{count}} tags',
+      tags_one: '{{count}} tag',
+      tags_other: '{{count}} tags',
     },
     entitiesPage: {
       errorLoading: 'Could not load entities',
@@ -507,8 +507,8 @@ export const qetaTranslationRef = createTranslationRef({
         placeholder: 'Search...',
       },
       entities_zero: 'No entities',
-      entities_one: 'Showing {{count}} entity',
-      entities_other: 'Showing {{count}} entities',
+      entities_one: '{{count}} entity',
+      entities_other: '{{count}} entities',
     },
     aiAnswerCard: {
       regenerate: 'Regenerate this answer',
@@ -527,8 +527,8 @@ export const qetaTranslationRef = createTranslationRef({
         placeholder: 'Search...',
       },
       users_zero: 'No users',
-      users_one: 'Showing {{count}} users',
-      users_other: 'Showing {{count}} users',
+      users_one: '{{count}} user',
+      users_other: '{{count}} users',
     },
     userPage: {
       profileTab: 'Profile',

@@ -113,12 +113,12 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     });
   };
 
-  const onSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onSearchQueryChange = (query: string) => {
     onPageChange(1);
-    if (event.target.value) {
-      analytics.captureEvent('qeta_search', event.target.value);
+    if (query) {
+      analytics.captureEvent('qeta_search', query);
     }
-    setSearchQuery(event.target.value);
+    setSearchQuery(query);
   };
 
   useDebounce(

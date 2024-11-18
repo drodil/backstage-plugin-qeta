@@ -1,7 +1,6 @@
-import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import { TagGridItem } from './TagGridItem';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { TagsResponse } from '@drodil/backstage-plugin-qeta-common';
 import { WarningPanel } from '@backstage/core-components';
 import { useTranslation } from '../../hooks';
@@ -16,18 +15,9 @@ export const TagsGridContent = (props: {
 }) => {
   const { response, onTagEdit, loading, error } = props;
   const { t } = useTranslation();
-  const [initialLoad, setInitialLoad] = useState(true);
-  useEffect(() => {
-    if (!loading) {
-      setInitialLoad(false);
-    }
-  }, [initialLoad, loading]);
 
   if (loading) {
-    if (initialLoad) {
-      return <LoadingGrid />;
-    }
-    return null;
+    return <LoadingGrid />;
   }
 
   if (error || response === undefined) {
@@ -43,17 +33,10 @@ export const TagsGridContent = (props: {
   }
 
   return (
-    <>
-      <Grid item xs={12}>
-        <Typography variant="h6" className="qetaTagsContainerTitle">
-          {t('tagPage.tags', { count: response.total })}
-        </Typography>
-      </Grid>
-      <Grid container item xs={12} alignItems="stretch">
-        {response?.tags.map(tag => (
-          <TagGridItem tag={tag} key={tag.tag} onTagEdit={onTagEdit} />
-        ))}
-      </Grid>
-    </>
+    <Grid container item xs={12} alignItems="stretch">
+      {response?.tags.map(tag => (
+        <TagGridItem tag={tag} key={tag.tag} onTagEdit={onTagEdit} />
+      ))}
+    </Grid>
   );
 };

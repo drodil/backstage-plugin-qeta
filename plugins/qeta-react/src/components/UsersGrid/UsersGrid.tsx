@@ -1,11 +1,11 @@
-import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
 import React, { useEffect } from 'react';
 import { useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { UsersGridContent } from './UsersGridContent';
 import useDebounce from 'react-use/lib/useDebounce';
+import { SearchBar } from '../SearchBar/SearchBar';
+import Typography from '@mui/material/Typography';
 
 type EntityFilters = {
   order: 'asc' | 'desc';
@@ -55,31 +55,36 @@ export const UsersGrid = () => {
   }, [response, entitiesPerPage]);
 
   return (
-    <Grid container className="qetaUsersContainer">
-      <Grid item xs={12}>
-        <TextField
-          id="search-bar"
-          className="text qetaUsersContainerSearchInput"
-          onChange={(
-            event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-          ) => setSearchQuery(event.target.value)}
-          label={t('usersPage.search.label')}
-          variant="outlined"
-          placeholder={t('usersPage.search.placeholder')}
-          size="small"
-        />
-        <IconButton type="submit" aria-label="search" size="large" />
+    <>
+      <Grid container className="qetaUsersContainer">
+        <Grid item xs={12} md={4}>
+          <SearchBar
+            onSearch={setSearchQuery}
+            label={t('usersPage.search.label')}
+          />
+        </Grid>
       </Grid>
-      <UsersGridContent response={response} loading={loading} error={error} />
-      {response && response?.total > 0 && (
-        <QetaPagination
-          pageSize={entitiesPerPage}
-          handlePageChange={(_e, p) => setPage(p)}
-          handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
-          page={page}
-          pageCount={pageCount}
-        />
-      )}
-    </Grid>
+      <Grid container>
+        {response && (
+          <Grid item xs={12}>
+            <Typography variant="h6" className="qetaUsersContainerTitle">
+              {t('usersPage.users', { count: response.total })}
+            </Typography>
+          </Grid>
+        )}
+        <UsersGridContent response={response} loading={loading} error={error} />
+        {response && response?.total > 0 && (
+          <QetaPagination
+            pageSize={entitiesPerPage}
+            handlePageChange={(_e, p) => setPage(p)}
+            handlePageSizeChange={e =>
+              setEntitiesPerPage(Number(e.target.value))
+            }
+            page={page}
+            pageCount={pageCount}
+          />
+        )}
+      </Grid>
+    </>
   );
 };

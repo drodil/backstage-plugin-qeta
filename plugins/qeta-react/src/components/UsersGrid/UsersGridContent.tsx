@@ -1,6 +1,5 @@
-import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { UsersResponse } from '@drodil/backstage-plugin-qeta-common';
 import { WarningPanel } from '@backstage/core-components';
 import { useTranslation } from '../../hooks';
@@ -15,18 +14,9 @@ export const UsersGridContent = (props: {
 }) => {
   const { response, error, loading } = props;
   const { t } = useTranslation();
-  const [initialLoad, setInitialLoad] = useState(true);
-  useEffect(() => {
-    if (!loading) {
-      setInitialLoad(false);
-    }
-  }, [initialLoad, loading]);
 
   if (loading) {
-    if (initialLoad) {
-      return <LoadingGrid />;
-    }
-    return null;
+    return <LoadingGrid />;
   }
 
   if (error || response === undefined) {
@@ -42,17 +32,10 @@ export const UsersGridContent = (props: {
   }
 
   return (
-    <>
-      <Grid item xs={12}>
-        <Typography variant="h6" className="qetaUsersContainerTitle">
-          {t('usersPage.users', { count: response.total })}
-        </Typography>
-      </Grid>
-      <Grid container item xs={12} alignItems="stretch">
-        {response.users.map(entity => (
-          <UsersGridItem user={entity} key={entity.userRef} />
-        ))}
-      </Grid>
-    </>
+    <Grid container item xs={12} alignItems="stretch">
+      {response.users.map(entity => (
+        <UsersGridItem user={entity} key={entity.userRef} />
+      ))}
+    </Grid>
   );
 };

@@ -85,7 +85,7 @@ export const PostListItem = (props: PostListItemProps) => {
             style={{
               paddingTop: '0.4rem',
               paddingBottom: '0.4rem',
-              paddingLeft: '0.4rem',
+              paddingLeft: '0.8rem',
             }}
           >
             {type === undefined && (
