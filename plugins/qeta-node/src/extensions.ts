@@ -34,6 +34,30 @@ export interface AIHandler {
     article: Article,
     options?: { credentials?: BackstageCredentials<BackstageUserPrincipal> },
   ): Promise<AIResponse>;
+
+  /**
+   * Check if answering existing questions is enabled for specific credentials. Defaults to true.
+   * Must also implement the `answerExistingQuestion` method.
+   */
+  isExistingQuestionEnabled?(options?: {
+    credentials?: BackstageCredentials;
+  }): Promise<boolean>;
+
+  /**
+   * Check if answering new questions is enabled for specific credentials. Defaults to true.
+   * Must also implement the `answerNewQuestion` method.
+   */
+  isNewQuestionEnabled?(options?: {
+    credentials?: BackstageCredentials;
+  }): Promise<boolean>;
+
+  /**
+   * Check if article summarization is enabled for specific credentials. Defaults to true.
+   * Must also implement the `summarizeArticle` method.
+   */
+  isArticleSummarizationEnabled?(options?: {
+    credentials?: BackstageCredentials;
+  }): Promise<boolean>;
 }
 
 export interface QetaAIExtensionPoint {

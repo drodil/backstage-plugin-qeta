@@ -8,6 +8,7 @@ import {
   Article,
   Question,
 } from '@drodil/backstage-plugin-qeta-common';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -15,11 +16,50 @@ addFormats(ajv);
 export const aiRoutes = (router: Router, options: RouteOptions) => {
   const { database, httpAuth, aiHandler } = options;
 
-  router.get('/ai/status', async (_request, response) => {
+  const isExistingQuestionEnabled = async (
+    credentials: BackstageCredentials,
+  ) => {
+    if (!aiHandler?.isExistingQuestionEnabled) {
+      return !!aiHandler?.answerExistingQuestion;
+    }
+    return (
+      (await aiHandler.isExistingQuestionEnabled({ credentials })) &&
+      !!aiHandler?.answerExistingQuestion
+    );
+  };
+
+  const isNewQuestionEnabled = async (credentials: BackstageCredentials) => {
+    if (!aiHandler?.isNewQuestionEnabled) {
+      return !!aiHandler?.answerNewQuestion;
+    }
+    return (
+      (await aiHandler.isNewQuestionEnabled({ credentials })) &&
+      !!aiHandler?.answerNewQuestion
+    );
+  };
+
+  const isArticleSummarizationEnabled = async (
+    credentials: BackstageCredentials,
+  ) => {
+    if (!aiHandler?.isArticleSummarizationEnabled) {
+      return !!aiHandler?.summarizeArticle;
+    }
+    return (
+      (await aiHandler.isArticleSummarizationEnabled({ credentials })) &&
+      !!aiHandler?.summarizeArticle
+    );
+  };
+
+  router.get('/ai/status', async (request, response) => {
+    const credentials = await httpAuth.credentials(request, {
+      allow: ['user'],
+    });
+
     const enabled = !!aiHandler;
-    const existingQuestions = !!aiHandler?.answerExistingQuestion;
-    const newQuestions = !!aiHandler?.answerNewQuestion;
-    const articleSummaries = !!aiHandler?.summarizeArticle;
+    const existingQuestions = await isExistingQuestionEnabled(credentials);
+    const newQuestions = await isNewQuestionEnabled(credentials);
+    const articleSummaries = await isArticleSummarizationEnabled(credentials);
+
     response.json({
       enabled,
       existingQuestions,
@@ -33,7 +73,12 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
   }
 
   router.get('/ai/question/:id', async (request, response) => {
-    if (!aiHandler.answerExistingQuestion) {
+    const credentials = await httpAuth.credentials(request, {
+      allow: ['user'],
+    });
+
+    const enabled = await isExistingQuestionEnabled(credentials);
+    if (!enabled) {
       response.sendStatus(404);
       return;
     }
@@ -53,9 +98,6 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const credentials = await httpAuth.credentials(request, {
-      allow: ['user'],
-    });
     const username = await getUsername(request, options);
     const post = await database.getPost(
       username,
@@ -78,7 +120,7 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       await database.deleteAIAnswer(post.id);
     }
 
-    const aiResponse = await aiHandler.answerExistingQuestion(
+    const aiResponse = await aiHandler.answerExistingQuestion!(
       post as Question,
       { credentials },
     );
@@ -90,7 +132,12 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.post('/ai/question', async (request, response) => {
-    if (!aiHandler.answerNewQuestion) {
+    const credentials = await httpAuth.credentials(request, {
+      allow: ['user'],
+    });
+
+    const enabled = await isNewQuestionEnabled(credentials);
+    if (!enabled) {
       response.sendStatus(404);
       return;
     }
@@ -101,10 +148,7 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const credentials = await httpAuth.credentials(request, {
-      allow: ['user'],
-    });
-    const aiResponse = await aiHandler.answerNewQuestion(
+    const aiResponse = await aiHandler.answerNewQuestion!(
       request.body.title,
       request.body.content,
       { credentials },
@@ -113,7 +157,12 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/ai/article/:id', async (request, response) => {
-    if (!aiHandler.summarizeArticle) {
+    const credentials = await httpAuth.credentials(request, {
+      allow: ['user'],
+    });
+
+    const enabled = await isArticleSummarizationEnabled(credentials);
+    if (!enabled) {
       response.sendStatus(404);
       return;
     }
@@ -134,9 +183,6 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const credentials = await httpAuth.credentials(request, {
-      allow: ['user'],
-    });
     const username = await getUsername(request, options);
     const post = await database.getPost(
       username,
@@ -159,7 +205,7 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       await database.deleteAIAnswer(post.id);
     }
 
-    const aiResponse = await aiHandler.summarizeArticle(post as Article, {
+    const aiResponse = await aiHandler.summarizeArticle!(post as Article, {
       credentials,
     });
     await database.saveAIAnswer(post.id, {
