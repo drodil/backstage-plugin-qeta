@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.10.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.9.3...v3.10.0) (2024-11-18)
+
+
+### Features
+
+* add new post type permission rule ([91c63e1](https://github.com/drodil/backstage-plugin-qeta/commit/91c63e1f9556a9db63833ffda7df4ef33b2279d1))
+* add secondary title and icon to entity tooltip ([e32a081](https://github.com/drodil/backstage-plugin-qeta/commit/e32a0817a8930e940f8af11196dda54605027ad7))
+* allow determining ai capabilities per user ([2204153](https://github.com/drodil/backstage-plugin-qeta/commit/22041536648ce9dbd6784ccf7f200a4060a6d48c)), closes [#239](https://github.com/drodil/backstage-plugin-qeta/issues/239)
+* allow extending tag database with org specific tags ([4faa46d](https://github.com/drodil/backstage-plugin-qeta/commit/4faa46dc79acd48e26614e925244e8d8ed95d5ac))
+* refactor r search bar and fix searching ([32e7b1c](https://github.com/drodil/backstage-plugin-qeta/commit/32e7b1c44e2b9d6e9afc02ce155a3f8f856de299))
+
+
+### Bug Fixes
+
+* answer sorting with mui5 ([c71fc48](https://github.com/drodil/backstage-plugin-qeta/commit/c71fc48c8539403fad46e838bc7dbf0b2feb0f54))
+* date range filter with mui5 ([ddc3528](https://github.com/drodil/backstage-plugin-qeta/commit/ddc3528b0c2d182231d3428037b9b2e498d9a135))
+* default ai enabled flags to false ([e7603f0](https://github.com/drodil/backstage-plugin-qeta/commit/e7603f067efc54972006e69439212d17837b0ebb))
+* more ui tuning for mui5 ([3effba0](https://github.com/drodil/backstage-plugin-qeta/commit/3effba0014ee24f28ec4937f2bdbe08206debed6))
+* relative time tooltip with mui5 ([12e5dfd](https://github.com/drodil/backstage-plugin-qeta/commit/12e5dfdc0906783fce2d5367902f4a8fa80d9ed0))
+* small ui tuning for mui5 ([f95ca34](https://github.com/drodil/backstage-plugin-qeta/commit/f95ca347766ad1f467da0e01a479360da00f7a5f))
+* ui fixes due to mui5 update ([e9325bb](https://github.com/drodil/backstage-plugin-qeta/commit/e9325bb1c9cbf505ee62d3d98db9a3d6ebbba361))
+
 ### [3.9.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.9.2...v3.9.3) (2024-11-05)
 
 
