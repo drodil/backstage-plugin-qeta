@@ -100,7 +100,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
           setAnswer(res);
         });
       } else {
-        setAnswer(undefined);
+        setAnswer(null);
       }
     },
     [

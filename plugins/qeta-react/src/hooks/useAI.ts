@@ -10,17 +10,15 @@ let cache: AIStatusResponse | undefined = undefined;
 
 export const useAI = () => {
   const qetaApi = useApi(qetaApiRef);
-  const [isAIEnabled, setIsAIEnabled] = React.useState<boolean | undefined>(
-    cache?.enabled,
+  const [isAIEnabled, setIsAIEnabled] = React.useState<boolean>(
+    cache?.enabled ?? false,
   );
   const [isExistingQuestionsEnabled, setIsExistingQuestionsEnabled] =
-    React.useState<boolean | undefined>(cache?.existingQuestions);
-  const [isNewQuestionsEnabled, setIsNewQuestionsEnabled] = React.useState<
-    boolean | undefined
-  >(cache?.newQuestions);
-  const [isArticleSummaryEnabled, setIsArticleSummaryEnabled] = React.useState<
-    boolean | undefined
-  >(cache?.articleSummaries);
+    React.useState<boolean>(cache?.existingQuestions ?? false);
+  const [isNewQuestionsEnabled, setIsNewQuestionsEnabled] =
+    React.useState<boolean>(cache?.newQuestions ?? false);
+  const [isArticleSummaryEnabled, setIsArticleSummaryEnabled] =
+    React.useState<boolean>(cache?.articleSummaries ?? false);
 
   useEffect(() => {
     if (cache?.enabled !== undefined) {
@@ -37,7 +35,7 @@ export const useAI = () => {
 
   const answerExistingQuestion = useCallback(
     async (questionId: number, options?: AIQuery) => {
-      if (isExistingQuestionsEnabled === false) {
+      if (!isExistingQuestionsEnabled) {
         return null;
       }
       const ret = await qetaApi.getAIAnswerForQuestion(questionId, options);
@@ -54,7 +52,7 @@ export const useAI = () => {
 
   const answerDraftQuestion = useCallback(
     async (draft: { title: string; content: string }) => {
-      if (isNewQuestionsEnabled === false) {
+      if (!isNewQuestionsEnabled) {
         return null;
       }
       const ret = await qetaApi.getAIAnswerForDraft(draft.title, draft.content);
@@ -71,7 +69,7 @@ export const useAI = () => {
 
   const summarizeArticle = useCallback(
     async (articleId: number, options?: AIQuery) => {
-      if (isArticleSummaryEnabled === false) {
+      if (!isArticleSummaryEnabled) {
         return null;
       }
       const ret = await qetaApi.getAISummaryForArticle(articleId, options);
