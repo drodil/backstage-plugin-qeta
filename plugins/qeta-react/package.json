@@ -58,6 +58,7 @@
     "@backstage/plugin-signals-react": "backstage:^",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",
     "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.7",
     "@mui/lab": "^5.0.0-alpha.169",
     "@mui/material": "^5.16.7",
@@ -79,7 +80,7 @@
     "remark-gfm": "^4.0.0"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0",
+    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
