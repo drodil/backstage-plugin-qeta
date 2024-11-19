@@ -12,18 +12,10 @@ import { MarkdownRenderer } from '../MarkdownRenderer';
 import { imageUpload } from '../../utils/utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
-
-import { css, Theme, useTheme } from '@mui/material/styles';
-import { css as emotionCss } from '@emotion/css';
+import { Theme, useTheme } from '@mui/material/styles';
+import { ClassNames } from '@emotion/react';
 
 const styles = {
-  tooltipLabel: (theme: Theme) => ({
-    color: theme.palette.text.primary,
-  }),
-  tooltipWrapper: (theme: Theme) => ({
-    backgroundColor: `${theme.palette.background.default} !important`,
-    border: 'none !important',
-  }),
   markdownEditor: (theme: Theme) => ({
     backgroundColor: 'initial',
     color: theme.palette.text.primary,
@@ -57,8 +49,8 @@ const styles = {
       outline: 'none',
     },
     '& .image-tip': {
-      color: theme.palette.text.primary,
-      backgroundColor: 'initial',
+      color: `${theme.palette.text.primary} !important`,
+      backgroundColor: 'initial !important',
     },
   }),
   markdownEditorError: (theme: Theme) => ({
@@ -183,59 +175,65 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     false;
 
   const theme = useTheme();
-  const markdownEditorClass = emotionCss(css(styles.markdownEditor(theme)));
-  const markdownEditorErrorClass = emotionCss(
-    css(styles.markdownEditorError(theme)),
-  );
-  const hideClass = emotionCss(css(styles.hide));
-  const suggestionsDropdownClass = emotionCss(
-    css({ position: 'absolute', ...styles.suggestionsDropdown(theme) }),
-  );
 
   return (
-    <ReactMde
-      classes={{
-        reactMde: markdownEditorClass,
-        textArea: error ? markdownEditorErrorClass : undefined,
-        toolbar: disableToolbar ? hideClass : undefined,
-        suggestionsDropdown: suggestionsDropdownClass,
-      }}
-      disablePreview={disablePreview}
-      value={value}
-      onChange={onChange}
-      selectedTab={selectedTab}
-      onTabChange={setSelectedTab}
-      minEditorHeight={height}
-      minPreviewHeight={height - 10}
-      childProps={{
-        textArea: {
-          required,
-          placeholder,
-          autoFocus,
-        },
-      }}
-      suggestionTriggerCharacters={['@']}
-      loadSuggestions={loadSuggestions}
-      suggestionsAutoplace
-      generateMarkdownPreview={content =>
-        Promise.resolve(
-          <MarkdownRenderer content={content} sx={styles.markdownPreview} />,
-        )
-      }
-      paste={
-        isUploadDisabled
-          ? undefined
-          : {
-              saveImage: imageUpload({
-                qetaApi,
-                errorApi,
-                onImageUpload: props.onImageUpload,
-                postId,
-                answerId,
-                collectionId,
+    <ClassNames>
+      {({ cx, css }) => (
+        <ReactMde
+          classes={{
+            reactMde: cx(css(styles.markdownEditor(theme))),
+            textArea: error
+              ? cx(css(styles.markdownEditorError(theme)))
+              : undefined,
+            toolbar: disableToolbar ? cx(css(styles.hide)) : undefined,
+            suggestionsDropdown: cx(
+              css({
+                position: 'absolute',
+                ...styles.suggestionsDropdown(theme),
               }),
-            }
-      }
-    />
+            ),
+          }}
+          disablePreview={disablePreview}
+          value={value}
+          onChange={onChange}
+          selectedTab={selectedTab}
+          onTabChange={setSelectedTab}
+          minEditorHeight={height}
+          minPreviewHeight={height - 10}
+          childProps={{
+            textArea: {
+              required,
+              placeholder,
+              autoFocus,
+            },
+          }}
+          suggestionTriggerCharacters={['@']}
+          loadSuggestions={loadSuggestions}
+          suggestionsAutoplace
+          generateMarkdownPreview={content =>
+            Promise.resolve(
+              <MarkdownRenderer
+                content={content}
+                sx={styles.markdownPreview}
+              />,
+            )
+          }
+          paste={
+            isUploadDisabled
+              ? undefined
+              : {
+                  saveImage: imageUpload({
+                    qetaApi,
+                    errorApi,
+                    onImageUpload: props.onImageUpload,
+                    postId,
+                    answerId,
+                    collectionId,
+                  }),
+                }
+          }
+        />
+      )}
+    </ClassNames>
   );
 };

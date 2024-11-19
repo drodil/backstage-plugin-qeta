@@ -20,18 +20,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { useTranslation } from '../../hooks';
 import { isGlobalStat, isUserStat } from './util';
-import { css, Theme, useTheme } from '@mui/material/styles';
-import { css as emotionCss } from '@emotion/css';
-
-const styles = {
-  tooltipLabel: (theme: Theme) => ({
-    color: theme.palette.text.primary,
-  }),
-  tooltipWrapper: (theme: Theme) => ({
-    backgroundColor: `${theme.palette.background.default} !important`,
-    border: 'none !important',
-  }),
-};
+import { useTheme } from '@mui/material/styles';
 
 type StatType = {
   dataKey:
@@ -156,20 +145,21 @@ const useChartState = (data: Stat[]) => {
     [stats],
   );
 
-  return { styles, isDark, toggleStat, stats, isDisabled };
+  return { isDark, toggleStat, stats, isDisabled };
 };
 
 const StatsBarChart = (props: { data: Stat[] }) => {
   const { isDark, stats, toggleStat, isDisabled } = useChartState(props.data);
   const theme = useTheme();
-  const labelClass = emotionCss(css(styles.tooltipLabel(theme)));
-  const wrapperClass = emotionCss(css(styles.tooltipWrapper(theme)));
   return (
     <ResponsiveContainer height={400} width="100%">
       <BarChart data={props.data} width={900} height={300}>
         <ChartTooltip
-          labelClassName={labelClass}
-          wrapperClassName={wrapperClass}
+          labelStyle={{ color: theme.palette.text.primary }}
+          contentStyle={{
+            backgroundColor: `${theme.palette.background.paper} !important`,
+            border: 'none !important',
+          }}
           cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
         />
         {stats.map(stat => (
@@ -215,14 +205,15 @@ const StatsBarChart = (props: { data: Stat[] }) => {
 const StatsLineChart = (props: { data: Stat[] }) => {
   const { isDark, stats, toggleStat, isDisabled } = useChartState(props.data);
   const theme = useTheme();
-  const labelClass = emotionCss(css(styles.tooltipLabel(theme)));
-  const wrapperClass = emotionCss(css(styles.tooltipWrapper(theme)));
   return (
     <ResponsiveContainer height={400} width="100%">
       <LineChart data={props.data} width={900} height={300}>
         <ChartTooltip
-          labelClassName={labelClass}
-          wrapperClassName={wrapperClass}
+          labelStyle={{ color: theme.palette.text.primary }}
+          contentStyle={{
+            backgroundColor: `${theme.palette.background.paper} !important`,
+            border: 'none !important',
+          }}
           cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
         />
         {stats.map(stat => (
