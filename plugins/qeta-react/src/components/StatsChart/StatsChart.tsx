@@ -15,39 +15,23 @@ import {
 import IconButton from '@mui/material/IconButton';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Typography from '@mui/material/Typography';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { useTranslation } from '../../hooks';
 import { isGlobalStat, isUserStat } from './util';
+import { css, Theme, useTheme } from '@mui/material/styles';
+import { css as emotionCss } from '@emotion/css';
 
-export type QetaStatsChartClassKey =
-  | 'tooltipLabel'
-  | 'tooltipWrapper'
-  | 'xAxis'
-  | 'lineChart'
-  | 'barChart';
-
-const useStyles = makeStyles(
-  theme =>
-    createStyles({
-      tooltipLabel: {
-        color: theme.palette.text.primary,
-      },
-      tooltipWrapper: {
-        backgroundColor: `${theme.palette.background.default} !important`,
-        border: 'none !important',
-      },
-      xAxis: {
-        color: `${theme.palette.text.primary} !important`,
-      },
-      lineChart: {},
-      barChart: {},
-    }),
-  { name: 'QetaStatsChart' },
-);
+const styles = {
+  tooltipLabel: (theme: Theme) => ({
+    color: theme.palette.text.primary,
+  }),
+  tooltipWrapper: (theme: Theme) => ({
+    backgroundColor: `${theme.palette.background.default} !important`,
+    border: 'none !important',
+  }),
+};
 
 type StatType = {
   dataKey:
@@ -143,7 +127,6 @@ const DEFAULT_STATS: StatType[] = [
 ];
 
 const useChartState = (data: Stat[]) => {
-  const styles = useStyles();
   const isDark = useIsDarkTheme();
   const globalStats = isGlobalStat(data[0]);
   const isUserStats = isUserStat(data[0]);
@@ -177,21 +160,16 @@ const useChartState = (data: Stat[]) => {
 };
 
 const StatsBarChart = (props: { data: Stat[] }) => {
-  const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
-    props.data,
-  );
-  const localStyles = useStyles();
+  const { isDark, stats, toggleStat, isDisabled } = useChartState(props.data);
+  const theme = useTheme();
+  const labelClass = emotionCss(css(styles.tooltipLabel(theme)));
+  const wrapperClass = emotionCss(css(styles.tooltipWrapper(theme)));
   return (
     <ResponsiveContainer height={400} width="100%">
-      <BarChart
-        data={props.data}
-        width={900}
-        height={300}
-        className={localStyles.barChart}
-      >
+      <BarChart data={props.data} width={900} height={300}>
         <ChartTooltip
-          labelClassName={styles.tooltipLabel}
-          wrapperClassName={styles.tooltipWrapper}
+          labelClassName={labelClass}
+          wrapperClassName={wrapperClass}
           cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
         />
         {stats.map(stat => (
@@ -235,21 +213,16 @@ const StatsBarChart = (props: { data: Stat[] }) => {
 };
 
 const StatsLineChart = (props: { data: Stat[] }) => {
-  const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
-    props.data,
-  );
-  const localStyles = useStyles();
+  const { isDark, stats, toggleStat, isDisabled } = useChartState(props.data);
+  const theme = useTheme();
+  const labelClass = emotionCss(css(styles.tooltipLabel(theme)));
+  const wrapperClass = emotionCss(css(styles.tooltipWrapper(theme)));
   return (
     <ResponsiveContainer height={400} width="100%">
-      <LineChart
-        data={props.data}
-        width={900}
-        height={300}
-        className={localStyles.lineChart}
-      >
+      <LineChart data={props.data} width={900} height={300}>
         <ChartTooltip
-          labelClassName={styles.tooltipLabel}
-          wrapperClassName={styles.tooltipWrapper}
+          labelClassName={labelClass}
+          wrapperClassName={wrapperClass}
           cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
         />
         {stats.map(stat => (

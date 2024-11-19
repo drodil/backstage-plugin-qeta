@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -18,14 +17,15 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { DeleteModal } from '../DeleteModal';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
+import { VoteButtonContainer } from '../Styled/VoteButtonContainer';
+import { CardActionContainer } from '../Styled/CardActionContainer';
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;
   question: PostResponse;
 }) => {
   const { answer, question } = props;
-  const styles = useStyles();
 
   const [editMode, setEditMode] = React.useState(false);
   const [answerEntity, setAnswerEntity] = React.useState(answer);
@@ -52,9 +52,18 @@ export const AnswerCard = (props: {
     <>
       <Card
         id={`answer_${answer.id}`}
-        className={`qetaAnswerCard ${styles.questionCard} ${
-          highlightedAnswer ? styles.highlight : ''
-        }`}
+        sx={theme => ({
+          marginTop: 3,
+          '@keyframes highlight': {
+            '0%': {
+              boxShadow: `0px 0px 0px 3px ${theme.palette.secondary.light}`,
+            },
+            '100%': {
+              boxShadow: 'none',
+            },
+          },
+          animation: highlightedAnswer ? 'highlight 5s' : 'none',
+        })}
       >
         <CardContent>
           <Grid
@@ -64,12 +73,16 @@ export const AnswerCard = (props: {
             style={{ flexWrap: 'nowrap' }}
           >
             <Grid item justifyContent="center">
-              <div className={styles.questionCardVote}>
+              <VoteButtonContainer>
                 <VoteButtons entity={answerEntity} post={question} />
                 <LinkButton entity={answerEntity} />
-              </div>
+              </VoteButtonContainer>
             </Grid>
-            <Grid item className={styles.answerCardContent} marginLeft={1}>
+            <Grid
+              item
+              marginLeft={1}
+              sx={{ display: 'inline-block', width: 'calc(100% - 70px)' }}
+            >
               {editMode ? (
                 <AnswerForm
                   post={question}
@@ -78,12 +91,9 @@ export const AnswerCard = (props: {
                 />
               ) : (
                 <>
-                  <Grid item>
+                  <Grid item sx={{ minHeight: '3rem', paddingTop: 1 }}>
                     <Typography variant="body1" gutterBottom>
-                      <MarkdownRenderer
-                        className="qetaAndwerCardAnswerContent"
-                        content={answerEntity.content}
-                      />
+                      <MarkdownRenderer content={answerEntity.content} />
                     </Typography>
                   </Grid>
                   <Grid
@@ -92,15 +102,13 @@ export const AnswerCard = (props: {
                     spacing={1}
                     justifyContent="space-between"
                     alignItems="flex-end"
-                    className={styles.questionCardMetadata}
+                    sx={{ marginTop: 3 }}
                   >
                     <Grid item style={{ alignSelf: 'flex-end' }}>
                       {(answerEntity.own ||
                         answerEntity.canDelete ||
                         answerEntity.canEdit) && (
-                        <Box
-                          className={`qetaAnswerCardActions ${styles.questionCardActions}`}
-                        >
+                        <CardActionContainer>
                           {!answerEntity.correct &&
                             (answerEntity.own || answerEntity.canDelete) && (
                               <>
@@ -109,8 +117,8 @@ export const AnswerCard = (props: {
                                   size="small"
                                   color="secondary"
                                   onClick={handleDeleteModalOpen}
-                                  className={`${styles.marginRight} qetaAnswerCardDeleteBtn`}
                                   startIcon={<DeleteIcon />}
+                                  sx={{ marginRight: 1 }}
                                 >
                                   {t('deleteModal.deleteButton')}
                                 </Button>
@@ -133,10 +141,10 @@ export const AnswerCard = (props: {
                               {t('questionPage.editButton')}
                             </Button>
                           )}
-                        </Box>
+                        </CardActionContainer>
                       )}
                     </Grid>
-                    <Grid item xs={3} className={styles.noPadding}>
+                    <Grid item xs={3} sx={{ padding: 0 }}>
                       <AuthorBox entity={answerEntity} />
                     </Grid>
                   </Grid>

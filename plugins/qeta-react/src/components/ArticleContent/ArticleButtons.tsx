@@ -5,7 +5,6 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
 import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { LinkButton } from '../Buttons/LinkButton';
@@ -15,35 +14,21 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { DeleteModal } from '../DeleteModal';
 import EditIcon from '@mui/icons-material/Edit';
 import { useVoting } from '../../hooks/useVoting';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
+import { styled } from '@mui/system';
 
-export type QetaArticleButtonsClassKey = 'container' | 'scoreText';
-
-export const useLocalStyles = makeStyles(
-  theme => {
-    return {
-      container: {
-        width: '100%',
-        paddingTop: '0.5rem',
-        paddingBottom: '0.5rem',
-        borderTop: `1px solid ${theme.palette.background.paper}`,
-        borderBottom: `1px solid ${theme.palette.background.paper}`,
-      },
-      scoreText: {
-        marginLeft: '0.5rem',
-        userSelect: 'none',
-      },
-    };
-  },
-  { name: 'QetaArticleButtons' },
-);
+const ArticleButtonContainer = styled('div')(({ theme }) => ({
+  width: '100%',
+  paddingTop: '0.5rem',
+  paddingBottom: '0.5rem',
+  borderTop: `1px solid ${theme.palette.background.paper}`,
+  borderBottom: `1px solid ${theme.palette.background.paper}`,
+}));
 
 export const ArticleButtons = (props: { post: PostResponse }) => {
   const { post } = props;
   const { voteUpTooltip, ownVote, voteUp, score, voteDownTooltip, voteDown } =
     useVoting(post);
-  const styles = useLocalStyles();
-  const classes = useStyles();
   const { t } = useTranslation();
   const editArticleRoute = useRouteRef(editArticleRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
@@ -53,7 +38,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
   const own = props.post.own ?? false;
 
   return (
-    <div className={styles.container}>
+    <ArticleButtonContainer>
       <Grid container justifyContent="space-between">
         <Grid item>
           <Tooltip title={voteUpTooltip}>
@@ -87,24 +72,23 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
             </span>
           </Tooltip>
           <Tooltip title={t('common.score', { score: score.toString(10) })}>
-            <Typography className={styles.scoreText} display="inline">
+            <Typography
+              sx={{ marginLeft: '0.5rem', userSelect: 'none' }}
+              display="inline"
+            >
               {score}
             </Typography>
           </Tooltip>
         </Grid>
         <Grid item>
           <FavoriteButton entity={post} />
-          <LinkButton entity={post} className={classes.marginLeft} />
+          <LinkButton entity={post} />
           {(post.canEdit || post.canDelete) && (
             <>
               {post.canDelete && (
                 <>
                   <Tooltip title={t('articlePage.deleteButton')}>
-                    <IconButton
-                      size="small"
-                      onClick={handleDeleteModalOpen}
-                      className={classes.marginLeft}
-                    >
+                    <IconButton size="small" onClick={handleDeleteModalOpen}>
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>
@@ -119,7 +103,6 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
                 <Tooltip title={t('articlePage.editButton')}>
                   <IconButton
                     size="small"
-                    className={classes.marginLeft}
                     href={editArticleRoute({
                       id: post.id.toString(10),
                     })}
@@ -132,6 +115,6 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
           )}
         </Grid>
       </Grid>
-    </div>
+    </ArticleButtonContainer>
   );
 };

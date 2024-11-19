@@ -14,8 +14,9 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { questionRouteRef, userRouteRef } from '../../routes';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
+import { VoteButtonContainer } from '../Styled/VoteButtonContainer';
 
 export interface AnswerListItemProps {
   answer: AnswerResponse;
@@ -27,7 +28,6 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
 
   const questionRoute = useRouteRef(questionRouteRef);
   const userRoute = useRouteRef(userRouteRef);
-  const styles = useStyles();
   const { name, initials, user } = useEntityAuthor(answer);
   const { t } = useTranslation();
 
@@ -42,18 +42,13 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
   };
 
   return (
-    <Grid
-      container
-      spacing={2}
-      className={styles.questionListItem}
-      justifyContent="flex-start"
-    >
+    <Grid container spacing={2} justifyContent="flex-start">
       <Grid item justifyContent="center" style={{ paddingTop: '0px' }}>
-        <div className={styles.questionCardVote}>
+        <VoteButtonContainer>
           <VoteButtons entity={answer} />
-        </div>
+        </VoteButtonContainer>
       </Grid>
-      <Grid item className={styles.questionListItemContent}>
+      <Grid item>
         <Grid container>
           <Grid item xs={12}>
             <Typography variant="h5" component="div">
@@ -79,14 +74,9 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
             </Typography>
             <Grid item xs={12}>
               {answer.post && <TagsAndEntities entity={answer.post} />}
-              <Typography
-                variant="caption"
-                display="inline"
-                className={`${styles.questionListItemAuthor} qetaAnswerListItemAuthor`}
-              >
+              <Typography variant="caption" display="inline">
                 <Avatar
                   src={user?.spec?.profile?.picture}
-                  className={styles.questionListItemAvatar}
                   alt={name}
                   variant="rounded"
                 >

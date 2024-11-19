@@ -101,12 +101,7 @@ export const PostList = (props: {
           <Grid container spacing={2} style={{ paddingTop: '1rem' }}>
             {response.posts.map((post, i) => {
               return (
-                <Grid
-                  item
-                  xs={12}
-                  key={post.id}
-                  style={{ paddingBottom: '1rem' }}
-                >
+                <Grid item xs={12} key={post.id}>
                   <PostListItem post={post} entity={entity} type={type} />
                   {i !== response.total - 1 && <Divider />}
                 </Grid>

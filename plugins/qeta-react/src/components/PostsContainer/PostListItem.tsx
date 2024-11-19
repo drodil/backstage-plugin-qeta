@@ -15,16 +15,16 @@ import {
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef, userRouteRef } from '../../routes';
-import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip/RelativeTimeWithTooltip';
+import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { capitalize } from 'lodash';
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 import HelpOutlined from '@mui/icons-material/HelpOutlined';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
-import useTheme from '@mui/styles/useTheme';
+import { VoteButtonContainer } from '../Styled/VoteButtonContainer';
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -53,8 +53,6 @@ export const PostListItem = (props: PostListItemProps) => {
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
   const userRoute = useRouteRef(userRouteRef);
-  const theme = useTheme();
-  const styles = useStyles();
   const { name, initials, user } = useEntityAuthor(post);
 
   const route = post.type === 'question' ? questionRoute : articleRoute;
@@ -68,16 +66,16 @@ export const PostListItem = (props: PostListItemProps) => {
     <Grid
       container
       spacing={2}
-      className={styles.questionListItem}
       justifyContent="flex-start"
+      sx={{ padding: '0.7rem', paddingBottom: '1.0rem' }}
     >
       <Grid item justifyContent="center" style={{ paddingTop: '0px' }}>
-        <div className={styles.questionCardVote}>
+        <VoteButtonContainer>
           <VoteButtons entity={post} />
           <FavoriteButton entity={post} />
-        </div>
+        </VoteButtonContainer>
       </Grid>
-      <Grid item className={styles.questionListItemContent}>
+      <Grid item sx={{ display: 'inline-block', width: 'calc(100% - 80px)' }}>
         <Grid container>
           <Grid
             item
@@ -93,6 +91,7 @@ export const PostListItem = (props: PostListItemProps) => {
                 color="secondary"
                 size="small"
                 label={`${capitalize(post.type)}`}
+                sx={{ userSelect: 'none', marginBottom: 0 }}
                 icon={
                   post.type === 'question' ? (
                     <HelpOutlined />
@@ -106,21 +105,22 @@ export const PostListItem = (props: PostListItemProps) => {
               <Chip
                 variant="outlined"
                 size="small"
-                label={t('common.answers', {
-                  count: answersCount,
-                })}
-                style={{
+                sx={theme => ({
+                  userSelect: 'none',
                   borderColor: correctAnswer
                     ? theme.palette.success.main
                     : undefined,
-                  marginBottom: '0',
-                }}
+                  marginBottom: 0,
+                })}
+                label={t('common.answers', {
+                  count: answersCount,
+                })}
               />
             )}
             <Chip
               variant="outlined"
               size="small"
-              style={{ border: 'none', marginBottom: '0' }}
+              sx={{ userSelect: 'none', border: 'none', marginBottom: 0 }}
               label={t('common.viewsShort', {
                 count: views,
               })}
@@ -149,13 +149,19 @@ export const PostListItem = (props: PostListItemProps) => {
             <Typography
               variant="caption"
               display="inline"
-              className={`${styles.questionListItemAuthor} qetaPostListItemAuthor`}
+              style={{ display: 'inline', float: 'right' }}
             >
               <Avatar
                 src={user?.spec?.profile?.picture}
-                className={styles.questionListItemAvatar}
                 alt={name}
                 variant="rounded"
+                sx={{
+                  display: 'inline-flex !important',
+                  marginRight: '0.25rem',
+                  fontSize: '1rem',
+                  maxWidth: '1rem',
+                  maxHeight: '1rem',
+                }}
               >
                 {initials}
               </Avatar>

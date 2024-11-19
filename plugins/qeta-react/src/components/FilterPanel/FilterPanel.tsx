@@ -14,7 +14,7 @@ import Checkbox from '@mui/material/Checkbox';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { DateRangeFilter } from './DateRangeFilter';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { TagInput } from '../PostForm/TagInput';
 import {
@@ -122,7 +122,6 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     showTagFilter = true,
     type,
   } = props;
-  const styles = useStyles();
   const { t } = useTranslation();
   const [entities, setEntities] = React.useState<Entity[] | undefined>(
     undefined,
@@ -194,7 +193,14 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const collectionFilters = isCollectionFilters(filters);
 
   return (
-    <Box className={`qetaFilterPanel ${styles.filterPanel}`} marginTop={2}>
+    <Box
+      marginTop={2}
+      sx={theme => ({
+        border: `1px solid ${theme.palette.action.selected}`,
+        borderRadius: 1,
+        padding: 3,
+      })}
+    >
       <Grid
         container
         spacing={4}

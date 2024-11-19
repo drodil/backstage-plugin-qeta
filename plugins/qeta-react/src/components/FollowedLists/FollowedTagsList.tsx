@@ -5,10 +5,9 @@ import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import React from 'react';
 import { TagChip } from '../TagsAndEntities/TagChip';
-import { useStyles, useTagsFollow, useTranslation } from '../../hooks';
+import { useTagsFollow, useTranslation } from '../../hooks';
 
 export const FollowedTagsList = () => {
-  const classes = useStyles();
   const tags = useTagsFollow();
   const { t } = useTranslation();
 
@@ -17,14 +16,10 @@ export const FollowedTagsList = () => {
   }
 
   return (
-    <Box
-      className={`qetaQuestionHighlightList ${classes.postHighlightListContainer}`}
-      display={{ md: 'none', lg: 'block' }}
-    >
+    <Box display={{ md: 'none', lg: 'block' }}>
       <List
         component="nav"
         aria-labelledby="nested-list-subheader"
-        className={`qetaQuestionHighlightListList ${classes.postHighlightList}`}
         subheader={
           <ListSubheader
             disableSticky

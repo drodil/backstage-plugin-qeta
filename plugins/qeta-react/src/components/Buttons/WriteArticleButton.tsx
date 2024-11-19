@@ -5,7 +5,8 @@ import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { writeRouteRef } from '../../routes';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
+import Box from '@mui/material/Box';
 
 export const WriteArticleButton = (props: {
   entity?: string;
@@ -15,7 +16,6 @@ export const WriteArticleButton = (props: {
   const { entity, entityPage, tags } = props;
   const writeRoute = useRouteRef(writeRouteRef);
   const { t } = useTranslation();
-  const styles = useStyles();
 
   const params = new URLSearchParams();
   if (entity) {
@@ -30,18 +30,21 @@ export const WriteArticleButton = (props: {
 
   return (
     <RequirePermission permission={qetaCreatePostPermission} errorPage={<></>}>
-      <LinkButton
-        size="small"
-        variant="contained"
-        to={
-          entity || tags ? `${writeRoute()}?${params.toString()}` : writeRoute()
-        }
-        color="primary"
-        className={`${styles.marginLeft} qetaWriteArticleBtn`}
-        startIcon={<CreateIcon />}
-      >
-        {t('writeArticleButton.title')}
-      </LinkButton>
+      <Box sx={{ marginLeft: 2 }}>
+        <LinkButton
+          size="small"
+          variant="contained"
+          to={
+            entity || tags
+              ? `${writeRoute()}?${params.toString()}`
+              : writeRoute()
+          }
+          color="primary"
+          startIcon={<CreateIcon />}
+        >
+          {t('writeArticleButton.title')}
+        </LinkButton>
+      </Box>
     </RequirePermission>
   );
 };

@@ -17,13 +17,14 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { useTranslation } from '../../hooks';
 import AddCommentIcon from '@mui/icons-material/AddComment';
+import { SxProps } from '@mui/system';
 
 export const CommentSection = (props: {
   onCommentPost: (question: PostResponse, answer?: AnswerResponse) => void;
   onCommentDelete: (question: PostResponse, answer?: AnswerResponse) => void;
   post: PostResponse;
   answer?: AnswerResponse;
-  className?: string;
+  sx?: SxProps;
 }) => {
   const { answer, post, onCommentPost, onCommentDelete } = props;
   const analytics = useAnalytics();
@@ -64,7 +65,7 @@ export const CommentSection = (props: {
   }, [edited]);
 
   return (
-    <Box marginLeft={9} className={`${props.className} qetaCommentSection`}>
+    <Box marginLeft={8} sx={{ marginTop: 1, ...props.sx }}>
       <CommentList
         question={post}
         answer={answer}
@@ -79,7 +80,6 @@ export const CommentSection = (props: {
             <Grid item>
               <Button
                 size="small"
-                variant="outlined"
                 className="qetaAddCommentBtn"
                 startIcon={<AddCommentIcon />}
                 onClick={() => setFormVisible(true)}
@@ -126,7 +126,6 @@ export const CommentSection = (props: {
                   size="small"
                   className="qetaCommentBtn"
                   type="submit"
-                  color="primary"
                   disabled={posting}
                 >
                   {t('commentSection.post')}

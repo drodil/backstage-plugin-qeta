@@ -4,12 +4,11 @@ import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import React from 'react';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
 import { CollectionChip } from '../TagsAndEntities/CollectionChip';
 
 export const FollowedCollectionsList = () => {
-  const classes = useStyles();
   const collections = useCollectionsFollow();
   const { t } = useTranslation();
 
@@ -18,14 +17,10 @@ export const FollowedCollectionsList = () => {
   }
 
   return (
-    <Box
-      className={`qetaQuestionHighlightList ${classes.postHighlightListContainer}`}
-      display={{ md: 'none', lg: 'block' }}
-    >
+    <Box display={{ md: 'none', lg: 'block' }}>
       <List
         component="nav"
         aria-labelledby="nested-list-subheader"
-        className={`qetaQuestionHighlightListList ${classes.postHighlightList}`}
         subheader={
           <ListSubheader
             disableSticky

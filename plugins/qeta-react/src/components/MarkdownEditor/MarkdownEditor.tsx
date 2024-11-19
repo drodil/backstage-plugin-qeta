@@ -10,98 +10,95 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { imageUpload } from '../../utils/utils';
-import makeStyles from '@mui/styles/makeStyles';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
 
-export type QetaMarkdownEditorClassKey =
-  | 'markdownEditor'
-  | 'markdownEditorError'
-  | 'markdownPreview'
-  | 'suggestionsDropdown';
+import { css, Theme, useTheme } from '@mui/material/styles';
+import { css as emotionCss } from '@emotion/css';
 
-export const useStyles = makeStyles(
-  theme => {
-    return {
-      markdownEditor: {
-        backgroundColor: 'initial',
-        color: theme.palette.text.primary,
-        border: `1px solid ${theme.palette.action.disabled}`,
-        borderRadius: theme.shape.borderRadius,
-        '&:hover': {
-          borderColor: theme.palette.action.active,
-        },
-        '&:focus-within': {
-          borderColor: theme.palette.primary.main,
-        },
-        '& .mde-header': {
-          backgroundColor: 'initial',
-          color: theme.palette.text.primary,
-          borderBottom: `1px solid ${theme.palette.action.selected}`,
-          '& .mde-tabs button, .mde-header-item > button': {
-            color: `${theme.palette.text.primary} !important`,
-          },
-        },
-        '& .mde-preview-content': {
-          padding: '10px',
-        },
-        '& .mde-text, .mde-preview': {
-          fontSize: theme.typography.body1.fontSize,
-          fontFamily: theme.typography.body1.fontFamily,
-          lineHeight: theme.typography.body1.lineHeight,
-        },
-        '& .mde-text': {
-          backgroundColor: 'initial',
-          color: theme.palette.text.primary,
-          outline: 'none',
-        },
-        '& .image-tip': {
-          color: theme.palette.text.primary,
-          backgroundColor: 'initial',
-        },
+const styles = {
+  tooltipLabel: (theme: Theme) => ({
+    color: theme.palette.text.primary,
+  }),
+  tooltipWrapper: (theme: Theme) => ({
+    backgroundColor: `${theme.palette.background.default} !important`,
+    border: 'none !important',
+  }),
+  markdownEditor: (theme: Theme) => ({
+    backgroundColor: 'initial',
+    color: theme.palette.text.primary,
+    border: `1px solid ${theme.palette.action.disabled}`,
+    borderRadius: theme.shape.borderRadius,
+    '&:hover': {
+      borderColor: theme.palette.action.active,
+    },
+    '&:focus-within': {
+      borderColor: theme.palette.primary.main,
+    },
+    '& .mde-header': {
+      backgroundColor: 'initial',
+      color: theme.palette.text.primary,
+      borderBottom: `1px solid ${theme.palette.action.selected}`,
+      '& .mde-tabs button, .mde-header-item > button': {
+        color: `${theme.palette.text.primary} !important`,
       },
-      markdownEditorError: {
-        border: `1px solid ${theme.palette.error.main} !important`,
-      },
-      markdownPreview: {
-        '& *': {
-          wordBreak: 'break-word',
-        },
-        '&.inline': {
-          display: 'inline-block',
-        },
-        '& > :first-child': {
-          marginTop: '0px !important',
-        },
-        '& > :last-child': {
-          marginBottom: '0px !important',
-        },
-      },
-      suggestionsDropdown: {
-        position: 'absolute',
-        minWidth: '180px',
-        margin: '20px 0 0',
-        listStyle: 'none',
-        padding: '0',
-        cursor: 'pointer',
-        background: theme.palette.background.paper,
-        border: `1px solid ${theme.palette.divider}`,
-        borderRadius: theme.shape.borderRadius,
-        '& li': {
-          width: '100%',
-          padding: '0.5rem',
-          '&:hover': {
-            backgroundColor: theme.palette.action.hover,
-          },
-        },
-      },
-      hide: {
-        display: 'none',
-      },
-    };
+    },
+    '& .mde-preview-content': {
+      padding: '10px',
+    },
+    '& .mde-text, .mde-preview': {
+      fontSize: theme.typography.body1.fontSize,
+      fontFamily: theme.typography.body1.fontFamily,
+      lineHeight: theme.typography.body1.lineHeight,
+    },
+    '& .mde-text': {
+      backgroundColor: 'initial',
+      color: theme.palette.text.primary,
+      outline: 'none',
+    },
+    '& .image-tip': {
+      color: theme.palette.text.primary,
+      backgroundColor: 'initial',
+    },
+  }),
+  markdownEditorError: (theme: Theme) => ({
+    border: `1px solid ${theme.palette.error.main} !important`,
+  }),
+  markdownPreview: {
+    '& *': {
+      wordBreak: 'break-word',
+    },
+    '&.inline': {
+      display: 'inline-block',
+    },
+    '& > :first-child': {
+      marginTop: '0px !important',
+    },
+    '& > :last-child': {
+      marginBottom: '0px !important',
+    },
   },
-  { name: 'QetaMarkdownEditor' },
-);
+  suggestionsDropdown: (theme: Theme) => ({
+    minWidth: '180px',
+    margin: '20px 0 0',
+    listStyle: 'none',
+    padding: '0',
+    cursor: 'pointer',
+    background: theme.palette.background.paper,
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: theme.shape.borderRadius,
+    '& li': {
+      width: '100%',
+      padding: '0.5rem',
+      '&:hover': {
+        backgroundColor: theme.palette.action.hover,
+      },
+    },
+  }),
+  hide: {
+    display: 'none',
+  },
+};
 
 export type MarkdownEditorProps = {
   config?: Config;
@@ -141,7 +138,6 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
   const [selectedTab, setSelectedTab] = React.useState<'write' | 'preview'>(
     'write',
   );
-  const styles = useStyles();
   const errorApi = useApi(errorApiRef);
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -186,18 +182,23 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     disableAttachments ||
     false;
 
+  const theme = useTheme();
+  const markdownEditorClass = emotionCss(css(styles.markdownEditor(theme)));
+  const markdownEditorErrorClass = emotionCss(
+    css(styles.markdownEditorError(theme)),
+  );
+  const hideClass = emotionCss(css(styles.hide));
+  const suggestionsDropdownClass = emotionCss(
+    css({ position: 'absolute', ...styles.suggestionsDropdown(theme) }),
+  );
+
   return (
     <ReactMde
       classes={{
-        reactMde: `qetaMarkdownEditorEdit ${styles.markdownEditor}`,
-        textArea: error
-          ? `qetaMarkdownEditorError ${styles.markdownEditorError}`
-          : undefined,
-        preview: 'qetaMarkdownEditorPreview',
-        toolbar: `${
-          disableToolbar ? styles.hide : ''
-        } qetaMarkdownEditorToolbar`,
-        suggestionsDropdown: styles.suggestionsDropdown,
+        reactMde: markdownEditorClass,
+        textArea: error ? markdownEditorErrorClass : undefined,
+        toolbar: disableToolbar ? hideClass : undefined,
+        suggestionsDropdown: suggestionsDropdownClass,
       }}
       disablePreview={disablePreview}
       value={value}
@@ -218,10 +219,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
       suggestionsAutoplace
       generateMarkdownPreview={content =>
         Promise.resolve(
-          <MarkdownRenderer
-            content={content}
-            className={`qetaMarkdownEditorPreview ${styles.markdownPreview}`}
-          />,
+          <MarkdownRenderer content={content} sx={styles.markdownPreview} />,
         )
       }
       paste={

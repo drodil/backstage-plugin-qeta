@@ -33,7 +33,6 @@ import {
   tagsRouteRef,
   userRouteRef,
   usersRouteRef,
-  useStyles,
   writeRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { QuestionsPage } from '../QuestionsPage/QuestionsPage';
@@ -70,7 +69,6 @@ export const QetaPage = (props?: Props) => {
     headerTypeLink,
     introElement,
   } = props ?? {};
-  const styles = useStyles();
 
   return (
     <Page themeId={themeId}>
@@ -87,7 +85,7 @@ export const QetaPage = (props?: Props) => {
         {introElement}
         <Container maxWidth="xl">
           <Grid container spacing={4} justifyContent="flex-start">
-            <Grid item md={1} lg={2} className={styles.noPadding}>
+            <Grid item md={1} lg={2} sx={{ padding: 0 }}>
               <LeftMenu />
             </Grid>
             <Grid

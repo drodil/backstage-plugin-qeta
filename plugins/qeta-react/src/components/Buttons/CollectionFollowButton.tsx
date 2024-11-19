@@ -3,13 +3,12 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
 
 export const CollectionFollowButton = (props: { collection: Collection }) => {
   const { collection } = props;
-  const styles = useStyles();
   const { t } = useTranslation();
   const collections = useCollectionsFollow();
   if (collections.loading) {
@@ -18,8 +17,8 @@ export const CollectionFollowButton = (props: { collection: Collection }) => {
   return (
     <Tooltip title={t('collectionButton.tooltip')}>
       <IconButton
+        sx={{ marginLeft: 2 }}
         size="small"
-        className={`${styles.marginLeft} qetaFollowCollectionBtn`}
         color={
           collections.isFollowingCollection(collection)
             ? 'secondary'

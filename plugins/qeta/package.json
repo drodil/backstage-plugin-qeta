@@ -56,10 +56,13 @@
     "@backstage/plugin-signals-react": "backstage:^",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",
     "@drodil/backstage-plugin-qeta-react": "workspace:^",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.15.14",
     "@mui/lab": "^5.0.0-alpha.169",
     "@mui/material": "^5.16.7",
     "@mui/styles": "^5.16.7",
+    "@mui/system": "^5.16.7",
     "react-use": "^17.4.0"
   },
   "peerDependencies": {

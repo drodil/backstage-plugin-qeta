@@ -5,7 +5,8 @@ import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef } from '../../routes';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
+import Box from '@mui/material/Box';
 
 export const AskQuestionButton = (props: {
   entity?: string;
@@ -15,7 +16,6 @@ export const AskQuestionButton = (props: {
   const { entity, entityPage, tags } = props;
   const askRoute = useRouteRef(askRouteRef);
   const { t } = useTranslation();
-  const styles = useStyles();
 
   const params = new URLSearchParams();
   if (entity) {
@@ -30,16 +30,19 @@ export const AskQuestionButton = (props: {
 
   return (
     <RequirePermission permission={qetaCreatePostPermission} errorPage={<></>}>
-      <LinkButton
-        variant="contained"
-        size="small"
-        to={entity || tags ? `${askRoute()}?${params.toString()}` : askRoute()}
-        color="primary"
-        className={`${styles.marginLeft} qetaAskQuestionBtn`}
-        startIcon={<HelpOutline />}
-      >
-        {t('askQuestionButton.title')}
-      </LinkButton>
+      <Box sx={{ marginLeft: 2 }}>
+        <LinkButton
+          variant="contained"
+          size="small"
+          to={
+            entity || tags ? `${askRoute()}?${params.toString()}` : askRoute()
+          }
+          color="primary"
+          startIcon={<HelpOutline />}
+        >
+          {t('askQuestionButton.title')}
+        </LinkButton>
+      </Box>
     </RequirePermission>
   );
 };

@@ -5,7 +5,6 @@ import ListItem from '@mui/material/ListItem';
 import SvgIcon from '@mui/material/SvgIcon';
 import MenuList from '@mui/material/MenuList';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import makeStyles from '@mui/styles/makeStyles';
 import AccountBox from '@mui/icons-material/AccountBox';
 import LoyaltyOutlined from '@mui/icons-material/LoyaltyOutlined';
 import StarIcon from '@mui/icons-material/Star';
@@ -34,54 +33,11 @@ import {
 } from '../../routes';
 import { TrophyIcon } from '../TopRankingUsersCard';
 import { useIdentityApi, useIsModerator, useTranslation } from '../../hooks';
+import { styled } from '@mui/system';
 
-export type QetaLeftMenuClassKey =
-  | 'leftMenu'
-  | 'inPopup'
-  | 'outsidePopup'
-  | 'selectedMenuItem'
-  | 'nonSelectedMenuItem'
-  | 'menuIcon';
-
-export const useStyles = makeStyles(
-  theme => {
-    return {
-      leftMenu: {
-        top: '0',
-        width: '165px',
-        paddingTop: '2rem',
-      },
-      inPopup: {
-        marginRight: 0,
-        padding: '0.5rem',
-      },
-      outsidePopup: {
-        marginRight: theme.spacing(5),
-        marginLeft: theme.spacing(1),
-        float: 'right',
-        position: 'sticky',
-      },
-      selectedMenuItem: {
-        color: theme.palette.primary.contrastText,
-        backgroundColor: theme.palette.primary.light,
-        borderRadius: theme.shape.borderRadius,
-        '&:hover': {
-          backgroundColor: theme.palette.primary.dark,
-        },
-        '& svg': {
-          color: theme.palette.primary.contrastText,
-        },
-      },
-      nonSelectedMenuItem: {
-        backgroundColor: 'initial',
-      },
-      menuIcon: {
-        minWidth: '26px',
-      },
-    };
-  },
-  { name: 'QetaLeftMenu' },
-);
+const LeftMenuItem = styled(ListItemIcon)({
+  minWidth: '26px !important',
+});
 
 export const LeftMenu = (props: {
   onKeyDown?: (event: React.KeyboardEvent) => void;
@@ -102,7 +58,6 @@ export const LeftMenu = (props: {
   const entitiesRoute = useRouteRef(entitiesRouteRef);
   const usersRoute = useRouteRef(usersRouteRef);
   const moderatorRoute = useRouteRef(moderatorRouteRef);
-  const styles = useStyles();
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -129,11 +84,21 @@ export const LeftMenu = (props: {
             props.onClick(e);
           }
         }}
-        className={
-          route === location.pathname
-            ? styles.selectedMenuItem
-            : styles.nonSelectedMenuItem
-        }
+        sx={{
+          ...(route === location.pathname
+            ? {
+                color: 'primary.contrastText',
+                backgroundColor: 'primary.light',
+                borderRadius: 1,
+                '&:hover': {
+                  backgroundColor: 'primary.dark',
+                },
+                '& svg': {
+                  color: 'primary.contrastText',
+                },
+              }
+            : { backgroundColor: 'initial', borderRadius: 1 }),
+        }}
       >
         {children}
       </MenuItem>
@@ -145,9 +110,19 @@ export const LeftMenu = (props: {
   return (
     <MenuList
       id="left-menu"
-      className={`${styles.leftMenu} ${
-        props.inPopup ? styles.inPopup : styles.outsidePopup
-      }`}
+      sx={{
+        top: '0',
+        width: '165px',
+        paddingTop: '2rem',
+        ...(props.inPopup
+          ? { marginRight: 0, padding: '0.5rem' }
+          : {
+              marginRight: 5,
+              marginLeft: 1,
+              float: 'right',
+              position: 'sticky',
+            }),
+      }}
       onKeyDown={props.onKeyDown}
       autoFocusItem={props.autoFocusItem}
     >
@@ -159,71 +134,71 @@ export const LeftMenu = (props: {
         }
       >
         <CustomMenuItem route={rootRoute()}>
-          <ListItemIcon className={styles.menuIcon}>
+          <LeftMenuItem>
             <Home fontSize="small" />
-          </ListItemIcon>
+          </LeftMenuItem>
           {t('leftMenu.home')}
         </CustomMenuItem>
         <ListItem>
           <Typography variant="subtitle2">{t('leftMenu.content')}</Typography>
         </ListItem>
         <CustomMenuItem route={questionsRoute()}>
-          <ListItemIcon className={styles.menuIcon}>
+          <LeftMenuItem>
             <HelpOutlined fontSize="small" />
-          </ListItemIcon>
+          </LeftMenuItem>
           {t('leftMenu.questions')}
         </CustomMenuItem>
         <CustomMenuItem route={articlesRoute()}>
-          <ListItemIcon className={styles.menuIcon}>
+          <LeftMenuItem>
             <CollectionsBookmarkIcon fontSize="small" />
-          </ListItemIcon>
+          </LeftMenuItem>
           {t('leftMenu.articles')}
         </CustomMenuItem>
         <CustomMenuItem route={favoritesRoute()}>
-          <ListItemIcon className={styles.menuIcon}>
+          <LeftMenuItem>
             <StarIcon fontSize="small" />
-          </ListItemIcon>
+          </LeftMenuItem>
           {t('leftMenu.favoriteQuestions')}
         </CustomMenuItem>
         <CustomMenuItem route={entitiesRoute()}>
-          <ListItemIcon className={styles.menuIcon}>
+          <LeftMenuItem>
             <EntityIcon fontSize="small" />
-          </ListItemIcon>
+          </LeftMenuItem>
           {t('leftMenu.entities')}
         </CustomMenuItem>
         <CustomMenuItem route={tagsRoute()}>
-          <ListItemIcon className={styles.menuIcon}>
+          <LeftMenuItem>
             <LoyaltyOutlined fontSize="small" />
-          </ListItemIcon>
+          </LeftMenuItem>
           {t('leftMenu.tags')}
         </CustomMenuItem>
         <ListItem>
           <Typography variant="subtitle2">{t('leftMenu.community')}</Typography>
         </ListItem>
         <CustomMenuItem route={collectionsRoute()}>
-          <ListItemIcon className={styles.menuIcon}>
+          <LeftMenuItem>
             <PlaylistPlay fontSize="small" />
-          </ListItemIcon>
+          </LeftMenuItem>
           {t('leftMenu.collections')}
         </CustomMenuItem>
         <CustomMenuItem route={usersRoute()}>
-          <ListItemIcon className={styles.menuIcon}>
+          <LeftMenuItem>
             <GroupIcon fontSize="small" />
-          </ListItemIcon>
+          </LeftMenuItem>
           {t('leftMenu.users')}
         </CustomMenuItem>
         {user && !loadingUser && !userError && (
           <CustomMenuItem route={`${userRoute()}/${user.userEntityRef}`}>
-            <ListItemIcon className={styles.menuIcon}>
+            <LeftMenuItem>
               <AccountBox fontSize="small" />
-            </ListItemIcon>
+            </LeftMenuItem>
             {t('leftMenu.profile')}
           </CustomMenuItem>
         )}
         <CustomMenuItem route={statisticsRoute()}>
-          <ListItemIcon className={styles.menuIcon}>
+          <LeftMenuItem>
             <TrophyIcon />
-          </ListItemIcon>
+          </LeftMenuItem>
           {t('leftMenu.statistics')}
         </CustomMenuItem>
         {isModerator && (
@@ -234,9 +209,9 @@ export const LeftMenu = (props: {
               </Typography>
             </ListItem>
             <CustomMenuItem route={moderatorRoute()}>
-              <ListItemIcon className={styles.menuIcon}>
+              <LeftMenuItem>
                 <SettingsIcon />
-              </ListItemIcon>
+              </LeftMenuItem>
               {t('leftMenu.moderate')}
             </CustomMenuItem>
           </>

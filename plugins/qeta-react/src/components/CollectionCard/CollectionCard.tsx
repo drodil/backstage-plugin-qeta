@@ -12,11 +12,10 @@ import { DeleteModal } from '../DeleteModal';
 import EditIcon from '@mui/icons-material/Edit';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionEditRouteRef } from '../../routes';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
 
 export const CollectionCard = (props: { collection: Collection }) => {
   const { collection } = props;
-  const styles = useStyles();
   const editCollectionRoute = useRouteRef(collectionEditRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
@@ -50,7 +49,6 @@ export const CollectionCard = (props: { collection: Collection }) => {
                   size="small"
                   color="secondary"
                   onClick={handleDeleteModalOpen}
-                  className={`${styles.marginRight} qetaCollectionCardDeleteBtn`}
                   startIcon={<DeleteIcon />}
                 >
                   {t('deleteModal.deleteButton')}
@@ -71,7 +69,6 @@ export const CollectionCard = (props: { collection: Collection }) => {
                   href={editCollectionRoute({
                     id: collection.id.toString(10),
                   })}
-                  className="qetaCollectionCardEditBtn"
                 >
                   {t('questionPage.editButton')}
                 </Button>

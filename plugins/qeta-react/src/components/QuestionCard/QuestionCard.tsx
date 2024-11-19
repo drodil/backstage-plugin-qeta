@@ -5,7 +5,6 @@ import {
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import React, { useEffect } from 'react';
@@ -22,11 +21,12 @@ import { LinkButton } from '../Buttons/LinkButton';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { editQuestionRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
+import { VoteButtonContainer } from '../Styled/VoteButtonContainer';
+import { CardActionContainer } from '../Styled/CardActionContainer';
 
 export const QuestionCard = (props: { question: PostResponse }) => {
   const { question } = props;
-  const styles = useStyles();
   const navigate = useNavigate();
   const editQuestionRoute = useRouteRef(editQuestionRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
@@ -54,10 +54,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
 
   return (
     <>
-      <Card
-        variant="outlined"
-        className={`qetaQuestionCard ${styles.questionCard}`}
-      >
+      <Card variant="outlined" sx={{ marginBottom: 1, position: 'relative' }}>
         <CardContent>
           <Grid
             container
@@ -66,14 +63,14 @@ export const QuestionCard = (props: { question: PostResponse }) => {
             style={{ flexWrap: 'nowrap' }}
           >
             <Grid item justifyContent="center">
-              <div className={styles.questionCardVote}>
+              <VoteButtonContainer>
                 <VoteButtons entity={questionEntity} />
                 <FavoriteButton entity={questionEntity} />
                 <LinkButton entity={questionEntity} />
-              </div>
+              </VoteButtonContainer>
             </Grid>
-            <Grid item className={styles.questionCardContent} marginLeft={1}>
-              <Grid item>
+            <Grid item marginLeft={1} sx={{ flexGrow: 1 }}>
+              <Grid item sx={{ minHeight: '5rem', paddingTop: 1 }}>
                 <Typography variant="body1" gutterBottom>
                   <MarkdownRenderer content={questionEntity.content} />
                 </Typography>
@@ -84,12 +81,12 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                 spacing={1}
                 justifyContent="space-between"
                 alignItems="flex-end"
-                className={styles.questionCardMetadata}
+                sx={{ marginTop: 3 }}
               >
                 <Grid item style={{ alignSelf: 'flex-end' }}>
                   <TagsAndEntities entity={questionEntity} />
                   {(question.canEdit || question.canDelete) && (
-                    <Box className={styles.questionCardActions}>
+                    <CardActionContainer>
                       {question.canDelete && (
                         <>
                           <Button
@@ -97,8 +94,8 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                             size="small"
                             color="secondary"
                             onClick={handleDeleteModalOpen}
-                            className={`${styles.marginRight} qetaQuestionCardDeleteBtn`}
                             startIcon={<DeleteIcon />}
+                            sx={{ marginRight: 1 }}
                           >
                             {t('deleteModal.deleteButton')}
                           </Button>
@@ -126,10 +123,10 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                           {t('questionPage.editButton')}
                         </Button>
                       )}
-                    </Box>
+                    </CardActionContainer>
                   )}
                 </Grid>
-                <Grid item xs={3} className={styles.noPadding}>
+                <Grid item xs={3}>
                   <AuthorBox entity={questionEntity} />
                 </Grid>
               </Grid>

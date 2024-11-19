@@ -17,7 +17,6 @@ import {
   RelativeTimeWithTooltip,
   UpdatedByLink,
   useQetaApi,
-  useStyles,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
 import {
@@ -32,7 +31,6 @@ import TextField from '@mui/material/TextField';
 
 export const QuestionPage = () => {
   const { id } = useParams();
-  const styles = useStyles();
   const { t } = useTranslation();
   const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
   const [answerSort, setAnswerSort] = React.useState<string>('default');
@@ -228,7 +226,7 @@ export const QuestionPage = () => {
           )}
         </Grid>
       </Box>
-      <Divider className={styles.questionDivider} />
+      <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
       {sortedAnswers.map(a => {
         return (
           <React.Fragment key={a.id}>
@@ -238,7 +236,7 @@ export const QuestionPage = () => {
           </React.Fragment>
         );
       })}
-      <Divider className={styles.questionDivider} />
+      <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
       <AnswerForm post={question} onPost={onAnswerPost} />
     </>
   );

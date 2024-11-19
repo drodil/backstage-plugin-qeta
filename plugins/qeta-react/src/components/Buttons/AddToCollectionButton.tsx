@@ -11,12 +11,11 @@ import RemoveCircle from '@mui/icons-material/RemoveCircle';
 import PlayListAddIcon from '@mui/icons-material/PlaylistAdd';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
-import { useQetaApi, useStyles, useTranslation } from '../../hooks';
+import { useQetaApi, useTranslation } from '../../hooks';
 
 export const AddToCollectionButton = (props: { post: PostResponse }) => {
   const { post } = props;
   const { t } = useTranslation();
-  const styles = useStyles();
   const { value: response, retry } = useQetaApi(api => {
     return api.getCollections();
   }, []);
@@ -54,8 +53,8 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
         variant="contained"
         size="small"
         onClick={handleClickOpen}
-        className={`${styles.marginLeft} qetaAddToCollectionBtn`}
         startIcon={<PlayListAddIcon />}
+        sx={{ marginLeft: 2 }}
       >
         {t('addToCollectionButton.title')}
       </Button>

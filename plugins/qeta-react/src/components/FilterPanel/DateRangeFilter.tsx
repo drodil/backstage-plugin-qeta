@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { formatDate } from '../../utils/utils';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
 import Grid from '@mui/material/Grid';
 
 export interface DateRangeFilterProps {
@@ -18,7 +18,6 @@ type DateRangeValidation = {
 
 export const DateRangeFilter = (props: DateRangeFilterProps) => {
   const { value, onChange } = props;
-  const styles = useStyles();
   const [dateRangeOption, setDateRangeOption] = useState<string | undefined>(
     value,
   );
@@ -67,7 +66,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
           select
           label={t('datePicker.range.label')}
           value={dateRangeOption || 'select'}
-          className={styles.dateFilter}
+          sx={{ minWidth: '200px', marginTop: 2, marginBottom: 2 }}
           onChange={e => {
             if (e.target.value !== 'custom') {
               onChange(e.target.value === 'select' ? '' : e.target.value);
@@ -94,7 +93,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
               id="from-date"
               type="date"
               value={fromDate}
-              className={styles.dateFilter}
+              sx={{ minWidth: '200px', marginTop: 2, marginBottom: 2 }}
               InputLabelProps={{ shrink: true }}
               error={!validation.isValid}
               onChange={e => {
@@ -112,7 +111,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
               id="to-date"
               type="date"
               value={toDate}
-              className={styles.dateFilter}
+              sx={{ minWidth: '200px', marginTop: 2, marginBottom: 2 }}
               InputLabelProps={{ shrink: true }}
               error={!validation.isValid}
               onChange={e => {

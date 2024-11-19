@@ -4,7 +4,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
 import Pagination from '@mui/material/Pagination';
 
 export const QetaPagination = (props: {
@@ -17,23 +17,23 @@ export const QetaPagination = (props: {
 }) => {
   const { handlePageChange, handlePageSizeChange, page, pageCount, tooltip } =
     props;
-  const styles = useStyles();
   const { t } = useTranslation();
   return (
     <Grid
       container
       spacing={0}
-      className={`qetaPostListPaginationGrid ${styles.questionListPagination}`}
       alignItems="center"
       justifyContent="center"
+      sx={{ marginTop: 4 }}
     >
       <Tooltip title={tooltip ?? t('pagination.defaultTooltip')} arrow>
         <FormControl variant="outlined">
           <Select
             value={props.pageSize}
             onChange={handlePageSizeChange}
-            className={`qetaPaginationSizeSelect ${styles.questionsPerPage}`}
-            inputProps={{ className: styles.questionsPerPageInput }}
+            variant="outlined"
+            size="small"
+            sx={{ marginRight: 2 }}
           >
             <MenuItem value={5}>5</MenuItem>
             <MenuItem value={10}>10</MenuItem>

@@ -9,7 +9,9 @@ import Skeleton from '@mui/material/Skeleton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
-import { useQetaApi, useStyles, useTranslation } from '../../hooks';
+import { useQetaApi, useTranslation } from '../../hooks';
+import ListItemButton from '@mui/material/ListItemButton';
+import { useNavigate } from 'react-router-dom';
 
 export const PostHighlightList = (props: {
   type: string;
@@ -32,8 +34,8 @@ export const PostHighlightList = (props: {
       }),
     [],
   );
-  const classes = useStyles();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
 
@@ -41,13 +43,17 @@ export const PostHighlightList = (props: {
 
   return (
     <Box
-      className={`qetaPostHighlightList ${classes.postHighlightListContainer}`}
       display={{ md: 'none', lg: 'block' }}
+      sx={{
+        width: '100%',
+        bgcolor: 'background.paper',
+        marginBottom: 2,
+        borderRadius: 1,
+      }}
     >
       <List
         component="nav"
         aria-labelledby="nested-list-subheader"
-        className={`qetaPostHighlightListList ${classes.postHighlightList}`}
         subheader={
           <ListSubheader
             disableSticky
@@ -86,15 +92,13 @@ export const PostHighlightList = (props: {
             return (
               <React.Fragment key={q.id}>
                 <Divider />
-                <ListItem
-                  className="qetaPostHighlightListListItem"
-                  button
+                <ListItemButton
                   dense
                   component="a"
-                  href={route({ id: q.id.toString(10) })}
+                  onClick={() => navigate(route({ id: q.id.toString(10) }))}
                 >
                   <ListItemText>{q.title}</ListItemText>
-                </ListItem>
+                </ListItemButton>
               </React.Fragment>
             );
           })}

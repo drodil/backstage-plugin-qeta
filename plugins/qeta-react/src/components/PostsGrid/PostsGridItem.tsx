@@ -23,13 +23,14 @@ import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { Link } from '@backstage/core-components';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { qetaApiRef } from '../../api';
 import VerticalAlignTopIcon from '@mui/icons-material/VerticalAlignTop';
 import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import Stack from '@mui/material/Stack';
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -57,7 +58,6 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
   const userRoute = useRouteRef(userRouteRef);
-  const styles = useStyles();
   const { name, initials, user } = useEntityAuthor(post);
   const navigate = useNavigate();
 
@@ -107,9 +107,15 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
           <Typography variant="caption">
             <Avatar
               src={user?.spec?.profile?.picture}
-              className={styles.questionListItemAvatar}
               alt={name}
               variant="rounded"
+              sx={{
+                display: 'inline-flex !important',
+                marginRight: '0.25rem',
+                fontSize: '1rem',
+                maxWidth: '1rem',
+                maxHeight: '1rem',
+              }}
             >
               {initials}
             </Avatar>
@@ -126,7 +132,9 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
           </Typography>
         </Box>
         {allowRanking && (
-          <Box
+          <Stack
+            direction="row"
+            spacing={0}
             style={{
               paddingRight: '0.2rem',
               paddingTop: '0.5rem',
@@ -153,7 +161,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
                 <VerticalAlignBottomIcon />
               </IconButton>
             </Tooltip>
-          </Box>
+          </Stack>
         )}
       </CardContent>
     </Card>

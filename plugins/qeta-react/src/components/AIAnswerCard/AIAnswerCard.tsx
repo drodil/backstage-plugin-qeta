@@ -22,23 +22,6 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
-
-export type QetaAIAnswerCardClassKey = 'card';
-
-const useStyles = makeStyles(
-  theme =>
-    createStyles({
-      card: {
-        marginTop: theme.spacing(3),
-        backgroundColor: theme.palette.background.default,
-        border: `3px solid ${theme.palette.status.ok}`,
-      },
-      markdown: {},
-    }),
-  { name: 'QetaAIAnswerCard' },
-);
 
 export type AIAnswerCardProps = {
   question?: Post;
@@ -61,7 +44,6 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   const [expanded, setExpanded] = React.useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
   );
-  const styles = useStyles();
   const { t } = useTranslation();
   const config = useApi(configApiRef);
   const botName = config.getOptionalString('qeta.aiBotName') ?? 'AI';
@@ -144,7 +126,14 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   }
 
   return (
-    <Card className={styles.card} style={style}>
+    <Card
+      sx={theme => ({
+        marginTop: theme.spacing(3),
+        backgroundColor: theme.palette.background.default,
+        border: `3px solid ${theme.palette.status.ok}`,
+      })}
+      style={style}
+    >
       <CardHeader
         avatar={<FlareIcon />}
         style={!expanded ? { paddingBottom: '1rem' } : {}}
@@ -202,12 +191,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
           {answer === undefined && (
             <Skeleton variant="rectangular" height={200} animation="wave" />
           )}
-          {answer && (
-            <MarkdownRenderer
-              content={answer.answer}
-              className={styles.markdown}
-            />
-          )}
+          {answer && <MarkdownRenderer content={answer.answer} />}
         </CardContent>
       </Collapse>
     </Card>

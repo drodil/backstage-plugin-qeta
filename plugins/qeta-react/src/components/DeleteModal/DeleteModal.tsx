@@ -4,7 +4,6 @@ import {
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Delete from '@mui/icons-material/Delete';
@@ -15,7 +14,8 @@ import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
 import { useBasePath } from '../../hooks/useBasePath';
-import { useStyles, useTranslation } from '../../hooks';
+import { useTranslation } from '../../hooks';
+import { ModalContent } from '../Styled/ModalContent';
 
 export const DeleteModal = (props: {
   entity: PostResponse | AnswerResponse | CollectionResponse;
@@ -27,7 +27,6 @@ export const DeleteModal = (props: {
   const base_path = useBasePath();
   const navigate = useNavigate();
   const { entity, open, question, onClose } = props;
-  const styles = useStyles();
   const [error, setError] = React.useState(false);
   const { t } = useTranslation();
   const isQuestion = 'title' in entity;
@@ -90,7 +89,7 @@ export const DeleteModal = (props: {
       closeAfterTransition
       slots={{ backdrop: Backdrop }}
     >
-      <Box className={`qetaDeleteModalContent ${styles.deleteModal}`}>
+      <ModalContent>
         {error && (
           <Alert severity="error">{t('deleteModal.errorDeleting')}</Alert>
         )}
@@ -113,7 +112,7 @@ export const DeleteModal = (props: {
         <Button onClick={onClose} className="qetaDeleteModalCancelBtn">
           {t('deleteModal.cancelButton')}
         </Button>
-      </Box>
+      </ModalContent>
     </Modal>
   );
 };

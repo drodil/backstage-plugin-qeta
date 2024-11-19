@@ -13,7 +13,6 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
 import { TrophyIcon } from './TrophyIcon';
-import { useStyles } from './styles';
 import { UserLink } from '../Links';
 import { useQetaApi, useTranslation } from '../../hooks';
 
@@ -64,7 +63,6 @@ export const RankingRow = (props: {
   rankingIcon?: RankingIcon;
   unit: string;
 }) => {
-  const classes = useStyles();
   const userRef = props.userRef;
 
   const ordinalPosition = props?.position ? getOrdinal(props?.position) : '';
@@ -82,7 +80,7 @@ export const RankingRow = (props: {
   return (
     <ListItem className="qetaRankingCardRow">
       <ListItemAvatar>
-        <Avatar className={classes.trophyIcon}>{rankingIcon}</Avatar>
+        <Avatar>{rankingIcon}</Avatar>
       </ListItemAvatar>
 
       <ListItemText
@@ -103,7 +101,7 @@ export const RankingRow = (props: {
         }
       />
 
-      <div className={classes.votesText}>
+      <div>
         <Typography variant="subtitle1">
           {props?.total} {props.unit}
         </Typography>
