@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.10.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.10.0...v3.10.1) (2024-11-19)
+
+
+### Bug Fixes
+
+* remove deprecated mui useStyles ([1d14bc9](https://github.com/drodil/backstage-plugin-qeta/commit/1d14bc99ff1fab47dd378b0a0d3966417c2c70ff))
+
 ## [3.10.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.9.3...v3.10.0) (2024-11-18)
 
 
