@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.10.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.10.3...v3.10.4) (2024-11-19)
+
+
+### Bug Fixes
+
+* add missing emotion dependencies ([16b5514](https://github.com/drodil/backstage-plugin-qeta/commit/16b5514705192fa977f0517e4a80830dac3b9092))
+
 ### [3.10.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.10.2...v3.10.3) (2024-11-19)
 
 
