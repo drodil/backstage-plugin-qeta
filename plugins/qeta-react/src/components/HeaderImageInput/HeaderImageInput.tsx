@@ -7,7 +7,16 @@ import React from 'react';
 import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
-import { useFormStyles } from '../../hooks/useFormStyles';
+import { styled } from '@mui/system';
+
+const HeaderImage = styled('img')(({ theme }) => ({
+  marginBottom: '1rem',
+  marginTop: '1rem',
+  height: '250px',
+  objectFit: 'cover',
+  width: '100%',
+  border: `1px solid ${theme.palette.background.paper}`,
+}));
 
 export const HeaderImageInput = (props: {
   url?: string;
@@ -21,7 +30,6 @@ export const HeaderImageInput = (props: {
   const qetaApi = useApi(qetaApiRef);
   const errorApi = useApi(errorApiRef);
   const { t } = useTranslation();
-  const styles = useFormStyles();
 
   const isUploadDisabled =
     configApi.getOptionalBoolean('qeta.storage.disabled') || false;
@@ -75,7 +83,7 @@ export const HeaderImageInput = (props: {
       {url && (
         <Grid item xs={12}>
           <Typography variant="subtitle1">{t('fileInput.preview')}</Typography>
-          <img className={styles.headerImage} src={url} alt="header" />
+          <HeaderImage src={url} alt="header" />
         </Grid>
       )}
     </Grid>

@@ -30,7 +30,6 @@ import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymou
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
-import { useFormStyles } from '../../hooks/useFormStyles';
 import { useTranslation } from '../../hooks';
 
 const formToRequest = (
@@ -132,7 +131,6 @@ export const PostForm = (props: PostFormProps) => {
   const catalogApi = useApi(catalogApiRef);
   const configApi = useApi(configApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
-  const styles = useFormStyles();
   const {
     register,
     handleSubmit,
@@ -278,7 +276,6 @@ export const PostForm = (props: PostFormProps) => {
         setEdited(true);
         onFormChange?.(control._formValues as QuestionFormValues);
       }}
-      className={`${styles.form} qetaAskForm`}
     >
       {error && (
         <Alert severity="error">{t('postForm.errorPosting', { type })}</Alert>
@@ -357,7 +354,7 @@ export const PostForm = (props: PostFormProps) => {
         type="submit"
         variant="contained"
         disabled={posting}
-        className={`qetaAskFormSubmitBtn ${styles.postButton}`}
+        sx={{ marginTop: 2, marginBottom: 2 }}
       >
         {id ? t('postForm.submit.existingPost') : t('postForm.submit.newPost')}
       </Button>

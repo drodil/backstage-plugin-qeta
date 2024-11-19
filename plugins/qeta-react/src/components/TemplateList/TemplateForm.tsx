@@ -14,7 +14,6 @@ import Alert from '@mui/material/Alert';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { TagInput } from '../PostForm/TagInput';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
-import { useFormStyles } from '../../hooks/useFormStyles';
 import { TemplateFormValues } from '../PostForm/types';
 
 const formToRequest = (form: TemplateFormValues): TemplateRequest => {
@@ -71,7 +70,6 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
   const catalogApi = useApi(catalogApiRef);
   const qetaApi = useApi(qetaApiRef);
   const [error, setError] = React.useState(false);
-  const styles = useFormStyles();
   const [values, setValues] = React.useState(getDefaultValues());
   const { isModerator } = useIsModerator();
   const { t } = useTranslation();
@@ -130,10 +128,7 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(postTemplate)}
-      className={`${styles.form} qetaTemplateForm`}
-    >
+    <form onSubmit={handleSubmit(postTemplate)}>
       {error && (
         <Alert severity="error">{t('templateList.errorPosting')}</Alert>
       )}
@@ -216,7 +211,7 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
         type="submit"
         variant="contained"
         disabled={posting}
-        className={`qetaTemplateFormSubmitBtn ${styles.postButton}`}
+        sx={{ marginBottom: 2, marginTop: 2 }}
       >
         {id
           ? t('templateList.submit.existingTemplate')

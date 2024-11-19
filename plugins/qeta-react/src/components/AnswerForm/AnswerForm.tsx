@@ -15,7 +15,6 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
-import { useFormStyles } from '../../hooks/useFormStyles';
 import { useTranslation } from '../../hooks';
 
 type AnswerFormData = {
@@ -42,7 +41,6 @@ export const AnswerForm = (props: {
   const [images, setImages] = React.useState<number[]>([]);
   const [edited, setEdited] = React.useState(false);
   const qetaApi = useApi(qetaApiRef);
-  const styles = useFormStyles();
   const configApi = useApi(configApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const { t } = useTranslation();
@@ -137,7 +135,6 @@ export const AnswerForm = (props: {
         onChange={() => {
           setEdited(true);
         }}
-        className={`${styles.form} qetaAnswerForm`}
       >
         <Typography variant="h6">Your answer</Typography>
         {error && (
@@ -173,7 +170,7 @@ export const AnswerForm = (props: {
           variant="outlined"
           type="submit"
           color="primary"
-          className={`qetaAnswerFormPostBtn ${styles.postButton}`}
+          sx={{ marginBottom: 2, marginTop: 2 }}
         >
           {id
             ? t('answerForm.submit.existingAnswer')

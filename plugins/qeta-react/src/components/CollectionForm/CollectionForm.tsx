@@ -27,7 +27,6 @@ import { qetaApiRef } from '../../api';
 import { CollectionFormData } from './types';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 import { useTranslation } from '../../hooks';
-import { useFormStyles } from '../../hooks/useFormStyles';
 
 const formToRequest = (
   form: CollectionFormData,
@@ -91,7 +90,6 @@ export const CollectionForm = (props: CollectionFormProps) => {
 
   const qetaApi = useApi(qetaApiRef);
   const configApi = useApi(configApiRef);
-  const styles = useFormStyles();
   const {
     register,
     handleSubmit,
@@ -178,7 +176,6 @@ export const CollectionForm = (props: CollectionFormProps) => {
       onChange={() => {
         setEdited(true);
       }}
-      className={`${styles.form} qetaCollectionForm`}
     >
       {error && (
         <Alert severity="error">{t('collectionForm.errorPosting')}</Alert>
@@ -266,7 +263,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
         type="submit"
         variant="contained"
         disabled={posting}
-        className={`qetaCollectionFormSubmitBtn ${styles.postButton}`}
+        sx={{ marginTop: 2, marginBottom: 2 }}
       >
         {id
           ? t('collectionForm.submit.existingCollection')
