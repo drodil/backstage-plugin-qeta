@@ -41,6 +41,9 @@ using the old backend system, please use version 1.24.5.
 
 **IMPORTANT**: Migrating from 2.x to 3.x has been briefly explained in this [document](./docs/migration.md).
 
+**IMPORTANT**: From 3.10.0 forward, this plugin is using MUIv5. If you are using MUIv4, please see the migration guide
+at https://backstage.io/docs/tutorials/migrate-to-mui5/
+
 ## Examples
 
 Home page:
