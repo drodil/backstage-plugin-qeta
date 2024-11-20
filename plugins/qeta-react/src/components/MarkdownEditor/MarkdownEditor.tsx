@@ -69,6 +69,9 @@ const MarkdownEditorContainer = styled('div')(({ theme }) => ({
         },
       },
     },
+    '& .error': {
+      borderColor: theme.palette.error.main,
+    },
   },
 }));
 
@@ -77,6 +80,7 @@ export type MarkdownEditorProps = {
   value: string;
   onChange: (value: string) => void;
   height: number;
+  error?: boolean;
   placeholder?: string;
   onImageUpload?: (imageId: number) => void;
   disableToolbar?: boolean;
@@ -99,6 +103,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     disableAttachments,
     disableToolbar,
     disablePreview,
+    error,
     postId,
     answerId,
     collectionId,
@@ -157,6 +162,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
       <ReactMde
         disablePreview={disablePreview}
         classes={{
+          reactMde: error ? 'error' : undefined,
           toolbar: disableToolbar ? 'invisible' : undefined,
         }}
         value={value}
