@@ -88,7 +88,7 @@ const EntityTooltip = (props: { entity: Entity | string }) => {
 export const EntityChip = (props: { entity: Entity | string }) => {
   const { entity } = props;
   const entityRoute = useRouteRef(entityRouteRef);
-  const { primaryTitle } = useEntityPresentation(entity);
+  const { primaryTitle, Icon } = useEntityPresentation(entity);
   const entityRef =
     typeof entity === 'string' ? entity : stringifyEntityRef(entity);
   return (
@@ -96,6 +96,7 @@ export const EntityChip = (props: { entity: Entity | string }) => {
       <Chip
         label={primaryTitle}
         size="small"
+        icon={Icon ? <Icon fontSize="small" /> : undefined}
         variant="outlined"
         className="qetaEntityChip"
         component="a"
