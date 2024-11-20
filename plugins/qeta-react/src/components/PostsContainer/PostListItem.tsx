@@ -107,8 +107,11 @@ export const PostListItem = (props: PostListItemProps) => {
                 size="small"
                 sx={theme => ({
                   userSelect: 'none',
+                  // eslint-disable-next-line no-nested-ternary
                   borderColor: correctAnswer
                     ? theme.palette.success.main
+                    : answersCount === 0
+                    ? theme.palette.warning.main
                     : undefined,
                   marginBottom: 0,
                 })}
