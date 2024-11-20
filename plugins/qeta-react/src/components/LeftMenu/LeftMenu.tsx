@@ -112,13 +112,12 @@ export const LeftMenu = (props: {
       id="left-menu"
       sx={{
         top: '0',
-        width: '165px',
+        maxWidth: '165px',
         paddingTop: '2rem',
         ...(props.inPopup
           ? { marginRight: 0, padding: '0.5rem' }
           : {
-              marginRight: 5,
-              marginLeft: 1,
+              marginRight: 4,
               float: 'right',
               position: 'sticky',
             }),

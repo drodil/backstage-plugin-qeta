@@ -184,6 +184,7 @@ export const qetaTranslationRef = createTranslationRef({
       title: 'Favorited posts',
     },
     leftMenu: {
+      buttonLabel: 'Menu',
       home: 'Home',
       questions: 'Questions',
       articles: 'Articles',
