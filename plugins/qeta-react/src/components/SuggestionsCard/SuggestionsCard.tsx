@@ -27,7 +27,7 @@ const SuggestionListItem = (props: {
 }) => {
   const navigate = useNavigate();
   return (
-    <ListItem sx={{ padding: 0 }}>
+    <ListItem disablePadding disableGutters>
       <ListItemButton onClick={() => navigate(props.href)}>
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         {props.children}
