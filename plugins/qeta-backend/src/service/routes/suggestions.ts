@@ -28,7 +28,7 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
   ): Promise<NoCorrectAnswerSuggestion[]> => {
     const questions = await database.getPosts(username, {
       author: username,
-      hasAnswers: false,
+      hasAnswers: true,
       noCorrectAnswer: true,
       type: 'question',
     });
@@ -187,6 +187,7 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       type: 'question',
       limit: 1,
       random: true,
+      noAnswers: true,
       excludeAuthors: [username],
     });
     return questions.posts.map(question => ({
