@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.11.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.10.5...v3.11.0) (2024-11-20)
+
+
+### Features
+
+* add user tooltip for user links ([2f5a412](https://github.com/drodil/backstage-plugin-qeta/commit/2f5a4129d35dcae3caf5e5746d9ea6103e5cbac3))
+
+
+### Bug Fixes
+
+* followed entity list styling ([d01a90c](https://github.com/drodil/backstage-plugin-qeta/commit/d01a90c747b2a354e7fd6f8d6ed06e493f4de1e9))
+
 ### [3.10.5](https://github.com/drodil/backstage-plugin-qeta/compare/v3.10.4...v3.10.5) (2024-11-20)
 
 
