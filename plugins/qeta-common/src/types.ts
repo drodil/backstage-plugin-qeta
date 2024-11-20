@@ -362,3 +362,29 @@ export interface StatisticsResponse<T extends Stat> {
   statistics: T[];
   summary: T;
 }
+
+export type SuggestionType = 'noCorrectAnswer' | 'newQuestion' | 'newArticle';
+
+export interface Suggestion {
+  type: SuggestionType;
+  id: string;
+}
+
+export interface NoCorrectAnswerSuggestion extends Suggestion {
+  type: 'noCorrectAnswer';
+  question: Question;
+}
+
+export interface NewQuestionSuggestion extends Suggestion {
+  type: 'newQuestion';
+  question: Question;
+}
+
+export interface NewArticleSuggestion extends Suggestion {
+  type: 'newArticle';
+  article: Article;
+}
+
+export interface SuggestionsResponse {
+  suggestions: Suggestion[];
+}

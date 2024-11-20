@@ -20,6 +20,7 @@ import {
   StatisticResponse,
   StatisticsRequestParameters,
   StatisticsResponse,
+  SuggestionsResponse,
   TagResponse,
   TagsResponse,
   TemplateRequest,
@@ -46,9 +47,11 @@ export interface PostsQuery extends PaginatedQuery {
   tagsRelation?: 'and' | 'or';
   entities?: string[];
   entitiesRelation?: 'and' | 'or';
-  author?: string;
+  author?: string | string[];
+  excludeAuthors?: string[];
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
+  hasAnswers?: boolean;
   favorite?: boolean;
   noVotes?: boolean;
   random?: boolean;
@@ -108,6 +111,10 @@ export interface AIQuery {
 export type RequestOptions = {
   token?: string;
 };
+
+export interface SuggestionsQuery {
+  limit?: number;
+}
 
 export interface QetaApi {
   getPosts(
@@ -435,4 +442,9 @@ export interface QetaApi {
     templateId: number,
     requestOptions?: RequestOptions,
   ): Promise<boolean>;
+
+  getSuggestions(
+    options?: SuggestionsQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<SuggestionsResponse>;
 }

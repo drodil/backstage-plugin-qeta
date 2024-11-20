@@ -207,6 +207,12 @@ export const qetaTranslationRef = createTranslationRef({
       templatesInfo:
         'Templates can be used to prefill question content for the user',
     },
+    suggestionsCard: {
+      title: 'Suggestions',
+      noCorrectAnswer: 'Select correct answer for you question {{title}}',
+      newQuestion: 'Do you have an answer for "{{title}}"',
+      newArticle: 'You might like to read "{{title}}"',
+    },
     homePage: {
       title: 'Home',
     },

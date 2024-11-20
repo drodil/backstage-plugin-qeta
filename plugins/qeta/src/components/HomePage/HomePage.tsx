@@ -6,6 +6,7 @@ import {
   FollowedTagsList,
   ImpactCard,
   PostsCard,
+  SuggestionsCard,
   useIdentityApi,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
@@ -27,6 +28,9 @@ export const HomePage = () => {
           <AskQuestionButton />
         </ContentHeader>
         <Grid container>
+          <Grid item xs={12}>
+            <SuggestionsCard />
+          </Grid>
           {user && !loadingUser && !userError && (
             <Grid item xs={12}>
               <PostsCard

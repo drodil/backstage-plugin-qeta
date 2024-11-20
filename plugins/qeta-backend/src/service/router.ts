@@ -23,6 +23,7 @@ import { postsRoutes } from './routes/posts';
 import { collectionsRoutes } from './routes/collections';
 import { templateRoutes } from './routes/templates';
 import { aiRoutes } from './routes/ai';
+import { suggestionRoutes } from './routes/suggestions';
 
 export async function createRouter(
   options: RouterOptions,
@@ -114,6 +115,7 @@ export async function createRouter(
   collectionsRoutes(router, routeOptions);
   templateRoutes(router, routeOptions);
   aiRoutes(router, routeOptions);
+  suggestionRoutes(router, routeOptions);
 
   router.use(MiddlewareFactory.create({ config, logger }).error());
   return router;

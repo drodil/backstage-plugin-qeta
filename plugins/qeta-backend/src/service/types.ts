@@ -21,6 +21,7 @@ import {
   EntitiesQuery,
   PostsQuery,
   PostType,
+  SuggestionsQuery,
   TagsQuery,
   UsersQuery,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -119,6 +120,11 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     limit: { type: 'integer', nullable: true },
     offset: { type: 'integer', nullable: true },
     author: { type: 'string', nullable: true },
+    excludeAuthors: {
+      type: 'array',
+      items: { type: 'string' },
+      nullable: true,
+    },
     orderBy: {
       type: 'string',
       enum: [
@@ -137,6 +143,7 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
     noCorrectAnswer: { type: 'boolean', nullable: true },
     noAnswers: { type: 'boolean', nullable: true },
+    hasAnswers: { type: 'boolean', nullable: true },
     favorite: { type: 'boolean', nullable: true },
     noVotes: { type: 'boolean', nullable: true },
     random: { type: 'boolean', nullable: true },
@@ -361,6 +368,15 @@ export const AIQuerySchema: JSONSchemaType<AIQuery> = {
   type: 'object',
   properties: {
     regenerate: { type: 'boolean', default: false, nullable: true },
+  },
+  required: [],
+  additionalProperties: false,
+};
+
+export const SuggestionsQuerySchema: JSONSchemaType<SuggestionsQuery> = {
+  type: 'object',
+  properties: {
+    limit: { type: 'integer', minimum: 1, nullable: true },
   },
   required: [],
   additionalProperties: false,

@@ -7,6 +7,7 @@ import {
   PostsQuery,
   QetaApi,
   RequestOptions,
+  SuggestionsQuery,
   TagsQuery,
   UsersQuery,
 } from './QetaApi';
@@ -39,6 +40,7 @@ import {
   StatisticResponse,
   StatisticsRequestParameters,
   StatisticsResponse,
+  SuggestionsResponse,
   TagResponse,
   TagsResponse,
   TemplateRequest,
@@ -1190,6 +1192,17 @@ export class QetaClient implements QetaApi {
       requestOptions,
     });
     return response.ok;
+  }
+
+  async getSuggestions(
+    options?: SuggestionsQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<SuggestionsResponse> {
+    const response = await this.fetch('/suggestions', {
+      queryParams: options,
+      requestOptions,
+    });
+    return (await response.json()) as SuggestionsResponse;
   }
 
   private async getBaseUrl(): Promise<string> {

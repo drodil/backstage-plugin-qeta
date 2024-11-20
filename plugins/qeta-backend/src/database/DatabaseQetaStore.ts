@@ -269,6 +269,10 @@ export class DatabaseQetaStore implements QetaStore {
       }
     }
 
+    if (options.excludeAuthors) {
+      query.whereNotIn('posts.author', options.excludeAuthors);
+    }
+
     if (filters) {
       parseFilter(filters, query, this.db);
     }
@@ -335,6 +339,10 @@ export class DatabaseQetaStore implements QetaStore {
 
     if (options.noAnswers) {
       query.whereNull('answers.postId');
+    }
+
+    if (options.hasAnswers) {
+      query.whereNotNull('answers.postId');
     }
 
     if (options.noCorrectAnswer) {
