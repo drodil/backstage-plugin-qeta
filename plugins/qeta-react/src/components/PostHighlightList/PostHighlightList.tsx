@@ -1,8 +1,5 @@
 import Divider from '@mui/material/Divider';
-import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
-import List from '@mui/material/List';
-import ListSubheader from '@mui/material/ListSubheader';
 import ListItemText from '@mui/material/ListItemText';
 import React from 'react';
 import Skeleton from '@mui/material/Skeleton';
@@ -12,6 +9,7 @@ import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi, useTranslation } from '../../hooks';
 import ListItemButton from '@mui/material/ListItemButton';
 import { useNavigate } from 'react-router-dom';
+import { RightList, RightListContainer } from '../Styled/RightList';
 
 export const PostHighlightList = (props: {
   type: string;
@@ -42,35 +40,8 @@ export const PostHighlightList = (props: {
   const posts = response?.posts ?? [];
 
   return (
-    <Box
-      display={{ md: 'none', lg: 'block' }}
-      sx={{
-        width: '100%',
-        bgcolor: 'background.paper',
-        marginBottom: 2,
-        borderRadius: 1,
-      }}
-    >
-      <List
-        component="nav"
-        aria-labelledby="nested-list-subheader"
-        subheader={
-          <ListSubheader
-            disableSticky
-            component="div"
-            id="nested-list-subheader"
-            color="primary"
-            style={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {props.title}
-            {props.icon}
-          </ListSubheader>
-        }
-      >
+    <RightListContainer>
+      <RightList title={props.title} icon={props.icon}>
         {loading && (
           <ListItem className="qetaPostHighlightListListItem" dense>
             <Skeleton variant="rectangular" />
@@ -102,7 +73,7 @@ export const PostHighlightList = (props: {
               </React.Fragment>
             );
           })}
-      </List>
-    </Box>
+      </RightList>
+    </RightListContainer>
   );
 };
