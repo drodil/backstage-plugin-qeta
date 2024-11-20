@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.12.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.11.0...v3.12.0) (2024-11-20)
+
+
+### Features
+
+* add suggestions to home page ([85ebc39](https://github.com/drodil/backstage-plugin-qeta/commit/85ebc3917b968362e41ced334d88957bd6b9ea31)), closes [#196](https://github.com/drodil/backstage-plugin-qeta/issues/196)
+
+
+### Bug Fixes
+
+* impact card margin ([f0567db](https://github.com/drodil/backstage-plugin-qeta/commit/f0567db463d4e4cac16ae5fa93bafecbbb8cff05))
+* no correct answer suggestion ([f85fe14](https://github.com/drodil/backstage-plugin-qeta/commit/f85fe1408d5e879cd9ea9b5ba40297bb54830d2a))
+
 ## [3.11.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.10.5...v3.11.0) (2024-11-20)
 
 
