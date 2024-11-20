@@ -4918,8 +4918,6 @@ __metadata:
     "@backstage/plugin-signals-react": "backstage:^"
     "@backstage/test-utils": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
-    "@emotion/react": "npm:^11.13.3"
-    "@emotion/styled": "npm:^11.13.0"
     "@mui/icons-material": "npm:^5.16.7"
     "@mui/lab": "npm:^5.0.0-alpha.169"
     "@mui/material": "npm:^5.16.7"
@@ -4970,8 +4968,6 @@ __metadata:
     "@backstage/plugin-signals-react": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@drodil/backstage-plugin-qeta-react": "workspace:^"
-    "@emotion/react": "npm:^11.13.3"
-    "@emotion/styled": "npm:^11.13.0"
     "@mui/icons-material": "npm:^5.15.14"
     "@mui/lab": "npm:^5.0.0-alpha.169"
     "@mui/material": "npm:^5.16.7"
@@ -5080,7 +5076,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/react@npm:^11.10.5, @emotion/react@npm:^11.13.3":
+"@emotion/react@npm:^11.10.5":
   version: 11.13.3
   resolution: "@emotion/react@npm:11.13.3"
   dependencies:
@@ -5121,7 +5117,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/styled@npm:^11.10.5, @emotion/styled@npm:^11.13.0":
+"@emotion/styled@npm:^11.10.5":
   version: 11.13.0
   resolution: "@emotion/styled@npm:11.13.0"
   dependencies:

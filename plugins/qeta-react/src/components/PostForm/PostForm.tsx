@@ -315,7 +315,6 @@ export const PostForm = (props: PostFormProps) => {
             value={value}
             onChange={onChange}
             height={400}
-            error={'content' in errors}
             placeholder={t('postForm.contentInput.placeholder', { type })}
             config={configApi}
             onImageUpload={onImageUpload}

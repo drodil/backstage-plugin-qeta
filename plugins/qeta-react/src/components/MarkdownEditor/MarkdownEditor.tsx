@@ -12,11 +12,10 @@ import { MarkdownRenderer } from '../MarkdownRenderer';
 import { imageUpload } from '../../utils/utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
-import { Theme, useTheme } from '@mui/material/styles';
-import { ClassNames } from '@emotion/react';
+import { styled } from '@mui/material/styles';
 
-const styles = {
-  markdownEditor: (theme: Theme) => ({
+const MarkdownEditorContainer = styled('div')(({ theme }) => ({
+  '.react-mde': {
     backgroundColor: 'initial',
     color: theme.palette.text.primary,
     border: `1px solid ${theme.palette.action.disabled}`,
@@ -52,52 +51,32 @@ const styles = {
       color: `${theme.palette.text.primary} !important`,
       backgroundColor: 'initial !important',
     },
-  }),
-  markdownEditorError: (theme: Theme) => ({
-    border: `1px solid ${theme.palette.error.main} !important`,
-  }),
-  markdownPreview: {
-    '& *': {
-      wordBreak: 'break-word',
-    },
-    '&.inline': {
-      display: 'inline-block',
-    },
-    '& > :first-child': {
-      marginTop: '0px !important',
-    },
-    '& > :last-child': {
-      marginBottom: '0px !important',
-    },
-  },
-  suggestionsDropdown: (theme: Theme) => ({
-    minWidth: '180px',
-    margin: '20px 0 0',
-    listStyle: 'none',
-    padding: '0',
-    cursor: 'pointer',
-    background: theme.palette.background.paper,
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: theme.shape.borderRadius,
-    '& li': {
-      width: '100%',
-      padding: '0.5rem',
-      '&:hover': {
-        backgroundColor: theme.palette.action.hover,
+    '& .mde-suggestions': {
+      position: 'absolute',
+      minWidth: '180px',
+      margin: '20px 0 0',
+      listStyle: 'none',
+      padding: '0',
+      cursor: 'pointer',
+      background: theme.palette.background.paper,
+      border: `1px solid ${theme.palette.divider}`,
+      borderRadius: theme.shape.borderRadius,
+      '& li': {
+        width: '100%',
+        padding: '0.5rem',
+        '&:hover': {
+          backgroundColor: theme.palette.action.hover,
+        },
       },
     },
-  }),
-  hide: {
-    display: 'none',
   },
-};
+}));
 
 export type MarkdownEditorProps = {
   config?: Config;
   value: string;
   onChange: (value: string) => void;
   height: number;
-  error?: boolean;
   placeholder?: string;
   onImageUpload?: (imageId: number) => void;
   disableToolbar?: boolean;
@@ -116,7 +95,6 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     value,
     onChange,
     height,
-    error,
     placeholder,
     disableAttachments,
     disableToolbar,
@@ -174,66 +152,65 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     disableAttachments ||
     false;
 
-  const theme = useTheme();
-
   return (
-    <ClassNames>
-      {({ cx, css }) => (
-        <ReactMde
-          classes={{
-            reactMde: cx(css(styles.markdownEditor(theme))),
-            textArea: error
-              ? cx(css(styles.markdownEditorError(theme)))
-              : undefined,
-            toolbar: disableToolbar ? cx(css(styles.hide)) : undefined,
-            suggestionsDropdown: cx(
-              css({
-                position: 'absolute',
-                ...styles.suggestionsDropdown(theme),
-              }),
-            ),
-          }}
-          disablePreview={disablePreview}
-          value={value}
-          onChange={onChange}
-          selectedTab={selectedTab}
-          onTabChange={setSelectedTab}
-          minEditorHeight={height}
-          minPreviewHeight={height - 10}
-          childProps={{
-            textArea: {
-              required,
-              placeholder,
-              autoFocus,
-            },
-          }}
-          suggestionTriggerCharacters={['@']}
-          loadSuggestions={loadSuggestions}
-          suggestionsAutoplace
-          generateMarkdownPreview={content =>
-            Promise.resolve(
-              <MarkdownRenderer
-                content={content}
-                sx={styles.markdownPreview}
-              />,
-            )
-          }
-          paste={
-            isUploadDisabled
-              ? undefined
-              : {
-                  saveImage: imageUpload({
-                    qetaApi,
-                    errorApi,
-                    onImageUpload: props.onImageUpload,
-                    postId,
-                    answerId,
-                    collectionId,
-                  }),
-                }
-          }
-        />
-      )}
-    </ClassNames>
+    <MarkdownEditorContainer>
+      <ReactMde
+        disablePreview={disablePreview}
+        classes={{
+          toolbar: disableToolbar ? 'invisible' : undefined,
+        }}
+        value={value}
+        onChange={onChange}
+        selectedTab={selectedTab}
+        onTabChange={setSelectedTab}
+        minEditorHeight={height}
+        minPreviewHeight={height - 10}
+        childProps={{
+          textArea: {
+            required,
+            placeholder,
+            autoFocus,
+          },
+        }}
+        suggestionTriggerCharacters={['@']}
+        loadSuggestions={loadSuggestions}
+        suggestionsAutoplace
+        generateMarkdownPreview={content =>
+          Promise.resolve(
+            <MarkdownRenderer
+              content={content}
+              sx={{
+                '& *': {
+                  wordBreak: 'break-word',
+                },
+                '&.inline': {
+                  display: 'inline-block',
+                },
+                '& > :first-child': {
+                  marginTop: '0px !important',
+                },
+                '& > :last-child': {
+                  marginBottom: '0px !important',
+                },
+              }}
+            />,
+          )
+        }
+        paste={
+          isUploadDisabled
+            ? undefined
+            : {
+                saveImage: imageUpload({
+                  qetaApi,
+                  errorApi,
+                  onImageUpload: props.onImageUpload,
+                  postId,
+                  answerId,
+                  collectionId,
+                }),
+              }
+        }
+      />
+    </MarkdownEditorContainer>
   );
 };
