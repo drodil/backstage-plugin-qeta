@@ -80,7 +80,9 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
       indexedPosts += posts.length;
 
       for (const post of posts) {
-        const questionContent = `# Question: ${post.title}\n\n${post.content}`;
+        const postContent = `# ${
+          post.type === 'question' ? 'Question' : 'Article'
+        }: ${post.title}\n\n${post.content}`;
         const answersContent = (post.answers ?? []).map(a => {
           return `## ${a.correct ? 'Correct answer' : 'Answer'} by ${
             a.author
@@ -96,7 +98,7 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
 
         yield {
           title: post.title,
-          text: `${questionContent}\n\n${answersContent.join(
+          text: `${postContent}\n\n${answersContent.join(
             '\n\n',
           )}\n\nComments:\n\n${commentsContent.join('\n\n')}`,
           location:
