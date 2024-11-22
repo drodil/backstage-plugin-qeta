@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import type { MenuItemProps } from '@mui/material/MenuItem';
 import MenuItem from '@mui/material/MenuItem';
 import ListItem from '@mui/material/ListItem';
 import SvgIcon from '@mui/material/SvgIcon';
@@ -69,6 +70,25 @@ export const LeftMenu = (props: {
     error: userError,
   } = useIdentityApi(api => api.getBackstageIdentity(), []);
 
+  const StyledMenuItem = styled(MenuItem)<MenuItemProps & { active: boolean }>(
+    ({ theme, ...p }) => {
+      return p.active
+        ? {
+            width: '100%',
+            color: theme.palette.primary.contrastText,
+            backgroundColor: theme.palette.primary.light,
+            borderRadius: 1,
+            '&:hover': {
+              backgroundColor: theme.palette.primary.dark,
+            },
+            '& svg': {
+              color: theme.palette.primary.contrastText,
+            },
+          }
+        : { width: '100%', backgroundColor: 'initial', borderRadius: 1 };
+    },
+  );
+
   const CustomMenuItem = ({
     route,
     children,
@@ -77,32 +97,17 @@ export const LeftMenu = (props: {
     children: ReactNode[];
   }) => {
     return (
-      <MenuItem
+      <StyledMenuItem
         onClick={e => {
           navigate(route);
           if (props.onClick) {
             props.onClick(e);
           }
         }}
-        sx={{
-          ...(route === location.pathname
-            ? {
-                color: 'primary.contrastText',
-                backgroundColor: 'primary.light',
-                borderRadius: 1,
-                '&:hover': {
-                  backgroundColor: 'primary.dark',
-                },
-                '& svg': {
-                  color: 'primary.contrastText',
-                },
-              }
-            : { backgroundColor: 'initial', borderRadius: 1 }),
-        }}
-        style={{ width: '100%' }}
+        active={route === location.pathname}
       >
         {children}
-      </MenuItem>
+      </StyledMenuItem>
     );
   };
 
