@@ -37,7 +37,7 @@ export const SummaryStatsGrid = (props: {
   const { stats } = props;
   const { t } = useTranslation();
   if (!stats.summary) {
-    return null;
+    return <Typography variant="subtitle1">{t('stats.noStats')}</Typography>;
   }
 
   return (
