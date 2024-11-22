@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.12.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.12.0...v3.12.1) (2024-11-22)
+
+
+### Bug Fixes
+
+* make sure menu items are 100% width ([e97c3bf](https://github.com/drodil/backstage-plugin-qeta/commit/e97c3bfb514752fe5d6ff34a50c551718c03ea87))
+* make sure stats summary is available ([7f500a4](https://github.com/drodil/backstage-plugin-qeta/commit/7f500a4b2505c1c1fe4e9913ffe95bb402104b7f))
+* show no stats message if summary is missing ([0556cc1](https://github.com/drodil/backstage-plugin-qeta/commit/0556cc1386c05a9f9139326b00ff635dc93b5e48))
+* use correct title for search documents for articles ([eb0e56c](https://github.com/drodil/backstage-plugin-qeta/commit/eb0e56ca4bcacc582459f6e56c85c35a702f76d4))
+
 ## [3.12.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.11.0...v3.12.0) (2024-11-20)
 
 
