@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.12.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.12.2...v3.12.3) (2024-11-22)
+
+
+### Bug Fixes
+
+* make date object correct in statistics endpoint ([7545f54](https://github.com/drodil/backstage-plugin-qeta/commit/7545f54d3fd9c3e75aaa2b26d40bf3278005abd1))
+
 ### [3.12.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.12.1...v3.12.2) (2024-11-22)
 
 
