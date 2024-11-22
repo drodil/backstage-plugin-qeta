@@ -99,6 +99,7 @@ export const LeftMenu = (props: {
               }
             : { backgroundColor: 'initial', borderRadius: 1 }),
         }}
+        style={{ width: '100%' }}
       >
         {children}
       </MenuItem>
