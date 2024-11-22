@@ -14,7 +14,7 @@ import { isGlobalStat, isUserStat } from '../StatsChart/util';
 
 const SummaryCard = (props: { title: string; value?: number }) => {
   const { title, value } = props;
-  if (!value) {
+  if (value === undefined) {
     return null;
   }
   return (

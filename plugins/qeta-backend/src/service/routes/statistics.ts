@@ -63,12 +63,13 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     }
     let todayStatsAdded = false;
     const statistics = globalStats.map(g => {
-      if (g.date.toDateString() !== new Date().toDateString()) {
+      const d = new Date(g.date);
+      if (d.toDateString() !== new Date().toDateString()) {
         return g;
       }
       todayStatsAdded = true;
       return {
-        date: g.date,
+        date: d,
         ...summary,
       };
     });
@@ -86,12 +87,13 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     let summary = await database.getUser(userRef);
     let todayStatsAdded = false;
     const statistics = userStats.map(g => {
-      if (!summary || g.date.toDateString() !== new Date().toDateString()) {
+      const d = new Date(g.date);
+      if (!summary || d.toDateString() !== new Date().toDateString()) {
         return g;
       }
       todayStatsAdded = true;
       return {
-        date: g.date,
+        date: d,
         ...summary,
       };
     });
