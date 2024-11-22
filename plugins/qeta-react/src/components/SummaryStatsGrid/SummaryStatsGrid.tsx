@@ -12,8 +12,11 @@ import numeral from 'numeral';
 import { useTranslation } from '../../hooks';
 import { isGlobalStat, isUserStat } from '../StatsChart/util';
 
-const SummaryCard = (props: { title: string; value: number }) => {
+const SummaryCard = (props: { title: string; value?: number }) => {
   const { title, value } = props;
+  if (!value) {
+    return null;
+  }
   return (
     <Card>
       <CardContent>
@@ -33,6 +36,10 @@ export const SummaryStatsGrid = (props: {
 }) => {
   const { stats } = props;
   const { t } = useTranslation();
+  if (!stats.summary) {
+    return null;
+  }
+
   return (
     <Grid container>
       <Grid item xs={4}>
