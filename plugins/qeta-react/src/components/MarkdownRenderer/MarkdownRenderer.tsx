@@ -27,7 +27,7 @@ const StyledReactMarkdown = styled(ReactMarkdown, {
   unstable_styleFunctionSx as StyleFunction<StyledReactMarkdownProps>,
 );
 
-const styles = (theme: any) => ({
+const styles = (theme: Theme) => ({
   '& table': {
     borderCollapse: 'collapse',
     border: `1px solid ${theme.palette.border}`,
@@ -65,7 +65,7 @@ const styles = (theme: any) => ({
   },
   '& blockquote': {
     backgroundColor: theme.palette.background.paper,
-    border: `.1em solid ${theme.palette.divider}`,
+    border: `1px solid ${theme.palette.divider}`,
     padding: '1em',
   },
   '& ol, ul': {
