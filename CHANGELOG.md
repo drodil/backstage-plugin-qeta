@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.13.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.12.5...v3.13.0) (2024-11-25)
+
+
+### Features
+
+* add support for node22 in tests ([949dc9a](https://github.com/drodil/backstage-plugin-qeta/commit/949dc9a8095233b11bf09c4fbba08b1cc3a0ddbb))
+* revert back to MUI4 ([31cf62f](https://github.com/drodil/backstage-plugin-qeta/commit/31cf62f8e7ac103dde0b4b83b0aa6b79718345e8)), closes [#244](https://github.com/drodil/backstage-plugin-qeta/issues/244)
+
 ### [3.12.5](https://github.com/drodil/backstage-plugin-qeta/compare/v3.12.4...v3.12.5) (2024-11-25)
 
 
