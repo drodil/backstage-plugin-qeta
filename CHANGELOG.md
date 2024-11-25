@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.13.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.13.0...v3.13.1) (2024-11-25)
+
+
+### Bug Fixes
+
+* small UI fixes for MUI4 ([555e7b3](https://github.com/drodil/backstage-plugin-qeta/commit/555e7b3d87ba27db24a1dd44219f094c16dc6356))
+
 ## [3.13.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.12.5...v3.13.0) (2024-11-25)
 
 
