@@ -4,6 +4,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import {
   AnswersContainer,
   AskQuestionButton,
+  ButtonContainer,
   CollectionsGrid,
   PostsContainer,
   PostsGrid,
@@ -12,12 +13,10 @@ import {
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { UserStatsContent } from './UserStatsContent';
+import { TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { Box, Tab, Typography } from '@material-ui/core';
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
@@ -47,8 +46,10 @@ export const UserPage = () => {
   return (
     <>
       <ContentHeader titleComponent={title}>
-        <AskQuestionButton />
-        <WriteArticleButton />
+        <ButtonContainer>
+          <AskQuestionButton />
+          <WriteArticleButton />
+        </ButtonContainer>
       </ContentHeader>
       <TabContext value={tab}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

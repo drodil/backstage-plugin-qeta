@@ -8,19 +8,49 @@ import {
   Line,
   LineChart,
   ResponsiveContainer,
-  Tooltip as ChartTooltip,
+  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
-import IconButton from '@mui/material/IconButton';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Typography from '@mui/material/Typography';
-import ShowChartIcon from '@mui/icons-material/ShowChart';
-import BarChartIcon from '@mui/icons-material/BarChart';
+import {
+  ButtonGroup,
+  createStyles,
+  IconButton,
+  makeStyles,
+  Theme,
+  Typography,
+} from '@material-ui/core';
+import ShowChartIcon from '@material-ui/icons/ShowChart';
+import BarChartIcon from '@material-ui/icons/BarChart';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { useTranslation } from '../../hooks';
 import { isGlobalStat, isUserStat } from './util';
-import { useTheme } from '@mui/material/styles';
+
+export type QetaStatsChartClassKey =
+  | 'tooltipLabel'
+  | 'tooltipWrapper'
+  | 'xAxis'
+  | 'lineChart'
+  | 'barChart';
+
+const useStyles = makeStyles(
+  (theme: Theme) =>
+    createStyles({
+      tooltipLabel: {
+        color: theme.palette.text.primary,
+      },
+      tooltipWrapper: {
+        backgroundColor: `${theme.palette.background.default} !important`,
+        border: 'none !important',
+      },
+      xAxis: {
+        color: `${theme.palette.text.primary} !important`,
+      },
+      lineChart: {},
+      barChart: {},
+    }),
+  { name: 'QetaStatsChart' },
+);
 
 type StatType = {
   dataKey:
@@ -116,6 +146,7 @@ const DEFAULT_STATS: StatType[] = [
 ];
 
 const useChartState = (data: Stat[]) => {
+  const styles = useStyles();
   const isDark = useIsDarkTheme();
   const globalStats = isGlobalStat(data[0]);
   const isUserStats = isUserStat(data[0]);
@@ -145,21 +176,25 @@ const useChartState = (data: Stat[]) => {
     [stats],
   );
 
-  return { isDark, toggleStat, stats, isDisabled };
+  return { styles, isDark, toggleStat, stats, isDisabled };
 };
 
 const StatsBarChart = (props: { data: Stat[] }) => {
-  const { isDark, stats, toggleStat, isDisabled } = useChartState(props.data);
-  const theme = useTheme();
+  const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
+    props.data,
+  );
+  const localStyles = useStyles();
   return (
     <ResponsiveContainer height={400} width="100%">
-      <BarChart data={props.data} width={900} height={300}>
-        <ChartTooltip
-          labelStyle={{ color: theme.palette.text.primary }}
-          contentStyle={{
-            backgroundColor: `${theme.palette.background.paper} !important`,
-            border: 'none !important',
-          }}
+      <BarChart
+        data={props.data}
+        width={900}
+        height={300}
+        className={localStyles.barChart}
+      >
+        <Tooltip
+          labelClassName={styles.tooltipLabel}
+          wrapperClassName={styles.tooltipWrapper}
           cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
         />
         {stats.map(stat => (
@@ -203,17 +238,21 @@ const StatsBarChart = (props: { data: Stat[] }) => {
 };
 
 const StatsLineChart = (props: { data: Stat[] }) => {
-  const { isDark, stats, toggleStat, isDisabled } = useChartState(props.data);
-  const theme = useTheme();
+  const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
+    props.data,
+  );
+  const localStyles = useStyles();
   return (
     <ResponsiveContainer height={400} width="100%">
-      <LineChart data={props.data} width={900} height={300}>
-        <ChartTooltip
-          labelStyle={{ color: theme.palette.text.primary }}
-          contentStyle={{
-            backgroundColor: `${theme.palette.background.paper} !important`,
-            border: 'none !important',
-          }}
+      <LineChart
+        data={props.data}
+        width={900}
+        height={300}
+        className={localStyles.lineChart}
+      >
+        <Tooltip
+          labelClassName={styles.tooltipLabel}
+          wrapperClassName={styles.tooltipWrapper}
           cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
         />
         {stats.map(stat => (
@@ -280,7 +319,6 @@ export const StatsChart = (props: { data: Stat[] }) => {
           onClick={() => {
             setChart('line');
           }}
-          size="large"
         >
           <ShowChartIcon />
         </IconButton>
@@ -289,7 +327,6 @@ export const StatsChart = (props: { data: Stat[] }) => {
           onClick={() => {
             setChart('bar');
           }}
-          size="large"
         >
           <BarChartIcon />
         </IconButton>

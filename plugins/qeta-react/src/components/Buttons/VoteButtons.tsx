@@ -2,15 +2,42 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import ArrowDownward from '@mui/icons-material/ArrowDownward';
-import ArrowUpward from '@mui/icons-material/ArrowUpward';
-import Check from '@mui/icons-material/Check';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import ArrowUpward from '@material-ui/icons/ArrowUpward';
+import Check from '@material-ui/icons/Check';
 import React from 'react';
 import { useVoting } from '../../hooks/useVoting';
+import {
+  Box,
+  createStyles,
+  IconButton,
+  makeStyles,
+  Theme,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
+
+export type QetaVoteButtonsClassKey =
+  | 'qetaCorrectAnswerSelected'
+  | 'qetaCorrectAnswer'
+  | 'voteButtonContainer';
+
+const useStyles = makeStyles(
+  (theme: Theme) =>
+    createStyles({
+      qetaCorrectAnswerSelected: {
+        color: theme.palette.success.main,
+      },
+      qetaCorrectAnswer: {
+        color: theme.palette.grey[500],
+      },
+      voteButtonContainer: {
+        borderWidth: '1px',
+        borderColor: 'white',
+      },
+    }),
+  { name: 'QetaVoteButtons' },
+);
 
 export const VoteButtons = (props: {
   entity: PostResponse | AnswerResponse;
@@ -28,6 +55,7 @@ export const VoteButtons = (props: {
     toggleCorrectAnswer,
   } = useVoting(props.entity);
   const own = props.entity.own ?? false;
+  const classes = useStyles();
 
   return (
     <React.Fragment>
@@ -77,9 +105,11 @@ export const VoteButtons = (props: {
                   }
                 >
                   <Check
-                    sx={{
-                      color: correctAnswer ? 'success.main' : 'text.primary',
-                    }}
+                    className={
+                      correctAnswer
+                        ? classes.qetaCorrectAnswerSelected
+                        : classes.qetaCorrectAnswer
+                    }
                   />
                 </IconButton>
               </span>

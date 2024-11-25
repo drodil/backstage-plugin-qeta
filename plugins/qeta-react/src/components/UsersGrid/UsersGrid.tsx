@@ -1,11 +1,10 @@
-import Grid from '@mui/material/Grid';
 import React, { useEffect } from 'react';
 import { useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { UsersGridContent } from './UsersGridContent';
 import useDebounce from 'react-use/lib/useDebounce';
 import { SearchBar } from '../SearchBar/SearchBar';
-import Typography from '@mui/material/Typography';
+import { Grid, Typography } from '@material-ui/core';
 
 type EntityFilters = {
   order: 'asc' | 'desc';

@@ -1,7 +1,3 @@
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
 import {
   GlobalStat,
   StatisticsResponse,
@@ -11,6 +7,7 @@ import React from 'react';
 import numeral from 'numeral';
 import { useTranslation } from '../../hooks';
 import { isGlobalStat, isUserStat } from '../StatsChart/util';
+import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 
 const SummaryCard = (props: { title: string; value?: number }) => {
   const { title, value } = props;

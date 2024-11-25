@@ -9,15 +9,16 @@ import React, { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef } from '../../routes';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardActionArea from '@mui/material/CardActionArea';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import CardMedia from '@mui/material/CardMedia';
+import {
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  IconButton,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
@@ -26,12 +27,12 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { qetaApiRef } from '../../api';
-import VerticalAlignTopIcon from '@mui/icons-material/VerticalAlignTop';
-import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import Stack from '@mui/material/Stack';
+import VerticalAlignTopIcon from '@material-ui/icons/VerticalAlignTop';
+import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import { UserLink } from '../Links';
+import { SmallAvatar } from '../Utility/SmallAvatar';
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -90,7 +91,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             alt={post.title}
           />
         )}
-        <CardContent style={{ paddingBottom: '0.5em' }}>
+        <CardContent style={{ paddingBottom: '0.5rem' }}>
           <Typography gutterBottom variant="h6" component="div">
             {post.title}
           </Typography>
@@ -101,24 +102,17 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
           </Typography>
         </CardContent>
       </CardActionArea>
-      <CardContent style={{ paddingTop: '0.5em' }}>
+      <CardContent style={{ paddingTop: '0.5rem' }}>
         <TagsAndEntities entity={post} />
-        <Box style={{ paddingLeft: '0.2em', paddingTop: '0.5em' }}>
+        <Box style={{ paddingLeft: '0.2rem', paddingTop: '0.5rem' }}>
           <Typography variant="caption">
-            <Avatar
+            <SmallAvatar
               src={user?.spec?.profile?.picture}
               alt={name}
               variant="rounded"
-              sx={{
-                display: 'inline-flex !important',
-                marginRight: '0.25em',
-                fontSize: '1em',
-                maxWidth: '1em',
-                maxHeight: '1em',
-              }}
             >
               {initials}
-            </Avatar>
+            </SmallAvatar>
             <UserLink entityRef={post.author} />{' '}
             <Link to={href} className="qetaPostListItemQuestionBtn">
               <RelativeTimeWithTooltip value={post.created} />
@@ -128,12 +122,10 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
           </Typography>
         </Box>
         {allowRanking && (
-          <Stack
-            direction="row"
-            spacing={0}
+          <Box
             style={{
-              paddingRight: '0.2em',
-              paddingTop: '0.5em',
+              paddingRight: '0.2rem',
+              paddingTop: '0.5rem',
               float: 'right',
             }}
           >
@@ -157,7 +149,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
                 <VerticalAlignBottomIcon />
               </IconButton>
             </Tooltip>
-          </Stack>
+          </Box>
         )}
       </CardContent>
     </Card>

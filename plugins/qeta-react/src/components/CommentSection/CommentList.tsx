@@ -2,8 +2,6 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import React from 'react';
 import { Link } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
@@ -12,11 +10,25 @@ import { AuthorLink } from '../Links/Links';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
-import { styled } from '@mui/system';
+import { Box, makeStyles, Typography } from '@material-ui/core';
 
-const CommentBox = styled('div', { name: 'QetaCommentBox' })({
-  padding: '0.5em',
-});
+export type QetaCommentListClassKey = 'content' | 'root' | 'box';
+
+const useStyles = makeStyles(
+  () => ({
+    root: {},
+    box: {
+      padding: '0.5em',
+    },
+    content: {
+      display: 'inline',
+      '& *:last-child': {
+        display: 'inline',
+      },
+    },
+  }),
+  { name: 'QetaCommentList' },
+);
 
 export const CommentList = (props: {
   onCommentDelete: (question: PostResponse, answer?: AnswerResponse) => void;
@@ -27,6 +39,7 @@ export const CommentList = (props: {
   const entity = answer ?? question;
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslation();
+  const styles = useStyles();
 
   const deleteComment = (id: number) => {
     if (answer) {
@@ -43,19 +56,14 @@ export const CommentList = (props: {
   }
 
   return (
-    <Box>
+    <Box className={styles.root}>
       {entity.comments?.map(c => {
         return (
           <div key={c.id}>
-            <CommentBox>
+            <Box className={styles.box}>
               <MarkdownRenderer
                 content={c.content}
-                sx={{
-                  display: 'inline',
-                  '& *:last-child': {
-                    display: 'inline',
-                  },
-                }}
+                className={styles.content}
               />
               <Typography variant="caption" className="qetaCommentMetadata">
                 {' – '}
@@ -75,7 +83,7 @@ export const CommentList = (props: {
                   </>
                 )}
               </Typography>
-            </CommentBox>
+            </Box>
           </div>
         );
       })}

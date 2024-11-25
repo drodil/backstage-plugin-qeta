@@ -1,4 +1,3 @@
-import Grid from '@mui/material/Grid';
 import React from 'react';
 import { UsersResponse } from '@drodil/backstage-plugin-qeta-common';
 import { WarningPanel } from '@backstage/core-components';
@@ -6,6 +5,7 @@ import { useTranslation } from '../../hooks';
 import { UsersGridItem } from './UsersGridItem';
 import { NoUsersCard } from './NoUsersCard';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
+import { Grid } from '@material-ui/core';
 
 export const UsersGridContent = (props: {
   loading: boolean;

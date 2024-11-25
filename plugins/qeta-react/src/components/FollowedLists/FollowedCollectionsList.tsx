@@ -1,9 +1,9 @@
-import ListItem from '@mui/material/ListItem';
 import React from 'react';
 import { useTranslation } from '../../hooks';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
 import { CollectionChip } from '../TagsAndEntities/CollectionChip';
-import { RightList, RightListContainer } from '../Styled/RightList';
+import { RightList, RightListContainer } from '../Utility/RightList';
+import { ListItem } from '@material-ui/core';
 
 export const FollowedCollectionsList = () => {
   const collections = useCollectionsFollow();

@@ -1,7 +1,7 @@
 import { Content, Page } from '@backstage/core-components';
-import Container from '@mui/material/Container';
 import { PostsContainer } from '@drodil/backstage-plugin-qeta-react';
 import React from 'react';
+import { Container } from '@material-ui/core';
 
 export const TagPage = () => {
   return (

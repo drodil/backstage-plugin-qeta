@@ -1,8 +1,8 @@
-import ListItem from '@mui/material/ListItem';
 import React from 'react';
 import { EntityChip } from '../TagsAndEntities/EntityChip';
 import { useEntityFollow, useTranslation } from '../../hooks';
-import { RightList, RightListContainer } from '../Styled/RightList';
+import { RightList, RightListContainer } from '../Utility/RightList';
+import { ListItem } from '@material-ui/core';
 
 export const FollowedEntitiesList = () => {
   const entities = useEntityFollow();

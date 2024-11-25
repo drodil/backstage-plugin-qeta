@@ -1,23 +1,25 @@
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import type { MenuItemProps } from '@mui/material/MenuItem';
-import MenuItem from '@mui/material/MenuItem';
-import ListItem from '@mui/material/ListItem';
-import SvgIcon from '@mui/material/SvgIcon';
-import MenuList from '@mui/material/MenuList';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import AccountBox from '@mui/icons-material/AccountBox';
-import LoyaltyOutlined from '@mui/icons-material/LoyaltyOutlined';
-import StarIcon from '@mui/icons-material/Star';
+import {
+  Box,
+  ListItem,
+  ListItemIcon,
+  makeStyles,
+  MenuItem,
+  MenuList,
+  SvgIcon,
+  Typography,
+} from '@material-ui/core';
+import AccountBox from '@material-ui/icons/AccountBox';
+import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
+import StarIcon from '@material-ui/icons/Star';
 import React, { ReactNode } from 'react';
 import { useApp, useRouteRef } from '@backstage/core-plugin-api';
-import HelpOutlined from '@mui/icons-material/HelpOutlined';
+import HelpOutlined from '@material-ui/icons/HelpOutlined';
 import { useNavigate } from 'react-router-dom';
-import Home from '@mui/icons-material/Home';
+import Home from '@material-ui/icons/Home';
 import { useLocation } from 'react-use';
-import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
-import PlaylistPlay from '@mui/icons-material/PlaylistPlay';
-import SettingsIcon from '@mui/icons-material/Settings';
+import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import PlaylistPlay from '@material-ui/icons/PlaylistPlay';
+import SettingsIcon from '@material-ui/icons/Settings';
 import { GroupIcon } from '@backstage/core-components';
 import {
   articlesRouteRef,
@@ -34,18 +36,58 @@ import {
 } from '../../routes';
 import { TrophyIcon } from '../TopRankingUsersCard';
 import { useIdentityApi, useIsModerator, useTranslation } from '../../hooks';
-import { styled } from '@mui/system';
 
-const LeftMenuItem = styled(ListItemIcon, { name: 'QetaLeftMenuIcon' })({
-  minWidth: '26px !important',
-});
+export type QetaLeftMenuClassKey =
+  | 'leftMenu'
+  | 'inPopup'
+  | 'outsidePopup'
+  | 'selectedMenuItem'
+  | 'nonSelectedMenuItem'
+  | 'menuIcon';
+
+export const useStyles = makeStyles(
+  theme => {
+    return {
+      leftMenu: {
+        top: '0',
+        width: '165px',
+        paddingTop: '1em',
+      },
+      inPopup: {
+        marginRight: 0,
+        padding: '0.5rem',
+      },
+      outsidePopup: {
+        marginRight: theme.spacing(5),
+        float: 'right',
+        position: 'sticky',
+      },
+      selectedMenuItem: {
+        color: theme.palette.primary.contrastText,
+        backgroundColor: theme.palette.primary.light,
+        borderRadius: theme.shape.borderRadius,
+        '&:hover': {
+          backgroundColor: theme.palette.primary.dark,
+        },
+        '& svg': {
+          color: theme.palette.primary.contrastText,
+        },
+      },
+      nonSelectedMenuItem: {
+        backgroundColor: 'initial',
+      },
+      menuIcon: {
+        minWidth: '26px',
+      },
+    };
+  },
+  { name: 'QetaLeftMenu' },
+);
 
 export const LeftMenu = (props: {
   onKeyDown?: (event: React.KeyboardEvent) => void;
   autoFocusItem?: boolean;
-  onClick?: (
-    event: MouseEvent | TouchEvent | React.MouseEvent<EventTarget>,
-  ) => void;
+  onClick?: (event: React.MouseEvent<EventTarget>) => void;
   inPopup?: boolean;
 }) => {
   const rootRoute = useRouteRef(qetaRouteRef);
@@ -59,6 +101,7 @@ export const LeftMenu = (props: {
   const entitiesRoute = useRouteRef(entitiesRouteRef);
   const usersRoute = useRouteRef(usersRouteRef);
   const moderatorRoute = useRouteRef(moderatorRouteRef);
+  const styles = useStyles();
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -70,25 +113,6 @@ export const LeftMenu = (props: {
     error: userError,
   } = useIdentityApi(api => api.getBackstageIdentity(), []);
 
-  const StyledMenuItem = styled(MenuItem, { name: 'QetaLeftMenuItem' })<
-    MenuItemProps & { active: boolean }
-  >(({ theme, ...p }) => {
-    return p.active
-      ? {
-          width: '100%',
-          color: theme.palette.primary.contrastText,
-          backgroundColor: theme.palette.primary.light,
-          borderRadius: 1,
-          '&:hover': {
-            backgroundColor: theme.palette.primary.dark,
-          },
-          '& svg': {
-            color: theme.palette.primary.contrastText,
-          },
-        }
-      : { width: '100%', backgroundColor: 'initial', borderRadius: 1 };
-  });
-
   const CustomMenuItem = ({
     route,
     children,
@@ -97,17 +121,21 @@ export const LeftMenu = (props: {
     children: ReactNode[];
   }) => {
     return (
-      <StyledMenuItem
+      <MenuItem
         onClick={e => {
           navigate(route);
           if (props.onClick) {
             props.onClick(e);
           }
         }}
-        active={route === location.pathname}
+        className={
+          route === location.pathname
+            ? styles.selectedMenuItem
+            : styles.nonSelectedMenuItem
+        }
       >
         {children}
-      </StyledMenuItem>
+      </MenuItem>
     );
   };
 
@@ -116,18 +144,9 @@ export const LeftMenu = (props: {
   return (
     <MenuList
       id="left-menu"
-      sx={{
-        top: '0',
-        maxWidth: '165px',
-        paddingTop: '2em',
-        ...(props.inPopup
-          ? { marginRight: 0, padding: '0.5em' }
-          : {
-              marginRight: 4,
-              float: 'right',
-              position: 'sticky',
-            }),
-      }}
+      className={`${styles.leftMenu} ${
+        props.inPopup ? styles.inPopup : styles.outsidePopup
+      }`}
       onKeyDown={props.onKeyDown}
       autoFocusItem={props.autoFocusItem}
     >
@@ -139,71 +158,71 @@ export const LeftMenu = (props: {
         }
       >
         <CustomMenuItem route={rootRoute()}>
-          <LeftMenuItem>
+          <ListItemIcon className={styles.menuIcon}>
             <Home fontSize="small" />
-          </LeftMenuItem>
+          </ListItemIcon>
           {t('leftMenu.home')}
         </CustomMenuItem>
         <ListItem>
           <Typography variant="subtitle2">{t('leftMenu.content')}</Typography>
         </ListItem>
         <CustomMenuItem route={questionsRoute()}>
-          <LeftMenuItem>
+          <ListItemIcon className={styles.menuIcon}>
             <HelpOutlined fontSize="small" />
-          </LeftMenuItem>
+          </ListItemIcon>
           {t('leftMenu.questions')}
         </CustomMenuItem>
         <CustomMenuItem route={articlesRoute()}>
-          <LeftMenuItem>
+          <ListItemIcon className={styles.menuIcon}>
             <CollectionsBookmarkIcon fontSize="small" />
-          </LeftMenuItem>
+          </ListItemIcon>
           {t('leftMenu.articles')}
         </CustomMenuItem>
         <CustomMenuItem route={favoritesRoute()}>
-          <LeftMenuItem>
+          <ListItemIcon className={styles.menuIcon}>
             <StarIcon fontSize="small" />
-          </LeftMenuItem>
+          </ListItemIcon>
           {t('leftMenu.favoriteQuestions')}
         </CustomMenuItem>
         <CustomMenuItem route={entitiesRoute()}>
-          <LeftMenuItem>
+          <ListItemIcon className={styles.menuIcon}>
             <EntityIcon fontSize="small" />
-          </LeftMenuItem>
+          </ListItemIcon>
           {t('leftMenu.entities')}
         </CustomMenuItem>
         <CustomMenuItem route={tagsRoute()}>
-          <LeftMenuItem>
+          <ListItemIcon className={styles.menuIcon}>
             <LoyaltyOutlined fontSize="small" />
-          </LeftMenuItem>
+          </ListItemIcon>
           {t('leftMenu.tags')}
         </CustomMenuItem>
         <ListItem>
           <Typography variant="subtitle2">{t('leftMenu.community')}</Typography>
         </ListItem>
         <CustomMenuItem route={collectionsRoute()}>
-          <LeftMenuItem>
+          <ListItemIcon className={styles.menuIcon}>
             <PlaylistPlay fontSize="small" />
-          </LeftMenuItem>
+          </ListItemIcon>
           {t('leftMenu.collections')}
         </CustomMenuItem>
         <CustomMenuItem route={usersRoute()}>
-          <LeftMenuItem>
+          <ListItemIcon className={styles.menuIcon}>
             <GroupIcon fontSize="small" />
-          </LeftMenuItem>
+          </ListItemIcon>
           {t('leftMenu.users')}
         </CustomMenuItem>
         {user && !loadingUser && !userError && (
           <CustomMenuItem route={`${userRoute()}/${user.userEntityRef}`}>
-            <LeftMenuItem>
+            <ListItemIcon className={styles.menuIcon}>
               <AccountBox fontSize="small" />
-            </LeftMenuItem>
+            </ListItemIcon>
             {t('leftMenu.profile')}
           </CustomMenuItem>
         )}
         <CustomMenuItem route={statisticsRoute()}>
-          <LeftMenuItem>
+          <ListItemIcon className={styles.menuIcon}>
             <TrophyIcon />
-          </LeftMenuItem>
+          </ListItemIcon>
           {t('leftMenu.statistics')}
         </CustomMenuItem>
         {isModerator && (
@@ -214,9 +233,9 @@ export const LeftMenu = (props: {
               </Typography>
             </ListItem>
             <CustomMenuItem route={moderatorRoute()}>
-              <LeftMenuItem>
+              <ListItemIcon className={styles.menuIcon}>
                 <SettingsIcon />
-              </LeftMenuItem>
+              </ListItemIcon>
               {t('leftMenu.moderate')}
             </CustomMenuItem>
           </>

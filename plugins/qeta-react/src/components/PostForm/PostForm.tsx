@@ -4,9 +4,8 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Alert from '@mui/material/Alert';
+import { Button, TextField } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import React, { useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -315,6 +314,7 @@ export const PostForm = (props: PostFormProps) => {
             value={value}
             onChange={onChange}
             height={400}
+            error={'content' in errors}
             placeholder={t('postForm.contentInput.placeholder', { type })}
             config={configApi}
             onImageUpload={onImageUpload}
@@ -353,7 +353,6 @@ export const PostForm = (props: PostFormProps) => {
         type="submit"
         variant="contained"
         disabled={posting}
-        sx={{ marginTop: 2, marginBottom: 2 }}
       >
         {id ? t('postForm.submit.existingPost') : t('postForm.submit.newPost')}
       </Button>

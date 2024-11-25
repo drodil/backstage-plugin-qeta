@@ -1,6 +1,4 @@
 import { useQetaApi, useTranslation } from '../../hooks';
-import CardHeader from '@mui/material/CardHeader';
-import Card from '@mui/material/Card';
 import React, { ReactNode } from 'react';
 import {
   NewArticleSuggestion,
@@ -8,17 +6,20 @@ import {
   NoCorrectAnswerSuggestion,
   SuggestionType,
 } from '@drodil/backstage-plugin-qeta-common';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import AssistantIcon from '@mui/icons-material/Assistant';
-import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined';
-import CheckIcon from '@mui/icons-material/Check';
-import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
+import AssistantIcon from '@material-ui/icons/Assistant';
+import HelpOutlinedIcon from '@material-ui/icons/HelpOutlined';
+import CheckIcon from '@material-ui/icons/Check';
+import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import { useNavigate } from 'react-router-dom';
-import ListItemButton from '@mui/material/ListItemButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef } from '../../routes';
-import ListItemIcon from '@mui/material/ListItemIcon';
+import {
+  Card,
+  CardHeader,
+  List,
+  ListItem,
+  ListItemIcon,
+} from '@material-ui/core';
 
 const SuggestionListItem = (props: {
   children: ReactNode;
@@ -27,11 +28,9 @@ const SuggestionListItem = (props: {
 }) => {
   const navigate = useNavigate();
   return (
-    <ListItem disablePadding disableGutters>
-      <ListItemButton onClick={() => navigate(props.href)}>
-        {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
-        {props.children}
-      </ListItemButton>
+    <ListItem button onClick={() => navigate(props.href)}>
+      {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
+      {props.children}
     </ListItem>
   );
 };

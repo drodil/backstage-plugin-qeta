@@ -3,12 +3,8 @@ import { userRouteRef } from '../../routes';
 import { useTranslation, useUserFollow } from '../../hooks';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import React from 'react';
-import Chip from '@mui/material/Chip';
 import { useNavigate } from 'react-router-dom';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
+import { Button, Chip, Grid, Tooltip, Typography } from '@material-ui/core';
 
 export const UserTooltip = (props: { entityRef: string }) => {
   const { entityRef } = props;

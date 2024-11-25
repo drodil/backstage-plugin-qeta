@@ -1,6 +1,4 @@
 import { WarningPanel } from '@backstage/core-components';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect } from 'react';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
@@ -16,6 +14,7 @@ import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymou
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
+import { Button, Typography } from '@material-ui/core';
 
 type AnswerFormData = {
   postId: number;
@@ -166,12 +165,7 @@ export const AnswerForm = (props: {
             label={t('anonymousCheckbox.answerAnonymously')}
           />
         )}
-        <Button
-          variant="outlined"
-          type="submit"
-          color="primary"
-          sx={{ marginBottom: 2, marginTop: 2 }}
-        >
+        <Button variant="outlined" type="submit" color="primary">
           {id
             ? t('answerForm.submit.existingAnswer')
             : t('answerForm.submit.newAnswer')}

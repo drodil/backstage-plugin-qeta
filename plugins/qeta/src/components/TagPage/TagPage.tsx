@@ -3,6 +3,7 @@ import { ContentHeader } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
+  ButtonContainer,
   FollowedTagsList,
   MarkdownRenderer,
   PostHighlightList,
@@ -13,13 +14,10 @@ import {
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Whatshot from '@mui/icons-material/Whatshot';
+import Whatshot from '@material-ui/icons/Whatshot';
 import { useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
+import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 
 export const TagPage = () => {
   const { tag } = useParams();
@@ -45,9 +43,11 @@ export const TagPage = () => {
     <Grid container spacing={4}>
       <Grid item md={12} lg={8} xl={9}>
         <ContentHeader title={tag ? `#${tag}` : t('tagPage.defaultTitle')}>
-          {tag && <TagFollowButton tag={tag} />}
-          <AskQuestionButton tags={tag ? [tag] : undefined} />
-          <WriteArticleButton tags={tag ? [tag] : undefined} />
+          <ButtonContainer>
+            {tag && <TagFollowButton tag={tag} />}
+            <AskQuestionButton tags={tag ? [tag] : undefined} />
+            <WriteArticleButton tags={tag ? [tag] : undefined} />
+          </ButtonContainer>
         </ContentHeader>
         {resp && (
           <Card variant="outlined" style={{ marginBottom: '1em' }}>

@@ -1,8 +1,6 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
+import { Box, Button, Grid, makeStyles } from '@material-ui/core';
 import {
   AnswerResponse,
   PostResponse,
@@ -16,15 +14,26 @@ import { confirmNavigationIfEdited } from '../../utils/utils';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { useTranslation } from '../../hooks';
-import AddCommentIcon from '@mui/icons-material/AddComment';
-import { SxProps } from '@mui/system';
+import AddCommentIcon from '@material-ui/icons/AddComment';
+
+export type QetaCommentSectionClassKey = 'root' | 'addCommentButton';
+
+const useStyles = makeStyles(
+  () => ({
+    root: {
+      marginTop: '1em',
+    },
+    addCommentButton: {},
+  }),
+  { name: 'QetaCommentSection' },
+);
 
 export const CommentSection = (props: {
   onCommentPost: (question: PostResponse, answer?: AnswerResponse) => void;
   onCommentDelete: (question: PostResponse, answer?: AnswerResponse) => void;
   post: PostResponse;
   answer?: AnswerResponse;
-  sx?: SxProps;
+  className?: string;
 }) => {
   const { answer, post, onCommentPost, onCommentDelete } = props;
   const analytics = useAnalytics();
@@ -35,6 +44,7 @@ export const CommentSection = (props: {
   const [edited, setEdited] = React.useState(false);
   const { t } = useTranslation();
   const { handleSubmit, control, reset } = useForm<{ content: string }>({});
+  const styles = useStyles();
 
   const postComment = (data: { content: string }) => {
     setPosting(true);
@@ -65,7 +75,10 @@ export const CommentSection = (props: {
   }, [edited]);
 
   return (
-    <Box marginLeft={8} sx={{ marginTop: 1, ...props.sx }}>
+    <Box
+      marginLeft={9}
+      className={`${styles.root} ${props.className} qetaCommentSection`}
+    >
       <CommentList
         question={post}
         answer={answer}
@@ -80,7 +93,6 @@ export const CommentSection = (props: {
             <Grid item>
               <Button
                 size="small"
-                className="qetaAddCommentBtn"
                 startIcon={<AddCommentIcon />}
                 onClick={() => setFormVisible(true)}
               >
@@ -126,6 +138,7 @@ export const CommentSection = (props: {
                   size="small"
                   className="qetaCommentBtn"
                   type="submit"
+                  color="primary"
                   disabled={posting}
                 >
                   {t('commentSection.post')}

@@ -1,5 +1,4 @@
 import { ContentHeader, InfoCard, Progress } from '@backstage/core-components';
-import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import {
   AIAnswerCard,
@@ -12,6 +11,7 @@ import {
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags, Template } from '@drodil/backstage-plugin-qeta-common';
+import { Grid } from '@material-ui/core';
 
 export const AskPage = () => {
   const { id } = useParams();

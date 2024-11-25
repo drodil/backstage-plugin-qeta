@@ -1,15 +1,12 @@
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import React from 'react';
-import Skeleton from '@mui/material/Skeleton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi, useTranslation } from '../../hooks';
-import ListItemButton from '@mui/material/ListItemButton';
 import { useNavigate } from 'react-router-dom';
-import { RightList, RightListContainer } from '../Styled/RightList';
+import { RightList, RightListContainer } from '../Utility/RightList';
+import { Divider, ListItem, ListItemText } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
 export const PostHighlightList = (props: {
   type: string;
@@ -44,7 +41,7 @@ export const PostHighlightList = (props: {
       <RightList title={props.title} icon={props.icon}>
         {loading && (
           <ListItem className="qetaPostHighlightListListItem" dense>
-            <Skeleton variant="rectangular" />
+            <Skeleton variant="rect" />
           </ListItem>
         )}
         {error && (
@@ -63,13 +60,14 @@ export const PostHighlightList = (props: {
             return (
               <React.Fragment key={q.id}>
                 <Divider />
-                <ListItemButton
+                <ListItem
                   dense
+                  button
                   component="a"
                   onClick={() => navigate(route({ id: q.id.toString(10) }))}
                 >
                   <ListItemText>{q.title}</ListItemText>
-                </ListItemButton>
+                </ListItem>
               </React.Fragment>
             );
           })}

@@ -1,6 +1,3 @@
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid';
 import { Link } from '@backstage/core-components';
 import React from 'react';
 import DOMPurify from 'dompurify';
@@ -16,7 +13,8 @@ import { VoteButtons } from '../Buttons/VoteButtons';
 import { questionRouteRef, userRouteRef } from '../../routes';
 import { useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
-import { VoteButtonContainer } from '../Styled/VoteButtonContainer';
+import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
+import { Avatar, Grid, Typography } from '@material-ui/core';
 
 export interface AnswerListItemProps {
   answer: AnswerResponse;

@@ -5,16 +5,38 @@ import {
   TabbedCard,
   WarningPanel,
 } from '@backstage/core-components';
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import ListItem from '@mui/material/ListItem';
-import List from '@mui/material/List';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
+import {
+  Avatar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
 import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
 import { TrophyIcon } from './TrophyIcon';
 import { UserLink } from '../Links';
 import { useQetaApi, useTranslation } from '../../hooks';
+
+const useStyles = makeStyles(theme => {
+  return {
+    trophyIcon: {
+      backgroundColor: 'initial',
+      color: theme.palette.text.primary,
+      borderRadius: '50%',
+      boxSizing: 'border-box',
+      padding: '0.5rem',
+      height: 50,
+      width: 50,
+    },
+    votesText: {
+      display: 'grid',
+      placeItems: 'center',
+      marginLeft: '16px',
+    },
+  };
+});
 
 type RankingIcon = {
   iconsByRanking: Map<number, ReactNode>;
@@ -25,19 +47,24 @@ const DefaultRankingIcons = new Map<number, ReactNode>([
   [
     1,
     <TrophyIcon
-      style={{ color: '#DAA520', height: '2.2em', width: '2.2em' }}
+      style={{ color: '#DAA520', height: '2.2rem', width: '2.2rem' }}
     />,
   ],
   [
     2,
     <TrophyIcon
-      style={{ color: '#C0C0C0', height: '2.1em', width: '2.1em' }}
+      style={{ color: '#C0C0C0', height: '2.1rem', width: '2.1rem' }}
     />,
   ],
-  [3, <TrophyIcon style={{ color: '#B87333', height: '2em', width: '2em' }} />],
+  [
+    3,
+    <TrophyIcon style={{ color: '#B87333', height: '2rem', width: '2rem' }} />,
+  ],
 ]);
 
-const DefaultUserIcon = <TrophyIcon style={{ height: '2em', width: '2em' }} />;
+const DefaultUserIcon = (
+  <TrophyIcon style={{ height: '2rem', width: '2rem' }} />
+);
 
 const getOrdinal = (n: number) => {
   if (n % 10 === 1 && n % 100 !== 11) {
@@ -58,6 +85,7 @@ export const RankingRow = (props: {
   rankingIcon?: RankingIcon;
   unit: string;
 }) => {
+  const classes = useStyles();
   const userRef = props.userRef;
 
   const ordinalPosition = props?.position ? getOrdinal(props?.position) : '';
@@ -75,7 +103,7 @@ export const RankingRow = (props: {
   return (
     <ListItem className="qetaRankingCardRow">
       <ListItemAvatar>
-        <Avatar>{rankingIcon}</Avatar>
+        <Avatar className={classes.trophyIcon}>{rankingIcon}</Avatar>
       </ListItemAvatar>
 
       <ListItemText
@@ -96,7 +124,7 @@ export const RankingRow = (props: {
         }
       />
 
-      <div>
+      <div className={classes.votesText}>
         <Typography variant="subtitle1">
           {props?.total} {props.unit}
         </Typography>

@@ -1,25 +1,23 @@
-import Button from '@mui/material/Button';
-import Popper from '@mui/material/Popper';
-import Paper from '@mui/material/Paper';
-import Grow from '@mui/material/Grow';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
+import {
+  Button,
+  ClickAwayListener,
+  Grow,
+  Paper,
+  Popper,
+} from '@material-ui/core';
 import React from 'react';
 import { LeftMenu } from './LeftMenu';
-import MenuIcon from '@mui/icons-material/Menu';
-import { useTranslation } from '../../hooks';
+import MenuIcon from '@material-ui/icons/Menu';
 
 export const LeftMenuButton = () => {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
-  const { t } = useTranslation();
 
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen);
   };
 
-  const handleClose = (
-    event: MouseEvent | TouchEvent | React.MouseEvent<EventTarget>,
-  ) => {
+  const handleClose = (event: React.MouseEvent<EventTarget>) => {
     if (
       anchorRef.current &&
       anchorRef.current.contains(event.target as HTMLElement)
@@ -57,9 +55,9 @@ export const LeftMenuButton = () => {
         variant="contained"
         onClick={handleToggle}
         startIcon={<MenuIcon />}
-        style={{ marginBottom: '0.5em' }}
+        style={{ marginBottom: '0.5rem' }}
       >
-        {t('leftMenu.buttonLabel')}
+        Menu
       </Button>
       <Popper
         open={open}
@@ -77,14 +75,7 @@ export const LeftMenuButton = () => {
             }}
           >
             <ClickAwayListener onClickAway={handleClose}>
-              <Paper
-                sx={theme => ({
-                  marginLeft: 2,
-                  borderColor: theme.palette.divider,
-                  borderWidth: '1px',
-                  borderStyle: 'solid',
-                })}
-              >
+              <Paper>
                 <LeftMenu
                   onKeyDown={handleListKeyDown}
                   autoFocusItem={open}

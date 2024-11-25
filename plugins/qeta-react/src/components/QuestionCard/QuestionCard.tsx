@@ -2,16 +2,11 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 import React, { useEffect } from 'react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
@@ -22,8 +17,15 @@ import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { editQuestionRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../hooks';
-import { VoteButtonContainer } from '../Styled/VoteButtonContainer';
-import { CardActionContainer } from '../Styled/CardActionContainer';
+import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+} from '@material-ui/core';
 
 export const QuestionCard = (props: { question: PostResponse }) => {
   const { question } = props;
@@ -54,7 +56,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
 
   return (
     <>
-      <Card variant="outlined" sx={{ marginBottom: 1, position: 'relative' }}>
+      <Card variant="outlined">
         <CardContent>
           <Grid
             container
@@ -69,8 +71,8 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                 <LinkButton entity={questionEntity} />
               </VoteButtonContainer>
             </Grid>
-            <Grid item marginLeft={1} sx={{ flexGrow: 1 }}>
-              <Grid item sx={{ minHeight: '5em', paddingTop: 1 }}>
+            <Grid item style={{ flexGrow: '1' }}>
+              <Grid item style={{ minHeight: '6em', paddingTop: '0.5em' }}>
                 <Typography variant="body1" gutterBottom>
                   <MarkdownRenderer content={questionEntity.content} />
                 </Typography>
@@ -81,12 +83,11 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                 spacing={1}
                 justifyContent="space-between"
                 alignItems="flex-end"
-                sx={{ marginTop: 3 }}
               >
                 <Grid item style={{ alignSelf: 'flex-end' }}>
                   <TagsAndEntities entity={questionEntity} />
                   {(question.canEdit || question.canDelete) && (
-                    <CardActionContainer>
+                    <Box>
                       {question.canDelete && (
                         <>
                           <Button
@@ -95,7 +96,6 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                             color="secondary"
                             onClick={handleDeleteModalOpen}
                             startIcon={<DeleteIcon />}
-                            sx={{ marginRight: 1 }}
                           >
                             {t('deleteModal.deleteButton')}
                           </Button>
@@ -123,7 +123,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                           {t('questionPage.editButton')}
                         </Button>
                       )}
-                    </CardActionContainer>
+                    </Box>
                   )}
                 </Grid>
                 <Grid item xs={3}>

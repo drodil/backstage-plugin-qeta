@@ -1,16 +1,34 @@
-import Tooltip from '@mui/material/Tooltip';
-import Grid from '@mui/material/Grid';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import { useTranslation } from '../../hooks';
-import Pagination from '@mui/material/Pagination';
+import {
+  FormControl,
+  Grid,
+  makeStyles,
+  MenuItem,
+  Select,
+  Tooltip,
+} from '@material-ui/core';
+import { Pagination } from '@material-ui/lab';
+
+export type QetaPaginationClassKeys = 'root' | 'pageSizeSelect' | 'pagination';
+
+const useStyles = makeStyles(
+  () => ({
+    root: {
+      marginTop: '2em',
+    },
+    pageSizeSelect: {
+      marginRight: '1em',
+    },
+    pagination: {},
+  }),
+  { name: 'QetaPagination' },
+);
 
 export const QetaPagination = (props: {
   pageSize: number;
   handlePageChange: (_event: React.ChangeEvent<unknown>, value: number) => void;
-  handlePageSizeChange: (event: SelectChangeEvent<number>) => void;
+  handlePageSizeChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
   page: number;
   tooltip?: string;
   pageCount: number;
@@ -18,13 +36,14 @@ export const QetaPagination = (props: {
   const { handlePageChange, handlePageSizeChange, page, pageCount, tooltip } =
     props;
   const { t } = useTranslation();
+  const styles = useStyles();
   return (
     <Grid
       container
+      className={styles.root}
       spacing={0}
       alignItems="center"
       justifyContent="center"
-      sx={{ marginTop: 4 }}
     >
       <Tooltip title={tooltip ?? t('pagination.defaultTooltip')} arrow>
         <FormControl variant="outlined">
@@ -32,8 +51,7 @@ export const QetaPagination = (props: {
             value={props.pageSize}
             onChange={handlePageSizeChange}
             variant="outlined"
-            size="small"
-            sx={{ marginRight: 2 }}
+            className={styles.pageSizeSelect}
           >
             <MenuItem value={5}>5</MenuItem>
             <MenuItem value={10}>10</MenuItem>
@@ -49,7 +67,7 @@ export const QetaPagination = (props: {
         count={pageCount}
         size="large"
         variant="outlined"
-        className="qetaPagination"
+        className={styles.pagination}
         showFirstButton
         showLastButton
       />

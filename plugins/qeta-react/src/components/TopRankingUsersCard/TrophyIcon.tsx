@@ -1,5 +1,5 @@
-import type { SvgIconProps } from '@mui/material/SvgIcon';
-import SvgIcon from '@mui/material/SvgIcon';
+import { SvgIcon, SvgIconProps } from '@material-ui/core';
+
 import React from 'react';
 
 export const TrophyIcon = (props: SvgIconProps) => (

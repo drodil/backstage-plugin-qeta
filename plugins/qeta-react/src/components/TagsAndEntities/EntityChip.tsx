@@ -1,9 +1,4 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import React, { useEffect } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
@@ -11,6 +6,7 @@ import { entityRouteRef } from '../../routes';
 import { qetaApiRef } from '../../api';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useEntityFollow, useTranslation } from '../../hooks';
+import { Button, Chip, Grid, Tooltip, Typography } from '@material-ui/core';
 
 const cache: Map<string, EntityResponse> = new Map();
 

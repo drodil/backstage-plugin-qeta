@@ -1,6 +1,6 @@
-import Grid from '@mui/material/Grid';
 import React from 'react';
-import Skeleton from '@mui/material/Skeleton';
+import { Grid } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
 export const LoadingGrid = () => {
   return (
@@ -11,7 +11,7 @@ export const LoadingGrid = () => {
       style={{ height: '20vh' }}
     >
       <Grid item>
-        <Skeleton variant="rectangular" height={200} />
+        <Skeleton variant="rect" height={200} />
       </Grid>
     </Grid>
   );

@@ -1,8 +1,8 @@
-import ListItem from '@mui/material/ListItem';
 import React from 'react';
 import { useTranslation, useUserFollow } from '../../hooks';
-import { RightList, RightListContainer } from '../Styled/RightList';
+import { RightList, RightListContainer } from '../Utility/RightList';
 import { UserChip } from '../TagsAndEntities/UserChip';
+import { ListItem } from '@material-ui/core';
 
 export const FollowedUsersList = () => {
   const users = useUserFollow();

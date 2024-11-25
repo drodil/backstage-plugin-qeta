@@ -1,10 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
-import Grid from '@mui/material/Grid';
-import Skeleton from '@mui/material/Skeleton';
-import Typography from '@mui/material/Typography';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
@@ -13,6 +7,7 @@ import {
   AnswerCard,
   AnswerForm,
   AskQuestionButton,
+  ButtonContainer,
   QuestionCard,
   RelativeTimeWithTooltip,
   UpdatedByLink,
@@ -26,8 +21,16 @@ import {
   QetaSignal,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useSignal } from '@backstage/plugin-signals-react';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
+import {
+  Box,
+  Divider,
+  FormControl,
+  Grid,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
 export const QuestionPage = () => {
   const { id } = useParams();
@@ -114,13 +117,13 @@ export const QuestionPage = () => {
     return (
       <span>
         {t('authorBox.postedAtTime')}{' '}
-        <Box fontWeight="fontWeightMedium" display="inline" sx={{ mr: 2 }}>
+        <Box fontWeight="fontWeightMedium" display="inline">
           <RelativeTimeWithTooltip value={q.created} />
         </Box>
         {q.updated && (
           <React.Fragment>
             {t('authorBox.updatedAtTime')}{' '}
-            <Box fontWeight="fontWeightMedium" display="inline" sx={{ mr: 2 }}>
+            <Box fontWeight="fontWeightMedium" display="inline">
               <RelativeTimeWithTooltip value={q.updated} />{' '}
               {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
             </Box>
@@ -134,7 +137,7 @@ export const QuestionPage = () => {
   };
 
   if (loading) {
-    return <Skeleton variant="rectangular" height={200} />;
+    return <Skeleton variant="rect" height={200} />;
   }
 
   if (error || question === undefined) {
@@ -158,8 +161,10 @@ export const QuestionPage = () => {
         // @ts-ignore
         description={getDescription(question)}
       >
-        <AskQuestionButton />
-        <AddToCollectionButton post={question} />
+        <ButtonContainer>
+          <AskQuestionButton />
+          <AddToCollectionButton post={question} />
+        </ButtonContainer>
       </ContentHeader>
       <QuestionCard question={question} />
       <AIAnswerCard question={question} debounceMs={0} />
@@ -226,7 +231,7 @@ export const QuestionPage = () => {
           )}
         </Grid>
       </Box>
-      <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
+      <Divider />
       {sortedAnswers.map(a => {
         return (
           <React.Fragment key={a.id}>
@@ -236,7 +241,7 @@ export const QuestionPage = () => {
           </React.Fragment>
         );
       })}
-      <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
+      <Divider />
       <AnswerForm post={question} onPost={onAnswerPost} />
     </>
   );

@@ -4,14 +4,16 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Alert from '@mui/material/Alert';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import {
+  Button,
+  FormControl,
+  FormHelperText,
+  Grid,
+  MenuItem,
+  Select,
+  TextField,
+} from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import React, { useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -223,7 +225,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
         name="description"
       />
       {canModifyAccess && (
-        <Grid container style={{ marginTop: '1em', marginBottom: '1em' }}>
+        <Grid container style={{ marginTop: '1rem', marginBottom: '1rem' }}>
           <Grid item>
             <Controller
               control={control}
@@ -263,7 +265,6 @@ export const CollectionForm = (props: CollectionFormProps) => {
         type="submit"
         variant="contained"
         disabled={posting}
-        sx={{ marginTop: 2, marginBottom: 2 }}
       >
         {id
           ? t('collectionForm.submit.existingCollection')

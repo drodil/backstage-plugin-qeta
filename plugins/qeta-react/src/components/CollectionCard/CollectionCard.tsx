@@ -1,15 +1,12 @@
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
 import { InfoCard } from '@backstage/core-components';
-import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import CardMedia from '@mui/material/CardMedia';
+import { Button, CardContent, CardMedia, Grid } from '@material-ui/core';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import React from 'react';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteModal } from '../DeleteModal';
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from '@material-ui/icons/Edit';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionEditRouteRef } from '../../routes';
 import { useTranslation } from '../../hooks';
@@ -69,6 +66,7 @@ export const CollectionCard = (props: { collection: Collection }) => {
                   href={editCollectionRoute({
                     id: collection.id.toString(10),
                   })}
+                  className="qetaCollectionCardEditBtn"
                 >
                   {t('questionPage.editButton')}
                 </Button>

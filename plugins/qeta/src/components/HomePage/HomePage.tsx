@@ -1,6 +1,7 @@
 import { ContentHeader } from '@backstage/core-components';
 import {
   AskQuestionButton,
+  ButtonContainer,
   FollowedCollectionsList,
   FollowedEntitiesList,
   FollowedTagsList,
@@ -9,9 +10,10 @@ import {
   SuggestionsCard,
   useIdentityApi,
   useTranslation,
+  WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import React from 'react';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@material-ui/core';
 
 export const HomePage = () => {
   const { t } = useTranslation();
@@ -25,7 +27,10 @@ export const HomePage = () => {
     <Grid container spacing={4}>
       <Grid item md={12} lg={8} xl={9}>
         <ContentHeader title={t('homePage.title')}>
-          <AskQuestionButton />
+          <ButtonContainer>
+            <AskQuestionButton />
+            <WriteArticleButton />
+          </ButtonContainer>
         </ContentHeader>
         <Grid container>
           <Grid item xs={12}>

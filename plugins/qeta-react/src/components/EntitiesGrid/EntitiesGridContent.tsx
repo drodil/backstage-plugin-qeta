@@ -1,4 +1,3 @@
-import Grid from '@mui/material/Grid';
 import React from 'react';
 import { EntitiesResponse } from '@drodil/backstage-plugin-qeta-common';
 import { WarningPanel } from '@backstage/core-components';
@@ -6,6 +5,7 @@ import { useTranslation } from '../../hooks';
 import { EntitiesGridItem } from './EntitiesGridItem';
 import { NoEntitiesCard } from './NoEntitiesCard';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
+import { Grid } from '@material-ui/core';
 
 export const EntitiesGridContent = (props: {
   loading: boolean;

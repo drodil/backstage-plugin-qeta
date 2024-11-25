@@ -1,9 +1,6 @@
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
 import React from 'react';
 import { useTranslation } from '../../hooks';
+import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 
 export const NoUsersCard = () => {
   const { t } = useTranslation();

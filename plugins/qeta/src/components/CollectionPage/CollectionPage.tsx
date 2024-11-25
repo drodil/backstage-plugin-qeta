@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import {
+  ButtonContainer,
   CollectionCard,
   CollectionFollowButton,
   CreateCollectionButton,
@@ -8,10 +9,9 @@ import {
   useQetaApi,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
-import Skeleton from '@mui/material/Skeleton';
+import { Skeleton } from '@material-ui/lab';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
+import { Grid, Typography } from '@material-ui/core';
 
 export const CollectionPage = () => {
   const { id } = useParams();
@@ -24,7 +24,7 @@ export const CollectionPage = () => {
   } = useQetaApi(api => api.getCollection(id), [id]);
 
   if (loading) {
-    return <Skeleton variant="rectangular" height={200} />;
+    return <Skeleton variant="rect" height={200} />;
   }
 
   if (error || collection === undefined) {
@@ -48,7 +48,9 @@ export const CollectionPage = () => {
         titleComponent={title}
         description={t('collectionPage.info')}
       >
-        <CreateCollectionButton />
+        <ButtonContainer>
+          <CreateCollectionButton />
+        </ButtonContainer>
       </ContentHeader>
       <Grid container>
         <Grid item xs={12}>

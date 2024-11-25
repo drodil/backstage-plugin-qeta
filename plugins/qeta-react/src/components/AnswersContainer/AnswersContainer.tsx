@@ -1,11 +1,5 @@
-import Collapse from '@mui/material/Collapse';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 import React, { useEffect } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
-import FilterList from '@mui/icons-material/FilterList';
 import { useSearchParams } from 'react-router-dom';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useAnalytics } from '@backstage/core-plugin-api';
@@ -20,6 +14,8 @@ import {
 import { AnswerList } from './AnswerList';
 import { useQetaApi, useTranslation } from '../../hooks';
 import { SearchBar } from '../SearchBar/SearchBar';
+import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
+import FilterList from '@material-ui/icons/FilterList';
 
 export interface AnswersContainerProps {
   tags?: string[];

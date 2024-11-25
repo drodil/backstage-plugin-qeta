@@ -8,13 +8,12 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { compact } from 'lodash';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Alert from '@mui/material/Alert';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { TagInput } from '../PostForm/TagInput';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { TemplateFormValues } from '../PostForm/types';
+import { Button, TextField } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 
 const formToRequest = (form: TemplateFormValues): TemplateRequest => {
   return {
@@ -211,7 +210,6 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
         type="submit"
         variant="contained"
         disabled={posting}
-        sx={{ marginBottom: 2, marginTop: 2 }}
       >
         {id
           ? t('templateList.submit.existingTemplate')

@@ -1,9 +1,8 @@
 import React from 'react';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { useTranslation, useUserFollow } from '../../hooks';
+import { IconButton, Tooltip } from '@material-ui/core';
 
 export const UserFollowButton = (props: { userRef: string }) => {
   const { userRef } = props;
@@ -16,8 +15,8 @@ export const UserFollowButton = (props: { userRef: string }) => {
   return (
     <Tooltip title={t('userButton.tooltip')}>
       <IconButton
+        disableRipple
         size="small"
-        sx={{ marginLeft: 2 }}
         color={users.isFollowingUser(userRef) ? 'secondary' : 'primary'}
         onClick={() => {
           if (users.isFollowingUser(userRef)) {

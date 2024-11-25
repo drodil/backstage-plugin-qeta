@@ -1,20 +1,19 @@
-import Box from '@mui/material/Box';
 import React from 'react';
-import ListSubheader from '@mui/material/ListSubheader';
-import List from '@mui/material/List';
+import { Box, List, ListSubheader, makeStyles, Paper } from '@material-ui/core';
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    width: '100%',
+    backgroundColor: theme.palette.background.paper,
+    marginTop: '1em',
+  },
+}));
 
 export const RightListContainer = (props: { children: React.ReactNode }) => {
+  const styles = useStyles();
   return (
-    <Box
-      display={{ md: 'none', lg: 'block' }}
-      sx={{
-        width: '100%',
-        bgcolor: 'background.paper',
-        marginBottom: 2,
-        borderRadius: 1,
-      }}
-    >
-      {props.children}
+    <Box display={{ md: 'none', lg: 'block' }}>
+      <Paper className={styles.container}>{props.children}</Paper>
     </Box>
   );
 };

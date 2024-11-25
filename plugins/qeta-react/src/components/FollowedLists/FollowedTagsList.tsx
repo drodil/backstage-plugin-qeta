@@ -1,8 +1,8 @@
-import ListItem from '@mui/material/ListItem';
 import React from 'react';
 import { TagChip } from '../TagsAndEntities/TagChip';
 import { useTagsFollow, useTranslation } from '../../hooks';
-import { RightList, RightListContainer } from '../Styled/RightList';
+import { RightList, RightListContainer } from '../Utility/RightList';
+import { ListItem } from '@material-ui/core';
 
 export const FollowedTagsList = () => {
   const tags = useTagsFollow();

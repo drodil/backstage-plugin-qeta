@@ -1,7 +1,3 @@
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid';
 import React from 'react';
 import {
   AnswerResponse,
@@ -11,27 +7,38 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { AuthorLink, UpdatedByLink } from '../Links';
 import { useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
+import { Avatar, Box, Grid, makeStyles, Typography } from '@material-ui/core';
+
+const useStyles = makeStyles(
+  theme => ({
+    authorBox: {
+      padding: theme.spacing(1),
+      float: 'right',
+      maxWidth: '200px',
+      border: `1px solid ${theme.palette.action.selected}`,
+      '& .avatar': {
+        width: theme.spacing(3),
+        height: theme.spacing(3),
+        fontSize: '1rem',
+      },
+    },
+    authorLink: {
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+    },
+  }),
+  { name: 'QetaAuthorBox' },
+);
 
 export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
   const { entity } = props;
   const { t } = useTranslation();
   const { name, initials, user } = useEntityAuthor(entity);
+  const styles = useStyles();
 
   return (
-    <Box
-      sx={theme => ({
-        padding: 1,
-        float: 'right',
-        maxWidth: '200px',
-        border: `1px solid ${theme.palette.action.selected}`,
-        borderRadius: 1,
-        '& .avatar': {
-          width: '2em',
-          height: '2em',
-          fontSize: '1em',
-        },
-      })}
-    >
+    <Box className={`qetaAuthorBox ${styles.authorBox}`}>
       <Grid
         container
         alignItems="stretch"

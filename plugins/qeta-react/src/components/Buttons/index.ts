@@ -6,3 +6,4 @@ export { CreateCollectionButton } from './CreateCollectionButton';
 export { AddToCollectionButton } from './AddToCollectionButton';
 export { UserFollowButton } from './UserFollowButton';
 export { CollectionFollowButton } from './CollectionFollowButton';
+export { ButtonContainer } from './ButtonContainer';

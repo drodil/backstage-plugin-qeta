@@ -1,14 +1,12 @@
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { WarningPanel } from '@backstage/core-components';
 import { NoPostsCard } from '../PostsContainer/NoPostsCard';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import { Box, Grid } from '@material-ui/core';
 import { PostsGridItem } from './PostsGridItem';
 import { useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
-import { SelectChangeEvent } from '@mui/material/Select';
 
 export const PostsGridContent = (props: {
   loading: boolean;
@@ -43,8 +41,15 @@ export const PostsGridContent = (props: {
     page,
     pageCount,
   } = props;
+  const [initialLoad, setInitialLoad] = useState(true);
   const { t } = useTranslation();
   const gridRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!loading) {
+      setInitialLoad(false);
+    }
+  }, [initialLoad, loading]);
 
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
@@ -56,7 +61,9 @@ export const PostsGridContent = (props: {
     onPageChange(value);
   };
 
-  const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
+  const handlePageSizeChange = (
+    event: React.ChangeEvent<{ value: unknown }>,
+  ) => {
     if (gridRef.current) {
       gridRef.current.scrollIntoView();
     }
@@ -64,7 +71,10 @@ export const PostsGridContent = (props: {
   };
 
   if (loading) {
-    return <LoadingGrid />;
+    if (initialLoad) {
+      return <LoadingGrid />;
+    }
+    return null;
   }
 
   const itemType = (type ?? 'post') as any;
@@ -99,7 +109,7 @@ export const PostsGridContent = (props: {
           container
           direction="row"
           alignItems="stretch"
-          style={{ marginTop: '1em' }}
+          style={{ marginTop: '1rem' }}
         >
           {response.posts.map(p => {
             return (

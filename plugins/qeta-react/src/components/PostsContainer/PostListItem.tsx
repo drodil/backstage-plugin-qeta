@@ -1,7 +1,3 @@
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid';
-import Chip from '@mui/material/Chip';
 import { Link } from '@backstage/core-components';
 import React, { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
@@ -20,18 +16,37 @@ import { useSignal } from '@backstage/plugin-signals-react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { capitalize } from 'lodash';
-import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
-import HelpOutlined from '@mui/icons-material/HelpOutlined';
+import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import HelpOutlined from '@material-ui/icons/HelpOutlined';
 import { useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
-import { VoteButtonContainer } from '../Styled/VoteButtonContainer';
+import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
 import { UserLink } from '../Links';
+import {
+  Chip,
+  Grid,
+  makeStyles,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
+import { SmallAvatar } from '../Utility/SmallAvatar';
 
 export interface PostListItemProps {
   post: PostResponse;
   entity?: string;
   type?: PostType;
 }
+
+const useStyles = makeStyles(() => ({
+  author: {
+    float: 'right',
+    alignItems: 'center',
+    display: 'flex',
+  },
+  timestamp: {
+    marginLeft: '0.3em',
+  },
+}));
 
 export const PostListItem = (props: PostListItemProps) => {
   const { post, entity, type } = props;
@@ -40,6 +55,7 @@ export const PostListItem = (props: PostListItemProps) => {
   const [answersCount, setAnswersCount] = useState(post.answersCount);
   const [views, setViews] = useState(post.views);
   const { t } = useTranslation();
+  const styles = useStyles();
 
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
 
@@ -54,6 +70,7 @@ export const PostListItem = (props: PostListItemProps) => {
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
   const { name, initials, user } = useEntityAuthor(post);
+  const theme = useTheme();
 
   const route = post.type === 'question' ? questionRoute : articleRoute;
   const href = entity
@@ -84,7 +101,7 @@ export const PostListItem = (props: PostListItemProps) => {
             item
             xs={12}
             style={{
-              paddingTop: '0.5em',
+              paddingTop: '0.3em',
               paddingBottom: '0.4em',
               marginLeft: '-0.2em',
             }}
@@ -94,7 +111,6 @@ export const PostListItem = (props: PostListItemProps) => {
                 color="secondary"
                 size="small"
                 label={`${capitalize(post.type)}`}
-                sx={{ userSelect: 'none', marginBottom: 0 }}
                 icon={
                   post.type === 'question' ? (
                     <HelpOutlined />
@@ -108,7 +124,7 @@ export const PostListItem = (props: PostListItemProps) => {
               <Chip
                 variant="outlined"
                 size="small"
-                sx={theme => ({
+                style={{
                   userSelect: 'none',
                   // eslint-disable-next-line no-nested-ternary
                   borderColor: correctAnswer
@@ -116,8 +132,7 @@ export const PostListItem = (props: PostListItemProps) => {
                     : answersCount === 0
                     ? theme.palette.warning.main
                     : undefined,
-                  marginBottom: 0,
-                })}
+                }}
                 label={t('common.answers', {
                   count: answersCount,
                 })}
@@ -126,7 +141,6 @@ export const PostListItem = (props: PostListItemProps) => {
             <Chip
               variant="outlined"
               size="small"
-              sx={{ userSelect: 'none', border: 'none', marginBottom: 0 }}
               label={t('common.viewsShort', {
                 count: views,
               })}
@@ -155,24 +169,17 @@ export const PostListItem = (props: PostListItemProps) => {
             <Typography
               variant="caption"
               display="inline"
-              style={{ display: 'inline', float: 'right' }}
+              className={styles.author}
             >
-              <Avatar
+              <SmallAvatar
                 src={user?.spec?.profile?.picture}
                 alt={name}
                 variant="rounded"
-                sx={{
-                  display: 'inline-flex !important',
-                  marginRight: '0.25em',
-                  fontSize: '1em',
-                  maxWidth: '1em',
-                  maxHeight: '1em',
-                }}
               >
                 {initials}
-              </Avatar>
+              </SmallAvatar>
               <UserLink entityRef={post.author} />{' '}
-              <Link to={href} className="qetaPostListItemQuestionBtn">
+              <Link to={href} className={styles.timestamp}>
                 <RelativeTimeWithTooltip value={post.created} />
               </Link>
             </Typography>

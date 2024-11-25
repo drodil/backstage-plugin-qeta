@@ -1,7 +1,8 @@
-import { styled } from '@mui/system';
+import { makeStyles } from '@material-ui/core';
+import React from 'react';
 
-export const ModalContent = styled('div', { name: 'QetaModalContent' })(
-  ({ theme }) => ({
+const useStyles = makeStyles(theme => ({
+  content: {
     position: 'absolute',
     top: '20%',
     left: '50%',
@@ -15,5 +16,10 @@ export const ModalContent = styled('div', { name: 'QetaModalContent' })(
       marginTop: '2em',
       float: 'right',
     },
-  }),
-);
+  },
+}));
+
+export const ModalContent = (props: { children: React.ReactNode }) => {
+  const styles = useStyles();
+  return <div className={styles.content}>{props.children}</div>;
+};

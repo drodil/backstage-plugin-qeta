@@ -2,6 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import {
+  ButtonContainer,
   FollowedEntitiesList,
   FollowedTagsList,
   PostHighlightList,
@@ -10,8 +11,8 @@ import {
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import Grid from '@mui/material/Grid';
-import Whatshot from '@mui/icons-material/Whatshot';
+import Whatshot from '@material-ui/icons/Whatshot';
+import { Grid } from '@material-ui/core';
 
 export const ArticlesPage = () => {
   const [searchParams] = useSearchParams();
@@ -30,7 +31,9 @@ export const ArticlesPage = () => {
     <Grid container spacing={4}>
       <Grid item md={12} lg={8} xl={9}>
         <ContentHeader title={t('articlesPage.title')}>
-          <WriteArticleButton entity={entityRef} tags={tags} />
+          <ButtonContainer>
+            <WriteArticleButton entity={entityRef} tags={tags} />
+          </ButtonContainer>
         </ContentHeader>
         <PostsGrid type="article" />
       </Grid>

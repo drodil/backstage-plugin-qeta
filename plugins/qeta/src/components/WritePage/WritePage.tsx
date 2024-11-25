@@ -4,7 +4,7 @@ import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { PostForm, useTranslation } from '@drodil/backstage-plugin-qeta-react';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { ContentHeader, InfoCard } from '@backstage/core-components';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@material-ui/core';
 
 export const WritePage = () => {
   const { id } = useParams();

@@ -6,7 +6,7 @@ import { userRouteRef } from '../../routes';
 import { Answer, Comment, Post } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslation } from '../../hooks';
 import { UserTooltip } from '../TagsAndEntities/UserChip';
-import Tooltip from '@mui/material/Tooltip';
+import { Tooltip } from '@material-ui/core';
 
 export const UserLink = (props: {
   entityRef: string;

@@ -1,4 +1,4 @@
-import CreateIcon from '@mui/icons-material/Create';
+import CreateIcon from '@material-ui/icons/Create';
 import React from 'react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
@@ -6,7 +6,7 @@ import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { writeRouteRef } from '../../routes';
 import { useTranslation } from '../../hooks';
-import Box from '@mui/material/Box';
+import { Box } from '@material-ui/core';
 
 export const WriteArticleButton = (props: {
   entity?: string;

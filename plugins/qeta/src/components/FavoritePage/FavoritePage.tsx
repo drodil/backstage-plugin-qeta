@@ -2,13 +2,14 @@ import React from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import {
   AskQuestionButton,
+  ButtonContainer,
   PostHighlightList,
   PostsContainer,
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import Grid from '@mui/material/Grid';
-import Whatshot from '@mui/icons-material/Whatshot';
+import Whatshot from '@material-ui/icons/Whatshot';
+import { Grid } from '@material-ui/core';
 
 export const FavoritePage = () => {
   const { t } = useTranslation();
@@ -16,8 +17,10 @@ export const FavoritePage = () => {
     <Grid container spacing={4}>
       <Grid item md={12} lg={8} xl={9}>
         <ContentHeader title={t('favoritePage.title')}>
-          <AskQuestionButton />
-          <WriteArticleButton />
+          <ButtonContainer>
+            <AskQuestionButton />
+            <WriteArticleButton />
+          </ButtonContainer>
         </ContentHeader>
         <PostsContainer favorite showNoQuestionsBtn={false} />
       </Grid>

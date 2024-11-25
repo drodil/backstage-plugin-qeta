@@ -6,12 +6,7 @@ import {
   TagFollowButton,
   WriteArticleButton,
 } from '../Buttons';
-import Collapse from '@mui/material/Collapse';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import FilterList from '@mui/icons-material/FilterList';
+import FilterList from '@material-ui/icons/FilterList';
 import { FilterPanel, PostFilters } from '../FilterPanel/FilterPanel';
 import { PostsGridContent } from './PostsGridContent';
 import { capitalize } from 'lodash';
@@ -21,6 +16,7 @@ import {
 } from '../../hooks/usePaginatedPosts';
 import { useTranslation } from '../../hooks';
 import { SearchBar } from '../SearchBar/SearchBar';
+import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
 
 export type PostGridProps = PaginatedPostsProps & { allowRanking?: boolean };
 

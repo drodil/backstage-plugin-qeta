@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
 import { formatDate } from '../../utils/utils';
 import { useTranslation } from '../../hooks';
-import Grid from '@mui/material/Grid';
+import { Grid, MenuItem, TextField, Typography } from '@material-ui/core';
 
 export interface DateRangeFilterProps {
   value?: string;
@@ -66,7 +63,6 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
           select
           label={t('datePicker.range.label')}
           value={dateRangeOption || 'select'}
-          sx={{ minWidth: '200px', marginTop: 2, marginBottom: 2 }}
           onChange={e => {
             if (e.target.value !== 'custom') {
               onChange(e.target.value === 'select' ? '' : e.target.value);
@@ -93,7 +89,6 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
               id="from-date"
               type="date"
               value={fromDate}
-              sx={{ minWidth: '200px', marginTop: 2, marginBottom: 2 }}
               InputLabelProps={{ shrink: true }}
               error={!validation.isValid}
               onChange={e => {
@@ -111,7 +106,6 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
               id="to-date"
               type="date"
               value={toDate}
-              sx={{ minWidth: '200px', marginTop: 2, marginBottom: 2 }}
               InputLabelProps={{ shrink: true }}
               error={!validation.isValid}
               onChange={e => {

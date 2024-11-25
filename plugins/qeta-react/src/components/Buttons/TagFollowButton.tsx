@@ -1,9 +1,8 @@
 import React from 'react';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { useTagsFollow, useTranslation } from '../../hooks';
+import { IconButton, Tooltip } from '@material-ui/core';
 
 export const TagFollowButton = (props: { tag: string }) => {
   const { tag } = props;
@@ -15,8 +14,8 @@ export const TagFollowButton = (props: { tag: string }) => {
   return (
     <Tooltip title={t('tagButton.tooltip')}>
       <IconButton
+        disableRipple
         size="small"
-        sx={{ marginLeft: 2 }}
         color={tags.isFollowingTag(tag) ? 'secondary' : 'primary'}
         onClick={() => {
           if (tags.isFollowingTag(tag)) {

@@ -41,8 +41,9 @@ using the old backend system, please use version 1.24.5.
 
 **IMPORTANT**: Migrating from 2.x to 3.x has been briefly explained in this [document](./docs/migration.md).
 
-**IMPORTANT**: From 3.10.0 forward, this plugin is using MUIv5. If you are using MUIv4, please see the migration guide
-at https://backstage.io/docs/tutorials/migrate-to-mui5/
+**IMPORTANT**: From 3.10.0 to 3.12.5 this plugin tried to use MUI5. This was reverted back to MUI4 in 3.13.0. If you have
+updated to 3.10.0 or later, please update to 3.13.0 or later to get back to MUI4. See also the
+related [issue](https://github.com/drodil/backstage-plugin-qeta/issues/244).
 
 ## Examples
 

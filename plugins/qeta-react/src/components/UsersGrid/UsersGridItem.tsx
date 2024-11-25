@@ -1,14 +1,4 @@
 import { UserResponse } from '@drodil/backstage-plugin-qeta-common';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardHeader from '@mui/material/CardHeader';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import CardActions from '@mui/material/CardActions';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +7,18 @@ import { userRouteRef } from '../../routes';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { useIdentityApi, useTranslation, useUserFollow } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
+import {
+  Avatar,
+  Button,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Grid,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 
 export const UsersGridItem = (props: { user: UserResponse }) => {
   const { user } = props;

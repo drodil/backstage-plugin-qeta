@@ -1,12 +1,6 @@
-import Collapse from '@mui/material/Collapse';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 import React from 'react';
 import { FilterPanel, PostFilters } from '../FilterPanel/FilterPanel';
 import { PostList } from './PostList';
-import FilterList from '@mui/icons-material/FilterList';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { TagFollowButton } from '../Buttons/TagFollowButton';
@@ -19,6 +13,8 @@ import {
 } from '../../hooks/usePaginatedPosts';
 import { useTranslation } from '../../hooks';
 import { SearchBar } from '../SearchBar/SearchBar';
+import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
+import FilterList from '@material-ui/icons/FilterList';
 
 export const PostsContainer = (
   props: PaginatedPostsProps & { entity?: string },

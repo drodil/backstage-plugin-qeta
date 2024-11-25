@@ -1,10 +1,7 @@
 import React from 'react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import numeral from 'numeral';
 import { useQetaApi, useTranslation } from '../../hooks';
+import { Box, Card, CardContent, Typography } from '@material-ui/core';
 
 export const ImpactCard = () => {
   const { t } = useTranslation();
@@ -19,13 +16,7 @@ export const ImpactCard = () => {
   }
 
   return (
-    <Box
-      display={{ md: 'none', lg: 'block' }}
-      sx={{
-        width: '100%',
-        marginBottom: 2,
-      }}
-    >
+    <Box display={{ md: 'none', lg: 'block' }}>
       <Card>
         <CardContent>
           <Typography variant="h5">{t('impactCard.title')}</Typography>

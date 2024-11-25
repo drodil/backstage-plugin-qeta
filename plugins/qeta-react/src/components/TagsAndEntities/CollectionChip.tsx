@@ -1,8 +1,3 @@
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import React, { useEffect } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { collectionRouteRef } from '../../routes';
@@ -12,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useTranslation } from '../../hooks';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
+import { Button, Chip, Grid, Tooltip, Typography } from '@material-ui/core';
 
 const cache: Map<number, Collection> = new Map();
 

@@ -1,7 +1,4 @@
 import React, { ReactNode } from 'react';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
 import { Content, Header, Page } from '@backstage/core-components';
 import { Route, Routes } from 'react-router-dom';
 import { AskPage } from '../AskPage';
@@ -46,6 +43,7 @@ import { CollectionCreatePage } from '../CollectionCreatePage/CollectionCreatePa
 import { EntityPage } from '../EntityPage/EntityPage';
 import { UsersPage } from '../UsersPage/UsersPage';
 import { ModeratorPage } from '../ModeratorPage/ModeratorPage';
+import { Box, Container, Grid } from '@material-ui/core';
 
 type Props = {
   title?: string;
@@ -85,7 +83,7 @@ export const QetaPage = (props?: Props) => {
         {introElement}
         <Container maxWidth="xl">
           <Grid container spacing={4} justifyContent="flex-start">
-            <Grid item md={1} lg={2} sx={{ padding: 0 }}>
+            <Grid item md={1} lg={2}>
               <LeftMenu />
             </Grid>
             <Grid

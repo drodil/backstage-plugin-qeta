@@ -5,7 +5,7 @@ import {
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
 import { ContentHeader } from '@backstage/core-components';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@material-ui/core';
 
 export const UsersPage = () => {
   const { t } = useTranslation();

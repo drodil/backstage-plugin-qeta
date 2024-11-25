@@ -3,6 +3,7 @@ import { ContentHeader } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
+  ButtonContainer,
   EntitiesGrid,
   EntityFollowButton,
   FollowedEntitiesList,
@@ -12,14 +13,11 @@ import {
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Whatshot from '@mui/icons-material/Whatshot';
+import Whatshot from '@material-ui/icons/Whatshot';
 import { useApi } from '@backstage/core-plugin-api';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 
 export const EntityPage = () => {
   const { entityRef } = useParams();
@@ -58,9 +56,11 @@ export const EntityPage = () => {
             </Typography>
           }
         >
-          {entityRef && <EntityFollowButton entityRef={entityRef} />}
-          <AskQuestionButton entity={entityRef} />
-          <WriteArticleButton entity={entityRef} />
+          <ButtonContainer>
+            {entityRef && <EntityFollowButton entityRef={entityRef} />}
+            <AskQuestionButton entity={entityRef} />
+            <WriteArticleButton entity={entityRef} />
+          </ButtonContainer>
         </ContentHeader>
         {resp && (
           <Card variant="outlined" style={{ marginBottom: '1em' }}>

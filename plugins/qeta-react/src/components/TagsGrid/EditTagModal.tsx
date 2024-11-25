@@ -1,16 +1,18 @@
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Alert from '@mui/material/Alert';
-import Modal from '@mui/material/Modal';
-import Backdrop from '@mui/material/Backdrop';
+import {
+  Backdrop,
+  Button,
+  Grid,
+  Modal,
+  TextField,
+  Typography,
+} from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
-import { ModalContent } from '../Styled/ModalContent';
+import { ModalContent } from '../Utility/ModalContent';
 
 export const EditTagModal = (props: {
   tag: TagResponse;
@@ -46,7 +48,10 @@ export const EditTagModal = (props: {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       closeAfterTransition
-      slots={{ backdrop: Backdrop }}
+      BackdropComponent={Backdrop}
+      BackdropProps={{
+        timeout: 500,
+      }}
     >
       <ModalContent>
         {error && (

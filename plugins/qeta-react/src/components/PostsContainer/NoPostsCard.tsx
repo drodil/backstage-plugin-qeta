@@ -1,16 +1,13 @@
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
 import { LinkButton } from '@backstage/core-components';
-import HelpOutline from '@mui/icons-material/HelpOutline';
+import HelpOutline from '@material-ui/icons/HelpOutline';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef, writeRouteRef } from '../../routes';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
-import CreateIcon from '@mui/icons-material/Create';
+import CreateIcon from '@material-ui/icons/Create';
 import { useTranslation } from '../../hooks';
 import { useEntityQueryParameter } from '../../hooks/useEntityQueryParameter';
+import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 
 export const NoPostsCard = (props: {
   showNoPostsBtn?: boolean;

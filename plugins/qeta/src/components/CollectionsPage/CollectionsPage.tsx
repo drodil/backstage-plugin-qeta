@@ -1,13 +1,14 @@
 import React from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import {
+  ButtonContainer,
   CollectionsGrid,
   CreateCollectionButton,
   FollowedCollectionsList,
   useCollectionsFollow,
   useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@material-ui/core';
 
 export const CollectionsPage = () => {
   const { t } = useTranslation();
@@ -22,7 +23,9 @@ export const CollectionsPage = () => {
         xl={collections.collections.length > 0 ? 9 : 12}
       >
         <ContentHeader title={t('collectionsPage.title')}>
-          <CreateCollectionButton />
+          <ButtonContainer>
+            <CreateCollectionButton />
+          </ButtonContainer>
         </ContentHeader>
         <CollectionsGrid />
       </Grid>

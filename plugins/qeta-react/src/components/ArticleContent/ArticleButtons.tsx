@@ -1,36 +1,50 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import React from 'react';
-import ArrowUpward from '@mui/icons-material/ArrowUpward';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import ArrowDownward from '@mui/icons-material/ArrowDownward';
+import ArrowUpward from '@material-ui/icons/ArrowUpward';
+import {
+  Grid,
+  IconButton,
+  makeStyles,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { LinkButton } from '../Buttons/LinkButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { editArticleRouteRef } from '../../routes';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteModal } from '../DeleteModal';
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from '@material-ui/icons/Edit';
 import { useVoting } from '../../hooks/useVoting';
 import { useTranslation } from '../../hooks';
-import { styled } from '@mui/system';
 
-const ArticleButtonContainer = styled('div', {
-  name: 'QetaArticleButtonContainer',
-})(({ theme }) => ({
-  width: '100%',
-  paddingTop: '0.5em',
-  paddingBottom: '0.5em',
-  borderTop: `1px solid ${theme.palette.background.paper}`,
-  borderBottom: `1px solid ${theme.palette.background.paper}`,
-}));
+export type QetaArticleButtonsClassKey = 'container' | 'scoreText';
+
+export const useLocalStyles = makeStyles(
+  theme => {
+    return {
+      container: {
+        width: '100%',
+        paddingTop: '0.5rem',
+        paddingBottom: '0.5rem',
+        borderTop: `1px solid ${theme.palette.background.paper}`,
+        borderBottom: `1px solid ${theme.palette.background.paper}`,
+      },
+      scoreText: {
+        marginLeft: '0.5rem',
+        userSelect: 'none',
+      },
+    };
+  },
+  { name: 'QetaArticleButtons' },
+);
 
 export const ArticleButtons = (props: { post: PostResponse }) => {
   const { post } = props;
   const { voteUpTooltip, ownVote, voteUp, score, voteDownTooltip, voteDown } =
     useVoting(post);
+  const styles = useLocalStyles();
   const { t } = useTranslation();
   const editArticleRoute = useRouteRef(editArticleRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
@@ -40,7 +54,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
   const own = props.post.own ?? false;
 
   return (
-    <ArticleButtonContainer>
+    <div className={styles.container}>
       <Grid container justifyContent="space-between">
         <Grid item>
           <Tooltip title={voteUpTooltip}>
@@ -74,10 +88,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
             </span>
           </Tooltip>
           <Tooltip title={t('common.score', { score: score.toString(10) })}>
-            <Typography
-              sx={{ marginLeft: '0.5em', userSelect: 'none' }}
-              display="inline"
-            >
+            <Typography className={styles.scoreText} display="inline">
               {score}
             </Typography>
           </Tooltip>
@@ -117,6 +128,6 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
           )}
         </Grid>
       </Grid>
-    </ArticleButtonContainer>
+    </div>
   );
 };

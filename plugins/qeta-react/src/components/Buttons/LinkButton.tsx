@@ -1,12 +1,11 @@
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Link from '@mui/icons-material/Link';
 import React from 'react';
 import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslation } from '../../hooks';
+import { IconButton, Tooltip } from '@material-ui/core';
+import Link from '@material-ui/icons/Link';
 
 export const LinkButton = (props: {
   entity: PostResponse | AnswerResponse;

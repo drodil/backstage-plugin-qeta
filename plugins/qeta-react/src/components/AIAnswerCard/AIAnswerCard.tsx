@@ -5,23 +5,34 @@ import {
   Post,
 } from '@drodil/backstage-plugin-qeta-common';
 import React, { useCallback } from 'react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useAI, useTranslation } from '../../hooks';
-import FlareIcon from '@mui/icons-material/Flare';
+import FlareIcon from '@material-ui/icons/Flare';
 import useDebounce from 'react-use/lib/useDebounce';
-import Skeleton from '@mui/material/Skeleton';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Collapse,
+  IconButton,
+  makeStyles,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    marginTop: '1em',
+    backgroundColor: theme.palette.background.default,
+    border: `3px solid ${theme.palette.status.ok}`,
+  },
+}));
 
 export type AIAnswerCardProps = {
   question?: Post;
@@ -47,6 +58,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   const { t } = useTranslation();
   const config = useApi(configApiRef);
   const botName = config.getOptionalString('qeta.aiBotName') ?? 'AI';
+  const styles = useStyles();
 
   const {
     isAIEnabled,
@@ -126,14 +138,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   }
 
   return (
-    <Card
-      sx={theme => ({
-        marginTop: '1em',
-        backgroundColor: theme.palette.background.default,
-        border: `3px solid ${theme.palette.status.ok}`,
-      })}
-      style={style}
-    >
+    <Card style={style} className={styles.root}>
       <CardHeader
         avatar={<FlareIcon />}
         style={!expanded ? { paddingBottom: '1em' } : {}}
@@ -153,7 +158,6 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
                     setAnswer(undefined);
                     fetchAnswer({ regenerate: true });
                   }}
-                  size="large"
                 >
                   <RefreshIcon />
                 </IconButton>
@@ -171,7 +175,6 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
                   );
                 }}
                 aria-expanded={expanded}
-                size="large"
               >
                 {expanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
               </IconButton>
@@ -189,7 +192,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
       <Collapse in={expanded} timeout={0} unmountOnExit mountOnEnter>
         <CardContent>
           {answer === undefined && (
-            <Skeleton variant="rectangular" height={200} animation="wave" />
+            <Skeleton variant="rect" height={200} animation="wave" />
           )}
           {answer && <MarkdownRenderer content={answer.answer} />}
         </CardContent>

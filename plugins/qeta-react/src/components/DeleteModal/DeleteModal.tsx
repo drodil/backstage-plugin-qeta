@@ -3,19 +3,16 @@ import {
   CollectionResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Alert from '@mui/material/Alert';
-import Delete from '@mui/icons-material/Delete';
-import Modal from '@mui/material/Modal';
-import Backdrop from '@mui/material/Backdrop';
+import { Backdrop, Button, Modal, Typography } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import Delete from '@material-ui/icons/Delete';
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
 import { useBasePath } from '../../hooks/useBasePath';
 import { useTranslation } from '../../hooks';
-import { ModalContent } from '../Styled/ModalContent';
+import { ModalContent } from '../Utility/ModalContent';
 
 export const DeleteModal = (props: {
   entity: PostResponse | AnswerResponse | CollectionResponse;
@@ -87,7 +84,10 @@ export const DeleteModal = (props: {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       closeAfterTransition
-      slots={{ backdrop: Backdrop }}
+      BackdropComponent={Backdrop}
+      BackdropProps={{
+        timeout: 500,
+      }}
     >
       <ModalContent>
         {error && (

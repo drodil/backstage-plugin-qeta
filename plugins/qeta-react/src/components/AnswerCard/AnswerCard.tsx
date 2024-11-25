@@ -1,16 +1,11 @@
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import React from 'react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { AnswerForm } from '../AnswerForm';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { CommentSection } from '../CommentSection/CommentSection';
 import { LinkButton } from '../Buttons/LinkButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import {
   AnswerResponse,
   PostResponse,
@@ -18,8 +13,33 @@ import {
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { DeleteModal } from '../DeleteModal';
 import { useTranslation } from '../../hooks';
-import { VoteButtonContainer } from '../Styled/VoteButtonContainer';
-import { CardActionContainer } from '../Styled/CardActionContainer';
+import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
+import {
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
+import { ButtonContainer } from '../Buttons';
+
+const useStyles = makeStyles(theme => ({
+  answerCard: {
+    marginTop: '1em',
+  },
+  highlight: {
+    animation: 'highlight 5s',
+  },
+  '@keyframes highlight': {
+    '0%': {
+      boxShadow: `0px 0px 0px 3px ${theme.palette.secondary.light}`,
+    },
+    '100%': {
+      boxShadow: 'none',
+    },
+  },
+}));
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;
@@ -30,6 +50,7 @@ export const AnswerCard = (props: {
   const [editMode, setEditMode] = React.useState(false);
   const [answerEntity, setAnswerEntity] = React.useState(answer);
   const { t } = useTranslation();
+  const styles = useStyles();
 
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
@@ -52,18 +73,9 @@ export const AnswerCard = (props: {
     <>
       <Card
         id={`answer_${answer.id}`}
-        sx={theme => ({
-          marginTop: 3,
-          '@keyframes highlight': {
-            '0%': {
-              boxShadow: `0px 0px 0px 3px ${theme.palette.secondary.light}`,
-            },
-            '100%': {
-              boxShadow: 'none',
-            },
-          },
-          animation: highlightedAnswer ? 'highlight 5s' : 'none',
-        })}
+        className={`qetaAnswerCard ${styles.answerCard} ${
+          highlightedAnswer ? styles.highlight : ''
+        }`}
       >
         <CardContent>
           <Grid
@@ -80,8 +92,7 @@ export const AnswerCard = (props: {
             </Grid>
             <Grid
               item
-              marginLeft={1}
-              sx={{ display: 'inline-block', width: 'calc(100% - 70px)' }}
+              style={{ display: 'inline-block', width: 'calc(100% - 70px)' }}
             >
               {editMode ? (
                 <AnswerForm
@@ -91,7 +102,7 @@ export const AnswerCard = (props: {
                 />
               ) : (
                 <>
-                  <Grid item sx={{ minHeight: '3em', paddingTop: 1 }}>
+                  <Grid item style={{ minHeight: '6em', paddingTop: '0.5em' }}>
                     <Typography variant="body1" gutterBottom>
                       <MarkdownRenderer content={answerEntity.content} />
                     </Typography>
@@ -102,13 +113,12 @@ export const AnswerCard = (props: {
                     spacing={1}
                     justifyContent="space-between"
                     alignItems="flex-end"
-                    sx={{ marginTop: 3 }}
                   >
                     <Grid item style={{ alignSelf: 'flex-end' }}>
                       {(answerEntity.own ||
                         answerEntity.canDelete ||
                         answerEntity.canEdit) && (
-                        <CardActionContainer>
+                        <ButtonContainer>
                           {!answerEntity.correct &&
                             (answerEntity.own || answerEntity.canDelete) && (
                               <>
@@ -118,7 +128,6 @@ export const AnswerCard = (props: {
                                   color="secondary"
                                   onClick={handleDeleteModalOpen}
                                   startIcon={<DeleteIcon />}
-                                  sx={{ marginRight: 1 }}
                                 >
                                   {t('deleteModal.deleteButton')}
                                 </Button>
@@ -141,10 +150,10 @@ export const AnswerCard = (props: {
                               {t('questionPage.editButton')}
                             </Button>
                           )}
-                        </CardActionContainer>
+                        </ButtonContainer>
                       )}
                     </Grid>
-                    <Grid item xs={3} sx={{ padding: 0 }}>
+                    <Grid item xs={3}>
                       <AuthorBox entity={answerEntity} />
                     </Grid>
                   </Grid>
