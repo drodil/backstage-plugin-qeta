@@ -10,7 +10,7 @@ import { AuthorLink } from '../Links/Links';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
-import { Box, makeStyles, Typography } from '@material-ui/core';
+import { Box, Divider, makeStyles, Typography } from '@material-ui/core';
 
 export type QetaCommentListClassKey = 'content' | 'root' | 'box';
 
@@ -57,9 +57,10 @@ export const CommentList = (props: {
 
   return (
     <Box className={styles.root}>
-      {entity.comments?.map(c => {
+      {entity.comments?.map((c, i) => {
         return (
           <div key={c.id}>
+            {i > 0 && <Divider />}
             <Box className={styles.box}>
               <MarkdownRenderer
                 content={c.content}

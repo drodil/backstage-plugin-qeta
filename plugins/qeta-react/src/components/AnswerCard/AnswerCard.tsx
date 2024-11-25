@@ -15,6 +15,7 @@ import { DeleteModal } from '../DeleteModal';
 import { useTranslation } from '../../hooks';
 import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
 import {
+  Box,
   Button,
   Card,
   CardContent,
@@ -22,24 +23,47 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import { ButtonContainer } from '../Buttons';
 
-const useStyles = makeStyles(theme => ({
-  answerCard: {
-    marginTop: '1em',
-  },
-  highlight: {
-    animation: 'highlight 5s',
-  },
-  '@keyframes highlight': {
-    '0%': {
-      boxShadow: `0px 0px 0px 3px ${theme.palette.secondary.light}`,
+export type AnswerCardClassKeys =
+  | 'root'
+  | 'highlight'
+  | 'buttons'
+  | 'metadata'
+  | 'contentContainer';
+
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      marginTop: '1em',
     },
-    '100%': {
-      boxShadow: 'none',
+    contentContainer: {
+      minHeight: '6em',
+      paddingTop: '0.5em',
+      paddingBottom: '0.5em',
     },
-  },
-}));
+    metadata: {
+      marginTop: '1em',
+    },
+    highlight: {
+      animation: 'highlight 5s',
+    },
+    '@keyframes highlight': {
+      '0%': {
+        boxShadow: `0px 0px 0px 3px ${theme.palette.secondary.light}`,
+      },
+      '100%': {
+        boxShadow: 'none',
+      },
+    },
+    buttons: {
+      marginTop: '1em',
+      '& *:not(:last-child)': {
+        marginRight: '0.3em',
+      },
+    },
+  }),
+  { name: 'QetaAnswerCard' },
+);
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;
@@ -73,7 +97,7 @@ export const AnswerCard = (props: {
     <>
       <Card
         id={`answer_${answer.id}`}
-        className={`qetaAnswerCard ${styles.answerCard} ${
+        className={`qetaAnswerCard ${styles.root} ${
           highlightedAnswer ? styles.highlight : ''
         }`}
       >
@@ -102,7 +126,7 @@ export const AnswerCard = (props: {
                 />
               ) : (
                 <>
-                  <Grid item style={{ minHeight: '6em', paddingTop: '0.5em' }}>
+                  <Grid item className={styles.contentContainer}>
                     <Typography variant="body1" gutterBottom>
                       <MarkdownRenderer content={answerEntity.content} />
                     </Typography>
@@ -113,12 +137,13 @@ export const AnswerCard = (props: {
                     spacing={1}
                     justifyContent="space-between"
                     alignItems="flex-end"
+                    className={styles.metadata}
                   >
                     <Grid item style={{ alignSelf: 'flex-end' }}>
                       {(answerEntity.own ||
                         answerEntity.canDelete ||
                         answerEntity.canEdit) && (
-                        <ButtonContainer>
+                        <Box className={styles.buttons}>
                           {!answerEntity.correct &&
                             (answerEntity.own || answerEntity.canDelete) && (
                               <>
@@ -150,7 +175,7 @@ export const AnswerCard = (props: {
                               {t('questionPage.editButton')}
                             </Button>
                           )}
-                        </ButtonContainer>
+                        </Box>
                       )}
                     </Grid>
                     <Grid item xs={3}>

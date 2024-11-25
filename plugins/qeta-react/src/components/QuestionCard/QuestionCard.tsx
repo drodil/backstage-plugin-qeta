@@ -24,8 +24,36 @@ import {
   Card,
   CardContent,
   Grid,
+  makeStyles,
   Typography,
 } from '@material-ui/core';
+
+export type QuestionCardClassKeys =
+  | 'root'
+  | 'contentContainer'
+  | 'buttons'
+  | 'metadata';
+
+const useStyles = makeStyles(
+  () => ({
+    root: {},
+    contentContainer: {
+      minHeight: '6em',
+      paddingTop: '0.5em',
+      paddingBottom: '0.5em',
+    },
+    buttons: {
+      marginTop: '1em',
+      '& *:not(:last-child)': {
+        marginRight: '0.3em',
+      },
+    },
+    metadata: {
+      marginTop: '1em',
+    },
+  }),
+  { name: 'QetaQuestionCard' },
+);
 
 export const QuestionCard = (props: { question: PostResponse }) => {
   const { question } = props;
@@ -39,6 +67,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
   const onCommentAction = (q: PostResponse, _?: AnswerResponse) => {
     setQuestionEntity(q);
   };
+  const styles = useStyles();
 
   const highlightedAnswer = window.location.hash.slice(1) ?? undefined;
   useEffect(() => {
@@ -56,7 +85,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
 
   return (
     <>
-      <Card variant="outlined">
+      <Card variant="outlined" className={styles.root}>
         <CardContent>
           <Grid
             container
@@ -72,7 +101,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
               </VoteButtonContainer>
             </Grid>
             <Grid item style={{ flexGrow: '1' }}>
-              <Grid item style={{ minHeight: '6em', paddingTop: '0.5em' }}>
+              <Grid item className={styles.contentContainer}>
                 <Typography variant="body1" gutterBottom>
                   <MarkdownRenderer content={questionEntity.content} />
                 </Typography>
@@ -83,11 +112,12 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                 spacing={1}
                 justifyContent="space-between"
                 alignItems="flex-end"
+                className={styles.metadata}
               >
                 <Grid item style={{ alignSelf: 'flex-end' }}>
                   <TagsAndEntities entity={questionEntity} />
                   {(question.canEdit || question.canDelete) && (
-                    <Box>
+                    <Box className={styles.buttons}>
                       {question.canDelete && (
                         <>
                           <Button
