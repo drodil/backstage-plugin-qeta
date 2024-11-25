@@ -128,7 +128,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   return (
     <Card
       sx={theme => ({
-        marginTop: theme.spacing(3),
+        marginTop: '1rem',
         backgroundColor: theme.palette.background.default,
         border: `3px solid ${theme.palette.status.ok}`,
       })}
