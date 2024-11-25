@@ -99,7 +99,7 @@ export const PostsGridContent = (props: {
           container
           direction="row"
           alignItems="stretch"
-          style={{ marginTop: '1rem' }}
+          style={{ marginTop: '1em' }}
         >
           {response.posts.map(p => {
             return (

@@ -22,7 +22,7 @@ const SummaryCard = (props: { title: string; value?: number }) => {
       <CardContent>
         <Typography variant="h5">
           {value >= 1000 ? numeral(value).format('0.0 a') : value}
-          <Typography variant="caption" style={{ marginLeft: '1rem' }}>
+          <Typography variant="caption" style={{ marginLeft: '1em' }}>
             {title}
           </Typography>
         </Typography>

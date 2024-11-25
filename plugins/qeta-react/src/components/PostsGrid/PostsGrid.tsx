@@ -83,7 +83,7 @@ export const PostsGrid = (props: PostGridProps) => {
         <Typography
           variant="h5"
           className="qetaPostsGridTitle"
-          style={{ marginBottom: '1.5rem' }}
+          style={{ marginBottom: '1.5em' }}
         >
           {shownTitle} {link} {btn}
         </Typography>

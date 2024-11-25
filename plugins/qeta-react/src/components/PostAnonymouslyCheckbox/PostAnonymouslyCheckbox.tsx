@@ -13,7 +13,7 @@ export const PostAnonymouslyCheckbox = (props: {
   const { control, label } = props;
   const { t } = useTranslation();
   return (
-    <Box style={{ marginLeft: '0.2rem' }}>
+    <Box style={{ marginLeft: '0.2em' }}>
       <Controller
         control={control}
         render={({ field: { onChange, value } }) => (

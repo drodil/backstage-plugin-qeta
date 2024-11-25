@@ -41,7 +41,7 @@ export const CollectionsGridContent = (props: {
         item
         direction="row"
         alignItems="stretch"
-        style={{ marginTop: '1rem' }}
+        style={{ marginTop: '1em' }}
       >
         {response.collections.map(p => {
           return (

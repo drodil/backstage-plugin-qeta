@@ -90,7 +90,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             alt={post.title}
           />
         )}
-        <CardContent style={{ paddingBottom: '0.5rem' }}>
+        <CardContent style={{ paddingBottom: '0.5em' }}>
           <Typography gutterBottom variant="h6" component="div">
             {post.title}
           </Typography>
@@ -101,9 +101,9 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
           </Typography>
         </CardContent>
       </CardActionArea>
-      <CardContent style={{ paddingTop: '0.5rem' }}>
+      <CardContent style={{ paddingTop: '0.5em' }}>
         <TagsAndEntities entity={post} />
-        <Box style={{ paddingLeft: '0.2rem', paddingTop: '0.5rem' }}>
+        <Box style={{ paddingLeft: '0.2em', paddingTop: '0.5em' }}>
           <Typography variant="caption">
             <Avatar
               src={user?.spec?.profile?.picture}
@@ -111,10 +111,10 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               variant="rounded"
               sx={{
                 display: 'inline-flex !important',
-                marginRight: '0.25rem',
-                fontSize: '1rem',
-                maxWidth: '1rem',
-                maxHeight: '1rem',
+                marginRight: '0.25em',
+                fontSize: '1em',
+                maxWidth: '1em',
+                maxHeight: '1em',
               }}
             >
               {initials}
@@ -132,8 +132,8 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             direction="row"
             spacing={0}
             style={{
-              paddingRight: '0.2rem',
-              paddingTop: '0.5rem',
+              paddingRight: '0.2em',
+              paddingTop: '0.5em',
               float: 'right',
             }}
           >

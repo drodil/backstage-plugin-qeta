@@ -98,15 +98,10 @@ export const PostList = (props: {
     <div ref={listRef}>
       <Box sx={{ mt: 2 }} className="qetaPostList">
         <Card>
-          <Grid container spacing={2} style={{ paddingTop: '1rem' }}>
+          <Grid container spacing={2} style={{ paddingTop: '1em' }}>
             {response.posts.map((post, i) => {
               return (
-                <Grid
-                  item
-                  xs={12}
-                  key={post.id}
-                  style={{ marginTop: '0.5rem' }}
-                >
+                <Grid item xs={12} key={post.id} style={{ marginTop: '0.5em' }}>
                   <PostListItem post={post} entity={entity} type={type} />
                   {i !== response.total - 1 && <Divider />}
                 </Grid>

@@ -128,7 +128,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   return (
     <Card
       sx={theme => ({
-        marginTop: '1rem',
+        marginTop: '1em',
         backgroundColor: theme.palette.background.default,
         border: `3px solid ${theme.palette.status.ok}`,
       })}
@@ -136,7 +136,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
     >
       <CardHeader
         avatar={<FlareIcon />}
-        style={!expanded ? { paddingBottom: '1rem' } : {}}
+        style={!expanded ? { paddingBottom: '1em' } : {}}
         title={
           <Typography variant="h5">
             {article

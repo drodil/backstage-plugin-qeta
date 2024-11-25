@@ -15,7 +15,7 @@ import { useTranslation } from '../../hooks';
 import { styled } from '@mui/system';
 
 const CommentBox = styled('div', { name: 'QetaCommentBox' })({
-  padding: '0.5rem',
+  padding: '0.5em',
 });
 
 export const CommentList = (props: {

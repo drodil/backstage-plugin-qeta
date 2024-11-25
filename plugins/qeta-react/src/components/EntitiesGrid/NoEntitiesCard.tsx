@@ -9,7 +9,7 @@ export const NoEntitiesCard = () => {
   const { t } = useTranslation();
 
   return (
-    <Card style={{ marginTop: '2rem' }}>
+    <Card style={{ marginTop: '2em' }}>
       <CardContent>
         <Grid
           container

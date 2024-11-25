@@ -223,7 +223,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
         name="description"
       />
       {canModifyAccess && (
-        <Grid container style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+        <Grid container style={{ marginTop: '1em', marginBottom: '1em' }}>
           <Grid item>
             <Controller
               control={control}

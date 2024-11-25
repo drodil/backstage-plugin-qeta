@@ -87,7 +87,7 @@ export const TemplateList = () => {
         {t('templateList.createButton')}
       </Button>
       <Box
-        sx={{ width: '100%', bgcolor: 'background.paper', marginTop: '1rem' }}
+        sx={{ width: '100%', bgcolor: 'background.paper', marginTop: '1em' }}
       >
         <List style={{ width: '100%' }}>
           {value.total === 0 && (

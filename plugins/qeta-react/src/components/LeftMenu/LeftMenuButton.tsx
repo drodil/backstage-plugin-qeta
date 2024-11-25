@@ -57,7 +57,7 @@ export const LeftMenuButton = () => {
         variant="contained"
         onClick={handleToggle}
         startIcon={<MenuIcon />}
-        style={{ marginBottom: '0.5rem' }}
+        style={{ marginBottom: '0.5em' }}
       >
         {t('leftMenu.buttonLabel')}
       </Button>

@@ -50,7 +50,7 @@ export const TagPage = () => {
           <WriteArticleButton tags={tag ? [tag] : undefined} />
         </ContentHeader>
         {resp && (
-          <Card variant="outlined" style={{ marginBottom: '1rem' }}>
+          <Card variant="outlined" style={{ marginBottom: '1em' }}>
             <CardContent>
               <Typography variant="caption">
                 {t('common.posts', {

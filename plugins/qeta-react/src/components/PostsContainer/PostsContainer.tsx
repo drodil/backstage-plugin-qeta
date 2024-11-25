@@ -81,7 +81,7 @@ export const PostsContainer = (
         <Typography
           variant="h5"
           className="qetaPostsContainerTitle"
-          style={{ marginBottom: '1.5rem' }}
+          style={{ marginBottom: '1.5em' }}
         >
           {shownTitle} {link} {btn}
         </Typography>

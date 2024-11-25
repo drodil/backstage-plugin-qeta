@@ -70,7 +70,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
               </VoteButtonContainer>
             </Grid>
             <Grid item marginLeft={1} sx={{ flexGrow: 1 }}>
-              <Grid item sx={{ minHeight: '5rem', paddingTop: 1 }}>
+              <Grid item sx={{ minHeight: '5em', paddingTop: 1 }}>
                 <Typography variant="body1" gutterBottom>
                   <MarkdownRenderer content={questionEntity.content} />
                 </Typography>

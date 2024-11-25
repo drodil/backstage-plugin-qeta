@@ -67,7 +67,7 @@ export const PostListItem = (props: PostListItemProps) => {
       container
       spacing={2}
       justifyContent="flex-start"
-      style={{ padding: '0.7rem', paddingBottom: '1.0rem' }}
+      style={{ padding: '0.7em', paddingBottom: '1.0em' }}
     >
       <Grid item justifyContent="center" style={{ paddingTop: '0px' }}>
         <VoteButtonContainer>
@@ -83,7 +83,11 @@ export const PostListItem = (props: PostListItemProps) => {
           <Grid
             item
             xs={12}
-            style={{ paddingTop: 0, paddingBottom: '6px', marginLeft: '-2px' }}
+            style={{
+              paddingTop: '0.5em',
+              paddingBottom: '0.4em',
+              marginLeft: '-0.2em',
+            }}
           >
             {type === undefined && (
               <Chip
@@ -159,10 +163,10 @@ export const PostListItem = (props: PostListItemProps) => {
                 variant="rounded"
                 sx={{
                   display: 'inline-flex !important',
-                  marginRight: '0.25rem',
-                  fontSize: '1rem',
-                  maxWidth: '1rem',
-                  maxHeight: '1rem',
+                  marginRight: '0.25em',
+                  fontSize: '1em',
+                  maxWidth: '1em',
+                  maxHeight: '1em',
                 }}
               >
                 {initials}

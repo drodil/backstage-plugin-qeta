@@ -19,7 +19,7 @@ export const SearchBar = (props: {
         display: 'flex',
         alignItems: 'center',
         width: '100%',
-        marginBottom: '1rem',
+        marginBottom: '1em',
         cursor: 'text',
         boxShadow: 'none',
       }}

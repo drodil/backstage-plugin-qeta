@@ -33,7 +33,7 @@ export const ImpactCard = () => {
             {response.impact >= 1000
               ? numeral(response.impact).format('0.0 a')
               : response.impact}
-            <Typography variant="caption" style={{ marginLeft: '1rem' }}>
+            <Typography variant="caption" style={{ marginLeft: '1em' }}>
               {t('impactCard.views')}
             </Typography>
           </Typography>

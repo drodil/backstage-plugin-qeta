@@ -91,7 +91,7 @@ export const AnswerCard = (props: {
                 />
               ) : (
                 <>
-                  <Grid item sx={{ minHeight: '3rem', paddingTop: 1 }}>
+                  <Grid item sx={{ minHeight: '3em', paddingTop: 1 }}>
                     <Typography variant="body1" gutterBottom>
                       <MarkdownRenderer content={answerEntity.content} />
                     </Typography>

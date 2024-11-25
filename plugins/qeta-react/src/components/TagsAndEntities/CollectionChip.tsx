@@ -41,7 +41,7 @@ const CollectionTooltip = (props: { collectionId: number }) => {
   }
 
   return (
-    <Grid container style={{ padding: '0.5rem' }} spacing={1}>
+    <Grid container style={{ padding: '0.5em' }} spacing={1}>
       <Grid item xs={12}>
         <Typography variant="h6">{resp.title}</Typography>
       </Grid>

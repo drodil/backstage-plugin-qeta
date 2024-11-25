@@ -67,7 +67,7 @@ export const ArticlePage = () => {
       <Container maxWidth="md">
         <AIAnswerCard
           article={post as Article}
-          style={{ marginBottom: '2rem' }}
+          style={{ marginBottom: '2em' }}
         />
         <ArticleContent post={post} views={views} />
       </Container>

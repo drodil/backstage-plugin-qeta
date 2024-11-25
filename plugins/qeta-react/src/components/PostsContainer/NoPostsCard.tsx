@@ -40,7 +40,7 @@ export const NoPostsCard = (props: {
 
   const itemType = t(`common.${type ?? 'post'}`, {});
   return (
-    <Card style={{ marginTop: '2rem' }}>
+    <Card style={{ marginTop: '2em' }}>
       <CardContent>
         <Grid
           container

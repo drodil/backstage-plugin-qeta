@@ -21,8 +21,8 @@ const ArticleButtonContainer = styled('div', {
   name: 'QetaArticleButtonContainer',
 })(({ theme }) => ({
   width: '100%',
-  paddingTop: '0.5rem',
-  paddingBottom: '0.5rem',
+  paddingTop: '0.5em',
+  paddingBottom: '0.5em',
   borderTop: `1px solid ${theme.palette.background.paper}`,
   borderBottom: `1px solid ${theme.palette.background.paper}`,
 }));
@@ -75,7 +75,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
           </Tooltip>
           <Tooltip title={t('common.score', { score: score.toString(10) })}>
             <Typography
-              sx={{ marginLeft: '0.5rem', userSelect: 'none' }}
+              sx={{ marginLeft: '0.5em', userSelect: 'none' }}
               display="inline"
             >
               {score}

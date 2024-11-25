@@ -65,7 +65,7 @@ const MarkdownEditorContainer = styled('div', {
       borderRadius: theme.shape.borderRadius,
       '& li': {
         width: '100%',
-        padding: '0.5rem',
+        padding: '0.5em',
         '&:hover': {
           backgroundColor: theme.palette.action.hover,
         },

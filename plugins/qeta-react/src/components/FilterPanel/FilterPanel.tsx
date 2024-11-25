@@ -292,7 +292,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
               style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
-                gap: '0 1rem',
+                gap: '0 1em',
               }}
             >
               {postFilters &&

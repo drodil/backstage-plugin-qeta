@@ -44,7 +44,7 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
             alt={collection.title}
           />
         )}
-        <CardContent style={{ paddingBottom: '0.5rem' }}>
+        <CardContent style={{ paddingBottom: '0.5em' }}>
           <Typography gutterBottom variant="h6" component="div">
             {collection.title}
           </Typography>

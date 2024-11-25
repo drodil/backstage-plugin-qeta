@@ -25,24 +25,19 @@ const DefaultRankingIcons = new Map<number, ReactNode>([
   [
     1,
     <TrophyIcon
-      style={{ color: '#DAA520', height: '2.2rem', width: '2.2rem' }}
+      style={{ color: '#DAA520', height: '2.2em', width: '2.2em' }}
     />,
   ],
   [
     2,
     <TrophyIcon
-      style={{ color: '#C0C0C0', height: '2.1rem', width: '2.1rem' }}
+      style={{ color: '#C0C0C0', height: '2.1em', width: '2.1em' }}
     />,
   ],
-  [
-    3,
-    <TrophyIcon style={{ color: '#B87333', height: '2rem', width: '2rem' }} />,
-  ],
+  [3, <TrophyIcon style={{ color: '#B87333', height: '2em', width: '2em' }} />],
 ]);
 
-const DefaultUserIcon = (
-  <TrophyIcon style={{ height: '2rem', width: '2rem' }} />
-);
+const DefaultUserIcon = <TrophyIcon style={{ height: '2em', width: '2em' }} />;
 
 const getOrdinal = (n: number) => {
   if (n % 10 === 1 && n % 100 !== 11) {

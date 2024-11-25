@@ -10,9 +10,9 @@ export const ModalContent = styled('div', { name: 'QetaModalContent' })(
     backgroundColor: theme.palette.background.default,
     border: `1px solid ${theme.palette.action.selected}`,
     borderRadius: theme.shape.borderRadius,
-    padding: theme.spacing(2),
+    padding: '2em',
     '& button': {
-      marginTop: theme.spacing(2),
+      marginTop: '2em',
       float: 'right',
     },
   }),

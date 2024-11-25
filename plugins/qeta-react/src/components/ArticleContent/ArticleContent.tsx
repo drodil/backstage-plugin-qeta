@@ -18,8 +18,8 @@ import { styled } from '@mui/system';
 
 const HeaderImage = styled('img', { name: 'QetaArticleHeaderImage' })(
   ({ theme }) => ({
-    marginBottom: theme.spacing(2),
-    marginTop: theme.spacing(2),
+    marginBottom: '2em',
+    marginTop: '2em',
     height: '250px',
     objectFit: 'cover',
     width: '100%',

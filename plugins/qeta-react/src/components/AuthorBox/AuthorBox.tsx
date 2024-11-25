@@ -26,9 +26,9 @@ export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
         border: `1px solid ${theme.palette.action.selected}`,
         borderRadius: 1,
         '& .avatar': {
-          width: theme.spacing(3),
-          height: theme.spacing(3),
-          fontSize: '1rem',
+          width: '2em',
+          height: '2em',
+          fontSize: '1em',
         },
       })}
     >

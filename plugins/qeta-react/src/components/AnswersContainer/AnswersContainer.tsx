@@ -209,7 +209,7 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
         <Typography
           variant="h5"
           className="qetaAnswersContainerTitle"
-          style={{ marginBottom: '1.5rem' }}
+          style={{ marginBottom: '1.5em' }}
         >
           {shownTitle} {link}
         </Typography>

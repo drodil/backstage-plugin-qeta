@@ -37,7 +37,7 @@ const styles = (theme: any) => ({
   },
   '& th, & td': {
     border: `1px solid ${theme.palette.border}`,
-    padding: theme.spacing(1),
+    padding: '1em',
   },
   '& h1': {
     ...theme.typography?.h1,
@@ -65,16 +65,16 @@ const styles = (theme: any) => ({
   },
   '& blockquote': {
     backgroundColor: theme.palette.background.paper,
-    border: `.1rem solid ${theme.palette.divider}`,
-    padding: theme.spacing(2),
+    border: `.1em solid ${theme.palette.divider}`,
+    padding: '1em',
   },
   '& ol, ul': {
-    marginLeft: '1rem',
-    marginTop: '1rem',
-    marginBottom: '1rem',
+    marginLeft: '1em',
+    marginTop: '1em',
+    marginBottom: '1em',
   },
   '& li': {
-    marginTop: '0.5rem',
+    marginTop: '0.5em',
   },
   '& td': {
     wordBreak: 'break-word',
@@ -82,7 +82,7 @@ const styles = (theme: any) => ({
     verticalAlign: 'middle',
     lineHeight: '1',
     margin: 0,
-    padding: theme.spacing(3, 2, 3, 2.5),
+    padding: '1em',
     borderBottom: 0,
   },
   '& th': {

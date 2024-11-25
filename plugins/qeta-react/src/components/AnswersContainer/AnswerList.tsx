@@ -74,7 +74,7 @@ export const AnswerList = (props: {
 
   if (initialLoad && (!response.answers || response.answers.length === 0)) {
     return (
-      <Card style={{ marginTop: '2rem' }}>
+      <Card style={{ marginTop: '2em' }}>
         <CardContent>
           <Grid
             container
@@ -100,7 +100,7 @@ export const AnswerList = (props: {
     <div ref={listRef}>
       <Box sx={{ mt: 2 }} className="qetaAnswerList">
         <Card>
-          <Grid container spacing={2} style={{ paddingTop: '1rem' }}>
+          <Grid container spacing={2} style={{ paddingTop: '1em' }}>
             {response.answers.map(answer => {
               return (
                 <Grid item xs={12} key={answer.id}>
