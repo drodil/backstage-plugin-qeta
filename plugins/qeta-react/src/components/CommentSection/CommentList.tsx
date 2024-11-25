@@ -14,7 +14,7 @@ import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
 import { styled } from '@mui/system';
 
-const CommentBox = styled('div')({
+const CommentBox = styled('div', { name: 'QetaCommentBox' })({
   padding: '0.5rem',
 });
 

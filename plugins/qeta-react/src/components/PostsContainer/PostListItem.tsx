@@ -67,7 +67,7 @@ export const PostListItem = (props: PostListItemProps) => {
       container
       spacing={2}
       justifyContent="flex-start"
-      sx={{ padding: '0.7rem', paddingBottom: '1.0rem' }}
+      style={{ padding: '0.7rem', paddingBottom: '1.0rem' }}
     >
       <Grid item justifyContent="center" style={{ paddingTop: '0px' }}>
         <VoteButtonContainer>
@@ -75,16 +75,15 @@ export const PostListItem = (props: PostListItemProps) => {
           <FavoriteButton entity={post} />
         </VoteButtonContainer>
       </Grid>
-      <Grid item sx={{ display: 'inline-block', width: 'calc(100% - 80px)' }}>
+      <Grid
+        item
+        style={{ display: 'inline-block', width: 'calc(100% - 80px)' }}
+      >
         <Grid container>
           <Grid
             item
             xs={12}
-            style={{
-              paddingTop: '0.4rem',
-              paddingBottom: '0.4rem',
-              paddingLeft: '0.8rem',
-            }}
+            style={{ paddingTop: 0, paddingBottom: '6px', marginLeft: '-2px' }}
           >
             {type === undefined && (
               <Chip

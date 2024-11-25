@@ -36,7 +36,7 @@ import { TrophyIcon } from '../TopRankingUsersCard';
 import { useIdentityApi, useIsModerator, useTranslation } from '../../hooks';
 import { styled } from '@mui/system';
 
-const LeftMenuItem = styled(ListItemIcon)({
+const LeftMenuItem = styled(ListItemIcon, { name: 'QetaLeftMenuIcon' })({
   minWidth: '26px !important',
 });
 
@@ -70,24 +70,24 @@ export const LeftMenu = (props: {
     error: userError,
   } = useIdentityApi(api => api.getBackstageIdentity(), []);
 
-  const StyledMenuItem = styled(MenuItem)<MenuItemProps & { active: boolean }>(
-    ({ theme, ...p }) => {
-      return p.active
-        ? {
-            width: '100%',
+  const StyledMenuItem = styled(MenuItem, { name: 'QetaLeftMenuItem' })<
+    MenuItemProps & { active: boolean }
+  >(({ theme, ...p }) => {
+    return p.active
+      ? {
+          width: '100%',
+          color: theme.palette.primary.contrastText,
+          backgroundColor: theme.palette.primary.light,
+          borderRadius: 1,
+          '&:hover': {
+            backgroundColor: theme.palette.primary.dark,
+          },
+          '& svg': {
             color: theme.palette.primary.contrastText,
-            backgroundColor: theme.palette.primary.light,
-            borderRadius: 1,
-            '&:hover': {
-              backgroundColor: theme.palette.primary.dark,
-            },
-            '& svg': {
-              color: theme.palette.primary.contrastText,
-            },
-          }
-        : { width: '100%', backgroundColor: 'initial', borderRadius: 1 };
-    },
-  );
+          },
+        }
+      : { width: '100%', backgroundColor: 'initial', borderRadius: 1 };
+  });
 
   const CustomMenuItem = ({
     route,

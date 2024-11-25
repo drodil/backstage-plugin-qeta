@@ -9,14 +9,16 @@ import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
 import { styled } from '@mui/system';
 
-const HeaderImage = styled('img')(({ theme }) => ({
-  marginBottom: '1rem',
-  marginTop: '1rem',
-  height: '250px',
-  objectFit: 'cover',
-  width: '100%',
-  border: `1px solid ${theme.palette.background.paper}`,
-}));
+const HeaderImage = styled('img', { name: 'QetaHeaderImageInputImage' })(
+  ({ theme }) => ({
+    marginBottom: '1rem',
+    marginTop: '1rem',
+    height: '250px',
+    objectFit: 'cover',
+    width: '100%',
+    border: `1px solid ${theme.palette.background.paper}`,
+  }),
+);
 
 export const HeaderImageInput = (props: {
   url?: string;

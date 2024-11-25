@@ -14,7 +14,9 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
 import { styled } from '@mui/material/styles';
 
-const MarkdownEditorContainer = styled('div')(({ theme }) => ({
+const MarkdownEditorContainer = styled('div', {
+  name: 'QetaMarkdownEditorContainer',
+})(({ theme }) => ({
   '.react-mde': {
     backgroundColor: 'initial',
     color: theme.palette.text.primary,

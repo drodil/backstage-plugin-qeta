@@ -21,7 +21,9 @@ interface StyledReactMarkdownProps {
   sx?: SxProps;
 }
 
-const StyledReactMarkdown = styled(ReactMarkdown)<StyledReactMarkdownProps>(
+const StyledReactMarkdown = styled(ReactMarkdown, {
+  name: 'QetaReactMarkdown',
+})<StyledReactMarkdownProps>(
   unstable_styleFunctionSx as StyleFunction<StyledReactMarkdownProps>,
 );
 

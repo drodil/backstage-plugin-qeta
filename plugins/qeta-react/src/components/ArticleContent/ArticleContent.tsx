@@ -16,16 +16,18 @@ import { useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { styled } from '@mui/system';
 
-const HeaderImage = styled('img')(({ theme }) => ({
-  marginBottom: theme.spacing(2),
-  marginTop: theme.spacing(2),
-  height: '250px',
-  objectFit: 'cover',
-  width: '100%',
-  borderColor: theme.palette.background.paper,
-  borderStyle: 'solid',
-  borderWidth: '1px',
-}));
+const HeaderImage = styled('img', { name: 'QetaArticleHeaderImage' })(
+  ({ theme }) => ({
+    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    height: '250px',
+    objectFit: 'cover',
+    width: '100%',
+    borderColor: theme.palette.background.paper,
+    borderStyle: 'solid',
+    borderWidth: '1px',
+  }),
+);
 
 export const ArticleContent = (props: {
   post: PostResponse;

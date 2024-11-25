@@ -17,7 +17,9 @@ import { useVoting } from '../../hooks/useVoting';
 import { useTranslation } from '../../hooks';
 import { styled } from '@mui/system';
 
-const ArticleButtonContainer = styled('div')(({ theme }) => ({
+const ArticleButtonContainer = styled('div', {
+  name: 'QetaArticleButtonContainer',
+})(({ theme }) => ({
   width: '100%',
   paddingTop: '0.5rem',
   paddingBottom: '0.5rem',
