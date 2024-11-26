@@ -20,6 +20,7 @@ import {
   FormLabel,
   Grid,
   IconButton,
+  makeStyles,
   Radio,
   RadioGroup,
   Tooltip,
@@ -116,6 +117,18 @@ export interface FilterPanelProps<T extends Filters> {
   type?: PostType;
 }
 
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      padding: '1em',
+      paddingTop: '2em',
+      marginTop: '1em',
+      border: `1px solid ${theme.palette.divider}`,
+    },
+  }),
+  { name: 'QetaFilterPanel' },
+);
+
 export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const {
     onChange,
@@ -133,6 +146,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const starredEntitiesApi = useStarredEntities();
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
+  const styles = useStyles();
 
   const handleChange = (event: {
     target: {
@@ -195,7 +209,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const collectionFilters = isCollectionFilters(filters);
 
   return (
-    <Box>
+    <Box className={styles.root}>
       <Grid
         container
         spacing={4}

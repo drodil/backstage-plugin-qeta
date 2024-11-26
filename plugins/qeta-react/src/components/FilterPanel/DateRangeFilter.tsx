@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { formatDate } from '../../utils/utils';
 import { useTranslation } from '../../hooks';
-import { Grid, MenuItem, TextField, Typography } from '@material-ui/core';
+import {
+  Grid,
+  makeStyles,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@material-ui/core';
 
 export interface DateRangeFilterProps {
   value?: string;
@@ -13,8 +19,21 @@ type DateRangeValidation = {
   message?: string;
 };
 
+const useStyles = makeStyles(
+  theme => ({
+    root: {},
+    textInput: {
+      minWidth: '200px',
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+    },
+  }),
+  { name: 'QetaDateRangeFilter' },
+);
+
 export const DateRangeFilter = (props: DateRangeFilterProps) => {
   const { value, onChange } = props;
+  const styles = useStyles();
   const [dateRangeOption, setDateRangeOption] = useState<string | undefined>(
     value,
   );
@@ -50,7 +69,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
   };
 
   return (
-    <Grid container>
+    <Grid container className={styles.root}>
       {validation.message && (
         <Grid item xs={12}>
           <Typography color="error" variant="body2">
@@ -61,6 +80,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
       <Grid item>
         <TextField
           select
+          className={styles.textInput}
           label={t('datePicker.range.label')}
           value={dateRangeOption || 'select'}
           onChange={e => {
@@ -84,6 +104,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
         <>
           <Grid item>
             <TextField
+              className={styles.textInput}
               variant="outlined"
               label={t('datePicker.from')}
               id="from-date"
@@ -101,6 +122,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
           </Grid>
           <Grid item>
             <TextField
+              className={styles.textInput}
               variant="outlined"
               label={t('datePicker.to')}
               id="to-date"

@@ -29,6 +29,7 @@ export type AnswerCardClassKeys =
   | 'highlight'
   | 'buttons'
   | 'metadata'
+  | 'markdownContainer'
   | 'contentContainer';
 
 const useStyles = makeStyles(
@@ -37,8 +38,12 @@ const useStyles = makeStyles(
       marginTop: '1em',
     },
     contentContainer: {
+      marginLeft: '0.5em',
+      display: 'inline-block',
+      width: 'calc(100% - 70px)',
+    },
+    markdownContainer: {
       minHeight: '6em',
-      paddingTop: '0.5em',
       paddingBottom: '0.5em',
     },
     metadata: {
@@ -108,16 +113,13 @@ export const AnswerCard = (props: {
             justifyContent="flex-start"
             style={{ flexWrap: 'nowrap' }}
           >
-            <Grid item justifyContent="center">
+            <Grid item>
               <VoteButtonContainer>
                 <VoteButtons entity={answerEntity} post={question} />
                 <LinkButton entity={answerEntity} />
               </VoteButtonContainer>
             </Grid>
-            <Grid
-              item
-              style={{ display: 'inline-block', width: 'calc(100% - 70px)' }}
-            >
+            <Grid item className={styles.contentContainer}>
               {editMode ? (
                 <AnswerForm
                   post={question}
@@ -126,7 +128,7 @@ export const AnswerCard = (props: {
                 />
               ) : (
                 <>
-                  <Grid item className={styles.contentContainer}>
+                  <Grid item className={styles.markdownContainer}>
                     <Typography variant="body1" gutterBottom>
                       <MarkdownRenderer content={answerEntity.content} />
                     </Typography>

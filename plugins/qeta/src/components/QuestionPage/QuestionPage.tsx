@@ -26,17 +26,29 @@ import {
   Divider,
   FormControl,
   Grid,
+  makeStyles,
   MenuItem,
   TextField,
   Typography,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
+const useDescriptionStyles = makeStyles(
+  () => ({
+    root: {},
+    box: {
+      display: 'inline',
+    },
+  }),
+  { name: 'QetaDescription' },
+);
+
 export const QuestionPage = () => {
   const { id } = useParams();
   const { t } = useTranslation();
   const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
   const [answerSort, setAnswerSort] = React.useState<string>('default');
+  const dStyles = useDescriptionStyles();
 
   const [answersCount, setAnswersCount] = useState(0);
   const [views, setViews] = useState(0);
@@ -115,21 +127,23 @@ export const QuestionPage = () => {
 
   const getDescription = (q: PostResponse) => {
     return (
-      <span>
-        {t('authorBox.postedAtTime')}{' '}
-        <Box fontWeight="fontWeightMedium" display="inline">
+      <span className={dStyles.root}>
+        <Box fontWeight="fontWeightMedium" className={dStyles.box}>
+          {t('authorBox.postedAtTime')}{' '}
           <RelativeTimeWithTooltip value={q.created} />
+          {' · '}
         </Box>
         {q.updated && (
           <React.Fragment>
-            {t('authorBox.updatedAtTime')}{' '}
-            <Box fontWeight="fontWeightMedium" display="inline">
+            <Box fontWeight="fontWeightMedium" className={dStyles.box}>
+              {t('authorBox.updatedAtTime')}{' '}
               <RelativeTimeWithTooltip value={q.updated} />{' '}
               {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
+              {' · '}
             </Box>
           </React.Fragment>
         )}
-        <Box fontWeight="fontWeightMedium" display="inline">
+        <Box fontWeight="fontWeightMedium" className={dStyles.box}>
           {t('common.views', { count: views })}
         </Box>
       </span>

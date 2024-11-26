@@ -31,6 +31,7 @@ import {
 export type QuestionCardClassKeys =
   | 'root'
   | 'contentContainer'
+  | 'markdownContainer'
   | 'buttons'
   | 'metadata';
 
@@ -38,8 +39,10 @@ const useStyles = makeStyles(
   () => ({
     root: {},
     contentContainer: {
+      marginLeft: '0.5em',
+    },
+    markdownContainer: {
       minHeight: '6em',
-      paddingTop: '0.5em',
       paddingBottom: '0.5em',
     },
     buttons: {
@@ -93,15 +96,19 @@ export const QuestionCard = (props: { question: PostResponse }) => {
             justifyContent="flex-start"
             style={{ flexWrap: 'nowrap' }}
           >
-            <Grid item justifyContent="center">
+            <Grid item>
               <VoteButtonContainer>
                 <VoteButtons entity={questionEntity} />
                 <FavoriteButton entity={questionEntity} />
                 <LinkButton entity={questionEntity} />
               </VoteButtonContainer>
             </Grid>
-            <Grid item style={{ flexGrow: '1' }}>
-              <Grid item className={styles.contentContainer}>
+            <Grid
+              item
+              className={styles.contentContainer}
+              style={{ flexGrow: '1' }}
+            >
+              <Grid item className={styles.markdownContainer}>
                 <Typography variant="body1" gutterBottom>
                   <MarkdownRenderer content={questionEntity.content} />
                 </Typography>
