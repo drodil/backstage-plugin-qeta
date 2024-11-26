@@ -124,8 +124,9 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
         {allowRanking && (
           <Box
             style={{
-              paddingRight: '0.2rem',
-              paddingTop: '0.5rem',
+              paddingRight: '0.2em',
+              paddingTop: '0.5em',
+              paddingBottom: '0.5em',
               float: 'right',
             }}
           >

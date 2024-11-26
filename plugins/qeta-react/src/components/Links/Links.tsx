@@ -26,6 +26,7 @@ export const UserLink = (props: {
       arrow
       title={<UserTooltip entityRef={entityRef} />}
       enterDelay={400}
+      interactive
     >
       <Link to={`${userRoute()}/${entityRef}`} {...linkProps}>
         {userName}
