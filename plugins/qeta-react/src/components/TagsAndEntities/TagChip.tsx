@@ -81,7 +81,12 @@ export const TagChip = (props: { tag: string }) => {
   const navigate = useNavigate();
   const { tag } = props;
   return (
-    <Tooltip arrow title={<TagTooltip tag={tag} />} enterDelay={400}>
+    <Tooltip
+      arrow
+      title={<TagTooltip tag={tag} />}
+      enterDelay={400}
+      interactive
+    >
       <Chip
         label={tag}
         size="small"

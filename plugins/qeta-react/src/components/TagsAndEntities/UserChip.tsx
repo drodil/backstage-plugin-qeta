@@ -69,6 +69,7 @@ export const UserChip = (props: { entityRef: string }) => {
       arrow
       title={<UserTooltip entityRef={entityRef} />}
       enterDelay={400}
+      interactive
     >
       <Chip
         label={userName}

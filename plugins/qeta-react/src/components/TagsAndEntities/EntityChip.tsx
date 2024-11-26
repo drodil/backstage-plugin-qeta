@@ -88,7 +88,12 @@ export const EntityChip = (props: { entity: Entity | string }) => {
   const entityRef =
     typeof entity === 'string' ? entity : stringifyEntityRef(entity);
   return (
-    <Tooltip title={<EntityTooltip entity={entity} />} arrow enterDelay={400}>
+    <Tooltip
+      title={<EntityTooltip entity={entity} />}
+      arrow
+      enterDelay={400}
+      interactive
+    >
       <Chip
         label={primaryTitle}
         size="small"
