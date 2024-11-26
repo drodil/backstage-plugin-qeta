@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.13.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.13.1...v3.13.2) (2024-11-26)
+
+
+### Bug Fixes
+
+* more UI fixes after MUI4 rollback ([94e34a7](https://github.com/drodil/backstage-plugin-qeta/commit/94e34a782ec3682c4412da5530482dde0ca903e9))
+* react warnings all over ([f71c72e](https://github.com/drodil/backstage-plugin-qeta/commit/f71c72ef3798864799b8e35e35f6d0342dade910))
+
 ### [3.13.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.13.0...v3.13.1) (2024-11-25)
 
 
