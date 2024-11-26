@@ -115,7 +115,9 @@ export const SuggestionsCard = () => {
       <List>
         {suggestions.map(suggestion => {
           const SuggestionComponent = suggestionTypeMap[suggestion.type];
-          return <SuggestionComponent suggestion={suggestion} />;
+          return (
+            <SuggestionComponent key={suggestion.id} suggestion={suggestion} />
+          );
         })}
       </List>
     </Card>

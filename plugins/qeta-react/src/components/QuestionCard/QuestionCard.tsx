@@ -25,7 +25,6 @@ import {
   CardContent,
   Grid,
   makeStyles,
-  Typography,
 } from '@material-ui/core';
 
 export type QuestionCardClassKeys =
@@ -109,9 +108,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
               style={{ flexGrow: '1' }}
             >
               <Grid item className={styles.markdownContainer}>
-                <Typography variant="body1" gutterBottom>
-                  <MarkdownRenderer content={questionEntity.content} />
-                </Typography>
+                <MarkdownRenderer content={questionEntity.content} />
               </Grid>
               <Grid
                 container

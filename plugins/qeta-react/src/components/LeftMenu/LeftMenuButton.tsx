@@ -2,15 +2,31 @@ import {
   Button,
   ClickAwayListener,
   Grow,
+  makeStyles,
   Paper,
   Popper,
 } from '@material-ui/core';
 import React from 'react';
 import { LeftMenu } from './LeftMenu';
 import MenuIcon from '@material-ui/icons/Menu';
+import { useTranslation } from '../../hooks';
+
+const useStyles = makeStyles(
+  () => ({
+    button: {
+      marginBottom: '0.5rem',
+    },
+    popper: {
+      zIndex: 1000,
+    },
+  }),
+  { name: 'QetaLeftMenuButton' },
+);
 
 export const LeftMenuButton = () => {
   const [open, setOpen] = React.useState(false);
+  const styles = useStyles();
+  const { t } = useTranslation();
   const anchorRef = React.useRef<HTMLButtonElement>(null);
 
   const handleToggle = () => {
@@ -55,16 +71,16 @@ export const LeftMenuButton = () => {
         variant="contained"
         onClick={handleToggle}
         startIcon={<MenuIcon />}
-        style={{ marginBottom: '0.5rem' }}
+        className={styles.button}
       >
-        Menu
+        {t('leftMenu.buttonLabel')}
       </Button>
       <Popper
         open={open}
         anchorEl={anchorRef.current}
         role={undefined}
         disablePortal
-        style={{ zIndex: 1000 }}
+        className={styles.popper}
       >
         {({ TransitionProps, placement }) => (
           <Grow

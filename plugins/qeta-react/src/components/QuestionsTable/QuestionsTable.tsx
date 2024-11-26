@@ -158,9 +158,15 @@ export const QuestionsTable = (props: {
             </TableRow>
           </TableHead>
           <TableBody>
-            {loading ? <Progress /> : null}
+            {loading ? (
+              <TableRow>
+                <TableCell>
+                  <Progress />
+                </TableCell>
+              </TableRow>
+            ) : null}
             {response.posts.map(q => (
-              <QuestionTableRow question={q} />
+              <QuestionTableRow key={q.id} question={q} />
             ))}
           </TableBody>
         </Table>

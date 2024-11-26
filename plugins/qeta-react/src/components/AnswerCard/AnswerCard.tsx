@@ -21,7 +21,6 @@ import {
   CardContent,
   Grid,
   makeStyles,
-  Typography,
 } from '@material-ui/core';
 
 export type AnswerCardClassKeys =
@@ -129,9 +128,7 @@ export const AnswerCard = (props: {
               ) : (
                 <>
                   <Grid item className={styles.markdownContainer}>
-                    <Typography variant="body1" gutterBottom>
-                      <MarkdownRenderer content={answerEntity.content} />
-                    </Typography>
+                    <MarkdownRenderer content={answerEntity.content} />
                   </Grid>
                   <Grid
                     container

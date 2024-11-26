@@ -73,7 +73,7 @@ export const EditTagModal = (props: {
               multiline
               minRows={10}
               style={{ width: '100%' }}
-              value={description}
+              value={description ?? ''}
               onChange={e => setDescription(e.target.value)}
             />
           </Grid>

@@ -86,7 +86,7 @@ export const PostListItem = (props: PostListItemProps) => {
       justifyContent="flex-start"
       style={{ padding: '0.7em', paddingBottom: '1.0em' }}
     >
-      <Grid item justifyContent="center" style={{ paddingTop: '0px' }}>
+      <Grid item style={{ paddingTop: '0px' }}>
         <VoteButtonContainer>
           <VoteButtons entity={post} />
           <FavoriteButton entity={post} />

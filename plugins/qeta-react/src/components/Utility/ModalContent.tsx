@@ -19,7 +19,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const ModalContent = (props: { children: React.ReactNode }) => {
+export const ModalContent = React.forwardRef<
+  HTMLDivElement,
+  { children: React.ReactNode }
+>((props: { children: React.ReactNode }, ref) => {
   const styles = useStyles();
-  return <div className={styles.content}>{props.children}</div>;
-};
+  return (
+    <div tabIndex={-1} className={styles.content} ref={ref}>
+      {props.children}
+    </div>
+  );
+});
