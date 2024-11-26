@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.14.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.13.2...v3.14.0) (2024-11-26)
+
+
+### Features
+
+* add user image to user page ([c38ebe7](https://github.com/drodil/backstage-plugin-qeta/commit/c38ebe7ba04090f653724779d51b070ff87694c6)), closes [#216](https://github.com/drodil/backstage-plugin-qeta/issues/216)
+
+
+### Bug Fixes
+
+* add margin to collection follow button ([1d03797](https://github.com/drodil/backstage-plugin-qeta/commit/1d03797d16a7edb076a23c4ea7bab5a3fd5698e2))
+* interactive for user link + user page lists ([6e279fe](https://github.com/drodil/backstage-plugin-qeta/commit/6e279fe75224964630da2a7aa221e7a9606c8ae8))
+* tooltips to be interactive ([23da6a5](https://github.com/drodil/backstage-plugin-qeta/commit/23da6a59cf3c15995ab9879eba1126644c809f04))
+
 ### [3.13.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.13.1...v3.13.2) (2024-11-26)
 
 
