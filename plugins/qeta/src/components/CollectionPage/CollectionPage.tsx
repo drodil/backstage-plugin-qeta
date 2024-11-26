@@ -38,7 +38,10 @@ export const CollectionPage = () => {
   const title = (
     <Typography variant="h5" component="h2">
       {collection.title}
-      <CollectionFollowButton collection={collection} />
+      <CollectionFollowButton
+        collection={collection}
+        style={{ marginLeft: '0.5em' }}
+      />
     </Typography>
   );
 

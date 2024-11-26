@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { IconButton, Tooltip } from '@material-ui/core';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
@@ -6,8 +6,11 @@ import { useTranslation } from '../../hooks';
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
 
-export const CollectionFollowButton = (props: { collection: Collection }) => {
-  const { collection } = props;
+export const CollectionFollowButton = (props: {
+  collection: Collection;
+  style?: CSSProperties;
+}) => {
+  const { collection, style } = props;
   const { t } = useTranslation();
   const collections = useCollectionsFollow();
   if (collections.loading) {
@@ -29,6 +32,7 @@ export const CollectionFollowButton = (props: { collection: Collection }) => {
             collections.followCollection(collection);
           }
         }}
+        style={style}
       >
         {collections.isFollowingCollection(collection) ? (
           <VisibilityOff />
