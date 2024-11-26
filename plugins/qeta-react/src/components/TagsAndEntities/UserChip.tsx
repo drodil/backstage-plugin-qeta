@@ -1,20 +1,35 @@
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { userRouteRef } from '../../routes';
-import { useTranslation, useUserFollow } from '../../hooks';
+import {
+  useIdentityApi,
+  useTranslation,
+  useUserFollow,
+  useUserInfo,
+} from '../../hooks';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Chip, Grid, Tooltip, Typography } from '@material-ui/core';
+import {
+  Avatar,
+  Box,
+  Button,
+  Chip,
+  Grid,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 
 export const UserTooltip = (props: { entityRef: string }) => {
   const { entityRef } = props;
   const { t } = useTranslation();
-  const {
-    primaryTitle: userName,
-    Icon,
-    secondaryTitle,
-  } = useEntityPresentation(
-    entityRef.startsWith('user:') ? entityRef : `user:${entityRef}`,
+  const { name, initials, user, secondaryTitle } = useUserInfo(
+    entityRef,
+    entityRef === 'anonymous',
+  );
+
+  const { value: currentUser } = useIdentityApi(
+    api => api.getBackstageIdentity(),
+    [],
   );
   const users = useUserFollow();
 
@@ -22,14 +37,23 @@ export const UserTooltip = (props: { entityRef: string }) => {
     <Grid container style={{ padding: '0.5em' }} spacing={1}>
       <Grid item xs={12}>
         <Typography variant="h6">
-          {Icon ? <Icon fontSize="small" /> : null}
-          {entityRef === 'anonymous' ? t('userLink.anonymous') : userName}
+          <Box style={{ display: 'inline-block', marginRight: '0.3em' }}>
+            <Avatar
+              src={user?.spec?.profile?.picture}
+              alt={name}
+              variant="rounded"
+              style={{ width: '1em', height: '1em' }}
+            >
+              {initials}
+            </Avatar>
+          </Box>
+          {name}
         </Typography>
       </Grid>
       <Grid item xs={12}>
         <Typography variant="subtitle2">{secondaryTitle}</Typography>
       </Grid>
-      {!users.loading && (
+      {!users.loading && currentUser?.userEntityRef !== entityRef && (
         <Grid item xs={12}>
           <Button
             size="small"

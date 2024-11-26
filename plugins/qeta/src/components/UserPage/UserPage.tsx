@@ -11,21 +11,21 @@ import {
   useIdentityApi,
   UserFollowButton,
   useTranslation,
+  useUserInfo,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { UserStatsContent } from './UserStatsContent';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import { Box, Tab, Typography } from '@material-ui/core';
+import { Avatar, Box, Tab, Typography } from '@material-ui/core';
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
-  const presentation = useEntityPresentation(identity);
+  const { name, initials, user, secondaryTitle } = useUserInfo(identity);
   const [tab, setTab] = useState('statistics');
   const { t } = useTranslation();
   const [_searchParams, setSearchParams] = useSearchParams();
   const {
-    value: user,
+    value: currentUser,
     loading: loadingUser,
     error: userError,
   } = useIdentityApi(api => api.getBackstageIdentity(), []);
@@ -36,16 +36,26 @@ export const UserPage = () => {
   };
   const title = (
     <Typography variant="h5" component="h2">
-      {presentation.primaryTitle}
-      {!loadingUser && !userError && user?.userEntityRef !== identity && (
-        <UserFollowButton userRef={identity} />
-      )}
+      <Box style={{ display: 'inline-block', marginRight: '0.5em' }}>
+        <Avatar src={user?.spec?.profile?.picture} alt={name} variant="rounded">
+          {initials}
+        </Avatar>
+      </Box>
+      {name}
+      {!loadingUser &&
+        !userError &&
+        currentUser?.userEntityRef !== identity && (
+          <UserFollowButton
+            userRef={identity}
+            style={{ marginLeft: '0.5em' }}
+          />
+        )}
     </Typography>
   );
 
   return (
     <>
-      <ContentHeader titleComponent={title}>
+      <ContentHeader titleComponent={title} description={secondaryTitle}>
         <ButtonContainer>
           <AskQuestionButton />
           <WriteArticleButton />

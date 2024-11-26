@@ -259,6 +259,7 @@ export const qetaTranslationRef = createTranslationRef({
     },
     userLink: {
       anonymous: 'Anonymous',
+      you: 'You',
     },
     articlePage: {
       notFound: 'Could not find the article',

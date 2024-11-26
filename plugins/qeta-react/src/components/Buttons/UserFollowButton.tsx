@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { useTranslation, useUserFollow } from '../../hooks';
 import { IconButton, Tooltip } from '@material-ui/core';
 
-export const UserFollowButton = (props: { userRef: string }) => {
-  const { userRef } = props;
+export const UserFollowButton = (props: {
+  userRef: string;
+  style?: CSSProperties;
+}) => {
+  const { userRef, style } = props;
   const { t } = useTranslation();
   const users = useUserFollow();
   if (users.loading) {
@@ -25,6 +28,7 @@ export const UserFollowButton = (props: { userRef: string }) => {
             users.followUser(userRef);
           }
         }}
+        style={style}
       >
         {users.isFollowingUser(userRef) ? <VisibilityOff /> : <Visibility />}
       </IconButton>

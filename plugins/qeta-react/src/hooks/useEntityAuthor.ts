@@ -1,4 +1,4 @@
-import { UserEntity } from '@backstage/catalog-model';
+import { parseEntityRef, UserEntity } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import DataLoader from 'dataloader';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
@@ -13,6 +13,7 @@ import {
   PostResponse,
   UserResponse,
 } from '@drodil/backstage-plugin-qeta-common';
+import { useTranslation } from './useTranslation';
 
 const userCache: Map<string, UserEntity> = new Map();
 const dataLoaderFactory = (catalogApi: CatalogApi) =>
@@ -44,41 +45,34 @@ const dataLoaderFactory = (catalogApi: CatalogApi) =>
     },
   );
 
-export const useEntityAuthor = (
-  entity: PostResponse | AnswerResponse | CollectionResponse | UserResponse,
-) => {
+export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
+  const { t } = useTranslation();
   const [name, setName] = React.useState<string | undefined>(undefined);
   const [user, setUser] = React.useState<UserEntity | null>(null);
   const [initials, setInitials] = React.useState<string | null>(null);
   const [currentUser, setCurrentUser] = React.useState<string | null>(null);
-  const anonymous = 'anonymous' in entity ? entity.anonymous ?? false : false;
-  let author =
-    // eslint-disable-next-line no-nested-ternary
-    'author' in entity
-      ? entity.author
-      : 'userRef' in entity
-      ? entity.userRef
-      : entity.owner;
-  if (!author.startsWith('user:')) {
-    author = `user:${author}`;
-  }
+  const ref = entityRef.startsWith('user:') ? entityRef : `user:${entityRef}`;
 
-  const { primaryTitle: userName } = useEntityPresentation(author);
+  const {
+    primaryTitle: userName,
+    secondaryTitle,
+    Icon,
+  } = useEntityPresentation(ref);
 
   useEffect(() => {
     if (anonymous) {
       return;
     }
 
-    if (userCache.get(author)) {
-      setUser(userCache.get(author) as UserEntity);
+    if (userCache.get(ref)) {
+      setUser(userCache.get(ref) as UserEntity);
       return;
     }
 
     dataLoaderFactory(catalogApi)
-      .load(author)
+      .load(ref)
       .then(data => {
         if (data) {
           setUser(data as UserEntity);
@@ -89,7 +83,7 @@ export const useEntityAuthor = (
       .catch(() => {
         setUser(null);
       });
-  }, [catalogApi, author, anonymous]);
+  }, [catalogApi, ref, anonymous]);
 
   useEffect(() => {
     identityApi.getBackstageIdentity().then(res => {
@@ -99,14 +93,20 @@ export const useEntityAuthor = (
 
   useEffect(() => {
     let displayName = userName;
-    if (author === currentUser) {
-      displayName = 'You';
-      if (anonymous) {
-        displayName += ' (anonymous)';
+    if (anonymous) {
+      displayName = t('userLink.anonymous');
+    } else if (currentUser) {
+      const currentUserRef = parseEntityRef(currentUser);
+      const userRef = parseEntityRef(ref);
+      if (
+        currentUserRef.name === userRef.name &&
+        currentUserRef.namespace === userRef.namespace
+      ) {
+        displayName = t('userLink.you');
       }
     }
     setName(displayName);
-  }, [author, anonymous, currentUser, userName]);
+  }, [ref, anonymous, currentUser, userName, t]);
 
   useEffect(() => {
     const init = (name ?? '')
@@ -118,5 +118,19 @@ export const useEntityAuthor = (
     setInitials(init);
   }, [name]);
 
-  return { name, initials, user };
+  return { name, initials, user, secondaryTitle, Icon };
+};
+
+export const useEntityAuthor = (
+  entity: PostResponse | AnswerResponse | CollectionResponse | UserResponse,
+) => {
+  const anonymous = 'anonymous' in entity ? entity.anonymous ?? false : false;
+  const author =
+    // eslint-disable-next-line no-nested-ternary
+    'author' in entity
+      ? entity.author
+      : 'userRef' in entity
+      ? entity.userRef
+      : entity.owner;
+  return useUserInfo(author, anonymous);
 };
