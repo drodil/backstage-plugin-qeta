@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.15.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.14.0...v3.15.0) (2024-11-27)
+
+
+### Features
+
+* allow deleting tags by moderator ([9a7ce4d](https://github.com/drodil/backstage-plugin-qeta/commit/9a7ce4d15d309ff460fdd4daa475c558343a38ac))
+* allow moderators to create tags ([b576792](https://github.com/drodil/backstage-plugin-qeta/commit/b57679265907b42e7f1100ee11c406696cc6e5b1)), closes [#241](https://github.com/drodil/backstage-plugin-qeta/issues/241)
+
+
+### Bug Fixes
+
+* entity follow tooltip + add icons ([4ad28c6](https://github.com/drodil/backstage-plugin-qeta/commit/4ad28c65745e824dc3115e23d06126dbe623decd))
+* filtering of tags in backend to allow existing tags ([41840da](https://github.com/drodil/backstage-plugin-qeta/commit/41840dada65054ca606a8bd748774604d90f0256))
+* small fix for user page title rendering ([b9f17eb](https://github.com/drodil/backstage-plugin-qeta/commit/b9f17eb39f4126c8d607ad0da15cc87c13af8b4e))
+* use correct params for no questions button ([4af8704](https://github.com/drodil/backstage-plugin-qeta/commit/4af8704fb4c5756a8107064660760f7dcda519b6))
+
 ## [3.14.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.13.2...v3.14.0) (2024-11-26)
 
 
