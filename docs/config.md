@@ -28,7 +28,7 @@ The configuration values are:
 - allowGlobalEdits, boolean, allows editing other users' questions and answers by any user. Only if permission framework is not in use. Default is `false`.
 - entities.kinds, string array, what kind of catalog entities can be attached to a question. Default is ['Component']
 - entities.max, integer, maximum number of entities to attach to a question. Default is `3`
-- tags.allowCreation, boolean, determines whether it's possible to add new tags when creating question. Default is `true`
+- tags.allowCreation, boolean, determines whether it's possible to add new tags when creating question. Moderators can always add tags from the UI even if this is false. Default is `true`
 - tags.allowedTags, string array, list of allowed tags to be attached to questions. Only used if `tags.allowCreation` is set to `false`.
 - tags.max, integer, maximum number of tags to be attached to a question. Default is `5`.
 - moderators, string array, list of moderator groups or users who can edit, delete questions/answers/comments and mark answers correct for any question. Only if permissions framework is not in use.
