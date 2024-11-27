@@ -35,13 +35,15 @@ export const UserPage = () => {
     setTab(newValue);
   };
   const title = (
-    <Typography variant="h5" component="h2">
+    <Box style={{ display: 'flex', alignItems: 'center' }}>
       <Box style={{ display: 'inline-block', marginRight: '0.5em' }}>
         <Avatar src={user?.spec?.profile?.picture} alt={name} variant="rounded">
           {initials}
         </Avatar>
       </Box>
-      {name}
+      <Typography variant="h5" component="h2">
+        {name}
+      </Typography>
       {!loadingUser &&
         !userError &&
         currentUser?.userEntityRef !== identity && (
@@ -50,7 +52,7 @@ export const UserPage = () => {
             style={{ marginLeft: '0.5em' }}
           />
         )}
-    </Typography>
+    </Box>
   );
 
   return (
