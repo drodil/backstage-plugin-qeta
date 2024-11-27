@@ -66,7 +66,14 @@ export const TagPage = () => {
             </CardContent>
           </Card>
         )}
-        {tag ? <PostsContainer tags={[tag ?? '']} /> : <TagsGrid />}
+        {tag ? (
+          <PostsContainer
+            tags={[tag ?? '']}
+            filterPanelProps={{ showTagFilter: false }}
+          />
+        ) : (
+          <TagsGrid />
+        )}
       </Grid>
       <Grid item lg={4} xl={3}>
         <FollowedTagsList />

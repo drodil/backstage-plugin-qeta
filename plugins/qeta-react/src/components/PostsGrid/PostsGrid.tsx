@@ -7,7 +7,11 @@ import {
   WriteArticleButton,
 } from '../Buttons';
 import FilterList from '@material-ui/icons/FilterList';
-import { FilterPanel, PostFilters } from '../FilterPanel/FilterPanel';
+import {
+  CommonFilterPanelProps,
+  FilterPanel,
+  PostFilters,
+} from '../FilterPanel/FilterPanel';
 import { PostsGridContent } from './PostsGridContent';
 import { capitalize } from 'lodash';
 import {
@@ -18,7 +22,10 @@ import { useTranslation } from '../../hooks';
 import { SearchBar } from '../SearchBar/SearchBar';
 import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
 
-export type PostGridProps = PaginatedPostsProps & { allowRanking?: boolean };
+export type PostGridProps = PaginatedPostsProps & {
+  allowRanking?: boolean;
+  filterPanelProps?: CommonFilterPanelProps;
+};
 
 export const PostsGrid = (props: PostGridProps) => {
   const {
@@ -141,6 +148,7 @@ export const PostsGrid = (props: PostGridProps) => {
             onChange={onFilterChange}
             filters={filters}
             type={type}
+            {...props.filterPanelProps}
           />
         </Collapse>
       )}

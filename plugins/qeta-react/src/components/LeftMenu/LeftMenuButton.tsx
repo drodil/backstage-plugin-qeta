@@ -14,7 +14,8 @@ import { useTranslation } from '../../hooks';
 const useStyles = makeStyles(
   () => ({
     button: {
-      marginBottom: '0.5rem',
+      marginTop: '1em',
+      marginBottom: '-1em',
     },
     popper: {
       zIndex: 1000,
@@ -68,6 +69,7 @@ export const LeftMenuButton = () => {
         aria-controls={open ? 'menu-list-grow' : undefined}
         aria-haspopup="true"
         color="primary"
+        size="large"
         variant="contained"
         onClick={handleToggle}
         startIcon={<MenuIcon />}

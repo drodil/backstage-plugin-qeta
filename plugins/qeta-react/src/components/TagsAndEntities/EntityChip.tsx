@@ -6,7 +6,16 @@ import { entityRouteRef } from '../../routes';
 import { qetaApiRef } from '../../api';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useEntityFollow, useTranslation } from '../../hooks';
-import { Button, Chip, Grid, Tooltip, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Chip,
+  Grid,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import Visibility from '@material-ui/icons/Visibility';
 
 const cache: Map<string, EntityResponse> = new Map();
 
@@ -41,9 +50,10 @@ const EntityTooltip = (props: { entity: Entity | string }) => {
   return (
     <Grid container style={{ padding: '0.5em' }} spacing={1}>
       <Grid item xs={12}>
-        <Typography variant="h6">
-          {Icon ? <Icon fontSize="small" /> : null} {primaryTitle}
-        </Typography>
+        <Box style={{ display: 'flex', alignItems: 'center' }}>
+          {Icon ? <Icon fontSize="small" /> : null}
+          <Typography variant="h6">{primaryTitle}</Typography>
+        </Box>
         <Typography variant="subtitle1">{secondaryTitle}</Typography>
       </Grid>
       <Grid item xs={12}>
@@ -65,11 +75,18 @@ const EntityTooltip = (props: { entity: Entity | string }) => {
             }
             onClick={() => {
               if (entitiesFollow.isFollowingEntity(entityRef)) {
-                entitiesFollow.followEntity(entityRef);
+                entitiesFollow.unfollowEntity(entityRef);
               } else {
                 entitiesFollow.followEntity(entityRef);
               }
             }}
+            startIcon={
+              entitiesFollow.isFollowingEntity(entityRef) ? (
+                <VisibilityOff />
+              ) : (
+                <Visibility />
+              )
+            }
           >
             {entitiesFollow.isFollowingEntity(entityRef)
               ? t('entityButton.unfollow')

@@ -87,7 +87,11 @@ export const UserPage = () => {
           />
         </TabPanel>
         <TabPanel value="articles">
-          <PostsGrid author={identity ?? ''} type="article" />
+          <PostsGrid
+            author={identity ?? ''}
+            type="article"
+            showNoQuestionsBtn={false}
+          />
         </TabPanel>
         <TabPanel value="collections">
           <CollectionsGrid owner={identity ?? ''} />

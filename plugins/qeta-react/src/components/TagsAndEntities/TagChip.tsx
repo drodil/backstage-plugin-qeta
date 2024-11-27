@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useTagsFollow, useTranslation } from '../../hooks';
 import { Button, Chip, Grid, Tooltip, Typography } from '@material-ui/core';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import Visibility from '@material-ui/icons/Visibility';
 
 const cache: Map<string, TagResponse> = new Map();
 
@@ -65,6 +67,9 @@ const TagTooltip = (props: { tag: string }) => {
                 tags.followTag(tag);
               }
             }}
+            startIcon={
+              tags.isFollowingTag(tag) ? <VisibilityOff /> : <Visibility />
+            }
           >
             {tags.isFollowingTag(tag)
               ? t('tagButton.unfollow')

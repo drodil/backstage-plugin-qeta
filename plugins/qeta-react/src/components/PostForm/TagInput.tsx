@@ -19,7 +19,7 @@ export const TagInput = (props: {
     value,
     onChange,
     error,
-    allowCreate = true,
+    allowCreate,
     hideHelpText = false,
     style,
   } = props;
@@ -27,48 +27,50 @@ export const TagInput = (props: {
   const config = useApi(configApiRef);
   const { t } = useTranslation();
   const allowCreation = useMemo(
-    () => config.getOptionalBoolean('qeta.tags.allowCreation') ?? allowCreate,
+    () =>
+      allowCreate ??
+      config.getOptionalBoolean('qeta.tags.allowCreation') ??
+      true,
     [config, allowCreate],
   );
   const allowedTags = useMemo(
-    () => config.getOptionalStringArray('qeta.tags.allowedTags') ?? null,
+    () => config.getOptionalStringArray('qeta.tags.allowedTags') ?? [],
     [config],
   );
   const maximumTags = useMemo(
     () => config.getOptionalNumber('qeta.tags.max') ?? 5,
     [config],
   );
-  const [availableTags, setAvailableTags] = React.useState<string[] | null>([]);
+  const [availableTags, setAvailableTags] = React.useState<string[]>([]);
   const [tagDescriptions, setTagDescriptions] = React.useState<
     Record<string, string>
   >({});
   useEffect(() => {
     qetaApi
       .getTags()
-      .catch(_ => setAvailableTags(null))
+      .catch(_ => setAvailableTags([]))
       .then(data => {
-        if (data) {
-          const uniqueTags = [
-            ...new Set([
-              ...(allowedTags ?? []),
-              ...data.tags.map(tag => tag.tag),
-            ]),
-          ];
-          setAvailableTags(uniqueTags);
-          setTagDescriptions(
-            data.tags.reduce((acc, tag) => {
-              if (!tag.description) {
-                return acc;
-              }
-              acc[tag.tag] = tag.description;
-              return acc;
-            }, {} as Record<string, string>),
-          );
+        if (!data) {
+          return;
         }
+
+        const uniqueTags = [
+          ...new Set([...allowedTags, ...data.tags.map(tag => tag.tag)]),
+        ];
+        setAvailableTags(uniqueTags);
+        setTagDescriptions(
+          data.tags.reduce((acc, tag) => {
+            if (!tag.description) {
+              return acc;
+            }
+            acc[tag.tag] = tag.description;
+            return acc;
+          }, {} as Record<string, string>),
+        );
       });
   }, [qetaApi, allowCreation, allowedTags]);
 
-  if (!allowCreate && (!availableTags || availableTags.length === 0)) {
+  if (!allowCreation && availableTags.length === 0) {
     return null;
   }
 

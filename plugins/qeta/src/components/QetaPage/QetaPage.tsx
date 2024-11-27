@@ -83,8 +83,13 @@ export const QetaPage = (props?: Props) => {
         {introElement}
         <Container maxWidth="xl">
           <Grid container spacing={4} justifyContent="flex-start">
-            <Grid item md={1} lg={2}>
-              <LeftMenu />
+            <Grid item md={1} lg={2} style={{ padding: 0 }}>
+              <Box display={{ md: 'block', lg: 'none' }}>
+                <LeftMenuButton />
+              </Box>
+              <Box display={{ xs: 'none', md: 'block' }}>
+                <LeftMenu />
+              </Box>
             </Grid>
             <Grid
               item
@@ -92,9 +97,6 @@ export const QetaPage = (props?: Props) => {
               lg={10}
               style={{ paddingLeft: '0', paddingRight: '0' }}
             >
-              <Box display={{ md: 'block', lg: 'none' }}>
-                <LeftMenuButton />
-              </Box>
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route

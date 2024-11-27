@@ -76,7 +76,14 @@ export const EntityPage = () => {
             </CardContent>
           </Card>
         )}
-        {entityRef ? <PostsContainer entity={entityRef} /> : <EntitiesGrid />}
+        {entityRef ? (
+          <PostsContainer
+            entity={entityRef}
+            filterPanelProps={{ showEntityFilter: false }}
+          />
+        ) : (
+          <EntitiesGrid />
+        )}
       </Grid>
       <Grid item lg={4} xl={3}>
         <FollowedEntitiesList />

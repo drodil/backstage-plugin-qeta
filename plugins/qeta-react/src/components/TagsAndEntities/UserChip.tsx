@@ -18,6 +18,8 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import Visibility from '@material-ui/icons/Visibility';
 
 export const UserTooltip = (props: { entityRef: string }) => {
   const { entityRef } = props;
@@ -36,8 +38,8 @@ export const UserTooltip = (props: { entityRef: string }) => {
   return (
     <Grid container style={{ padding: '0.5em' }} spacing={1}>
       <Grid item xs={12}>
-        <Typography variant="h6">
-          <Box style={{ display: 'inline-block', marginRight: '0.3em' }}>
+        <Box style={{ display: 'flex', alignItems: 'center' }}>
+          <Box style={{ display: 'inline-block', marginRight: '1em' }}>
             <Avatar
               src={user?.spec?.profile?.picture}
               alt={name}
@@ -47,8 +49,10 @@ export const UserTooltip = (props: { entityRef: string }) => {
               {initials}
             </Avatar>
           </Box>
-          {name}
-        </Typography>
+          <Typography variant="h6" style={{ display: 'inline' }}>
+            {name}
+          </Typography>
+        </Box>
       </Grid>
       <Grid item xs={12}>
         <Typography variant="subtitle2">{secondaryTitle}</Typography>
@@ -66,6 +70,13 @@ export const UserTooltip = (props: { entityRef: string }) => {
                 users.followUser(entityRef);
               }
             }}
+            startIcon={
+              users.isFollowingUser(entityRef) ? (
+                <VisibilityOff />
+              ) : (
+                <Visibility />
+              )
+            }
           >
             {users.isFollowingUser(entityRef)
               ? t('userButton.unfollow')

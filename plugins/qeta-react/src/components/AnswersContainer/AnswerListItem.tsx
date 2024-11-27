@@ -10,11 +10,24 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { VoteButtons } from '../Buttons/VoteButtons';
-import { questionRouteRef, userRouteRef } from '../../routes';
+import { questionRouteRef } from '../../routes';
 import { useTranslation } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
-import { Avatar, Grid, Typography } from '@material-ui/core';
+import { Grid, makeStyles, Typography } from '@material-ui/core';
+import { SmallAvatar } from '../Utility/SmallAvatar';
+import { UserLink } from '../Links';
+
+const useStyles = makeStyles(() => ({
+  author: {
+    float: 'right',
+    alignItems: 'center',
+    display: 'flex',
+  },
+  timestamp: {
+    marginLeft: '0.3em',
+  },
+}));
 
 export interface AnswerListItemProps {
   answer: AnswerResponse;
@@ -25,9 +38,9 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
   const { answer, entity } = props;
 
   const questionRoute = useRouteRef(questionRouteRef);
-  const userRoute = useRouteRef(userRouteRef);
   const { name, initials, user } = useEntityAuthor(answer);
   const { t } = useTranslation();
+  const styles = useStyles();
 
   const getAnswerLink = () => {
     return entity
@@ -40,15 +53,23 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
   };
 
   return (
-    <Grid container spacing={2} justifyContent="flex-start">
-      <Grid item justifyContent="center" style={{ paddingTop: '0px' }}>
+    <Grid
+      container
+      spacing={2}
+      justifyContent="flex-start"
+      style={{ padding: '0.7em', paddingBottom: '1.0em' }}
+    >
+      <Grid item style={{ paddingTop: '0px' }}>
         <VoteButtonContainer>
           <VoteButtons entity={answer} />
         </VoteButtonContainer>
       </Grid>
-      <Grid item>
+      <Grid
+        item
+        style={{ display: 'inline-block', width: 'calc(100% - 80px)' }}
+      >
         <Grid container>
-          <Grid item xs={12}>
+          <Grid item xs={12} style={{ paddingTop: '0px' }}>
             <Typography variant="h5" component="div">
               <Link
                 to={getAnswerLink()}
@@ -63,32 +84,29 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
               variant="caption"
               noWrap
               component="div"
-              className="qetaQuestionListItemContent"
+              className="qetaAnswerListItemContent"
               style={{ marginBottom: '5px' }}
             >
               {DOMPurify.sanitize(
                 truncate(removeMarkdownFormatting(answer.content), 150),
               )}
             </Typography>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{ marginTop: '1em' }}>
               {answer.post && <TagsAndEntities entity={answer.post} />}
-              <Typography variant="caption" display="inline">
-                <Avatar
+              <Typography
+                variant="caption"
+                display="inline"
+                className={styles.author}
+              >
+                <SmallAvatar
                   src={user?.spec?.profile?.picture}
                   alt={name}
                   variant="rounded"
                 >
                   {initials}
-                </Avatar>
-                {answer.author === 'anonymous' ? (
-                  t('common.anonymousAuthor')
-                ) : (
-                  <Link to={`${userRoute()}/${answer.author}`}>{name}</Link>
-                )}{' '}
-                <Link
-                  to={getAnswerLink()}
-                  className="qetaQuestionListItemQuestionBtn"
-                >
+                </SmallAvatar>
+                <UserLink entityRef={answer.author} />{' '}
+                <Link to={getAnswerLink()} className={styles.timestamp}>
                   {`${t('answer.answeredTime')} `}
                   <RelativeTimeWithTooltip value={answer.created} />
                 </Link>

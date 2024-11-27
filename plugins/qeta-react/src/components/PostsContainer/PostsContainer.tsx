@@ -1,5 +1,9 @@
 import React from 'react';
-import { FilterPanel, PostFilters } from '../FilterPanel/FilterPanel';
+import {
+  CommonFilterPanelProps,
+  FilterPanel,
+  PostFilters,
+} from '../FilterPanel/FilterPanel';
 import { PostList } from './PostList';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
@@ -17,7 +21,10 @@ import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
 import FilterList from '@material-ui/icons/FilterList';
 
 export const PostsContainer = (
-  props: PaginatedPostsProps & { entity?: string },
+  props: PaginatedPostsProps & {
+    entity?: string;
+    filterPanelProps?: CommonFilterPanelProps;
+  },
 ) => {
   const {
     type,
@@ -142,7 +149,7 @@ export const PostsContainer = (
             filters={filters}
             type={type}
             showEntityFilter={entity === undefined}
-            showTagFilter={tags === undefined}
+            {...props.filterPanelProps}
           />
         </Collapse>
       )}
@@ -158,7 +165,7 @@ export const PostsContainer = (
         pageCount={pageCount}
         showNoQuestionsBtn={showNoQuestionsBtn}
         entityPage={entity !== undefined}
-        tags={tags}
+        tags={tags ?? filters.tags}
         type={type}
       />
     </Box>

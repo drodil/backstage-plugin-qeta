@@ -44,7 +44,6 @@ export const filterKeys = [
   'noAnswers',
   'noCorrectAnswer',
   'noVotes',
-  'tags',
   'dateRange',
 ] as const;
 export type FilterKey = (typeof filterKeys)[number];
@@ -108,13 +107,17 @@ export type Change<T extends Filters> = {
   value: string | string[];
 };
 
-export interface FilterPanelProps<T extends Filters> {
-  onChange: (changes: Change<T> | Change<T>[]) => void;
-  filters: T;
+export interface CommonFilterPanelProps {
   showEntityFilter?: boolean;
   showTagFilter?: boolean;
   answerFilters?: boolean;
   type?: PostType;
+}
+
+export interface FilterPanelProps<T extends Filters>
+  extends CommonFilterPanelProps {
+  onChange: (changes: Change<T> | Change<T>[]) => void;
+  filters: T;
 }
 
 const useStyles = makeStyles(

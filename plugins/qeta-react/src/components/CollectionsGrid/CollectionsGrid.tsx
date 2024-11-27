@@ -12,13 +12,18 @@ import { CollectionsGridContent } from './CollectionsGridContent';
 import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
-import { CollectionFilters, FilterPanel } from '../FilterPanel/FilterPanel';
+import {
+  CollectionFilters,
+  CommonFilterPanelProps,
+  FilterPanel,
+} from '../FilterPanel/FilterPanel';
 import FilterList from '@material-ui/icons/FilterList';
 import { getFiltersWithDateRange } from '../../utils';
 
 export type CollectionsGridProps = {
   owner?: string;
   showFilters?: boolean;
+  filterPanelProps?: CommonFilterPanelProps;
 };
 
 export type CollectionFilterChange = {
@@ -29,7 +34,7 @@ export type CollectionFilterChange = {
 const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-collection-filters-expanded';
 
 export const CollectionsGrid = (props: CollectionsGridProps) => {
-  const { showFilters } = props;
+  const { showFilters, owner } = props;
   const { t } = useTranslation();
   const [page, setPage] = React.useState(1);
   const [pageCount, setPageCount] = React.useState(1);
@@ -60,6 +65,7 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
       return api.getCollections({
         limit: collectionsPerPage,
         offset: (page - 1) * collectionsPerPage,
+        owner,
         ...(getFiltersWithDateRange(filters) as any),
       });
     },
@@ -141,6 +147,7 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
           <FilterPanel<CollectionFilters>
             onChange={onFilterChange}
             filters={filters}
+            {...props.filterPanelProps}
           />
         </Collapse>
       )}
