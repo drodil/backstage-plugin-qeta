@@ -20,7 +20,7 @@ export const NoPostsCard = (props: {
   const askRoute = useRouteRef(askRouteRef);
   const writeRoute = useRouteRef(writeRouteRef);
   const { t } = useTranslation();
-  const entityRef = useEntityQueryParameter(entity);
+  const entityRef = useEntityQueryParameter(entity) ?? entity;
 
   const queryParams = new URLSearchParams();
   if (entityRef) {
@@ -56,7 +56,7 @@ export const NoPostsCard = (props: {
             <Grid item>
               <LinkButton
                 to={
-                  entityRef || tags
+                  queryParams.size > 0
                     ? `${route()}?${queryParams.toString()}`
                     : `${route()}`
                 }

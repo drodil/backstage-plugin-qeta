@@ -141,6 +141,8 @@ export const PostsContainer = (
             onChange={onFilterChange}
             filters={filters}
             type={type}
+            showEntityFilter={entity === undefined}
+            showTagFilter={tags === undefined}
           />
         </Collapse>
       )}
@@ -150,7 +152,7 @@ export const PostsContainer = (
         response={response}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        entity={entity}
+        entity={entity ?? filters.entity}
         page={page}
         pageSize={postsPerPage}
         pageCount={pageCount}
