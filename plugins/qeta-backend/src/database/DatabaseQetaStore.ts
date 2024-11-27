@@ -1004,6 +1004,19 @@ export class DatabaseQetaStore implements QetaStore {
     return !!(await query.delete());
   }
 
+  async createTag(
+    tag: string,
+    description?: string,
+  ): Promise<TagResponse | null> {
+    const trimmed = tag.trim();
+    await this.db
+      .insert({ tag: trimmed, description })
+      .into('tags')
+      .onConflict('tag')
+      .ignore();
+    return this.getTag(trimmed);
+  }
+
   async updateTag(
     tag: string,
     description?: string,
@@ -2178,7 +2191,7 @@ export class DatabaseQetaStore implements QetaStore {
       .as('followerCount');
 
     return this.db('tags')
-      .rightJoin('post_tags', 'tags.id', 'post_tags.tagId')
+      .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
       .orderBy('postsCount', 'desc')
       .select('id', 'tag', 'description', postsCount, followerCount)
       .groupBy('tags.id');

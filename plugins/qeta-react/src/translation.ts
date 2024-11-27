@@ -170,6 +170,14 @@ export const qetaTranslationRef = createTranslationRef({
       saveButton: 'Save',
       cancelButton: 'Cancel',
     },
+    createTagModal: {
+      title: 'Create a new tag',
+      tagInput: 'Tag',
+      description: 'Tag description',
+      errorPosting: 'Failed to create',
+      createButton: 'Create',
+      cancelButton: 'Cancel',
+    },
     deleteModal: {
       title: {
         question: 'Are you sure you want to delete this post?',
@@ -502,6 +510,7 @@ export const qetaTranslationRef = createTranslationRef({
     tagPage: {
       errorLoading: 'Could not load tags',
       defaultTitle: 'Tags',
+      createTag: 'Create tag',
       search: {
         label: 'Search tag',
         placeholder: 'Search...',

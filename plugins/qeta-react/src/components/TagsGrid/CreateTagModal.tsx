@@ -1,4 +1,3 @@
-import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import {
   Backdrop,
   Button,
@@ -14,22 +13,24 @@ import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
 import { ModalContent } from '../Utility/ModalContent';
 
-export const EditTagModal = (props: {
-  tag: TagResponse;
+export const CreateTagModal = (props: {
   open: boolean;
   onClose: () => void;
 }) => {
-  const { tag, open, onClose } = props;
-  const [description, setDescription] = React.useState(tag.description);
+  const { open, onClose } = props;
+  const [tag, setTag] = React.useState('');
+  const [description, setDescription] = React.useState('');
   const { t } = useTranslation();
   const [error, setError] = React.useState(false);
   const qetaApi = useApi(qetaApiRef);
 
-  const handleUpdate = () => {
+  const handleCreate = () => {
     qetaApi
-      .updateTag(tag.tag, description)
+      .createTag(tag, description)
       .then(ret => {
         if (ret) {
+          setTag('');
+          setDescription('');
           onClose();
           return;
         }
@@ -44,7 +45,7 @@ export const EditTagModal = (props: {
     <Modal
       open={open}
       onClose={onClose}
-      className="qetaEditTagModal"
+      className="qetaCreateTagModal"
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       closeAfterTransition
@@ -55,22 +56,32 @@ export const EditTagModal = (props: {
     >
       <ModalContent>
         {error && (
-          <Alert severity="error">{t('editTagModal.errorPosting')}</Alert>
+          <Alert severity="error">{t('createTagModal.errorPosting')}</Alert>
         )}
         <Typography
           id="modal-modal-title"
-          className="qetaEditTagModalTitle"
+          className="qetaCreateTagModalTitle"
           variant="h6"
           component="h2"
           style={{ marginBottom: '1em' }}
         >
-          {t('editTagModal.title', { tag: tag.tag })}
+          {t('createTagModal.title')}
         </Typography>
         <Grid container>
           <Grid item xs={12}>
             <TextField
               variant="outlined"
-              label={t('editTagModal.description')}
+              label={t('createTagModal.tagInput')}
+              style={{ width: '100%' }}
+              required
+              value={tag}
+              onChange={e => setTag(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              variant="outlined"
+              label={t('createTagModal.description')}
               multiline
               minRows={10}
               style={{ width: '100%' }}
@@ -80,14 +91,14 @@ export const EditTagModal = (props: {
           </Grid>
         </Grid>
         <Button
-          onClick={handleUpdate}
-          className="qetaEditTagModalSaveBtn"
+          onClick={handleCreate}
+          className="qetaCreateTagModalSaveBtn"
           color="secondary"
         >
-          {t('editTagModal.saveButton')}
+          {t('createTagModal.createButton')}
         </Button>
-        <Button onClick={onClose} className="qetaEditTagModalCancelBtn">
-          {t('editTagModal.cancelButton')}
+        <Button onClick={onClose} className="qetaCreateTagModalCancelBtn">
+          {t('createTagModal.cancelButton')}
         </Button>
       </ModalContent>
     </Modal>

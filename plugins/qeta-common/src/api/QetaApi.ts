@@ -178,6 +178,11 @@ export interface QetaApi {
     tag: string,
     requestOptions?: RequestOptions,
   ): Promise<TagResponse | null>;
+  createTag(
+    tag: string,
+    description?: string,
+    requestOptions?: RequestOptions,
+  ): Promise<TagResponse | null>;
   updateTag(
     tag: string,
     description?: string,

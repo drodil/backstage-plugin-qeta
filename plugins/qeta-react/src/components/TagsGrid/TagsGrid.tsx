@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import { useQetaApi, useTranslation } from '../../hooks';
+import { useIsModerator, useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import useDebounce from 'react-use/lib/useDebounce';
 import { TagsGridContent } from './TagsGridContent';
 import { SearchBar } from '../SearchBar/SearchBar';
-import { Grid, Typography } from '@material-ui/core';
+import { Button, Grid, Typography } from '@material-ui/core';
+import { CreateTagModal } from './CreateTagModal';
 
 type TagFilters = {
   order: 'asc' | 'desc';
@@ -17,6 +18,7 @@ export const TagsGrid = () => {
   const [pageCount, setPageCount] = React.useState(1);
   const [tagsPerPage, setTagsPerPage] = React.useState(25);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const isModerator = useIsModerator();
   const { t } = useTranslation();
   const [filters, setFilters] = React.useState<TagFilters>({
     order: 'desc',
@@ -60,8 +62,15 @@ export const TagsGrid = () => {
     }
   }, [response, tagsPerPage]);
 
-  const onTagEdit = () => {
+  const onTagsModify = () => {
     retry();
+  };
+
+  const [createModalOpen, setCreateModalOpen] = React.useState(false);
+  const handleCreateModalOpen = () => setCreateModalOpen(true);
+  const handleCreateModalClose = () => {
+    setCreateModalOpen(false);
+    onTagsModify();
   };
 
   return (
@@ -76,15 +85,31 @@ export const TagsGrid = () => {
       </Grid>
       <Grid container justifyContent="space-between">
         {response && (
-          <Grid item xs={12}>
+          <Grid item xs={isModerator ? 8 : 12}>
             <Typography variant="h6" className="qetaTagsContainerTitle">
               {t('tagPage.tags', { count: response.total })}
             </Typography>
           </Grid>
         )}
+        {response && isModerator && (
+          <Grid item xs={4}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCreateModalOpen}
+              style={{ float: 'right' }}
+            >
+              {t('tagPage.createTag')}
+            </Button>
+            <CreateTagModal
+              open={createModalOpen}
+              onClose={handleCreateModalClose}
+            />
+          </Grid>
+        )}
         <TagsGridContent
           response={response}
-          onTagEdit={onTagEdit}
+          onTagEdit={onTagsModify}
           loading={loading}
           error={error}
         />

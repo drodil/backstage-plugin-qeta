@@ -368,6 +368,7 @@ export interface QetaStore {
     options?: { noDescription?: boolean } & TagsQuery,
   ): Promise<TagsResponse>;
   getTag(tag: string): Promise<TagResponse | null>;
+  createTag(tag: string, description?: string): Promise<TagResponse | null>;
   updateTag(tag: string, description?: string): Promise<TagResponse | null>;
   deleteTag(id: number): Promise<boolean>;
 

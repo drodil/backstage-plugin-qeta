@@ -18,6 +18,8 @@ import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { useEntityFollow, useTranslation } from '../../hooks';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import Visibility from '@material-ui/icons/Visibility';
 
 export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
   const { entity } = props;
@@ -77,6 +79,13 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
                       entityFollow.followEntity(entity.entityRef);
                     }
                   }}
+                  startIcon={
+                    entityFollow.isFollowingEntity(entity.entityRef) ? (
+                      <VisibilityOff />
+                    ) : (
+                      <Visibility />
+                    )
+                  }
                 >
                   {entityFollow.isFollowingEntity(entity.entityRef)
                     ? t('entityButton.unfollow')

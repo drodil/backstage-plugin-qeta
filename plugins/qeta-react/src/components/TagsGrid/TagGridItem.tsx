@@ -22,6 +22,10 @@ import { EditTagModal } from './EditTagModal';
 import DOMPurify from 'dompurify';
 import { useIsModerator, useTagsFollow, useTranslation } from '../../hooks';
 import { DeleteModal } from '../DeleteModal';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 export const TagGridItem = (props: {
   tag: TagResponse;
@@ -85,6 +89,13 @@ export const TagGridItem = (props: {
                       tags.followTag(tag.tag);
                     }
                   }}
+                  startIcon={
+                    tags.isFollowingTag(tag.tag) ? (
+                      <VisibilityOff />
+                    ) : (
+                      <Visibility />
+                    )
+                  }
                 >
                   {tags.isFollowingTag(tag.tag)
                     ? t('tagButton.unfollow')
@@ -97,6 +108,7 @@ export const TagGridItem = (props: {
                 size="small"
                 onClick={handleEditModalOpen}
                 variant="outlined"
+                startIcon={<EditIcon />}
               >
                 {t('tagButton.edit')}
               </Button>
@@ -106,8 +118,9 @@ export const TagGridItem = (props: {
                 <Button
                   size="small"
                   onClick={handleDeleteModalOpen}
-                  variant="outlined"
+                  variant="contained"
                   color="secondary"
+                  startIcon={<DeleteIcon />}
                 >
                   {t('tagButton.delete')}
                 </Button>

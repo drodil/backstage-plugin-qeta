@@ -21,6 +21,8 @@ import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { useTranslation } from '../../hooks';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import Visibility from '@material-ui/icons/Visibility';
 
 export interface PostsGridItemProps {
   collection: Collection;
@@ -95,6 +97,13 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
                     collections.followCollection(collection);
                   }
                 }}
+                startIcon={
+                  collections.isFollowingCollection(collection) ? (
+                    <VisibilityOff />
+                  ) : (
+                    <Visibility />
+                  )
+                }
               >
                 {collections.isFollowingCollection(collection)
                   ? t('collectionButton.unfollow')

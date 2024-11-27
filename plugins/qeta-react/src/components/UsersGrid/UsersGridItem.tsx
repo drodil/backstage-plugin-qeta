@@ -19,6 +19,8 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import Visibility from '@material-ui/icons/Visibility';
 
 export const UsersGridItem = (props: { user: UserResponse }) => {
   const { user } = props;
@@ -112,6 +114,13 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
                           users.followUser(user.userRef);
                         }
                       }}
+                      startIcon={
+                        users.isFollowingUser(user.userRef) ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )
+                      }
                     >
                       {users.isFollowingUser(user.userRef)
                         ? t('userButton.unfollow')

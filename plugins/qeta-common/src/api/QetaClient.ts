@@ -308,6 +308,25 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as TagResponse;
   }
 
+  async createTag(
+    tag: string,
+    description?: string,
+    requestOptions?: RequestOptions,
+  ): Promise<TagResponse | null> {
+    const response = await this.fetch(`/tags/${tag}`, {
+      requestOptions,
+      reqInit: {
+        method: 'PUT',
+        body: JSON.stringify({ description }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    });
+    if (!response.ok) {
+      return null;
+    }
+    return (await response.json()) as TagResponse;
+  }
+
   async deleteTag(
     id?: number,
     requestOptions?: RequestOptions,

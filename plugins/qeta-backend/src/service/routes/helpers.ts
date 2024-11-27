@@ -7,6 +7,7 @@ import {
 } from '../types';
 import { getUsername, isModerator } from '../util';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import { isValidTag } from '@drodil/backstage-plugin-qeta-common';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 
@@ -137,6 +138,34 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     const tag = await database.updateTag(request.params.tag, description);
     if (!tag) {
       response.sendStatus(404);
+      return;
+    }
+    response.json(tag);
+  });
+
+  router.put('/tags/:tag', async (request, response) => {
+    const mod = await isModerator(request, options);
+    if (!mod) {
+      response.status(403).send({ errors: 'Not authorized', type: 'body' });
+      return;
+    }
+
+    const existing = await database.getTag(request.params.tag);
+    if (existing) {
+      response.status(409).send({ errors: 'Tag already exists', type: 'body' });
+      return;
+    }
+
+    if (!isValidTag(request.params.tag)) {
+      response.status(400).send({ errors: 'Invalid tag', type: 'body' });
+      return;
+    }
+
+    const description = request.body.description;
+    const tag = await database.createTag(request.params.tag, description);
+    console.log(tag);
+    if (!tag) {
+      response.sendStatus(500);
       return;
     }
     response.json(tag);
