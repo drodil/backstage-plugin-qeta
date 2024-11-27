@@ -369,6 +369,7 @@ export interface QetaStore {
   ): Promise<TagsResponse>;
   getTag(tag: string): Promise<TagResponse | null>;
   updateTag(tag: string, description?: string): Promise<TagResponse | null>;
+  deleteTag(id: number): Promise<boolean>;
 
   getUsers(
     options?: { entityRefs?: string[] } & UsersQuery,

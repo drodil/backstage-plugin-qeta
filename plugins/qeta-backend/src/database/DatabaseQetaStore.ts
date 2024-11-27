@@ -999,6 +999,11 @@ export class DatabaseQetaStore implements QetaStore {
     };
   }
 
+  async deleteTag(id: number): Promise<boolean> {
+    const query = this.db('tags').where('id', '=', id);
+    return !!(await query.delete());
+  }
+
   async updateTag(
     tag: string,
     description?: string,

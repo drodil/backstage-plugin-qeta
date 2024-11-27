@@ -308,6 +308,23 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as TagResponse;
   }
 
+  async deleteTag(
+    id?: number,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean> {
+    if (!id) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    const response = await this.fetch(`/tags/${id}`, {
+      reqInit: {
+        method: 'DELETE',
+      },
+      requestOptions,
+    });
+    const data = await response;
+    return data.ok;
+  }
+
   async getUsers(
     options?: UsersQuery,
     requestOptions?: RequestOptions,

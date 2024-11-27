@@ -20,7 +20,8 @@ import { tagRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
 import { EditTagModal } from './EditTagModal';
 import DOMPurify from 'dompurify';
-import { useTagsFollow, useTranslation } from '../../hooks';
+import { useIsModerator, useTagsFollow, useTranslation } from '../../hooks';
+import { DeleteModal } from '../DeleteModal';
 
 export const TagGridItem = (props: {
   tag: TagResponse;
@@ -31,11 +32,19 @@ export const TagGridItem = (props: {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const tags = useTagsFollow();
+  const isModerator = useIsModerator();
 
   const [editModalOpen, setEditModalOpen] = React.useState(false);
   const handleEditModalOpen = () => setEditModalOpen(true);
   const handleEditModalClose = () => {
     setEditModalOpen(false);
+    onTagEdit();
+  };
+
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => {
+    setDeleteModalOpen(false);
     onTagEdit();
   };
 
@@ -92,6 +101,23 @@ export const TagGridItem = (props: {
                 {t('tagButton.edit')}
               </Button>
             </Grid>
+            {isModerator && (
+              <Grid item>
+                <Button
+                  size="small"
+                  onClick={handleDeleteModalOpen}
+                  variant="outlined"
+                  color="secondary"
+                >
+                  {t('tagButton.delete')}
+                </Button>
+                <DeleteModal
+                  open={deleteModalOpen}
+                  onClose={handleDeleteModalClose}
+                  entity={tag}
+                />
+              </Grid>
+            )}
           </Grid>
         </CardActions>
       </Card>

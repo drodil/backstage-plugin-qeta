@@ -5,7 +5,7 @@ import {
   TagsQuerySchema,
   UsersQuerySchema,
 } from '../types';
-import { getUsername } from '../util';
+import { getUsername, isModerator } from '../util';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
@@ -140,6 +140,25 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
     response.json(tag);
+  });
+
+  router.delete('/tags/:tag', async (request, response) => {
+    const mod = await isModerator(request, options);
+    if (!mod) {
+      response.status(403).send({ errors: 'Not authorized', type: 'body' });
+      return;
+    }
+
+    const tagId = Number.parseInt(request.params.tag, 10);
+    if (Number.isNaN(tagId)) {
+      response.status(400).send({ errors: 'Invalid tag id', type: 'body' });
+      return;
+    }
+
+    const deleted = await database.deleteTag(tagId);
+
+    // Response
+    response.sendStatus(deleted ? 200 : 404);
   });
 
   router.get('/entities', async (request, response) => {

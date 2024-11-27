@@ -354,6 +354,7 @@ export interface QetaApi {
   getFollowedTags(requestOptions?: RequestOptions): Promise<UserTagsResponse>;
   followTag(tag: string, requestOptions?: RequestOptions): Promise<boolean>;
   unfollowTag(tag: string, requestOptions?: RequestOptions): Promise<boolean>;
+  deleteTag(id: number, requestOptions?: RequestOptions): Promise<boolean>;
 
   getFollowedEntities(
     requestOptions?: RequestOptions,

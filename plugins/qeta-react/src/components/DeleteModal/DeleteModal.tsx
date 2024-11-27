@@ -2,6 +2,7 @@ import {
   AnswerResponse,
   CollectionResponse,
   PostResponse,
+  TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Backdrop, Button, Modal, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -10,31 +11,39 @@ import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
-import { useBasePath } from '../../hooks/useBasePath';
 import { useTranslation } from '../../hooks';
 import { ModalContent } from '../Utility/ModalContent';
 
 export const DeleteModal = (props: {
-  entity: PostResponse | AnswerResponse | CollectionResponse;
+  entity: PostResponse | AnswerResponse | CollectionResponse | TagResponse;
   open: boolean;
   onClose: () => void;
   question?: PostResponse;
 }) => {
   const qetaApi = useApi(qetaApiRef);
-  const base_path = useBasePath();
   const navigate = useNavigate();
   const { entity, open, question, onClose } = props;
   const [error, setError] = React.useState(false);
   const { t } = useTranslation();
   const isQuestion = 'title' in entity;
   const isCollection = 'owner' in entity;
+  const isTag = 'tag' in entity;
+
+  const getTitle = () => {
+    if (isCollection) {
+      return t('deleteModal.title.collection');
+    }
+    if (isTag) {
+      return t('deleteModal.title.tag');
+    }
+    if (isQuestion) {
+      return t('deleteModal.title.question');
+    }
+    return t('deleteModal.title.answer');
+  };
 
   // eslint-disable-next-line no-nested-ternary
-  const title = isCollection
-    ? t('deleteModal.title.collection')
-    : isQuestion
-    ? t('deleteModal.title.question')
-    : t('deleteModal.title.answer');
+  const title = getTitle();
 
   const handleDelete = () => {
     if (isCollection) {
@@ -44,7 +53,18 @@ export const DeleteModal = (props: {
         .then(ret => {
           if (ret) {
             onClose();
-            navigate(`${base_path}/qeta`);
+            navigate(-1);
+          } else {
+            setError(true);
+          }
+        });
+    } else if (isTag) {
+      qetaApi
+        .deleteTag(entity.id)
+        .catch(_ => setError(true))
+        .then(ret => {
+          if (ret) {
+            onClose();
           } else {
             setError(true);
           }
@@ -56,7 +76,7 @@ export const DeleteModal = (props: {
         .then(ret => {
           if (ret) {
             onClose();
-            navigate(`${base_path}/qeta`);
+            navigate(-1);
           } else {
             setError(true);
           }

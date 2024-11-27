@@ -175,6 +175,7 @@ export const qetaTranslationRef = createTranslationRef({
         question: 'Are you sure you want to delete this post?',
         answer: 'Are you sure you want to delete this answer?',
         collection: 'Are you sure you want to delete this collection?',
+        tag: 'Are you sure you want to delete this tag?',
       },
       errorDeleting: 'Failed to delete',
       deleteButton: 'Delete',
@@ -570,6 +571,7 @@ export const qetaTranslationRef = createTranslationRef({
       follow: 'Follow',
       unfollow: 'Unfollow',
       edit: 'Edit',
+      delete: 'Delete',
       tooltip:
         'By following a tag, you will get notified when ever a new post with that tag is posted',
     },
