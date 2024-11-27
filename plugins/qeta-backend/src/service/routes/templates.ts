@@ -49,7 +49,7 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const tags = getTags(request, config);
+    const tags = getTags(request, config, await database.getTags());
     const entities = getEntities(request, config);
 
     // Act
@@ -107,7 +107,7 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const tags = getTags(request, config);
+    const tags = getTags(request, config, await database.getTags());
     const entities = getEntities(request, config);
 
     // Act

@@ -350,7 +350,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
     await authorize(request, qetaCreatePostPermission, options);
 
-    const tags = getTags(request, config);
+    const tags = getTags(request, config, await database.getTags());
     const entities = getEntities(request, config);
     const username = await getUsername(request, options);
     const created = await getCreated(request, options);
@@ -432,7 +432,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     await authorize(request, qetaEditPostPermission, options, post);
 
-    const tags = getTags(request, config);
+    const tags = getTags(request, config, await database.getTags());
     const entities = getEntities(request, config);
 
     // Act
