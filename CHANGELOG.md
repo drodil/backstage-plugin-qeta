@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.15.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.15.1...v3.15.2) (2024-11-28)
+
+
+### Bug Fixes
+
+* virtualize entity and tag pickers to work with large amount ([6e91073](https://github.com/drodil/backstage-plugin-qeta/commit/6e91073ce77a30d4c9a099193e73cc96e3408768))
+
 ### [3.15.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.15.0...v3.15.1) (2024-11-28)
 
 
