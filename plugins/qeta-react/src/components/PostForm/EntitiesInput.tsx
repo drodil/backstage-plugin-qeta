@@ -1,13 +1,17 @@
 import { Autocomplete } from '@material-ui/lab';
 import { getEntityTitle } from '../../utils/utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { TextField, Tooltip } from '@material-ui/core';
+import { TextField, Tooltip, Typography } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useTranslation } from '../../hooks';
 import { qetaApiRef } from '../../api';
 import { compact } from 'lodash';
+import {
+  AutocompleteListboxComponent,
+  renderGroup,
+} from './AutocompleteListComponent';
 
 export const EntitiesInput = (props: {
   value?: Entity[];
@@ -82,6 +86,7 @@ export const EntitiesInput = (props: {
             'metadata.name',
             'metadata.namespace',
             'metadata.title',
+            'metadata.description',
           ],
         })
         .catch(_ => setAvailableEntities(null))
@@ -109,9 +114,16 @@ export const EntitiesInput = (props: {
       value={value}
       disabled={disabled}
       groupBy={entityKinds.length > 1 ? option => option.kind : undefined}
+      renderGroup={renderGroup}
       id="entities-select"
       options={availableEntities}
       getOptionLabel={getEntityTitle}
+      ListboxComponent={
+        AutocompleteListboxComponent as React.ComponentType<
+          React.HTMLAttributes<HTMLElement>
+        >
+      }
+      disableListWrap
       style={style}
       getOptionSelected={(o, v) =>
         stringifyEntityRef(o) === stringifyEntityRef(v)
@@ -124,7 +136,18 @@ export const EntitiesInput = (props: {
       renderOption={option => {
         return (
           <>
-            <Tooltip title={stringifyEntityRef(option)}>
+            <Tooltip
+              arrow
+              placement="right"
+              title={
+                <>
+                  <Typography>{stringifyEntityRef(option)}</Typography>
+                  <Typography variant="caption">
+                    {option.metadata.description}
+                  </Typography>
+                </>
+              }
+            >
               <span>{getEntityTitle(option)}</span>
             </Tooltip>
           </>

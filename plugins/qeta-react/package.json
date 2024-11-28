@@ -72,6 +72,7 @@
     "react-relative-time": "^0.0.9",
     "react-syntax-highlighter": "^15.6.1",
     "react-use": "^17.4.0",
+    "react-window": "^1.8.10",
     "recharts": "^2.13.0",
     "remark-gfm": "^4.0.0"
   },
@@ -88,7 +89,8 @@
     "@types/dompurify": "^3.0.0",
     "@types/lodash": "^4.14.199",
     "@types/numeral": "^2",
-    "@types/react-syntax-highlighter": "^15"
+    "@types/react-syntax-highlighter": "^15",
+    "@types/react-window": "^1"
   },
   "files": [
     "dist"

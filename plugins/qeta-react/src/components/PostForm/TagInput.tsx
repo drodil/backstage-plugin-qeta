@@ -1,11 +1,12 @@
 import { Autocomplete } from '@material-ui/lab';
-import { TextField, Tooltip } from '@material-ui/core';
+import { TextField, Tooltip, Typography } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { qetaApiRef } from '../../api';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslation } from '../../hooks';
 import { FieldError } from 'react-hook-form';
+import { AutocompleteListboxComponent } from './AutocompleteListComponent';
 
 export const TagInput = (props: {
   value?: string[];
@@ -82,12 +83,22 @@ export const TagInput = (props: {
       value={value}
       options={availableTags ?? []}
       freeSolo={allowCreation}
+      ListboxComponent={
+        AutocompleteListboxComponent as React.ComponentType<
+          React.HTMLAttributes<HTMLElement>
+        >
+      }
+      disableListWrap
       style={style}
       renderOption={option => {
         if (tagDescriptions[option]) {
           return (
             <>
-              <Tooltip title={tagDescriptions[option]}>
+              <Tooltip
+                arrow
+                placement="right"
+                title={<Typography>{tagDescriptions[option]}</Typography>}
+              >
                 <span>{option}</span>
               </Tooltip>
             </>

@@ -5007,6 +5007,7 @@ __metadata:
     "@types/lodash": "npm:^4.14.199"
     "@types/numeral": "npm:^2"
     "@types/react-syntax-highlighter": "npm:^15"
+    "@types/react-window": "npm:^1"
     dataloader: "npm:^2.2.2"
     dompurify: "npm:^3.1.3"
     file-type: "npm:16.5.4"
@@ -5019,6 +5020,7 @@ __metadata:
     react-relative-time: "npm:^0.0.9"
     react-syntax-highlighter: "npm:^15.6.1"
     react-use: "npm:^17.4.0"
+    react-window: "npm:^1.8.10"
     recharts: "npm:^2.13.0"
     remark-gfm: "npm:^4.0.0"
   peerDependencies:
@@ -9524,6 +9526,15 @@ __metadata:
   dependencies:
     "@types/react": "npm:*"
   checksum: 10c0/8fbf0dcc1b81985cdcebe3c59d769fe2ea3f4525f12c3a10a7429a59f93e303c82b2abb744d21cb762879f4514969d70a7ab11b9bf486f92213e8fe70e04098d
+  languageName: node
+  linkType: hard
+
+"@types/react-window@npm:^1":
+  version: 1.8.8
+  resolution: "@types/react-window@npm:1.8.8"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10c0/2170a3957752603e8b994840c5d31b72ddf94c427c0f42b0175b343cc54f50fe66161d8871e11786ec7a59906bd33861945579a3a8f745455a3744268ec1069f
   languageName: node
   linkType: hard
 
@@ -24782,7 +24793,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-window@npm:^1.8.6":
+"react-window@npm:^1.8.10, react-window@npm:^1.8.6":
   version: 1.8.10
   resolution: "react-window@npm:1.8.10"
   dependencies:
