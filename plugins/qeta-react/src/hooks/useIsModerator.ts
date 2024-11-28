@@ -12,11 +12,10 @@ export const useIsModerator = () => {
 
   const isModerator = useMemo(() => {
     const ownership: string[] = user?.ownershipEntityRefs ?? [];
-    if (user?.userEntityRef) {
-      ownership.push(user?.userEntityRef);
+    if (user?.userEntityRef && !ownership.includes(user.userEntityRef)) {
+      ownership.push(user.userEntityRef);
     }
     return moderators.some((m: string) => ownership.includes(m));
   }, [moderators, user]);
-
   return { isModerator };
 };

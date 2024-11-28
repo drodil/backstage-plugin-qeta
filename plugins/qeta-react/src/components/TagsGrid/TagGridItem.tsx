@@ -36,7 +36,7 @@ export const TagGridItem = (props: {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const tags = useTagsFollow();
-  const isModerator = useIsModerator();
+  const { isModerator } = useIsModerator();
 
   const [editModalOpen, setEditModalOpen] = React.useState(false);
   const handleEditModalOpen = () => setEditModalOpen(true);

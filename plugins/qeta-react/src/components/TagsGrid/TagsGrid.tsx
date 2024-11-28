@@ -18,7 +18,7 @@ export const TagsGrid = () => {
   const [pageCount, setPageCount] = React.useState(1);
   const [tagsPerPage, setTagsPerPage] = React.useState(25);
   const [searchQuery, setSearchQuery] = React.useState('');
-  const isModerator = useIsModerator();
+  const { isModerator } = useIsModerator();
   const { t } = useTranslation();
   const [filters, setFilters] = React.useState<TagFilters>({
     order: 'desc',
