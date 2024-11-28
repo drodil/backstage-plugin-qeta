@@ -101,7 +101,11 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
               {post.canDelete && (
                 <>
                   <Tooltip title={t('articlePage.deleteButton')}>
-                    <IconButton size="small" onClick={handleDeleteModalOpen}>
+                    <IconButton
+                      size="small"
+                      onClick={handleDeleteModalOpen}
+                      color="secondary"
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>
@@ -119,6 +123,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
                     href={editArticleRoute({
                       id: post.id.toString(10),
                     })}
+                    color="primary"
                   >
                     <EditIcon />
                   </IconButton>
