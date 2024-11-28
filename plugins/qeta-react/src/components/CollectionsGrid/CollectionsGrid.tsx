@@ -1,13 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  Box,
-  Button,
-  Collapse,
-  Grid,
-  IconButton,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
 import { CollectionsGridContent } from './CollectionsGridContent';
 import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
@@ -19,6 +11,7 @@ import {
 } from '../FilterPanel/FilterPanel';
 import FilterList from '@material-ui/icons/FilterList';
 import { getFiltersWithDateRange } from '../../utils';
+import { SearchBar } from '../SearchBar/SearchBar';
 
 export type CollectionsGridProps = {
   owner?: string;
@@ -106,18 +99,10 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
     <Box>
       <Grid container justifyContent="space-between">
         <Grid item xs={12} md={4}>
-          <TextField
-            id="search-bar"
-            className="text qetaUsersContainerSearchInput"
-            onChange={(
-              event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-            ) => setSearchQuery(event.target.value)}
+          <SearchBar
+            onSearch={setSearchQuery}
             label={t('collectionsPage.search.label')}
-            variant="outlined"
-            placeholder={t('collectionsPage.search.placeholder')}
-            size="small"
           />
-          <IconButton type="submit" aria-label="search" />
         </Grid>
       </Grid>
       <Grid container justifyContent="space-between">

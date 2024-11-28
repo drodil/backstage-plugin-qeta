@@ -1,9 +1,10 @@
-import { Grid, IconButton, TextField } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { EntitiesGridContent } from './EntitiesGridContent';
+import { SearchBar } from '../SearchBar/SearchBar';
 
 type EntityFilters = {
   order: 'asc' | 'desc';
@@ -60,18 +61,10 @@ export const EntitiesGrid = () => {
   return (
     <Grid container className="qetaEntitiesContainer">
       <Grid item xs={12}>
-        <TextField
-          id="search-bar"
-          className="text qetaEntitiesContainerSearchInput"
-          onChange={(
-            event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-          ) => onSearchQueryChange(event.target.value)}
+        <SearchBar
+          onSearch={onSearchQueryChange}
           label={t('entitiesPage.search.label')}
-          variant="outlined"
-          placeholder={t('entitiesPage.search.placeholder')}
-          size="small"
         />
-        <IconButton type="submit" aria-label="search" />
       </Grid>
       <EntitiesGridContent
         response={response}
