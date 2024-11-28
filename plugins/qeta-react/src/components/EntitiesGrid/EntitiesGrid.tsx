@@ -60,7 +60,7 @@ export const EntitiesGrid = () => {
 
   return (
     <Grid container className="qetaEntitiesContainer">
-      <Grid item xs={12}>
+      <Grid item xs={12} md={4}>
         <SearchBar
           onSearch={onSearchQueryChange}
           label={t('entitiesPage.search.label')}
