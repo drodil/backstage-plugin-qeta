@@ -49,7 +49,7 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
   const { t } = useTranslation();
-  const [name, setName] = React.useState<string | undefined>(undefined);
+  const [name, setName] = React.useState<string>('');
   const [user, setUser] = React.useState<UserEntity | null>(null);
   const [initials, setInitials] = React.useState<string | null>(null);
   const [currentUser, setCurrentUser] = React.useState<string | null>(null);
