@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.15.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.15.2...v3.15.3) (2024-11-28)
+
+
+### Bug Fixes
+
+* search bar width in entities page ([9b47198](https://github.com/drodil/backstage-plugin-qeta/commit/9b4719873c76fd7c10f8bfe3013f902e7f59b197))
+* use correct name for own questions in post list ([5a3e942](https://github.com/drodil/backstage-plugin-qeta/commit/5a3e942c2fbda7d5365454d09b33cb27aa43dba5))
+* use less space in right side lists ([3295b85](https://github.com/drodil/backstage-plugin-qeta/commit/3295b85e2ec122e1265d52d00bfdbe7b19ef12e4))
+* use search bar also in entities and collections grids ([5dffcb2](https://github.com/drodil/backstage-plugin-qeta/commit/5dffcb2867ed3c3b85e492deebea2638be5464e3))
+
 ### [3.15.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.15.1...v3.15.2) (2024-11-28)
 
 
