@@ -20,7 +20,7 @@ export const CollectionsPage = () => {
         item
         md={12}
         lg={collections.collections.length > 0 ? 9 : 12}
-        xl={collections.collections.length > 0 ? 9 : 12}
+        xl={collections.collections.length > 0 ? 10 : 12}
       >
         <ContentHeader title={t('collectionsPage.title')}>
           <ButtonContainer>

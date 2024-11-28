@@ -29,7 +29,7 @@ export const QuestionsPage = () => {
 
   return (
     <Grid container spacing={4}>
-      <Grid item md={12} lg={8} xl={9}>
+      <Grid item md={12} lg={9} xl={10}>
         <ContentHeader title={t('questionsPage.title')}>
           <ButtonContainer>
             <AskQuestionButton entity={entityRef} tags={tags} />
@@ -37,7 +37,7 @@ export const QuestionsPage = () => {
         </ContentHeader>
         <PostsContainer entity={entityRef} tags={tags} type="question" />
       </Grid>
-      <Grid item lg={4} xl={3}>
+      <Grid item lg={3} xl={2}>
         <PostHighlightList
           type="hot"
           title={t('highlights.hotQuestions.title')}

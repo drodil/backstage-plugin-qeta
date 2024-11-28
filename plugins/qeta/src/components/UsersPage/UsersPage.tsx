@@ -14,11 +14,11 @@ export const UsersPage = () => {
 
   return (
     <Grid container spacing={4}>
-      <Grid item md={12} lg={8} xl={9}>
+      <Grid item md={12} lg={9} xl={10}>
         <ContentHeader title={t('usersPage.title')} />
         <UsersGrid />
       </Grid>
-      <Grid item lg={4} xl={3}>
+      <Grid item lg={3} xl={2}>
         <FollowedUsersList />
         <PostHighlightList
           type="hot"

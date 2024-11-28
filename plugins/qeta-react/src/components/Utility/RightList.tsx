@@ -5,7 +5,7 @@ const useStyles = makeStyles(theme => ({
   container: {
     width: '100%',
     backgroundColor: theme.palette.background.paper,
-    marginTop: '1em',
+    marginBottom: '1em',
   },
 }));
 

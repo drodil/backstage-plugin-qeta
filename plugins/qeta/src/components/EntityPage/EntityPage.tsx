@@ -48,7 +48,7 @@ export const EntityPage = () => {
 
   return (
     <Grid container spacing={4}>
-      <Grid item md={12} lg={8} xl={9}>
+      <Grid item md={12} lg={9} xl={10}>
         <ContentHeader
           titleComponent={
             <Typography variant="h5" component="h2">
@@ -85,7 +85,7 @@ export const EntityPage = () => {
           <EntitiesGrid />
         )}
       </Grid>
-      <Grid item lg={4} xl={3}>
+      <Grid item lg={3} xl={2}>
         <FollowedEntitiesList />
         {resp && (
           <>

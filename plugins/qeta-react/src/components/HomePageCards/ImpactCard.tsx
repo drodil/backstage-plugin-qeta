@@ -16,7 +16,7 @@ export const ImpactCard = () => {
   }
 
   return (
-    <Box display={{ md: 'none', lg: 'block' }}>
+    <Box display={{ md: 'none', lg: 'block' }} style={{ marginBottom: '1em' }}>
       <Card>
         <CardContent>
           <Typography variant="h5">{t('impactCard.title')}</Typography>

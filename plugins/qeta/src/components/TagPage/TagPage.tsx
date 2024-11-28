@@ -41,7 +41,7 @@ export const TagPage = () => {
 
   return (
     <Grid container spacing={4}>
-      <Grid item md={12} lg={8} xl={9}>
+      <Grid item md={12} lg={9} xl={10}>
         <ContentHeader title={tag ? `#${tag}` : t('tagPage.defaultTitle')}>
           <ButtonContainer>
             {tag && <TagFollowButton tag={tag} />}
@@ -75,7 +75,7 @@ export const TagPage = () => {
           <TagsGrid />
         )}
       </Grid>
-      <Grid item lg={4} xl={3}>
+      <Grid item lg={3} xl={2}>
         <FollowedTagsList />
         {resp && (
           <>
