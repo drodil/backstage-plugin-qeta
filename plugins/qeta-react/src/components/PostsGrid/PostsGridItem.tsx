@@ -113,7 +113,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             >
               {initials}
             </SmallAvatar>
-            <UserLink entityRef={post.author} />{' '}
+            <UserLink entityRef={post.author} anonymous={post.anonymous} />{' '}
             <Link to={href} className="qetaPostListItemQuestionBtn">
               <RelativeTimeWithTooltip value={post.created} />
             </Link>

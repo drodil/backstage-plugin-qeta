@@ -21,12 +21,15 @@ import {
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Visibility from '@material-ui/icons/Visibility';
 
-export const UserTooltip = (props: { entityRef: string }) => {
-  const { entityRef } = props;
+export const UserTooltip = (props: {
+  entityRef: string;
+  anonymous?: boolean;
+}) => {
+  const { entityRef, anonymous } = props;
   const { t } = useTranslation();
   const { name, initials, user, secondaryTitle } = useUserInfo(
     entityRef,
-    entityRef === 'anonymous',
+    anonymous ?? entityRef === 'anonymous',
   );
 
   const { value: currentUser } = useIdentityApi(

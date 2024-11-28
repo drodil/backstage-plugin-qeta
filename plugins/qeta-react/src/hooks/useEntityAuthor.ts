@@ -93,23 +93,30 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
 
   useEffect(() => {
     let displayName = userName;
-    if (anonymous) {
-      displayName = t('userLink.anonymous');
-    } else if (currentUser) {
+    if (currentUser) {
       const currentUserRef = parseEntityRef(currentUser);
       const userRef = parseEntityRef(ref);
       if (
         currentUserRef.name === userRef.name &&
         currentUserRef.namespace === userRef.namespace
       ) {
-        displayName = t('userLink.you');
+        displayName = `${t('userLink.you')}${
+          anonymous
+            ? ` (${t('userLink.anonymous').toLocaleLowerCase('en-US')})`
+            : ''
+        }`;
+      } else if (anonymous) {
+        displayName = t('userLink.anonymous');
       }
+    } else if (anonymous) {
+      displayName = t('userLink.anonymous');
     }
     setName(displayName);
   }, [ref, anonymous, currentUser, userName, t]);
 
   useEffect(() => {
     const init = (name ?? '')
+      .replace(/[^a-zA-Z]/g, '')
       .split(' ')
       .map(p => p[0])
       .join('')

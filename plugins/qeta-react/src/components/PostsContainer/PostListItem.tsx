@@ -178,7 +178,7 @@ export const PostListItem = (props: PostListItemProps) => {
               >
                 {initials}
               </SmallAvatar>
-              <UserLink entityRef={post.author} />{' '}
+              <UserLink entityRef={post.author} anonymous={post.anonymous} />{' '}
               <Link to={href} className={styles.timestamp}>
                 <RelativeTimeWithTooltip value={post.created} />
               </Link>

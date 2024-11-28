@@ -105,7 +105,10 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
                 >
                   {initials}
                 </SmallAvatar>
-                <UserLink entityRef={answer.author} />{' '}
+                <UserLink
+                  entityRef={answer.author}
+                  anonymous={answer.anonymous}
+                />{' '}
                 <Link to={getAnswerLink()} className={styles.timestamp}>
                   {`${t('answer.answeredTime')} `}
                   <RelativeTimeWithTooltip value={answer.created} />
