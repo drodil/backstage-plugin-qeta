@@ -9,6 +9,12 @@ import {
   QetaSignal,
 } from '@drodil/backstage-plugin-qeta-common';
 
+function isPostResponse(
+  resp: PostResponse | AnswerResponse,
+): resp is PostResponse {
+  return 'title' in resp;
+}
+
 export function useVoting(resp: PostResponse | AnswerResponse) {
   const [entity, setEntity] = React.useState<PostResponse | AnswerResponse>(
     resp,
@@ -22,11 +28,11 @@ export function useVoting(resp: PostResponse | AnswerResponse) {
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslation();
 
-  const isQuestion = 'title' in entity;
+  const isPost = isPostResponse(resp);
   const own = entity.own ?? false;
 
   const { lastSignal } = useSignal<QetaSignal>(
-    isQuestion ? `qeta:question_${entity.id}` : `qeta:answer_${entity.id}`,
+    isPost ? `qeta:post_${entity.id}` : `qeta:answer_${entity.id}`,
   );
 
   useEffect(() => {
@@ -62,7 +68,7 @@ export function useVoting(resp: PostResponse | AnswerResponse) {
   };
 
   const voteUp = () => {
-    if (isQuestion) {
+    if (isPost) {
       if (ownVote > 0) {
         deletePostVote(entity.id);
         return;
@@ -86,7 +92,7 @@ export function useVoting(resp: PostResponse | AnswerResponse) {
   };
 
   const voteDown = () => {
-    if (isQuestion) {
+    if (isPost) {
       if (ownVote < 0) {
         deletePostVote(entity.id);
         return;
@@ -112,21 +118,21 @@ export function useVoting(resp: PostResponse | AnswerResponse) {
   let correctTooltip: string = correctAnswer
     ? t('voteButtons.answer.markIncorrect')
     : t('voteButtons.answer.markCorrect');
-  if (!entity?.own) {
+  if (own) {
     correctTooltip = correctAnswer ? t('voteButtons.answer.marked') : '';
   }
 
-  let voteUpTooltip: string = isQuestion
-    ? t('voteButtons.question.good')
+  let voteUpTooltip: string = isPost
+    ? t('voteButtons.post.good', { type: resp.type })
     : t('voteButtons.answer.good');
   if (own) {
-    voteUpTooltip = isQuestion
-      ? t('voteButtons.question.own')
+    voteUpTooltip = isPost
+      ? t('voteButtons.post.own', { type: resp.type })
       : t('voteButtons.answer.own');
   }
 
-  let voteDownTooltip: string = isQuestion
-    ? t('voteButtons.question.bad')
+  let voteDownTooltip: string = isPost
+    ? t('voteButtons.post.bad', { type: resp.type })
     : t('voteButtons.answer.bad');
   if (own) {
     voteDownTooltip = voteUpTooltip;

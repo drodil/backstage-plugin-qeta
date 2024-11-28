@@ -368,10 +368,10 @@ export const qetaTranslationRef = createTranslationRef({
         bad: 'This answer is not good',
         own: 'You cannot vote your own answer',
       },
-      question: {
-        good: 'This post is good',
-        bad: 'This post is not good',
-        own: 'You cannot vote your own post',
+      post: {
+        good: 'This {{type}} is good',
+        bad: 'This {{type}} is not good',
+        own: 'You cannot vote your own {{type}}',
       },
     },
     datePicker: {
