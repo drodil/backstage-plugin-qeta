@@ -7,10 +7,10 @@ describe('TAGS_REGEX', () => {
     expect(TAGS_REGEX.test('tag-1')).toBe(true);
     expect(TAGS_REGEX.test('tag_1')).toBe(true);
     expect(TAGS_REGEX.test('tag+1')).toBe(true);
-    expect(TAGS_REGEX.test('tag#1')).toBe(true);
   });
 
   it('should not match invalid tags', () => {
+    expect(TAGS_REGEX.test('tag#1')).toBe(true);
     expect(TAGS_REGEX.test('Tag')).toBe(false);
     expect(TAGS_REGEX.test('tag!')).toBe(false);
     expect(TAGS_REGEX.test('tag@')).toBe(false);

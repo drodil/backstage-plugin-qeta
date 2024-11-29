@@ -31,7 +31,6 @@ export const getTags = (
         allowedTags.includes(tag) || existingTags.tags.some(t => t.tag === tag),
     );
   }
-  console.log(tags);
 
   return tags.slice(0, maxTags);
 };
