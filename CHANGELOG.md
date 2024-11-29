@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.16.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.15.3...v3.16.0) (2024-11-29)
+
+
+### Features
+
+* add toc to article page ([37b327f](https://github.com/drodil/backstage-plugin-qeta/commit/37b327fb64b2d96bb71d231af87d0680f5a2a563))
+* allow copying link to markdown headers ([7bbaa0e](https://github.com/drodil/backstage-plugin-qeta/commit/7bbaa0ed86711018c617e0b86b6d0c86c2d15461))
+* allow creating tags by adding them to content ([21caf2e](https://github.com/drodil/backstage-plugin-qeta/commit/21caf2ec5c22d5a316633312b6443235af419064))
+* collect tags from text in the ui instead backend and add suggestions ([bf8b1ad](https://github.com/drodil/backstage-plugin-qeta/commit/bf8b1ad4acf0bd9c192cb14b19f329d4d4eca66c))
+* show links in markdown content as chips ([eb156c7](https://github.com/drodil/backstage-plugin-qeta/commit/eb156c7e9cf15aee176a2e0ed5fb1fbc1e4b2b6e))
+
+
+### Bug Fixes
+
+* add colors to article buttons ([5f02db3](https://github.com/drodil/backstage-plugin-qeta/commit/5f02db30a4253dbdded9f30d8e0bd5360f44a14f))
+* default to empty name in user info ([c5f0bd3](https://github.com/drodil/backstage-plugin-qeta/commit/c5f0bd3617312d53e53bf68633e18604c2a02c6d))
+* tags test ([3060da1](https://github.com/drodil/backstage-plugin-qeta/commit/3060da10fc588f878acdce5ee6814607708e3806))
+* tests and route utility ([8c889fe](https://github.com/drodil/backstage-plugin-qeta/commit/8c889fe52835f7053904e38fa22e4d80c5d2d381))
+* use blank links in preview for users and tags ([c315fe7](https://github.com/drodil/backstage-plugin-qeta/commit/c315fe7b039c12e23e2cca297b5dc9234df3f361))
+* use mui typography for markdown headers ([44cec53](https://github.com/drodil/backstage-plugin-qeta/commit/44cec532b3bcdd67b695319bd1146784e0c40276))
+* use post type in vote button tooltips ([1a7b304](https://github.com/drodil/backstage-plugin-qeta/commit/1a7b304de50edca1f5fe91a429faf54bc5bb538c))
+
 ### [3.15.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.15.2...v3.15.3) (2024-11-28)
 
 
