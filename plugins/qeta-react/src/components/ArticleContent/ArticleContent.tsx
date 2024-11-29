@@ -105,6 +105,7 @@ export const ArticleContent = (props: {
       <MarkdownRenderer
         content={postEntity.content}
         className={styles.content}
+        showToc
       />
       <Typography variant="h6">{t('common.comments')}</Typography>
       <CommentSection

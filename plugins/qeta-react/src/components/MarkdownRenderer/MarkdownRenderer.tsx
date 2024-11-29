@@ -8,6 +8,8 @@ import {
 import { IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import { findUserMentions } from '@drodil/backstage-plugin-qeta-common';
 import gfm from 'remark-gfm';
+import rehypeSlug from 'rehype-slug';
+import rehypeToc, { HeadingNode, TextNode } from '@jsdevtools/rehype-toc';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { BackstageOverrides } from '@backstage/core-components';
@@ -15,8 +17,20 @@ import LinkIcon from '@material-ui/icons/Link';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslation } from '../../hooks';
 import { Variant } from '@material-ui/core/styles/createTypography';
+import GithubSlugger from 'github-slugger';
+import { HtmlElementNode } from '@jsdevtools/rehype-toc/lib/types';
+import { find } from 'unist-util-find';
 
-export type QetaMarkdownContentClassKey = 'markdown';
+const slugger = new GithubSlugger();
+
+export type QetaMarkdownContentClassKey =
+  | 'markdown'
+  | 'header'
+  | 'tocHeader'
+  | 'toc'
+  | 'tocList'
+  | 'tocListItem'
+  | 'tocLink';
 
 const useStyles = makeStyles(
   theme => {
@@ -127,6 +141,32 @@ const useStyles = makeStyles(
           display: 'inline-block',
         },
       },
+      tocHeader: {
+        marginTop: '0.5em',
+        marginBottom: 0,
+      },
+      toc: {
+        marginTop: '0.5em',
+        marginLeft: '0.2em',
+        paddingBottom: '1em',
+        borderBottom: `1px solid ${theme.palette.divider}`,
+      },
+      tocList: {
+        marginLeft: '0 !important',
+        marginTop: '0.5em !important',
+        paddingInlineStart: '1em',
+        counterReset: 'item',
+      },
+      tocListItem: {
+        display: 'block',
+        '&:before': {
+          content: 'counters(item, ".") " "',
+          counterIncrement: 'item',
+        },
+      },
+      tocLink: {
+        color: theme.palette.link,
+      },
     };
   },
   { name: 'QetaMarkdownContent' },
@@ -143,12 +183,14 @@ const flatten = (text: string, child: any): string => {
 export const MarkdownRenderer = (props: {
   content: string;
   className?: string;
+  showToc?: boolean;
 }) => {
-  const { content, className: mainClassName } = props;
+  const { content, className: mainClassName, showToc } = props;
   const darkTheme = useIsDarkTheme();
   const { t } = useTranslation();
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
+  slugger.reset();
 
   const copyToClipboard = (slug: string) => {
     const url = new URL(window.location.href);
@@ -167,7 +209,7 @@ export const MarkdownRenderer = (props: {
     const { node, children } = hProps;
     const childrenArray = React.Children.toArray(children);
     const text = childrenArray.reduce(flatten, '');
-    const slug = text.toLocaleLowerCase('en-US').replace(/\W/g, '-');
+    const slug = slugger.slug(text);
     const link = (
       <Tooltip title={t('link.aria')}>
         <IconButton
@@ -207,66 +249,103 @@ export const MarkdownRenderer = (props: {
     }
   }, []);
 
+  const rehypePlugins: import('unified').PluggableList = [[rehypeSlug]];
+  if (showToc) {
+    rehypePlugins.push([
+      rehypeToc,
+      {
+        cssClasses: {
+          toc: classes.toc,
+          list: classes.tocList,
+          listItem: classes.tocListItem,
+          link: classes.tocLink,
+        },
+        customizeTOC: (toc: HtmlElementNode) => {
+          const listItems = find(toc, { tagName: 'li' });
+          if (!toc.children || !listItems) {
+            return false;
+          }
+          const tocHeader: TextNode = {
+            type: 'text',
+            value: t('markdown.toc'),
+          };
+          const heading: HeadingNode = {
+            type: 'element',
+            tagName: 'h3',
+            properties: {},
+            children: [tocHeader],
+          };
+
+          toc.children.unshift(heading);
+          return toc;
+        },
+      },
+    ]);
+  }
+
   return (
-    <ReactMarkdown
-      remarkPlugins={[gfm]}
-      className={`${classes.markdown} ${mainClassName ?? ''}`.trim()}
-      components={{
-        h1: (p: any) => headingRenderer(p),
-        h2: (p: any) => headingRenderer(p),
-        h3: (p: any) => headingRenderer(p),
-        h4: (p: any) => headingRenderer(p),
-        h5: (p: any) => headingRenderer(p),
-        h6: (p: any) => headingRenderer(p),
-        p: (p: any) => {
-          const { children } = p;
-          const arr = React.Children.toArray(children);
-          const formatted = arr.map((child: any) => {
-            if (typeof child !== 'string') {
-              return child;
-            }
-            const mentions = findUserMentions(child);
-            if (mentions.length === 0) {
-              return child;
-            }
-
-            return child.split(' ').map((word: string) => {
-              const mention = mentions.find(m => word.includes(m));
-              if (mention) {
-                return (
-                  <>
-                    <EntityRefLink entityRef={mention.slice(1)} hideIcon />{' '}
-                  </>
-                );
+    <>
+      <ReactMarkdown
+        remarkPlugins={[gfm]}
+        rehypePlugins={rehypePlugins}
+        className={`${classes.markdown} ${mainClassName ?? ''}`.trim()}
+        components={{
+          h1: (p: any) => headingRenderer(p),
+          h2: (p: any) => headingRenderer(p),
+          h3: (p: any) => headingRenderer(p),
+          h4: (p: any) => headingRenderer(p),
+          h5: (p: any) => headingRenderer(p),
+          h6: (p: any) => headingRenderer(p),
+          p: (p: any) => {
+            const { children } = p;
+            const arr = React.Children.toArray(children);
+            const formatted = arr.map((child: any) => {
+              if (typeof child !== 'string') {
+                return child;
               }
-              return <>{word} </>;
-            });
-          });
+              const mentions = findUserMentions(child);
+              if (mentions.length === 0) {
+                return child;
+              }
 
-          return <p>{formatted}</p>;
-        },
-        code(p: any) {
-          const { children, className, node, ...rest } = p;
-          const match = /language-(\w+)/.exec(className || '');
-          return match ? (
-            <SyntaxHighlighter
-              {...rest}
-              PreTag="div"
-              language={match[1]}
-              style={darkTheme ? a11yDark : a11yLight}
-              showLineNumbers
-            >
-              {String(children).replace(/\n$/, '')}
-            </SyntaxHighlighter>
-          ) : (
-            <code {...rest} className={className}>
-              {children}
-            </code>
-          );
-        },
-      }}
-    >
-      {content}
-    </ReactMarkdown>
+              return child.split(' ').map((word: string) => {
+                const mention = mentions.find(m => word.includes(m));
+                if (mention) {
+                  return (
+                    <>
+                      <EntityRefLink entityRef={mention.slice(1)} hideIcon />{' '}
+                    </>
+                  );
+                }
+                return <>{word} </>;
+              });
+            });
+
+            return <p>{formatted}</p>;
+          },
+          code(p: any) {
+            const { children, className, node, ...rest } = p;
+            const match = /language-(\w+)/.exec(className || '');
+            return match ? (
+              <SyntaxHighlighter
+                {...rest}
+                PreTag="div"
+                language={match[1]}
+                style={darkTheme ? a11yDark : a11yLight}
+                showLineNumbers
+              >
+                {String(children).replace(/\n$/, '')}
+              </SyntaxHighlighter>
+            ) : (
+              <code {...rest} className={className}>
+                {children}
+              </code>
+            );
+          },
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </>
   );
 };

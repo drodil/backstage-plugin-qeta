@@ -156,6 +156,9 @@ export const qetaTranslationRef = createTranslationRef({
     commentList: {
       deleteLink: 'delete',
     },
+    markdown: {
+      toc: 'Table of contents',
+    },
     commentSection: {
       input: {
         placeholder: 'Your comment',
