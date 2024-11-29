@@ -29,6 +29,14 @@ const TagTooltip = (props: { tag: string }) => {
       if (res) {
         cache.set(tag, res);
         setResp(res);
+      } else {
+        setResp({
+          id: 0,
+          tag,
+          postsCount: 0,
+          followerCount: 0,
+          description: '',
+        });
       }
     });
   }, [qetaApi, tag]);
@@ -54,7 +62,7 @@ const TagTooltip = (props: { tag: string }) => {
           <MarkdownRenderer content={resp.description} />
         </Grid>
       )}
-      {!tags.loading && (
+      {!tags.loading && resp.id !== 0 && (
         <Grid item xs={12}>
           <Button
             size="small"

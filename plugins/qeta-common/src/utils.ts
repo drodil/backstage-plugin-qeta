@@ -1,5 +1,6 @@
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { compact } from 'lodash';
+import { isValidTag } from './tags';
 
 export const truncate = (str: string, n: number): string => {
   return str.length > n ? `${str.slice(0, n - 1)}...` : str;
@@ -19,6 +20,16 @@ export const findUserMentions = (text: string): string[] => {
       } catch (e) {
         return undefined;
       }
+    }),
+  );
+};
+
+export const findTagMentions = (text: string): string[] => {
+  const mentions = text.match(/#(\S+)/g);
+  const ret = mentions ? Array.from(new Set(mentions)) : [];
+  return compact(
+    ret.filter(tag => {
+      return isValidTag(tag);
     }),
   );
 };

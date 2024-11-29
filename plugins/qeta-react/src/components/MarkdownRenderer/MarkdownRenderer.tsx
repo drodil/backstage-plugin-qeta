@@ -6,7 +6,10 @@ import {
   a11yLight,
 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
-import { findUserMentions } from '@drodil/backstage-plugin-qeta-common';
+import {
+  findTagMentions,
+  findUserMentions,
+} from '@drodil/backstage-plugin-qeta-common';
 import gfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
 import rehypeToc, { HeadingNode, TextNode } from '@jsdevtools/rehype-toc';
@@ -20,6 +23,7 @@ import { Variant } from '@material-ui/core/styles/createTypography';
 import GithubSlugger from 'github-slugger';
 import { HtmlElementNode } from '@jsdevtools/rehype-toc/lib/types';
 import { find } from 'unist-util-find';
+import { TagChip } from '../TagsAndEntities/TagChip';
 
 const slugger = new GithubSlugger();
 
@@ -303,20 +307,34 @@ export const MarkdownRenderer = (props: {
               if (typeof child !== 'string') {
                 return child;
               }
-              const mentions = findUserMentions(child);
-              if (mentions.length === 0) {
+              const userMentions = findUserMentions(child);
+              const tagMentions = findTagMentions(child);
+              if (userMentions.length === 0 && tagMentions.length === 0) {
                 return child;
               }
 
               return child.split(' ').map((word: string) => {
-                const mention = mentions.find(m => word.includes(m));
-                if (mention) {
+                const userMention = userMentions.find(m => word === m);
+                if (userMention) {
                   return (
                     <>
-                      <EntityRefLink entityRef={mention.slice(1)} hideIcon />{' '}
+                      <EntityRefLink
+                        entityRef={userMention.slice(1)}
+                        hideIcon
+                      />{' '}
                     </>
                   );
                 }
+
+                const tagMention = tagMentions.find(m => word === m);
+                if (tagMention) {
+                  return (
+                    <>
+                      <TagChip tag={tagMention.slice(1)} />
+                    </>
+                  );
+                }
+
                 return <>{word} </>;
               });
             });
