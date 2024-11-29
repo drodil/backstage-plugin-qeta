@@ -71,7 +71,7 @@ qeta:
   entities:
     max: 2
   tags:
-    allowCreation: false
+    #allowCreation: false
     #allowedTags:
       #- test
       #- another_tag

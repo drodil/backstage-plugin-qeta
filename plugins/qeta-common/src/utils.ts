@@ -29,7 +29,7 @@ export const findTagMentions = (text: string): string[] => {
   const ret = mentions ? Array.from(new Set(mentions)) : [];
   return compact(
     ret.filter(tag => {
-      return isValidTag(tag);
+      return isValidTag(tag.slice(1));
     }),
   );
 };

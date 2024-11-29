@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { CSSProperties, useEffect } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
 import { qetaApiRef } from '../../api';
@@ -35,11 +35,11 @@ const TagTooltip = (props: { tag: string }) => {
           tag,
           postsCount: 0,
           followerCount: 0,
-          description: '',
+          description: t('tagChip.nonExistingTag'),
         });
       }
     });
-  }, [qetaApi, tag]);
+  }, [qetaApi, tag, t]);
 
   if (!resp) {
     return null;
@@ -50,13 +50,15 @@ const TagTooltip = (props: { tag: string }) => {
       <Grid item xs={12}>
         <Typography variant="h6">{tag}</Typography>
       </Grid>
-      <Grid item xs={12}>
-        <Typography variant="subtitle2">
-          {t('common.posts', { count: resp.postsCount, itemType: 'post' })}
-          {' · '}
-          {t('common.followers', { count: resp.followerCount })}
-        </Typography>
-      </Grid>
+      {resp.id > 0 && (
+        <Grid item xs={12}>
+          <Typography variant="subtitle2">
+            {t('common.posts', { count: resp.postsCount, itemType: 'post' })}
+            {' · '}
+            {t('common.followers', { count: resp.followerCount })}
+          </Typography>
+        </Grid>
+      )}
       {resp.description && (
         <Grid item xs={12}>
           <MarkdownRenderer content={resp.description} />
@@ -89,7 +91,7 @@ const TagTooltip = (props: { tag: string }) => {
   );
 };
 
-export const TagChip = (props: { tag: string }) => {
+export const TagChip = (props: { tag: string; style?: CSSProperties }) => {
   const tagRoute = useRouteRef(tagRouteRef);
   const navigate = useNavigate();
   const { tag } = props;
@@ -105,6 +107,7 @@ export const TagChip = (props: { tag: string }) => {
         size="small"
         className="qetaTagChip"
         component="a"
+        style={props.style}
         onClick={() => {
           navigate(tagRoute({ tag }));
         }}

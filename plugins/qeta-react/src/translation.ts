@@ -166,6 +166,9 @@ export const qetaTranslationRef = createTranslationRef({
       addComment: 'Add a comment',
       post: 'Post',
     },
+    tagChip: {
+      nonExistingTag: 'This tag does not yet exist',
+    },
     editTagModal: {
       title: 'Edit tag {{tag}}',
       description: 'Tag description',

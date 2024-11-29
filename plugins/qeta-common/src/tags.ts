@@ -1,4 +1,4 @@
-export const TAGS_REGEX = new RegExp('^[a-z0-9+#]+((\\-|_)[a-z0-9+#_]+)*$');
+export const TAGS_REGEX = new RegExp('^[a-z0-9+]+(([-_])[a-z0-9+]+)*$');
 
 export const isValidTag = (tag: string) => {
   const trimmed = tag.trim();

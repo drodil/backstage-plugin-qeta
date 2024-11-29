@@ -1,6 +1,7 @@
 import { Config } from '@backstage/config';
 import { Request } from 'express';
 import { TagsResponse } from '../../database/QetaStore';
+import { findTagMentions } from '@drodil/backstage-plugin-qeta-common';
 
 export const getTags = (
   request: Request,
@@ -14,7 +15,11 @@ export const getTags = (
     config.getOptionalBoolean('qeta.tags.allowCreation') ?? true;
 
   const rawTags = request.body.tags;
-  let tags: string[] = Array.isArray(rawTags) ? rawTags : rawTags.split(',');
+  const requestedTags: string[] = Array.isArray(rawTags)
+    ? rawTags
+    : rawTags.split(',');
+  const bodyTags = findTagMentions(request.body.content).map(t => t.slice(1));
+  let tags = [...new Set([...requestedTags, ...bodyTags])];
 
   if (tags.length === 0) {
     return [];
@@ -26,6 +31,8 @@ export const getTags = (
         allowedTags.includes(tag) || existingTags.tags.some(t => t.tag === tag),
     );
   }
+  console.log(tags);
+
   return tags.slice(0, maxTags);
 };
 

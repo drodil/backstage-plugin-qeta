@@ -330,7 +330,10 @@ export const MarkdownRenderer = (props: {
                 if (tagMention) {
                   return (
                     <>
-                      <TagChip tag={tagMention.slice(1)} />
+                      <TagChip
+                        tag={tagMention.slice(1)}
+                        style={{ marginBottom: 0 }}
+                      />
                     </>
                   );
                 }
