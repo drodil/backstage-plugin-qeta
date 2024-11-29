@@ -5,7 +5,7 @@ import {
   a11yDark,
   a11yLight,
 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { IconButton, makeStyles, Tooltip } from '@material-ui/core';
+import { IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import { findUserMentions } from '@drodil/backstage-plugin-qeta-common';
 import gfm from 'remark-gfm';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
@@ -14,6 +14,7 @@ import { BackstageOverrides } from '@backstage/core-components';
 import LinkIcon from '@material-ui/icons/Link';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslation } from '../../hooks';
+import { Variant } from '@material-ui/core/styles/createTypography';
 
 export type QetaMarkdownContentClassKey = 'markdown';
 
@@ -182,8 +183,12 @@ export const MarkdownRenderer = (props: {
     return (
       <>
         {React.createElement(
-          `${node.tagName}`,
-          { id: slug, className: classes.header },
+          Typography,
+          {
+            variant: node.tagName as Variant,
+            id: slug,
+            className: classes.header,
+          },
           [children, link],
         )}
       </>
