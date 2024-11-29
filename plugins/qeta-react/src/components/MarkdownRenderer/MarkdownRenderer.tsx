@@ -1,16 +1,19 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import ReactMarkdown from 'react-markdown';
 import {
   a11yDark,
   a11yLight,
 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { makeStyles } from '@material-ui/core';
+import { IconButton, makeStyles, Tooltip } from '@material-ui/core';
 import { findUserMentions } from '@drodil/backstage-plugin-qeta-common';
 import gfm from 'remark-gfm';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { BackstageOverrides } from '@backstage/core-components';
+import LinkIcon from '@material-ui/icons/Link';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useTranslation } from '../../hooks';
 
 export type QetaMarkdownContentClassKey = 'markdown';
 
@@ -114,6 +117,15 @@ const useStyles = makeStyles(
           ? overrides.BackstageMarkdownContent
           : {}),
       },
+      header: {
+        '& .anchor-link': {
+          display: 'none',
+          marginLeft: '0.5em',
+        },
+        '&:hover .anchor-link': {
+          display: 'inline-block',
+        },
+      },
     };
   },
   { name: 'QetaMarkdownContent' },
@@ -127,23 +139,69 @@ const flatten = (text: string, child: any): string => {
     : React.Children.toArray(child.props.children).reduce(flatten, text);
 };
 
-const headingRenderer = (
-  props: PropsWithChildren<{ node: { tagName: string } }>,
-) => {
-  const { node, children } = props;
-  const childrenArray = React.Children.toArray(children);
-  const text = childrenArray.reduce(flatten, '');
-  const slug = text.toLocaleLowerCase('en-US').replace(/\W/g, '-');
-  return React.createElement(`${node.tagName}`, { id: slug }, children);
-};
-
 export const MarkdownRenderer = (props: {
   content: string;
   className?: string;
 }) => {
   const { content, className: mainClassName } = props;
   const darkTheme = useIsDarkTheme();
+  const { t } = useTranslation();
   const classes = useStyles();
+  const alertApi = useApi(alertApiRef);
+
+  const copyToClipboard = (slug: string) => {
+    const url = new URL(window.location.href);
+    url.hash = `#${slug}`;
+    window.navigator.clipboard.writeText(url.toString());
+    alertApi.post({
+      message: t('link.copied'),
+      severity: 'info',
+      display: 'transient',
+    });
+  };
+
+  const headingRenderer = (
+    hProps: PropsWithChildren<{ node: { tagName: string } }>,
+  ) => {
+    const { node, children } = hProps;
+    const childrenArray = React.Children.toArray(children);
+    const text = childrenArray.reduce(flatten, '');
+    const slug = text.toLocaleLowerCase('en-US').replace(/\W/g, '-');
+    const link = (
+      <Tooltip title={t('link.aria')}>
+        <IconButton
+          aria-label={t('link.aria')}
+          onClick={() => copyToClipboard(slug)}
+          size="small"
+          className="anchor-link"
+        >
+          <LinkIcon />
+        </IconButton>
+      </Tooltip>
+    );
+    return (
+      <>
+        {React.createElement(
+          `${node.tagName}`,
+          { id: slug, className: classes.header },
+          [children, link],
+        )}
+      </>
+    );
+  };
+
+  useEffect(() => {
+    if (!window.location.hash) {
+      return;
+    }
+
+    const id = window.location.hash.slice(1);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
+  }, []);
+
   return (
     <ReactMarkdown
       remarkPlugins={[gfm]}

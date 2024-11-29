@@ -6,6 +6,7 @@ import {
 import { useTranslation } from '../../hooks';
 import { IconButton, Tooltip } from '@material-ui/core';
 import Link from '@material-ui/icons/Link';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const LinkButton = (props: {
   entity: PostResponse | AnswerResponse;
@@ -13,12 +14,18 @@ export const LinkButton = (props: {
 }) => {
   const isQuestion = 'title' in props.entity;
   const { t } = useTranslation();
+  const alertApi = useApi(alertApiRef);
   const copyToClipboard = () => {
     const url = new URL(window.location.href);
     if (!isQuestion) {
       url.hash = `#answer_${props.entity.id}`;
     }
     window.navigator.clipboard.writeText(url.toString());
+    alertApi.post({
+      message: t('link.copied'),
+      severity: 'info',
+      display: 'transient',
+    });
   };
 
   return (
