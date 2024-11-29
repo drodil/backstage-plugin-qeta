@@ -260,6 +260,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
           <MarkdownRenderer
             content={content}
             className={`qetaMarkdownEditorPreview ${styles.markdownPreview}`}
+            useBlankLinks
           />,
         )
       }

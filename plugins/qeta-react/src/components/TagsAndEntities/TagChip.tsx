@@ -91,7 +91,11 @@ const TagTooltip = (props: { tag: string }) => {
   );
 };
 
-export const TagChip = (props: { tag: string; style?: CSSProperties }) => {
+export const TagChip = (props: {
+  tag: string;
+  style?: CSSProperties;
+  useHref?: boolean;
+}) => {
   const tagRoute = useRouteRef(tagRouteRef);
   const navigate = useNavigate();
   const { tag } = props;
@@ -108,9 +112,15 @@ export const TagChip = (props: { tag: string; style?: CSSProperties }) => {
         className="qetaTagChip"
         component="a"
         style={props.style}
-        onClick={() => {
-          navigate(tagRoute({ tag }));
-        }}
+        href={props.useHref ? tagRoute({ tag }) : undefined}
+        target={props.useHref ? '_blank' : undefined}
+        onClick={
+          !props.useHref
+            ? () => {
+                navigate(tagRoute({ tag }));
+              }
+            : undefined
+        }
         clickable
       />
     </Tooltip>

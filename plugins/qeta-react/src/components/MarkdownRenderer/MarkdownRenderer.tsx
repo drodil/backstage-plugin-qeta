@@ -188,8 +188,9 @@ export const MarkdownRenderer = (props: {
   content: string;
   className?: string;
   showToc?: boolean;
+  useBlankLinks?: boolean;
 }) => {
-  const { content, className: mainClassName, showToc } = props;
+  const { content, className: mainClassName, showToc, useBlankLinks } = props;
   const darkTheme = useIsDarkTheme();
   const { t } = useTranslation();
   const classes = useStyles();
@@ -321,6 +322,7 @@ export const MarkdownRenderer = (props: {
                       <EntityRefLink
                         entityRef={userMention.slice(1)}
                         hideIcon
+                        target={useBlankLinks ? '_blank' : undefined}
                       />{' '}
                     </>
                   );
@@ -333,6 +335,7 @@ export const MarkdownRenderer = (props: {
                       <TagChip
                         tag={tagMention.slice(1)}
                         style={{ marginBottom: 0 }}
+                        useHref={useBlankLinks}
                       />
                     </>
                   );
