@@ -13,6 +13,7 @@ import { imageUpload } from '../../utils/utils';
 import { makeStyles } from '@material-ui/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
+import { findTagMentions } from '@drodil/backstage-plugin-qeta-common';
 
 export type QetaMarkdownEditorClassKey =
   | 'markdownEditor'
@@ -107,6 +108,7 @@ export type MarkdownEditorProps = {
   config?: Config;
   value: string;
   onChange: (value: string) => void;
+  onTagsChange?: (tags: string[]) => void;
   height: number;
   error?: boolean;
   placeholder?: string;
@@ -121,6 +123,8 @@ export type MarkdownEditorProps = {
   required?: boolean;
 };
 
+const NO_SUGGESTIONS = [{ preview: 'No suggestions', value: '' }];
+
 export const MarkdownEditor = (props: MarkdownEditorProps) => {
   const {
     config,
@@ -130,6 +134,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     error,
     placeholder,
     disableAttachments,
+    onTagsChange,
     disableToolbar,
     disablePreview,
     postId,
@@ -146,9 +151,9 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
 
-  const loadSuggestions = async (text: string) => {
+  const loadUserSuggestions = async (text: string) => {
     if (!text) {
-      return [{ preview: 'No suggestions', value: '' }];
+      return NO_SUGGESTIONS;
     }
     const users = await catalogApi.queryEntities({
       filter: { kind: 'User' },
@@ -165,7 +170,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     });
 
     if (users.items.length === 0) {
-      return [{ preview: 'No suggestions', value: '' }];
+      return NO_SUGGESTIONS;
     }
 
     return users.items.map(entity => {
@@ -179,6 +184,35 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
         value: `@${stringifyEntityRef(user)}`,
       };
     });
+  };
+
+  const loadTagSuggestions = async (text: string) => {
+    if (!text) {
+      return NO_SUGGESTIONS;
+    }
+    const tags = await qetaApi.getTags({ searchQuery: text });
+    if (tags.tags.length === 0) {
+      return NO_SUGGESTIONS;
+    }
+    return tags.tags.map(tag => {
+      return {
+        preview: tag.tag,
+        value: `#${tag.tag}`,
+      };
+    });
+  };
+
+  const loadSuggestions = async (text: string, triggeredBy: string) => {
+    if (!text || !triggeredBy) {
+      return NO_SUGGESTIONS;
+    }
+    if (triggeredBy === '@') {
+      return loadUserSuggestions(text);
+    }
+    if (triggeredBy === '#') {
+      return loadTagSuggestions(text);
+    }
+    return NO_SUGGESTIONS;
   };
 
   const isUploadDisabled =
@@ -211,9 +245,14 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
           required,
           placeholder,
           autoFocus,
+          onBlur: () => {
+            if (onTagsChange) {
+              onTagsChange(findTagMentions(value).map(t => t.slice(1)));
+            }
+          },
         },
       }}
-      suggestionTriggerCharacters={['@']}
+      suggestionTriggerCharacters={['@', '#']}
       loadSuggestions={loadSuggestions}
       suggestionsAutoplace
       generateMarkdownPreview={content =>

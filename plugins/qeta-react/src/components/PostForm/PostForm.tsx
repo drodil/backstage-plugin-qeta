@@ -135,6 +135,8 @@ export const PostForm = (props: PostFormProps) => {
     handleSubmit,
     control,
     reset,
+    getValues: getFormValues,
+    setValue,
     formState: { errors },
   } = useForm<QuestionFormValues>({
     values,
@@ -319,6 +321,11 @@ export const PostForm = (props: PostFormProps) => {
             config={configApi}
             onImageUpload={onImageUpload}
             postId={id ? Number(id) : undefined}
+            onTagsChange={tags => {
+              const existing = getFormValues('tags') ?? [];
+              const newTags = [...new Set([...existing, ...tags])];
+              setValue('tags', newTags, { shouldValidate: true });
+            }}
           />
         )}
         name="content"

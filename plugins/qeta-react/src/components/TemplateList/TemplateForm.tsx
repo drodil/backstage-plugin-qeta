@@ -76,6 +76,8 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
     register,
     handleSubmit,
     control,
+    getValues: getFormValues,
+    setValue,
     reset,
     formState: { errors },
   } = useForm<TemplateFormValues>({
@@ -186,6 +188,11 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
             height={400}
             error={'questionContent' in errors}
             placeholder={t('templateList.questionContentInput.placeholder')}
+            onTagsChange={tags => {
+              const existing = getFormValues('tags') ?? [];
+              const newTags = [...new Set([...existing, ...tags])];
+              setValue('tags', newTags, { shouldValidate: true });
+            }}
           />
         )}
         name="questionContent"

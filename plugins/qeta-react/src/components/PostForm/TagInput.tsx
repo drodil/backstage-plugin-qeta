@@ -3,7 +3,7 @@ import { TextField, Tooltip, Typography } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { qetaApiRef } from '../../api';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { filterTags } from '@drodil/backstage-plugin-qeta-common';
+import { filterTags, isValidTag } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslation } from '../../hooks';
 import { FieldError } from 'react-hook-form';
 import { AutocompleteListboxComponent } from './AutocompleteListComponent';
@@ -75,12 +75,16 @@ export const TagInput = (props: {
     return null;
   }
 
+  const val = [...new Set(value ?? [])]
+    .filter(isValidTag)
+    .slice(0, maximumTags);
+
   return (
     <Autocomplete
       multiple
       id="tags-select"
       className="qetaTagInput"
-      value={value}
+      value={val}
       options={availableTags ?? []}
       freeSolo={allowCreation}
       ListboxComponent={
