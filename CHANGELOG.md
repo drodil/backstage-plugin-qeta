@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.16.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.16.1...v3.16.2) (2024-12-04)
+
+
+### Bug Fixes
+
+* also fix header image input for collection form ([7b0437a](https://github.com/drodil/backstage-plugin-qeta/commit/7b0437adbbe32b2b25e6d65c3898a9984f057a53))
+
 ### [3.16.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.16.0...v3.16.1) (2024-12-04)
 
 
