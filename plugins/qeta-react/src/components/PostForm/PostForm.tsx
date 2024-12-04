@@ -282,13 +282,17 @@ export const PostForm = (props: PostFormProps) => {
         <Alert severity="error">{t('postForm.errorPosting', { type })}</Alert>
       )}
       {type === 'article' && (
-        <HeaderImageInput
-          onChange={(url?: string) =>
-            setValues(v => ({ ...v, headerImage: url }))
-          }
-          onImageUpload={onImageUpload}
-          url={values.headerImage}
-          postId={id ? Number(id) : undefined}
+        <Controller
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <HeaderImageInput
+              onChange={onChange}
+              onImageUpload={onImageUpload}
+              url={value}
+              postId={id ? Number(id) : undefined}
+            />
+          )}
+          name="headerImage"
         />
       )}
       <TextField
