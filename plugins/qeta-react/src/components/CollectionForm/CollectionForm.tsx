@@ -182,13 +182,17 @@ export const CollectionForm = (props: CollectionFormProps) => {
       {error && (
         <Alert severity="error">{t('collectionForm.errorPosting')}</Alert>
       )}
-      <HeaderImageInput
-        url={values.headerImage}
-        onChange={(url?: string) =>
-          setValues(v => ({ ...v, headerImage: url }))
-        }
-        onImageUpload={onImageUpload}
-        collectionId={id ? Number(id) : undefined}
+      <Controller
+        control={control}
+        render={({ field: { onChange, value } }) => (
+          <HeaderImageInput
+            onChange={onChange}
+            onImageUpload={onImageUpload}
+            url={value}
+            collectionId={id ? Number(id) : undefined}
+          />
+        )}
+        name="headerImage"
       />
       <TextField
         label={t('collectionForm.titleInput.label')}
