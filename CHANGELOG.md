@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.16.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.16.2...v3.16.3) (2024-12-05)
+
+
+### Bug Fixes
+
+* add missing type condition factory ([82b5c8e](https://github.com/drodil/backstage-plugin-qeta/commit/82b5c8ea059bd481ef9677a2b71eb8ff1827eb2a))
+* use correct name for the delete permission ([1a579d3](https://github.com/drodil/backstage-plugin-qeta/commit/1a579d3854711d35e968266dc2aad09f2d94c014))
+
 ### [3.16.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.16.1...v3.16.2) (2024-12-04)
 
 
