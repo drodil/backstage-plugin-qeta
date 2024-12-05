@@ -120,6 +120,18 @@ export class PermissionPolicy implements PermissionPolicy {
         });
       }
       */
+
+      // Testing that it's possible to restrict viewing of
+      // specific type of posts
+      /**
+       if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
+        // Can only view questions
+        return createPostConditionalDecision(request.permission, {
+          allOf: [postHasTypeConditionFactory({ type: 'question' })],
+        });
+       }
+       */
+
       // Disable posting
       /**
        if (isPermission(request.permission, qetaCreatePostPermission)) {
@@ -184,6 +196,17 @@ export class PermissionPolicy implements PermissionPolicy {
         });
       }
        */
+
+      // Testing that it's possible to restrict editing and deleting of
+      // specific type of posts
+      /**
+       if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
+        // Can only edit or delete questions
+        return createPostConditionalDecision(request.permission, {
+          allOf: [postHasTypeConditionFactory({ type: 'question' })],
+        });
+      }
+      */
 
       if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
         return createPostConditionalDecision(request.permission, {

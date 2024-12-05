@@ -100,6 +100,8 @@ export const postHasType = createPostPermissionRule({
   },
 });
 
+export const postHasTypeConditionFactory = createConditionFactory(postHasType);
+
 export const postRules = {
   isPostAuthor,
   postHasTags,
