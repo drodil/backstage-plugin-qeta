@@ -35,7 +35,7 @@ export const qetaEditPostPermission = createPermission({
 });
 
 export const qetaDeletePostPermission = createPermission({
-  name: 'qeta.delete.question',
+  name: 'qeta.delete.post',
   attributes: { action: 'delete' },
   resourceType: POST_RESOURCE_TYPE,
 });
