@@ -12,4 +12,5 @@ export type AttachmentStorageEngineOptions = {
 export interface AttachmentStorageEngine {
     handleFile: (file: File, options?: { postId?: number; answerId?: number; collectionId?: number }) => Promise<Attachment>;
     getAttachmentBuffer: (attachment: Attachment) => Promise<Buffer | undefined>;
+    deleteAttachment(attachment: Attachment): Promise<void>;
 }

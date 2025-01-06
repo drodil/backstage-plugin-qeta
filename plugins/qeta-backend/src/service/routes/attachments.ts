@@ -8,11 +8,6 @@ import AzureBlobStorageEngine from '../upload/azureBlobStorage';
 import fs from 'fs';
 import FileType from 'file-type';
 import { File, RouteOptions } from '../types';
-import {
-  DeleteObjectCommand,
-  DeleteObjectCommandOutput,
-} from '@aws-sdk/client-s3';
-import { getS3Client } from '../util';
 import { AttachmentStorageEngine, AttachmentStorageEngineOptions } from '../upload/attachmentStorageEngine';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
@@ -157,34 +152,8 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const deleteS3Image = async () => {
-      const bucket = config.getOptionalString('qeta.storage.bucket');
-      if (!bucket) {
-        throw new Error('Bucket name is required for S3 storage');
-      }
-      const s3 = getS3Client(config);
-      const output: DeleteObjectCommandOutput = await s3.send(
-        new DeleteObjectCommand({
-          Bucket: bucket,
-          Key: attachment.path,
-        }),
-      );
-      if (output.$metadata.httpStatusCode !== 204) {
-        throw new Error('Failed to delete object');
-      }
-    };
-
-    switch (attachment.locationType) {
-      case 's3':
-        await deleteS3Image();
-        break;
-      case 'filesystem':
-        await fs.promises.rm(attachment.path);
-        break;
-      default:
-      case 'database':
-        break;
-    }
+    const engine = getStorageEngine(attachment.locationType, options);
+    await engine.deleteAttachment(attachment);
 
     const result = await database.deleteAttachment(uuid);
     if (!result) {

@@ -4,7 +4,7 @@ import { Config } from '@backstage/config';
 import { QetaStore } from '../../database/QetaStore';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
-import { GetObjectCommand, GetObjectCommandOutput, PutObjectCommand } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, DeleteObjectCommandOutput, GetObjectCommand, GetObjectCommandOutput, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getS3Client } from '../util';
 import { AttachmentStorageEngine, AttachmentStorageEngineOptions } from './attachmentStorageEngine';
 
@@ -81,6 +81,23 @@ class S3StoreEngine implements AttachmentStorageEngine {
     const bytes = await object.Body.transformToByteArray();
     return Buffer.from(bytes);
   };
+
+  deleteAttachment = async (attachment: Attachment) => {
+    const bucket = this.config.getOptionalString('qeta.storage.bucket');
+    if (!bucket) {
+      throw new Error('Bucket name is required for S3 storage');
+    }
+    const s3 = getS3Client(this.config);
+    const output: DeleteObjectCommandOutput = await s3.send(
+      new DeleteObjectCommand({
+        Bucket: bucket,
+        Key: attachment.path,
+      }),
+    );
+    if (output.$metadata.httpStatusCode !== 204) {
+      throw new Error('Failed to delete object');
+    }
+  }
 }
 
 export default (opts: AttachmentStorageEngineOptions) => {

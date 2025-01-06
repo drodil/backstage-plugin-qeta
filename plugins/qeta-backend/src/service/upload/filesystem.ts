@@ -54,6 +54,10 @@ class FilesystemStoreEngine implements AttachmentStorageEngine {
   getAttachmentBuffer = async (attachment: Attachment) => {
     return await fs.promises.readFile(attachment.path);
   };
+
+  deleteAttachment = async (attachment: Attachment) => {
+    await fs.promises.rm(attachment.path);
+  }
 }
 
 export default (opts: AttachmentStorageEngineOptions) => {

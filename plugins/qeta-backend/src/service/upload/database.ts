@@ -39,6 +39,10 @@ class DatabaseStoreEngine implements AttachmentStorageEngine {
   getAttachmentBuffer = async (attachment: Attachment) => {
     return attachment.binaryImage;
   };
+
+  deleteAttachment = async (_attachment: Attachment) => {
+    // Nothing to do here, since the attachment is stored in the database
+  }
 }
 
 export default (opts: AttachmentStorageEngineOptions) => {
