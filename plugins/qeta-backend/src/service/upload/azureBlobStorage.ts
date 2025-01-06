@@ -5,13 +5,14 @@ import { QetaStore } from '../../database/QetaStore';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
 import { getAzureBlobServiceClient } from '../util';
+import { AttachmentStorageEngine } from './attachmentStorageEngine';
 
 type Options = {
   config: Config;
   database: QetaStore;
 };
 
-class AzureBlobStorageEngine {
+class AzureBlobStorageEngine implements AttachmentStorageEngine {
   config: Config;
   database: QetaStore;
   backendBaseUrl: string;

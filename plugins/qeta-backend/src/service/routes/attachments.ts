@@ -15,6 +15,7 @@ import {
   GetObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { getS3Client } from '../util';
+import { AttachmentStorageEngine } from '../upload/attachmentStorageEngine';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
 const DEFAULT_MIME_TYPES = [
@@ -41,10 +42,23 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       DEFAULT_MIME_TYPES;
 
     const form = new multiparty.Form();
-    const fileSystemEngine = FilesystemStoreEngine(options);
-    const databaseEngine = DatabaseStoreEngine(options);
-    const s3Engine = S3StoreEngine(options);
-    const azureBlobStorageEngine = AzureBlobStorageEngine(options);
+
+    let engine: AttachmentStorageEngine;
+    switch (storageType) {
+      case 'azure':
+        engine = AzureBlobStorageEngine(options);
+        break;
+      case 's3':
+        engine = S3StoreEngine(options);
+        break;
+      case 'filesystem':
+        engine = FilesystemStoreEngine(options);
+        break;
+      case 'database':
+      default:
+        engine = DatabaseStoreEngine(options);
+        break;
+    }
 
     form.parse(request, async (err, _fields, files) => {
       if (err) {
@@ -95,21 +109,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
           : undefined,
       };
 
-      switch (storageType) {
-        case 'azure':
-          attachment = await azureBlobStorageEngine.handleFile(file, opts);
-          break;
-        case 's3':
-          attachment = await s3Engine.handleFile(file, opts);
-          break;
-        case 'filesystem':
-          attachment = await fileSystemEngine.handleFile(file, opts);
-          break;
-        case 'database':
-        default:
-          attachment = await databaseEngine.handleFile(file, opts);
-          break;
-      }
+      attachment = await engine.handleFile(file, opts);
       response.json(attachment);
     });
   });

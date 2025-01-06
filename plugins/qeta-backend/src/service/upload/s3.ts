@@ -6,13 +6,14 @@ import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getS3Client } from '../util';
+import { AttachmentStorageEngine } from './attachmentStorageEngine';
 
 type Options = {
   config: Config;
   database: QetaStore;
 };
 
-class S3StoreEngine {
+class S3StoreEngine implements AttachmentStorageEngine {
   config: Config;
   database: QetaStore;
   backendBaseUrl: string;

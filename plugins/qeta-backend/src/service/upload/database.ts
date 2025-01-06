@@ -2,13 +2,14 @@ import { Config } from '@backstage/config';
 import { QetaStore } from '../../database/QetaStore';
 import { File } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { AttachmentStorageEngine } from './attachmentStorageEngine';
 
 type Options = {
   config: Config;
   database: QetaStore;
 };
 
-class DatabaseStoreEngine {
+class DatabaseStoreEngine implements AttachmentStorageEngine {
   config: Config;
   database: QetaStore;
   backendBaseUrl: string;
