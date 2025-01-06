@@ -48,6 +48,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.540.0",
+    "@azure/identity": "^4.5.0",
+    "@azure/storage-blob": "^12.26.0",
     "@backstage/backend-defaults": "backstage:^",
     "@backstage/backend-plugin-api": "backstage:^",
     "@backstage/catalog-client": "backstage:^",

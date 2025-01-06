@@ -4,6 +4,7 @@ import multiparty from 'multiparty';
 import FilesystemStoreEngine from '../upload/filesystem';
 import DatabaseStoreEngine from '../upload/database';
 import S3StoreEngine from '../upload/s3';
+import AzureBlobStorageEngine from '../upload/azureBlobStorage';
 import fs from 'fs';
 import FileType from 'file-type';
 import { File, RouteOptions } from '../types';
@@ -43,6 +44,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
     const fileSystemEngine = FilesystemStoreEngine(options);
     const databaseEngine = DatabaseStoreEngine(options);
     const s3Engine = S3StoreEngine(options);
+    const azureBlobStorageEngine = AzureBlobStorageEngine(options);
 
     form.parse(request, async (err, _fields, files) => {
       if (err) {
@@ -94,6 +96,9 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       };
 
       switch (storageType) {
+        case 'azure':
+          attachment = await azureBlobStorageEngine.handleFile(file, opts);
+          break;
         case 's3':
           attachment = await s3Engine.handleFile(file, opts);
           break;
