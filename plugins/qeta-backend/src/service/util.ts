@@ -378,7 +378,7 @@ export const getAzureBlobServiceClient = (config: Config) => {
     return BlobServiceClient.fromConnectionString(connectionString);
   } else if (accountName) {
     return new BlobServiceClient(`https://${accountName}.blob.core.windows.net`, new DefaultAzureCredential());
-  } else {
-    throw new Error('Either account name or connection string must be provided for Azure Blob Storage');
   }
+  
+  throw new Error('Either account name or connection string must be provided for Azure Blob Storage');
 }
