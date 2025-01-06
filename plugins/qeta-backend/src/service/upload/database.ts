@@ -2,12 +2,8 @@ import { Config } from '@backstage/config';
 import { QetaStore } from '../../database/QetaStore';
 import { File } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { AttachmentStorageEngine } from './attachmentStorageEngine';
-
-type Options = {
-  config: Config;
-  database: QetaStore;
-};
+import { AttachmentStorageEngine, AttachmentStorageEngineOptions } from './attachmentStorageEngine';
+import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 
 class DatabaseStoreEngine implements AttachmentStorageEngine {
   config: Config;
@@ -15,7 +11,7 @@ class DatabaseStoreEngine implements AttachmentStorageEngine {
   backendBaseUrl: string;
   qetaUrl: string;
 
-  constructor(opts: Options) {
+  constructor(opts: AttachmentStorageEngineOptions) {
     this.config = opts.config;
     this.database = opts.database;
     this.backendBaseUrl = this.config.getString('backend.baseUrl');
@@ -39,8 +35,12 @@ class DatabaseStoreEngine implements AttachmentStorageEngine {
       ...options,
     });
   };
+
+  getAttachmentBuffer = async (attachment: Attachment) => {
+    return attachment.binaryImage;
+  };
 }
 
-export default (opts: Options) => {
+export default (opts: AttachmentStorageEngineOptions) => {
   return new DatabaseStoreEngine(opts);
 };

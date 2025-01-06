@@ -11,11 +11,9 @@ import { File, RouteOptions } from '../types';
 import {
   DeleteObjectCommand,
   DeleteObjectCommandOutput,
-  GetObjectCommand,
-  GetObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { getS3Client } from '../util';
-import { AttachmentStorageEngine } from '../upload/attachmentStorageEngine';
+import { AttachmentStorageEngine, AttachmentStorageEngineOptions } from '../upload/attachmentStorageEngine';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
 const DEFAULT_MIME_TYPES = [
@@ -24,6 +22,20 @@ const DEFAULT_MIME_TYPES = [
   'image/jpeg',
   'image/gif',
 ];
+
+const getStorageEngine = (storageType: string, options: AttachmentStorageEngineOptions): AttachmentStorageEngine => {
+  switch (storageType) {
+    case 'azure':
+      return AzureBlobStorageEngine(options);
+    case 's3':
+      return S3StoreEngine(options);
+    case 'filesystem':
+      return FilesystemStoreEngine(options);
+    case 'database':
+    default:
+      return DatabaseStoreEngine(options);
+  }
+}
 
 export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
   const { database, config } = options;
@@ -43,22 +55,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
 
     const form = new multiparty.Form();
 
-    let engine: AttachmentStorageEngine;
-    switch (storageType) {
-      case 'azure':
-        engine = AzureBlobStorageEngine(options);
-        break;
-      case 's3':
-        engine = S3StoreEngine(options);
-        break;
-      case 'filesystem':
-        engine = FilesystemStoreEngine(options);
-        break;
-      case 'database':
-      default:
-        engine = DatabaseStoreEngine(options);
-        break;
-    }
+    const engine = getStorageEngine(storageType, options);    
 
     form.parse(request, async (err, _fields, files) => {
       if (err) {
@@ -124,39 +121,8 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const getS3ImageBuffer = async () => {
-      const bucket = config.getOptionalString('qeta.storage.bucket');
-      if (!bucket) {
-        throw new Error('Bucket name is required for S3 storage');
-      }
-      const s3 = getS3Client(config);
-      const object: GetObjectCommandOutput = await s3.send(
-        new GetObjectCommand({
-          Bucket: bucket,
-          Key: attachment.path,
-        }),
-      );
-
-      if (!object.Body) {
-        return undefined;
-      }
-      const bytes = await object.Body.transformToByteArray();
-      return Buffer.from(bytes);
-    };
-
-    let imageBuffer: Buffer | undefined;
-    switch (attachment.locationType) {
-      case 's3':
-        imageBuffer = await getS3ImageBuffer();
-        break;
-      case 'filesystem':
-        imageBuffer = await fs.promises.readFile(attachment.path);
-        break;
-      default:
-      case 'database':
-        imageBuffer = attachment.binaryImage;
-        break;
-    }
+    const engine = getStorageEngine(attachment.locationType, options);
+    const imageBuffer = await engine.getAttachmentBuffer(attachment);
 
     if (!imageBuffer) {
       response.status(500).send('Attachment buffer is undefined');

@@ -5,12 +5,7 @@ import { QetaStore } from '../../database/QetaStore';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
 import { getAzureBlobServiceClient } from '../util';
-import { AttachmentStorageEngine } from './attachmentStorageEngine';
-
-type Options = {
-  config: Config;
-  database: QetaStore;
-};
+import { AttachmentStorageEngine, AttachmentStorageEngineOptions } from './attachmentStorageEngine';
 
 class AzureBlobStorageEngine implements AttachmentStorageEngine {
   config: Config;
@@ -19,7 +14,7 @@ class AzureBlobStorageEngine implements AttachmentStorageEngine {
   qetaUrl: string;
   container: string;
 
-  constructor(opts: Options) {
+  constructor(opts: AttachmentStorageEngineOptions) {
     this.config = opts.config;
     this.database = opts.database;
     this.backendBaseUrl = this.config.getString('backend.baseUrl');
@@ -57,8 +52,15 @@ class AzureBlobStorageEngine implements AttachmentStorageEngine {
       ...options,
     });
   };
+
+  getAttachmentBuffer = async (attachment: Attachment) => {
+    const client = getAzureBlobServiceClient(this.config);
+    const container = client.getContainerClient(this.container);
+    const blob = container.getBlockBlobClient(attachment.path);
+    return blob.downloadToBuffer();
+  }
 }
 
-export default (opts: Options) => {
+export default (opts: AttachmentStorageEngineOptions) => {
   return new AzureBlobStorageEngine(opts);
 };
