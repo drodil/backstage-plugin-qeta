@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   AttachmentStorageEngine,
   AttachmentStorageEngineOptions,
+  FileOptions,
 } from './attachmentStorageEngine';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 
@@ -21,10 +22,7 @@ class DatabaseStoreEngine implements AttachmentStorageEngine {
     this.qetaUrl = `${this.backendBaseUrl}/api/qeta/attachments`;
   }
 
-  handleFile = async (
-    file: File,
-    options?: { postId?: number; answerId?: number; collectionId?: number },
-  ) => {
+  handleFile = async (file: File, options?: FileOptions) => {
     const imageUuid = uuidv4();
     const locationUri = `${this.qetaUrl}/${imageUuid}`;
 

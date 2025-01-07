@@ -7,6 +7,7 @@ import { File } from '../types';
 import {
   AttachmentStorageEngine,
   AttachmentStorageEngineOptions,
+  FileOptions,
 } from './attachmentStorageEngine';
 
 class FilesystemStoreEngine implements AttachmentStorageEngine {
@@ -28,7 +29,7 @@ class FilesystemStoreEngine implements AttachmentStorageEngine {
 
   handleFile = async (
     file: File,
-    options?: { postId?: number; answerId?: number; collectionId?: number },
+    options?: FileOptions,
   ): Promise<Attachment> => {
     fs.mkdirSync(this.folder, { recursive: true });
 

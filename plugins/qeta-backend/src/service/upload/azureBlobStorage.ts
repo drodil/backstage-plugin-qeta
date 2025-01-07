@@ -8,6 +8,7 @@ import { getAzureBlobServiceClient } from '../util';
 import {
   AttachmentStorageEngine,
   AttachmentStorageEngineOptions,
+  FileOptions,
 } from './attachmentStorageEngine';
 
 class AzureBlobStorageEngine implements AttachmentStorageEngine {
@@ -29,7 +30,7 @@ class AzureBlobStorageEngine implements AttachmentStorageEngine {
 
   handleFile = async (
     file: File,
-    options?: { postId?: number; answerId?: number; collectionId?: number },
+    options?: FileOptions,
   ): Promise<Attachment> => {
     const imageUuid = uuidv4();
     const filename = `image-${imageUuid}-${Date.now()}.${file.ext}`;

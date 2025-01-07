@@ -15,6 +15,7 @@ import { getS3Client } from '../util';
 import {
   AttachmentStorageEngine,
   AttachmentStorageEngineOptions,
+  FileOptions,
 } from './attachmentStorageEngine';
 
 class S3StoreEngine implements AttachmentStorageEngine {
@@ -39,7 +40,7 @@ class S3StoreEngine implements AttachmentStorageEngine {
 
   handleFile = async (
     file: File,
-    options?: { postId?: number; answerId?: number; collectionId?: number },
+    options?: FileOptions,
   ): Promise<Attachment> => {
     if (!this.bucket) {
       throw new Error('Bucket name is required for S3 storage');

@@ -8,16 +8,15 @@ export type AttachmentStorageEngineOptions = {
   database: QetaStore;
 };
 
+export type FileOptions = {
+  creator: string;
+  postId?: number;
+  answerId?: number;
+  collectionId?: number;
+};
+
 export interface AttachmentStorageEngine {
-  handleFile: (
-    file: File,
-    options?: {
-      creator: string;
-      postId?: number;
-      answerId?: number;
-      collectionId?: number;
-    },
-  ) => Promise<Attachment>;
+  handleFile: (file: File, options?: FileOptions) => Promise<Attachment>;
   getAttachmentBuffer: (attachment: Attachment) => Promise<Buffer | undefined>;
   deleteAttachment(attachment: Attachment): Promise<void>;
 }
