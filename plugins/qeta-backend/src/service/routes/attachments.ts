@@ -120,7 +120,8 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
     const imageBuffer = await engine.getAttachmentBuffer(attachment);
 
     if (!imageBuffer) {
-      response.status(500).send('Attachment buffer is undefined');
+      response.status(404).end();
+      return;
     }
 
     response.writeHead(200, {

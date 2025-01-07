@@ -56,15 +56,30 @@ class AzureBlobStorageEngine implements AttachmentStorageEngine {
   getAttachmentBuffer = async (attachment: Attachment) => {
     const client = getAzureBlobServiceClient(this.config);
     const container = client.getContainerClient(this.container);
+
+    if (!await container.exists()) {
+        return undefined;
+    }
+    
     const blob = container.getBlockBlobClient(attachment.path);
-    return blob.downloadToBuffer();
+    if (await blob.exists()) {
+        return blob.downloadToBuffer();
+    }
+    
+    return undefined;
   }
 
   deleteAttachment = async (attachment: Attachment) => {
     const client = getAzureBlobServiceClient(this.config);
     const container = client.getContainerClient(this.container);
+    if (!await container.exists()) {
+        return;
+    }
+
     const blob = container.getBlockBlobClient(attachment.path);
-    await blob.delete();
+    if (await blob.exists()) {
+        await blob.delete();
+    }
   }
 }
 
