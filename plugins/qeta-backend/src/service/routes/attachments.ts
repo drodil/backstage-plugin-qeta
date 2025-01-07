@@ -12,6 +12,7 @@ import {
   AttachmentStorageEngine,
   AttachmentStorageEngineOptions,
 } from '../upload/attachmentStorageEngine';
+import { getUsername } from '../util';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
 const DEFAULT_MIME_TYPES = [
@@ -44,6 +45,8 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
   // POST /attachments
   router.post('/attachments', async (request, response) => {
     let attachment: Attachment;
+
+    const username = await getUsername(request, options);
 
     const storageType =
       config?.getOptionalString('qeta.storage.type') || 'database';
@@ -98,6 +101,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       };
 
       const opts = {
+        creator: username,
         postId: request.query.postId ? Number(request.query.postId) : undefined,
         answerId: request.query.answerId
           ? Number(request.query.answerId)

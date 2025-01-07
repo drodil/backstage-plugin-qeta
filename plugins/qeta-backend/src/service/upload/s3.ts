@@ -65,7 +65,6 @@ class S3StoreEngine implements AttachmentStorageEngine {
       mimeType: file.mimeType,
       path: newPath,
       binaryImage: undefined,
-      creator: '', // required to run locally on sqlite, otherwise it complains about null.
       ...options,
     });
   };

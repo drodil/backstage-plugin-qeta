@@ -55,7 +55,6 @@ class AzureBlobStorageEngine implements AttachmentStorageEngine {
       mimeType: file.mimeType,
       path: filename,
       binaryImage: undefined,
-      creator: '', // required to run locally on sqlite, otherwise it complains about null.
       ...options,
     });
   };
