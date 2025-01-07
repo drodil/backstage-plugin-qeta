@@ -2,7 +2,10 @@ import { Config } from '@backstage/config';
 import { QetaStore } from '../../database/QetaStore';
 import { File } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { AttachmentStorageEngine, AttachmentStorageEngineOptions } from './attachmentStorageEngine';
+import {
+  AttachmentStorageEngine,
+  AttachmentStorageEngineOptions,
+} from './attachmentStorageEngine';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 
 class DatabaseStoreEngine implements AttachmentStorageEngine {
@@ -42,7 +45,7 @@ class DatabaseStoreEngine implements AttachmentStorageEngine {
 
   deleteAttachment = async (_attachment: Attachment) => {
     // Nothing to do here, since the attachment is stored in the database
-  }
+  };
 }
 
 export default (opts: AttachmentStorageEngineOptions) => {

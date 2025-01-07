@@ -4,7 +4,10 @@ import { Config } from '@backstage/config';
 import { QetaStore } from '../../database/QetaStore';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
-import { AttachmentStorageEngine, AttachmentStorageEngineOptions } from './attachmentStorageEngine';
+import {
+  AttachmentStorageEngine,
+  AttachmentStorageEngineOptions,
+} from './attachmentStorageEngine';
 
 class FilesystemStoreEngine implements AttachmentStorageEngine {
   config: Config;
@@ -63,7 +66,7 @@ class FilesystemStoreEngine implements AttachmentStorageEngine {
     if (fs.existsSync(attachment.path)) {
       await fs.promises.rm(attachment.path);
     }
-  }
+  };
 }
 
 export default (opts: AttachmentStorageEngineOptions) => {

@@ -4,9 +4,18 @@ import { Config } from '@backstage/config';
 import { QetaStore } from '../../database/QetaStore';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
-import { DeleteObjectCommand, DeleteObjectCommandOutput, GetObjectCommand, GetObjectCommandOutput, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  DeleteObjectCommandOutput,
+  GetObjectCommand,
+  GetObjectCommandOutput,
+  PutObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getS3Client } from '../util';
-import { AttachmentStorageEngine, AttachmentStorageEngineOptions } from './attachmentStorageEngine';
+import {
+  AttachmentStorageEngine,
+  AttachmentStorageEngineOptions,
+} from './attachmentStorageEngine';
 
 class S3StoreEngine implements AttachmentStorageEngine {
   config: Config;
@@ -97,7 +106,7 @@ class S3StoreEngine implements AttachmentStorageEngine {
     if (output.$metadata.httpStatusCode !== 204) {
       throw new Error('Failed to delete object');
     }
-  }
+  };
 }
 
 export default (opts: AttachmentStorageEngineOptions) => {

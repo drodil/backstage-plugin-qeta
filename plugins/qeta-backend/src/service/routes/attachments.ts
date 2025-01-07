@@ -8,7 +8,10 @@ import AzureBlobStorageEngine from '../upload/azureBlobStorage';
 import fs from 'fs';
 import FileType from 'file-type';
 import { File, RouteOptions } from '../types';
-import { AttachmentStorageEngine, AttachmentStorageEngineOptions } from '../upload/attachmentStorageEngine';
+import {
+  AttachmentStorageEngine,
+  AttachmentStorageEngineOptions,
+} from '../upload/attachmentStorageEngine';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
 const DEFAULT_MIME_TYPES = [
@@ -18,7 +21,10 @@ const DEFAULT_MIME_TYPES = [
   'image/gif',
 ];
 
-const getStorageEngine = (storageType: string, options: AttachmentStorageEngineOptions): AttachmentStorageEngine => {
+const getStorageEngine = (
+  storageType: string,
+  options: AttachmentStorageEngineOptions,
+): AttachmentStorageEngine => {
   switch (storageType) {
     case 'azure':
       return AzureBlobStorageEngine(options);
@@ -30,7 +36,7 @@ const getStorageEngine = (storageType: string, options: AttachmentStorageEngineO
     default:
       return DatabaseStoreEngine(options);
   }
-}
+};
 
 export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
   const { database, config } = options;
@@ -50,7 +56,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
 
     const form = new multiparty.Form();
 
-    const engine = getStorageEngine(storageType, options);    
+    const engine = getStorageEngine(storageType, options);
 
     form.parse(request, async (err, _fields, files) => {
       if (err) {

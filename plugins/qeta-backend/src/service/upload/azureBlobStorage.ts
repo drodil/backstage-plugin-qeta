@@ -5,7 +5,10 @@ import { QetaStore } from '../../database/QetaStore';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
 import { getAzureBlobServiceClient } from '../util';
-import { AttachmentStorageEngine, AttachmentStorageEngineOptions } from './attachmentStorageEngine';
+import {
+  AttachmentStorageEngine,
+  AttachmentStorageEngineOptions,
+} from './attachmentStorageEngine';
 
 class AzureBlobStorageEngine implements AttachmentStorageEngine {
   config: Config;
@@ -35,10 +38,14 @@ class AzureBlobStorageEngine implements AttachmentStorageEngine {
     const client = getAzureBlobServiceClient(this.config);
     const container = client.getContainerClient(this.container);
     if (!(await container.exists())) {
-        await container.create();
+      await container.create();
     }
 
-    await container.uploadBlockBlob(filename, fs.createReadStream(file.path), file.size);
+    await container.uploadBlockBlob(
+      filename,
+      fs.createReadStream(file.path),
+      file.size,
+    );
 
     return await this.database.postAttachment({
       uuid: imageUuid,
@@ -57,30 +64,30 @@ class AzureBlobStorageEngine implements AttachmentStorageEngine {
     const client = getAzureBlobServiceClient(this.config);
     const container = client.getContainerClient(this.container);
 
-    if (!await container.exists()) {
-        return undefined;
+    if (!(await container.exists())) {
+      return undefined;
     }
-    
+
     const blob = container.getBlockBlobClient(attachment.path);
     if (await blob.exists()) {
-        return blob.downloadToBuffer();
+      return blob.downloadToBuffer();
     }
-    
+
     return undefined;
-  }
+  };
 
   deleteAttachment = async (attachment: Attachment) => {
     const client = getAzureBlobServiceClient(this.config);
     const container = client.getContainerClient(this.container);
-    if (!await container.exists()) {
-        return;
+    if (!(await container.exists())) {
+      return;
     }
 
     const blob = container.getBlockBlobClient(attachment.path);
     if (await blob.exists()) {
-        await blob.delete();
+      await blob.delete();
     }
-  }
+  };
 }
 
 export default (opts: AttachmentStorageEngineOptions) => {

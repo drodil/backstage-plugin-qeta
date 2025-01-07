@@ -372,13 +372,22 @@ export const getS3Client = (config: Config) => {
 };
 
 export const getAzureBlobServiceClient = (config: Config) => {
-  const accountName = config.getOptionalString('qeta.storage.blobStorageAccountName');
-  const connectionString = config.getOptionalString('qeta.storage.blobStorageConnectionString');
+  const accountName = config.getOptionalString(
+    'qeta.storage.blobStorageAccountName',
+  );
+  const connectionString = config.getOptionalString(
+    'qeta.storage.blobStorageConnectionString',
+  );
   if (connectionString) {
     return BlobServiceClient.fromConnectionString(connectionString);
   } else if (accountName) {
-    return new BlobServiceClient(`https://${accountName}.blob.core.windows.net`, new DefaultAzureCredential());
+    return new BlobServiceClient(
+      `https://${accountName}.blob.core.windows.net`,
+      new DefaultAzureCredential(),
+    );
   }
-  
-  throw new Error('Either account name or connection string must be provided for Azure Blob Storage');
-}
+
+  throw new Error(
+    'Either account name or connection string must be provided for Azure Blob Storage',
+  );
+};
