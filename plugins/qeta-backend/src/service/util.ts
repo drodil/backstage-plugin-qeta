@@ -37,6 +37,8 @@ import {
   createConditionTransformer,
 } from '@backstage/plugin-permission-node';
 import { rules } from './postRules';
+import { BlobServiceClient } from '@azure/storage-blob';
+import { DefaultAzureCredential } from '@azure/identity';
 
 export const getUsername = async (
   req: Request<unknown>,
@@ -367,4 +369,25 @@ export const getS3Client = (config: Config) => {
     });
   }
   return new S3Client({ region });
+};
+
+export const getAzureBlobServiceClient = (config: Config) => {
+  const accountName = config.getOptionalString(
+    'qeta.storage.blobStorageAccountName',
+  );
+  const connectionString = config.getOptionalString(
+    'qeta.storage.blobStorageConnectionString',
+  );
+  if (connectionString) {
+    return BlobServiceClient.fromConnectionString(connectionString);
+  } else if (accountName) {
+    return new BlobServiceClient(
+      `https://${accountName}.blob.core.windows.net`,
+      new DefaultAzureCredential(),
+    );
+  }
+
+  throw new Error(
+    'Either account name or connection string must be provided for Azure Blob Storage',
+  );
 };

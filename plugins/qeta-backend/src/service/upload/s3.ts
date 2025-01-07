@@ -4,15 +4,20 @@ import { Config } from '@backstage/config';
 import { QetaStore } from '../../database/QetaStore';
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  DeleteObjectCommandOutput,
+  GetObjectCommand,
+  GetObjectCommandOutput,
+  PutObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getS3Client } from '../util';
+import {
+  AttachmentStorageEngine,
+  AttachmentStorageEngineOptions,
+} from './attachmentStorageEngine';
 
-type Options = {
-  config: Config;
-  database: QetaStore;
-};
-
-class S3StoreEngine {
+class S3StoreEngine implements AttachmentStorageEngine {
   config: Config;
   database: QetaStore;
   backendBaseUrl: string;
@@ -21,7 +26,7 @@ class S3StoreEngine {
 
   bucket?: string;
 
-  constructor(opts: Options) {
+  constructor(opts: AttachmentStorageEngineOptions) {
     this.config = opts.config;
     this.database = opts.database;
     this.backendBaseUrl = this.config.getString('backend.baseUrl');
@@ -59,13 +64,50 @@ class S3StoreEngine {
       extension: file.ext,
       mimeType: file.mimeType,
       path: newPath,
-      binaryImage: Buffer.from('0'),
-      creator: '', // required to run locally on sqlite, otherwise it complains about null.
+      binaryImage: undefined,
       ...options,
     });
   };
+
+  getAttachmentBuffer = async (attachment: Attachment) => {
+    const bucket = this.config.getOptionalString('qeta.storage.bucket');
+    if (!bucket) {
+      throw new Error('Bucket name is required for S3 storage');
+    }
+
+    const s3 = getS3Client(this.config);
+    const object: GetObjectCommandOutput = await s3.send(
+      new GetObjectCommand({
+        Bucket: bucket,
+        Key: attachment.path,
+      }),
+    );
+
+    if (!object.Body) {
+      return undefined;
+    }
+    const bytes = await object.Body.transformToByteArray();
+    return Buffer.from(bytes);
+  };
+
+  deleteAttachment = async (attachment: Attachment) => {
+    const bucket = this.config.getOptionalString('qeta.storage.bucket');
+    if (!bucket) {
+      throw new Error('Bucket name is required for S3 storage');
+    }
+    const s3 = getS3Client(this.config);
+    const output: DeleteObjectCommandOutput = await s3.send(
+      new DeleteObjectCommand({
+        Bucket: bucket,
+        Key: attachment.path,
+      }),
+    );
+    if (output.$metadata.httpStatusCode !== 204) {
+      throw new Error('Failed to delete object');
+    }
+  };
 }
 
-export default (opts: Options) => {
+export default (opts: AttachmentStorageEngineOptions) => {
   return new S3StoreEngine(opts);
 };

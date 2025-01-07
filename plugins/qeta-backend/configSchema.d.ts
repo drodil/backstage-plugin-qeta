@@ -79,7 +79,7 @@ export interface Config {
      * @visibility backend
      */
     storage?: {
-      type?: 'database' | 'filesystem' | 's3';
+      type?: 'database' | 'filesystem' | 's3' | 'azure';
       folder?: string;
       maxSizeImage?: number;
       allowedMimeTypes?: string[];
@@ -88,6 +88,9 @@ export interface Config {
       secretAccessKey?: string;
       region?: string;
       sessionToken?: string;
+      blobStorageAccountName?: string;
+      blobStorageConnectionString?: string;
+      blobStorageContainer?: string;
     };
     /**
      * Stats config

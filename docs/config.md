@@ -43,7 +43,7 @@ The allowed configuration values are:
 
 ## Storage
 
-- storage.type, string, what kind of storage is used to upload images used in questions. Default is `database`. Available values are 'filesystem', 'database' and 's3'.
+- storage.type, string, what kind of storage is used to upload images used in questions. Default is `database`. Available values are 'filesystem', 'database', 's3' and 'azure'.
 - storage.maxSizeImage, number, the maximum allowed size of upload files in bytes. Default is `2500000`
 - storage.folder, string, what folder is used to storage temporarily images to convert and send to frontend. Default is `/tmp/backstage-qeta-images`
 - storage.allowedMimeTypes, string[], A list of allowed upload formats. Default: `png,jpg,jpeg,gif`
@@ -53,5 +53,10 @@ The allowed configuration values are:
 - storage.secretAccessKey, string, secret access key for S3 storage, optional
 - storage.region, string, region for S3 storage, optional
 - storage.sessionToken, string, AWS session token, optional
+- storage.blobStorageAccountName, string, Azure Blob Storage account name, optional
+- storage.blobStorageConnectionString, string, Connection String to Azure Blob Storage, optional
+- storage.blobStorageContainer, string, Azure Blob Storage container name, optional. Default `backstage-qeta-images`
+
+> Note: For Azure Blob Storage you can either use passwordless authentication by configuring `blobStorageAccountName`. This requires your Backstage backend to run as an Azure Managed Identity. Alternatively, you can use `blobStorageConnectionString` to authenticate with a connection string.
 
 Additionally, there are more config values for the [OpenAI module](ai.md).

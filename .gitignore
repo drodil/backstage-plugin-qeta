@@ -118,3 +118,4 @@ dist
 !**/.yarn/versions
 
 dist-types/
+app-config.local.yaml
