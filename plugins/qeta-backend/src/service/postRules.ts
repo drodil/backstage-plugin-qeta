@@ -26,15 +26,19 @@ export const isPostAuthor = createPostPermissionRule({
   description: 'Should allow only if the post is created by the user',
   resourceType: POST_RESOURCE_TYPE,
   paramsSchema: z.object({
-    userRef: z.string().describe('User ID to match on the author'),
+    userRef: z.string().describe('User ID to match on the author').optional(),
+    claims: z
+      .array(z.string())
+      .optional()
+      .describe('List of claims to match at least one on within author'),
   }),
-  apply: (resource: Post, { userRef }) => {
-    return resource.author === userRef;
+  apply: (resource: Post, { userRef, claims = [] }) => {
+    return resource.author === userRef || claims.includes(resource.author);
   },
-  toQuery: ({ userRef }) => {
+  toQuery: ({ userRef, claims = [] }) => {
     return {
       property: 'posts.author',
-      values: [userRef],
+      values: [userRef, ...claims].filter(Boolean),
     };
   },
 });
@@ -120,15 +124,19 @@ export const isAnswerAuthor = createAnswerPermissionRule({
   description: 'Should allow only if the answer is created by the user',
   resourceType: ANSWER_RESOURCE_TYPE,
   paramsSchema: z.object({
-    userRef: z.string().describe('User ID to match on the author'),
+    userRef: z.string().describe('User ID to match on the author').optional(),
+    claims: z
+      .array(z.string())
+      .optional()
+      .describe('List of claims to match at least one on within author'),
   }),
-  apply: (resource: Answer, { userRef }) => {
-    return resource.author === userRef;
+  apply: (resource: Answer, { userRef, claims = [] }) => {
+    return resource.author === userRef || claims.includes(resource.author);
   },
-  toQuery: ({ userRef }) => {
+  toQuery: ({ userRef, claims = [] }) => {
     return {
       property: 'answers.author',
-      values: [userRef],
+      values: [userRef, ...claims].filter(Boolean),
     };
   },
 });
@@ -199,15 +207,19 @@ export const isCommentAuthor = createCommentPermissionRule({
   description: 'Should allow only if the comment is created by the user',
   resourceType: COMMENT_RESOURCE_TYPE,
   paramsSchema: z.object({
-    userRef: z.string().describe('User ID to match on the author'),
+    userRef: z.string().describe('User ID to match on the author').optional(),
+    claims: z
+      .array(z.string())
+      .optional()
+      .describe('List of claims to match at least one on within author'),
   }),
-  apply: (resource: Comment, { userRef }) => {
-    return resource.author === userRef;
+  apply: (resource: Comment, { userRef, claims = [] }) => {
+    return resource.author === userRef || claims.includes(resource.author);
   },
-  toQuery: ({ userRef }) => {
+  toQuery: ({ userRef, claims = [] }) => {
     return {
       property: 'comments.author',
-      values: [userRef],
+      values: [userRef, ...claims].filter(Boolean),
     };
   },
 });
