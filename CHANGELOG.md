@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.17.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.16.4...v3.17.0) (2025-01-10)
+
+
+### Features
+
+* allow passing user claims to author permission rules ([3546008](https://github.com/drodil/backstage-plugin-qeta/commit/354600830430e779283b004b058334f361178f64)), closes [#256](https://github.com/drodil/backstage-plugin-qeta/issues/256)
+
 ### [3.16.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.16.3...v3.16.4) (2025-01-07)
 
 
