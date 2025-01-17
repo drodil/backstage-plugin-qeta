@@ -40,6 +40,12 @@ import { rules } from './postRules';
 import { BlobServiceClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
 
+export const isPost = (ent: MaybePost | MaybeAnswer): ent is Post =>
+  ent !== null && (ent as Post).title !== undefined;
+
+export const isAnswer = (ent: MaybePost | MaybeAnswer): ent is Answer =>
+  ent !== null && (ent as Answer).postId !== undefined;
+
 export const getUsername = async (
   req: Request<unknown>,
   options: RouterOptions,
@@ -312,6 +318,15 @@ export const mapAdditionalFields = async (
     options,
     resp,
   );
+
+  if (isPost(resp)) {
+    await Promise.all(
+      (resp.answers ?? []).map(
+        async a => await mapAdditionalFields(request, a, options),
+      ),
+    );
+  }
+
   const comments: (Comment | null)[] = await Promise.all(
     (resp.comments ?? []).map(async (c: Comment): Promise<Comment | null> => {
       if (

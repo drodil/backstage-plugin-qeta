@@ -72,10 +72,20 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         decision.conditions,
       );
       const posts = await database.getPosts(username, request.query, filter);
-      response.json({ posts: posts.posts, total: posts.total });
+      await Promise.all(
+        posts.posts.map(async post => {
+          await mapAdditionalFields(request, post, options);
+        }),
+      );
+      response.json(posts);
     } else {
       const posts = await database.getPosts(username, request.query);
-      response.json({ posts: posts.posts, total: posts.total });
+      await Promise.all(
+        posts.posts.map(async post => {
+          await mapAdditionalFields(request, post, options);
+        }),
+      );
+      response.json(posts);
     }
   });
 
@@ -109,10 +119,20 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         decision.conditions,
       );
       const posts = await database.getPosts(username, request.body, filter);
-      response.json({ posts: posts.posts, total: posts.total });
+      await Promise.all(
+        posts.posts.map(async post => {
+          await mapAdditionalFields(request, post, options);
+        }),
+      );
+      response.json(posts);
     } else {
       const posts = await database.getPosts(username, request.body);
-      response.json({ posts: posts.posts, total: posts.total });
+      await Promise.all(
+        posts.posts.map(async post => {
+          await mapAdditionalFields(request, post, options);
+        }),
+      );
+      response.json(posts);
     }
   });
 
@@ -159,13 +179,25 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         { ...request.query, ...optionOverride },
         filter,
       );
-      response.json({ posts: posts.posts, total: posts.total });
+
+      const mapped = await Promise.all(
+        posts.posts.map(async post => {
+          await mapAdditionalFields(request, post, options);
+        }),
+      );
+      response.json({ posts: mapped, total: posts.total });
     } else {
       const posts = await database.getPosts(username, {
         ...request.query,
         ...optionOverride,
       });
-      response.json({ posts: posts.posts, total: posts.total });
+
+      await Promise.all(
+        posts.posts.map(async post => {
+          await mapAdditionalFields(request, post, options);
+        }),
+      );
+      response.json(posts);
     }
   });
 
@@ -193,12 +225,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     await authorize(request, qetaReadPostPermission, options, post);
 
     await mapAdditionalFields(request, post, options);
-    await Promise.all(
-      (post.answers ?? []).map(
-        async a => await mapAdditionalFields(request, a, options),
-      ),
-    );
-
     signalPostStats(signals, post);
 
     // Response
@@ -249,11 +275,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await mapAdditionalFields(request, question, options);
-    await Promise.all(
-      (question.answers ?? []).map(
-        async a => await mapAdditionalFields(request, a, options),
-      ),
-    );
 
     wrapAsync(async () => {
       if (!question) {
@@ -328,11 +349,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await mapAdditionalFields(request, post, options);
-    await Promise.all(
-      (post.answers ?? []).map(
-        async a => await mapAdditionalFields(request, a, options),
-      ),
-    );
 
     // Response
     response.json(post);
@@ -356,7 +372,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const created = await getCreated(request, options);
 
     // Act
-    const question = await database.createPost({
+    const post = await database.createPost({
       user_ref: username,
       title: request.body.title,
       content: request.body.content,
@@ -369,7 +385,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       headerImage: request.body.headerImage,
     });
 
-    if (!question) {
+    if (!post) {
       response.status(400).send({ errors: 'Failed to post', type: 'body' });
       return;
     }
@@ -382,12 +398,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       ]);
       const sent = await notificationMgr.onNewPost(
         username,
-        question,
+        post,
         followingUsers.flat(),
       );
       const mentions = findUserMentions(request.body.content);
       if (mentions.length > 0) {
-        await notificationMgr.onMention(username, question, sent, mentions);
+        await notificationMgr.onMention(username, post, sent, mentions);
       }
     });
 
@@ -395,16 +411,18 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       events.publish({
         topic: 'qeta',
         eventPayload: {
-          question,
+          question: post,
           author: username,
         },
         metadata: { action: 'new_post' },
       });
     }
 
+    await mapAdditionalFields(request, post, options);
+
     // Response
     response.status(201);
-    response.json(question);
+    response.json(post);
   });
 
   // POST /posts/:id
@@ -462,6 +480,8 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         metadata: { action: 'update_post' },
       });
     }
+
+    await mapAdditionalFields(request, post, options);
 
     // Response
     response.status(200);

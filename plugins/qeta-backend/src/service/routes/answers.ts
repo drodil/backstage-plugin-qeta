@@ -80,9 +80,21 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         request.query,
         filter,
       );
+
+      await Promise.all(
+        answers.answers.map(async answer => {
+          await mapAdditionalFields(request, answer, options);
+        }),
+      );
       response.json(answers);
     } else {
-      response.json(await database.getAnswers(username, request.query));
+      const answers = await database.getAnswers(username, request.query);
+      await Promise.all(
+        answers.answers.map(async answer => {
+          await mapAdditionalFields(request, answer, options);
+        }),
+      );
+      response.json(answers);
     }
   });
 
@@ -117,9 +129,20 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         decision.conditions,
       );
       const answers = await database.getAnswers(username, request.body, filter);
+      await Promise.all(
+        answers.answers.map(async answer => {
+          await mapAdditionalFields(request, answer, options);
+        }),
+      );
       response.json(answers);
     } else {
-      response.json(await database.getAnswers(username, request.body));
+      const answers = await database.getAnswers(username, request.query);
+      await Promise.all(
+        answers.answers.map(async answer => {
+          await mapAdditionalFields(request, answer, options);
+        }),
+      );
+      response.json(answers);
     }
   });
 
