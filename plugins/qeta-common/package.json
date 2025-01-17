@@ -57,7 +57,7 @@
     "qs": "^6.13.0"
   },
   "peerDependencies": {
-    "@backstage/catalog-model": "^1.7.1"
+    "@backstage/catalog-model": "^1.7.3"
   },
   "devDependencies": {
     "@backstage/cli": "backstage:^",
