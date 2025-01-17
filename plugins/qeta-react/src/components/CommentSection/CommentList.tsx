@@ -70,7 +70,7 @@ export const CommentList = (props: {
                 {' – '}
                 <AuthorLink entity={c} />{' '}
                 <RelativeTimeWithTooltip value={c.created} />
-                {(c.own || c.canDelete) && (
+                {c.canDelete && (
                   <>
                     {' / '}
                     <Link

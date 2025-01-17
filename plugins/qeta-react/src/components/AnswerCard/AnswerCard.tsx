@@ -139,31 +139,28 @@ export const AnswerCard = (props: {
                     className={styles.metadata}
                   >
                     <Grid item style={{ alignSelf: 'flex-end' }}>
-                      {(answerEntity.own ||
-                        answerEntity.canDelete ||
-                        answerEntity.canEdit) && (
+                      {(answerEntity.canDelete || answerEntity.canEdit) && (
                         <Box className={styles.buttons}>
-                          {!answerEntity.correct &&
-                            (answerEntity.own || answerEntity.canDelete) && (
-                              <>
-                                <Button
-                                  variant="outlined"
-                                  size="small"
-                                  color="secondary"
-                                  onClick={handleDeleteModalOpen}
-                                  startIcon={<DeleteIcon />}
-                                >
-                                  {t('deleteModal.deleteButton')}
-                                </Button>
-                                <DeleteModal
-                                  open={deleteModalOpen}
-                                  onClose={handleDeleteModalClose}
-                                  entity={answerEntity}
-                                  question={question}
-                                />
-                              </>
-                            )}
-                          {(answerEntity.own || answerEntity.canEdit) && (
+                          {!answerEntity.correct && answerEntity.canDelete && (
+                            <>
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                color="secondary"
+                                onClick={handleDeleteModalOpen}
+                                startIcon={<DeleteIcon />}
+                              >
+                                {t('deleteModal.deleteButton')}
+                              </Button>
+                              <DeleteModal
+                                open={deleteModalOpen}
+                                onClose={handleDeleteModalClose}
+                                entity={answerEntity}
+                                question={question}
+                              />
+                            </>
+                          )}
+                          {answerEntity.canEdit && (
                             <Button
                               variant="outlined"
                               size="small"
