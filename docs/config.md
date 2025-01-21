@@ -49,6 +49,10 @@ The allowed configuration values are:
 - storage.allowedMimeTypes, string[], A list of allowed upload formats. Default: `png,jpg,jpeg,gif`
 - storage.disabled, boolean, If for some specific scenario you want to disable the upload of images. Default `false`
 - storage.bucket, string, bucket ARN for S3 storage, required for S3 storage
+- storage.endpoint, string, endpoint uri to send requests to. if not set, the default endpoint is built from the configured region, optional
+- storage.httpsProxy, string, this allows docs to be published and read from behind a proxy, optional
+- storage.forcePathStyle, boolean, allows other providers to be used like localstack, minio, wasabi (and possibly others), optional
+- storage.maxAttempts, number, number of attempts to try, optional
 - storage.accessKeyId, string, access key ID for S3 storage, optional
 - storage.secretAccessKey, string, secret access key for S3 storage, optional
 - storage.region, string, region for S3 storage, optional

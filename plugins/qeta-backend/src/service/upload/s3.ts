@@ -32,7 +32,7 @@ class S3StoreEngine implements AttachmentStorageEngine {
     this.database = opts.database;
     this.backendBaseUrl = this.config.getString('backend.baseUrl');
     this.qetaUrl = `${this.backendBaseUrl}/api/qeta/attachments`;
-    this.bucket = this.config.getOptionalString('qeta.storage.bucket');
+    this.bucket = getStrippedBucket(this.config);
     this.folder =
       this.config.getOptionalString('qeta.storage.folder') ||
       '/backstage-qeta-images';
@@ -71,7 +71,7 @@ class S3StoreEngine implements AttachmentStorageEngine {
   };
 
   getAttachmentBuffer = async (attachment: Attachment) => {
-    const bucket = this.config.getOptionalString('qeta.storage.bucket');
+    const bucket = getStrippedBucket(this.config);
     if (!bucket) {
       throw new Error('Bucket name is required for S3 storage');
     }
@@ -92,7 +92,7 @@ class S3StoreEngine implements AttachmentStorageEngine {
   };
 
   deleteAttachment = async (attachment: Attachment) => {
-    const bucket = this.config.getOptionalString('qeta.storage.bucket');
+    const bucket = getStrippedBucket(this.config);
     if (!bucket) {
       throw new Error('Bucket name is required for S3 storage');
     }
@@ -107,6 +107,11 @@ class S3StoreEngine implements AttachmentStorageEngine {
       throw new Error('Failed to delete object');
     }
   };
+}
+
+function getStrippedBucket(config: Config): string {
+  const bucket = config.getOptionalString('qeta.storage.bucket');
+  return bucket ? bucket.replace('arn:aws:s3:::', '') : bucket;
 }
 
 export default (opts: AttachmentStorageEngineOptions) => {

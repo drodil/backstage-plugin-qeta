@@ -31,6 +31,8 @@ import {
   qetaEditPostPermission,
   qetaReadCommentPermission,
 } from '@drodil/backstage-plugin-qeta-common';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { HttpsProxyAgent } from 'hpagent';
 import { compact } from 'lodash';
 import {
   ConditionTransformer,
@@ -373,17 +375,34 @@ export const getS3Client = (config: Config) => {
   );
   const region = config.getOptionalString('qeta.storage.region');
   const sessionToken = config.getOptionalString('qeta.storage.sessionToken');
+  const endpoint = config.getOptionalString('qeta.storage.endpoint');
+  const httpsProxy = config.getOptionalString('qeta.storage.httpsProxy');
+  const forcePathStyle = config.getOptionalBoolean(
+    'qeta.storage.forcePathStyle',
+  );
+  const maxAttempts = config.getOptionalNumber('qeta.storage.maxAttempts');
+
+  let credentials;
   if (accessKeyId && secretAccessKey) {
-    return new S3Client({
-      credentials: {
-        accessKeyId,
-        secretAccessKey,
-        sessionToken,
-      },
-      region,
-    });
+    credentials = {
+      accessKeyId,
+      secretAccessKey,
+      sessionToken,
+    };
   }
-  return new S3Client({ region });
+  return new S3Client({
+    customUserAgent: 'backstage-aws-drodil-qeta-s3-storage',
+    ...(credentials && { credentials }),
+    ...(region && { region }),
+    ...(endpoint && { endpoint }),
+    ...(forcePathStyle && { forcePathStyle }),
+    ...(maxAttempts && { maxAttempts }),
+    ...(httpsProxy && {
+      requestHandler: new NodeHttpHandler({
+        httpsAgent: new HttpsProxyAgent({ proxy: httpsProxy }),
+      }),
+    }),
+  });
 };
 
 export const getAzureBlobServiceClient = (config: Config) => {
