@@ -109,7 +109,7 @@ class S3StoreEngine implements AttachmentStorageEngine {
   };
 }
 
-function getStrippedBucket(config: Config): string {
+function getStrippedBucket(config: Config): string | undefined {
   const bucket = config.getOptionalString('qeta.storage.bucket');
   return bucket ? bucket.replace('arn:aws:s3:::', '') : bucket;
 }
