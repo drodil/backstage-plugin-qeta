@@ -71,10 +71,14 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       const fileBuffer = await fs.promises.readFile(`${fileRequest?.path}`);
       const mimeType = await FileType.fromBuffer(fileBuffer);
 
-      if (mimeType && !supportedFilesTypes.includes(mimeType.mime)) {
+      if (!mimeType || !supportedFilesTypes.includes(mimeType.mime)) {
         response.status(400).json({
           errors: [
-            { message: `Attachment type (${mimeType.mime}) not supported.` },
+            {
+              message: `Attachment type (${
+                mimeType?.mime ?? 'unknown'
+              }) not supported.`,
+            },
           ],
         });
         return;
