@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.17.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.17.2...v3.17.3) (2025-01-27)
+
+
+### Bug Fixes
+
+* add external s3 capabilities to match techdocs implementations ([75f2a10](https://github.com/drodil/backstage-plugin-qeta/commit/75f2a10b1bd61e845372fa31af5d60a78f7c9356))
+* collection read access check on collection page ([fe7990c](https://github.com/drodil/backstage-plugin-qeta/commit/fe7990cad6aaefbe0028e8e7002180327afd010d))
+* deny attachments with allowed mime type ([708ea46](https://github.com/drodil/backstage-plugin-qeta/commit/708ea46c07bb9e5879edebc2a6ba7355ee4fca20))
+* ignore form submit on SearchBar ([f3ac42d](https://github.com/drodil/backstage-plugin-qeta/commit/f3ac42dcab31dd56096302c65285e2369dd3f106)), closes [#262](https://github.com/drodil/backstage-plugin-qeta/issues/262)
+* tsc linting ([3347276](https://github.com/drodil/backstage-plugin-qeta/commit/334727692406a57bc762f5d6f52292ee81947b5e))
+
 ### [3.17.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.17.1...v3.17.2) (2025-01-17)
 
 
