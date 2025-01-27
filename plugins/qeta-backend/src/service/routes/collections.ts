@@ -341,7 +341,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     response.status(204).send();
   });
 
-  // GET /posts/:id
+  // GET /collections/:id
   router.get(`/collections/:id`, async (request, response) => {
     // Validation
     // Act
@@ -374,6 +374,12 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
+
+    if (collection.readAccess === 'private' && collection.owner !== username) {
+      response.sendStatus(401);
+      return;
+    }
+
     // Response
     response.json(collection);
   });
