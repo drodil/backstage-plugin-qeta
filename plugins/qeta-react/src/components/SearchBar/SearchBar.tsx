@@ -48,7 +48,11 @@ export const SearchBar = (props: {
   const classes = useStyles();
 
   return (
-    <Paper component="form" className={classes.root}>
+    <Paper
+      component="form"
+      className={classes.root}
+      onSubmit={e => e.preventDefault()}
+    >
       <IconButton
         type="button"
         aria-label="search"
