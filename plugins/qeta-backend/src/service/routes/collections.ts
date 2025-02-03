@@ -1,10 +1,8 @@
 import {
   authorize,
-  authorizeConditional,
+  getAuthorizeConditions,
   getCreated,
   getUsername,
-  QetaFilters,
-  transformConditions,
 } from '../util';
 import Ajv from 'ajv';
 import { Router } from 'express';
@@ -20,10 +18,6 @@ import {
   CollectionsQuerySchema,
   RouteOptions,
 } from '../types';
-import {
-  AuthorizeResult,
-  PermissionCriteria,
-} from '@backstage/plugin-permission-common';
 import { validateDateRange, wrapAsync } from './util';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
@@ -52,36 +46,22 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const decision = await authorizeConditional(
+    const filter = await getAuthorizeConditions(
       request,
       qetaReadPostPermission,
       options,
     );
 
     // Act
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      const filter: PermissionCriteria<QetaFilters> = transformConditions(
-        decision.conditions,
-      );
-      const collections = await database.getCollections(
-        username,
-        request.query,
-        filter,
-      );
-      response.json({
-        collections: collections.collections,
-        total: collections.total,
-      });
-    } else {
-      const collections = await database.getCollections(
-        username,
-        request.query,
-      );
-      response.json({
-        collections: collections.collections,
-        total: collections.total,
-      });
-    }
+    const collections = await database.getCollections(
+      username,
+      request.query,
+      filter,
+    );
+    response.json({
+      collections: collections.collections,
+      total: collections.total,
+    });
   });
 
   router.post(`/collections/query`, async (request, response) => {
@@ -104,33 +84,22 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const decision = await authorizeConditional(
+    const filter = await getAuthorizeConditions(
       request,
       qetaReadPostPermission,
       options,
     );
 
     // Act
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      const filter: PermissionCriteria<QetaFilters> = transformConditions(
-        decision.conditions,
-      );
-      const collections = await database.getCollections(
-        username,
-        request.body,
-        filter,
-      );
-      response.json({
-        collections: collections.collections,
-        total: collections.total,
-      });
-    } else {
-      const collections = await database.getCollections(username, request.body);
-      response.json({
-        collections: collections.collections,
-        total: collections.total,
-      });
-    }
+    const collections = await database.getCollections(
+      username,
+      request.body,
+      filter,
+    );
+    response.json({
+      collections: collections.collections,
+      total: collections.total,
+    });
   });
 
   // POST /collections
@@ -298,16 +267,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
   router.get('/collections/followed', async (request, response) => {
     const username = await getUsername(request, options, false);
-    const decision = await authorizeConditional(
+    const filter = await getAuthorizeConditions(
       request,
       qetaReadPostPermission,
       options,
     );
-
-    let filter: PermissionCriteria<QetaFilters> | undefined;
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      filter = transformConditions(decision.conditions);
-    }
 
     const collections = await database.getUserCollections(username, filter);
     response.json(collections);
@@ -354,16 +318,12 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const decision = await authorizeConditional(
+    const filter = await getAuthorizeConditions(
       request,
       qetaReadPostPermission,
       options,
     );
 
-    let filter: PermissionCriteria<QetaFilters> | undefined;
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      filter = transformConditions(decision.conditions);
-    }
     const collection = await database.getCollection(
       username,
       Number.parseInt(request.params.id, 10),
@@ -413,15 +373,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const decision = await authorizeConditional(
+    const filter = await getAuthorizeConditions(
       request,
       qetaReadPostPermission,
       options,
     );
-    let filter: PermissionCriteria<QetaFilters> | undefined;
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      filter = transformConditions(decision.conditions);
-    }
 
     // Act
     collection = await database.addPostToCollection(
@@ -496,15 +452,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const decision = await authorizeConditional(
+    const filter = await getAuthorizeConditions(
       request,
       qetaReadPostPermission,
       options,
     );
-    let filter: PermissionCriteria<QetaFilters> | undefined;
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      filter = transformConditions(decision.conditions);
-    }
 
     // Act
     collection = await database.removePostFromCollection(

@@ -1,11 +1,9 @@
 import {
   authorize,
-  authorizeConditional,
+  getAuthorizeConditions,
   getCreated,
   getUsername,
   mapAdditionalFields,
-  QetaFilters,
-  transformConditions,
 } from '../util';
 import Ajv from 'ajv';
 import { Request, Router } from 'express';
@@ -28,10 +26,6 @@ import {
 } from '../types';
 import { Response } from 'express-serve-static-core';
 import { signalPostStats, validateDateRange, wrapAsync } from './util';
-import {
-  AuthorizeResult,
-  PermissionCriteria,
-} from '@backstage/plugin-permission-common';
 import { getEntities, getTags } from './routeUtil';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
@@ -60,7 +54,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const decision = await authorizeConditional(
+    const filter = await getAuthorizeConditions(
       request,
       qetaReadPostPermission,
       options,
@@ -68,26 +62,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     );
 
     // Act
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      const filter: PermissionCriteria<QetaFilters> = transformConditions(
-        decision.conditions,
-      );
-      const posts = await database.getPosts(username, request.query, filter);
-      await Promise.all(
-        posts.posts.map(async post => {
-          await mapAdditionalFields(request, post, options);
-        }),
-      );
-      response.json(posts);
-    } else {
-      const posts = await database.getPosts(username, request.query);
-      await Promise.all(
-        posts.posts.map(async post => {
-          await mapAdditionalFields(request, post, options);
-        }),
-      );
-      response.json(posts);
-    }
+    const posts = await database.getPosts(username, request.query, filter);
+    await Promise.all(
+      posts.posts.map(async post => {
+        await mapAdditionalFields(request, post, options);
+      }),
+    );
+    response.json(posts);
   });
 
   router.post(`/posts/query`, async (request, response) => {
@@ -108,7 +89,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const decision = await authorizeConditional(
+    const filter = await getAuthorizeConditions(
       request,
       qetaReadPostPermission,
       options,
@@ -116,26 +97,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     );
 
     // Act
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      const filter: PermissionCriteria<QetaFilters> = transformConditions(
-        decision.conditions,
-      );
-      const posts = await database.getPosts(username, request.body, filter);
-      await Promise.all(
-        posts.posts.map(async post => {
-          await mapAdditionalFields(request, post, options);
-        }),
-      );
-      response.json(posts);
-    } else {
-      const posts = await database.getPosts(username, request.body);
-      await Promise.all(
-        posts.posts.map(async post => {
-          await mapAdditionalFields(request, post, options);
-        }),
-      );
-      response.json(posts);
-    }
+    const posts = await database.getPosts(username, request.body, filter);
+    await Promise.all(
+      posts.posts.map(async post => {
+        await mapAdditionalFields(request, post, options);
+      }),
+    );
+    response.json(posts);
   });
 
   // GET /posts/list/:type
@@ -165,42 +133,26 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       optionOverride.author = username;
     }
 
-    const decision = await authorizeConditional(
+    const filter = await getAuthorizeConditions(
       request,
       qetaReadPostPermission,
       options,
+      true,
     );
 
     // Act
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      const filter: PermissionCriteria<QetaFilters> = transformConditions(
-        decision.conditions,
-      );
-      const posts = await database.getPosts(
-        username,
-        { ...request.query, ...optionOverride },
-        filter,
-      );
+    const posts = await database.getPosts(
+      username,
+      { ...request.query, ...optionOverride },
+      filter,
+    );
 
-      const mapped = await Promise.all(
-        posts.posts.map(async post => {
-          await mapAdditionalFields(request, post, options);
-        }),
-      );
-      response.json({ posts: mapped, total: posts.total });
-    } else {
-      const posts = await database.getPosts(username, {
-        ...request.query,
-        ...optionOverride,
-      });
-
-      await Promise.all(
-        posts.posts.map(async post => {
-          await mapAdditionalFields(request, post, options);
-        }),
-      );
-      response.json(posts);
-    }
+    const mapped = await Promise.all(
+      posts.posts.map(async post => {
+        await mapAdditionalFields(request, post, options);
+      }),
+    );
+    response.json({ posts: mapped, total: posts.total });
   });
 
   // GET /posts/:id

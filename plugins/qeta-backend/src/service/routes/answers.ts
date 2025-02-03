@@ -2,12 +2,10 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import {
   authorize,
-  authorizeConditional,
+  getAuthorizeConditions,
   getCreated,
   getUsername,
   mapAdditionalFields,
-  QetaFilters,
-  transformConditions,
 } from '../util';
 import {
   AnswersQuerySchema,
@@ -34,10 +32,6 @@ import {
   validateDateRange,
   wrapAsync,
 } from './util';
-import {
-  AuthorizeResult,
-  PermissionCriteria,
-} from '@backstage/plugin-permission-common';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -65,38 +59,21 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const decision = await authorizeConditional(
+    const filter = await getAuthorizeConditions(
       request,
       qetaReadAnswerPermission,
       options,
       true,
     );
 
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      const filter: PermissionCriteria<QetaFilters> = transformConditions(
-        decision.conditions,
-      );
-      const answers = await database.getAnswers(
-        username,
-        request.query,
-        filter,
-      );
+    const answers = await database.getAnswers(username, request.query, filter);
 
-      await Promise.all(
-        answers.answers.map(async answer => {
-          await mapAdditionalFields(request, answer, options);
-        }),
-      );
-      response.json(answers);
-    } else {
-      const answers = await database.getAnswers(username, request.query);
-      await Promise.all(
-        answers.answers.map(async answer => {
-          await mapAdditionalFields(request, answer, options);
-        }),
-      );
-      response.json(answers);
-    }
+    await Promise.all(
+      answers.answers.map(async answer => {
+        await mapAdditionalFields(request, answer, options);
+      }),
+    );
+    response.json(answers);
   });
 
   router.post(`/answers/query`, async (request, response) => {
@@ -119,33 +96,20 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const decision = await authorizeConditional(
+    const filter = await getAuthorizeConditions(
       request,
       qetaReadAnswerPermission,
       options,
       true,
     );
 
-    if (decision.result === AuthorizeResult.CONDITIONAL) {
-      const filter: PermissionCriteria<QetaFilters> = transformConditions(
-        decision.conditions,
-      );
-      const answers = await database.getAnswers(username, request.body, filter);
-      await Promise.all(
-        answers.answers.map(async answer => {
-          await mapAdditionalFields(request, answer, options);
-        }),
-      );
-      response.json(answers);
-    } else {
-      const answers = await database.getAnswers(username, request.query);
-      await Promise.all(
-        answers.answers.map(async answer => {
-          await mapAdditionalFields(request, answer, options);
-        }),
-      );
-      response.json(answers);
-    }
+    const answers = await database.getAnswers(username, request.body, filter);
+    await Promise.all(
+      answers.answers.map(async answer => {
+        await mapAdditionalFields(request, answer, options);
+      }),
+    );
+    response.json(answers);
   });
 
   // POST /posts/:id/answers

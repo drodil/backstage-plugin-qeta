@@ -299,6 +299,24 @@ export const authorizeConditional = async (
   return decision;
 };
 
+export const getAuthorizeConditions = async (
+  request: Request<unknown>,
+  permission: Permission,
+  options: RouterOptions,
+  allowServicePrincipal?: boolean,
+) => {
+  const decision = await authorizeConditional(
+    request,
+    permission,
+    options,
+    allowServicePrincipal,
+  );
+  if (decision.result === AuthorizeResult.CONDITIONAL) {
+    return transformConditions(decision.conditions);
+  }
+  return undefined;
+};
+
 export const authorizeBoolean = async (
   request: Request<unknown>,
   permission: Permission,
