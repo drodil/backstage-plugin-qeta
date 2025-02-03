@@ -91,6 +91,27 @@ export const qetaPermissions = [
   qetaDeleteCommentPermission,
 ];
 
+export const qetaPostPermissions = [
+  qetaReadPostPermission,
+  qetaCreatePostPermission,
+  qetaEditPostPermission,
+  qetaDeletePostPermission,
+];
+
+export const qetaAnswerPermissions = [
+  qetaReadAnswerPermission,
+  qetaCreateAnswerPermission,
+  qetaEditAnswerPermission,
+  qetaDeleteAnswerPermission,
+];
+
+export const qetaCommentPermissions = [
+  qetaCreateCommentPermission,
+  qetaReadCommentPermission,
+  qetaEditCommentPermission,
+  qetaDeleteCommentPermission,
+];
+
 export const isQetaPermission = (
   permission: BasicPermission | ResourcePermission,
 ) => {

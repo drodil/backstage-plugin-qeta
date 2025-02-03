@@ -6,7 +6,10 @@ import {
   COMMENT_RESOURCE_TYPE,
   Post,
   POST_RESOURCE_TYPE,
+  qetaAnswerPermissions,
+  qetaCommentPermissions,
   qetaPermissions,
+  qetaPostPermissions,
 } from '@drodil/backstage-plugin-qeta-common';
 import { answerRules, commentRules, postRules } from '../postRules';
 import { Router } from 'express';
@@ -38,6 +41,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
           );
         },
         resourceType: POST_RESOURCE_TYPE,
+        permissions: qetaPostPermissions,
         rules: Object.values(postRules),
       },
       {
@@ -57,6 +61,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
           );
         },
         resourceType: ANSWER_RESOURCE_TYPE,
+        permissions: qetaAnswerPermissions,
         rules: Object.values(answerRules),
       },
       {
@@ -75,6 +80,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
           );
         },
         resourceType: COMMENT_RESOURCE_TYPE,
+        permissions: qetaCommentPermissions,
         rules: Object.values(commentRules),
       },
     ],
