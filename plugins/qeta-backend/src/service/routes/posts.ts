@@ -147,12 +147,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       filter,
     );
 
-    const mapped = await Promise.all(
+    await Promise.all(
       posts.posts.map(async post => {
         await mapAdditionalFields(request, post, options);
       }),
     );
-    response.json({ posts: mapped, total: posts.total });
+    response.json(posts);
   });
 
   // GET /posts/:id
