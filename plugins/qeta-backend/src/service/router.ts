@@ -52,9 +52,13 @@ export async function createRouter(
         getResources: async resourceRefs => {
           return await Promise.all(
             resourceRefs.map(async ref => {
+              if (!ref.startsWith('qeta:post:')) {
+                return null;
+              }
+              const id = ref.split(':')[2];
               const post = await options.database.getPost(
                 '',
-                Number.parseInt(ref, 10),
+                Number.parseInt(id, 10),
                 false,
               );
               return post === null ? undefined : (post as Post);
@@ -68,8 +72,12 @@ export async function createRouter(
         getResources: async resourceRefs => {
           return await Promise.all(
             resourceRefs.map(async ref => {
+              if (!ref.startsWith('qeta:answer:')) {
+                return null;
+              }
+              const id = ref.split(':')[2];
               const answer = await options.database.getAnswer(
-                Number.parseInt(ref, 10),
+                Number.parseInt(id, 10),
                 '',
               );
               return answer === null ? undefined : (answer as Answer);
@@ -83,13 +91,13 @@ export async function createRouter(
         getResources: async resourceRefs => {
           return await Promise.all(
             resourceRefs.map(async ref => {
+              if (!ref.startsWith('qeta:comment:')) {
+                return null;
+              }
+              const id = Number.parseInt(ref.split(':')[2], 10);
               const comment =
-                (await options.database.getAnswerComment(
-                  Number.parseInt(ref, 10),
-                )) ??
-                (await options.database.getPostComment(
-                  Number.parseInt(ref, 10),
-                ));
+                (await options.database.getAnswerComment(id)) ??
+                (await options.database.getPostComment(id));
               return comment === null ? undefined : (comment as Comment);
             }),
           );

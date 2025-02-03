@@ -112,6 +112,9 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
           answerCount: post.answersCount,
           views: post.views,
           tags: post.tags,
+          authorization: {
+            resourceRef: `qeta:post:${post.id}`,
+          },
         };
       }
     }

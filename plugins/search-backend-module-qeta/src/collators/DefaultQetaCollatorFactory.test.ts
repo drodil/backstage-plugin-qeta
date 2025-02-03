@@ -141,5 +141,25 @@ describe('DefaultQetaCollatorFactory', () => {
       expect(documents).toHaveLength(totalDocuments);
       expect(lastRequest.headers.get('authorization')).toEqual(null);
     });
+
+    it('authenticated backend', async () => {
+      factory = DefaultQetaCollatorFactory.fromConfig(config, {
+        discovery: mockDiscovery,
+        logger: mockServices.logger.mock(),
+        auth: mockServices.auth.mock({
+          getPluginRequestToken: jest.fn().mockResolvedValue({ token: '1234' }),
+        }),
+      });
+      collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+
+      expect(mockDiscovery.getBaseUrl).toHaveBeenCalledWith('qeta');
+      const totalDocuments =
+        mockPosts.posts.length + mockCollections.collections.length;
+      expect(documents).toHaveLength(totalDocuments);
+      expect(lastRequest.headers.get('authorization')).toEqual('Bearer 1234');
+    });
   });
 });

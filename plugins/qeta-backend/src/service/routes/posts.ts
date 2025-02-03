@@ -64,6 +64,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       request,
       qetaReadPostPermission,
       options,
+      true,
     );
 
     // Act
@@ -111,6 +112,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       request,
       qetaReadPostPermission,
       options,
+      true,
     );
 
     // Act

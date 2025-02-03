@@ -258,14 +258,23 @@ export const authorizeConditional = async (
   request: Request<unknown>,
   permission: Permission,
   options: RouterOptions,
+  allowServicePrincipal?: boolean,
 ): Promise<PolicyDecision> => {
   if (!options.permissions) {
     return await authorizeWithoutPermissions(request, permission, options);
   }
 
   const credentials = await options.httpAuth.credentials(request);
+
   if (!credentials) {
     throw new NotAllowedError('Unauthorized');
+  }
+
+  if (
+    allowServicePrincipal &&
+    options.auth.isPrincipal(credentials, 'service')
+  ) {
+    return { result: AuthorizeResult.ALLOW };
   }
 
   let decision: PolicyDecision = { result: AuthorizeResult.DENY };

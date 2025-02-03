@@ -69,6 +69,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       request,
       qetaReadAnswerPermission,
       options,
+      true,
     );
 
     if (decision.result === AuthorizeResult.CONDITIONAL) {
@@ -122,6 +123,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       request,
       qetaReadAnswerPermission,
       options,
+      true,
     );
 
     if (decision.result === AuthorizeResult.CONDITIONAL) {
