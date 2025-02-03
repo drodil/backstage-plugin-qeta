@@ -17,6 +17,7 @@ import { answersRoutes } from './routes/answers';
 import { helperRoutes } from './routes/helpers';
 import { RouterOptions } from './types';
 import { NotificationManager } from './NotificationManager';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { answerRules, commentRules, postRules } from './postRules';
 import { postsRoutes } from './routes/posts';
 import { collectionsRoutes } from './routes/collections';
@@ -30,7 +31,7 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
   router.use(bodyParser.urlencoded({ extended: true }));
-  const { logger, httpAuth } = options;
+  const { config, logger, httpAuth } = options;
   const notificationMgr = new NotificationManager(
     logger,
     options.catalog,
@@ -124,5 +125,6 @@ export async function createRouter(
   aiRoutes(router, routeOptions);
   suggestionRoutes(router, routeOptions);
 
+  router.use(MiddlewareFactory.create({ config, logger }).error());
   return router;
 }
