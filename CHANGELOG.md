@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.17.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.17.3...v3.17.4) (2025-02-03)
+
+
+### Bug Fixes
+
+* correct resource refs + local search testing ([d45f319](https://github.com/drodil/backstage-plugin-qeta/commit/d45f3197b9b4fc3aa8c991b61f08fc210eb73b61))
+* pass resource specific permissions to permission router ([4c5786a](https://github.com/drodil/backstage-plugin-qeta/commit/4c5786a5cd2e4f41afb19f5b420e251061a90a3e))
+* search collator to work with permissions ([032d104](https://github.com/drodil/backstage-plugin-qeta/commit/032d104c867eed567d57986f42fc3db704990398))
+
 ### [3.17.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.17.2...v3.17.3) (2025-01-27)
 
 
