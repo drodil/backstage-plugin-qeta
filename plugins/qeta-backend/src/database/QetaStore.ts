@@ -25,7 +25,7 @@ import {
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
-export function isQuestion(entity: Post | Answer | Comment): entity is Post {
+export function isPost(entity: Post | Answer | Comment): entity is Post {
   return 'answers' in entity;
 }
 

@@ -19,6 +19,8 @@ import { catalogPlugin } from '@backstage/plugin-catalog';
 import { signalsPlugin } from '@backstage/plugin-signals';
 import { Box } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
+import { searchPage } from './SearchPage';
+import { searchPlugin } from '@backstage/plugin-search';
 
 const IntroElement = () => (
   <Box marginBottom={4}>
@@ -51,6 +53,7 @@ createDevApp()
   .registerPlugin(qetaDevPlugin)
   .registerPlugin(notificationsPlugin)
   .registerPlugin(signalsPlugin)
+  .registerPlugin(searchPlugin)
   .addPage({
     element: (
       <QetaPage
@@ -69,6 +72,11 @@ createDevApp()
     element: <CatalogEntityPage />,
     title: 'Component',
     path: '/catalog/default/component/test-component',
+  })
+  .addPage({
+    element: searchPage,
+    title: 'Search',
+    path: '/search',
   })
   .addPage({
     element: <TagPage />,

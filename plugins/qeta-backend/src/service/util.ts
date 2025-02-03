@@ -15,7 +15,12 @@ import {
   Permission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { isQuestion, MaybeAnswer, MaybePost } from '../database/QetaStore';
+import {
+  isPost,
+  MaybeAnswer,
+  MaybeComment,
+  MaybePost,
+} from '../database/QetaStore';
 import { Config } from '@backstage/config';
 import { S3Client } from '@aws-sdk/client-s3';
 import { RouteOptions, RouterOptions } from './types';
@@ -42,11 +47,9 @@ import { rules } from './postRules';
 import { BlobServiceClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
 
-export const isPost = (ent: MaybePost | MaybeAnswer): ent is Post =>
-  ent !== null && (ent as Post).title !== undefined;
-
-export const isAnswer = (ent: MaybePost | MaybeAnswer): ent is Answer =>
-  ent !== null && (ent as Answer).postId !== undefined;
+export const isAnswer = (
+  ent: MaybePost | MaybeAnswer | MaybeComment,
+): ent is Answer => ent !== null && (ent as Answer).postId !== undefined;
 
 export const getUsername = async (
   req: Request<unknown>,
@@ -209,13 +212,17 @@ export const authorize = async (
       throw new NotFoundError('Resource not found');
     }
 
+    // eslint-disable-next-line no-nested-ternary
+    const resourceRef = isPost(resource)
+      ? `qeta:post:${resource.id}`
+      : isAnswer(resource)
+      ? `qeta:answer:${resource.id}`
+      : `qeta:comment:${resource.id}`;
+
     decision = (
-      await options.permissions.authorize(
-        [{ permission, resourceRef: resource.id.toString(10) }],
-        {
-          credentials,
-        },
-      )
+      await options.permissions.authorize([{ permission, resourceRef }], {
+        credentials,
+      })
     )[0];
   } else {
     decision = (
@@ -302,6 +309,7 @@ export const authorizeBoolean = async (
     const res = await authorize(request, permission, options, resource);
     return res.result === AuthorizeResult.ALLOW;
   } catch (e) {
+    console.error(e);
     return false;
   }
 };
@@ -319,13 +327,13 @@ export const mapAdditionalFields = async (
   resp.own = resp.author === username;
   resp.canEdit = await authorizeBoolean(
     request,
-    isQuestion(resp) ? qetaEditPostPermission : qetaEditAnswerPermission,
+    isPost(resp) ? qetaEditPostPermission : qetaEditAnswerPermission,
     options,
     resp,
   );
   resp.canDelete = await authorizeBoolean(
     request,
-    isQuestion(resp) ? qetaDeletePostPermission : qetaDeleteAnswerPermission,
+    isPost(resp) ? qetaDeletePostPermission : qetaDeleteAnswerPermission,
     options,
     resp,
   );

@@ -76,6 +76,8 @@
     "@backstage/plugin-catalog": "backstage:^",
     "@backstage/plugin-home": "backstage:^",
     "@backstage/plugin-notifications": "backstage:^",
+    "@backstage/plugin-search": "backstage:^",
+    "@backstage/plugin-search-react": "backstage:^",
     "@backstage/plugin-signals": "backstage:^",
     "@testing-library/jest-dom": "^6.1.3",
     "cross-fetch": "^3.1.5"

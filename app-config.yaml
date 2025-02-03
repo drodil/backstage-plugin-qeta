@@ -59,6 +59,15 @@ catalog:
 events:
   useEventBus: 'never'
 
+search:
+  collators:
+    qeta:
+      schedule:
+        frequency: { minutes: 1 }
+        timeout: { seconds: 30 }
+        initialDelay: { minutes: 1 }
+        scope: global
+
 qeta:
   storage:
     type: database

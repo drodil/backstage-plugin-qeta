@@ -6,6 +6,7 @@ import {
   QetaClient,
   QetaCollectionDocument,
   QetaPostDocument,
+  qetaReadPostPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   AuthService,
@@ -21,6 +22,7 @@ export type QetaCollatorFactoryOptions = {
 
 export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'qeta';
+  visibilityPermission = qetaReadPostPermission;
   private readonly logger: LoggerService;
   private readonly auth?: AuthService;
   private readonly api: QetaApi;
@@ -98,9 +100,11 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
 
         yield {
           title: post.title,
-          text: `${postContent}\n\n${answersContent.join(
-            '\n\n',
-          )}\n\nComments:\n\n${commentsContent.join('\n\n')}`,
+          text: `${postContent}\n\n${answersContent.join('\n\n')}\n\n${
+            commentsContent.length > 0
+              ? `Comments:\n\n${commentsContent.join('\n\n')}`
+              : ''
+          }`,
           location:
             post.type === 'question'
               ? `/qeta/questions/${post.id}`

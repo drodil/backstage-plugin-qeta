@@ -91,8 +91,11 @@
     "@backstage/plugin-events-backend": "backstage:^",
     "@backstage/plugin-notifications-backend": "backstage:^",
     "@backstage/plugin-permission-backend": "backstage:^",
+    "@backstage/plugin-search-backend": "backstage:^",
+    "@backstage/plugin-search-backend-module-pg": "backstage:^",
     "@backstage/plugin-signals-backend": "backstage:^",
     "@drodil/backstage-plugin-qeta-backend-module-openai": "workspace:^",
+    "@drodil/backstage-plugin-search-backend-module-qeta": "workspace:^",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^9.0.4",
     "supertest": "^6.2.4"
