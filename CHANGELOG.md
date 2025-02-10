@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.17.6](https://github.com/drodil/backstage-plugin-qeta/compare/v3.17.5...v3.17.6) (2025-02-10)
+
+
+### Bug Fixes
+
+* do not change entity title if not a ref ([#263](https://github.com/drodil/backstage-plugin-qeta/issues/263)) ([0c8944d](https://github.com/drodil/backstage-plugin-qeta/commit/0c8944dc87b78dc357b6edbffb549399c4dc5e08))
+* permission mapping with service token ([af99ca1](https://github.com/drodil/backstage-plugin-qeta/commit/af99ca12f0a9aac1a9012b2f110468c9c86d6638))
+
 ### [3.17.5](https://github.com/drodil/backstage-plugin-qeta/compare/v3.17.4...v3.17.5) (2025-02-03)
 
 
