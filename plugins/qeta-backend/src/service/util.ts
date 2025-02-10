@@ -46,6 +46,7 @@ import {
 import { rules } from './postRules';
 import { BlobServiceClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
+import { BackstagePrincipalTypes } from '@backstage/backend-plugin-api';
 
 export const isAnswer = (
   ent: MaybePost | MaybeAnswer | MaybeComment,
@@ -271,7 +272,10 @@ export const authorizeConditional = async (
     return await authorizeWithoutPermissions(request, permission, options);
   }
 
-  const credentials = await options.httpAuth.credentials(request);
+  const allow: Array<keyof BackstagePrincipalTypes> = allowServicePrincipal
+    ? ['user', 'service']
+    : ['user'];
+  const credentials = await options.httpAuth.credentials(request, { allow });
 
   if (!credentials) {
     throw new NotAllowedError('Unauthorized');
@@ -327,7 +331,6 @@ export const authorizeBoolean = async (
     const res = await authorize(request, permission, options, resource);
     return res.result === AuthorizeResult.ALLOW;
   } catch (e) {
-    console.error(e);
     return false;
   }
 };
@@ -340,7 +343,7 @@ export const mapAdditionalFields = async (
   if (!resp) {
     return;
   }
-  const username = await getUsername(request, options);
+  const username = await getUsername(request, options, true);
   resp.ownVote = resp.votes?.find(v => v.author === username)?.score;
   resp.own = resp.author === username;
   resp.canEdit = await authorizeBoolean(
