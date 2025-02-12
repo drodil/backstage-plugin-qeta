@@ -87,6 +87,7 @@ export const EntitiesInput = (props: {
             'metadata.namespace',
             'metadata.title',
             'metadata.description',
+            'spec.type',
           ],
         })
         .catch(_ => setAvailableEntities(null))

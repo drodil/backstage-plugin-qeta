@@ -155,6 +155,16 @@ describe('getEntityTitle', () => {
     expect(getEntityTitle(entity)).toBe('Test Entity');
   });
 
+  it('should return the entity type if available', () => {
+    const entity: Entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: { name: 'test', title: 'Test Entity' },
+      spec: { type: 'test' },
+    };
+    expect(getEntityTitle(entity)).toBe('Test Entity (test)');
+  });
+
   it('should return the stringified entity reference if title is not available', () => {
     const entity: Entity = {
       apiVersion: 'v1',

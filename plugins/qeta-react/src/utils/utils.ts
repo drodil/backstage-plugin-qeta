@@ -49,7 +49,9 @@ export const formatEntityName = (username?: string) => {
 
 export const getEntityTitle = (entity: Entity): string => {
   const stringified = stringifyEntityRef(entity);
-  return entity.metadata.title ?? formatEntityName(stringified) ?? stringified;
+  return `${
+    entity.metadata.title ?? formatEntityName(stringified) ?? stringified
+  }${entity.spec?.type ? ` (${entity.spec.type})` : ''}`;
 };
 
 export const formatDate = (localDate: Date) => {
