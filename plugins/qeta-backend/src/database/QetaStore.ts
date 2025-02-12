@@ -26,11 +26,15 @@ import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 export function isPost(entity: Post | Answer | Comment): entity is Post {
-  return 'answers' in entity;
+  return 'title' in entity;
 }
 
 export function isAnswer(entity: Post | Answer | Comment): entity is Answer {
-  return !('answers' in entity);
+  return 'postId' in entity && 'correct' in entity;
+}
+
+export function isComment(entity: Post | Answer | Comment): entity is Comment {
+  return !('title' in entity) && !('correct' in entity);
 }
 
 export type MaybeAnswer = Answer | null;

@@ -16,9 +16,10 @@ import {
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
+  isAnswer,
+  isComment,
   isPost,
   MaybeAnswer,
-  MaybeComment,
   MaybePost,
 } from '../database/QetaStore';
 import { Config } from '@backstage/config';
@@ -47,17 +48,6 @@ import { rules } from './postRules';
 import { BlobServiceClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
 import { BackstagePrincipalTypes } from '@backstage/backend-plugin-api';
-
-export const isAnswer = (
-  ent: MaybePost | MaybeAnswer | MaybeComment,
-): ent is Answer => ent !== null && (ent as Answer).postId !== undefined;
-
-export const isComment = (
-  ent: MaybePost | MaybeAnswer | MaybeComment,
-): ent is Comment =>
-  ent !== null &&
-  (ent as Answer).postId === undefined &&
-  (ent as Post).title === undefined;
 
 export const getUsername = async (
   req: Request<unknown>,
