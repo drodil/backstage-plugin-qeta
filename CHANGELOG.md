@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.18.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.17.6...v3.18.0) (2025-02-12)
+
+
+### Features
+
+* include entities to post search ([e7142fd](https://github.com/drodil/backstage-plugin-qeta/commit/e7142fd29f582b3cc0d65e98800037357e9eff40))
+* post search to support also tag searching ([7200273](https://github.com/drodil/backstage-plugin-qeta/commit/7200273fb0c25e4422f6ca5a715bb9fbbe13cb09)), closes [#250](https://github.com/drodil/backstage-plugin-qeta/issues/250)
+* show entity type in entity picker to differentiate entities better ([f253187](https://github.com/drodil/backstage-plugin-qeta/commit/f253187bfe699fc24a1219e40b2c5e92abacb337))
+
+
+### Bug Fixes
+
+* tag search not finding with only tag name ([00e4025](https://github.com/drodil/backstage-plugin-qeta/commit/00e4025afa7af0111bd798638eab46e5ab2f49fe)), closes [#251](https://github.com/drodil/backstage-plugin-qeta/issues/251)
+* use left join instead innert join for search queries ([8b5bf62](https://github.com/drodil/backstage-plugin-qeta/commit/8b5bf6201a0e29f7ad11eb0c7b5e826c83380c38))
+
 ### [3.17.6](https://github.com/drodil/backstage-plugin-qeta/compare/v3.17.5...v3.17.6) (2025-02-10)
 
 
