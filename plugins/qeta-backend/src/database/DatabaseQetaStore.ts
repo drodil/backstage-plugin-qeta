@@ -280,10 +280,12 @@ export class DatabaseQetaStore implements QetaStore {
     if (options.searchQuery) {
       query.innerJoin('post_tags as st', 'posts.id', 'st.postId');
       query.innerJoin('tags as stt', 'st.tagId', 'stt.id');
+      query.innerJoin('post_entities as se', 'posts.id', 'se.postId');
+      query.innerJoin('entities as see', 'se.entityId', 'see.id');
 
       this.applySearchQuery(
         query,
-        ['posts.title', 'posts.content', 'stt.tag'],
+        ['posts.title', 'posts.content', 'stt.tag', 'see.entity_ref'],
         options.searchQuery,
       );
     }
