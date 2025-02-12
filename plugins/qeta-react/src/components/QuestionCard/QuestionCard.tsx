@@ -39,6 +39,7 @@ const useStyles = makeStyles(
     root: {},
     contentContainer: {
       marginLeft: '0.5em',
+      width: 'calc(100% - 70px)',
     },
     markdownContainer: {
       minHeight: '6em',

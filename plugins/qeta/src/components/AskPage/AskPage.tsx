@@ -75,7 +75,7 @@ export const AskPage = () => {
     <>
       <ContentHeader title={title} />
       <Grid container spacing={3} direction="column">
-        <Grid item>
+        <Grid item style={{ width: '100%' }}>
           <InfoCard>
             <PostForm
               id={id}
