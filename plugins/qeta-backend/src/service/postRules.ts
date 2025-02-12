@@ -33,7 +33,7 @@ export const isPostAuthor = createPostPermissionRule({
       .describe('List of claims to match at least one on within author'),
   }),
   apply: (resource: Post, { userRef, claims = [] }) => {
-    return resource.author === userRef || claims.includes(resource.author);
+    return resource?.author === userRef || claims.includes(resource?.author);
   },
   toQuery: ({ userRef, claims = [] }) => {
     return {
@@ -53,7 +53,7 @@ export const postHasTags = createPostPermissionRule({
     tags: z.array(z.string()).describe('Tag to match the post'),
   }),
   apply: (resource: Post, { tags }) => {
-    return tags.every(t => resource.tags?.includes(t));
+    return tags.every(t => resource?.tags?.includes(t));
   },
   toQuery: ({ tags }) => {
     return {
@@ -73,7 +73,7 @@ export const postHasEntities = createPostPermissionRule({
     entityRefs: z.array(z.string()).describe('Entity refs to match the post'),
   }),
   apply: (resource: Post, { entityRefs }) => {
-    return entityRefs.every(t => resource.entities?.includes(t));
+    return entityRefs.every(t => resource?.entities?.includes(t));
   },
   toQuery: ({ entityRefs }) => {
     return {
@@ -94,7 +94,7 @@ export const postHasType = createPostPermissionRule({
     type: z.string().describe('Type to match the post'),
   }),
   apply: (resource: Post, { type }) => {
-    return resource.type === type;
+    return resource?.type === type;
   },
   toQuery: ({ type }) => {
     return {
@@ -131,7 +131,7 @@ export const isAnswerAuthor = createAnswerPermissionRule({
       .describe('List of claims to match at least one on within author'),
   }),
   apply: (resource: Answer, { userRef, claims = [] }) => {
-    return resource.author === userRef || claims.includes(resource.author);
+    return resource?.author === userRef || claims.includes(resource?.author);
   },
   toQuery: ({ userRef, claims = [] }) => {
     return {
@@ -153,7 +153,7 @@ export const answerQuestionHasTags = createAnswerPermissionRule({
     tags: z.array(z.string()).describe('Tag to match the question'),
   }),
   apply: (resource: Answer, { tags }) => {
-    return tags.every(t => resource.post?.tags?.includes(t));
+    return tags.every(t => resource?.post?.tags?.includes(t));
   },
   toQuery: ({ tags }) => {
     return {
@@ -176,7 +176,7 @@ export const answerQuestionHasEntityRefs = createAnswerPermissionRule({
     entityRefs: z.array(z.string()).describe('Tag to match the question'),
   }),
   apply: (resource: Answer, { entityRefs }) => {
-    return entityRefs.every(t => resource.post?.entities?.includes(t));
+    return entityRefs.every(t => resource?.post?.entities?.includes(t));
   },
   toQuery: ({ entityRefs }) => {
     return {
@@ -214,7 +214,7 @@ export const isCommentAuthor = createCommentPermissionRule({
       .describe('List of claims to match at least one on within author'),
   }),
   apply: (resource: Comment, { userRef, claims = [] }) => {
-    return resource.author === userRef || claims.includes(resource.author);
+    return resource?.author === userRef || claims.includes(resource?.author);
   },
   toQuery: ({ userRef, claims = [] }) => {
     return {

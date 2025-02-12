@@ -25,10 +25,10 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
     resources: [
       {
         getResources: async resourceRefs => {
-          return await Promise.all(
+          const resources = await Promise.all(
             resourceRefs.map(async ref => {
               if (!ref.startsWith('qeta:post:')) {
-                return null;
+                return undefined;
               }
               const id = ref.split(':')[2];
               const post = await options.database.getPost(
@@ -39,6 +39,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
               return post === null ? undefined : (post as Post);
             }),
           );
+          return resources.filter(Boolean);
         },
         resourceType: POST_RESOURCE_TYPE,
         permissions: qetaPostPermissions,
@@ -46,10 +47,10 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
       },
       {
         getResources: async resourceRefs => {
-          return await Promise.all(
+          const resources = await Promise.all(
             resourceRefs.map(async ref => {
               if (!ref.startsWith('qeta:answer:')) {
-                return null;
+                return undefined;
               }
               const id = ref.split(':')[2];
               const answer = await options.database.getAnswer(
@@ -59,6 +60,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
               return answer === null ? undefined : (answer as Answer);
             }),
           );
+          return resources.filter(Boolean);
         },
         resourceType: ANSWER_RESOURCE_TYPE,
         permissions: qetaAnswerPermissions,
@@ -66,10 +68,10 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
       },
       {
         getResources: async resourceRefs => {
-          return await Promise.all(
+          const resources = await Promise.all(
             resourceRefs.map(async ref => {
               if (!ref.startsWith('qeta:comment:')) {
-                return null;
+                return undefined;
               }
               const id = Number.parseInt(ref.split(':')[2], 10);
               const comment =
@@ -78,6 +80,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
               return comment === null ? undefined : (comment as Comment);
             }),
           );
+          return resources.filter(Boolean);
         },
         resourceType: COMMENT_RESOURCE_TYPE,
         permissions: qetaCommentPermissions,
