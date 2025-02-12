@@ -195,6 +195,7 @@ describe.each(databases.eachSupportedId())(
           searchQuery: 'to search',
           type: 'question',
         });
+
         expect(ret?.posts.length).toEqual(1);
 
         const noPosts = await storage.getPosts('user1', {
