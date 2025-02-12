@@ -2750,14 +2750,14 @@ export class DatabaseQetaStore implements QetaStore {
   ) {
     if (this.db.client.config.client === 'pg') {
       query.whereRaw(
-        `((to_tsvector('english', ${columns.join(
-          ` || ' ' || `,
-        )}) @@ websearch_to_tsquery('english', quote_literal(?))
-          or to_tsvector('english', ${columns.join(
-            ` || ' ' || `,
-          )}) @@ to_tsquery('english',quote_literal(?))) or LOWER(${columns.join(
-          ` || ' ' || `,
-        )}) LIKE LOWER(?))`,
+        `((to_tsvector('english', CONCAT(${columns.join(
+          ',',
+        )})) @@ websearch_to_tsquery('english', quote_literal(?))
+          or to_tsvector('english', CONCAT(${columns.join(
+            ',',
+          )})) @@ to_tsquery('english',quote_literal(?))) or LOWER(CONCAT(${columns.join(
+          ',',
+        )})) LIKE LOWER(?))`,
         [
           `${searchQuery}`,
           `${searchQuery.replaceAll(/\s/g, '+')}:*`,
@@ -2765,7 +2765,7 @@ export class DatabaseQetaStore implements QetaStore {
         ],
       );
     } else {
-      query.whereRaw(`LOWER(${columns.join(` || ' ' || `)}) LIKE LOWER(?)`, [
+      query.whereRaw(`LOWER(CONCAT(${columns.join(',')})) LIKE LOWER(?)`, [
         `%${searchQuery}%`,
       ]);
     }
