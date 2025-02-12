@@ -52,6 +52,13 @@ export const isAnswer = (
   ent: MaybePost | MaybeAnswer | MaybeComment,
 ): ent is Answer => ent !== null && (ent as Answer).postId !== undefined;
 
+export const isComment = (
+  ent: MaybePost | MaybeAnswer | MaybeComment,
+): ent is Comment =>
+  ent !== null &&
+  (ent as Answer).postId === undefined &&
+  (ent as Post).title === undefined;
+
 export const getUsername = async (
   req: Request<unknown>,
   options: RouterOptions,
@@ -187,6 +194,19 @@ const authorizeWithoutPermissions = async (
   return { result: AuthorizeResult.DENY };
 };
 
+const getResourceRef = (resource: Post | Answer | Comment) => {
+  if (isPost(resource)) {
+    return `qeta:post:${resource.id}`;
+  }
+  if (isAnswer(resource)) {
+    return `qeta:answer:${resource.id}`;
+  }
+  if (isComment(resource)) {
+    return `qeta:comment:${resource.id}`;
+  }
+  throw new Error('Invalid resource type');
+};
+
 export const authorize = async (
   request: Request<unknown>,
   permission: Permission,
@@ -213,12 +233,7 @@ export const authorize = async (
       throw new NotFoundError('Resource not found');
     }
 
-    // eslint-disable-next-line no-nested-ternary
-    const resourceRef = isPost(resource)
-      ? `qeta:post:${resource.id}`
-      : isAnswer(resource)
-      ? `qeta:answer:${resource.id}`
-      : `qeta:comment:${resource.id}`;
+    const resourceRef = getResourceRef(resource);
 
     decision = (
       await options.permissions.authorize([{ permission, resourceRef }], {
