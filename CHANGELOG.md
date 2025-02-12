@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.18.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.18.1...v3.18.2) (2025-02-12)
+
+
+### Bug Fixes
+
+* filter resource refs before mapping them to entities ([89f82d8](https://github.com/drodil/backstage-plugin-qeta/commit/89f82d8de903fd08ee891690a1b5410847df3997))
+* improve resource ref creation ([ed69737](https://github.com/drodil/backstage-plugin-qeta/commit/ed69737d42c697810580cc833f79b903ac14566c))
+* long codeblocks going out of the screen ([40cb5b5](https://github.com/drodil/backstage-plugin-qeta/commit/40cb5b5a0999e902dccf11638dbf40a58da83df8))
+* resource ref creation ([f10661a](https://github.com/drodil/backstage-plugin-qeta/commit/f10661ab3452453ddd5123a870905e4d7b5358ad))
+
 ### [3.18.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.18.0...v3.18.1) (2025-02-12)
 
 
