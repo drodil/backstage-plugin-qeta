@@ -25,11 +25,12 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
     resources: [
       {
         getResources: async resourceRefs => {
+          const postRefs = resourceRefs.filter(ref =>
+            ref.startsWith('qeta:post:'),
+          );
+
           const resources = await Promise.all(
-            resourceRefs.map(async ref => {
-              if (!ref.startsWith('qeta:post:')) {
-                return undefined;
-              }
+            postRefs.map(async ref => {
               const id = ref.split(':')[2];
               const post = await options.database.getPost(
                 '',
@@ -47,11 +48,12 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
       },
       {
         getResources: async resourceRefs => {
+          const answerRefs = resourceRefs.filter(ref =>
+            ref.startsWith('qeta:answer:'),
+          );
+
           const resources = await Promise.all(
-            resourceRefs.map(async ref => {
-              if (!ref.startsWith('qeta:answer:')) {
-                return undefined;
-              }
+            answerRefs.map(async ref => {
               const id = ref.split(':')[2];
               const answer = await options.database.getAnswer(
                 Number.parseInt(id, 10),
@@ -68,15 +70,16 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
       },
       {
         getResources: async resourceRefs => {
+          const commentRefs = resourceRefs.filter(ref =>
+            ref.startsWith('qeta:comment:'),
+          );
+
           const resources = await Promise.all(
-            resourceRefs.map(async ref => {
-              if (!ref.startsWith('qeta:comment:')) {
-                return undefined;
-              }
+            commentRefs.map(async ref => {
               const id = Number.parseInt(ref.split(':')[2], 10);
               const comment =
-                (await options.database.getAnswerComment(id)) ??
-                (await options.database.getPostComment(id));
+                (await options.database.getPostComment(id)) ??
+                (await options.database.getAnswerComment(id));
               return comment === null ? undefined : (comment as Comment);
             }),
           );
