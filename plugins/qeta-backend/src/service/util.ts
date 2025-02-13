@@ -19,6 +19,7 @@ import {
   isAnswer,
   isComment,
   isPost,
+  isTag,
   MaybeAnswer,
   MaybePost,
 } from '../database/QetaStore';
@@ -35,6 +36,7 @@ import {
   qetaEditAnswerPermission,
   qetaEditCommentPermission,
   qetaEditPostPermission,
+  QetaIdEntity,
   qetaReadCommentPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
@@ -151,7 +153,7 @@ const authorizeWithoutPermissions = async (
   request: Request<unknown>,
   permission: Permission,
   options: RouterOptions,
-  resource?: Post | Answer | Comment | null,
+  resource?: QetaIdEntity | null,
 ): Promise<DefinitivePolicyDecision> => {
   const readPermission = isReadPermission(permission);
   const createPermission = isCreatePermission(permission);
@@ -178,13 +180,13 @@ const authorizeWithoutPermissions = async (
   }
 
   const username = await getUsername(request, options);
-  if (username === resource.author) {
+  if ('author' in resource && username === resource.author) {
     return { result: AuthorizeResult.ALLOW };
   }
   return { result: AuthorizeResult.DENY };
 };
 
-const getResourceRef = (resource: Post | Answer | Comment) => {
+const getResourceRef = (resource: QetaIdEntity) => {
   if (isPost(resource)) {
     return `qeta:post:${resource.id}`;
   }
@@ -194,6 +196,9 @@ const getResourceRef = (resource: Post | Answer | Comment) => {
   if (isComment(resource)) {
     return `qeta:comment:${resource.id}`;
   }
+  if (isTag(resource)) {
+    return `qeta:tag:${resource.id}`;
+  }
   throw new Error('Invalid resource type');
 };
 
@@ -201,7 +206,7 @@ export const authorize = async (
   request: Request<unknown>,
   permission: Permission,
   options: RouterOptions,
-  resource?: Post | Answer | Comment | null,
+  resource?: QetaIdEntity | null,
 ): Promise<DefinitivePolicyDecision> => {
   if (!options.permissions) {
     return await authorizeWithoutPermissions(
@@ -254,7 +259,10 @@ export type QetaFilter = {
     | 'answers.id'
     | 'answers.author'
     | 'comments.id'
-    | 'comments.author';
+    | 'comments.author'
+    | 'tags.tag'
+    | 'collections.owner'
+    | 'collections.id';
   values: Array<string | undefined>;
 };
 

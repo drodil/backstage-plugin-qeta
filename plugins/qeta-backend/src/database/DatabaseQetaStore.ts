@@ -165,22 +165,28 @@ function parseFilter(
   filter: PermissionCriteria<QetaFilters>,
   query: Knex.QueryBuilder,
   db: Knex,
-  isPost: boolean = true,
+  type: 'post' | 'answer' | 'collection' = 'post',
   negate: boolean = false,
 ): Knex.QueryBuilder {
   if (isNotCriteria(filter)) {
-    return parseFilter(filter.not, query, db, isPost, !negate);
+    return parseFilter(filter.not, query, db, type, !negate);
   }
 
   if (isQetaFilter(filter)) {
     const values: string[] = compact(filter.values) ?? [];
 
+    let fk = 'posts.id';
+    if (type === 'answer') {
+      fk = 'answers.postId';
+    } else if (type === 'collection') {
+      fk = 'collection_posts.postId';
+    }
     if (filter.property === 'tags') {
       const postIds = db('tags')
         .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
         .where('tags.tag', 'in', values)
         .select('post_tags.postId');
-      query.whereIn(isPost ? 'posts.id' : 'answers.postId', postIds);
+      query.whereIn(fk, postIds);
       return query;
     }
 
@@ -189,7 +195,7 @@ function parseFilter(
         .leftJoin('post_entities', 'entities.id', 'post_entities.entityId')
         .where('entities.entity_ref', 'in', values)
         .select('post_entities.postId');
-      query.whereIn(isPost ? 'posts.id' : 'answers.postId', postIds);
+      query.whereIn(fk, postIds);
       return query;
     }
 
@@ -204,13 +210,13 @@ function parseFilter(
     if (isOrCriteria(filter)) {
       for (const subFilter of filter.anyOf ?? []) {
         this.orWhere(subQuery =>
-          parseFilter(subFilter, subQuery, db, isPost, false),
+          parseFilter(subFilter, subQuery, db, type, false),
         );
       }
     } else if (isAndCriteria(filter)) {
       for (const subFilter of filter.allOf ?? []) {
         this.andWhere(subQuery =>
-          parseFilter(subFilter, subQuery, db, isPost, false),
+          parseFilter(subFilter, subQuery, db, type, false),
         );
       }
     }
@@ -718,7 +724,7 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (filters) {
-      parseFilter(filters, query, this.db, false);
+      parseFilter(filters, query, this.db, 'answer');
     }
 
     if (options.tags) {
@@ -938,6 +944,7 @@ export class DatabaseQetaStore implements QetaStore {
 
   async getTags(
     options?: { noDescription: boolean } & TagsQuery,
+    filters?: PermissionCriteria<QetaFilters>,
   ): Promise<TagsResponse> {
     const query = this.getTagBaseQuery();
     if (options?.noDescription) {
@@ -950,6 +957,10 @@ export class DatabaseQetaStore implements QetaStore {
         ['tags.tag', 'tags.description'],
         options.searchQuery,
       );
+    }
+
+    if (filters) {
+      parseFilter(filters, query, this.db);
     }
 
     const totalQuery = query.clone();
@@ -985,6 +996,22 @@ export class DatabaseQetaStore implements QetaStore {
           followerCount: this.mapToInteger(tag.followerCount),
         };
       }),
+    };
+  }
+
+  async getTagById(id: number): Promise<TagResponse | null> {
+    const query = this.getTagBaseQuery();
+    const tags = await query.where('tags.id', '=', id);
+
+    if (tags.length === 0) {
+      return null;
+    }
+    return {
+      id: tags[0].id,
+      tag: tags[0].tag,
+      description: tags[0].description,
+      postsCount: this.mapToInteger(tags[0].postsCount),
+      followerCount: this.mapToInteger(tags[0].followerCount),
     };
   }
 
@@ -1160,11 +1187,18 @@ export class DatabaseQetaStore implements QetaStore {
     return true;
   }
 
-  async getUserTags(user_ref: string): Promise<UserTagsResponse> {
-    const tags = await this.db('user_tags')
+  async getUserTags(
+    user_ref: string,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<UserTagsResponse> {
+    const query = this.db('user_tags')
       .where('userRef', user_ref)
-      .leftJoin('tags', 'user_tags.tagId', 'tags.id')
-      .select('tags.tag');
+      .leftJoin('tags', 'user_tags.tagId', 'tags.id');
+
+    if (filters) {
+      parseFilter(filters, query, this.db);
+    }
+    const tags = await query.select('tags.tag');
 
     return {
       tags: tags.map(tag => tag.tag),
