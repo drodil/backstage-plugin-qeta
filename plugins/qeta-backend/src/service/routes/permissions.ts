@@ -107,8 +107,8 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
 
           const resources = await Promise.all(
             tagRefs.map(async ref => {
-              const id = ref.split(':')[2];
-              const tag = await options.database.getTag(id);
+              const id = Number.parseInt(ref.split(':')[2], 10);
+              const tag = await options.database.getTagById(id);
               return tag === null ? undefined : tag;
             }),
           );

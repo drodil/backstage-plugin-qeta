@@ -11,6 +11,7 @@ import {
   Post,
   PostsQuery,
   PostType,
+  QetaIdEntity,
   Statistic,
   StatisticsRequestParameters,
   TagsQuery,
@@ -25,16 +26,20 @@ import {
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
-export function isPost(entity: Post | Answer | Comment): entity is Post {
+export function isPost(entity: QetaIdEntity): entity is Post {
   return 'title' in entity;
 }
 
-export function isAnswer(entity: Post | Answer | Comment): entity is Answer {
+export function isAnswer(entity: QetaIdEntity): entity is Answer {
   return 'postId' in entity && 'correct' in entity;
 }
 
-export function isComment(entity: Post | Answer | Comment): entity is Comment {
+export function isComment(entity: QetaIdEntity): entity is Comment {
   return !('title' in entity) && !('correct' in entity);
+}
+
+export function isTag(entity: QetaIdEntity): entity is TagResponse {
+  return 'tag' in entity;
 }
 
 export type MaybeAnswer = Answer | null;
@@ -370,7 +375,9 @@ export interface QetaStore {
    */
   getTags(
     options?: { noDescription?: boolean } & TagsQuery,
+    filters?: PermissionCriteria<QetaFilters>,
   ): Promise<TagsResponse>;
+  getTagById(id: number): Promise<TagResponse | null>;
   getTag(tag: string): Promise<TagResponse | null>;
   createTag(tag: string, description?: string): Promise<TagResponse | null>;
   updateTag(tag: string, description?: string): Promise<TagResponse | null>;
@@ -380,11 +387,10 @@ export interface QetaStore {
     options?: { entityRefs?: string[] } & UsersQuery,
   ): Promise<UsersResponse>;
   getUser(user_ref: string): Promise<UserResponse | null>;
-  /**
-   * Gets all tags user is following
-   * @param user_ref
-   */
-  getUserTags(user_ref: string): Promise<UserTagsResponse>;
+  getUserTags(
+    user_ref: string,
+    filters?: PermissionCriteria<QetaFilters>,
+  ): Promise<UserTagsResponse>;
   getUsersForTags(tags?: string[]): Promise<string[]>;
 
   followTag(user_ref: string, tag: string): Promise<boolean>;

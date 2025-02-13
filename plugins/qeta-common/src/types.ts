@@ -45,8 +45,11 @@ export interface StatisticsRequestParameters {
   requestOptions?: RequestOptions;
 }
 
-export interface QetaEntity {
+export interface QetaIdEntity {
   id: number;
+}
+
+export interface QetaEntity extends QetaIdEntity {
   author: string;
   content: string;
   created: Date;
@@ -65,8 +68,7 @@ export interface PostAnswerEntity extends QetaEntity {
   anonymous?: boolean;
 }
 
-export interface CollectionEntity {
-  id: number;
+export interface CollectionEntity extends QetaIdEntity {
   title: string;
   description?: string;
   owner: string;
@@ -266,8 +268,7 @@ export interface AnswersResponse {
 
 export type AnswerResponseBody = Answer | ErrorResponse;
 
-export interface TagResponse {
-  id: number;
+export interface TagResponse extends QetaIdEntity {
   tag: string;
   description?: string;
   postsCount: number;
