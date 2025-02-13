@@ -5,9 +5,15 @@ import {
   TagsQuerySchema,
   UsersQuerySchema,
 } from '../types';
-import { getUsername, isModerator } from '../util';
+import { authorize, getAuthorizeConditions, getUsername } from '../util';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
-import { isValidTag } from '@drodil/backstage-plugin-qeta-common';
+import {
+  isValidTag,
+  qetaCreateTagPermission,
+  qetaDeleteTagPermission,
+  qetaEditTagPermission,
+  qetaReadTagPermission,
+} from '@drodil/backstage-plugin-qeta-common';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 
@@ -100,13 +106,26 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const tags = await database.getTags(request.query);
+    const filter = await getAuthorizeConditions(
+      request,
+      qetaReadTagPermission,
+      options,
+      true,
+    );
+
+    const tags = await database.getTags(request.query, filter);
     response.json(tags);
   });
 
   router.get('/tags/followed', async (request, response) => {
     const username = await getUsername(request, options, false);
-    const tags = await database.getUserTags(username);
+    const filter = await getAuthorizeConditions(
+      request,
+      qetaReadTagPermission,
+      options,
+      true,
+    );
+    const tags = await database.getUserTags(username, filter);
     response.json(tags);
   });
 
@@ -130,25 +149,25 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
+    await authorize(request, qetaReadTagPermission, options, tag);
     response.json(tag);
   });
 
   router.post('/tags/:tag', async (request, response) => {
     const description = request.body.description;
-    const tag = await database.updateTag(request.params.tag, description);
+    const tag = await database.getTag(request.params.tag);
+    await authorize(request, qetaEditTagPermission, options, tag);
     if (!tag) {
       response.sendStatus(404);
       return;
     }
-    response.json(tag);
+
+    const resp = await database.updateTag(request.params.tag, description);
+    response.json(resp);
   });
 
   router.put('/tags/:tag', async (request, response) => {
-    const mod = await isModerator(request, options);
-    if (!mod) {
-      response.status(403).send({ errors: 'Not authorized', type: 'body' });
-      return;
-    }
+    await authorize(request, qetaCreateTagPermission, options);
 
     const existing = await database.getTag(request.params.tag);
     if (existing) {
@@ -163,7 +182,6 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
     const description = request.body.description;
     const tag = await database.createTag(request.params.tag, description);
-    console.log(tag);
     if (!tag) {
       response.sendStatus(500);
       return;
@@ -172,11 +190,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.delete('/tags/:tag', async (request, response) => {
-    const mod = await isModerator(request, options);
-    if (!mod) {
-      response.status(403).send({ errors: 'Not authorized', type: 'body' });
-      return;
-    }
+    await authorize(request, qetaDeleteTagPermission, options);
 
     const tagId = Number.parseInt(request.params.tag, 10);
     if (Number.isNaN(tagId)) {
