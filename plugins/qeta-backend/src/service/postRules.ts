@@ -7,12 +7,18 @@ import {
   Answer,
   ANSWER_RESOURCE_TYPE,
   AnswerFilter,
+  Collection,
+  COLLECTION_RESOUCE_TYPE,
+  CollectionFilter,
   Comment,
   COMMENT_RESOURCE_TYPE,
   CommentFilter,
   Post,
   POST_RESOURCE_TYPE,
   PostFilter,
+  TAG_RESOURCE_TYPE,
+  TagFilter,
+  TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export const createPostPermissionRule = makeCreatePermissionRule<
@@ -229,4 +235,120 @@ export const commentAuthorConditionFactory =
 
 export const commentRules = { isCommentAuthor };
 
-export const rules = { ...commentRules, ...answerRules, ...postRules };
+export const createTagPermissionRule = makeCreatePermissionRule<
+  TagResponse,
+  TagFilter,
+  typeof TAG_RESOURCE_TYPE
+>();
+export const isTag = createTagPermissionRule({
+  name: 'IS_TAG',
+  description: 'Should allow only if the tag exists',
+  resourceType: TAG_RESOURCE_TYPE,
+  paramsSchema: z.object({
+    tag: z.string().describe('Tag to match the post'),
+  }),
+  apply: (resource: TagResponse, { tag }) => {
+    return resource?.tag === tag;
+  },
+  toQuery: ({ tag }) => {
+    return {
+      property: 'tags.tag',
+      values: [tag],
+    };
+  },
+});
+
+export const tagConditionFactory = createConditionFactory(isTag);
+
+export const tagRules = { isTag };
+
+export const createCollectionPermissionRule = makeCreatePermissionRule<
+  Collection,
+  CollectionFilter,
+  typeof COLLECTION_RESOUCE_TYPE
+>();
+
+export const isCollectionOwner = createCollectionPermissionRule({
+  name: 'IS_OWNER',
+  description: 'Should allow only if the collection is owned by the user',
+  resourceType: COLLECTION_RESOUCE_TYPE,
+  paramsSchema: z.object({
+    userRef: z.string().describe('User ID to match on the owner').optional(),
+    claims: z
+      .array(z.string())
+      .optional()
+      .describe('List of claims to match at least one on within owner'),
+  }),
+  apply: (resource: Collection, { userRef, claims = [] }) => {
+    return resource?.owner === userRef || claims.includes(resource?.owner);
+  },
+  toQuery: ({ userRef, claims = [] }) => {
+    return {
+      property: 'collections.owner',
+      values: [userRef, ...claims].filter(Boolean),
+    };
+  },
+});
+
+export const collectionOwnerConditionFactory =
+  createConditionFactory(isCollectionOwner);
+
+export const collectionHasTags = createCollectionPermissionRule({
+  name: 'HAS_TAGS',
+  description: 'Should allow only if the collection has all the specific tags',
+  resourceType: COLLECTION_RESOUCE_TYPE,
+  paramsSchema: z.object({
+    tags: z.array(z.string()).describe('Tag to match the collection'),
+  }),
+  apply: (resource: Collection, { tags }) => {
+    return tags.every(t => resource?.tags?.includes(t));
+  },
+  toQuery: ({ tags }) => {
+    return {
+      property: 'tags',
+      values: tags,
+    };
+  },
+});
+
+export const collectionHasTagsConditionFactory =
+  createConditionFactory(collectionHasTags);
+
+export const collectionHasEntities = createCollectionPermissionRule({
+  name: 'HAS_ENTITIES',
+  description:
+    'Should allow only if the collection has all the specific entities',
+  resourceType: COLLECTION_RESOUCE_TYPE,
+  paramsSchema: z.object({
+    entityRefs: z
+      .array(z.string())
+      .describe('Entity refs to match the collection'),
+  }),
+  apply: (resource: Collection, { entityRefs }) => {
+    return entityRefs.every(t => resource?.entities?.includes(t));
+  },
+  toQuery: ({ entityRefs }) => {
+    return {
+      property: 'entityRefs',
+      values: entityRefs,
+    };
+  },
+});
+
+export const collectionHasEntitiesConditionFactory = createConditionFactory(
+  collectionHasEntities,
+);
+
+export const collectionRules = {
+  isCollectionOwner,
+  collectionHasTags,
+  collectionHasEntities,
+};
+
+export const rules = {
+  ...commentRules,
+  ...answerRules,
+  ...postRules,
+  ...tagRules,
+  ...collectionRules,
+};
