@@ -7,11 +7,20 @@ import {
   Post,
   POST_RESOURCE_TYPE,
   qetaAnswerPermissions,
+  qetaCollectionPermissions,
   qetaCommentPermissions,
   qetaPermissions,
   qetaPostPermissions,
+  qetaTagPermissions,
+  TAG_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
-import { answerRules, commentRules, postRules } from '../postRules';
+import {
+  answerRules,
+  collectionRules,
+  commentRules,
+  postRules,
+  tagRules,
+} from '../postRules';
 import { Router } from 'express';
 import { RouteOptions } from '../types';
 
@@ -22,6 +31,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
 
   const permissions = createPermissionIntegrationRouter({
     permissions: qetaPermissions,
+    // @ts-ignore: until 1.36.0 backstage release
     resources: [
       {
         getResources: async resourceRefs => {
@@ -88,6 +98,44 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
         resourceType: COMMENT_RESOURCE_TYPE,
         permissions: qetaCommentPermissions,
         rules: Object.values(commentRules),
+      },
+      {
+        getResources: async resourceRefs => {
+          const tagRefs = resourceRefs.filter(ref =>
+            ref.startsWith('qeta:tag:'),
+          );
+
+          const resources = await Promise.all(
+            tagRefs.map(async ref => {
+              const id = ref.split(':')[2];
+              const tag = await options.database.getTag(id);
+              return tag === null ? undefined : tag;
+            }),
+          );
+          return resources.filter(Boolean);
+        },
+        resourceType: TAG_RESOURCE_TYPE,
+        permissions: qetaTagPermissions,
+        rules: Object.values(tagRules),
+      },
+      {
+        getResources: async resourceRefs => {
+          const entityRefs = resourceRefs.filter(ref =>
+            ref.startsWith('qeta:collection:'),
+          );
+
+          const resources = await Promise.all(
+            entityRefs.map(async ref => {
+              const id = Number.parseInt(ref.split(':')[2], 10);
+              const entity = await options.database.getCollection('', id);
+              return entity === null ? undefined : entity;
+            }),
+          );
+          return resources.filter(Boolean);
+        },
+        resourceType: COMMENT_RESOURCE_TYPE,
+        permissions: qetaCollectionPermissions,
+        rules: Object.values(collectionRules),
       },
     ],
   });

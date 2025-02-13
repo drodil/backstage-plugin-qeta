@@ -126,6 +126,16 @@ export type CommentFilter = {
   values: Array<string | undefined>;
 };
 
+export type TagFilter = {
+  property: 'tags.tag';
+  values: Array<string | undefined>;
+};
+
+export type CollectionFilter = {
+  property: 'collections.owner' | 'collections.id' | 'tags' | 'entityRefs';
+  values: Array<string | undefined>;
+};
+
 export interface Answer extends PostAnswerEntity {
   postId: number;
   correct: boolean;
