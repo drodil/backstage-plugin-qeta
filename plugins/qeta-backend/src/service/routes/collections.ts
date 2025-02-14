@@ -50,6 +50,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       request,
       qetaReadPostPermission,
       options,
+      true,
     );
 
     // Act
@@ -88,6 +89,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       request,
       qetaReadPostPermission,
       options,
+      true,
     );
 
     // Act
