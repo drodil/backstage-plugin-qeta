@@ -415,10 +415,7 @@ export interface QetaStore {
 
   getUserCollections(
     user_ref: string,
-    options?: {
-      filters?: PermissionCriteria<QetaFilters>;
-      includePosts?: boolean;
-    },
+    options?: CollectionOptions,
   ): Promise<UserCollectionsResponse>;
   getUsersForCollection(collectionId: number): Promise<string[]>;
 
@@ -494,6 +491,7 @@ export interface QetaStore {
     created: Date;
     images?: number[];
     headerImage?: string;
+    opts?: CollectionOptions;
   }): Promise<Collection>;
 
   updateCollection(options: {
@@ -503,6 +501,7 @@ export interface QetaStore {
     description?: string;
     images?: number[];
     headerImage?: string;
+    opts?: CollectionOptions;
   }): Promise<MaybeCollection>;
 
   deleteCollection(id: number): Promise<boolean>;
@@ -511,13 +510,13 @@ export interface QetaStore {
     user_ref: string,
     id: number,
     postId: number,
-    filters?: PermissionCriteria<QetaFilters>,
+    options?: CollectionOptions,
   ): Promise<MaybeCollection>;
   removePostFromCollection(
     user_ref: string,
     id: number,
     postId: number,
-    filters?: PermissionCriteria<QetaFilters>,
+    options?: CollectionOptions,
   ): Promise<MaybeCollection>;
 
   getTemplates(): Promise<Templates>;

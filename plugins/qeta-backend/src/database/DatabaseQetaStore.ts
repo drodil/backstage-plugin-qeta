@@ -1166,10 +1166,7 @@ export class DatabaseQetaStore implements QetaStore {
 
   async getUserCollections(
     user_ref: string,
-    options?: {
-      filters?: PermissionCriteria<QetaFilters>;
-      includePosts?: boolean;
-    },
+    options?: CollectionOptions,
   ): Promise<UserCollectionsResponse> {
     const rows = await this.db('user_collections')
       .where('userRef', user_ref)
@@ -1898,8 +1895,9 @@ export class DatabaseQetaStore implements QetaStore {
     created: Date;
     images?: number[];
     headerImage?: string;
+    opts?: CollectionOptions;
   }): Promise<Collection> {
-    const { user_ref, title, description, created, images, headerImage } =
+    const { user_ref, title, description, created, images, headerImage, opts } =
       options;
     const collections = await this.db
       .insert(
@@ -1923,7 +1921,7 @@ export class DatabaseQetaStore implements QetaStore {
       headerImage,
     );
 
-    return this.mapCollectionEntity(collections[0], user_ref);
+    return this.mapCollectionEntity(collections[0], user_ref, opts);
   }
 
   async updateCollection(options: {
@@ -1933,8 +1931,10 @@ export class DatabaseQetaStore implements QetaStore {
     description?: string;
     images?: number[];
     headerImage?: string;
+    opts?: CollectionOptions;
   }): Promise<MaybeCollection> {
-    const { id, user_ref, title, description, images, headerImage } = options;
+    const { id, user_ref, title, description, images, headerImage, opts } =
+      options;
     const query = this.db('collections').where('collections.id', '=', id);
     const rows = await query.update({
       title,
@@ -1954,7 +1954,7 @@ export class DatabaseQetaStore implements QetaStore {
       headerImage,
     );
 
-    return await this.getCollection(user_ref, id);
+    return await this.getCollection(user_ref, id, opts);
   }
 
   async deleteCollection(id: number): Promise<boolean> {
@@ -1966,7 +1966,7 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     id: number,
     postId: number,
-    filters?: PermissionCriteria<QetaFilters>,
+    options?: CollectionOptions,
   ): Promise<MaybeCollection> {
     await this.db
       .insert({
@@ -1976,20 +1976,20 @@ export class DatabaseQetaStore implements QetaStore {
       .into('collection_posts')
       .onConflict()
       .ignore();
-    return await this.getCollection(user_ref, id, { postFilters: filters });
+    return await this.getCollection(user_ref, id, options);
   }
 
   async removePostFromCollection(
     user_ref: string,
     id: number,
     postId: number,
-    filters?: PermissionCriteria<QetaFilters>,
+    options?: CollectionOptions,
   ): Promise<MaybeCollection> {
     await this.db('collection_posts')
       .where('collectionId', id)
       .where('postId', postId)
       .delete();
-    return await this.getCollection(user_ref, id, { postFilters: filters });
+    return await this.getCollection(user_ref, id, options);
   }
 
   async getTemplates(): Promise<Templates> {

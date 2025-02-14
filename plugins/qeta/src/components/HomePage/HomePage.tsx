@@ -36,24 +36,22 @@ export const HomePage = () => {
           <Grid item xs={12}>
             <SuggestionsCard />
           </Grid>
+          <Grid item xs={12}>
+            <PostsCard
+              title={t('highlights.unanswered.title')}
+              options={{ noAnswers: true, random: true, type: 'question' }}
+              postType="question"
+            />
+          </Grid>
           {user && !loadingUser && !userError && (
             <Grid item xs={12}>
               <PostsCard
-                type="own"
                 title={t('highlights.own.title')}
                 options={{ author: user.userEntityRef }}
                 postType="question"
               />
             </Grid>
           )}
-          <Grid item xs={12}>
-            <PostsCard
-              type="own"
-              title={t('highlights.unanswered.title')}
-              options={{ noAnswers: true, random: true, type: 'question' }}
-              postType="question"
-            />
-          </Grid>
         </Grid>
       </Grid>
       <Grid item lg={3} xl={2}>

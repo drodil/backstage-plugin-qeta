@@ -10,10 +10,12 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionEditRouteRef } from '../../routes';
 import { useTranslation } from '../../hooks';
+import { useNavigate } from 'react-router-dom';
 
 export const CollectionCard = (props: { collection: Collection }) => {
   const { collection } = props;
   const editCollectionRoute = useRouteRef(collectionEditRouteRef);
+  const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
@@ -63,9 +65,13 @@ export const CollectionCard = (props: { collection: Collection }) => {
                   variant="outlined"
                   size="small"
                   startIcon={<EditIcon />}
-                  href={editCollectionRoute({
-                    id: collection.id.toString(10),
-                  })}
+                  onClick={() =>
+                    navigate(
+                      editCollectionRoute({
+                        id: collection.id.toString(10),
+                      }),
+                    )
+                  }
                   className="qetaCollectionCardEditBtn"
                 >
                   {t('questionPage.editButton')}
