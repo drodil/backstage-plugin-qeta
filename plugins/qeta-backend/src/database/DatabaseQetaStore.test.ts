@@ -97,8 +97,7 @@ describe.each(databases.eachSupportedId())(
       await knex('answer_votes').del();
       await knex('post_views').del();
       await knex('tags').del();
-      await knex('post_comments').del();
-      await knex('answer_comments').del();
+      await knex('comments').del();
       await knex('user_tags').del();
     });
 

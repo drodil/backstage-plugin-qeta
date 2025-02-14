@@ -9,12 +9,12 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
-import { RequirePermission } from '@backstage/plugin-permission-react';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { confirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
 import { Button, Typography } from '@material-ui/core';
+import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 
 type AnswerFormData = {
   postId: number;
@@ -125,7 +125,7 @@ export const AnswerForm = (props: {
   );
 
   return (
-    <RequirePermission
+    <OptionalRequirePermission
       permission={qetaCreateAnswerPermission}
       errorPage={<></>}
     >
@@ -171,6 +171,6 @@ export const AnswerForm = (props: {
             : t('answerForm.submit.newAnswer')}
         </Button>
       </form>
-    </RequirePermission>
+    </OptionalRequirePermission>
   );
 };

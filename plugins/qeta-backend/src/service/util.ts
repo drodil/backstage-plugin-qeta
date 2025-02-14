@@ -9,6 +9,7 @@ import {
   AuthorizeResult,
   DefinitivePolicyDecision,
   isCreatePermission,
+  isPermission,
   isReadPermission,
   isResourcePermission,
   isUpdatePermission,
@@ -17,25 +18,37 @@ import {
 } from '@backstage/plugin-permission-common';
 import {
   isAnswer,
+  isCollection,
   isComment,
   isPost,
+  isTag,
   MaybeAnswer,
+  MaybeCollection,
   MaybePost,
+  MaybeTag,
 } from '../database/QetaStore';
 import { Config } from '@backstage/config';
 import { S3Client } from '@aws-sdk/client-s3';
 import { RouteOptions, RouterOptions } from './types';
 import {
   Answer,
+  Collection,
   Comment,
   Post,
+  qetaCreateTagPermission,
   qetaDeleteAnswerPermission,
+  qetaDeleteCollectionPermission,
   qetaDeleteCommentPermission,
   qetaDeletePostPermission,
+  qetaDeleteTagPermission,
   qetaEditAnswerPermission,
+  qetaEditCollectionPermission,
   qetaEditCommentPermission,
   qetaEditPostPermission,
+  qetaEditTagPermission,
+  QetaIdEntity,
   qetaReadCommentPermission,
+  TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { HttpsProxyAgent } from 'hpagent';
@@ -44,7 +57,7 @@ import {
   ConditionTransformer,
   createConditionTransformer,
 } from '@backstage/plugin-permission-node';
-import { rules } from './postRules';
+import { rules } from '@drodil/backstage-plugin-qeta-node';
 import { BlobServiceClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
 import { BackstagePrincipalTypes } from '@backstage/backend-plugin-api';
@@ -151,10 +164,17 @@ const authorizeWithoutPermissions = async (
   request: Request<unknown>,
   permission: Permission,
   options: RouterOptions,
-  resource?: Post | Answer | Comment | null,
+  resource?: QetaIdEntity | null,
 ): Promise<DefinitivePolicyDecision> => {
   const readPermission = isReadPermission(permission);
   const createPermission = isCreatePermission(permission);
+
+  if (isPermission(permission, qetaCreateTagPermission)) {
+    return options.config.getOptionalBoolean('qeta.tags.allowCreation') ?? true
+      ? { result: AuthorizeResult.ALLOW }
+      : { result: AuthorizeResult.DENY };
+  }
+
   if (readPermission || createPermission) {
     return { result: AuthorizeResult.ALLOW };
   }
@@ -178,13 +198,15 @@ const authorizeWithoutPermissions = async (
   }
 
   const username = await getUsername(request, options);
-  if (username === resource.author) {
+  if ('author' in resource && username === resource.author) {
+    return { result: AuthorizeResult.ALLOW };
+  } else if ('owner' in resource && username === resource.owner) {
     return { result: AuthorizeResult.ALLOW };
   }
   return { result: AuthorizeResult.DENY };
 };
 
-const getResourceRef = (resource: Post | Answer | Comment) => {
+const getResourceRef = (resource: QetaIdEntity) => {
   if (isPost(resource)) {
     return `qeta:post:${resource.id}`;
   }
@@ -194,6 +216,12 @@ const getResourceRef = (resource: Post | Answer | Comment) => {
   if (isComment(resource)) {
     return `qeta:comment:${resource.id}`;
   }
+  if (isTag(resource)) {
+    return `qeta:tag:${resource.id}`;
+  }
+  if (isCollection(resource)) {
+    return `qeta:collection:${resource.id}`;
+  }
   throw new Error('Invalid resource type');
 };
 
@@ -201,7 +229,7 @@ export const authorize = async (
   request: Request<unknown>,
   permission: Permission,
   options: RouterOptions,
-  resource?: Post | Answer | Comment | null,
+  resource?: QetaIdEntity | null,
 ): Promise<DefinitivePolicyDecision> => {
   if (!options.permissions) {
     return await authorizeWithoutPermissions(
@@ -254,7 +282,10 @@ export type QetaFilter = {
     | 'answers.id'
     | 'answers.author'
     | 'comments.id'
-    | 'comments.author';
+    | 'comments.author'
+    | 'tags.tag'
+    | 'collections.owner'
+    | 'collections.id';
   values: Array<string | undefined>;
 };
 
@@ -330,7 +361,7 @@ export const authorizeBoolean = async (
   request: Request<unknown>,
   permission: Permission,
   options: RouterOptions,
-  resource?: Post | Answer | Comment | null,
+  resource?: Post | Answer | Comment | Collection | TagResponse | null,
 ): Promise<boolean> => {
   try {
     const res = await authorize(request, permission, options, resource);
@@ -342,12 +373,31 @@ export const authorizeBoolean = async (
 
 export const mapAdditionalFields = async (
   request: Request<unknown>,
-  resp: MaybePost | MaybeAnswer,
+  resp: MaybePost | MaybeAnswer | MaybeTag | MaybeCollection,
   options: RouterOptions,
 ) => {
   if (!resp) {
-    return;
+    return resp;
   }
+
+  if (isCollection(resp) || isTag(resp)) {
+    resp.canEdit = await authorizeBoolean(
+      request,
+      isCollection(resp) ? qetaEditCollectionPermission : qetaEditTagPermission,
+      options,
+      resp,
+    );
+    resp.canDelete = await authorizeBoolean(
+      request,
+      isCollection(resp)
+        ? qetaDeleteCollectionPermission
+        : qetaDeleteTagPermission,
+      options,
+      resp,
+    );
+    return resp;
+  }
+
   const username = await getUsername(request, options, true);
   resp.ownVote = resp.votes?.find(v => v.author === username)?.score;
   resp.own = resp.author === username;
@@ -404,6 +454,7 @@ export const mapAdditionalFields = async (
     }),
   );
   resp.comments = compact(comments);
+  return resp;
 };
 
 export const stringDateTime = (dayString: string) => {

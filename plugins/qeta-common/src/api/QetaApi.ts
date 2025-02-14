@@ -60,20 +60,25 @@ export interface PostsQuery extends PaginatedQuery {
   includeEntities?: boolean;
   includeTrend?: boolean;
   includeComments?: boolean;
+  includeTags?: boolean;
+  includeAttachments?: boolean;
   fromDate?: string;
   toDate?: string;
   type?: PostType;
   collectionId?: number;
+  ids?: number[];
 }
 
 export interface CollectionsQuery extends PaginatedQuery {
   owner?: string;
   entities?: string[];
   entitiesRelation?: 'and' | 'or';
+  includePosts?: boolean;
   tags?: string[];
   tagsRelation?: 'and' | 'or';
   fromDate?: string;
   toDate?: string;
+  ids?: number[];
 }
 
 export interface AnswersQuery extends PaginatedQuery {
@@ -90,6 +95,7 @@ export interface AnswersQuery extends PaginatedQuery {
   includeComments?: boolean;
   fromDate?: string;
   toDate?: string;
+  ids?: number[];
 }
 
 export interface TagsQuery extends PaginatedQuery {

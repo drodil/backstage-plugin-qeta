@@ -1,12 +1,12 @@
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import React from 'react';
-import { RequirePermission } from '@backstage/plugin-permission-react';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef } from '../../routes';
 import { useTranslation } from '../../hooks';
 import { Box } from '@material-ui/core';
+import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 
 export const AskQuestionButton = (props: {
   entity?: string;
@@ -29,7 +29,10 @@ export const AskQuestionButton = (props: {
   }
 
   return (
-    <RequirePermission permission={qetaCreatePostPermission} errorPage={<></>}>
+    <OptionalRequirePermission
+      permission={qetaCreatePostPermission}
+      errorPage={<></>}
+    >
       <Box>
         <LinkButton
           variant="contained"
@@ -43,6 +46,6 @@ export const AskQuestionButton = (props: {
           {t('askQuestionButton.title')}
         </LinkButton>
       </Box>
-    </RequirePermission>
+    </OptionalRequirePermission>
   );
 };

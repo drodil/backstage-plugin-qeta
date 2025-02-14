@@ -45,8 +45,11 @@ export interface StatisticsRequestParameters {
   requestOptions?: RequestOptions;
 }
 
-export interface QetaEntity {
+export interface QetaIdEntity {
   id: number;
+}
+
+export interface QetaEntity extends QetaIdEntity {
   author: string;
   content: string;
   created: Date;
@@ -65,15 +68,12 @@ export interface PostAnswerEntity extends QetaEntity {
   anonymous?: boolean;
 }
 
-export interface CollectionEntity {
-  id: number;
+export interface CollectionEntity extends QetaIdEntity {
   title: string;
   description?: string;
   owner: string;
   created: Date;
   headerImage?: string;
-  readAccess: 'private' | 'public';
-  editAccess: 'private' | 'public';
 }
 
 export type PostType = 'question' | 'article';
@@ -90,7 +90,7 @@ export interface Post extends PostAnswerEntity {
   trend?: number;
   type: PostType;
   headerImage?: string;
-  images: number[];
+  images?: number[];
 }
 
 export interface Template {
@@ -126,6 +126,16 @@ export type CommentFilter = {
   values: Array<string | undefined>;
 };
 
+export type TagFilter = {
+  property: 'tags.tag';
+  values: Array<string | undefined>;
+};
+
+export type CollectionFilter = {
+  property: 'collections.owner' | 'collections.id' | 'tags' | 'entityRefs';
+  values: Array<string | undefined>;
+};
+
 export interface Answer extends PostAnswerEntity {
   postId: number;
   correct: boolean;
@@ -137,8 +147,8 @@ export interface Collection extends CollectionEntity {
   tags?: string[];
   entities?: string[];
   posts?: Post[];
-  canEdit: boolean;
-  canDelete: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
   images: number[];
   followers: number;
 }
@@ -215,8 +225,6 @@ export type CollectionsResponseBody = CollectionsResponse | ErrorResponse;
 export interface CollectionRequest {
   title: string;
   description?: string;
-  readAccess: 'public' | 'private';
-  editAccess: 'public' | 'private';
   images: number[];
   headerImage?: string;
 }
@@ -256,12 +264,13 @@ export interface AnswersResponse {
 
 export type AnswerResponseBody = Answer | ErrorResponse;
 
-export interface TagResponse {
-  id: number;
+export interface TagResponse extends QetaIdEntity {
   tag: string;
   description?: string;
   postsCount: number;
   followerCount: number;
+  canEdit?: boolean;
+  canDelete?: boolean;
 }
 
 export interface TagsResponse {

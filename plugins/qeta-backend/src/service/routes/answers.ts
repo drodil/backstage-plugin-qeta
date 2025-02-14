@@ -362,7 +362,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       const username = await getUsername(request, options);
       const post = await database.getPost(username, postId, false);
       let answer = await database.getAnswer(answerId, username);
-      const comment = await database.getAnswerComment(commentId);
+      const comment = await database.getComment(commentId, { answerId });
 
       await authorize(request, qetaReadPostPermission, options, post);
       await authorize(request, qetaReadAnswerPermission, options, answer);

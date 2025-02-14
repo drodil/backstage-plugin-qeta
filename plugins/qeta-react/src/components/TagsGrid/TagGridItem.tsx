@@ -20,7 +20,7 @@ import { tagRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
 import { EditTagModal } from './EditTagModal';
 import DOMPurify from 'dompurify';
-import { useIsModerator, useTagsFollow, useTranslation } from '../../hooks';
+import { useTagsFollow, useTranslation } from '../../hooks';
 import { DeleteModal } from '../DeleteModal';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
@@ -36,7 +36,6 @@ export const TagGridItem = (props: {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const tags = useTagsFollow();
-  const { isModerator } = useIsModerator();
 
   const [editModalOpen, setEditModalOpen] = React.useState(false);
   const handleEditModalOpen = () => setEditModalOpen(true);
@@ -103,17 +102,19 @@ export const TagGridItem = (props: {
                 </Button>
               </Tooltip>
             </Grid>
-            <Grid item>
-              <Button
-                size="small"
-                onClick={handleEditModalOpen}
-                variant="outlined"
-                startIcon={<EditIcon />}
-              >
-                {t('tagButton.edit')}
-              </Button>
-            </Grid>
-            {isModerator && (
+            {tag.canEdit && (
+              <Grid item>
+                <Button
+                  size="small"
+                  onClick={handleEditModalOpen}
+                  variant="outlined"
+                  startIcon={<EditIcon />}
+                >
+                  {t('tagButton.edit')}
+                </Button>
+              </Grid>
+            )}
+            {tag.canDelete && (
               <Grid item>
                 <Button
                   size="small"

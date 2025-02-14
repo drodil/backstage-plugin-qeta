@@ -7,6 +7,10 @@ export interface Config {
      */
     allowAnonymous?: boolean;
     /**
+     * @visibility frontend
+     */
+    permissions?: boolean;
+    /**
      * Determine what kind of entities can be attached to questions.
      * For example [System, Component, API, Location, Template]. Default is [Component, System].
      *

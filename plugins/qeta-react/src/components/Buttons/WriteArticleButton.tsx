@@ -1,12 +1,12 @@
 import CreateIcon from '@material-ui/icons/Create';
 import React from 'react';
-import { RequirePermission } from '@backstage/plugin-permission-react';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { writeRouteRef } from '../../routes';
 import { useTranslation } from '../../hooks';
 import { Box } from '@material-ui/core';
+import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 
 export const WriteArticleButton = (props: {
   entity?: string;
@@ -29,7 +29,10 @@ export const WriteArticleButton = (props: {
   }
 
   return (
-    <RequirePermission permission={qetaCreatePostPermission} errorPage={<></>}>
+    <OptionalRequirePermission
+      permission={qetaCreatePostPermission}
+      errorPage={<></>}
+    >
       <Box sx={{ marginLeft: 2 }}>
         <LinkButton
           size="small"
@@ -45,6 +48,6 @@ export const WriteArticleButton = (props: {
           {t('writeArticleButton.title')}
         </LinkButton>
       </Box>
-    </RequirePermission>
+    </OptionalRequirePermission>
   );
 };
