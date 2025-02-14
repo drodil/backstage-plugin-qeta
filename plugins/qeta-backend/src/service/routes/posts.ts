@@ -587,6 +587,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const resp = await database.getPost(username, postId, false, {
       tagsFilter,
       commentsFilter,
+      includeComments: false,
+      includeAnswers: false,
+      includeAttachments: false,
+      includeTags: false,
+      includeEntities: false,
     });
     if (resp === null) {
       response.sendStatus(404);
@@ -711,7 +716,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       username,
       Number.parseInt(request.params.id, 10),
       false,
-      { tagsFilter, commentsFilter },
+      {
+        tagsFilter,
+        commentsFilter,
+        includeComments: false,
+        includeAnswers: false,
+        includeEntities: false,
+        includeVotes: false,
+        includeTags: false,
+        includeAttachments: false,
+      },
     );
 
     await mapAdditionalFields(request, post, options);
@@ -753,7 +767,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       username,
       Number.parseInt(request.params.id, 10),
       false,
-      { tagsFilter, commentsFilter },
+      {
+        tagsFilter,
+        commentsFilter,
+        includeComments: false,
+        includeAnswers: false,
+        includeEntities: false,
+        includeVotes: false,
+        includeTags: false,
+        includeAttachments: false,
+      },
     );
 
     await mapAdditionalFields(request, post, options);

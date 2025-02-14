@@ -166,7 +166,7 @@ function parseFilter(
   filter: PermissionCriteria<QetaFilters>,
   query: Knex.QueryBuilder,
   db: Knex,
-  type: 'post' | 'answer' | 'collection' | 'tags' = 'post',
+  type: 'post' | 'answer' | 'collection' | 'tags' | 'comments' = 'post',
   negate: boolean = false,
 ): Knex.QueryBuilder {
   if (isNotCriteria(filter)) {
@@ -2419,11 +2419,16 @@ export class DatabaseQetaStore implements QetaStore {
         ? this.getRelatedTags(val.id, 'post_tags', 'postId', tagsFilter)
         : undefined,
       includeAnswers
-        ? this.getPostAnswers(val.id, user_ref, includeVotes, includeComments)
+        ? this.getPostAnswers(val.id, user_ref, {
+            ...options,
+            includePost: false,
+          })
         : undefined,
       includeVotes ? this.getPostVotes(val.id) : undefined,
       includeEntities ? this.getRelatedEntities(val.id) : undefined,
-      includeComments ? this.getPostComments(val.id) : undefined,
+      includeComments
+        ? this.getPostComments(val.id, options?.commentsFilter)
+        : undefined,
       includeAttachments
         ? this.db('attachments').select('id').where('postId', val.id)
         : undefined,
@@ -2480,7 +2485,9 @@ export class DatabaseQetaStore implements QetaStore {
     } = options ?? {};
     const additionalInfo = await Promise.all([
       includeVotes ? this.getAnswerVotes(val.id) : undefined,
-      includeComments ? this.getAnswerComments(val.id) : undefined,
+      includeComments
+        ? this.getAnswerComments(val.id, options?.commentsFilter)
+        : undefined,
       includePost ? this.getPost(user_ref, val.postId, false) : undefined,
       this.db('attachments').select('id').where('answerId', val.id),
     ]);
@@ -2530,18 +2537,34 @@ export class DatabaseQetaStore implements QetaStore {
     return rows.map(val => val.tag);
   }
 
-  private async getPostComments(postId: number): Promise<RawCommentEntity[]> {
-    return this.db<RawCommentEntity>('comments') // nosonar
-      .where('comments.postId', '=', postId)
-      .select();
+  private async getPostComments(
+    postId: number,
+    commentsFilter?: PermissionCriteria<QetaFilters>,
+  ): Promise<RawCommentEntity[]> {
+    const query = this.db<RawCommentEntity>('comments').where(
+      'comments.postId',
+      '=',
+      postId,
+    );
+    if (commentsFilter) {
+      parseFilter(commentsFilter, query, this.db, 'comments');
+    }
+    return query.select();
   }
 
   private async getAnswerComments(
     answerId: number,
+    commentsFilter?: PermissionCriteria<QetaFilters>,
   ): Promise<RawCommentEntity[]> {
-    return this.db<RawCommentEntity>('comments') // nosonar
-      .where('comments.answerId', '=', answerId)
-      .select();
+    const query = this.db<RawCommentEntity>('comments').where(
+      'comments.answerId',
+      '=',
+      answerId,
+    );
+    if (commentsFilter) {
+      parseFilter(commentsFilter, query, this.db, 'comments');
+    }
+    return query.select();
   }
 
   private async getRelatedEntities(
@@ -2549,7 +2572,7 @@ export class DatabaseQetaStore implements QetaStore {
     tableName: string = 'post_entities',
     columnName: string = 'postId',
   ): Promise<string[]> {
-    const rows = await this.db<RawTagEntity>('entities') // nosonar
+    const rows = await this.db<RawTagEntity>('entities')
       .leftJoin(tableName, 'entities.id', `${tableName}.entityId`)
       .where(`${tableName}.${columnName}`, '=', id)
       .select();
@@ -2587,8 +2610,7 @@ export class DatabaseQetaStore implements QetaStore {
   private async getPostAnswers(
     postId: number,
     user_ref: string,
-    includeVotes?: boolean,
-    includeComments?: boolean,
+    options?: AnswerOptions,
   ): Promise<Answer[]> {
     const rows = await this.getAnswerBaseQuery()
       .where('postId', '=', postId)
@@ -2596,11 +2618,7 @@ export class DatabaseQetaStore implements QetaStore {
       .orderBy('answers.created');
     return await Promise.all(
       rows.map(async val => {
-        return this.mapAnswer(val, user_ref, {
-          includeComments,
-          includeVotes,
-          includePost: false,
-        });
+        return this.mapAnswer(val, user_ref, options);
       }),
     );
   }

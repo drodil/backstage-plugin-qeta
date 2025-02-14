@@ -144,6 +144,7 @@ export type AnswerOptions = {
   includeVotes?: boolean;
   includeComments?: boolean;
   includePost?: boolean;
+  commentsFilter?: PermissionCriteria<QetaFilters>;
 };
 
 /**
