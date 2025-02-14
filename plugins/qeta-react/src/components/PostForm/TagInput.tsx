@@ -3,10 +3,15 @@ import { TextField, Tooltip, Typography } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
 import { qetaApiRef } from '../../api';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { filterTags } from '@drodil/backstage-plugin-qeta-common';
+import {
+  filterTags,
+  qetaCreateTagPermission,
+} from '@drodil/backstage-plugin-qeta-common';
 import { useTranslation } from '../../hooks';
 import { FieldError } from 'react-hook-form';
 import { AutocompleteListboxComponent } from './AutocompleteListComponent';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 export const TagInput = (props: {
   value?: string[];
@@ -26,14 +31,35 @@ export const TagInput = (props: {
   } = props;
   const qetaApi = useApi(qetaApiRef);
   const config = useApi(configApiRef);
+  const permissions = useApi(permissionApiRef);
   const { t } = useTranslation();
-  const allowCreation = useMemo(
-    () =>
-      allowCreate ??
-      config.getOptionalBoolean('qeta.tags.allowCreation') ??
-      true,
-    [config, allowCreate],
+  const [allowCreation, setAllowCreation] = React.useState<boolean | undefined>(
+    allowCreate,
   );
+  useEffect(() => {
+    if (allowCreate !== undefined) {
+      return;
+    }
+
+    if (config.getOptionalBoolean('qeta.permissions') === true) {
+      permissions
+        .authorize({
+          permission: qetaCreateTagPermission,
+        })
+        .then(res => {
+          if (res.result === AuthorizeResult.ALLOW) {
+            setAllowCreation(true);
+          } else {
+            setAllowCreation(false);
+          }
+        });
+    } else {
+      setAllowCreation(
+        config.getOptionalBoolean('qeta.tags.allowCreation') ?? true,
+      );
+    }
+  }, [config, permissions, allowCreate]);
+
   const allowedTags = useMemo(
     () => config.getOptionalStringArray('qeta.tags.allowedTags') ?? [],
     [config],

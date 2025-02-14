@@ -105,7 +105,7 @@ const getValues = async (
     entities: 'items' in entities ? compact(entities.items) : [],
     type,
     headerImage: post.headerImage,
-    images: post.images,
+    images: post.images ?? [],
   };
 };
 

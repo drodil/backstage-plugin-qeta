@@ -54,6 +54,8 @@
   ],
   "dependencies": {
     "@backstage/backend-plugin-api": "backstage:^",
-    "@drodil/backstage-plugin-qeta-common": "workspace:^"
+    "@backstage/plugin-permission-node": "backstage:^",
+    "@drodil/backstage-plugin-qeta-common": "workspace:^",
+    "zod": "^3.22.4"
   }
 }

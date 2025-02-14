@@ -16,6 +16,7 @@ import {
 } from '@material-ui/core';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Visibility from '@material-ui/icons/Visibility';
+import { useNavigate } from 'react-router-dom';
 
 const cache: Map<string, EntityResponse> = new Map();
 
@@ -98,10 +99,14 @@ const EntityTooltip = (props: { entity: Entity | string }) => {
   );
 };
 
-export const EntityChip = (props: { entity: Entity | string }) => {
+export const EntityChip = (props: {
+  entity: Entity | string;
+  useHref?: boolean;
+}) => {
   const { entity } = props;
   const entityRoute = useRouteRef(entityRouteRef);
   const { primaryTitle, Icon } = useEntityPresentation(entity);
+  const navigate = useNavigate();
   const entityRef =
     typeof entity === 'string' ? entity : stringifyEntityRef(entity);
   return (
@@ -118,7 +123,15 @@ export const EntityChip = (props: { entity: Entity | string }) => {
         variant="outlined"
         className="qetaEntityChip"
         component="a"
-        href={entityRoute({ entityRef })}
+        href={props.useHref ? entityRoute({ entityRef }) : undefined}
+        target={props.useHref ? '_blank' : undefined}
+        onClick={
+          !props.useHref
+            ? () => {
+                navigate(entityRoute({ entityRef }));
+              }
+            : undefined
+        }
         clickable
       />
     </Tooltip>

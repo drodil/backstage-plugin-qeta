@@ -102,6 +102,7 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
           <SearchBar
             onSearch={setSearchQuery}
             label={t('collectionsPage.search.label')}
+            loading={loading}
           />
         </Grid>
       </Grid>

@@ -6,25 +6,30 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   isResourcePermission,
+  isUpdatePermission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import { PolicyQuery } from '@backstage/plugin-permission-node';
 import {
   ANSWER_RESOURCE_TYPE,
+  COLLECTION_RESOUCE_TYPE,
   COMMENT_RESOURCE_TYPE,
   isQetaPermission,
   POST_RESOURCE_TYPE,
+  TAG_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   answerAuthorConditionFactory,
   answerQuestionEntitiesConditionFactory,
+  collectionOwnerConditionFactory,
   commentAuthorConditionFactory,
   createAnswerConditionalDecision,
+  createCollectionConditionalDecision,
   createCommentConditionalDecision,
   createPostConditionalDecision,
   postAuthorConditionFactory,
   postHasEntitiesConditionFactory,
-} from '@drodil/backstage-plugin-qeta-backend';
+} from '@drodil/backstage-plugin-qeta-node';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -150,6 +155,62 @@ export class PermissionPolicy implements PermissionPolicy {
       /** if (isPermission(request.permission, qetaCreateCommentPermission)) {
         return { result: AuthorizeResult.DENY };
       }*/
+
+      // Disable tag creation
+      /** if (isPermission(request.permission, qetaCreateTagPermission)) {
+        return { result: AuthorizeResult.DENY };
+      }*/
+
+      // Disable collection creation
+      /** if (isPermission(request.permission, qetaCreateCollectionPermission)) {
+        return { result: AuthorizeResult.DENY };
+      }*/
+
+      // Allow reading only own collections
+      /** if (isResourcePermission(request.permission, COLLECTION_RESOUCE_TYPE)) {
+        return createCollectionConditionalDecision(request.permission, {
+          allOf: [
+            collectionOwnerConditionFactory({
+              userRef: user.identity.userEntityRef,
+            }),
+          ],
+        });
+      }
+          */
+
+      // Allow reading only specific tags
+      /** if (isResourcePermission(request.permission, TAG_RESOURCE_TYPE)) {
+        return createTagConditionalDecision(request.permission, {
+          allOf: [
+            tagConditionFactory({
+              tag: 'test',
+            }),
+          ],
+        });
+      } */
+
+      // Test that only collections with specific tags can be seen
+      /** if (isResourcePermission(request.permission, COLLECTION_RESOUCE_TYPE)) {
+        return createCollectionConditionalDecision(request.permission, {
+          allOf: [
+            collectionHasTagsConditionFactory({
+              tags: ['test'],
+            }),
+          ],
+        });
+      }*/
+
+      // Test that only collections with specific entities can be seen
+      /** if (isResourcePermission(request.permission, COLLECTION_RESOUCE_TYPE)) {
+        return createCollectionConditionalDecision(request.permission, {
+          allOf: [
+            collectionHasEntitiesConditionFactory({
+              entityRefs: ['group:default/child-group'],
+            }),
+          ],
+        });
+      } */
+
       return { result: AuthorizeResult.ALLOW };
     }
 
@@ -224,6 +285,7 @@ export class PermissionPolicy implements PermissionPolicy {
         });
       }
 
+      // Allow updating and deleting only own answers and answers with test-component in the question
       if (isResourcePermission(request.permission, ANSWER_RESOURCE_TYPE)) {
         return createAnswerConditionalDecision(request.permission, {
           anyOf: [
@@ -237,6 +299,7 @@ export class PermissionPolicy implements PermissionPolicy {
         });
       }
 
+      // Allow deleting and updating only own comments
       if (isResourcePermission(request.permission, COMMENT_RESOURCE_TYPE)) {
         return createCommentConditionalDecision(request.permission, {
           allOf: [
@@ -245,6 +308,25 @@ export class PermissionPolicy implements PermissionPolicy {
             }),
           ],
         });
+      }
+
+      // Allow deleting and updating only own collections
+      if (isResourcePermission(request.permission, COLLECTION_RESOUCE_TYPE)) {
+        return createCollectionConditionalDecision(request.permission, {
+          allOf: [
+            collectionOwnerConditionFactory({
+              userRef: user.identity.userEntityRef,
+            }),
+          ],
+        });
+      }
+
+      // Allow updating any tag by anyone
+      if (
+        isResourcePermission(request.permission, TAG_RESOURCE_TYPE) &&
+        isUpdatePermission(request.permission)
+      ) {
+        return { result: AuthorizeResult.ALLOW };
       }
     }
 

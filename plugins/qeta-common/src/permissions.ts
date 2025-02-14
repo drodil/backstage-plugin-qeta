@@ -76,6 +76,48 @@ export const qetaDeleteCommentPermission = createPermission({
   resourceType: COMMENT_RESOURCE_TYPE,
 });
 
+export const TAG_RESOURCE_TYPE = 'tag';
+export const qetaCreateTagPermission = createPermission({
+  name: 'qeta.create.tag',
+  attributes: { action: 'create' },
+});
+export const qetaReadTagPermission = createPermission({
+  name: 'qeta.read.tag',
+  attributes: { action: 'read' },
+  resourceType: TAG_RESOURCE_TYPE,
+});
+export const qetaEditTagPermission = createPermission({
+  name: 'qeta.edit.tag',
+  attributes: { action: 'update' },
+  resourceType: TAG_RESOURCE_TYPE,
+});
+export const qetaDeleteTagPermission = createPermission({
+  name: 'qeta.delete.tag',
+  attributes: { action: 'delete' },
+  resourceType: TAG_RESOURCE_TYPE,
+});
+
+export const COLLECTION_RESOUCE_TYPE = 'collection';
+export const qetaReadCollectionPermission = createPermission({
+  name: 'qeta.read.collection',
+  attributes: { action: 'read' },
+  resourceType: COLLECTION_RESOUCE_TYPE,
+});
+export const qetaCreateCollectionPermission = createPermission({
+  name: 'qeta.create.collection',
+  attributes: { action: 'create' },
+});
+export const qetaEditCollectionPermission = createPermission({
+  name: 'qeta.edit.collection',
+  attributes: { action: 'update' },
+  resourceType: COLLECTION_RESOUCE_TYPE,
+});
+export const qetaDeleteCollectionPermission = createPermission({
+  name: 'qeta.delete.collection',
+  attributes: { action: 'delete' },
+  resourceType: COLLECTION_RESOUCE_TYPE,
+});
+
 export const qetaPermissions = [
   qetaReadPostPermission,
   qetaCreatePostPermission,
@@ -89,6 +131,14 @@ export const qetaPermissions = [
   qetaReadCommentPermission,
   qetaEditCommentPermission,
   qetaDeleteCommentPermission,
+  qetaCreateTagPermission,
+  qetaReadTagPermission,
+  qetaEditTagPermission,
+  qetaDeleteTagPermission,
+  qetaReadCollectionPermission,
+  qetaCreateCollectionPermission,
+  qetaEditCollectionPermission,
+  qetaDeleteCollectionPermission,
 ];
 
 export const qetaPostPermissions = [
@@ -110,6 +160,20 @@ export const qetaCommentPermissions = [
   qetaReadCommentPermission,
   qetaEditCommentPermission,
   qetaDeleteCommentPermission,
+];
+
+export const qetaTagPermissions = [
+  qetaCreateTagPermission,
+  qetaReadTagPermission,
+  qetaEditTagPermission,
+  qetaDeleteTagPermission,
+];
+
+export const qetaCollectionPermissions = [
+  qetaReadCollectionPermission,
+  qetaCreateCollectionPermission,
+  qetaEditCollectionPermission,
+  qetaDeleteCollectionPermission,
 ];
 
 export const isQetaPermission = (

@@ -1,5 +1,5 @@
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { WarningPanel } from '@backstage/core-components';
 import { NoPostsCard } from '../PostsContainer/NoPostsCard';
 import { Box, Grid } from '@material-ui/core';
@@ -41,15 +41,8 @@ export const PostsGridContent = (props: {
     page,
     pageCount,
   } = props;
-  const [initialLoad, setInitialLoad] = useState(true);
   const { t } = useTranslation();
   const gridRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!loading) {
-      setInitialLoad(false);
-    }
-  }, [initialLoad, loading]);
 
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
@@ -71,10 +64,7 @@ export const PostsGridContent = (props: {
   };
 
   if (loading) {
-    if (initialLoad) {
-      return <LoadingGrid />;
-    }
-    return null;
+    return <LoadingGrid />;
   }
 
   const itemType = (type ?? 'post') as any;

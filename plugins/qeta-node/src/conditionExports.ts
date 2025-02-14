@@ -1,9 +1,17 @@
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { answerRules, commentRules, postRules } from './service/postRules';
+import {
+  answerRules,
+  collectionRules,
+  commentRules,
+  postRules,
+  tagRules,
+} from './permissionRules';
 import {
   ANSWER_RESOURCE_TYPE,
+  COLLECTION_RESOUCE_TYPE,
   COMMENT_RESOURCE_TYPE,
   POST_RESOURCE_TYPE,
+  TAG_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 
 const {
@@ -44,3 +52,29 @@ const {
 export const commentConditions = cConditions;
 
 export const createCommentConditionalDecision = createCommentDecision;
+
+const {
+  conditions: tConditions,
+  createConditionalDecision: createTagDecision,
+} = createConditionExports({
+  pluginId: 'qeta',
+  resourceType: TAG_RESOURCE_TYPE,
+  rules: tagRules,
+});
+
+export const tagConditions = tConditions;
+
+export const createTagConditionalDecision = createTagDecision;
+
+const {
+  conditions: colConditions,
+  createConditionalDecision: createCollectionDecision,
+} = createConditionExports({
+  pluginId: 'qeta',
+  resourceType: COLLECTION_RESOUCE_TYPE,
+  rules: collectionRules,
+});
+
+export const collectionConditions = colConditions;
+
+export const createCollectionConditionalDecision = createCollectionDecision;

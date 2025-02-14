@@ -25,6 +25,12 @@ export const PostHighlightList = (props: {
       api.getPostsList(props.type, {
         limit: 5,
         type: props.postType,
+        includeTags: false,
+        includeAttachments: false,
+        includeComments: false,
+        includeAnswers: false,
+        includeVotes: false,
+        includeEntities: false,
         ...props.options,
       }),
     [],
@@ -41,7 +47,7 @@ export const PostHighlightList = (props: {
       <RightList title={props.title} icon={props.icon}>
         {loading && (
           <ListItem className="qetaPostHighlightListListItem" dense>
-            <Skeleton variant="rect" />
+            <Skeleton variant="rect" width="100%" />
           </ListItem>
         )}
         {error && (
@@ -49,7 +55,7 @@ export const PostHighlightList = (props: {
             <ListItemText>{t('highlights.loadError')}</ListItemText>
           </ListItem>
         )}
-        {!error && posts.length === 0 && (
+        {!error && !loading && posts.length === 0 && (
           <ListItem className="qetaPostHighlightListListItem" dense>
             <ListItemText>{props.noQuestionsLabel}</ListItemText>
           </ListItem>

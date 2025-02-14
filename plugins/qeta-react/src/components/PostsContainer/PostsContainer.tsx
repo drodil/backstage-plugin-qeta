@@ -96,6 +96,7 @@ export const PostsContainer = (
             label={t('postsContainer.search.label', {
               itemType: itemType.toLowerCase(),
             })}
+            loading={loading}
           />
         </Grid>
         {showAskButton && (

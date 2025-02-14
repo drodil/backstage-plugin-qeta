@@ -52,5 +52,13 @@ The Q&A permissions are exported from `@drodil/backstage-plugin-qeta-common` pac
 - qetaCreateCommentPermission - Allows or denies commenting on posts or answers
 - qetaEditCommentPermission - Allows or denies editing of comments
 - qetaDeleteCommentPermission - Allows or denies deleting of comments
+- qetaReadTagPermission - Allows or denies reading of tags
+- qetaCreateTagPermission - Allows or denies creating of tags
+- qetaEditTagPermission - Allows or denies editing of tags
+- qetaDeleteTagPermission - Allows or denies deleting of tags
+- qetaReadCollectionPermission - Allows or denies reading of collections
+- qetaCreateCollectionPermission - Allows or denies creating of collections
+- qetaEditCollectionPermission - Allows or denies editing of collections
+- qetaDeleteCollectionPermission - Allows or denies deleting of collections
 
 You can find example permission policy in the `plugins/qeta-backend/dev/PermissionPolicy.ts` file.

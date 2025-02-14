@@ -3,12 +3,17 @@ import {
   getAuthorizeConditions,
   getCreated,
   getUsername,
+  mapAdditionalFields,
 } from '../util';
 import Ajv from 'ajv';
 import { Router } from 'express';
 import {
-  qetaCreatePostPermission,
+  qetaCreateCollectionPermission,
+  qetaDeleteCollectionPermission,
+  qetaEditCollectionPermission,
+  qetaReadCollectionPermission,
   qetaReadPostPermission,
+  qetaReadTagPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import addFormats from 'ajv-formats';
 import {
@@ -46,23 +51,35 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const filter = await getAuthorizeConditions(
-      request,
-      qetaReadPostPermission,
-      options,
-      true,
-    );
+    const conditions = await Promise.all([
+      getAuthorizeConditions(request, qetaReadPostPermission, options, true),
+      getAuthorizeConditions(
+        request,
+        qetaReadCollectionPermission,
+        options,
+        true,
+      ),
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+    ]);
+
+    const postFilters = conditions[0];
+    const filters = conditions[1];
+    const tagFilters = conditions[2];
 
     // Act
-    const collections = await database.getCollections(
-      username,
-      request.query,
-      filter,
-    );
-    response.json({
-      collections: collections.collections,
-      total: collections.total,
+    const collections = await database.getCollections(username, request.query, {
+      filters,
+      postFilters,
+      tagFilters,
     });
+
+    await Promise.all(
+      collections.collections.map(async collection => {
+        await mapAdditionalFields(request, collection, options);
+      }),
+    );
+
+    response.json(collections);
   });
 
   router.post(`/collections/query`, async (request, response) => {
@@ -85,23 +102,31 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const filter = await getAuthorizeConditions(
-      request,
-      qetaReadPostPermission,
-      options,
-      true,
-    );
+    const [postFilters, filters, tagFilters] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadPostPermission, options, true),
+      getAuthorizeConditions(
+        request,
+        qetaReadCollectionPermission,
+        options,
+        true,
+      ),
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+    ]);
 
     // Act
-    const collections = await database.getCollections(
-      username,
-      request.body,
-      filter,
-    );
-    response.json({
-      collections: collections.collections,
-      total: collections.total,
+    const collections = await database.getCollections(username, request.body, {
+      filters,
+      postFilters,
+      tagFilters,
     });
+
+    await Promise.all(
+      collections.collections.map(async collection => {
+        await mapAdditionalFields(request, collection, options);
+      }),
+    );
+
+    response.json(collections);
   });
 
   // POST /collections
@@ -114,7 +139,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
         .json({ errors: validateRequestBody.errors, type: 'body' });
       return;
     }
-    await authorize(request, qetaCreatePostPermission, options);
+    await authorize(request, qetaCreateCollectionPermission, options);
 
     const username = await getUsername(request, options);
     const created = await getCreated(request, options);
@@ -125,10 +150,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       title: request.body.title,
       description: request.body.description,
       created,
-      readAccess: request.body.readAccess,
-      editAccess: request.body.editAccess,
       images: request.body.images,
       headerImage: request.body.headerImage,
+      opts: { includePosts: false },
     });
 
     if (!collection) {
@@ -160,6 +184,8 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       });
     }
 
+    await mapAdditionalFields(request, collection, options);
+
     // Response
     response.status(201);
     response.json(collection);
@@ -189,10 +215,23 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
     );
 
-    if (!collection?.canEdit) {
-      response.sendStatus(401);
+    if (!collection) {
+      response.sendStatus(404);
       return;
     }
+
+    await authorize(request, qetaEditCollectionPermission, options, collection);
+
+    const [postFilters, filters, tagFilters] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadPostPermission, options, true),
+      getAuthorizeConditions(
+        request,
+        qetaReadCollectionPermission,
+        options,
+        true,
+      ),
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+    ]);
 
     // Act
     collection = await database.updateCollection({
@@ -200,10 +239,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       user_ref: username,
       title: request.body.title,
       description: request.body.description,
-      readAccess: collection.canDelete ? request.body.readAccess : undefined,
-      editAccess: collection.canDelete ? request.body.editAccess : undefined,
       images: request.body.images,
       headerImage: request.body.headerImage,
+      opts: { postFilters, tagFilters, filters },
     });
 
     if (!collection) {
@@ -221,6 +259,8 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
         metadata: { action: 'update_collection' },
       });
     }
+
+    await mapAdditionalFields(request, collection, options);
 
     // Response
     response.status(200);
@@ -244,12 +284,22 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
     );
 
-    if (!collection?.canDelete) {
-      response.sendStatus(401);
+    if (!collection) {
+      response.sendStatus(404);
       return;
     }
 
-    if (events) {
+    await authorize(
+      request,
+      qetaDeleteCollectionPermission,
+      options,
+      collection,
+    );
+
+    // Act
+    const deleted = await database.deleteCollection(collectionId);
+
+    if (deleted && events) {
       events.publish({
         topic: 'qeta',
         eventPayload: {
@@ -260,22 +310,28 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       });
     }
 
-    // Act
-    const deleted = await database.deleteCollection(collectionId);
-
     // Response
     response.sendStatus(deleted ? 200 : 404);
   });
 
   router.get('/collections/followed', async (request, response) => {
     const username = await getUsername(request, options, false);
-    const filter = await getAuthorizeConditions(
-      request,
-      qetaReadPostPermission,
-      options,
-    );
+    const [postFilters, filters, tagFilters] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadPostPermission, options, true),
+      getAuthorizeConditions(
+        request,
+        qetaReadCollectionPermission,
+        options,
+        true,
+      ),
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+    ]);
 
-    const collections = await database.getUserCollections(username, filter);
+    const collections = await database.getUserCollections(username, {
+      filters,
+      postFilters,
+      tagFilters,
+    });
     response.json(collections);
   });
 
@@ -289,6 +345,13 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const username = await getUsername(request, options, false);
+    const collection = await database.getCollection(username, collectionId);
+    if (!collection) {
+      response.sendStatus(404);
+      return;
+    }
+    await authorize(request, qetaReadCollectionPermission, options, collection);
+
     await database.followCollection(username, collectionId);
     response.status(204).send();
   });
@@ -303,6 +366,13 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const username = await getUsername(request, options, false);
+    const collection = await database.getCollection(username, collectionId);
+    if (!collection) {
+      response.sendStatus(404);
+      return;
+    }
+
+    await authorize(request, qetaReadCollectionPermission, options, collection);
     await database.unfollowCollection(username, collectionId);
     response.status(204).send();
   });
@@ -320,16 +390,15 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const filter = await getAuthorizeConditions(
-      request,
-      qetaReadPostPermission,
-      options,
-    );
+    const [postFilters, tagFilters] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadPostPermission, options, true),
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+    ]);
 
     const collection = await database.getCollection(
       username,
       Number.parseInt(request.params.id, 10),
-      filter,
+      { postFilters, tagFilters },
     );
 
     if (collection === null) {
@@ -337,11 +406,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    if (collection.readAccess === 'private' && collection.owner !== username) {
-      response.sendStatus(401);
-      return;
-    }
+    await authorize(request, qetaReadCollectionPermission, options, collection);
 
+    await mapAdditionalFields(request, collection, options);
     // Response
     response.json(collection);
   });
@@ -370,23 +437,19 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
     );
 
-    if (!collection?.canEdit) {
-      response.sendStatus(401);
-      return;
-    }
+    await authorize(request, qetaEditCollectionPermission, options, collection);
 
-    const filter = await getAuthorizeConditions(
-      request,
-      qetaReadPostPermission,
-      options,
-    );
+    const [postFilters, tagFilters] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadPostPermission, options, true),
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+    ]);
 
     // Act
     collection = await database.addPostToCollection(
       username,
       collectionId,
       request.body.postId,
-      filter,
+      { postFilters, tagFilters },
     );
 
     if (!collection) {
@@ -420,6 +483,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       });
     }
 
+    await mapAdditionalFields(request, collection, options);
     // Response
     response.status(200);
     response.json(collection);
@@ -449,23 +513,19 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
     );
 
-    if (!collection?.canEdit) {
-      response.sendStatus(401);
-      return;
-    }
+    await authorize(request, qetaEditCollectionPermission, options, collection);
 
-    const filter = await getAuthorizeConditions(
-      request,
-      qetaReadPostPermission,
-      options,
-    );
+    const [postFilters, tagFilters] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadPostPermission, options, true),
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+    ]);
 
     // Act
     collection = await database.removePostFromCollection(
       username,
       collectionId,
       request.body.postId,
-      filter,
+      { postFilters, tagFilters },
     );
 
     if (events) {
@@ -478,6 +538,8 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
         metadata: { action: 'update_collection' },
       });
     }
+
+    await mapAdditionalFields(request, collection, options);
 
     // Response
     response.status(200);
@@ -507,10 +569,12 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
     );
 
-    if (!collection?.canEdit) {
-      response.sendStatus(401);
+    if (!collection) {
+      response.sendStatus(404);
       return;
     }
+
+    await authorize(request, qetaEditCollectionPermission, options, collection);
 
     const post = await database.getPost(username, request.body.postId, false);
 

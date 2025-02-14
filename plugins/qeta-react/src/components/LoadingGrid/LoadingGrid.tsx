@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Progress } from '@backstage/core-components';
 
 export const LoadingGrid = () => {
   return (
@@ -8,10 +8,10 @@ export const LoadingGrid = () => {
       container
       justifyContent="center"
       alignItems="center"
-      style={{ height: '20vh' }}
+      style={{ height: '10vh' }}
     >
-      <Grid item>
-        <Skeleton variant="rect" height={200} />
+      <Grid item xs={12}>
+        <Progress />
       </Grid>
     </Grid>
   );

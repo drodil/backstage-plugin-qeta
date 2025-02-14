@@ -18,6 +18,7 @@ import { DeleteModal } from '../DeleteModal';
 import EditIcon from '@material-ui/icons/Edit';
 import { useVoting } from '../../hooks/useVoting';
 import { useTranslation } from '../../hooks';
+import { useNavigate } from 'react-router-dom';
 
 export type QetaArticleButtonsClassKey = 'container' | 'scoreText';
 
@@ -46,6 +47,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
     useVoting(post);
   const styles = useLocalStyles();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const editArticleRoute = useRouteRef(editArticleRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
@@ -120,9 +122,13 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
                 <Tooltip title={t('articlePage.editButton')}>
                   <IconButton
                     size="small"
-                    href={editArticleRoute({
-                      id: post.id.toString(10),
-                    })}
+                    onClick={() =>
+                      navigate(
+                        editArticleRoute({
+                          id: post.id.toString(10),
+                        }),
+                      )
+                    }
                     color="primary"
                   >
                     <EditIcon />

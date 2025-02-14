@@ -5,7 +5,6 @@ import { useQetaApi } from '../../hooks';
 import { Card, CardHeader, Divider, Grid } from '@material-ui/core';
 
 export const PostsCard = (props: {
-  type: string;
   title: string;
   options?: PostsQuery;
   icon?: React.ReactNode;
