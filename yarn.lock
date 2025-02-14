@@ -5202,6 +5202,7 @@ __metadata:
     "@backstage/core-components": "backstage:^"
     "@backstage/core-plugin-api": "backstage:^"
     "@backstage/plugin-catalog-react": "backstage:^"
+    "@backstage/plugin-permission-common": "backstage:^"
     "@backstage/plugin-permission-react": "backstage:^"
     "@backstage/plugin-signals-react": "backstage:^"
     "@backstage/test-utils": "backstage:^"

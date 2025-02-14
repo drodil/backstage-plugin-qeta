@@ -80,7 +80,6 @@ export const TAG_RESOURCE_TYPE = 'tag';
 export const qetaCreateTagPermission = createPermission({
   name: 'qeta.create.tag',
   attributes: { action: 'create' },
-  resourceType: TAG_RESOURCE_TYPE,
 });
 export const qetaReadTagPermission = createPermission({
   name: 'qeta.read.tag',
@@ -107,7 +106,6 @@ export const qetaReadCollectionPermission = createPermission({
 export const qetaCreateCollectionPermission = createPermission({
   name: 'qeta.create.collection',
   attributes: { action: 'create' },
-  resourceType: COLLECTION_RESOUCE_TYPE,
 });
 export const qetaEditCollectionPermission = createPermission({
   name: 'qeta.edit.collection',

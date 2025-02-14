@@ -64,6 +64,7 @@ export interface PostsQuery extends PaginatedQuery {
   toDate?: string;
   type?: PostType;
   collectionId?: number;
+  ids?: number[];
 }
 
 export interface CollectionsQuery extends PaginatedQuery {
@@ -74,6 +75,7 @@ export interface CollectionsQuery extends PaginatedQuery {
   tagsRelation?: 'and' | 'or';
   fromDate?: string;
   toDate?: string;
+  ids?: number[];
 }
 
 export interface AnswersQuery extends PaginatedQuery {
@@ -90,6 +92,7 @@ export interface AnswersQuery extends PaginatedQuery {
   includeComments?: boolean;
   fromDate?: string;
   toDate?: string;
+  ids?: number[];
 }
 
 export interface TagsQuery extends PaginatedQuery {

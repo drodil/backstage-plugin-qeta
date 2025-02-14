@@ -14,7 +14,9 @@ import {
   QetaIdEntity,
   Statistic,
   StatisticsRequestParameters,
+  TagResponse,
   TagsQuery,
+  TagsResponse,
   Template,
   UserCollectionsResponse,
   UserEntitiesResponse,
@@ -27,7 +29,7 @@ import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 export function isPost(entity: QetaIdEntity): entity is Post {
-  return 'title' in entity;
+  return 'title' in entity && !('followers' in entity);
 }
 
 export function isAnswer(entity: QetaIdEntity): entity is Answer {
@@ -42,9 +44,14 @@ export function isTag(entity: QetaIdEntity): entity is TagResponse {
   return 'tag' in entity;
 }
 
+export function isCollection(entity: QetaIdEntity): entity is Collection {
+  return 'followers' in entity;
+}
+
 export type MaybeAnswer = Answer | null;
 export type MaybePost = Post | null;
 export type MaybeComment = Comment | null;
+export type MaybeTag = TagResponse | null;
 export type MaybeCollection = Collection | null;
 export type MaybeTemplate = Template | null;
 
@@ -65,19 +72,6 @@ export interface Collections {
 
 export interface Templates {
   templates: Template[];
-  total: number;
-}
-
-export interface TagResponse {
-  id: number;
-  tag: string;
-  description?: string;
-  postsCount: number;
-  followerCount: number;
-}
-
-export interface TagsResponse {
-  tags: TagResponse[];
   total: number;
 }
 
@@ -128,46 +122,64 @@ export interface CollectionPostRank {
   rank: number;
 }
 
+export type PostOptions = {
+  tagsFilter?: PermissionCriteria<QetaFilters>;
+  commentsFilter?: PermissionCriteria<QetaFilters>;
+  includeTags?: boolean;
+  includeAnswers?: boolean;
+  includeVotes?: boolean;
+  includeEntities?: boolean;
+  includeComments?: boolean;
+  includeAttachments?: boolean;
+};
+
+export type CollectionOptions = {
+  filters?: PermissionCriteria<QetaFilters>;
+  postFilters?: PermissionCriteria<QetaFilters>;
+  tagFilters?: PermissionCriteria<QetaFilters>;
+  includePosts?: boolean;
+};
+
+export type AnswerOptions = {
+  includeVotes?: boolean;
+  includeComments?: boolean;
+  includePost?: boolean;
+};
+
 /**
  * Interface for fetching and modifying Q&A data
  */
 export interface QetaStore {
   /**
    * Fetch all stored posts with options
-   * @param user_ref user name requesting post
-   * @param options Search options
-   * @param filters Permission filters
    */
   getPosts(
     user_ref: string,
     options: PostsQuery,
     filters?: PermissionCriteria<QetaFilters>,
+    opts?: PostOptions,
   ): Promise<Posts>;
 
   /**
    * Fetch single question by id
    * Question views count is increased after fetching the question
-   * @param user_ref user name requesting question
-   * @param id question id
-   * @param recordView record question view, default true
    */
   getPost(
     user_ref: string,
     id: number,
     recordView?: boolean,
+    options?: PostOptions,
   ): Promise<MaybePost>;
 
   /**
    * Fetch single question by answer id
    * Question views count is increased after fetching the question
-   * @param user_ref user name requesting question
-   * @param answerId answer id
-   * @param recordView record question view, default true
    */
   getPostByAnswerId(
     user_ref: string,
     answerId: number,
     recordView?: boolean,
+    options?: PostOptions,
   ): Promise<MaybePost>;
 
   /**
@@ -184,32 +196,28 @@ export interface QetaStore {
     anonymous?: boolean;
     type?: PostType;
     headerImage?: string;
+    opts?: PostOptions;
   }): Promise<Post>;
 
   /**
    * Comment question
-   * @param question_id question id
-   * @param user_ref user
-   * @param content comment content
-   * @param created
    */
   commentPost(
     question_id: number,
     user_ref: string,
     content: string,
     created: Date,
+    options?: PostOptions,
   ): Promise<MaybePost>;
 
   /**
    * Delete question comment
-   * @param question_id question id
-   * @param id comment id
-   * @param user_ref username
    */
   deletePostComment(
     question_id: number,
     id: number,
     user_ref: string,
+    options?: PostOptions,
   ): Promise<MaybePost>;
 
   /**
@@ -224,6 +232,7 @@ export interface QetaStore {
     entities?: string[];
     images?: number[];
     headerImage?: string;
+    opts?: PostOptions;
   }): Promise<MaybePost>;
 
   /**
@@ -234,12 +243,6 @@ export interface QetaStore {
 
   /**
    * Answer question
-   * @param user_ref user name of the user answering question
-   * @param questionId question id
-   * @param answer answer content
-   * @param created
-   * @param images
-   * @param anonymous
    */
   answerPost(
     user_ref: string,
@@ -248,40 +251,32 @@ export interface QetaStore {
     created: Date,
     images?: number[],
     anonymous?: boolean,
+    options?: AnswerOptions,
   ): Promise<MaybeAnswer>;
 
   /**
    * Comment answer
-   * @param answer_id answer id
-   * @param user_ref user commenting
-   * @param content comment content
    */
   commentAnswer(
     answer_id: number,
     user_ref: string,
     content: string,
     created: Date,
+    options?: AnswerOptions,
   ): Promise<MaybeAnswer>;
 
   /**
    * Delete answer comment
-   * @param answer_id answer id
-   * @param id comment id
-   * @param user_ref username
    */
   deleteAnswerComment(
     answer_id: number,
     id: number,
     user_ref: string,
+    options?: AnswerOptions,
   ): Promise<MaybeAnswer>;
 
   /**
    * Update answer to a question
-   * @param user_ref user name of the user updating the answer
-   * @param questionId question id
-   * @param answerId answer id
-   * @param answer answer content
-   * @param images
    */
   updateAnswer(
     user_ref: string,
@@ -289,28 +284,32 @@ export interface QetaStore {
     answerId: number,
     answer: string,
     images?: number[],
+    options?: AnswerOptions,
   ): Promise<MaybeAnswer>;
 
   /**
    * Fetch all stored answers with options
-   * @param user_ref user name requesting question
-   * @param options Search options
-   * @param filters Permission filters
    */
   getAnswers(
     user_ref: string,
     options: AnswersQuery,
     filters?: PermissionCriteria<QetaFilters>,
+    opts?: AnswerOptions,
   ): Promise<Answers>;
 
   /** Get answer by id
-   * @param answerId answer id
-   * @param user_ref user name of the user getting answer
    */
-  getAnswer(answerId: number, user_ref: string): Promise<MaybeAnswer>;
+  getAnswer(
+    answerId: number,
+    user_ref: string,
+    options?: AnswerOptions,
+  ): Promise<MaybeAnswer>;
 
-  getPostComment(commentId: number): Promise<MaybeComment>;
-  getAnswerComment(commentId: number): Promise<MaybeComment>;
+  getComments(options?: { ids?: number[] }): Promise<Comment[]>;
+  getComment(
+    commentId: number,
+    opts?: { postId?: number; answerId?: number },
+  ): Promise<MaybeComment>;
 
   /**
    * Delete answer. Only the user who created the answer can delete it.
@@ -374,7 +373,7 @@ export interface QetaStore {
    * Returns all used tags for posts
    */
   getTags(
-    options?: { noDescription?: boolean } & TagsQuery,
+    options?: { noDescription?: boolean; ids?: number[] } & TagsQuery,
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<TagsResponse>;
   getTagById(id: number): Promise<TagResponse | null>;
@@ -415,7 +414,10 @@ export interface QetaStore {
 
   getUserCollections(
     user_ref: string,
-    filters?: PermissionCriteria<QetaFilters>,
+    options?: {
+      filters?: PermissionCriteria<QetaFilters>;
+      includePosts?: boolean;
+    },
   ): Promise<UserCollectionsResponse>;
   getUsersForCollection(collectionId: number): Promise<string[]>;
 
@@ -475,13 +477,13 @@ export interface QetaStore {
   getCollections(
     user_ref: string,
     options: CollectionsQuery,
-    filters?: PermissionCriteria<QetaFilters>,
+    opts?: CollectionOptions,
   ): Promise<Collections>;
 
   getCollection(
     user_ref: string,
     id: number,
-    filters?: PermissionCriteria<QetaFilters>,
+    options?: CollectionOptions,
   ): Promise<MaybeCollection>;
 
   createCollection(options: {
@@ -489,8 +491,6 @@ export interface QetaStore {
     title: string;
     description?: string;
     created: Date;
-    readAccess: string;
-    editAccess: string;
     images?: number[];
     headerImage?: string;
   }): Promise<Collection>;
@@ -500,8 +500,6 @@ export interface QetaStore {
     user_ref: string;
     title: string;
     description?: string;
-    readAccess?: string;
-    editAccess?: string;
     images?: number[];
     headerImage?: string;
   }): Promise<MaybeCollection>;

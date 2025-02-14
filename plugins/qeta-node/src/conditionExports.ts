@@ -3,7 +3,7 @@ import {
   answerRules,
   collectionRules,
   commentRules,
-  permissionRules,
+  postRules,
   tagRules,
 } from './permissionRules';
 import {
@@ -20,7 +20,7 @@ const {
 } = createConditionExports({
   pluginId: 'qeta',
   resourceType: POST_RESOURCE_TYPE,
-  rules: permissionRules,
+  rules: postRules,
 });
 
 export const questionConditions = qConditions;

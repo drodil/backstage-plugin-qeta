@@ -15,7 +15,9 @@ import {
   qetaDeleteCommentPermission,
   qetaDeletePostPermission,
   qetaEditPostPermission,
+  qetaReadCommentPermission,
   qetaReadPostPermission,
+  qetaReadTagPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import addFormats from 'ajv-formats';
 import {
@@ -54,15 +56,21 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const filter = await getAuthorizeConditions(
-      request,
-      qetaReadPostPermission,
-      options,
-      true,
-    );
+    const conditions = await Promise.all([
+      getAuthorizeConditions(request, qetaReadPostPermission, options, true),
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+      getAuthorizeConditions(request, qetaReadCommentPermission, options, true),
+    ]);
+
+    const filter = conditions[0];
+    const tagsFilter = conditions[1];
+    const commentsFilter = conditions[2];
 
     // Act
-    const posts = await database.getPosts(username, request.query, filter);
+    const posts = await database.getPosts(username, request.query, filter, {
+      tagsFilter,
+      commentsFilter,
+    });
     await Promise.all(
       posts.posts.map(async post => {
         await mapAdditionalFields(request, post, options);
@@ -89,15 +97,21 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const filter = await getAuthorizeConditions(
-      request,
-      qetaReadPostPermission,
-      options,
-      true,
-    );
+    const conditions = await Promise.all([
+      getAuthorizeConditions(request, qetaReadPostPermission, options, true),
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+      getAuthorizeConditions(request, qetaReadCommentPermission, options, true),
+    ]);
+
+    const filter = conditions[0];
+    const tagsFilter = conditions[1];
+    const commentsFilter = conditions[2];
 
     // Act
-    const posts = await database.getPosts(username, request.body, filter);
+    const posts = await database.getPosts(username, request.body, filter, {
+      tagsFilter,
+      commentsFilter,
+    });
     await Promise.all(
       posts.posts.map(async post => {
         await mapAdditionalFields(request, post, options);
@@ -133,18 +147,25 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       optionOverride.author = username;
     }
 
-    const filter = await getAuthorizeConditions(
-      request,
-      qetaReadPostPermission,
-      options,
-      true,
-    );
+    const conditions = await Promise.all([
+      await getAuthorizeConditions(
+        request,
+        qetaReadPostPermission,
+        options,
+        true,
+      ),
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+    ]);
+
+    const filter = conditions[0];
+    const tagsFilter = conditions[1];
 
     // Act
     const posts = await database.getPosts(
       username,
       { ...request.query, ...optionOverride },
       filter,
+      { tagsFilter },
     );
 
     await Promise.all(
@@ -166,9 +187,19 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    const conditions = await Promise.all([
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+      getAuthorizeConditions(request, qetaReadCommentPermission, options, true),
+    ]);
+
+    const tagsFilter = conditions[0];
+    const commentsFilter = conditions[1];
+
     const post = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
+      true,
+      { tagsFilter, commentsFilter },
     );
 
     if (post === null) {
@@ -214,11 +245,20 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     await authorize(request, qetaReadPostPermission, options, question);
     await authorize(request, qetaCreateCommentPermission, options);
 
+    const conditions = await Promise.all([
+      getAuthorizeConditions(request, qetaReadTagPermission, options),
+      getAuthorizeConditions(request, qetaReadCommentPermission, options),
+    ]);
+
+    const tagsFilter = conditions[0];
+    const commentsFilter = conditions[1];
+
     question = await database.commentPost(
       questionId,
       username,
       request.body.content,
       created,
+      { tagsFilter, commentsFilter },
     );
 
     if (question === null) {
@@ -277,23 +317,30 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   router.delete(`/posts/:id/comments/:commentId`, async (request, response) => {
     // Validation
     // Act
-    const questionId = Number.parseInt(request.params.id, 10);
+    const postId = Number.parseInt(request.params.id, 10);
     const commentId = Number.parseInt(request.params.commentId, 10);
-    if (Number.isNaN(questionId) || Number.isNaN(commentId)) {
+    if (Number.isNaN(postId) || Number.isNaN(commentId)) {
       response.status(400).send({ errors: 'Invalid id', type: 'body' });
       return;
     }
 
     const username = await getUsername(request, options);
-    const comment = await database.getPostComment(commentId);
+    const comment = await database.getComment(commentId, { postId });
 
     await authorize(request, qetaDeleteCommentPermission, options, comment);
 
-    const post = await database.deletePostComment(
-      questionId,
-      commentId,
-      username,
-    );
+    const conditions = await Promise.all([
+      getAuthorizeConditions(request, qetaReadTagPermission, options),
+      getAuthorizeConditions(request, qetaReadCommentPermission, options),
+    ]);
+
+    const tagsFilter = conditions[0];
+    const commentsFilter = conditions[1];
+
+    const post = await database.deletePostComment(postId, commentId, username, {
+      tagsFilter,
+      commentsFilter,
+    });
 
     if (post === null) {
       response
@@ -320,10 +367,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
     await authorize(request, qetaCreatePostPermission, options);
 
-    const tags = getTags(request, config, await database.getTags());
-    const entities = getEntities(request, config);
-    const username = await getUsername(request, options);
-    const created = await getCreated(request, options);
+    const existingTags = await database.getTags();
+    const [tags, entities, username, created, tagsFilter, commentsFilter] =
+      await Promise.all([
+        getTags(request, options, existingTags),
+        getEntities(request, config),
+        getUsername(request, options),
+        getCreated(request, options),
+        getAuthorizeConditions(request, qetaReadTagPermission, options),
+        getAuthorizeConditions(request, qetaReadCommentPermission, options),
+      ]);
 
     // Act
     const post = await database.createPost({
@@ -337,6 +390,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       anonymous: request.body.anonymous || username === 'user:default/guest',
       type: request.body.type,
       headerImage: request.body.headerImage,
+      opts: {
+        tagsFilter,
+        commentsFilter,
+        includeComments: false,
+        includeVotes: false,
+        includeAnswers: false,
+      },
     });
 
     if (!post) {
@@ -404,8 +464,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     await authorize(request, qetaEditPostPermission, options, post);
 
-    const tags = getTags(request, config, await database.getTags());
-    const entities = getEntities(request, config);
+    const existingTags = await database.getTags();
+    const [tags, entities, tagsFilter, commentsFilter] = await Promise.all([
+      getTags(request, options, existingTags),
+      getEntities(request, config),
+      getAuthorizeConditions(request, qetaReadTagPermission, options),
+      getAuthorizeConditions(request, qetaReadCommentPermission, options),
+    ]);
 
     // Act
     post = await database.updatePost({
@@ -417,6 +482,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       entities,
       images: request.body.images,
       headerImage: request.body.headerImage,
+      opts: { tagsFilter, commentsFilter },
     });
 
     if (!post) {
@@ -513,7 +579,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const resp = await database.getPost(username, postId, false);
+    const [tagsFilter, commentsFilter] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadTagPermission, options),
+      getAuthorizeConditions(request, qetaReadCommentPermission, options),
+    ]);
+
+    const resp = await database.getPost(username, postId, false, {
+      tagsFilter,
+      commentsFilter,
+    });
     if (resp === null) {
       response.sendStatus(404);
       return;
@@ -585,7 +659,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       });
     }
 
-    const resp = await database.getPost(username, postId, false);
+    const [tagsFilter, commentsFilter] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadTagPermission, options),
+      getAuthorizeConditions(request, qetaReadCommentPermission, options),
+    ]);
+
+    const resp = await database.getPost(username, postId, false, {
+      tagsFilter,
+      commentsFilter,
+    });
     if (resp === null) {
       response.sendStatus(404);
       return;
@@ -620,10 +702,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    const [tagsFilter, commentsFilter] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadTagPermission, options),
+      getAuthorizeConditions(request, qetaReadCommentPermission, options),
+    ]);
+
     post = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
+      { tagsFilter, commentsFilter },
     );
 
     await mapAdditionalFields(request, post, options);
@@ -656,10 +744,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    const [tagsFilter, commentsFilter] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadTagPermission, options),
+      getAuthorizeConditions(request, qetaReadCommentPermission, options),
+    ]);
+
     post = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
+      { tagsFilter, commentsFilter },
     );
 
     await mapAdditionalFields(request, post, options);

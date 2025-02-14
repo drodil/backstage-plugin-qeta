@@ -1,10 +1,8 @@
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import {
-  Answer,
   ANSWER_RESOURCE_TYPE,
-  Comment,
+  COLLECTION_RESOUCE_TYPE,
   COMMENT_RESOURCE_TYPE,
-  Post,
   POST_RESOURCE_TYPE,
   qetaAnswerPermissions,
   qetaCollectionPermissions,
@@ -18,9 +16,9 @@ import {
   answerRules,
   collectionRules,
   commentRules,
-  permissionRules,
+  postRules,
   tagRules,
-} from '@drodil/backstage-plugin-qeta-backend';
+} from '@drodil/backstage-plugin-qeta-node';
 import { Router } from 'express';
 import { RouteOptions } from '../types';
 
@@ -29,50 +27,35 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
     return;
   }
 
+  const parseIdArray = (value: string[]) => {
+    return value.map(v => Number.parseInt(v.split(':')[2], 10));
+  };
+
   const permissions = createPermissionIntegrationRouter({
     permissions: qetaPermissions,
     // @ts-ignore: until 1.36.0 backstage release
     resources: [
       {
         getResources: async resourceRefs => {
-          const postRefs = resourceRefs.filter(ref =>
-            ref.startsWith('qeta:post:'),
+          const postIds = parseIdArray(
+            resourceRefs.filter(ref => ref.startsWith('qeta:post:')),
           );
-
-          const resources = await Promise.all(
-            postRefs.map(async ref => {
-              const id = ref.split(':')[2];
-              const post = await options.database.getPost(
-                '',
-                Number.parseInt(id, 10),
-                false,
-              );
-              return post === null ? undefined : (post as Post);
-            }),
-          );
-          return resources.filter(Boolean);
+          const posts = await options.database.getPosts('', { ids: postIds });
+          return posts.posts;
         },
         resourceType: POST_RESOURCE_TYPE,
         permissions: qetaPostPermissions,
-        rules: Object.values(permissionRules),
+        rules: Object.values(postRules),
       },
       {
         getResources: async resourceRefs => {
-          const answerRefs = resourceRefs.filter(ref =>
-            ref.startsWith('qeta:answer:'),
+          const answerIds = parseIdArray(
+            resourceRefs.filter(ref => ref.startsWith('qeta:answer:')),
           );
-
-          const resources = await Promise.all(
-            answerRefs.map(async ref => {
-              const id = ref.split(':')[2];
-              const answer = await options.database.getAnswer(
-                Number.parseInt(id, 10),
-                '',
-              );
-              return answer === null ? undefined : (answer as Answer);
-            }),
-          );
-          return resources.filter(Boolean);
+          const answers = await options.database.getAnswers('', {
+            ids: answerIds,
+          });
+          return answers.answers;
         },
         resourceType: ANSWER_RESOURCE_TYPE,
         permissions: qetaAnswerPermissions,
@@ -80,20 +63,12 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
       },
       {
         getResources: async resourceRefs => {
-          const commentRefs = resourceRefs.filter(ref =>
-            ref.startsWith('qeta:comment:'),
+          const commentIds = parseIdArray(
+            resourceRefs.filter(ref => ref.startsWith('qeta:comment:')),
           );
-
-          const resources = await Promise.all(
-            commentRefs.map(async ref => {
-              const id = Number.parseInt(ref.split(':')[2], 10);
-              const comment =
-                (await options.database.getPostComment(id)) ??
-                (await options.database.getAnswerComment(id));
-              return comment === null ? undefined : (comment as Comment);
-            }),
-          );
-          return resources.filter(Boolean);
+          return await options.database.getComments({
+            ids: commentIds,
+          });
         },
         resourceType: COMMENT_RESOURCE_TYPE,
         permissions: qetaCommentPermissions,
@@ -101,18 +76,11 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
       },
       {
         getResources: async resourceRefs => {
-          const tagRefs = resourceRefs.filter(ref =>
-            ref.startsWith('qeta:tag:'),
+          const tagIds = parseIdArray(
+            resourceRefs.filter(ref => ref.startsWith('qeta:tag:')),
           );
-
-          const resources = await Promise.all(
-            tagRefs.map(async ref => {
-              const id = Number.parseInt(ref.split(':')[2], 10);
-              const tag = await options.database.getTagById(id);
-              return tag === null ? undefined : tag;
-            }),
-          );
-          return resources.filter(Boolean);
+          const tags = await options.database.getTags({ ids: tagIds });
+          return tags.tags;
         },
         resourceType: TAG_RESOURCE_TYPE,
         permissions: qetaTagPermissions,
@@ -120,20 +88,15 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
       },
       {
         getResources: async resourceRefs => {
-          const entityRefs = resourceRefs.filter(ref =>
-            ref.startsWith('qeta:collection:'),
+          const tagIds = parseIdArray(
+            resourceRefs.filter(ref => ref.startsWith('qeta:collection:')),
           );
-
-          const resources = await Promise.all(
-            entityRefs.map(async ref => {
-              const id = Number.parseInt(ref.split(':')[2], 10);
-              const entity = await options.database.getCollection('', id);
-              return entity === null ? undefined : entity;
-            }),
-          );
-          return resources.filter(Boolean);
+          const collections = await options.database.getCollections('', {
+            ids: tagIds,
+          });
+          return collections.collections;
         },
-        resourceType: COMMENT_RESOURCE_TYPE,
+        resourceType: COLLECTION_RESOUCE_TYPE,
         permissions: qetaCollectionPermissions,
         rules: Object.values(collectionRules),
       },

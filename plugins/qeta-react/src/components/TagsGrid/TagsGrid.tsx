@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
-import { useIsModerator, useQetaApi, useTranslation } from '../../hooks';
+import { useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import useDebounce from 'react-use/lib/useDebounce';
 import { TagsGridContent } from './TagsGridContent';
 import { SearchBar } from '../SearchBar/SearchBar';
 import { Button, Grid, Typography } from '@material-ui/core';
 import { CreateTagModal } from './CreateTagModal';
+import { qetaCreateTagPermission } from '@drodil/backstage-plugin-qeta-common';
+import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 
 type TagFilters = {
   order: 'asc' | 'desc';
@@ -18,7 +20,6 @@ export const TagsGrid = () => {
   const [pageCount, setPageCount] = React.useState(1);
   const [tagsPerPage, setTagsPerPage] = React.useState(25);
   const [searchQuery, setSearchQuery] = React.useState('');
-  const { isModerator } = useIsModerator();
   const { t } = useTranslation();
   const [filters, setFilters] = React.useState<TagFilters>({
     order: 'desc',
@@ -85,26 +86,31 @@ export const TagsGrid = () => {
       </Grid>
       <Grid container justifyContent="space-between">
         {response && (
-          <Grid item xs={isModerator ? 8 : 12}>
+          <Grid item xs={8}>
             <Typography variant="h6" className="qetaTagsContainerTitle">
               {t('tagPage.tags', { count: response.total })}
             </Typography>
           </Grid>
         )}
-        {response && isModerator && (
+        {response && (
           <Grid item xs={4}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleCreateModalOpen}
-              style={{ float: 'right' }}
+            <OptionalRequirePermission
+              permission={qetaCreateTagPermission}
+              errorPage={<></>}
             >
-              {t('tagPage.createTag')}
-            </Button>
-            <CreateTagModal
-              open={createModalOpen}
-              onClose={handleCreateModalClose}
-            />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleCreateModalOpen}
+                style={{ float: 'right' }}
+              >
+                {t('tagPage.createTag')}
+              </Button>
+              <CreateTagModal
+                open={createModalOpen}
+                onClose={handleCreateModalClose}
+              />
+            </OptionalRequirePermission>
           </Grid>
         )}
         <TagsGridContent

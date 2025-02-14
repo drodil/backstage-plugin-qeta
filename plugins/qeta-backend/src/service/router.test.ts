@@ -320,6 +320,11 @@ describe('createRouter', () => {
           entities: ['component:default/comp1'],
           type: 'question',
         });
+      expect(response.body).toEqual({
+        ...question,
+        created: '2022-01-01T00:00:00.000Z',
+      });
+      expect(response.status).toEqual(201);
 
       expect(qetaStore.createPost).toHaveBeenCalledWith({
         user_ref: 'user:default/mock',
@@ -330,11 +335,6 @@ describe('createRouter', () => {
         entities: ['component:default/comp1'],
         anonymous: false,
         type: 'question',
-      });
-      expect(response.status).toEqual(201);
-      expect(response.body).toEqual({
-        ...question,
-        created: '2022-01-01T00:00:00.000Z',
       });
     });
 

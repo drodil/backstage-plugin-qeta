@@ -23,7 +23,7 @@ export interface Config {
     /**
      * Use permissions framework to control access to questions and answers.
      *
-     * @visibility backend
+     * @visibility frontend
      */
     permissions?: boolean;
     /**

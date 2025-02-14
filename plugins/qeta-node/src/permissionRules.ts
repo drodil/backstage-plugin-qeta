@@ -278,7 +278,10 @@ export const isCollectionOwner = createCollectionPermissionRule({
   description: 'Should allow only if the collection is owned by the user',
   resourceType: COLLECTION_RESOUCE_TYPE,
   paramsSchema: z.object({
-    userRef: z.string().describe('User ID to match on the owner').optional(),
+    userRef: z
+      .string()
+      .describe('User reference to match on the owner')
+      .optional(),
     claims: z
       .array(z.string())
       .optional()
@@ -300,7 +303,8 @@ export const collectionOwnerConditionFactory =
 
 export const collectionHasTags = createCollectionPermissionRule({
   name: 'HAS_TAGS',
-  description: 'Should allow only if the collection has all the specific tags',
+  description:
+    'Should allow only if the posts in the collection have the specific tags',
   resourceType: COLLECTION_RESOUCE_TYPE,
   paramsSchema: z.object({
     tags: z.array(z.string()).describe('Tag to match the collection'),
@@ -322,7 +326,7 @@ export const collectionHasTagsConditionFactory =
 export const collectionHasEntities = createCollectionPermissionRule({
   name: 'HAS_ENTITIES',
   description:
-    'Should allow only if the collection has all the specific entities',
+    'Should allow only if the posts in the collection have the specific entities',
   resourceType: COLLECTION_RESOUCE_TYPE,
   paramsSchema: z.object({
     entityRefs: z
@@ -353,7 +357,7 @@ export const collectionRules = {
 export const rules = {
   ...commentRules,
   ...answerRules,
-  ...permissionRules,
+  ...postRules,
   ...tagRules,
   ...collectionRules,
 };

@@ -11,10 +11,10 @@ import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
 import { confirmNavigationIfEdited } from '../../utils/utils';
-import { RequirePermission } from '@backstage/plugin-permission-react';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { useTranslation } from '../../hooks';
 import AddCommentIcon from '@material-ui/icons/AddComment';
+import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 
 export type QetaCommentSectionClassKey = 'root' | 'addCommentButton';
 
@@ -84,7 +84,7 @@ export const CommentSection = (props: {
         answer={answer}
         onCommentDelete={onCommentDelete}
       />
-      <RequirePermission
+      <OptionalRequirePermission
         permission={qetaCreateCommentPermission}
         errorPage={<></>}
       >
@@ -147,7 +147,7 @@ export const CommentSection = (props: {
             </Grid>
           </form>
         )}
-      </RequirePermission>
+      </OptionalRequirePermission>
     </Box>
   );
 };

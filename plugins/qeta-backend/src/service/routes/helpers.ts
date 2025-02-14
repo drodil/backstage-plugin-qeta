@@ -5,7 +5,12 @@ import {
   TagsQuerySchema,
   UsersQuerySchema,
 } from '../types';
-import { authorize, getAuthorizeConditions, getUsername } from '../util';
+import {
+  authorize,
+  getAuthorizeConditions,
+  getUsername,
+  mapAdditionalFields,
+} from '../util';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   isValidTag,
@@ -114,6 +119,13 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     );
 
     const tags = await database.getTags(request.query, filter);
+
+    await Promise.all(
+      tags.tags.map(async tag => {
+        await mapAdditionalFields(request, tag, options);
+      }),
+    );
+
     response.json(tags);
   });
 
@@ -126,6 +138,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       true,
     );
     const tags = await database.getUserTags(username, filter);
+
     response.json(tags);
   });
 
@@ -150,6 +163,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
     await authorize(request, qetaReadTagPermission, options, tag);
+    await mapAdditionalFields(request, tag, options);
     response.json(tag);
   });
 
@@ -163,6 +177,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const resp = await database.updateTag(request.params.tag, description);
+    await mapAdditionalFields(request, resp, options);
     response.json(resp);
   });
 
@@ -186,6 +201,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(500);
       return;
     }
+    await mapAdditionalFields(request, tag, options);
     response.json(tag);
   });
 

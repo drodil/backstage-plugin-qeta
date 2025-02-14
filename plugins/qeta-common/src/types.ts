@@ -74,8 +74,6 @@ export interface CollectionEntity extends QetaIdEntity {
   owner: string;
   created: Date;
   headerImage?: string;
-  readAccess: 'private' | 'public';
-  editAccess: 'private' | 'public';
 }
 
 export type PostType = 'question' | 'article';
@@ -92,7 +90,7 @@ export interface Post extends PostAnswerEntity {
   trend?: number;
   type: PostType;
   headerImage?: string;
-  images: number[];
+  images?: number[];
 }
 
 export interface Template {
@@ -149,8 +147,8 @@ export interface Collection extends CollectionEntity {
   tags?: string[];
   entities?: string[];
   posts?: Post[];
-  canEdit: boolean;
-  canDelete: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
   images: number[];
   followers: number;
 }
@@ -227,8 +225,6 @@ export type CollectionsResponseBody = CollectionsResponse | ErrorResponse;
 export interface CollectionRequest {
   title: string;
   description?: string;
-  readAccess: 'public' | 'private';
-  editAccess: 'public' | 'private';
   images: number[];
   headerImage?: string;
 }
@@ -273,6 +269,8 @@ export interface TagResponse extends QetaIdEntity {
   description?: string;
   postsCount: number;
   followerCount: number;
+  canEdit?: boolean;
+  canDelete?: boolean;
 }
 
 export interface TagsResponse {

@@ -77,8 +77,6 @@ export interface CollectionContent {
   headerImage?: string;
   images?: number[];
   created?: string;
-  readAccess: 'public' | 'private';
-  editAccess: 'public' | 'private';
 }
 
 export interface CollectionPostContent {
@@ -109,6 +107,7 @@ export const CollectionsQuerySchema: JSONSchemaType<CollectionsQuery> = {
     tagsRelation: { type: 'string', enum: ['and', 'or'], nullable: true },
     fromDate: { type: 'string', nullable: true, format: 'date' },
     toDate: { type: 'string', nullable: true, format: 'date' },
+    ids: { type: 'array', items: { type: 'integer' }, nullable: true },
   },
   required: [],
   additionalProperties: false,
@@ -160,6 +159,7 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     fromDate: { type: 'string', nullable: true, format: 'date' },
     toDate: { type: 'string', nullable: true, format: 'date' },
     type: { type: 'string', enum: ['question', 'article'], nullable: true },
+    ids: { type: 'array', items: { type: 'integer' }, nullable: true },
   },
   required: [],
   additionalProperties: false,
@@ -240,6 +240,7 @@ export const AnswersQuerySchema: JSONSchemaType<AnswersQuery> = {
     searchQuery: { type: 'string', nullable: true },
     fromDate: { type: 'string', nullable: true, format: 'date' },
     toDate: { type: 'string', nullable: true, format: 'date' },
+    ids: { type: 'array', items: { type: 'integer' }, nullable: true },
   },
   required: [],
   additionalProperties: false,
@@ -285,10 +286,8 @@ export const CollectionSchema: JSONSchemaType<CollectionContent> = {
     headerImage: { type: 'string', nullable: true },
     images: { type: 'array', items: { type: 'integer' }, nullable: true },
     created: { type: 'string', minLength: 1, nullable: true },
-    readAccess: { type: 'string', enum: ['public', 'private'] },
-    editAccess: { type: 'string', enum: ['public', 'private'] },
   },
-  required: ['title', 'readAccess', 'editAccess'],
+  required: ['title'],
   additionalProperties: false,
 };
 

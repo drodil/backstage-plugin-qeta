@@ -4,15 +4,7 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import {
-  Button,
-  FormControl,
-  FormHelperText,
-  Grid,
-  MenuItem,
-  Select,
-  TextField,
-} from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -48,8 +40,6 @@ export type CollectionFormProps = {
 const getDefaultValues = (): CollectionFormData => {
   return {
     title: '',
-    readAccess: 'private',
-    editAccess: 'private',
     images: [],
   };
 };
@@ -67,8 +57,6 @@ const getValues = async (
     form: {
       title: collection.title,
       description: collection.description,
-      editAccess: collection.editAccess,
-      readAccess: collection.readAccess,
       headerImage: collection.headerImage,
       images: collection.images,
     },
@@ -85,8 +73,6 @@ export const CollectionForm = (props: CollectionFormProps) => {
   const [values, setValues] = React.useState(getDefaultValues());
   const [error, setError] = React.useState(false);
   const [edited, setEdited] = React.useState(false);
-  const [canModifyAccess, setCanModifyAccess] = React.useState(true);
-
   const [images, setImages] = React.useState<number[]>([]);
   const { t } = useTranslation();
 
@@ -151,7 +137,6 @@ export const CollectionForm = (props: CollectionFormProps) => {
     if (id) {
       getValues(qetaApi, id).then(data => {
         setValues(data.form);
-        setCanModifyAccess(data.collection?.canDelete ?? false);
         setImages(data.form.images);
       });
     }
@@ -228,42 +213,6 @@ export const CollectionForm = (props: CollectionFormProps) => {
         )}
         name="description"
       />
-      {canModifyAccess && (
-        <Grid container style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-          <Grid item>
-            <Controller
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { onChange, value } }) => (
-                <FormControl>
-                  <FormHelperText>Read access</FormHelperText>
-                  <Select variant="outlined" onChange={onChange} value={value}>
-                    <MenuItem value="private">Only you</MenuItem>
-                    <MenuItem value="public">Anyone</MenuItem>
-                  </Select>
-                </FormControl>
-              )}
-              name="readAccess"
-            />
-          </Grid>
-          <Grid item>
-            <Controller
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { onChange, value } }) => (
-                <FormControl>
-                  <FormHelperText>Edit access</FormHelperText>
-                  <Select variant="outlined" onChange={onChange} value={value}>
-                    <MenuItem value="private">Only you</MenuItem>
-                    <MenuItem value="public">Anyone</MenuItem>
-                  </Select>
-                </FormControl>
-              )}
-              name="editAccess"
-            />
-          </Grid>
-        </Grid>
-      )}
       <Button
         color="primary"
         type="submit"
