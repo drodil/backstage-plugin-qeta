@@ -164,39 +164,6 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
     }));
   };
 
-  const getRandomArticleSuggestion = async (
-    username: string,
-  ): Promise<NewArticleSuggestion[]> => {
-    const articles = await database.getPosts(username, {
-      type: 'article',
-      limit: 1,
-      random: true,
-      excludeAuthors: [username],
-    });
-    return articles.posts.map(article => ({
-      id: `a_${article.id}`,
-      type: 'newArticle',
-      article: article as Article,
-    }));
-  };
-
-  const getRandomQuestionSuggestion = async (
-    username: string,
-  ): Promise<NewQuestionSuggestion[]> => {
-    const questions = await database.getPosts(username, {
-      type: 'question',
-      limit: 1,
-      random: true,
-      noAnswers: true,
-      excludeAuthors: [username],
-    });
-    return questions.posts.map(question => ({
-      id: `q_${question.id}`,
-      type: 'newQuestion',
-      question: question as Question,
-    }));
-  };
-
   router.get('/suggestions', async (request, response) => {
     const validateQuery = ajv.compile(SuggestionsQuerySchema);
     if (!validateQuery(request.query)) {
@@ -219,8 +186,6 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       getNewEntityArticles(username),
       getNewUserQuestions(username),
       getNewUserArticles(username),
-      getRandomArticleSuggestion(username),
-      getRandomQuestionSuggestion(username),
     ]);
     const suggestions = raw
       .flat()
