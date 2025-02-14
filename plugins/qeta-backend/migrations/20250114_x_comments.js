@@ -27,16 +27,24 @@ exports.up = async function up(knex) {
   const postComments = await knex('post_comments').select();
   for (const comment of postComments) {
     await knex('comments').insert({
-      ...comment,
-      id: undefined,
+      author: comment.author,
+      content: comment.content,
+      created: comment.created,
+      updated: comment.updated,
+      updatedBy: comment.updatedBy,
+      postId: comment.postId,
     });
   }
 
   const answerComments = await knex('answer_comments').select();
   for (const comment of answerComments) {
     await knex('comments').insert({
-      ...comment,
-      id: undefined,
+      author: comment.author,
+      content: comment.content,
+      created: comment.created,
+      updated: comment.updated,
+      updatedBy: comment.updatedBy,
+      answerId: comment.answerId,
     });
   }
 
@@ -103,13 +111,21 @@ exports.down = async function down(knex) {
   for (const comment of comments) {
     if (comment.postId) {
       await knex('post_comments').insert({
-        ...comment,
-        id: undefined,
+        author: comment.author,
+        content: comment.content,
+        created: comment.created,
+        updated: comment.updated,
+        updatedBy: comment.updatedBy,
+        postId: comment.postId,
       });
     } else {
       await knex('answer_comments').insert({
-        ...comment,
-        id: undefined,
+        author: comment.author,
+        content: comment.content,
+        created: comment.created,
+        updated: comment.updated,
+        updatedBy: comment.updatedBy,
+        answerId: comment.answerId,
       });
     }
   }
