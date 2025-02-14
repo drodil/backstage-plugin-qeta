@@ -1769,6 +1769,7 @@ export class DatabaseQetaStore implements QetaStore {
         'collections.id',
         'collection_posts.collectionId',
       )
+      .leftJoin('posts', 'collection_posts.postId', 'posts.id')
       .groupBy('collections.id');
 
     if (options.owner) {
@@ -1842,6 +1843,8 @@ export class DatabaseQetaStore implements QetaStore {
     if (opts?.filters) {
       parseFilter(opts.filters, query, this.db);
     }
+
+    console.log('!!!!!!!!!!!!', query.toQuery());
 
     const totalQuery = query.clone();
 

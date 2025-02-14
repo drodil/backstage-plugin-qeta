@@ -1,5 +1,5 @@
 import { CollectionsResponse } from '@drodil/backstage-plugin-qeta-common';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { WarningPanel } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import { CollectionsGridItem } from './CollectionsGridItem';
@@ -13,16 +13,9 @@ export const CollectionsGridContent = (props: {
   response?: CollectionsResponse;
 }) => {
   const { loading, error, response } = props;
-  const [initialLoad, setInitialLoad] = useState(true);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (!loading) {
-      setInitialLoad(false);
-    }
-  }, [initialLoad, loading]);
-
-  if (loading && initialLoad) {
+  if (loading) {
     return <LoadingGrid />;
   }
 

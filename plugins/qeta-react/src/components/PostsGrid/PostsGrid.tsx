@@ -98,6 +98,7 @@ export const PostsGrid = (props: PostGridProps) => {
             label={t('postsContainer.search.label', {
               itemType: itemType.toLowerCase(),
             })}
+            loading={loading}
           />
         </Grid>
         {showAskButton && (

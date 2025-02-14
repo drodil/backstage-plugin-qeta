@@ -215,6 +215,7 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
           <SearchBar
             onSearch={onSearchQueryChange}
             label={t('answerContainer.search.label')}
+            loading={loading}
           />
         </Grid>
       </Grid>

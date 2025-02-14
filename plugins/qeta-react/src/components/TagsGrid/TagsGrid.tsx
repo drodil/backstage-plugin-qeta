@@ -81,6 +81,7 @@ export const TagsGrid = () => {
           <SearchBar
             onSearch={onSearchQueryChange}
             label={t('tagPage.search.label')}
+            loading={loading}
           />
         </Grid>
       </Grid>

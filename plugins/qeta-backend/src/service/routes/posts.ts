@@ -56,18 +56,25 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const conditions = await Promise.all([
+    const opts = request.query;
+
+    const [filter, tagsFilter, commentsFilter] = await Promise.all([
       getAuthorizeConditions(request, qetaReadPostPermission, options, true),
-      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
-      getAuthorizeConditions(request, qetaReadCommentPermission, options, true),
+      opts.includeTags
+        ? getAuthorizeConditions(request, qetaReadTagPermission, options, true)
+        : undefined,
+      opts.includeComments
+        ? getAuthorizeConditions(
+            request,
+            qetaReadCommentPermission,
+            options,
+            true,
+          )
+        : undefined,
     ]);
 
-    const filter = conditions[0];
-    const tagsFilter = conditions[1];
-    const commentsFilter = conditions[2];
-
     // Act
-    const posts = await database.getPosts(username, request.query, filter, {
+    const posts = await database.getPosts(username, opts, filter, {
       tagsFilter,
       commentsFilter,
     });
@@ -97,18 +104,25 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const conditions = await Promise.all([
+    const opts = request.body;
+
+    const [filter, tagsFilter, commentsFilter] = await Promise.all([
       getAuthorizeConditions(request, qetaReadPostPermission, options, true),
-      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
-      getAuthorizeConditions(request, qetaReadCommentPermission, options, true),
+      opts.includeTags
+        ? getAuthorizeConditions(request, qetaReadTagPermission, options, true)
+        : undefined,
+      opts.includeComments
+        ? getAuthorizeConditions(
+            request,
+            qetaReadCommentPermission,
+            options,
+            true,
+          )
+        : undefined,
     ]);
 
-    const filter = conditions[0];
-    const tagsFilter = conditions[1];
-    const commentsFilter = conditions[2];
-
     // Act
-    const posts = await database.getPosts(username, request.body, filter, {
+    const posts = await database.getPosts(username, opts, filter, {
       tagsFilter,
       commentsFilter,
     });
@@ -146,27 +160,22 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     } else if (type === 'own') {
       optionOverride.author = username;
     }
+    const opts = { ...request.query, ...optionOverride };
 
     const conditions = await Promise.all([
-      await getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        options,
-        true,
-      ),
-      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+      getAuthorizeConditions(request, qetaReadPostPermission, options, true),
+      opts.includeTags
+        ? getAuthorizeConditions(request, qetaReadTagPermission, options, true)
+        : undefined,
     ]);
 
     const filter = conditions[0];
     const tagsFilter = conditions[1];
 
     // Act
-    const posts = await database.getPosts(
-      username,
-      { ...request.query, ...optionOverride },
-      filter,
-      { tagsFilter },
-    );
+    const posts = await database.getPosts(username, opts, filter, {
+      tagsFilter,
+    });
 
     await Promise.all(
       posts.posts.map(async post => {
@@ -368,15 +377,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     await authorize(request, qetaCreatePostPermission, options);
 
     const existingTags = await database.getTags();
-    const [tags, entities, username, created, tagsFilter, commentsFilter] =
-      await Promise.all([
-        getTags(request, options, existingTags),
-        getEntities(request, config),
-        getUsername(request, options),
-        getCreated(request, options),
-        getAuthorizeConditions(request, qetaReadTagPermission, options),
-        getAuthorizeConditions(request, qetaReadCommentPermission, options),
-      ]);
+    const [tags, entities, username, created] = await Promise.all([
+      getTags(request, options, existingTags),
+      getEntities(request, config),
+      getUsername(request, options),
+      getCreated(request, options),
+    ]);
 
     // Act
     const post = await database.createPost({
@@ -391,8 +397,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       type: request.body.type,
       headerImage: request.body.headerImage,
       opts: {
-        tagsFilter,
-        commentsFilter,
         includeComments: false,
         includeVotes: false,
         includeAnswers: false,
@@ -579,14 +583,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const [tagsFilter, commentsFilter] = await Promise.all([
-      getAuthorizeConditions(request, qetaReadTagPermission, options),
-      getAuthorizeConditions(request, qetaReadCommentPermission, options),
-    ]);
-
     const resp = await database.getPost(username, postId, false, {
-      tagsFilter,
-      commentsFilter,
       includeComments: false,
       includeAnswers: false,
       includeAttachments: false,
@@ -664,14 +661,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       });
     }
 
-    const [tagsFilter, commentsFilter] = await Promise.all([
-      getAuthorizeConditions(request, qetaReadTagPermission, options),
-      getAuthorizeConditions(request, qetaReadCommentPermission, options),
-    ]);
-
     const resp = await database.getPost(username, postId, false, {
-      tagsFilter,
-      commentsFilter,
+      includeComments: false,
+      includeAnswers: false,
+      includeAttachments: false,
+      includeTags: false,
+      includeEntities: false,
     });
     if (resp === null) {
       response.sendStatus(404);
@@ -707,18 +702,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const [tagsFilter, commentsFilter] = await Promise.all([
-      getAuthorizeConditions(request, qetaReadTagPermission, options),
-      getAuthorizeConditions(request, qetaReadCommentPermission, options),
-    ]);
-
     post = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
       {
-        tagsFilter,
-        commentsFilter,
         includeComments: false,
         includeAnswers: false,
         includeEntities: false,
@@ -758,18 +746,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const [tagsFilter, commentsFilter] = await Promise.all([
-      getAuthorizeConditions(request, qetaReadTagPermission, options),
-      getAuthorizeConditions(request, qetaReadCommentPermission, options),
-    ]);
-
     post = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
       {
-        tagsFilter,
-        commentsFilter,
         includeComments: false,
         includeAnswers: false,
         includeEntities: false,

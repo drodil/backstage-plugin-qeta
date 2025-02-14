@@ -1,4 +1,4 @@
-import { Grid } from '@material-ui/core';
+import { Box, Grid, Typography } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
@@ -59,12 +59,24 @@ export const EntitiesGrid = () => {
   }, [response, entitiesPerPage]);
 
   return (
-    <Grid container className="qetaEntitiesContainer">
-      <Grid item xs={12} md={4}>
-        <SearchBar
-          onSearch={onSearchQueryChange}
-          label={t('entitiesPage.search.label')}
-        />
+    <Box>
+      <Grid container justifyContent="space-between">
+        <Grid item xs={12} md={4}>
+          <SearchBar
+            onSearch={onSearchQueryChange}
+            label={t('entitiesPage.search.label')}
+            loading={loading}
+          />
+        </Grid>
+      </Grid>
+      <Grid container justifyContent="space-between">
+        {response && (
+          <Grid item>
+            <Typography variant="h6" className="qetaCollectionsContainerdCount">
+              {t('common.entities', { count: response?.total ?? 0 })}
+            </Typography>
+          </Grid>
+        )}
       </Grid>
       <EntitiesGridContent
         response={response}
@@ -80,6 +92,6 @@ export const EntitiesGrid = () => {
           pageCount={pageCount}
         />
       )}
-    </Grid>
+    </Box>
   );
 };

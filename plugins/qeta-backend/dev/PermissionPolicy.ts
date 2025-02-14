@@ -189,6 +189,28 @@ export class PermissionPolicy implements PermissionPolicy {
         });
       } */
 
+      // Test that only collections with specific tags can be seen
+      /** if (isResourcePermission(request.permission, COLLECTION_RESOUCE_TYPE)) {
+        return createCollectionConditionalDecision(request.permission, {
+          allOf: [
+            collectionHasTagsConditionFactory({
+              tags: ['test'],
+            }),
+          ],
+        });
+      }*/
+
+      // Test that only collections with specific entities can be seen
+      /** if (isResourcePermission(request.permission, COLLECTION_RESOUCE_TYPE)) {
+        return createCollectionConditionalDecision(request.permission, {
+          allOf: [
+            collectionHasEntitiesConditionFactory({
+              entityRefs: ['group:default/child-group'],
+            }),
+          ],
+        });
+      } */
+
       return { result: AuthorizeResult.ALLOW };
     }
 

@@ -47,7 +47,7 @@ export const PostHighlightList = (props: {
       <RightList title={props.title} icon={props.icon}>
         {loading && (
           <ListItem className="qetaPostHighlightListListItem" dense>
-            <Skeleton variant="rect" />
+            <Skeleton variant="rect" width="100%" />
           </ListItem>
         )}
         {error && (
@@ -55,7 +55,7 @@ export const PostHighlightList = (props: {
             <ListItemText>{t('highlights.loadError')}</ListItemText>
           </ListItem>
         )}
-        {!error && posts.length === 0 && (
+        {!error && !loading && posts.length === 0 && (
           <ListItem className="qetaPostHighlightListListItem" dense>
             <ListItemText>{props.noQuestionsLabel}</ListItemText>
           </ListItem>

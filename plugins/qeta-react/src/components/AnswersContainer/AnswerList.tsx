@@ -1,5 +1,5 @@
 import { Progress, WarningPanel } from '@backstage/core-components';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { AnswersResponse } from '@drodil/backstage-plugin-qeta-common';
 import { AnswerListItem } from './AnswerListItem';
 import { useTranslation } from '../../hooks';
@@ -35,14 +35,7 @@ export const AnswerList = (props: {
     onPageSizeChange,
   } = props;
   const listRef = useRef<HTMLDivElement | null>(null);
-  const [initialLoad, setInitialLoad] = useState(true);
   const { t } = useTranslation();
-
-  useEffect(() => {
-    if (!initialLoad) {
-      setInitialLoad(false);
-    }
-  }, [initialLoad, loading]);
 
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
@@ -63,7 +56,7 @@ export const AnswerList = (props: {
     onPageSizeChange(Number.parseInt(event.target.value as string, 10));
   };
 
-  if (loading && initialLoad) {
+  if (loading) {
     return <Progress />;
   }
 
@@ -75,7 +68,7 @@ export const AnswerList = (props: {
     );
   }
 
-  if (initialLoad && (!response.answers || response.answers.length === 0)) {
+  if (!response.answers || response.answers.length === 0) {
     return (
       <Card style={{ marginTop: '2em' }}>
         <CardContent>

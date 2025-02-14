@@ -60,6 +60,7 @@ export const UsersGrid = () => {
           <SearchBar
             onSearch={setSearchQuery}
             label={t('usersPage.search.label')}
+            loading={loading}
           />
         </Grid>
       </Grid>

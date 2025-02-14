@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  CircularProgress,
   IconButton,
   InputBase,
   makeStyles,
@@ -42,8 +43,9 @@ const useStyles = makeStyles(
 export const SearchBar = (props: {
   label: string;
   onSearch: (query: string) => void;
+  loading?: boolean;
 }) => {
-  const { label, onSearch } = props;
+  const { label, onSearch, loading } = props;
   const [searchQuery, setSearchQuery] = React.useState('');
   const classes = useStyles();
 
@@ -58,7 +60,11 @@ export const SearchBar = (props: {
         aria-label="search"
         className={classes.iconButton}
       >
-        <SearchIcon color="disabled" />
+        {loading ? (
+          <CircularProgress size="1em" />
+        ) : (
+          <SearchIcon color="disabled" />
+        )}
       </IconButton>
       <InputBase
         className={classes.input}
