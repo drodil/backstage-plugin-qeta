@@ -60,6 +60,8 @@ export interface PostsQuery extends PaginatedQuery {
   includeEntities?: boolean;
   includeTrend?: boolean;
   includeComments?: boolean;
+  includeTags?: boolean;
+  includeAttachments?: boolean;
   fromDate?: string;
   toDate?: string;
   type?: PostType;
@@ -71,6 +73,7 @@ export interface CollectionsQuery extends PaginatedQuery {
   owner?: string;
   entities?: string[];
   entitiesRelation?: 'and' | 'or';
+  includePosts?: boolean;
   tags?: string[];
   tagsRelation?: 'and' | 'or';
   fromDate?: string;

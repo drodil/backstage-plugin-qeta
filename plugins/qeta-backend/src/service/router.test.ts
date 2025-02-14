@@ -284,7 +284,12 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/posts/1');
 
-      expect(qetaStore.getPost).toHaveBeenCalledWith('user:default/mock', 1);
+      expect(qetaStore.getPost).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+        true,
+        {},
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         ...question,
@@ -335,6 +340,11 @@ describe('createRouter', () => {
         entities: ['component:default/comp1'],
         anonymous: false,
         type: 'question',
+        opts: {
+          includeAnswers: false,
+          includeComments: false,
+          includeVotes: false,
+        },
       });
     });
 
@@ -364,6 +374,11 @@ describe('createRouter', () => {
         entities: ['component:default/comp1'],
         anonymous: false,
         type: 'question',
+        opts: {
+          includeAnswers: false,
+          includeComments: false,
+          includeVotes: false,
+        },
       });
       expect(response.status).toEqual(201);
     });
@@ -429,6 +444,7 @@ describe('createRouter', () => {
         'user:default/mock',
         'content',
         question.created,
+        {},
       );
       expect(response.body).toEqual(
         JSON.parse(JSON.stringify(questionWithComment)),
@@ -452,6 +468,7 @@ describe('createRouter', () => {
         'user2',
         'content2',
         testDate,
+        {},
       );
     });
 

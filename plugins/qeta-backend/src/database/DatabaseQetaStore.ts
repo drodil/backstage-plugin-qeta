@@ -1866,7 +1866,10 @@ export class DatabaseQetaStore implements QetaStore {
     return {
       collections: await Promise.all(
         rows.map(async val => {
-          return this.mapCollectionEntity(val, user_ref, opts);
+          return this.mapCollectionEntity(val, user_ref, {
+            ...opts,
+            includePosts: options.includePosts,
+          });
         }),
       ),
       total,
@@ -2341,7 +2344,13 @@ export class DatabaseQetaStore implements QetaStore {
             user_ref,
             { collectionId: val.id, includeEntities: true },
             postFilters,
-            { tagsFilter: options?.tagFilters },
+            {
+              tagsFilter: options?.tagFilters,
+              includeComments: false,
+              includeAnswers: false,
+              includeAttachments: false,
+              includeVotes: false,
+            },
           )
         : { posts: [] },
       this.db('attachments').where('collectionId', val.id).select('id'),
