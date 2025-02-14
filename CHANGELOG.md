@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.19.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.18.2...v3.19.0) (2025-02-14)
+
+
+### Features
+
+* add new resource types and rules for tags and collections ([f804ea2](https://github.com/drodil/backstage-plugin-qeta/commit/f804ea2b2093d039aeacc5da29c0735f14225bd1)), closes [#222](https://github.com/drodil/backstage-plugin-qeta/issues/222) [#236](https://github.com/drodil/backstage-plugin-qeta/issues/236)
+* collection permissions in use ([2d6c117](https://github.com/drodil/backstage-plugin-qeta/commit/2d6c11776de194c37c5185af3197207f917d6824))
+* tag router support for permissions ([9bd0f8a](https://github.com/drodil/backstage-plugin-qeta/commit/9bd0f8af016fc346901d00678172ddaa999e69ed))
+
+
+### Bug Fixes
+
+* allow service token in collections query ([f31b4fb](https://github.com/drodil/backstage-plugin-qeta/commit/f31b4fbf3f685050e06df6447d4f2adafed80807))
+* icon style ([6c68272](https://github.com/drodil/backstage-plugin-qeta/commit/6c68272ff99620e2c7f11932f54c6e677fa816b3))
+* make sure collection responses are filtered ([14e8b48](https://github.com/drodil/backstage-plugin-qeta/commit/14e8b48c07d01cf78a8e4c712a1bc8243d0cde7d))
+* migration script of comments ([d84f591](https://github.com/drodil/backstage-plugin-qeta/commit/d84f591aa2ab49697f266f4a5c55b7b21f8fa1e7))
+* minor navigation improvements ([229265b](https://github.com/drodil/backstage-plugin-qeta/commit/229265b8c93577bbdf953a5f181bb1f9073b777a))
+* minor ui tunings for longer loading times ([33e940b](https://github.com/drodil/backstage-plugin-qeta/commit/33e940b11a827afc1b68c7ad7f3586cee96d417a))
+* pass comment filters to answers as well ([d48d063](https://github.com/drodil/backstage-plugin-qeta/commit/d48d06398724f622981035fda755642cc4bf512c))
+* test fixes for new parameters ([895b3ec](https://github.com/drodil/backstage-plugin-qeta/commit/895b3ecac8516d0f9a2ebd7f76e27b1967dec5f6))
+
 ### [3.18.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.18.1...v3.18.2) (2025-02-12)
 
 
