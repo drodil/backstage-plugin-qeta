@@ -25,6 +25,12 @@ export const PostHighlightList = (props: {
       api.getPostsList(props.type, {
         limit: 5,
         type: props.postType,
+        includeTags: false,
+        includeAttachments: false,
+        includeComments: false,
+        includeAnswers: false,
+        includeVotes: false,
+        includeEntities: false,
         ...props.options,
       }),
     [],
