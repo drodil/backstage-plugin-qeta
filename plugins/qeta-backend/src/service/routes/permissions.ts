@@ -18,9 +18,9 @@ import {
   answerRules,
   collectionRules,
   commentRules,
-  postRules,
+  permissionRules,
   tagRules,
-} from '../postRules';
+} from '@drodil/backstage-plugin-qeta-backend';
 import { Router } from 'express';
 import { RouteOptions } from '../types';
 
@@ -54,7 +54,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
         },
         resourceType: POST_RESOURCE_TYPE,
         permissions: qetaPostPermissions,
-        rules: Object.values(postRules),
+        rules: Object.values(permissionRules),
       },
       {
         getResources: async resourceRefs => {

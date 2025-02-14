@@ -46,7 +46,7 @@ import {
   ConditionTransformer,
   createConditionTransformer,
 } from '@backstage/plugin-permission-node';
-import { rules } from './postRules';
+import { rules } from '@drodil/backstage-plugin-qeta-node';
 import { BlobServiceClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
 import { BackstagePrincipalTypes } from '@backstage/backend-plugin-api';

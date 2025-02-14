@@ -119,6 +119,11 @@ export const postRules = {
   postHasType,
 };
 
+/**
+ * @deprecated use `postRules` instead
+ */
+export const permissionRules = postRules;
+
 export const createAnswerPermissionRule = makeCreatePermissionRule<
   Answer,
   AnswerFilter,
@@ -348,7 +353,7 @@ export const collectionRules = {
 export const rules = {
   ...commentRules,
   ...answerRules,
-  ...postRules,
+  ...permissionRules,
   ...tagRules,
   ...collectionRules,
 };

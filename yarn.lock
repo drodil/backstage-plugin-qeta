@@ -5185,7 +5185,9 @@ __metadata:
   dependencies:
     "@backstage/backend-plugin-api": "backstage:^"
     "@backstage/cli": "backstage:^"
+    "@backstage/plugin-permission-node": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
+    zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
 
