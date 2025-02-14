@@ -119,11 +119,7 @@ export const EntityChip = (props: {
       <Chip
         label={primaryTitle}
         size="small"
-        icon={
-          Icon ? (
-            <Icon fontSize="small" style={{ marginLeft: '0.5rem' }} />
-          ) : undefined
-        }
+        icon={Icon ? <Icon fontSize="small" /> : undefined}
         variant="outlined"
         className="qetaEntityChip"
         component="a"
