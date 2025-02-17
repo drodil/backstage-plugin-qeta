@@ -5258,6 +5258,7 @@ __metadata:
     "@backstage/plugin-home-react": "backstage:^"
     "@backstage/plugin-notifications": "backstage:^"
     "@backstage/plugin-search": "backstage:^"
+    "@backstage/plugin-search-common": "backstage:^"
     "@backstage/plugin-search-react": "backstage:^"
     "@backstage/plugin-signals": "backstage:^"
     "@backstage/plugin-signals-react": "backstage:^"
@@ -5267,7 +5268,12 @@ __metadata:
     "@material-ui/icons": "npm:^4.11.3"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
     "@testing-library/jest-dom": "npm:^6.1.3"
+    "@types/lodash": "npm:^4.14.199"
+    "@types/luxon": "npm:^3"
     cross-fetch: "npm:^3.1.5"
+    dompurify: "npm:^3.1.3"
+    lodash: "npm:^4.17.21"
+    luxon: "npm:^3.5.0"
     react-use: "npm:^17.4.0"
   peerDependencies:
     "@backstage/catalog-client": ^1.9.1
@@ -9681,7 +9687,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/luxon@npm:^3.0.0, @types/luxon@npm:~3.4.0":
+"@types/luxon@npm:^3, @types/luxon@npm:^3.0.0, @types/luxon@npm:~3.4.0":
   version: 3.4.2
   resolution: "@types/luxon@npm:3.4.2"
   checksum: 10c0/d835467de3daf7e17ba78b50bb5a14efd94272439ca067990d71332a54b311544459c69623eddd243b511b28d70194c9591a9ee8cf9c038962c965f991affd7e
@@ -20936,7 +20942,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.0.0, luxon@npm:^3.2.1, luxon@npm:^3.4.3":
+"luxon@npm:^3.0.0, luxon@npm:^3.2.1, luxon@npm:^3.4.3, luxon@npm:^3.5.0":
   version: 3.5.0
   resolution: "luxon@npm:3.5.0"
   checksum: 10c0/335789bba95077db831ef99894edadeb23023b3eb2137a1b56acd0d290082b691cf793143d69e30bc069ec95f0b49f36419f48e951c68014f19ffe12045e3494

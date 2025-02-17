@@ -174,19 +174,25 @@ export interface Attachment {
   created: Date;
 }
 
-export interface QetaPostDocument extends IndexableDocument {
-  docType: string;
+export interface QetaSearchDocument extends IndexableDocument {
+  docType: 'qeta_post' | 'qeta_collection';
+}
+
+export interface QetaPostDocument extends QetaSearchDocument {
+  docType: 'qeta_post';
   author: string;
   score: number;
+  postType: PostType;
   entityRefs?: string[];
   answerCount?: number;
-  views?: number;
+  created: Date;
+  views: number;
   tags?: string[];
   correctAnswer?: boolean;
 }
 
-export interface QetaCollectionDocument extends IndexableDocument {
-  docType: string;
+export interface QetaCollectionDocument extends QetaSearchDocument {
+  docType: 'qeta_collection';
   owner: string;
   created: Date;
   headerImage?: string;

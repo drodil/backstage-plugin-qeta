@@ -111,11 +111,13 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
               : `/qeta/articles/${post.id}`,
           docType: 'qeta_post',
           author: post.author,
+          created: post.created,
           score: post.score,
           entityRefs: post.entities,
           answerCount: post.answersCount,
           views: post.views,
           tags: post.tags,
+          postType: post.type,
           authorization: {
             resourceRef: `qeta:post:${post.id}`,
           },

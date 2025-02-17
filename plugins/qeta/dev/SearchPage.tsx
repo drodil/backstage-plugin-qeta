@@ -7,6 +7,7 @@ import {
   SearchContextProvider,
   SearchResult,
 } from '@backstage/plugin-search-react';
+import { QetaSearchResultListItem } from '../src';
 
 export const searchPage = (
   <Page themeId="home">
@@ -23,6 +24,14 @@ export const searchPage = (
                 <List>
                   {results.map(result => {
                     switch (result.type) {
+                      case 'qeta':
+                        return (
+                          <QetaSearchResultListItem
+                            key={result.document.location}
+                            result={result.document}
+                            highlight={result.highlight}
+                          />
+                        );
                       default:
                         return (
                           <DefaultResultListItem

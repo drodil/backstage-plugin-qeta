@@ -17,6 +17,7 @@ export const qetaTranslationRef = createTranslationRef({
       post: 'post',
       question: 'question',
       article: 'article',
+      collection: 'collection',
       score: '{{score}} score',
       comments: 'Comments',
       anonymousAuthor: 'Anonymous',
@@ -334,6 +335,9 @@ export const qetaTranslationRef = createTranslationRef({
     collectionPage: {
       description: 'Description',
       info: 'You can add questions and articles to the collection from question and article pages',
+    },
+    searchResult: {
+      created: 'Created',
     },
     questionPage: {
       errorLoading: 'Could not load question',

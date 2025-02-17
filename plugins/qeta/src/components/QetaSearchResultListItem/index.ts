@@ -1,0 +1,1 @@
+export { QetaSearchResultListItem } from './QetaSearchResultListItem';
