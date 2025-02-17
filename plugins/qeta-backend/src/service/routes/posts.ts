@@ -77,6 +77,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const posts = await database.getPosts(username, opts, filter, {
       tagsFilter,
       commentsFilter,
+      includeAnswers: false,
+      includeComments: false,
+      includeAttachments: false,
     });
     await Promise.all(
       posts.posts.map(async post => {
@@ -125,6 +128,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const posts = await database.getPosts(username, opts, filter, {
       tagsFilter,
       commentsFilter,
+      includeAnswers: false,
+      includeComments: false,
+      includeAttachments: false,
     });
     await Promise.all(
       posts.posts.map(async post => {
@@ -164,17 +170,19 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     const conditions = await Promise.all([
       getAuthorizeConditions(request, qetaReadPostPermission, options, true),
-      opts.includeTags
-        ? getAuthorizeConditions(request, qetaReadTagPermission, options, true)
-        : undefined,
     ]);
 
     const filter = conditions[0];
-    const tagsFilter = conditions[1];
 
     // Act
     const posts = await database.getPosts(username, opts, filter, {
-      tagsFilter,
+      includeTotal: false,
+      includeAnswers: false,
+      includeAttachments: false,
+      includeEntities: false,
+      includeTags: false,
+      includeVotes: false,
+      includeComments: false,
     });
 
     await Promise.all(

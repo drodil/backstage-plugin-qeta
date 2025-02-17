@@ -131,6 +131,7 @@ export type PostOptions = {
   includeEntities?: boolean;
   includeComments?: boolean;
   includeAttachments?: boolean;
+  includeTotal?: boolean;
 };
 
 export type CollectionOptions = {

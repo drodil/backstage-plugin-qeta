@@ -258,6 +258,7 @@ export class DatabaseQetaStore implements QetaStore {
     filters?: PermissionCriteria<QetaFilters>,
     opts?: PostOptions,
   ): Promise<Posts> {
+    const { includeTotal = true } = opts ?? {};
     const query = this.getPostsBaseQuery(user_ref);
     if (options.type) {
       query.where('posts.type', options.type);
@@ -410,7 +411,9 @@ export class DatabaseQetaStore implements QetaStore {
 
     const results = await Promise.all([
       query,
-      this.db(totalQuery.as('totalQuery')).count('* as CNT').first(),
+      includeTotal
+        ? this.db(totalQuery.as('totalQuery')).count('* as CNT').first()
+        : undefined,
     ]);
     const rows = results[0] as RawPostEntity[];
     const total = this.mapToInteger((results[1] as any)?.CNT);
@@ -423,6 +426,7 @@ export class DatabaseQetaStore implements QetaStore {
             includeAnswers: options.includeAnswers,
             includeVotes: options.includeVotes,
             includeEntities: options.includeEntities,
+            includeAttachments: options.includeAttachments,
           });
         }),
       ),
@@ -2344,6 +2348,7 @@ export class DatabaseQetaStore implements QetaStore {
               includeAnswers: false,
               includeAttachments: false,
               includeVotes: false,
+              includeTotal: false,
             },
           )
         : { posts: [] },

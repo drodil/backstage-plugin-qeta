@@ -13,6 +13,7 @@
     "docker:down": "docker compose down",
     "start": "yarn workspace @drodil/backstage-plugin-qeta start",
     "start-backend": "yarn workspace @drodil/backstage-plugin-qeta-backend start",
+    "debug-backend": "yarn workspace @drodil/backstage-plugin-qeta-backend start --inspect",
     "start:ci": "concurrently \"yarn start\" \"yarn start-backend:ci\"",
     "build": "backstage-cli repo build --all",
     "tsc": "tsc",
