@@ -150,6 +150,7 @@ export interface Collection extends CollectionEntity {
   canEdit?: boolean;
   canDelete?: boolean;
   images: number[];
+  postsCount: number;
   followers: number;
 }
 
@@ -184,7 +185,7 @@ export interface QetaPostDocument extends QetaSearchDocument {
   score: number;
   postType: PostType;
   entityRefs?: string[];
-  answerCount?: number;
+  answerCount: number;
   created: Date;
   views: number;
   tags?: string[];
@@ -196,6 +197,7 @@ export interface QetaCollectionDocument extends QetaSearchDocument {
   owner: string;
   created: Date;
   headerImage?: string;
+  postsCount: number;
 }
 
 interface CustomError {

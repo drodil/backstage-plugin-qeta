@@ -99,12 +99,8 @@ const Excerpt = (props: {
           {t('common.score', { score: document.score.toString(10) })}
           {' · '}
           {t('common.viewsShort', { count: document.views })}
-          {document.answerCount && (
-            <>
-              {' · '}
-              {t('common.answers', { count: document.answerCount })}
-            </>
-          )}
+          {' · '}
+          {t('common.answers', { count: document.answerCount })}
         </span>
         <>
           {highlight?.fields.text ? (
@@ -129,6 +125,11 @@ const Excerpt = (props: {
           {DateTime.fromISO(document.created.toString() as string).toRelative()}
           {' · '}
           <EntityRefLink entityRef={document.owner} hideIcon />
+          {' · '}
+          {t('common.posts', {
+            count: document.postsCount,
+            itemType: t('common.post'),
+          })}
         </span>
         <>
           {highlight?.fields.text ? (

@@ -58,6 +58,7 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
       return api.getCollections({
         limit: collectionsPerPage,
         offset: (page - 1) * collectionsPerPage,
+        includePosts: false,
         owner,
         ...(getFiltersWithDateRange(filters) as any),
       });

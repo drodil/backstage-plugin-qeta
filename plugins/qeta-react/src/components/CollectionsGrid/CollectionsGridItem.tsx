@@ -66,7 +66,7 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
             <Grid item>
               <Typography variant="caption">
                 {t('common.posts', {
-                  count: collection.posts?.length ?? 0,
+                  count: collection.postsCount,
                   itemType: 'post',
                 })}
                 {' · '}

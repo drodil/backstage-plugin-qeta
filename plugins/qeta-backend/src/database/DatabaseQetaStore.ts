@@ -95,6 +95,7 @@ export type RawCollectionEntity = {
   created: Date;
   owner: string;
   headerImage: string;
+  postsCount: number | string;
 };
 
 export type RawAnswerEntity = {
@@ -1759,15 +1760,7 @@ export class DatabaseQetaStore implements QetaStore {
     options: CollectionsQuery,
     opts?: CollectionOptions,
   ): Promise<Collections> {
-    const query = this.db('collections')
-      .select('collections.*')
-      .leftJoin(
-        'collection_posts',
-        'collections.id',
-        'collection_posts.collectionId',
-      )
-      .leftJoin('posts', 'collection_posts.postId', 'posts.id')
-      .groupBy('collections.id');
+    const query = this.getCollectionsBaseQuery();
 
     if (options.owner) {
       query.where('owner', options.owner);
@@ -2377,6 +2370,7 @@ export class DatabaseQetaStore implements QetaStore {
       created: val.created as Date,
       posts: results[0].posts,
       headerImage: val.headerImage,
+      postsCount: this.mapToInteger(val.postsCount),
       entities,
       tags,
       images: results[1].map(r => r.id),
@@ -2674,6 +2668,24 @@ export class DatabaseQetaStore implements QetaStore {
       .leftJoin('answers', 'posts.id', 'answers.postId')
       .leftJoin('user_favorite', 'posts.id', 'user_favorite.postId')
       .groupBy('posts.id');
+  }
+
+  private getCollectionsBaseQuery() {
+    const collectionRef = this.db.ref('collections.id');
+    const postsCount = this.db('collection_posts')
+      .where('collection_posts.collectionId', collectionRef)
+      .count('*')
+      .as('postsCount');
+
+    return this.db<RawCollectionEntity>('collections')
+      .select('collections.*', postsCount)
+      .leftJoin(
+        'collection_posts',
+        'collections.id',
+        'collection_posts.collectionId',
+      )
+      .leftJoin('posts', 'collection_posts.postId', 'posts.id')
+      .groupBy('collections.id');
   }
 
   private async addTags(

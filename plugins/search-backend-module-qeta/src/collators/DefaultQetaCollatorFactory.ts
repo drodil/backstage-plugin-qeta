@@ -167,6 +167,7 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
           text: collection.description ?? '',
           location: `/qeta/collections/${collection.id}`,
           docType: 'qeta_collection',
+          postsCount: collection.postsCount,
           owner: collection.owner,
           created: collection.created,
           headerImage: collection.headerImage,
