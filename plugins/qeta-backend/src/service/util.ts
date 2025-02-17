@@ -14,6 +14,7 @@ import {
   isResourcePermission,
   isUpdatePermission,
   Permission,
+  PermissionCriteria,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
@@ -344,7 +345,11 @@ export const getAuthorizeConditions = async (
   permission: Permission,
   options: RouterOptions,
   allowServicePrincipal?: boolean,
-) => {
+): Promise<PermissionCriteria<QetaFilters> | undefined> => {
+  if (!options.permissions) {
+    return undefined;
+  }
+
   const decision = await authorizeConditional(
     request,
     permission,
