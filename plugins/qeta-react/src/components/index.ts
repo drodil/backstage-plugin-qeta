@@ -12,7 +12,7 @@ export * from './FollowedLists';
 export * from './AnswerForm';
 export * from './RelativeTimeWithTooltip';
 export * from './Links';
-export * from './QuestionsTable';
+export * from './PostsTable';
 export * from './StatsChart';
 export * from './SummaryStatsGrid';
 export * from './TopRankingUsersCard';

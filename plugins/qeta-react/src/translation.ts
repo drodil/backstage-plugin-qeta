@@ -480,13 +480,14 @@ export const qetaTranslationRef = createTranslationRef({
       noItems: 'No {{itemType}}s',
       createButton: 'Go ahead and create one!',
     },
-    questionsTable: {
+    postsTable: {
       errorLoading: 'Could not load questions',
       latest: 'Latest',
       mostViewed: 'Most viewed',
       favorites: 'Favorites',
       cells: {
         title: 'Title',
+        type: 'Type',
         author: 'Author',
         asked: 'Asked',
         updated: 'Last updated',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { CustomHomepageGrid } from '@backstage/plugin-home';
-import { QuestionTableCard } from '../src/plugin';
+import { PostsTableCard } from '../src/plugin';
 import { Content, Page } from '@backstage/core-components';
 
 export const HomePage = () => {
@@ -8,7 +8,7 @@ export const HomePage = () => {
     <Page themeId="home">
       <Content>
         <CustomHomepageGrid>
-          <QuestionTableCard />
+          <PostsTableCard />
         </CustomHomepageGrid>
       </Content>
     </Page>

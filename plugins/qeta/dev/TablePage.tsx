@@ -1,6 +1,6 @@
 import React from 'react';
 import { Content, Page } from '@backstage/core-components';
-import { QuestionsTable } from '@drodil/backstage-plugin-qeta-react';
+import { PostsTable } from '@drodil/backstage-plugin-qeta-react';
 import { Card, CardContent } from '@material-ui/core';
 
 export const TablePage = () => {
@@ -9,7 +9,7 @@ export const TablePage = () => {
       <Content>
         <Card>
           <CardContent>
-            <QuestionsTable />
+            <PostsTable />
           </CardContent>
         </Card>
       </Content>

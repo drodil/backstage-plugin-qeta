@@ -7,7 +7,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home-react';
 import { qetaApiRef, qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
-import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
+import { PostType, QetaClient } from '@drodil/backstage-plugin-qeta-common';
 
 export const qetaPlugin = createPlugin({
   id: 'qeta',
@@ -32,12 +32,16 @@ export const QetaPage = qetaPlugin.provide(
   }),
 );
 
-export const QuestionTableCard = qetaPlugin.provide(
-  createCardExtension<{ rowsPerPage?: number; quickFilter?: string }>({
-    name: 'QuestionsTableCard',
+export const PostsTableCard = qetaPlugin.provide(
+  createCardExtension<{
+    postType?: PostType;
+    rowsPerPage?: number;
+    quickFilter?: string;
+  }>({
+    name: 'PostsTableCard',
     title: 'Q&A',
-    description: 'Shows Q&A questions',
-    components: () => import('./components/QuestionTableCard'),
+    description: 'Shows Q&A posts',
+    components: () => import('./components/PostsTableCard'),
     layout: {
       height: { minRows: 6 },
       width: { minColumns: 6 },
@@ -47,6 +51,12 @@ export const QuestionTableCard = qetaPlugin.provide(
         title: 'Q&A',
         type: 'object',
         properties: {
+          postType: {
+            title: 'Post type',
+            type: 'string',
+            enum: ['question', 'article'],
+            default: undefined,
+          },
           rowsPerPage: {
             title: 'Rows per page',
             type: 'number',
@@ -64,3 +74,8 @@ export const QuestionTableCard = qetaPlugin.provide(
     },
   }),
 );
+
+/**
+ * @deprecated Use PostsTableCard instead
+ */
+export const QuestionsTableCard = PostsTableCard;

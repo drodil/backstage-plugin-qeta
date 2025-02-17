@@ -1,2 +1,2 @@
-export * from './QuestionTableCard';
+export * from './PostsTableCard';
 export * from './Statistics';

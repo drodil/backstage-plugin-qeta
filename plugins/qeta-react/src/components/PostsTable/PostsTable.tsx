@@ -1,6 +1,6 @@
 import React from 'react';
 import { LinkButton, Progress, WarningPanel } from '@backstage/core-components';
-import { QuestionTableRow } from './QuestionTableRow';
+import { PostsTableRow } from './PostsTableRow';
 import { useQetaApi, useTranslation } from '../../hooks';
 import {
   Button,
@@ -16,13 +16,15 @@ import {
   Typography,
 } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import { PostType } from '@drodil/backstage-plugin-qeta-common';
 
 type QuickFilterType = 'latest' | 'favorites' | 'most_viewed';
 
-export const QuestionsTable = (props: {
+export const PostsTable = (props: {
   hideTitle?: boolean;
   rowsPerPage?: number;
   quickFilter?: QuickFilterType;
+  postType?: PostType;
 }) => {
   const [page, setPage] = React.useState(1);
   const [questionsPerPage, setQuestionsPerPage] = React.useState(
@@ -49,7 +51,7 @@ export const QuestionsTable = (props: {
   } = useQetaApi(
     api =>
       api.getPosts({
-        type: 'question',
+        type: props.postType,
         limit: questionsPerPage,
         offset: (page - 1) * questionsPerPage,
         includeEntities: true,
@@ -97,7 +99,7 @@ export const QuestionsTable = (props: {
 
   if (error || response === undefined) {
     return (
-      <WarningPanel severity="error" title={t('questionsTable.errorLoading')}>
+      <WarningPanel severity="error" title={t('postsTable.errorLoading')}>
         {error?.message}
       </WarningPanel>
     );
@@ -110,7 +112,7 @@ export const QuestionsTable = (props: {
         justifyContent="space-between"
         alignItems="center"
         style={{ marginBottom: '1em' }}
-        className="qetaQuestionsTableGrid"
+        className="qetaPostsTableGrid"
       >
         <Grid item>
           {props.hideTitle === true ? null : (
@@ -123,19 +125,19 @@ export const QuestionsTable = (props: {
               color={quickFilter === 'latest' ? 'primary' : undefined}
               onClick={() => handleQuickFilterChange('latest')}
             >
-              {t('questionsTable.latest')}
+              {t('postsTable.latest')}
             </Button>
             <Button
               color={quickFilter === 'favorites' ? 'primary' : undefined}
               onClick={() => handleQuickFilterChange('favorites')}
             >
-              {t('questionsTable.favorites')}
+              {t('postsTable.favorites')}
             </Button>
             <Button
               color={quickFilter === 'most_viewed' ? 'primary' : undefined}
               onClick={() => handleQuickFilterChange('most_viewed')}
             >
-              {t('questionsTable.mostViewed')}
+              {t('postsTable.mostViewed')}
             </Button>
           </ButtonGroup>
           <LinkButton
@@ -151,10 +153,13 @@ export const QuestionsTable = (props: {
         <Table className="qetaQuestionsTable">
           <TableHead>
             <TableRow>
-              <TableCell>{t('questionsTable.cells.title')}</TableCell>
-              <TableCell>{t('questionsTable.cells.author')}</TableCell>
-              <TableCell>{t('questionsTable.cells.asked')}</TableCell>
-              <TableCell>{t('questionsTable.cells.updated')}</TableCell>
+              <TableCell>{t('postsTable.cells.title')}</TableCell>
+              <TableCell>{t('postsTable.cells.author')}</TableCell>
+              {props.postType === undefined && (
+                <TableCell>{t('postsTable.cells.type')}</TableCell>
+              )}
+              <TableCell>{t('postsTable.cells.asked')}</TableCell>
+              <TableCell>{t('postsTable.cells.updated')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -166,7 +171,11 @@ export const QuestionsTable = (props: {
               </TableRow>
             ) : null}
             {response.posts.map(q => (
-              <QuestionTableRow key={q.id} question={q} />
+              <PostsTableRow
+                key={q.id}
+                post={q}
+                showIcon={props.postType === undefined}
+              />
             ))}
           </TableBody>
         </Table>
@@ -183,3 +192,8 @@ export const QuestionsTable = (props: {
     </>
   );
 };
+
+/**
+ * @deprecated Use `PostsTable` instead
+ */
+export const QuestionsTable = PostsTable;
