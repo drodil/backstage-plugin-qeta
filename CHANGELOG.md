@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.20.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.19.0...v3.20.0) (2025-02-17)
+
+
+### Features
+
+* allow showing articles in home page table ([07f616e](https://github.com/drodil/backstage-plugin-qeta/commit/07f616e0783e32e269e20a33b2704de23344ed03)), closes [#269](https://github.com/drodil/backstage-plugin-qeta/issues/269)
+* **search:** add q&a search result list item ([7220ec8](https://github.com/drodil/backstage-plugin-qeta/commit/7220ec8f15b79950010b0e20c6c1837cbe4bc572)), closes [#266](https://github.com/drodil/backstage-plugin-qeta/issues/266)
+
 ## [3.19.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.18.2...v3.19.0) (2025-02-14)
 
 
