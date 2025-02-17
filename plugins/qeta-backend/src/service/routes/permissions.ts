@@ -36,7 +36,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
     // @ts-ignore: until 1.36.0 backstage release
     resources: [
       {
-        getResources: async resourceRefs => {
+        getResources: async (resourceRefs: string[]) => {
           const postIds = parseIdArray(
             resourceRefs.filter(ref => ref.startsWith('qeta:post:')),
           );
@@ -48,7 +48,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
         rules: Object.values(postRules),
       },
       {
-        getResources: async resourceRefs => {
+        getResources: async (resourceRefs: string[]) => {
           const answerIds = parseIdArray(
             resourceRefs.filter(ref => ref.startsWith('qeta:answer:')),
           );
@@ -62,7 +62,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
         rules: Object.values(answerRules),
       },
       {
-        getResources: async resourceRefs => {
+        getResources: async (resourceRefs: string[]) => {
           const commentIds = parseIdArray(
             resourceRefs.filter(ref => ref.startsWith('qeta:comment:')),
           );
@@ -75,7 +75,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
         rules: Object.values(commentRules),
       },
       {
-        getResources: async resourceRefs => {
+        getResources: async (resourceRefs: string[]) => {
           const tagIds = parseIdArray(
             resourceRefs.filter(ref => ref.startsWith('qeta:tag:')),
           );
@@ -87,7 +87,7 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
         rules: Object.values(tagRules),
       },
       {
-        getResources: async resourceRefs => {
+        getResources: async (resourceRefs: string[]) => {
           const tagIds = parseIdArray(
             resourceRefs.filter(ref => ref.startsWith('qeta:collection:')),
           );
