@@ -1841,8 +1841,6 @@ export class DatabaseQetaStore implements QetaStore {
       parseFilter(opts.filters, query, this.db);
     }
 
-    console.log('!!!!!!!!!!!!', query.toQuery());
-
     const totalQuery = query.clone();
 
     if (options.orderBy) {
