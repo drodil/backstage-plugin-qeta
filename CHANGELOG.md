@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.20.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.20.0...v3.20.1) (2025-02-17)
+
+
+### Bug Fixes
+
+* tsc issue with permissions ([24fd950](https://github.com/drodil/backstage-plugin-qeta/commit/24fd95071918dbfbb93c692d20884540b7b148dc))
+
 ## [3.20.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.19.0...v3.20.0) (2025-02-17)
 
 
