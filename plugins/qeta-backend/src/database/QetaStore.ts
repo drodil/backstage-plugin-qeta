@@ -125,6 +125,7 @@ export interface CollectionPostRank {
 export type PostOptions = {
   tagsFilter?: PermissionCriteria<QetaFilters>;
   commentsFilter?: PermissionCriteria<QetaFilters>;
+  answersFilter?: PermissionCriteria<QetaFilters>;
   includeTags?: boolean;
   includeAnswers?: boolean;
   includeVotes?: boolean;
@@ -142,6 +143,7 @@ export type CollectionOptions = {
 };
 
 export type AnswerOptions = {
+  filter?: PermissionCriteria<QetaFilters>;
   includeVotes?: boolean;
   includeComments?: boolean;
   includePost?: boolean;

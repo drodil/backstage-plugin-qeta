@@ -2422,6 +2422,7 @@ export class DatabaseQetaStore implements QetaStore {
         ? this.getPostAnswers(val.id, user_ref, {
             ...options,
             includePost: false,
+            filter: options?.answersFilter,
           })
         : undefined,
       includeVotes ? this.getPostVotes(val.id) : undefined,
@@ -2612,10 +2613,17 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     options?: AnswerOptions,
   ): Promise<Answer[]> {
-    const rows = await this.getAnswerBaseQuery()
+    const query = this.getAnswerBaseQuery()
       .where('postId', '=', postId)
       .orderBy('answers.correct', 'desc')
       .orderBy('answers.created');
+
+    if (options?.filter) {
+      parseFilter(options.filter, query, this.db, 'answer');
+    }
+
+    const rows = await query.select();
+
     return await Promise.all(
       rows.map(async val => {
         return this.mapAnswer(val, user_ref, options);
