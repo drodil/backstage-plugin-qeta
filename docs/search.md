@@ -29,30 +29,8 @@ import {
 export const searchPage = (
   <Page themeId="home">
     <SearchResult>
-      {({ results }) => (
-        <List>
-          {results.map(result => {
-            switch (result.type) {
-              case 'qeta':
-                return (
-                  <QetaSearchResultListItem
-                    key={result.document.location}
-                    result={result.document}
-                    highlight={result.highlight}
-                  />
-                );
-              default:
-                return (
-                  <DefaultResultListItem
-                    key={result.document.location}
-                    result={result.document}
-                    highlight={result.highlight}
-                  />
-                );
-            }
-          })}
-        </List>
-      )}
+      // ...
+      <QetaSearchResultListItem />
     </SearchResult>
   </Page>
 );

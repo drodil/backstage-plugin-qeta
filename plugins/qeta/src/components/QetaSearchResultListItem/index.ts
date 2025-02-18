@@ -1,1 +1,1 @@
-export { QetaSearchResultListItem } from './QetaSearchResultListItem';
+export * from './QetaSearchResultListItem';

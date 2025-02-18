@@ -6,8 +6,10 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home-react';
+import { createSearchResultListItemExtension } from '@backstage/plugin-search-react';
 import { qetaApiRef, qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { PostType, QetaClient } from '@drodil/backstage-plugin-qeta-common';
+import type { QetaSearchResultListItemProps } from './components/QetaSearchResultListItem';
 
 export const qetaPlugin = createPlugin({
   id: 'qeta',
@@ -79,3 +81,21 @@ export const PostsTableCard = qetaPlugin.provide(
  * @deprecated Use PostsTableCard instead
  */
 export const QuestionsTableCard = PostsTableCard;
+
+/**
+ * React extension used to render results on Search page or modal
+ *
+ * @public
+ */
+export const QetaSearchResultListItem: (
+  props: QetaSearchResultListItemProps,
+) => JSX.Element | null = qetaPlugin.provide(
+  createSearchResultListItemExtension({
+    name: 'QetaSearchResultListItem',
+    component: () =>
+      import('./components/QetaSearchResultListItem').then(
+        m => m.QetaSearchResultListItem,
+      ),
+    predicate: result => result.type === 'qeta',
+  }),
+);
