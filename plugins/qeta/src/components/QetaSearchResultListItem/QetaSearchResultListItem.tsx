@@ -43,12 +43,12 @@ const useStyles = makeStyles({
   },
 });
 
-export interface QetaSearchResultProps {
+export type QetaSearchResultListItemProps = {
   result?: IndexableDocument;
   highlight?: ResultHighlight;
   rank?: number;
   hideIcon?: boolean;
-}
+};
 
 const isQetaSearchDocument = (
   document: IndexableDocument,
@@ -161,7 +161,9 @@ const ResultIcon = (props: { document: QetaSearchDocument }) => {
   return <PlaylistPlay />;
 };
 
-export const QetaSearchResultListItem = (props: QetaSearchResultProps) => {
+export const QetaSearchResultListItem = (
+  props: QetaSearchResultListItemProps,
+) => {
   const classes = useStyles();
   const { result, highlight, hideIcon } = props;
 

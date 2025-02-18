@@ -1,8 +1,7 @@
 import React from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
-import { Grid, List } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import {
-  DefaultResultListItem,
   SearchBar,
   SearchContextProvider,
   SearchResult,
@@ -20,30 +19,7 @@ export const searchPage = (
           </Grid>
           <Grid item xs={9}>
             <SearchResult>
-              {({ results }) => (
-                <List>
-                  {results.map(result => {
-                    switch (result.type) {
-                      case 'qeta':
-                        return (
-                          <QetaSearchResultListItem
-                            key={result.document.location}
-                            result={result.document}
-                            highlight={result.highlight}
-                          />
-                        );
-                      default:
-                        return (
-                          <DefaultResultListItem
-                            key={result.document.location}
-                            result={result.document}
-                            highlight={result.highlight}
-                          />
-                        );
-                    }
-                  })}
-                </List>
-              )}
+              <QetaSearchResultListItem />
             </SearchResult>
           </Grid>
         </Grid>
