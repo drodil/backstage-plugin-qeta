@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.21.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.20.3...v3.21.0) (2025-02-20)
+
+
+### Features
+
+* **search:** add search result item extension ([b107f0a](https://github.com/drodil/backstage-plugin-qeta/commit/b107f0aeebbbdd03842716ef7d17fad21869e1f6))
+* support tags and entities in filter search params ([38e4b37](https://github.com/drodil/backstage-plugin-qeta/commit/38e4b37433229356c08cf3e9ba8056b316983f16)), closes [#264](https://github.com/drodil/backstage-plugin-qeta/issues/264)
+
+
+### Bug Fixes
+
+* do not run conditional authorize if permissions are not enabled ([02c044e](https://github.com/drodil/backstage-plugin-qeta/commit/02c044e51751e5b063613742e89c4739a0289e4a))
+* improve handling of forbidden responses ([487ee23](https://github.com/drodil/backstage-plugin-qeta/commit/487ee23daecbb952c78353a81f0065799e1e8b73))
+
 ### [3.20.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.20.2...v3.20.3) (2025-02-17)
 
 
