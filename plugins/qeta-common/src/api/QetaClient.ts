@@ -275,6 +275,11 @@ export class QetaClient implements QetaApi {
       queryParams: options,
       requestOptions,
     });
+
+    if (response.status === 403) {
+      return { tags: [], total: 0 };
+    }
+
     return (await response.json()) as TagsResponse;
   }
 
@@ -352,6 +357,11 @@ export class QetaClient implements QetaApi {
       requestOptions,
       queryParams: options,
     });
+
+    if (response.status === 403) {
+      return { users: [], total: 0 };
+    }
+
     return (await response.json()) as UsersResponse;
   }
 
@@ -363,6 +373,10 @@ export class QetaClient implements QetaApi {
       requestOptions,
       queryParams: options,
     });
+
+    if (response.status === 403) {
+      return { entities: [], total: 0 };
+    }
     return (await response.json()) as EntitiesResponse;
   }
 
@@ -770,6 +784,11 @@ export class QetaClient implements QetaApi {
     const response = await this.fetch(`/collections/followed`, {
       requestOptions,
     });
+
+    if (response.status === 403) {
+      return { collections: [], count: 0 };
+    }
+
     return (await response.json()) as UserCollectionsResponse;
   }
 
@@ -803,6 +822,10 @@ export class QetaClient implements QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<UserTagsResponse> {
     const response = await this.fetch(`/tags/followed`, { requestOptions });
+    if (response.status === 403) {
+      return { tags: [], count: 0 };
+    }
+
     return (await response.json()) as UserTagsResponse;
   }
 
@@ -836,6 +859,9 @@ export class QetaClient implements QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<UserEntitiesResponse> {
     const response = await this.fetch(`/entities/followed`, { requestOptions });
+    if (response.status === 403) {
+      return { entityRefs: [], count: 0 };
+    }
     return (await response.json()) as UserEntitiesResponse;
   }
 
@@ -869,6 +895,9 @@ export class QetaClient implements QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<UserUsersResponse> {
     const response = await this.fetch(`/users/followed`, { requestOptions });
+    if (response.status === 403) {
+      return { followedUserRefs: [], count: 0 };
+    }
     return (await response.json()) as UserUsersResponse;
   }
 
@@ -921,6 +950,11 @@ export class QetaClient implements QetaApi {
       queryParams: options.options,
       requestOptions: options.requestOptions,
     });
+
+    if (response.status === 403) {
+      return { ranking: [] };
+    }
+
     return (await response.json()) as StatisticResponse;
   }
 
@@ -935,6 +969,10 @@ export class QetaClient implements QetaApi {
       },
     );
 
+    if (response.status === 403) {
+      return { ranking: [] };
+    }
+
     return (await response.json()) as StatisticResponse;
   }
 
@@ -945,6 +983,10 @@ export class QetaClient implements QetaApi {
       queryParams: options.options,
       requestOptions: options.requestOptions,
     });
+
+    if (response.status === 403) {
+      return { ranking: [] };
+    }
 
     return (await response.json()) as StatisticResponse;
   }
@@ -957,6 +999,10 @@ export class QetaClient implements QetaApi {
       requestOptions: options.requestOptions,
     });
 
+    if (response.status === 403) {
+      return { ranking: [] };
+    }
+
     return (await response.json()) as StatisticResponse;
   }
 
@@ -967,6 +1013,10 @@ export class QetaClient implements QetaApi {
       queryParams: options.options,
       requestOptions: options.requestOptions,
     });
+
+    if (response.status === 403) {
+      return { ranking: [] };
+    }
 
     return (await response.json()) as StatisticResponse;
   }
@@ -990,6 +1040,10 @@ export class QetaClient implements QetaApi {
       requestOptions,
     });
 
+    if (response.status === 403) {
+      return { impact: 0, lastWeekImpact: 0 };
+    }
+
     return (await response.json()) as ImpactResponse;
   }
 
@@ -997,6 +1051,23 @@ export class QetaClient implements QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<StatisticsResponse<GlobalStat>> {
     const response = await this.fetch(`/statistics/global`, { requestOptions });
+    if (response.status === 403) {
+      return {
+        statistics: [],
+        summary: {
+          totalAnswers: 0,
+          totalArticles: 0,
+          totalComments: 0,
+          totalQuestions: 0,
+          totalTags: 0,
+          totalViews: 0,
+          totalVotes: 0,
+          totalUsers: 0,
+          date: new Date(),
+        },
+      };
+    }
+
     return (await response.json()) as StatisticsResponse<GlobalStat>;
   }
 
@@ -1007,6 +1078,22 @@ export class QetaClient implements QetaApi {
     const response = await this.fetch(`/statistics/user/${userRef}`, {
       requestOptions,
     });
+    if (response.status === 403) {
+      return {
+        statistics: [],
+        summary: {
+          totalAnswers: 0,
+          totalArticles: 0,
+          totalComments: 0,
+          totalQuestions: 0,
+          totalViews: 0,
+          totalVotes: 0,
+          totalFollowers: 0,
+          date: new Date(),
+        },
+      };
+    }
+
     return (await response.json()) as StatisticsResponse<UserStat>;
   }
 
@@ -1177,6 +1264,10 @@ export class QetaClient implements QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<TemplatesResponse> {
     const response = await this.fetch('/templates', { requestOptions });
+    if (response.status === 403) {
+      return { templates: [], total: 0 };
+    }
+
     return (await response.json()) as TemplatesResponse;
   }
 
