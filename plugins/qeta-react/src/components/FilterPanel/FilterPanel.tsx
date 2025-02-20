@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { DateRangeFilter } from './DateRangeFilter';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
@@ -27,6 +27,7 @@ import {
 } from '@material-ui/core';
 import AdjustIcon from '@material-ui/icons/Adjust';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import { compact } from 'lodash';
 
 const radioSelect = (value: string, label: string) => {
   return (
@@ -45,6 +46,10 @@ export const filterKeys = [
   'noCorrectAnswer',
   'noVotes',
   'dateRange',
+  'tags',
+  'tagsRelation',
+  'entities',
+  'entitiesRelation',
 ] as const;
 export type FilterKey = (typeof filterKeys)[number];
 
@@ -75,6 +80,10 @@ export type PostFilters = Filters & {
   noVotes?: 'true' | 'false';
   collectionId?: number;
   type?: PostType;
+  entities?: string[];
+  tags?: string[];
+  tagsRelation?: 'and' | 'or';
+  entitiesRelation?: 'and' | 'or';
 };
 
 export type AnswerFilters = Filters & {
@@ -206,6 +215,19 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
       ]);
     }
   };
+
+  useEffect(() => {
+    if (filters.entities) {
+      catalogApi
+        .getEntitiesByRefs({
+          entityRefs: filters.entities,
+          fields: ['kind', 'metadata.name', 'metadata.namespace'],
+        })
+        .then(data => {
+          setEntities(compact(data.items));
+        });
+    }
+  }, [catalogApi, filters.entities]);
 
   const postFilters = isPostFilters(filters);
   const answerFilters = isAnswerFilters(filters);

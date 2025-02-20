@@ -138,7 +138,9 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
         } else if (filterKeys.includes(key as FilterKey)) {
           filtersApplied = true;
           if (key === 'tags') {
-            filters.tags = filterTags(value) ?? [];
+            filters.tags = filterTags(value.split(',')) ?? [];
+          } else if (key === 'entities') {
+            filters.entities = value.split(',');
           } else {
             (filters as any)[key] = value;
           }

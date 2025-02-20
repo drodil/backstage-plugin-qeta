@@ -7,11 +7,15 @@ import { QetaPagination } from '../QetaPagination/QetaPagination';
 import {
   CollectionFilters,
   CommonFilterPanelProps,
+  FilterKey,
+  filterKeys,
   FilterPanel,
 } from '../FilterPanel/FilterPanel';
 import FilterList from '@material-ui/icons/FilterList';
 import { getFiltersWithDateRange } from '../../utils';
 import { SearchBar } from '../SearchBar/SearchBar';
+import { useSearchParams } from 'react-router-dom';
+import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 
 export type CollectionsGridProps = {
   owner?: string;
@@ -31,6 +35,7 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
   const { t } = useTranslation();
   const [page, setPage] = React.useState(1);
   const [pageCount, setPageCount] = React.useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [collectionsPerPage, setCollectionsPerPage] = React.useState(25);
   const [showFilterPanel, setShowFilterPanel] = React.useState(
@@ -94,7 +99,65 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
       }
       return newValue;
     });
+    setSearchParams(prev => {
+      const newValue = prev;
+      for (const { key, value } of changesArray) {
+        if (!filterKeys.includes(key as FilterKey)) {
+          continue;
+        }
+        if (!value || value === 'false') {
+          newValue.delete(key);
+        } else if (Array.isArray(value)) {
+          if (value.length === 0) {
+            newValue.delete(key);
+          } else {
+            newValue.set(key, value.join(','));
+          }
+        } else if (typeof value === 'number') {
+          newValue.set(key, String(value));
+        } else if (value.length > 0) {
+          newValue.set(key, value);
+        } else {
+          newValue.delete(key);
+        }
+      }
+      return newValue;
+    });
   };
+
+  useEffect(() => {
+    let filtersApplied = false;
+    searchParams.forEach((value, key) => {
+      try {
+        if (key === 'page') {
+          const pv = Number.parseInt(value, 10);
+          if (pv > 0) {
+            setPage(pv);
+          } else {
+            setPage(1);
+          }
+        } else if (key === 'collectionsPerPage') {
+          const qpp = Number.parseInt(value, 10);
+          if (qpp > 0) setCollectionsPerPage(qpp);
+        } else if (filterKeys.includes(key as FilterKey)) {
+          filtersApplied = true;
+          if (key === 'tags') {
+            filters.tags = filterTags(value.split(',')) ?? [];
+          } else if (key === 'entities') {
+            filters.entities = value.split(',');
+          } else {
+            (filters as any)[key] = value;
+          }
+        }
+      } catch (_e) {
+        // NOOP
+      }
+    });
+    setFilters(filters);
+    if (filtersApplied) {
+      setShowFilterPanel(true);
+    }
+  }, [searchParams, filters]);
 
   return (
     <Box>
