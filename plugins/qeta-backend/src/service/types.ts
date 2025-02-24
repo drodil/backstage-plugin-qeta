@@ -6,6 +6,7 @@ import {
   DiscoveryService,
   HttpAuthService,
   LoggerService,
+  PermissionsRegistryService,
   PermissionsService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
@@ -43,6 +44,7 @@ export interface RouterOptions {
   signals?: SignalsService;
   notifications?: NotificationService;
   aiHandler?: AIHandler;
+  permissionsRegistry?: PermissionsRegistryService;
 }
 
 export interface RouteOptions extends RouterOptions {

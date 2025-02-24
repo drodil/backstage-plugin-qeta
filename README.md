@@ -45,6 +45,10 @@ using the old backend system, please use version 1.24.5.
 updated to 3.10.0 or later, please update to 3.13.0 or later to get back to MUI4. See also the
 related [issue](https://github.com/drodil/backstage-plugin-qeta/issues/244).
 
+**IMPORTANT**: From version 3.22.0 forward, Backstage 1.36.0 or later is required. This is due to change in permission
+integration router moving to use `permissionsRegistryService`. If you try to run this plugin with older Backstage
+version, an error is logged and permissions will be disabled.
+
 ## Examples
 
 Home page:

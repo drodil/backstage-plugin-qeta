@@ -7,19 +7,18 @@ import {
   tagRules,
 } from './permissionRules';
 import {
-  ANSWER_RESOURCE_TYPE,
-  COLLECTION_RESOUCE_TYPE,
-  COMMENT_RESOURCE_TYPE,
-  POST_RESOURCE_TYPE,
-  TAG_RESOURCE_TYPE,
-} from '@drodil/backstage-plugin-qeta-common';
+  answerPermissionResourceRef,
+  collectionPermissionResourceRef,
+  commentPermissionResourceRef,
+  postPermissionResourceRef,
+  tagPermissionResourceRef,
+} from './permissionResources.ts';
 
 const {
   conditions: qConditions,
   createConditionalDecision: createPostDecision,
 } = createConditionExports({
-  pluginId: 'qeta',
-  resourceType: POST_RESOURCE_TYPE,
+  resourceRef: postPermissionResourceRef,
   rules: postRules,
 });
 
@@ -31,8 +30,7 @@ const {
   conditions: aConditions,
   createConditionalDecision: createAnswerDecision,
 } = createConditionExports({
-  pluginId: 'qeta',
-  resourceType: ANSWER_RESOURCE_TYPE,
+  resourceRef: answerPermissionResourceRef,
   rules: answerRules,
 });
 
@@ -44,8 +42,7 @@ const {
   conditions: cConditions,
   createConditionalDecision: createCommentDecision,
 } = createConditionExports({
-  pluginId: 'qeta',
-  resourceType: COMMENT_RESOURCE_TYPE,
+  resourceRef: commentPermissionResourceRef,
   rules: commentRules,
 });
 
@@ -57,8 +54,7 @@ const {
   conditions: tConditions,
   createConditionalDecision: createTagDecision,
 } = createConditionExports({
-  pluginId: 'qeta',
-  resourceType: TAG_RESOURCE_TYPE,
+  resourceRef: tagPermissionResourceRef,
   rules: tagRules,
 });
 
@@ -70,8 +66,7 @@ const {
   conditions: colConditions,
   createConditionalDecision: createCollectionDecision,
 } = createConditionExports({
-  pluginId: 'qeta',
-  resourceType: COLLECTION_RESOUCE_TYPE,
+  resourceRef: collectionPermissionResourceRef,
   rules: collectionRules,
 });
 

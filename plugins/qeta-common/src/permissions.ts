@@ -41,6 +41,7 @@ export const qetaDeletePostPermission = createPermission({
 });
 
 export const ANSWER_RESOURCE_TYPE = 'answer';
+
 export const qetaReadAnswerPermission = createPermission({
   name: 'qeta.read.answer',
   attributes: { action: 'read' },
@@ -59,6 +60,7 @@ export const qetaDeleteAnswerPermission = createPermission({
 });
 
 export const COMMENT_RESOURCE_TYPE = 'comment';
+
 export const qetaReadCommentPermission = createPermission({
   name: 'qeta.read.comment',
   attributes: { action: 'read' },
@@ -77,6 +79,7 @@ export const qetaDeleteCommentPermission = createPermission({
 });
 
 export const TAG_RESOURCE_TYPE = 'tag';
+
 export const qetaCreateTagPermission = createPermission({
   name: 'qeta.create.tag',
   attributes: { action: 'create' },
@@ -98,6 +101,7 @@ export const qetaDeleteTagPermission = createPermission({
 });
 
 export const COLLECTION_RESOUCE_TYPE = 'collection';
+
 export const qetaReadCollectionPermission = createPermission({
   name: 'qeta.read.collection',
   attributes: { action: 'read' },

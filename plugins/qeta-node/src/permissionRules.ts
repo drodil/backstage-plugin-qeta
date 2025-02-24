@@ -1,36 +1,32 @@
 import {
   createConditionFactory,
-  makeCreatePermissionRule,
+  createPermissionRule,
 } from '@backstage/plugin-permission-node';
 import { z } from 'zod';
 import {
   Answer,
-  ANSWER_RESOURCE_TYPE,
   AnswerFilter,
   Collection,
-  COLLECTION_RESOUCE_TYPE,
   CollectionFilter,
   Comment,
-  COMMENT_RESOURCE_TYPE,
   CommentFilter,
   Post,
-  POST_RESOURCE_TYPE,
   PostFilter,
-  TAG_RESOURCE_TYPE,
   TagFilter,
   TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
+import {
+  answerPermissionResourceRef,
+  collectionPermissionResourceRef,
+  commentPermissionResourceRef,
+  postPermissionResourceRef,
+  tagPermissionResourceRef,
+} from './permissionResources';
 
-export const createPostPermissionRule = makeCreatePermissionRule<
-  Post,
-  PostFilter,
-  typeof POST_RESOURCE_TYPE
->();
-
-export const isPostAuthor = createPostPermissionRule({
+export const isPostAuthor = createPermissionRule({
   name: 'IS_AUTHOR',
   description: 'Should allow only if the post is created by the user',
-  resourceType: POST_RESOURCE_TYPE,
+  resourceRef: postPermissionResourceRef,
   paramsSchema: z.object({
     userRef: z.string().describe('User ID to match on the author').optional(),
     claims: z
@@ -43,7 +39,7 @@ export const isPostAuthor = createPostPermissionRule({
   },
   toQuery: ({ userRef, claims = [] }) => {
     return {
-      property: 'posts.author',
+      property: 'posts.author' as PostFilter['property'],
       values: [userRef, ...claims].filter(Boolean),
     };
   },
@@ -51,10 +47,10 @@ export const isPostAuthor = createPostPermissionRule({
 
 export const postAuthorConditionFactory = createConditionFactory(isPostAuthor);
 
-export const postHasTags = createPostPermissionRule({
+export const postHasTags = createPermissionRule({
   name: 'HAS_TAGS',
   description: 'Should allow only if the post has all the specific tags',
-  resourceType: POST_RESOURCE_TYPE,
+  resourceRef: postPermissionResourceRef,
   paramsSchema: z.object({
     tags: z.array(z.string()).describe('Tag to match the post'),
   }),
@@ -63,7 +59,7 @@ export const postHasTags = createPostPermissionRule({
   },
   toQuery: ({ tags }) => {
     return {
-      property: 'tags',
+      property: 'tags' as PostFilter['property'],
       values: tags,
     };
   },
@@ -71,10 +67,10 @@ export const postHasTags = createPostPermissionRule({
 
 export const postHasTagsConditionFactory = createConditionFactory(postHasTags);
 
-export const postHasEntities = createPostPermissionRule({
+export const postHasEntities = createPermissionRule({
   name: 'HAS_ENTITIES',
   description: 'Should allow only if the post has all the specific entities',
-  resourceType: POST_RESOURCE_TYPE,
+  resourceRef: postPermissionResourceRef,
   paramsSchema: z.object({
     entityRefs: z.array(z.string()).describe('Entity refs to match the post'),
   }),
@@ -83,7 +79,7 @@ export const postHasEntities = createPostPermissionRule({
   },
   toQuery: ({ entityRefs }) => {
     return {
-      property: 'entityRefs',
+      property: 'entityRefs' as PostFilter['property'],
       values: entityRefs,
     };
   },
@@ -92,10 +88,10 @@ export const postHasEntities = createPostPermissionRule({
 export const postHasEntitiesConditionFactory =
   createConditionFactory(postHasEntities);
 
-export const postHasType = createPostPermissionRule({
+export const postHasType = createPermissionRule({
   name: 'HAS_TYPE',
   description: 'Should allow only if the post has the specific type',
-  resourceType: POST_RESOURCE_TYPE,
+  resourceRef: postPermissionResourceRef,
   paramsSchema: z.object({
     type: z.string().describe('Type to match the post'),
   }),
@@ -104,7 +100,7 @@ export const postHasType = createPostPermissionRule({
   },
   toQuery: ({ type }) => {
     return {
-      property: 'posts.type',
+      property: 'posts.type' as PostFilter['property'],
       values: [type],
     };
   },
@@ -119,21 +115,10 @@ export const postRules = {
   postHasType,
 };
 
-/**
- * @deprecated use `postRules` instead
- */
-export const permissionRules = postRules;
-
-export const createAnswerPermissionRule = makeCreatePermissionRule<
-  Answer,
-  AnswerFilter,
-  typeof ANSWER_RESOURCE_TYPE
->();
-
-export const isAnswerAuthor = createAnswerPermissionRule({
+export const isAnswerAuthor = createPermissionRule({
   name: 'IS_AUTHOR',
   description: 'Should allow only if the answer is created by the user',
-  resourceType: ANSWER_RESOURCE_TYPE,
+  resourceRef: answerPermissionResourceRef,
   paramsSchema: z.object({
     userRef: z.string().describe('User ID to match on the author').optional(),
     claims: z
@@ -146,7 +131,7 @@ export const isAnswerAuthor = createAnswerPermissionRule({
   },
   toQuery: ({ userRef, claims = [] }) => {
     return {
-      property: 'answers.author',
+      property: 'answers.author' as AnswerFilter['property'],
       values: [userRef, ...claims].filter(Boolean),
     };
   },
@@ -155,11 +140,11 @@ export const isAnswerAuthor = createAnswerPermissionRule({
 export const answerAuthorConditionFactory =
   createConditionFactory(isAnswerAuthor);
 
-export const answerQuestionHasTags = createAnswerPermissionRule({
+export const answerQuestionHasTags = createPermissionRule({
   name: 'HAS_TAGS',
   description:
     'Should allow only if the answers question has all the specific tags',
-  resourceType: ANSWER_RESOURCE_TYPE,
+  resourceRef: answerPermissionResourceRef,
   paramsSchema: z.object({
     tags: z.array(z.string()).describe('Tag to match the question'),
   }),
@@ -168,7 +153,7 @@ export const answerQuestionHasTags = createAnswerPermissionRule({
   },
   toQuery: ({ tags }) => {
     return {
-      property: 'tags',
+      property: 'tags' as AnswerFilter['property'],
       values: tags,
     };
   },
@@ -178,11 +163,11 @@ export const answerQuestionTagsConditionFactory = createConditionFactory(
   answerQuestionHasTags,
 );
 
-export const answerQuestionHasEntityRefs = createAnswerPermissionRule({
+export const answerQuestionHasEntityRefs = createPermissionRule({
   name: 'HAS_ENTITIES',
   description:
     'Should allow only if the answers question has all the specific entities',
-  resourceType: ANSWER_RESOURCE_TYPE,
+  resourceRef: answerPermissionResourceRef,
   paramsSchema: z.object({
     entityRefs: z.array(z.string()).describe('Tag to match the question'),
   }),
@@ -191,7 +176,7 @@ export const answerQuestionHasEntityRefs = createAnswerPermissionRule({
   },
   toQuery: ({ entityRefs }) => {
     return {
-      property: 'entityRefs',
+      property: 'entityRefs' as AnswerFilter['property'],
       values: entityRefs,
     };
   },
@@ -207,16 +192,10 @@ export const answerRules = {
   answerQuestionHasEntityRefs,
 };
 
-export const createCommentPermissionRule = makeCreatePermissionRule<
-  Comment,
-  CommentFilter,
-  typeof COMMENT_RESOURCE_TYPE
->();
-
-export const isCommentAuthor = createCommentPermissionRule({
+export const isCommentAuthor = createPermissionRule({
   name: 'IS_AUTHOR',
   description: 'Should allow only if the comment is created by the user',
-  resourceType: COMMENT_RESOURCE_TYPE,
+  resourceRef: commentPermissionResourceRef,
   paramsSchema: z.object({
     userRef: z.string().describe('User ID to match on the author').optional(),
     claims: z
@@ -229,7 +208,7 @@ export const isCommentAuthor = createCommentPermissionRule({
   },
   toQuery: ({ userRef, claims = [] }) => {
     return {
-      property: 'comments.author',
+      property: 'comments.author' as CommentFilter['property'],
       values: [userRef, ...claims].filter(Boolean),
     };
   },
@@ -240,15 +219,10 @@ export const commentAuthorConditionFactory =
 
 export const commentRules = { isCommentAuthor };
 
-export const createTagPermissionRule = makeCreatePermissionRule<
-  TagResponse,
-  TagFilter,
-  typeof TAG_RESOURCE_TYPE
->();
-export const isTag = createTagPermissionRule({
+export const isTag = createPermissionRule({
   name: 'IS_TAG',
   description: 'Should allow only if the tag exists',
-  resourceType: TAG_RESOURCE_TYPE,
+  resourceRef: tagPermissionResourceRef,
   paramsSchema: z.object({
     tag: z.string().describe('Tag to match the post'),
   }),
@@ -257,7 +231,7 @@ export const isTag = createTagPermissionRule({
   },
   toQuery: ({ tag }) => {
     return {
-      property: 'tags.tag',
+      property: 'tags.tag' as TagFilter['property'],
       values: [tag],
     };
   },
@@ -267,16 +241,10 @@ export const tagConditionFactory = createConditionFactory(isTag);
 
 export const tagRules = { isTag };
 
-export const createCollectionPermissionRule = makeCreatePermissionRule<
-  Collection,
-  CollectionFilter,
-  typeof COLLECTION_RESOUCE_TYPE
->();
-
-export const isCollectionOwner = createCollectionPermissionRule({
+export const isCollectionOwner = createPermissionRule({
   name: 'IS_OWNER',
   description: 'Should allow only if the collection is owned by the user',
-  resourceType: COLLECTION_RESOUCE_TYPE,
+  resourceRef: collectionPermissionResourceRef,
   paramsSchema: z.object({
     userRef: z
       .string()
@@ -292,7 +260,7 @@ export const isCollectionOwner = createCollectionPermissionRule({
   },
   toQuery: ({ userRef, claims = [] }) => {
     return {
-      property: 'collections.owner',
+      property: 'collections.owner' as CollectionFilter['property'],
       values: [userRef, ...claims].filter(Boolean),
     };
   },
@@ -301,11 +269,11 @@ export const isCollectionOwner = createCollectionPermissionRule({
 export const collectionOwnerConditionFactory =
   createConditionFactory(isCollectionOwner);
 
-export const collectionHasTags = createCollectionPermissionRule({
+export const collectionHasTags = createPermissionRule({
   name: 'HAS_TAGS',
   description:
     'Should allow only if the posts in the collection have the specific tags',
-  resourceType: COLLECTION_RESOUCE_TYPE,
+  resourceRef: collectionPermissionResourceRef,
   paramsSchema: z.object({
     tags: z.array(z.string()).describe('Tag to match the collection'),
   }),
@@ -314,7 +282,7 @@ export const collectionHasTags = createCollectionPermissionRule({
   },
   toQuery: ({ tags }) => {
     return {
-      property: 'tags',
+      property: 'tags' as CollectionFilter['property'],
       values: tags,
     };
   },
@@ -323,11 +291,11 @@ export const collectionHasTags = createCollectionPermissionRule({
 export const collectionHasTagsConditionFactory =
   createConditionFactory(collectionHasTags);
 
-export const collectionHasEntities = createCollectionPermissionRule({
+export const collectionHasEntities = createPermissionRule({
   name: 'HAS_ENTITIES',
   description:
     'Should allow only if the posts in the collection have the specific entities',
-  resourceType: COLLECTION_RESOUCE_TYPE,
+  resourceRef: collectionPermissionResourceRef,
   paramsSchema: z.object({
     entityRefs: z
       .array(z.string())
@@ -338,7 +306,7 @@ export const collectionHasEntities = createCollectionPermissionRule({
   },
   toQuery: ({ entityRefs }) => {
     return {
-      property: 'entityRefs',
+      property: 'entityRefs' as CollectionFilter['property'],
       values: entityRefs,
     };
   },

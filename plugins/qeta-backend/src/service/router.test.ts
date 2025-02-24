@@ -191,6 +191,7 @@ describe('createRouter', () => {
       catalog: mockCatalog,
       config,
       permissions: permissionEvaluator,
+      permissionsRegistry: mockServices.permissionsRegistry.mock(),
     });
     return express().use(router);
   };

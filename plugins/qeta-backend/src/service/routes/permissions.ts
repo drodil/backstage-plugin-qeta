@@ -1,30 +1,39 @@
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import {
-  ANSWER_RESOURCE_TYPE,
-  COLLECTION_RESOUCE_TYPE,
-  COMMENT_RESOURCE_TYPE,
-  POST_RESOURCE_TYPE,
   qetaAnswerPermissions,
   qetaCollectionPermissions,
   qetaCommentPermissions,
-  qetaPermissions,
   qetaPostPermissions,
   qetaTagPermissions,
-  TAG_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
+  answerPermissionResourceRef,
   answerRules,
+  collectionPermissionResourceRef,
   collectionRules,
+  commentPermissionResourceRef,
   commentRules,
+  postPermissionResourceRef,
   postRules,
+  tagPermissionResourceRef,
   tagRules,
 } from '@drodil/backstage-plugin-qeta-node';
 import { Router } from 'express';
 import { RouteOptions } from '../types';
 import { AnswerOptions, PostOptions } from '../../database/QetaStore';
 
-export const permissionsRoute = (router: Router, options: RouteOptions) => {
-  if (!options.permissions) {
+export const permissionsRoute = (_router: Router, options: RouteOptions) => {
+  const { permissions, permissionsRegistry, logger } = options;
+  if (!permissions) {
+    logger.info(
+      `Permissions not enabled, skipping setting up permissions registry`,
+    );
+    return;
+  }
+
+  if (!permissionsRegistry) {
+    logger.error(
+      `Permissions are enabled but permissions registry is missing; are you running Backstage version 1.36.0 or later?`,
+    );
     return;
   }
 
@@ -32,124 +41,123 @@ export const permissionsRoute = (router: Router, options: RouteOptions) => {
     return value.map(v => Number.parseInt(v.split(':')[2], 10));
   };
 
-  const permissions = createPermissionIntegrationRouter({
-    permissions: qetaPermissions,
-    // @ts-ignore: until 1.36.0 backstage release
-    resources: [
-      {
-        getResources: async (resourceRefs: string[]) => {
-          const postIds = parseIdArray(
-            resourceRefs.filter(ref => ref.startsWith('qeta:post:')),
-          );
-          const opts: PostOptions = {
-            includeComments: false,
-            includeAnswers: false,
-            includeVotes: false,
-            includeAttachments: false,
-            includeTags: false,
-            includeEntities: false,
-            includeTotal: false,
-          };
-          if (postIds.length === 1) {
-            const post = await options.database.getPost(
-              '',
-              postIds[0],
-              false,
-              opts,
-            );
-            return [post];
-          }
-          const posts = await options.database.getPosts(
-            '',
-            { ids: postIds },
-            undefined,
-            opts,
-          );
-          return posts.posts;
-        },
-        resourceType: POST_RESOURCE_TYPE,
-        permissions: qetaPostPermissions,
-        rules: Object.values(postRules),
-      },
-      {
-        getResources: async (resourceRefs: string[]) => {
-          const answerIds = parseIdArray(
-            resourceRefs.filter(ref => ref.startsWith('qeta:answer:')),
-          );
-          const opts: AnswerOptions = {
-            includeVotes: false,
-            includePost: false,
-            includeComments: false,
-          };
+  permissionsRegistry.addResourceType({
+    resourceRef: postPermissionResourceRef,
+    getResources: async (resourceRefs: string[]) => {
+      const postIds = parseIdArray(
+        resourceRefs.filter(ref => ref.startsWith('qeta:post:')),
+      );
 
-          if (answerIds.length === 1) {
-            const answer = await options.database.getAnswer(
-              answerIds[0],
-              '',
-              opts,
-            );
-            return [answer];
-          }
+      if (postIds.length === 0) {
+        return [];
+      }
 
-          const answers = await options.database.getAnswers(
-            '',
-            {
-              ids: answerIds,
-            },
-            undefined,
-            opts,
-          );
-          return answers.answers;
-        },
-        resourceType: ANSWER_RESOURCE_TYPE,
-        permissions: qetaAnswerPermissions,
-        rules: Object.values(answerRules),
-      },
-      {
-        getResources: async (resourceRefs: string[]) => {
-          const commentIds = parseIdArray(
-            resourceRefs.filter(ref => ref.startsWith('qeta:comment:')),
-          );
-          return await options.database.getComments({
-            ids: commentIds,
-          });
-        },
-        resourceType: COMMENT_RESOURCE_TYPE,
-        permissions: qetaCommentPermissions,
-        rules: Object.values(commentRules),
-      },
-      {
-        getResources: async (resourceRefs: string[]) => {
-          const tagIds = parseIdArray(
-            resourceRefs.filter(ref => ref.startsWith('qeta:tag:')),
-          );
-          const tags = await options.database.getTags({ ids: tagIds });
-          return tags.tags;
-        },
-        resourceType: TAG_RESOURCE_TYPE,
-        permissions: qetaTagPermissions,
-        rules: Object.values(tagRules),
-      },
-      {
-        getResources: async (resourceRefs: string[]) => {
-          const tagIds = parseIdArray(
-            resourceRefs.filter(ref => ref.startsWith('qeta:collection:')),
-          );
-          const collections = await options.database.getCollections(
-            '',
-            {
-              ids: tagIds,
-            },
-            { includePosts: false },
-          );
-          return collections.collections;
-        },
-        resourceType: COLLECTION_RESOUCE_TYPE,
-        permissions: qetaCollectionPermissions,
-        rules: Object.values(collectionRules),
-      },
-    ],
+      const opts: PostOptions = {
+        includeComments: false,
+        includeAnswers: false,
+        includeVotes: false,
+        includeAttachments: false,
+        includeTags: false,
+        includeEntities: false,
+        includeTotal: false,
+      };
+
+      const posts = await options.database.getPosts(
+        '',
+        { ids: postIds },
+        undefined,
+        opts,
+      );
+      return posts.posts;
+    },
+    permissions: qetaPostPermissions,
+    rules: Object.values(postRules),
   });
 
-  router.use(permissions);
+  permissionsRegistry.addResourceType({
+    resourceRef: answerPermissionResourceRef,
+    getResources: async (resourceRefs: string[]) => {
+      const answerIds = parseIdArray(
+        resourceRefs.filter(ref => ref.startsWith('qeta:answer:')),
+      );
+      if (answerIds.length === 0) {
+        return [];
+      }
+
+      const opts: AnswerOptions = {
+        includeVotes: false,
+        includePost: false,
+        includeComments: false,
+      };
+
+      const answers = await options.database.getAnswers(
+        '',
+        {
+          ids: answerIds,
+        },
+        undefined,
+        opts,
+      );
+      return answers.answers;
+    },
+    permissions: qetaAnswerPermissions,
+    rules: Object.values(answerRules),
+  });
+
+  permissionsRegistry.addResourceType({
+    resourceRef: commentPermissionResourceRef,
+    getResources: async (resourceRefs: string[]) => {
+      const commentIds = parseIdArray(
+        resourceRefs.filter(ref => ref.startsWith('qeta:comment:')),
+      );
+
+      if (commentIds.length === 0) {
+        return [];
+      }
+
+      return await options.database.getComments({
+        ids: commentIds,
+      });
+    },
+    permissions: qetaCommentPermissions,
+    rules: Object.values(commentRules),
+  });
+
+  permissionsRegistry.addResourceType({
+    resourceRef: tagPermissionResourceRef,
+    getResources: async (resourceRefs: string[]) => {
+      const tagIds = parseIdArray(
+        resourceRefs.filter(ref => ref.startsWith('qeta:tag:')),
+      );
+      if (tagIds.length === 0) {
+        return [];
+      }
+      const tags = await options.database.getTags({ ids: tagIds });
+      return tags.tags;
+    },
+    permissions: qetaTagPermissions,
+    rules: Object.values(tagRules),
+  });
+
+  permissionsRegistry.addResourceType({
+    resourceRef: collectionPermissionResourceRef,
+    getResources: async (resourceRefs: string[]) => {
+      const tagIds = parseIdArray(
+        resourceRefs.filter(ref => ref.startsWith('qeta:collection:')),
+      );
+      if (tagIds.length === 0) {
+        return [];
+      }
+      const collections = await options.database.getCollections(
+        '',
+        {
+          ids: tagIds,
+        },
+        { includePosts: false },
+      );
+      return collections.collections;
+    },
+    permissions: qetaCollectionPermissions,
+    rules: Object.values(collectionRules),
+  });
 };
