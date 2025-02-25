@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.23.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.22.0...v3.23.0) (2025-02-25)
+
+
+### Features
+
+* add support for auditor service ([fdbd240](https://github.com/drodil/backstage-plugin-qeta/commit/fdbd240013e296584743c0b713101d3c6b3ed66e))
+* allow disabling notifications from config ([7e0a3c8](https://github.com/drodil/backstage-plugin-qeta/commit/7e0a3c8dd9f4d67ab9f5282d40317701c2a0e3a3))
+* do not check edit/delete access in list operations ([a5845a2](https://github.com/drodil/backstage-plugin-qeta/commit/a5845a2a7f0be932ae334270f0ed93c46f8a0b0e))
+* notify users who have favorited a post ([38bb945](https://github.com/drodil/backstage-plugin-qeta/commit/38bb94510ec9d7523d7eff9126b2de35c41d2e2e)), closes [#199](https://github.com/drodil/backstage-plugin-qeta/issues/199)
+
+
+### Bug Fixes
+
+* make from and to date filters work also alone ([49df38e](https://github.com/drodil/backstage-plugin-qeta/commit/49df38e287bc52f1296e292ddc24f188780e4267))
+* notification manager initialization ([98b8aee](https://github.com/drodil/backstage-plugin-qeta/commit/98b8aeed4ead8230a26a7cf52156705a515c5b1a))
+* router test mocks ([35d631f](https://github.com/drodil/backstage-plugin-qeta/commit/35d631f673c6f55723f9f90ac9d049150fba16cc))
+
 ## [3.22.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.21.0...v3.22.0) (2025-02-24)
 
 
