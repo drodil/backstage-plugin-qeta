@@ -13,22 +13,27 @@ import {
 } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { UserEntity } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 
 export class NotificationManager {
+  private readonly enabled: boolean;
   constructor(
     private readonly logger: LoggerService,
     private readonly catalog: CatalogApi,
     private readonly auth: AuthService,
+    config: Config,
     private readonly notifications?: NotificationService,
     private readonly cache?: CacheService,
-  ) {}
+  ) {
+    this.enabled = config.getOptionalBoolean('qeta.notifications') ?? true;
+  }
 
   async onNewPost(
     username: string,
     post: Post,
     followingUsers: string[],
   ): Promise<string[]> {
-    if (!this.notifications) {
+    if (!this.notifications || !this.enabled) {
       return [];
     }
 
@@ -77,7 +82,7 @@ export class NotificationManager {
     comment: string,
     followingUsers: string[],
   ): Promise<string[]> {
-    if (!this.notifications) {
+    if (!this.notifications || !this.enabled) {
       return [];
     }
 
@@ -132,7 +137,7 @@ export class NotificationManager {
     answer: Answer,
     followingUsers: string[],
   ): Promise<string[]> {
-    if (!this.notifications) {
+    if (!this.notifications || !this.enabled) {
       return [];
     }
 
@@ -180,7 +185,7 @@ export class NotificationManager {
     comment: string,
     followingUsers: string[],
   ): Promise<string[]> {
-    if (!this.notifications) {
+    if (!this.notifications || !this.enabled) {
       return [];
     }
 
@@ -231,7 +236,7 @@ export class NotificationManager {
     question: Post,
     answer: Answer,
   ): Promise<string[]> {
-    if (!this.notifications) {
+    if (!this.notifications || !this.enabled) {
       return [];
     }
 
@@ -279,7 +284,7 @@ export class NotificationManager {
     alreadySent: string[],
     isComment?: boolean,
   ): Promise<string[]> {
-    if (!this.notifications) {
+    if (!this.notifications || !this.enabled) {
       return [];
     }
 
@@ -338,7 +343,7 @@ export class NotificationManager {
     collection: Collection,
     followingUsers: string[],
   ): Promise<string[]> {
-    if (!this.notifications || followingUsers.length === 0) {
+    if (!this.notifications || !this.enabled || followingUsers.length === 0) {
       return [];
     }
 
@@ -375,7 +380,7 @@ export class NotificationManager {
     collection: Collection,
     followingUsers: string[],
   ): Promise<string[]> {
-    if (!this.notifications || followingUsers.length === 0) {
+    if (!this.notifications || !this.enabled || followingUsers.length === 0) {
       return [];
     }
 

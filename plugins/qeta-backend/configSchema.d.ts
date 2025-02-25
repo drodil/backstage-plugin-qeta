@@ -27,6 +27,10 @@ export interface Config {
      */
     permissions?: boolean;
     /**
+     * Can be used to disable notifications completely
+     */
+    notifications?: boolean;
+    /**
      * Entities configuration for questions.
      *
      * @visibility frontend
