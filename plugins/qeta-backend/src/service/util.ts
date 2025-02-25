@@ -48,7 +48,6 @@ import {
   qetaEditPostPermission,
   qetaEditTagPermission,
   QetaIdEntity,
-  qetaReadCommentPermission,
   TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
@@ -380,44 +379,55 @@ export const mapAdditionalFields = async (
   request: Request<unknown>,
   resp: MaybePost | MaybeAnswer | MaybeTag | MaybeCollection,
   options: RouterOptions,
+  checkRights = true,
 ) => {
   if (!resp) {
     return resp;
   }
 
   if (isCollection(resp) || isTag(resp)) {
-    resp.canEdit = await authorizeBoolean(
-      request,
-      isCollection(resp) ? qetaEditCollectionPermission : qetaEditTagPermission,
-      options,
-      resp,
-    );
-    resp.canDelete = await authorizeBoolean(
-      request,
-      isCollection(resp)
-        ? qetaDeleteCollectionPermission
-        : qetaDeleteTagPermission,
-      options,
-      resp,
-    );
+    resp.canEdit = checkRights
+      ? await authorizeBoolean(
+          request,
+          isCollection(resp)
+            ? qetaEditCollectionPermission
+            : qetaEditTagPermission,
+          options,
+          resp,
+        )
+      : undefined;
+    resp.canDelete = checkRights
+      ? await authorizeBoolean(
+          request,
+          isCollection(resp)
+            ? qetaDeleteCollectionPermission
+            : qetaDeleteTagPermission,
+          options,
+          resp,
+        )
+      : undefined;
     return resp;
   }
 
   const username = await getUsername(request, options, true);
   resp.ownVote = resp.votes?.find(v => v.author === username)?.score;
   resp.own = resp.author === username;
-  resp.canEdit = await authorizeBoolean(
-    request,
-    isPost(resp) ? qetaEditPostPermission : qetaEditAnswerPermission,
-    options,
-    resp,
-  );
-  resp.canDelete = await authorizeBoolean(
-    request,
-    isPost(resp) ? qetaDeletePostPermission : qetaDeleteAnswerPermission,
-    options,
-    resp,
-  );
+  resp.canEdit = checkRights
+    ? await authorizeBoolean(
+        request,
+        isPost(resp) ? qetaEditPostPermission : qetaEditAnswerPermission,
+        options,
+        resp,
+      )
+    : undefined;
+  resp.canDelete = checkRights
+    ? await authorizeBoolean(
+        request,
+        isPost(resp) ? qetaDeletePostPermission : qetaDeleteAnswerPermission,
+        options,
+        resp,
+      )
+    : undefined;
 
   if (isPost(resp)) {
     await Promise.all(
@@ -429,32 +439,25 @@ export const mapAdditionalFields = async (
 
   const comments: (Comment | null)[] = await Promise.all(
     (resp.comments ?? []).map(async (c: Comment): Promise<Comment | null> => {
-      if (
-        !(await authorizeBoolean(
-          request,
-          qetaReadCommentPermission,
-          options,
-          c,
-        ))
-      ) {
-        return null;
-      }
-
       return {
         ...c,
         own: c.author === username,
-        canEdit: await authorizeBoolean(
-          request,
-          qetaEditCommentPermission,
-          options,
-          c,
-        ),
-        canDelete: await authorizeBoolean(
-          request,
-          qetaDeleteCommentPermission,
-          options,
-          c,
-        ),
+        canEdit: checkRights
+          ? await authorizeBoolean(
+              request,
+              qetaEditCommentPermission,
+              options,
+              c,
+            )
+          : undefined,
+        canDelete: checkRights
+          ? await authorizeBoolean(
+              request,
+              qetaDeleteCommentPermission,
+              options,
+              c,
+            )
+          : undefined,
       };
     }),
   );

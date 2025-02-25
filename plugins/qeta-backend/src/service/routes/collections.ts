@@ -8,6 +8,7 @@ import {
 import Ajv from 'ajv';
 import { Router } from 'express';
 import {
+  CollectionsQuery,
   qetaCreateCollectionPermission,
   qetaDeleteCollectionPermission,
   qetaEditCollectionPermission,
@@ -66,8 +67,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     const filters = conditions[1];
     const tagFilters = conditions[2];
 
+    const opts = request.query as CollectionsQuery;
     // Act
-    const collections = await database.getCollections(username, request.query, {
+    const collections = await database.getCollections(username, opts, {
       filters,
       postFilters,
       tagFilters,
@@ -75,7 +77,12 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
     await Promise.all(
       collections.collections.map(async collection => {
-        await mapAdditionalFields(request, collection, options);
+        await mapAdditionalFields(
+          request,
+          collection,
+          options,
+          opts.checkAccess ?? false,
+        );
       }),
     );
 
@@ -113,8 +120,10 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       getAuthorizeConditions(request, qetaReadTagPermission, options, true),
     ]);
 
+    const opts = request.body;
+
     // Act
-    const collections = await database.getCollections(username, request.body, {
+    const collections = await database.getCollections(username, opts, {
       filters,
       postFilters,
       tagFilters,
@@ -122,7 +131,12 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
     await Promise.all(
       collections.collections.map(async collection => {
-        await mapAdditionalFields(request, collection, options);
+        await mapAdditionalFields(
+          request,
+          collection,
+          options,
+          opts.checkAccess ?? false,
+        );
       }),
     );
 

@@ -67,6 +67,7 @@ export interface PostsQuery extends PaginatedQuery {
   type?: PostType;
   collectionId?: number;
   ids?: number[];
+  checkAccess?: boolean;
 }
 
 export interface CollectionsQuery extends PaginatedQuery {
@@ -79,6 +80,7 @@ export interface CollectionsQuery extends PaginatedQuery {
   fromDate?: string;
   toDate?: string;
   ids?: number[];
+  checkAccess?: boolean;
 }
 
 export interface AnswersQuery extends PaginatedQuery {
@@ -96,6 +98,7 @@ export interface AnswersQuery extends PaginatedQuery {
   fromDate?: string;
   toDate?: string;
   ids?: number[];
+  checkAccess?: boolean;
 }
 
 export interface TagsQuery extends PaginatedQuery {

@@ -84,7 +84,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const opts = request.query;
+    const opts = request.query as PostsQuery;
 
     const [filter, tagsFilter, commentsFilter, answersFilter] =
       await getPostFilters(request, opts);
@@ -100,7 +100,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
     await Promise.all(
       posts.posts.map(async post => {
-        await mapAdditionalFields(request, post, options);
+        await mapAdditionalFields(
+          request,
+          post,
+          options,
+          opts.checkAccess ?? false,
+        );
       }),
     );
     response.json(posts);
@@ -140,7 +145,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
     await Promise.all(
       posts.posts.map(async post => {
-        await mapAdditionalFields(request, post, options);
+        await mapAdditionalFields(
+          request,
+          post,
+          options,
+          opts.checkAccess ?? false,
+        );
       }),
     );
     response.json(posts);
@@ -193,7 +203,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     await Promise.all(
       posts.posts.map(async post => {
-        await mapAdditionalFields(request, post, options);
+        await mapAdditionalFields(
+          request,
+          post,
+          options,
+          opts.checkAccess ?? false,
+        );
       }),
     );
     response.json(posts);

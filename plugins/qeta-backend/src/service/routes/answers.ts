@@ -15,6 +15,7 @@ import {
 } from '../types';
 import { Request, Router } from 'express';
 import {
+  AnswersQuery,
   findUserMentions,
   qetaCreateAnswerPermission,
   qetaCreateCommentPermission,
@@ -23,6 +24,7 @@ import {
   qetaEditAnswerPermission,
   qetaEditPostPermission,
   qetaReadAnswerPermission,
+  qetaReadCommentPermission,
   qetaReadPostPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Response } from 'express-serve-static-core';
@@ -59,18 +61,25 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const filter = await getAuthorizeConditions(
-      request,
-      qetaReadAnswerPermission,
-      options,
-      true,
-    );
+    const [commentsFilter, answersFilter] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadCommentPermission, options, true),
+      getAuthorizeConditions(request, qetaReadAnswerPermission, options, true),
+    ]);
 
-    const answers = await database.getAnswers(username, request.query, filter);
+    const opts = request.query as AnswersQuery;
+
+    const answers = await database.getAnswers(username, opts, answersFilter, {
+      commentsFilter,
+    });
 
     await Promise.all(
       answers.answers.map(async answer => {
-        await mapAdditionalFields(request, answer, options);
+        await mapAdditionalFields(
+          request,
+          answer,
+          options,
+          opts.checkAccess ?? false,
+        );
       }),
     );
     response.json(answers);
@@ -96,17 +105,24 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const filter = await getAuthorizeConditions(
-      request,
-      qetaReadAnswerPermission,
-      options,
-      true,
-    );
+    const [commentsFilter, answersFilter] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadCommentPermission, options, true),
+      getAuthorizeConditions(request, qetaReadAnswerPermission, options, true),
+    ]);
 
-    const answers = await database.getAnswers(username, request.body, filter);
+    const opts = request.body;
+
+    const answers = await database.getAnswers(username, opts, answersFilter, {
+      commentsFilter,
+    });
     await Promise.all(
       answers.answers.map(async answer => {
-        await mapAdditionalFields(request, answer, options);
+        await mapAdditionalFields(
+          request,
+          answer,
+          options,
+          opts.checkAccess ?? false,
+        );
       }),
     );
     response.json(answers);
