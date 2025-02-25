@@ -146,6 +146,7 @@ describe('createRouter', () => {
     getTotalAnswers: jest.fn(),
     getMostUpvotedPosts: jest.fn(),
     getMostUpvotedCorrectAnswers: jest.fn(),
+    getUsersWhoFavoritedPost: jest.fn(),
     getTotalPosts: jest.fn(),
     followTag: jest.fn(),
     unfollowTag: jest.fn(),
