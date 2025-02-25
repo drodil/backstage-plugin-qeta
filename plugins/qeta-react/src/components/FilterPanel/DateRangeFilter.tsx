@@ -23,7 +23,7 @@ const useStyles = makeStyles(
   theme => ({
     root: {},
     textInput: {
-      minWidth: '200px',
+      minWidth: '230px',
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
     },

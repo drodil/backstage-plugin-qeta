@@ -382,7 +382,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
               <Grid item>
                 <EntitiesInput
                   disabled={starredEntities || ownedEntities}
-                  style={{ minWidth: '200px' }}
+                  style={{ width: '230px' }}
                   onChange={(newEntities?: Entity[]) => {
                     const entityRefs = (newEntities ?? []).map(e =>
                       stringifyEntityRef(e),
@@ -433,7 +433,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
             <Grid container alignItems="center">
               <Grid item>
                 <TagInput
-                  style={{ minWidth: '200px' }}
+                  style={{ width: '230px' }}
                   onChange={(newTags: string[]) =>
                     onChange({ key: 'tags', value: newTags })
                   }

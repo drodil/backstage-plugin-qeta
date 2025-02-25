@@ -29,6 +29,7 @@ describe('NotificationManager', () => {
           .fn()
           .mockResolvedValue({ token: 'test_token' }),
       }),
+      mockServices.rootConfig.mock(),
       mockNotificationService,
     );
   });

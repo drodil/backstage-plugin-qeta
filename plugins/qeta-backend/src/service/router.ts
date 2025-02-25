@@ -26,6 +26,7 @@ export async function createRouter(
     logger,
     options.catalog,
     options.auth,
+    config,
     options.notifications,
     options.cache,
   );
