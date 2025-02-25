@@ -62,3 +62,36 @@ The Q&A permissions are exported from `@drodil/backstage-plugin-qeta-common` pac
 - qetaDeleteCollectionPermission - Allows or denies deleting of collections
 
 You can find example permission policy in the `plugins/qeta-backend/dev/PermissionPolicy.ts` file.
+
+## Using default permission policy
+
+In case you want to use the default permission policy, you can import it from the node package:
+
+```ts
+import { DefaultQetaPermissionPolicy } from '@drodil/backstage-plugin-qeta-node';
+import { isQetaPermission } from '@drodil/backstage-plugin-qeta-common';
+
+class BackstagePermissionPolicy implements PermissionPolicy {
+  private readonly qetaPermissionPolicy: DefaultQetaPermissionPolicy;
+
+  constructor(readonly config: Config) {
+    // You can pass the config to the policy if you want to use the moderators array for
+    // allowing access based on configuration `qeta.moderators`
+    this.qetaPermissionPolicy = new DefaultQetaPermissionPolicy(config);
+  }
+
+  async handle(
+    request: PolicyQuery,
+    user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision> {
+    if (isQetaPermission(request.permission)) {
+      return this.qetaPermissionPolicy.handle(request, user);
+    }
+  }
+}
+```
+
+This allows users to only edit and delete their own posts, answers, and comments.
+Creation and editing of tags is enabled for everyone.
+Additionally, moderators can edit and delete any post, answer, or comment if the config is passed
+to the `DefaultQetaPermissionPolicy` constructor.

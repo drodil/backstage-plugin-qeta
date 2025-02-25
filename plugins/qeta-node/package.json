@@ -54,6 +54,11 @@
   ],
   "dependencies": {
     "@backstage/backend-plugin-api": "backstage:^",
+    "@backstage/catalog-client": "backstage:^",
+    "@backstage/catalog-model": "backstage:^",
+    "@backstage/config": "backstage:^",
+    "@backstage/plugin-auth-node": "backstage:^",
+    "@backstage/plugin-permission-common": "backstage:^",
     "@backstage/plugin-permission-node": "backstage:^",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",
     "zod": "^3.22.4"

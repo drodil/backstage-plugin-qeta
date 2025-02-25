@@ -5203,7 +5203,12 @@ __metadata:
   resolution: "@drodil/backstage-plugin-qeta-node@workspace:plugins/qeta-node"
   dependencies:
     "@backstage/backend-plugin-api": "backstage:^"
+    "@backstage/catalog-client": "backstage:^"
+    "@backstage/catalog-model": "backstage:^"
     "@backstage/cli": "backstage:^"
+    "@backstage/config": "backstage:^"
+    "@backstage/plugin-auth-node": "backstage:^"
+    "@backstage/plugin-permission-common": "backstage:^"
     "@backstage/plugin-permission-node": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     zod: "npm:^3.22.4"
