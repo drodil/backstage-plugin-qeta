@@ -933,6 +933,12 @@ export class DatabaseQetaStore implements QetaStore {
       .delete());
   }
 
+  async getUsersWhoFavoritedPost(postId: number): Promise<string[]> {
+    const query = this.db('user_favorite').where('postId', '=', postId);
+    const users = await query.select('user');
+    return users.map(u => u.user);
+  }
+
   async deleteAnswerVote(user_ref: string, answerId: number): Promise<boolean> {
     return !!(await this.db('answer_votes')
       .where('author', '=', user_ref)

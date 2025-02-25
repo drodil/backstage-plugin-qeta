@@ -362,16 +362,18 @@ export interface QetaStore {
   /**
    * Mark question favorite for user
    * @param user_ref user name of the user voting question
-   * @param questionId question id
+   * @param postId post id
    */
-  favoritePost(user_ref: string, questionId: number): Promise<boolean>;
+  favoritePost(user_ref: string, postId: number): Promise<boolean>;
 
   /**
    * Mark question unfavorite for user
    * @param user_ref user name of the user voting question
-   * @param questionId question id
+   * @param postId post id
    */
-  unfavoritePost(user_ref: string, questionId: number): Promise<boolean>;
+  unfavoritePost(user_ref: string, postId: number): Promise<boolean>;
+
+  getUsersWhoFavoritedPost(postId: number): Promise<string[]>;
 
   /**
    * Returns all used tags for posts

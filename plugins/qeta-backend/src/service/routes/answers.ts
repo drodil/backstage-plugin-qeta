@@ -178,6 +178,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         database.getUsersForTags(post.tags),
         database.getUsersForEntities(post.entities),
         database.getFollowingUsers(username),
+        database.getUsersWhoFavoritedPost(post.id),
       ]);
       const sent = await notificationMgr.onNewAnswer(
         username,
@@ -329,6 +330,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
           database.getUsersForTags(post.tags),
           database.getUsersForEntities(post.entities),
           database.getFollowingUsers(username),
+          database.getUsersWhoFavoritedPost(post.id),
         ]);
         const sent = await notificationMgr.onAnswerComment(
           username,
