@@ -269,6 +269,10 @@ export class DatabaseQetaStore implements QetaStore {
         `${options.fromDate} 00:00:00.000+00`,
         `${options.toDate} 23:59:59.999+00`,
       ]);
+    } else if (options.fromDate) {
+      query.where('posts.created', '>=', `${options.fromDate} 00:00:00.000+00`);
+    } else if (options.toDate) {
+      query.where('posts.created', '<=', `${options.toDate} 23:59:59.999+00`);
     }
 
     if (options.author) {
