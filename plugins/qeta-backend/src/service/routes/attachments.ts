@@ -40,7 +40,7 @@ const getStorageEngine = (
 };
 
 export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
-  const { database, config } = options;
+  const { database, config, auditor } = options;
 
   // POST /attachments
   router.post('/attachments', async (request, response) => {
@@ -116,6 +116,18 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       };
 
       attachment = await engine.handleFile(file, opts);
+
+      auditor?.createEvent({
+        eventId: 'upload-attachment',
+        severityLevel: 'medium',
+        request,
+        meta: {
+          uuid: attachment.uuid,
+          mimeType: attachment.mimeType,
+          locationType: attachment.locationType,
+          ...opts,
+        },
+      });
       response.json(attachment);
     });
   });
@@ -175,6 +187,14 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       response.status(404).send('Attachment not found');
       return;
     }
+
+    auditor?.createEvent({
+      eventId: 'delete-attachment',
+      severityLevel: 'medium',
+      request,
+      meta: { uuid },
+    });
+
     response.sendStatus(204);
   });
 };

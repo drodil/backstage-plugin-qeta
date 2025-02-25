@@ -9,7 +9,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const templateRoutes = (router: Router, options: RouteOptions) => {
-  const { database, config, events } = options;
+  const { database, config, events, auditor } = options;
 
   router.get('/templates', async (_req, response) => {
     const templates = await database.getTemplates();
@@ -37,6 +37,14 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
     // Validation
     const mod = await isModerator(request, options);
     if (!mod) {
+      auditor?.createEvent({
+        eventId: 'create-template',
+        severityLevel: 'critical',
+        request,
+        meta: {
+          failure: 'Not authorized',
+        },
+      });
       response.status(403).send({ errors: 'Not authorized', type: 'body' });
       return;
     }
@@ -79,6 +87,15 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
       });
     }
 
+    auditor?.createEvent({
+      eventId: 'create-template',
+      severityLevel: 'medium',
+      request,
+      meta: {
+        templateId: template.id,
+      },
+    });
+
     // Response
     response.status(201);
     response.json(template);
@@ -88,6 +105,15 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
     // Validation
     const mod = await isModerator(request, options);
     if (!mod) {
+      auditor?.createEvent({
+        eventId: 'update-template',
+        severityLevel: 'critical',
+        request,
+        meta: {
+          failure: 'Not authorized',
+          templateId: request.params.id,
+        },
+      });
       response.status(403).send({ errors: 'Not authorized', type: 'body' });
       return;
     }
@@ -136,6 +162,15 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
       });
     }
 
+    auditor?.createEvent({
+      eventId: 'update-template',
+      severityLevel: 'medium',
+      request,
+      meta: {
+        templateId: template.id,
+      },
+    });
+
     // Response
     response.status(200);
     response.json(template);
@@ -146,6 +181,15 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
     // Validation
     const mod = await isModerator(request, options);
     if (!mod) {
+      auditor?.createEvent({
+        eventId: 'delete-template',
+        severityLevel: 'critical',
+        request,
+        meta: {
+          failure: 'Not authorized',
+          templateId: request.params.id,
+        },
+      });
       response.status(403).send({ errors: 'Not authorized', type: 'body' });
       return;
     }
@@ -160,6 +204,17 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
 
     // Act
     const deleted = await database.deleteTemplate(templateId);
+
+    if (deleted) {
+      auditor?.createEvent({
+        eventId: 'delete-template',
+        severityLevel: 'medium',
+        request,
+        meta: {
+          templateId: request.params.id,
+        },
+      });
+    }
 
     // Response
     response.sendStatus(deleted ? 200 : 404);

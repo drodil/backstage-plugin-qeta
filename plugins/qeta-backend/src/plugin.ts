@@ -77,6 +77,7 @@ export const qetaPlugin = createBackendPlugin({
         auth: coreServices.auth,
         cache: coreServices.cache,
         permissionsRegistry: coreServices.permissionsRegistry,
+        auditor: coreServices.auditor,
       },
       async init({
         logger,
@@ -94,6 +95,7 @@ export const qetaPlugin = createBackendPlugin({
         auth,
         cache,
         permissionsRegistry,
+        auditor,
       }) {
         const qetaStore = await DatabaseQetaStore.create({
           database,
@@ -122,6 +124,7 @@ export const qetaPlugin = createBackendPlugin({
             notifications,
             aiHandler: aiExtension.aiHandler,
             permissionsRegistry,
+            auditor,
           }),
         );
         // Allowing attachments download

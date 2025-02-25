@@ -36,7 +36,8 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const postsRoutes = (router: Router, options: RouteOptions) => {
-  const { database, events, config, signals, notificationMgr } = options;
+  const { database, events, config, signals, notificationMgr, auditor } =
+    options;
 
   const getPostFilters = async (request: Request, opts: PostOptions) => {
     return await Promise.all([
@@ -248,6 +249,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     await mapAdditionalFields(request, post, options);
     signalPostStats(signals, post);
 
+    auditor?.createEvent({
+      eventId: 'read-post',
+      severityLevel: 'low',
+      request,
+      meta: { postId: post.id, type: post.type },
+    });
+
     // Response
     response.json(post);
   });
@@ -272,13 +280,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    let question = await database.getPost(
+    let post = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
     );
 
-    await authorize(request, qetaReadPostPermission, options, question);
+    await authorize(request, qetaReadPostPermission, options, post);
     await authorize(request, qetaCreateCommentPermission, options);
 
     const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
@@ -287,7 +295,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       getAuthorizeConditions(request, qetaReadAnswerPermission, options, true),
     ]);
 
-    question = await database.commentPost(
+    post = await database.commentPost(
       questionId,
       username,
       request.body.content,
@@ -295,56 +303,55 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       { tagsFilter, commentsFilter, answersFilter },
     );
 
-    if (question === null) {
+    if (post === null) {
       response
         .status(400)
         .send({ errors: 'Failed to comment post', type: 'body' });
       return;
     }
 
-    await mapAdditionalFields(request, question, options);
+    await mapAdditionalFields(request, post, options);
 
     wrapAsync(async () => {
-      if (!question) {
+      if (!post) {
         return;
       }
       const followingUsers = await Promise.all([
-        database.getUsersForTags(question.tags),
-        database.getUsersForEntities(question.entities),
+        database.getUsersForTags(post.tags),
+        database.getUsersForEntities(post.entities),
         database.getFollowingUsers(username),
       ]);
       const sent = await notificationMgr.onNewPostComment(
         username,
-        question,
+        post,
         request.body.content,
         followingUsers.flat(),
       );
       const mentions = findUserMentions(request.body.content);
       if (mentions.length > 0) {
-        await notificationMgr.onMention(
-          username,
-          question,
-          mentions,
-          sent,
-          true,
-        );
+        await notificationMgr.onMention(username, post, mentions, sent, true);
       }
     });
 
-    if (events) {
-      events.publish({
-        topic: 'qeta',
-        eventPayload: {
-          question,
-          comment: request.body.content,
-          author: username,
-        },
-        metadata: { action: 'comment_post' },
-      });
-    }
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        question: post,
+        comment: request.body.content,
+        author: username,
+      },
+      metadata: { action: 'comment_post' },
+    });
+
+    auditor?.createEvent({
+      eventId: 'comment-post',
+      severityLevel: 'low',
+      request,
+      meta: { postId: post.id, type: post.type },
+    });
 
     // Response
-    response.json(question);
+    response.json(post);
   });
 
   // DELETE /posts/:id/comments/:commentId
@@ -381,6 +388,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         .send({ errors: 'Failed to delete post comment', type: 'body' });
       return;
     }
+
+    auditor?.createEvent({
+      eventId: 'delete-comment',
+      severityLevel: 'medium',
+      request,
+      meta: { commentId, postId },
+    });
 
     await mapAdditionalFields(request, post, options);
 
@@ -449,16 +463,20 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       }
     });
 
-    if (events) {
-      events.publish({
-        topic: 'qeta',
-        eventPayload: {
-          question: post,
-          author: username,
-        },
-        metadata: { action: 'new_post' },
-      });
-    }
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        question: post,
+        author: username,
+      },
+      metadata: { action: 'new_post' },
+    });
+    auditor?.createEvent({
+      eventId: 'create-post',
+      severityLevel: 'medium',
+      request,
+      meta: { postId: post.id, type: post.type },
+    });
 
     await mapAdditionalFields(request, post, options);
 
@@ -520,18 +538,23 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    if (events) {
-      events.publish({
-        topic: 'qeta',
-        eventPayload: {
-          post,
-          author: username,
-        },
-        metadata: { action: 'update_post' },
-      });
-    }
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        post,
+        author: username,
+      },
+      metadata: { action: 'update_post' },
+    });
 
     await mapAdditionalFields(request, post, options);
+
+    auditor?.createEvent({
+      eventId: 'update-post',
+      severityLevel: 'low',
+      request,
+      meta: { postId: post.id, type: post.type },
+    });
 
     // Response
     response.status(200);
@@ -541,7 +564,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   // DELETE /questions/:id
   router.delete('/posts/:id', async (request, response) => {
     // Validation
-
     const postId = Number.parseInt(request.params.id, 10);
     if (Number.isNaN(postId)) {
       response.status(400).send({ errors: 'Invalid post id', type: 'body' });
@@ -555,8 +577,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     );
     await authorize(request, qetaDeletePostPermission, options, post);
 
-    if (events) {
-      events.publish({
+    // Act
+    const deleted = await database.deletePost(postId);
+
+    if (deleted) {
+      events?.publish({
         topic: 'qeta',
         eventPayload: {
           post,
@@ -564,10 +589,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         },
         metadata: { action: 'delete_post' },
       });
-    }
 
-    // Act
-    const deleted = await database.deletePost(postId);
+      auditor?.createEvent({
+        eventId: 'delete-post',
+        severityLevel: 'medium',
+        request,
+        meta: { postId },
+      });
+    }
 
     // Response
     response.sendStatus(deleted ? 200 : 404);
@@ -620,20 +649,26 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
+
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        resp,
+        author: username,
+        score,
+      },
+      metadata: { action: 'vote_post' },
+    });
+
     await mapAdditionalFields(request, resp, options);
     resp.ownVote = score;
 
-    if (events) {
-      events.publish({
-        topic: 'qeta',
-        eventPayload: {
-          resp,
-          author: username,
-          score,
-        },
-        metadata: { action: 'vote_post' },
-      });
-    }
+    auditor?.createEvent({
+      eventId: 'vote',
+      severityLevel: 'low',
+      request,
+      meta: { postId: post.id, type: post.type, score },
+    });
 
     signalPostStats(signals, resp);
 
@@ -676,17 +711,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    if (events) {
-      events.publish({
-        topic: 'qeta',
-        eventPayload: {
-          post,
-          author: username,
-        },
-        metadata: { action: 'delete_vote' },
-      });
-    }
-
     const resp = await database.getPost(username, postId, false, {
       includeComments: false,
       includeAnswers: false,
@@ -698,9 +722,25 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
-    await mapAdditionalFields(request, resp, options);
 
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        post,
+        author: username,
+      },
+      metadata: { action: 'delete_vote' },
+    });
+
+    await mapAdditionalFields(request, resp, options);
     resp.ownVote = undefined;
+
+    auditor?.createEvent({
+      eventId: 'delete-vote',
+      severityLevel: 'low',
+      request,
+      meta: { postId: post.id, type: post.type },
+    });
     response.json(resp);
   });
 
@@ -741,6 +781,18 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         includeAttachments: false,
       },
     );
+
+    if (!post) {
+      response.sendStatus(404);
+      return;
+    }
+
+    auditor?.createEvent({
+      eventId: 'favorite-post',
+      severityLevel: 'low',
+      request,
+      meta: { postId: post.id, type: post.type },
+    });
 
     await mapAdditionalFields(request, post, options);
 
@@ -785,6 +837,18 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         includeAttachments: false,
       },
     );
+
+    if (!post) {
+      response.sendStatus(404);
+      return;
+    }
+
+    auditor?.createEvent({
+      eventId: 'unfavorite-post',
+      severityLevel: 'low',
+      request,
+      meta: { postId: post.id, type: post.type },
+    });
 
     await mapAdditionalFields(request, post, options);
 

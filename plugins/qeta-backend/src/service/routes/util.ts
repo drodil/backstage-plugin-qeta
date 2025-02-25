@@ -25,7 +25,7 @@ export const signalPostStats = (
   });
 };
 
-export const signalAnswerStats = async (
+export const signalAnswerStats = (
   signalService?: SignalsService,
   answer?: Answer | null,
 ) => {

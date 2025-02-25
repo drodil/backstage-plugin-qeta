@@ -165,6 +165,7 @@ const authorizeWithoutPermissions = async (
   permission: Permission,
   options: RouterOptions,
   resource?: QetaIdEntity | null,
+  audit?: boolean,
 ): Promise<DefinitivePolicyDecision> => {
   const readPermission = isReadPermission(permission);
   const createPermission = isCreatePermission(permission);
@@ -180,6 +181,18 @@ const authorizeWithoutPermissions = async (
   }
 
   if (!resource) {
+    if (audit) {
+      options.auditor?.createEvent({
+        eventId: 'authorize',
+        severityLevel: 'high',
+        request,
+        meta: {
+          permission,
+          resource,
+          failure: 'Resource not found',
+        },
+      });
+    }
     throw new NotFoundError('Resource not found');
   }
 
@@ -203,6 +216,19 @@ const authorizeWithoutPermissions = async (
   } else if ('owner' in resource && username === resource.owner) {
     return { result: AuthorizeResult.ALLOW };
   }
+
+  if (audit) {
+    options.auditor?.createEvent({
+      eventId: 'authorize',
+      severityLevel: 'high',
+      request,
+      meta: {
+        permission,
+        failure: 'Unauthorized',
+      },
+    });
+  }
+
   return { result: AuthorizeResult.DENY };
 };
 
@@ -230,6 +256,7 @@ export const authorize = async (
   permission: Permission,
   options: RouterOptions,
   resource?: QetaIdEntity | null,
+  audit?: boolean,
 ): Promise<DefinitivePolicyDecision> => {
   if (!options.permissions) {
     return await authorizeWithoutPermissions(
@@ -237,17 +264,41 @@ export const authorize = async (
       permission,
       options,
       resource,
+      audit,
     );
   }
 
   const credentials = await options.httpAuth.credentials(request);
   if (!credentials) {
+    if (audit) {
+      options.auditor?.createEvent({
+        eventId: 'authorize',
+        severityLevel: 'high',
+        request,
+        meta: {
+          permission,
+          failure: 'Unauthorized',
+        },
+      });
+    }
     throw new NotAllowedError('Unauthorized');
   }
 
   let decision: DefinitivePolicyDecision = { result: AuthorizeResult.DENY };
   if (isResourcePermission(permission)) {
     if (!resource) {
+      if (audit) {
+        options.auditor?.createEvent({
+          eventId: 'authorize',
+          severityLevel: 'high',
+          request,
+          meta: {
+            permission,
+            resource,
+            failure: 'Resource not found',
+          },
+        });
+      }
       throw new NotFoundError('Resource not found');
     }
 
@@ -267,6 +318,17 @@ export const authorize = async (
   }
 
   if (decision.result === AuthorizeResult.DENY) {
+    if (audit) {
+      options.auditor?.createEvent({
+        eventId: 'authorize',
+        severityLevel: 'high',
+        request,
+        meta: {
+          permission,
+          failure: 'Unauthorized',
+        },
+      });
+    }
     throw new NotAllowedError('Unauthorized');
   }
   return decision;
@@ -305,7 +367,13 @@ export const authorizeConditional = async (
   allowServicePrincipal?: boolean,
 ): Promise<PolicyDecision> => {
   if (!options.permissions) {
-    return await authorizeWithoutPermissions(request, permission, options);
+    return await authorizeWithoutPermissions(
+      request,
+      permission,
+      options,
+      null,
+      true,
+    );
   }
 
   const allow: Array<keyof BackstagePrincipalTypes> = allowServicePrincipal
@@ -314,6 +382,15 @@ export const authorizeConditional = async (
   const credentials = await options.httpAuth.credentials(request, { allow });
 
   if (!credentials) {
+    options.auditor?.createEvent({
+      eventId: 'authorize',
+      severityLevel: 'high',
+      request,
+      meta: {
+        permission,
+        failure: 'Unauthorized',
+      },
+    });
     throw new NotAllowedError('Unauthorized');
   }
 
@@ -334,6 +411,15 @@ export const authorizeConditional = async (
   }
 
   if (decision.result === AuthorizeResult.DENY) {
+    options.auditor?.createEvent({
+      eventId: 'authorize',
+      severityLevel: 'high',
+      request,
+      meta: {
+        permission,
+        failure: 'Unauthorized',
+      },
+    });
     throw new NotAllowedError('Unauthorized');
   }
   return decision;
@@ -368,7 +454,7 @@ export const authorizeBoolean = async (
   resource?: Post | Answer | Comment | Collection | TagResponse | null,
 ): Promise<boolean> => {
   try {
-    const res = await authorize(request, permission, options, resource);
+    const res = await authorize(request, permission, options, resource, false);
     return res.result === AuthorizeResult.ALLOW;
   } catch (e) {
     return false;

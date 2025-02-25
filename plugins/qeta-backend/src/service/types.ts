@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { QetaStore } from '../database/QetaStore';
 import {
+  AuditorService,
   AuthService,
   CacheService,
   DiscoveryService,
@@ -45,6 +46,7 @@ export interface RouterOptions {
   notifications?: NotificationService;
   aiHandler?: AIHandler;
   permissionsRegistry?: PermissionsRegistryService;
+  auditor?: AuditorService;
 }
 
 export interface RouteOptions extends RouterOptions {

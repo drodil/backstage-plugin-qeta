@@ -26,7 +26,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const helperRoutes = (router: Router, options: RouteOptions) => {
-  const { database, catalog, auth, httpAuth } = options;
+  const { database, catalog, auth, httpAuth, auditor } = options;
 
   const validateEntityRef = (entityRef: string, kind?: string) => {
     try {
@@ -90,6 +90,16 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     validateEntityRef(userRef, 'user');
     const username = await getUsername(request, options, false);
     await database.followUser(username, userRef);
+
+    auditor?.createEvent({
+      eventId: 'follow-user',
+      severityLevel: 'low',
+      request,
+      meta: {
+        userRef,
+      },
+    });
+
     response.status(204).send();
   });
 
@@ -98,6 +108,16 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     validateEntityRef(userRef, 'user');
     const username = await getUsername(request, options, false);
     await database.unfollowUser(username, userRef);
+
+    auditor?.createEvent({
+      eventId: 'unfollow-user',
+      severityLevel: 'low',
+      request,
+      meta: {
+        userRef,
+      },
+    });
+
     response.status(204).send();
   });
 
@@ -146,6 +166,16 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     const { tag } = request.params;
     const username = await getUsername(request, options, false);
     await database.followTag(username, tag);
+
+    auditor?.createEvent({
+      eventId: 'follow-tag',
+      severityLevel: 'low',
+      request,
+      meta: {
+        tag,
+      },
+    });
+
     response.status(204).send();
   });
 
@@ -153,6 +183,15 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     const { tag } = request.params;
     const username = await getUsername(request, options, false);
     await database.unfollowTag(username, tag);
+
+    auditor?.createEvent({
+      eventId: 'unfollow-tag',
+      severityLevel: 'low',
+      request,
+      meta: {
+        tag,
+      },
+    });
     response.status(204).send();
   });
 
@@ -164,6 +203,12 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     }
     await authorize(request, qetaReadTagPermission, options, tag);
     await mapAdditionalFields(request, tag, options);
+    auditor?.createEvent({
+      eventId: 'read-tag',
+      severityLevel: 'low',
+      request,
+      meta: { tagId: tag.id, tag: tag.tag },
+    });
     response.json(tag);
   });
 
@@ -178,6 +223,16 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
     const resp = await database.updateTag(request.params.tag, description);
     await mapAdditionalFields(request, resp, options);
+    auditor?.createEvent({
+      eventId: 'update-tag',
+      severityLevel: 'medium',
+      request,
+      meta: {
+        tag: tag.tag,
+        tagId: tag.id,
+      },
+    });
+
     response.json(resp);
   });
 
@@ -202,6 +257,15 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
     await mapAdditionalFields(request, tag, options);
+    auditor?.createEvent({
+      eventId: 'create-tag',
+      severityLevel: 'medium',
+      request,
+      meta: {
+        tag: tag.tag,
+        tagId: tag.id,
+      },
+    });
     response.json(tag);
   });
 
@@ -216,6 +280,16 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
     const deleted = await database.deleteTag(tagId);
 
+    if (deleted) {
+      auditor?.createEvent({
+        eventId: 'delete-tag',
+        severityLevel: 'medium',
+        request,
+        meta: {
+          tagId,
+        },
+      });
+    }
     // Response
     response.sendStatus(deleted ? 200 : 404);
   });
@@ -265,6 +339,14 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     validateEntityRef(entityRef);
     const username = await getUsername(request, options, false);
     await database.followEntity(username, entityRef);
+    auditor?.createEvent({
+      eventId: 'follow-entity',
+      severityLevel: 'low',
+      request,
+      meta: {
+        entityRef,
+      },
+    });
     response.status(204).send();
   });
 
@@ -273,6 +355,14 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     validateEntityRef(entityRef);
     const username = await getUsername(request, options, false);
     await database.unfollowEntity(username, entityRef);
+    auditor?.createEvent({
+      eventId: 'unfollow-entity',
+      severityLevel: 'low',
+      request,
+      meta: {
+        entityRef,
+      },
+    });
     response.status(204).send();
   });
 
@@ -283,6 +373,12 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
+    auditor?.createEvent({
+      eventId: 'read-entity',
+      severityLevel: 'low',
+      request,
+      meta: { entityRef: request.params.entityRef },
+    });
     response.json(entity);
   });
 };

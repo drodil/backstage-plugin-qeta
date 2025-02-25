@@ -30,7 +30,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const collectionsRoutes = (router: Router, options: RouteOptions) => {
-  const { database, events, notificationMgr } = options;
+  const { database, events, notificationMgr, auditor } = options;
   // GET /collections
   router.get(`/collections`, async (request, response) => {
     // Validation
@@ -187,18 +187,23 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       );
     });
 
-    if (events) {
-      events.publish({
-        topic: 'qeta',
-        eventPayload: {
-          collection,
-          author: username,
-        },
-        metadata: { action: 'new_collection' },
-      });
-    }
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        collection,
+        author: username,
+      },
+      metadata: { action: 'new_collection' },
+    });
 
     await mapAdditionalFields(request, collection, options);
+
+    auditor?.createEvent({
+      eventId: 'create-collection',
+      severityLevel: 'medium',
+      request,
+      meta: { collectionId: collection.id },
+    });
 
     // Response
     response.status(201);
@@ -263,18 +268,23 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    if (events) {
-      events.publish({
-        topic: 'qeta',
-        eventPayload: {
-          collection,
-          author: username,
-        },
-        metadata: { action: 'update_collection' },
-      });
-    }
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        collection,
+        author: username,
+      },
+      metadata: { action: 'update_collection' },
+    });
 
     await mapAdditionalFields(request, collection, options);
+
+    auditor?.createEvent({
+      eventId: 'update-collection',
+      severityLevel: 'medium',
+      request,
+      meta: { collectionId: collection.id },
+    });
 
     // Response
     response.status(200);
@@ -324,6 +334,15 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       });
     }
 
+    if (deleted) {
+      auditor?.createEvent({
+        eventId: 'delete-collection',
+        severityLevel: 'medium',
+        request,
+        meta: { collectionId: collection.id },
+      });
+    }
+
     // Response
     response.sendStatus(deleted ? 200 : 404);
   });
@@ -367,6 +386,14 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     await authorize(request, qetaReadCollectionPermission, options, collection);
 
     await database.followCollection(username, collectionId);
+
+    auditor?.createEvent({
+      eventId: 'follow-collection',
+      severityLevel: 'low',
+      request,
+      meta: { collectionId: collection.id },
+    });
+
     response.status(204).send();
   });
 
@@ -388,6 +415,14 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
     await authorize(request, qetaReadCollectionPermission, options, collection);
     await database.unfollowCollection(username, collectionId);
+
+    auditor?.createEvent({
+      eventId: 'unfollow-collection',
+      severityLevel: 'low',
+      request,
+      meta: { collectionId: collection.id },
+    });
+
     response.status(204).send();
   });
 
@@ -423,6 +458,14 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     await authorize(request, qetaReadCollectionPermission, options, collection);
 
     await mapAdditionalFields(request, collection, options);
+
+    auditor?.createEvent({
+      eventId: 'read-collection',
+      severityLevel: 'low',
+      request,
+      meta: { collectionId: collection.id },
+    });
+
     // Response
     response.json(collection);
   });
@@ -486,18 +529,24 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       );
     });
 
-    if (events) {
-      events.publish({
-        topic: 'qeta',
-        eventPayload: {
-          collection,
-          author: username,
-        },
-        metadata: { action: 'update_collection' },
-      });
-    }
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        collection,
+        author: username,
+      },
+      metadata: { action: 'update_collection' },
+    });
 
     await mapAdditionalFields(request, collection, options);
+
+    auditor?.createEvent({
+      eventId: 'add-to-collection',
+      severityLevel: 'low',
+      request,
+      meta: { collectionId: collection.id, postId: request.body.postId },
+    });
+
     // Response
     response.status(200);
     response.json(collection);
@@ -542,18 +591,23 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       { postFilters, tagFilters },
     );
 
-    if (events) {
-      events.publish({
-        topic: 'qeta',
-        eventPayload: {
-          collection,
-          author: username,
-        },
-        metadata: { action: 'update_collection' },
-      });
-    }
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        collection,
+        author: username,
+      },
+      metadata: { action: 'update_collection' },
+    });
 
     await mapAdditionalFields(request, collection, options);
+
+    auditor?.createEvent({
+      eventId: 'delete-from-collection',
+      severityLevel: 'low',
+      request,
+      meta: { collectionId, postId: request.body.postId },
+    });
 
     // Response
     response.status(200);
@@ -673,6 +727,18 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
         );
       }
     }
+
+    auditor?.createEvent({
+      eventId: 'rank-collection',
+      severityLevel: 'low',
+      request,
+      meta: {
+        collectionId,
+        postId: request.body.postId,
+        rank: request.body.rank,
+      },
+    });
+
     response.sendStatus(200);
   });
 };

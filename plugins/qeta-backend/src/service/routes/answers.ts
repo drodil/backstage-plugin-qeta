@@ -39,7 +39,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const answersRoutes = (router: Router, options: RouteOptions) => {
-  const { database, events, signals, notificationMgr } = options;
+  const { database, events, signals, notificationMgr, auditor } = options;
 
   router.get(`/answers`, async (request, response) => {
     // Validation
@@ -191,20 +191,25 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
     });
 
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        answer,
+        question: post,
+        author: username,
+      },
+      metadata: { action: 'post_answer' },
+    });
+
     await mapAdditionalFields(request, answer, options);
 
-    if (events) {
-      events.publish({
-        topic: 'qeta',
-        eventPayload: {
-          answer,
-          question: post,
-          author: username,
-        },
-        metadata: { action: 'post_answer' },
-      });
-      signalPostStats(signals, post);
-    }
+    signalPostStats(signals, post);
+    auditor?.createEvent({
+      eventId: 'create-answer',
+      severityLevel: 'medium',
+      request,
+      meta: { postId: post.id, answerId: answer.id, type: post.type },
+    });
 
     // Response
     response.status(201);
@@ -253,6 +258,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
+
+    auditor?.createEvent({
+      eventId: 'update-answer',
+      severityLevel: 'low',
+      request,
+      meta: { postId: post.id, answerId: answer.id, type: post.type },
+    });
 
     await mapAdditionalFields(request, answer, options);
 
@@ -337,20 +349,25 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         }
       });
 
+      events?.publish({
+        topic: 'qeta',
+        eventPayload: {
+          question: post,
+          answer,
+          comment: request.body.content,
+          author: username,
+        },
+        metadata: { action: 'comment_answer' },
+      });
+
       await mapAdditionalFields(request, answer, options);
 
-      if (events) {
-        events.publish({
-          topic: 'qeta',
-          eventPayload: {
-            question: post,
-            answer,
-            comment: request.body.content,
-            author: username,
-          },
-          metadata: { action: 'comment_answer' },
-        });
-      }
+      auditor?.createEvent({
+        eventId: 'comment-answer',
+        severityLevel: 'low',
+        request,
+        meta: { postId: post.id, answerId: answer.id, type: post.type },
+      });
 
       // Response
       response.status(201);
@@ -396,6 +413,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
+      auditor?.createEvent({
+        eventId: 'delete-comment',
+        severityLevel: 'medium',
+        request,
+        meta: { commentId, answerId, postId },
+      });
+
       await mapAdditionalFields(request, answer, options);
 
       // Response
@@ -423,12 +447,19 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
     answer = await database.getAnswer(answerId, username);
 
-    if (answer === null) {
+    if (!post || !answer) {
       response.sendStatus(404);
       return;
     }
 
     await mapAdditionalFields(request, answer, options);
+
+    auditor?.createEvent({
+      eventId: 'read-answer',
+      severityLevel: 'low',
+      request,
+      meta: { postId: post.id, answerId: answer.id, type: post.type },
+    });
 
     // Response
     response.json(answer);
@@ -451,8 +482,12 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     await authorize(request, qetaReadPostPermission, options, post);
     await authorize(request, qetaDeleteAnswerPermission, options, answer);
 
-    if (events) {
-      events.publish({
+    // Act
+    const deleted = await database.deleteAnswer(answerId);
+
+    if (deleted) {
+      signalPostStats(signals, post);
+      events?.publish({
         topic: 'qeta',
         eventPayload: {
           question: post,
@@ -461,11 +496,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         },
         metadata: { action: 'delete_answer' },
       });
-      signalPostStats(signals, post);
+      auditor?.createEvent({
+        eventId: 'delete-answer',
+        severityLevel: 'medium',
+        request,
+        meta: { answerId, postId },
+      });
     }
-
-    // Act
-    const deleted = await database.deleteAnswer(answerId);
 
     // Response
     response.sendStatus(deleted ? 200 : 404);
@@ -516,21 +553,26 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        question: post,
+        answer: resp,
+        author: username,
+        score,
+      },
+      metadata: { action: 'vote_answer' },
+    });
+
     await mapAdditionalFields(request, resp, options);
     resp.ownVote = score;
 
-    if (events) {
-      events.publish({
-        topic: 'qeta',
-        eventPayload: {
-          question: post,
-          answer: resp,
-          author: username,
-          score,
-        },
-        metadata: { action: 'vote_answer' },
-      });
-    }
+    auditor?.createEvent({
+      eventId: 'vote',
+      severityLevel: 'low',
+      request,
+      meta: { postId: post.id, answerId, type: post.type, score },
+    });
 
     signalAnswerStats(signals, resp);
 
@@ -588,6 +630,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
+      auditor?.createEvent({
+        eventId: 'delete-vote',
+        severityLevel: 'low',
+        request,
+        meta: { postId: post.id, answerId, type: post.type },
+      });
+
       await mapAdditionalFields(request, resp, options);
       resp.ownVote = undefined;
 
@@ -632,42 +681,30 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      if (events || signals) {
-        if (events) {
-          events.publish({
-            topic: 'qeta',
-            eventPayload: {
-              question: post,
-              answer,
-              author: username,
-            },
-            metadata: { action: 'correct_answer' },
-          });
-        }
-
-        signalPostStats(signals, post);
-        signalAnswerStats(signals, answer);
-      }
-
       wrapAsync(async () => {
         await notificationMgr.onCorrectAnswer(username, post, answer);
       });
 
-      if (events || signals) {
-        const updated = await database.getAnswer(answerId, username);
-        events?.publish({
-          topic: 'qeta',
-          eventPayload: {
-            question: post,
-            answer: updated,
-            author: username,
-          },
-          metadata: { action: 'correct_answer' },
-        });
+      const updated = await database.getAnswer(answerId, username);
+      events?.publish({
+        topic: 'qeta',
+        eventPayload: {
+          question: post,
+          answer: updated,
+          author: username,
+        },
+        metadata: { action: 'correct_answer' },
+      });
 
-        signalPostStats(signals, post);
-        signalAnswerStats(signals, updated);
-      }
+      signalPostStats(signals, post);
+      signalAnswerStats(signals, updated);
+
+      auditor?.createEvent({
+        eventId: 'correct-answer',
+        severityLevel: 'low',
+        request,
+        meta: { postId: post.id, answerId, type: post.type },
+      });
 
       response.sendStatus(200);
     },
@@ -691,8 +728,9 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       await authorize(request, qetaReadAnswerPermission, options, answer);
 
       const marked = await database.markAnswerIncorrect(postId, answerId);
-      if (events) {
-        events.publish({
+
+      if (marked) {
+        events?.publish({
           topic: 'qeta',
           eventPayload: {
             question: post,
@@ -701,7 +739,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
           },
           metadata: { action: 'incorrect_answer' },
         });
+        auditor?.createEvent({
+          eventId: 'incorrect-answer',
+          severityLevel: 'low',
+          request,
+          meta: { postId, answerId },
+        });
       }
+
       response.sendStatus(marked ? 200 : 404);
     },
   );
