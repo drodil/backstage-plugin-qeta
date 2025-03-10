@@ -138,7 +138,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   }
 
   return (
-    <Card style={style} className={styles.root}>
+    <Card style={style} className={`${styles.root} qetaAIAnswerCard`}>
       <CardHeader
         avatar={<FlareIcon />}
         style={!expanded ? { paddingBottom: '1em' } : {}}
