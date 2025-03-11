@@ -1,4 +1,9 @@
-import { Answer, Post, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
+import {
+  Answer,
+  Post,
+  QetaIdEntity,
+  QetaSignal,
+} from '@drodil/backstage-plugin-qeta-common';
 import { SignalsService } from '@backstage/plugin-signals-node';
 
 export const wrapAsync = async (fn: Function) => {
@@ -69,4 +74,12 @@ export const validateDateRange = (
   }
 
   return { isValid: true };
+};
+
+export const entityToJsonObject = (entity: QetaIdEntity) => {
+  try {
+    return JSON.parse(JSON.stringify(entity));
+  } catch {
+    return { id: entity.id };
+  }
 };

@@ -29,6 +29,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { Response } from 'express-serve-static-core';
 import {
+  entityToJsonObject,
   signalAnswerStats,
   signalPostStats,
   validateDateRange,
@@ -209,7 +210,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'create-answer',
       severityLevel: 'medium',
       request,
-      meta: { postId: post.id, answerId: answer.id, type: post.type },
+      meta: {
+        answer: entityToJsonObject(answer),
+        post: entityToJsonObject(post),
+      },
     });
 
     // Response
@@ -238,16 +242,16 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const post = await database.getPost(username, postId, false);
-    let answer = await database.getAnswer(answerId, username);
-    if (!answer || !post || post.type !== 'question') {
+    const originalAnswer = await database.getAnswer(answerId, username);
+    if (!originalAnswer || !post || post.type !== 'question') {
       response.status(404).send({ errors: 'Post not found', type: 'body' });
       return;
     }
     await authorize(request, qetaReadPostPermission, options, post);
-    await authorize(request, qetaEditAnswerPermission, options, answer);
+    await authorize(request, qetaEditAnswerPermission, options, originalAnswer);
 
     // Act
-    answer = await database.updateAnswer(
+    const answer = await database.updateAnswer(
       username,
       postId,
       answerId,
@@ -262,9 +266,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
     auditor?.createEvent({
       eventId: 'update-answer',
-      severityLevel: 'low',
+      severityLevel: 'medium',
       request,
-      meta: { postId: post.id, answerId: answer.id, type: post.type },
+      meta: {
+        from: entityToJsonObject(originalAnswer),
+        to: entityToJsonObject(answer),
+        post: entityToJsonObject(post),
+      },
     });
 
     await mapAdditionalFields(request, answer, options);
@@ -366,9 +374,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
       auditor?.createEvent({
         eventId: 'comment-answer',
-        severityLevel: 'low',
+        severityLevel: 'medium',
         request,
-        meta: { postId: post.id, answerId: answer.id, type: post.type },
+        meta: {
+          answer: entityToJsonObject(answer),
+          post: entityToJsonObject(post),
+          comment: request.body.content,
+        },
       });
 
       // Response
@@ -399,6 +411,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       let answer = await database.getAnswer(answerId, username);
       const comment = await database.getComment(commentId, { answerId });
 
+      if (!post || !answer || !comment) {
+        response
+          .status(404)
+          .send({ errors: 'Post, answer or comment not found', type: 'body' });
+        return;
+      }
+
       await authorize(request, qetaReadPostPermission, options, post);
       await authorize(request, qetaReadAnswerPermission, options, answer);
       await authorize(request, qetaDeleteCommentPermission, options, comment);
@@ -419,7 +438,11 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         eventId: 'delete-comment',
         severityLevel: 'medium',
         request,
-        meta: { commentId, answerId, postId },
+        meta: {
+          post: entityToJsonObject(post),
+          answer: entityToJsonObject(answer),
+          comment: entityToJsonObject(comment),
+        },
       });
 
       await mapAdditionalFields(request, answer, options);
@@ -460,7 +483,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'read-answer',
       severityLevel: 'low',
       request,
-      meta: { postId: post.id, answerId: answer.id, type: post.type },
+      meta: {
+        post: entityToJsonObject(post),
+        answer: entityToJsonObject(answer),
+      },
     });
 
     // Response
@@ -480,6 +506,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
     const post = await database.getPost(username, postId, false);
     const answer = await database.getAnswer(answerId, username);
+
+    if (!post || !answer) {
+      response
+        .status(404)
+        .send({ errors: 'Post or answer not found', type: 'body' });
+      return;
+    }
 
     await authorize(request, qetaReadPostPermission, options, post);
     await authorize(request, qetaDeleteAnswerPermission, options, answer);
@@ -502,7 +535,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         eventId: 'delete-answer',
         severityLevel: 'medium',
         request,
-        meta: { answerId, postId },
+        meta: {
+          answer: entityToJsonObject(answer),
+          post: entityToJsonObject(post),
+        },
       });
     }
 
@@ -573,7 +609,11 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'vote',
       severityLevel: 'low',
       request,
-      meta: { postId: post.id, answerId, type: post.type, score },
+      meta: {
+        post: entityToJsonObject(post),
+        answer: entityToJsonObject(answer),
+        score,
+      },
     });
 
     signalAnswerStats(signals, resp);
@@ -636,7 +676,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         eventId: 'delete-vote',
         severityLevel: 'low',
         request,
-        meta: { postId: post.id, answerId, type: post.type },
+        meta: {
+          post: entityToJsonObject(post),
+          answer: entityToJsonObject(answer),
+        },
       });
 
       await mapAdditionalFields(request, resp, options);
@@ -703,9 +746,12 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
       auditor?.createEvent({
         eventId: 'correct-answer',
-        severityLevel: 'low',
+        severityLevel: 'medium',
         request,
-        meta: { postId: post.id, answerId, type: post.type },
+        meta: {
+          post: entityToJsonObject(post),
+          answer: entityToJsonObject(answer),
+        },
       });
 
       response.sendStatus(200);
@@ -726,6 +772,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       const post = await database.getPost(username, postId, false);
       const answer = await database.getAnswer(answerId, username);
 
+      if (!post || !answer) {
+        response
+          .status(404)
+          .send({ errors: 'Post or answer not found', type: 'body' });
+        return;
+      }
+
       await authorize(request, qetaEditPostPermission, options, post);
       await authorize(request, qetaReadAnswerPermission, options, answer);
 
@@ -743,9 +796,12 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         });
         auditor?.createEvent({
           eventId: 'incorrect-answer',
-          severityLevel: 'low',
+          severityLevel: 'medium',
           request,
-          meta: { postId, answerId },
+          meta: {
+            post: entityToJsonObject(post),
+            answer: entityToJsonObject(answer),
+          },
         });
       }
 

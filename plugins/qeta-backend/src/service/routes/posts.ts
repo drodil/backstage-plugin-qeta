@@ -28,7 +28,12 @@ import {
   RouteOptions,
 } from '../types';
 import { Response } from 'express-serve-static-core';
-import { signalPostStats, validateDateRange, wrapAsync } from './util';
+import {
+  entityToJsonObject,
+  signalPostStats,
+  validateDateRange,
+  wrapAsync,
+} from './util';
 import { getEntities, getTags } from './routeUtil';
 import { PostOptions } from '../../database/QetaStore';
 
@@ -253,7 +258,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'read-post',
       severityLevel: 'low',
       request,
-      meta: { postId: post.id, type: post.type },
+      meta: { post: entityToJsonObject(post) },
     });
 
     // Response
@@ -346,9 +351,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     auditor?.createEvent({
       eventId: 'comment-post',
-      severityLevel: 'low',
+      severityLevel: 'medium',
       request,
-      meta: { postId: post.id, type: post.type },
+      meta: { post: entityToJsonObject(post), comment: request.body.content },
     });
 
     // Response
@@ -368,6 +373,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     const username = await getUsername(request, options);
     const comment = await database.getComment(commentId, { postId });
+
+    if (!comment) {
+      response.status(404).send({ errors: 'Comment not found', type: 'body' });
+      return;
+    }
 
     await authorize(request, qetaDeleteCommentPermission, options, comment);
 
@@ -394,7 +404,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'delete-comment',
       severityLevel: 'medium',
       request,
-      meta: { commentId, postId },
+      meta: {
+        post: entityToJsonObject(post),
+        comment: entityToJsonObject(comment),
+      },
     });
 
     await mapAdditionalFields(request, post, options);
@@ -477,7 +490,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'create-post',
       severityLevel: 'medium',
       request,
-      meta: { postId: post.id, type: post.type },
+      meta: {
+        post: entityToJsonObject(post),
+      },
     });
 
     await mapAdditionalFields(request, post, options);
@@ -504,13 +519,18 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const username = await getUsername(request, options);
-    let post = await database.getPost(
+    const originalPost = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
     );
 
-    await authorize(request, qetaEditPostPermission, options, post);
+    if (!originalPost) {
+      response.status(404).send({ errors: 'Post not found', type: 'body' });
+      return;
+    }
+
+    await authorize(request, qetaEditPostPermission, options, originalPost);
 
     const existingTags = await database.getTags();
     const [tags, entities, tagsFilter, commentsFilter, answersFilter] =
@@ -523,7 +543,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       ]);
 
     // Act
-    post = await database.updatePost({
+    const post = await database.updatePost({
       id: postId,
       user_ref: username,
       title: request.body.title,
@@ -553,9 +573,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     auditor?.createEvent({
       eventId: 'update-post',
-      severityLevel: 'low',
+      severityLevel: 'medium',
       request,
-      meta: { postId: post.id, type: post.type },
+      meta: {
+        from: entityToJsonObject(originalPost),
+        to: entityToJsonObject(post),
+      },
     });
 
     // Response
@@ -577,6 +600,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
       false,
     );
+
+    if (!post) {
+      response.status(404).send({ errors: 'Post not found', type: 'body' });
+      return;
+    }
+
     await authorize(request, qetaDeletePostPermission, options, post);
 
     // Act
@@ -596,7 +625,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         eventId: 'delete-post',
         severityLevel: 'medium',
         request,
-        meta: { postId },
+        meta: { post: entityToJsonObject(post) },
       });
     }
 
@@ -621,7 +650,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const post = await database.getPost(username, postId, false);
 
     if (post === null) {
-      response.sendStatus(404);
+      response.status(404).send({ errors: 'Post not found', type: 'body' });
       return;
     }
 
@@ -636,7 +665,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const voted = await database.votePost(username, postId, score);
 
     if (!voted) {
-      response.sendStatus(404);
+      response.status(404).send({ errors: 'Post not found', type: 'body' });
       return;
     }
 
@@ -669,7 +698,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'vote',
       severityLevel: 'low',
       request,
-      meta: { postId: post.id, type: post.type, score },
+      meta: { post: entityToJsonObject(post), score },
     });
 
     signalPostStats(signals, resp);
@@ -741,7 +770,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'delete-vote',
       severityLevel: 'low',
       request,
-      meta: { postId: post.id, type: post.type },
+      meta: { post: entityToJsonObject(post) },
     });
     response.json(resp);
   });
@@ -793,7 +822,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'favorite-post',
       severityLevel: 'low',
       request,
-      meta: { postId: post.id, type: post.type },
+      meta: { post: entityToJsonObject(post) },
     });
 
     await mapAdditionalFields(request, post, options);
@@ -849,7 +878,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'unfavorite-post',
       severityLevel: 'low',
       request,
-      meta: { postId: post.id, type: post.type },
+      meta: { post: entityToJsonObject(post) },
     });
 
     await mapAdditionalFields(request, post, options);

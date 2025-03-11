@@ -4,6 +4,7 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { getEntities, getTags } from './routeUtil';
 import { isModerator } from '../util';
+import { entityToJsonObject } from './util.ts';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -92,7 +93,7 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
       severityLevel: 'medium',
       request,
       meta: {
-        templateId: template.id,
+        template: entityToJsonObject(template),
       },
     });
 
@@ -167,7 +168,7 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
       severityLevel: 'medium',
       request,
       meta: {
-        templateId: template.id,
+        template: entityToJsonObject(template),
       },
     });
 

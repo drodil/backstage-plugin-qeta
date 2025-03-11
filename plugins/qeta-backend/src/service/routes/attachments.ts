@@ -13,6 +13,7 @@ import {
   AttachmentStorageEngineOptions,
 } from '../upload/attachmentStorageEngine';
 import { getUsername } from '../util';
+import { entityToJsonObject } from './util.ts';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
 const DEFAULT_MIME_TYPES = [
@@ -122,10 +123,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
         severityLevel: 'medium',
         request,
         meta: {
-          uuid: attachment.uuid,
-          mimeType: attachment.mimeType,
-          locationType: attachment.locationType,
-          ...opts,
+          attachment: entityToJsonObject(attachment),
         },
       });
       response.json(attachment);
@@ -149,6 +147,13 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       response.status(404).end();
       return;
     }
+
+    auditor?.createEvent({
+      eventId: 'read-attachment',
+      severityLevel: 'low',
+      request,
+      meta: { attachment: entityToJsonObject(attachment) },
+    });
 
     response.writeHead(200, {
       'Content-Type': attachment.mimeType,
@@ -192,7 +197,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'delete-attachment',
       severityLevel: 'medium',
       request,
-      meta: { uuid },
+      meta: { attachment: entityToJsonObject(attachment) },
     });
 
     response.sendStatus(204);

@@ -24,7 +24,7 @@ import {
   CollectionsQuerySchema,
   RouteOptions,
 } from '../types';
-import { validateDateRange, wrapAsync } from './util';
+import { entityToJsonObject, validateDateRange, wrapAsync } from './util';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -202,7 +202,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'create-collection',
       severityLevel: 'medium',
       request,
-      meta: { collectionId: collection.id },
+      meta: { collection: entityToJsonObject(collection) },
     });
 
     // Response
@@ -229,17 +229,22 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const username = await getUsername(request, options);
-    let collection = await database.getCollection(
+    const originalCollection = await database.getCollection(
       username,
       Number.parseInt(request.params.id, 10),
     );
 
-    if (!collection) {
+    if (!originalCollection) {
       response.sendStatus(404);
       return;
     }
 
-    await authorize(request, qetaEditCollectionPermission, options, collection);
+    await authorize(
+      request,
+      qetaEditCollectionPermission,
+      options,
+      originalCollection,
+    );
 
     const [postFilters, filters, tagFilters] = await Promise.all([
       getAuthorizeConditions(request, qetaReadPostPermission, options, true),
@@ -253,7 +258,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     ]);
 
     // Act
-    collection = await database.updateCollection({
+    const collection = await database.updateCollection({
       id: collectionId,
       user_ref: username,
       title: request.body.title,
@@ -283,7 +288,10 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'update-collection',
       severityLevel: 'medium',
       request,
-      meta: { collectionId: collection.id },
+      meta: {
+        from: entityToJsonObject(originalCollection),
+        to: entityToJsonObject(collection),
+      },
     });
 
     // Response
@@ -339,7 +347,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
         eventId: 'delete-collection',
         severityLevel: 'medium',
         request,
-        meta: { collectionId: collection.id },
+        meta: { collection: entityToJsonObject(collection) },
       });
     }
 
@@ -391,7 +399,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'follow-collection',
       severityLevel: 'low',
       request,
-      meta: { collectionId: collection.id },
+      meta: { collection: entityToJsonObject(collection) },
     });
 
     response.status(204).send();
@@ -420,7 +428,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'unfollow-collection',
       severityLevel: 'low',
       request,
-      meta: { collectionId: collection.id },
+      meta: { collection: entityToJsonObject(collection) },
     });
 
     response.status(204).send();
@@ -463,7 +471,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'read-collection',
       severityLevel: 'low',
       request,
-      meta: { collectionId: collection.id },
+      meta: { collection: entityToJsonObject(collection) },
     });
 
     // Response
@@ -500,6 +508,14 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       getAuthorizeConditions(request, qetaReadPostPermission, options, true),
       getAuthorizeConditions(request, qetaReadTagPermission, options, true),
     ]);
+
+    const post = await database.getPost(username, request.body.postId, false);
+    if (!post) {
+      response.status(404).send({ errors: 'Post not found', type: 'body' });
+      return;
+    }
+
+    await authorize(request, qetaReadPostPermission, options, post);
 
     // Act
     collection = await database.addPostToCollection(
@@ -544,7 +560,10 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'add-to-collection',
       severityLevel: 'low',
       request,
-      meta: { collectionId: collection.id, postId: request.body.postId },
+      meta: {
+        collection: entityToJsonObject(collection),
+        post: entityToJsonObject(post),
+      },
     });
 
     // Response
@@ -583,6 +602,14 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       getAuthorizeConditions(request, qetaReadTagPermission, options, true),
     ]);
 
+    const post = await database.getPost(username, request.body.postId, false);
+    if (!post) {
+      response.status(404).send({ errors: 'Post not found', type: 'body' });
+      return;
+    }
+
+    await authorize(request, qetaReadPostPermission, options, post);
+
     // Act
     collection = await database.removePostFromCollection(
       username,
@@ -590,6 +617,13 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       request.body.postId,
       { postFilters, tagFilters },
     );
+
+    if (!collection) {
+      response
+        .status(404)
+        .send({ errors: 'Collection not found', type: 'body' });
+      return;
+    }
 
     events?.publish({
       topic: 'qeta',
@@ -606,7 +640,10 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'delete-from-collection',
       severityLevel: 'low',
       request,
-      meta: { collectionId, postId: request.body.postId },
+      meta: {
+        collection: entityToJsonObject(collection),
+        post: entityToJsonObject(post),
+      },
     });
 
     // Response
@@ -733,8 +770,8 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       severityLevel: 'low',
       request,
       meta: {
-        collectionId,
-        postId: request.body.postId,
+        collection: entityToJsonObject(collection),
+        post: entityToJsonObject(post),
         rank: request.body.rank,
       },
     });
