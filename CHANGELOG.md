@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.24.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.23.0...v3.24.0) (2025-03-11)
+
+
+### Features
+
+* add default permission policy to node plugin ([6e04413](https://github.com/drodil/backstage-plugin-qeta/commit/6e04413ec056720ce4894cc6e6c9ea80f4656c19))
+* allow editing comments ([949ffb7](https://github.com/drodil/backstage-plugin-qeta/commit/949ffb76e38659aadcc9a8b748d6d7487de623aa))
+* improve auditor logging to include details ([3efef89](https://github.com/drodil/backstage-plugin-qeta/commit/3efef898afa507d2b4795ca7b385c51fa8c4816e))
+
+
+### Bug Fixes
+
+* make sure comments are ordered by created timestamp ([6baf957](https://github.com/drodil/backstage-plugin-qeta/commit/6baf957da94a5d4287841db43c16c92ad3dcc541))
+* response codes in tests ([7dfab63](https://github.com/drodil/backstage-plugin-qeta/commit/7dfab63533d86a637c658cdb6276268e4c79aadf))
+
 ## [3.23.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.22.0...v3.23.0) (2025-02-25)
 
 
