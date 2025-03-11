@@ -22,6 +22,7 @@ import {
   qetaDeleteAnswerPermission,
   qetaDeleteCommentPermission,
   qetaEditAnswerPermission,
+  qetaEditCommentPermission,
   qetaEditPostPermission,
   qetaReadAnswerPermission,
   qetaReadCommentPermission,
@@ -217,8 +218,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     });
 
     // Response
-    response.status(201);
-    response.json(answer);
+    response.status(201).json(answer);
   });
 
   // POST /questions/:id/answers/:answerId
@@ -278,7 +278,6 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     await mapAdditionalFields(request, answer, options);
 
     // Response
-    response.status(201);
     response.json(answer);
   });
 
@@ -384,7 +383,71 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       });
 
       // Response
-      response.status(201);
+      response.status(201).json(answer);
+    },
+  );
+
+  // POST /posts/:id/answers/:answerId/comments/:commentId
+  router.post(
+    `/posts/:id/answers/:answerId/comments/:commentId`,
+    async (request, response) => {
+      // Validation
+      const postId = Number.parseInt(request.params.id, 10);
+      const answerId = Number.parseInt(request.params.answerId, 10);
+      const commentId = Number.parseInt(request.params.commentId, 10);
+      if (
+        Number.isNaN(postId) ||
+        Number.isNaN(answerId) ||
+        Number.isNaN(commentId)
+      ) {
+        response.status(400).send({ errors: 'Invalid id', type: 'body' });
+        return;
+      }
+
+      const username = await getUsername(request, options);
+      const post = await database.getPost(username, postId, false);
+      let answer = await database.getAnswer(answerId, username);
+      const comment = await database.getComment(commentId, { answerId });
+
+      if (!post || !answer || !comment) {
+        response
+          .status(404)
+          .send({ errors: 'Post, answer or comment not found', type: 'body' });
+        return;
+      }
+
+      await authorize(request, qetaReadPostPermission, options, post);
+      await authorize(request, qetaReadAnswerPermission, options, answer);
+      await authorize(request, qetaEditCommentPermission, options, comment);
+
+      // Act
+      answer = await database.updateAnswerComment(
+        answerId,
+        commentId,
+        username,
+        request.body.content,
+      );
+
+      if (!answer) {
+        response.sendStatus(404);
+        return;
+      }
+
+      auditor?.createEvent({
+        eventId: 'delete-comment',
+        severityLevel: 'medium',
+        request,
+        meta: {
+          post: entityToJsonObject(post),
+          answer: entityToJsonObject(answer),
+          from: entityToJsonObject(comment),
+          to: request.body.content,
+        },
+      });
+
+      await mapAdditionalFields(request, answer, options);
+
+      // Response
       response.json(answer);
     },
   );
@@ -543,7 +606,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     // Response
-    response.sendStatus(deleted ? 200 : 404);
+    response.sendStatus(deleted ? 204 : 404);
   });
 
   const voteAnswer = async (

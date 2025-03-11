@@ -14,6 +14,7 @@ import {
   qetaCreatePostPermission,
   qetaDeleteCommentPermission,
   qetaDeletePostPermission,
+  qetaEditCommentPermission,
   qetaEditPostPermission,
   qetaReadAnswerPermission,
   qetaReadCommentPermission,
@@ -357,6 +358,69 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     // Response
+    response.status(201).json(post);
+  });
+
+  // POST /posts/:id/comments/:commentId
+  router.post(`/posts/:id/comments/:commentId`, async (request, response) => {
+    // Validation
+    // Act
+    const postId = Number.parseInt(request.params.id, 10);
+    const commentId = Number.parseInt(request.params.commentId, 10);
+    if (Number.isNaN(postId) || Number.isNaN(commentId)) {
+      response.status(400).send({ errors: 'Invalid id', type: 'body' });
+      return;
+    }
+
+    const username = await getUsername(request, options);
+    const comment = await database.getComment(commentId, { postId });
+
+    if (!comment) {
+      response.status(404).send({ errors: 'Comment not found', type: 'body' });
+      return;
+    }
+
+    await authorize(request, qetaEditCommentPermission, options, comment);
+
+    const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
+      getAuthorizeConditions(request, qetaReadTagPermission, options, true),
+      getAuthorizeConditions(request, qetaReadCommentPermission, options, true),
+      getAuthorizeConditions(request, qetaReadAnswerPermission, options, true),
+    ]);
+
+    const post = await database.updatePostComment(
+      postId,
+      commentId,
+      username,
+      request.body.content,
+      {
+        tagsFilter,
+        commentsFilter,
+        answersFilter,
+      },
+    );
+
+    if (post === null) {
+      response
+        .status(400)
+        .send({ errors: 'Failed to update post comment', type: 'body' });
+      return;
+    }
+
+    auditor?.createEvent({
+      eventId: 'update-comment',
+      severityLevel: 'medium',
+      request,
+      meta: {
+        post: entityToJsonObject(post),
+        from: entityToJsonObject(comment),
+        to: request.body.content,
+      },
+    });
+
+    await mapAdditionalFields(request, post, options);
+
+    // Response
     response.json(post);
   });
 
@@ -498,8 +562,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     await mapAdditionalFields(request, post, options);
 
     // Response
-    response.status(201);
-    response.json(post);
+    response.status(201).json(post);
   });
 
   // POST /posts/:id
@@ -582,7 +645,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     // Response
-    response.status(200);
     response.json(post);
   });
 
@@ -630,7 +692,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     // Response
-    response.sendStatus(deleted ? 200 : 404);
+    response.sendStatus(deleted ? 204 : 404);
   });
 
   const votePost = async (

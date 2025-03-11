@@ -187,8 +187,7 @@ export const AnswerCard = (props: {
       <CommentSection
         post={question}
         answer={answerEntity}
-        onCommentPost={onCommentAction}
-        onCommentDelete={onCommentAction}
+        onCommentAction={onCommentAction}
       />
     </>
   );

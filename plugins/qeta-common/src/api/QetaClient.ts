@@ -100,7 +100,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as PostsResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to fetch posts', data.errors);
     }
 
     return data;
@@ -123,7 +123,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as PostsResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to fetch post list', data.errors);
     }
 
     return data;
@@ -144,7 +144,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as PostResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to create post', data.errors);
     }
 
     return data;
@@ -166,7 +166,30 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as PostResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to comment post', data.errors);
+    }
+
+    return data;
+  }
+
+  async updatePostComment(
+    questionId: number,
+    id: number,
+    content: string,
+    requestOptions?: RequestOptions,
+  ): Promise<Post> {
+    const response = await this.fetch(`/posts/${questionId}/comments/${id}`, {
+      requestOptions,
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify({ content }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    });
+    const data = (await response.json()) as PostResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to update post comment', data.errors);
     }
 
     return data;
@@ -184,7 +207,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as PostResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to delete post comment', data.errors);
     }
 
     return data;
@@ -199,7 +222,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as PostResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to fetch post', data.errors);
     }
 
     return data;
@@ -404,7 +427,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as PostResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to vote post', data.errors);
     }
 
     return data;
@@ -423,7 +446,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as PostResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to vote post', data.errors);
     }
 
     return data;
@@ -442,7 +465,7 @@ export class QetaClient implements QetaApi {
     });
     const data = (await response.json()) as PostResponseBody;
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to delete post vote', data.errors);
     }
     return data;
   }
@@ -460,7 +483,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as PostResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to favorite', data.errors);
     }
 
     return data;
@@ -479,7 +502,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as PostResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to unfavorite', data.errors);
     }
 
     return data;
@@ -504,7 +527,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as AnswerResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to post answer', data.errors);
     }
 
     return data;
@@ -530,7 +553,34 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as AnswerResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to comment answer', data.errors);
+    }
+
+    return data;
+  }
+
+  async updateAnswerComment(
+    questionId: number,
+    answerId: number,
+    id: number,
+    content: string,
+    requestOptions?: RequestOptions,
+  ): Promise<Answer> {
+    const response = await this.fetch(
+      `/posts/${questionId}/answers/${answerId}/comments/${id}`,
+      {
+        reqInit: {
+          method: 'POST',
+          body: JSON.stringify({ content }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+        requestOptions,
+      },
+    );
+    const data = (await response.json()) as AnswerResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to update comment', data.errors);
     }
 
     return data;
@@ -554,7 +604,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as AnswerResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to delete comment', data.errors);
     }
 
     return data;
@@ -575,7 +625,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as AnswerResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to vote', data.errors);
     }
 
     return data;
@@ -596,7 +646,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as AnswerResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to vote', data.errors);
     }
 
     return data;
@@ -617,7 +667,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as AnswerResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to delete vote', data.errors);
     }
 
     return data;
@@ -706,7 +756,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as PostResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to update', data.errors);
+      throw new QetaError('Failed to update post', data.errors);
     }
 
     return data;
@@ -728,7 +778,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as AnswerResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to update answer', data.errors);
     }
 
     return data;
@@ -752,7 +802,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as AnswersResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to get answers', data.errors);
     }
 
     return data;
@@ -772,7 +822,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as AnswerResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to get answer', data.errors);
     }
 
     return data;
@@ -1154,7 +1204,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as CollectionResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to fetch', data.errors);
+      throw new QetaError('Failed to create collection', data.errors);
     }
 
     return data;
@@ -1176,7 +1226,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as CollectionResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to update', data.errors);
+      throw new QetaError('Failed to update collection', data.errors);
     }
 
     return data;
@@ -1215,7 +1265,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as CollectionResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to update', data.errors);
+      throw new QetaError('Failed to add post to collection', data.errors);
     }
 
     return data;
@@ -1237,7 +1287,7 @@ export class QetaClient implements QetaApi {
     const data = (await response.json()) as CollectionResponseBody;
 
     if ('errors' in data) {
-      throw new QetaError('Failed to update', data.errors);
+      throw new QetaError('Failed to remove post from collection', data.errors);
     }
 
     return data;

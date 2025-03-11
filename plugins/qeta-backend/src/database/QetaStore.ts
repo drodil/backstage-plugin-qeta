@@ -214,6 +214,14 @@ export interface QetaStore {
     options?: PostOptions,
   ): Promise<MaybePost>;
 
+  updatePostComment(
+    post_id: number,
+    id: number,
+    user_ref: string,
+    content: string,
+    options?: PostOptions,
+  ): Promise<MaybePost>;
+
   /**
    * Delete question comment
    */
@@ -266,6 +274,14 @@ export interface QetaStore {
     user_ref: string,
     content: string,
     created: Date,
+    options?: AnswerOptions,
+  ): Promise<MaybeAnswer>;
+
+  updateAnswerComment(
+    answer_id: number,
+    id: number,
+    user_ref: string,
+    content: string,
     options?: AnswerOptions,
   ): Promise<MaybeAnswer>;
 

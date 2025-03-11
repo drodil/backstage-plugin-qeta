@@ -148,6 +148,13 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<PostResponse>;
 
+  updatePostComment(
+    postId: number,
+    id: number,
+    content: string,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
+
   deletePostComment(
     postId: number,
     id: number,
@@ -310,6 +317,14 @@ export interface QetaApi {
 
   commentAnswer(
     questionId: number,
+    id: number,
+    content: string,
+    requestOptions?: RequestOptions,
+  ): Promise<AnswerResponse>;
+
+  updateAnswerComment(
+    questionId: number,
+    answerId: number,
     id: number,
     content: string,
     requestOptions?: RequestOptions,

@@ -151,7 +151,6 @@ export const AnswerForm = (props: {
               onChange={onChange}
               height={200}
               error={'answer' in errors}
-              config={configApi}
               placeholder={t('answerForm.contentInput.placeholder')}
               onImageUpload={onImageUpload}
               answerId={id ? Number(id) : undefined}

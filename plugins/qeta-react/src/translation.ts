@@ -158,6 +158,8 @@ export const qetaTranslationRef = createTranslationRef({
       title: 'Create a collection',
     },
     commentList: {
+      save: 'Save',
+      editLink: 'edit',
       deleteLink: 'delete',
     },
     markdown: {

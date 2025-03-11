@@ -169,11 +169,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
           </Grid>
         </CardContent>
       </Card>
-      <CommentSection
-        post={questionEntity}
-        onCommentDelete={onCommentAction}
-        onCommentPost={onCommentAction}
-      />
+      <CommentSection post={questionEntity} onCommentAction={onCommentAction} />
     </>
   );
 };

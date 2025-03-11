@@ -218,6 +218,6 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
     }
 
     // Response
-    response.sendStatus(deleted ? 200 : 404);
+    response.sendStatus(deleted ? 204 : 404);
   });
 };

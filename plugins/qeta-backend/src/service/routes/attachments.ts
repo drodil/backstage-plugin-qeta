@@ -126,7 +126,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
           attachment: entityToJsonObject(attachment),
         },
       });
-      response.json(attachment);
+      response.status(201).json(attachment);
     });
   });
 

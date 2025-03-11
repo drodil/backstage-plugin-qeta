@@ -1,12 +1,10 @@
 /* eslint-disable no-console */
 import React from 'react';
 import ReactMde from 'react-mde';
-
-import { Config } from '@backstage/config';
 import 'react-mde/lib/styles/css/react-mde.css';
 import 'react-mde/lib/styles/css/react-mde-editor.css';
 import 'react-mde/lib/styles/css/react-mde-toolbar.css';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { imageUpload } from '../../utils/utils';
@@ -105,7 +103,6 @@ export const useStyles = makeStyles(
 );
 
 export type MarkdownEditorProps = {
-  config?: Config;
   value: string;
   onChange: (value: string) => void;
   onTagsChange?: (tags: string[]) => void;
@@ -117,6 +114,7 @@ export type MarkdownEditorProps = {
   disableAttachments?: boolean;
   disablePreview?: boolean;
   postId?: number;
+  disabled?: boolean;
   answerId?: number;
   collectionId?: number;
   autoFocus?: boolean;
@@ -127,10 +125,10 @@ const NO_SUGGESTIONS = [{ preview: 'No suggestions', value: '' }];
 
 export const MarkdownEditor = (props: MarkdownEditorProps) => {
   const {
-    config,
     value,
     onChange,
     height,
+    disabled,
     error,
     placeholder,
     disableAttachments,
@@ -150,6 +148,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
   const errorApi = useApi(errorApiRef);
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
+  const config = useApi(configApiRef);
 
   const loadUserSuggestions = async (text: string) => {
     if (!text) {
@@ -244,6 +243,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
         textArea: {
           required,
           placeholder,
+          disabled,
           autoFocus,
           onBlur: () => {
             if (onTagsChange) {

@@ -206,8 +206,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     // Response
-    response.status(201);
-    response.json(collection);
+    response.status(201).json(collection);
   });
 
   // POST /collections/:id
@@ -295,7 +294,6 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     // Response
-    response.status(200);
     response.json(collection);
   });
 
@@ -352,7 +350,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     // Response
-    response.sendStatus(deleted ? 200 : 404);
+    response.sendStatus(deleted ? 204 : 404);
   });
 
   router.get('/collections/followed', async (request, response) => {

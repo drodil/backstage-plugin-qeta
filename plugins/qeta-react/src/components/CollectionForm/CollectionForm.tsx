@@ -1,9 +1,4 @@
-import {
-  configApiRef,
-  useAnalytics,
-  useApi,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useCallback, useEffect } from 'react';
@@ -77,7 +72,6 @@ export const CollectionForm = (props: CollectionFormProps) => {
   const { t } = useTranslation();
 
   const qetaApi = useApi(qetaApiRef);
-  const configApi = useApi(configApiRef);
   const {
     register,
     handleSubmit,
@@ -206,7 +200,6 @@ export const CollectionForm = (props: CollectionFormProps) => {
             height={400}
             error={'content' in errors}
             placeholder={t('collectionForm.descriptionInput.placeholder')}
-            config={configApi}
             onImageUpload={onImageUpload}
             collectionId={id ? Number(id) : undefined}
           />

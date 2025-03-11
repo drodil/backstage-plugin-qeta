@@ -569,6 +569,20 @@ export class DatabaseQetaStore implements QetaStore {
     return await this.getPost(user_ref, post_id, false, options);
   }
 
+  async updatePostComment(
+    post_id: number,
+    id: number,
+    user_ref: string,
+    content: string,
+    options?: PostOptions,
+  ): Promise<MaybePost> {
+    const query = this.db('comments')
+      .where('id', '=', id)
+      .where('postId', '=', post_id);
+    await query.update({ content, updatedBy: user_ref, updated: new Date() });
+    return this.getPost(user_ref, post_id, false, options);
+  }
+
   async deletePostComment(
     post_id: number,
     id: number,
@@ -597,6 +611,20 @@ export class DatabaseQetaStore implements QetaStore {
         answerId: answer_id,
       })
       .into('comments');
+    return this.getAnswer(answer_id, user_ref, options);
+  }
+
+  async updateAnswerComment(
+    answer_id: number,
+    id: number,
+    user_ref: string,
+    content: string,
+    options?: AnswerOptions,
+  ): Promise<MaybeAnswer> {
+    const query = this.db('comments')
+      .where('id', '=', id)
+      .where('answerId', '=', answer_id);
+    await query.update({ content, updatedBy: user_ref, updated: new Date() });
     return this.getAnswer(answer_id, user_ref, options);
   }
 

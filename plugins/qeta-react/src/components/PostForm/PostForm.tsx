@@ -322,7 +322,6 @@ export const PostForm = (props: PostFormProps) => {
             height={400}
             error={'content' in errors}
             placeholder={t('postForm.contentInput.placeholder', { type })}
-            config={configApi}
             onImageUpload={onImageUpload}
             postId={id ? Number(id) : undefined}
             onTagsChange={tags => {

@@ -111,8 +111,7 @@ export const ArticleContent = (props: {
       <CommentSection
         className={styles.commentSection}
         post={postEntity}
-        onCommentDelete={onCommentAction}
-        onCommentPost={onCommentAction}
+        onCommentAction={onCommentAction}
       />
       <Grid container>
         <Grid item xs={12}>

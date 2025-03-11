@@ -266,7 +266,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         tagId: tag.id,
       },
     });
-    response.json(tag);
+    response.status(201).json(tag);
   });
 
   router.delete('/tags/:tag', async (request, response) => {
@@ -291,7 +291,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       });
     }
     // Response
-    response.sendStatus(deleted ? 200 : 404);
+    response.sendStatus(deleted ? 204 : 404);
   });
 
   router.get('/entities', async (request, response) => {
