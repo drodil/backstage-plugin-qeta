@@ -41,24 +41,6 @@ export const CollectionCard = (props: { collection: Collection }) => {
             <TagsAndEntities entity={collection} />
           </Grid>
           <Grid container item xs={12}>
-            {collection.canDelete && (
-              <Grid item>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  color="secondary"
-                  onClick={handleDeleteModalOpen}
-                  startIcon={<DeleteIcon />}
-                >
-                  {t('deleteModal.deleteButton')}
-                </Button>
-                <DeleteModal
-                  open={deleteModalOpen}
-                  onClose={handleDeleteModalClose}
-                  entity={collection}
-                />
-              </Grid>
-            )}
             {collection.canEdit && (
               <Grid item>
                 <Button
@@ -76,6 +58,24 @@ export const CollectionCard = (props: { collection: Collection }) => {
                 >
                   {t('questionPage.editButton')}
                 </Button>
+              </Grid>
+            )}
+            {collection.canDelete && (
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="secondary"
+                  onClick={handleDeleteModalOpen}
+                  startIcon={<DeleteIcon />}
+                >
+                  {t('deleteModal.deleteButton')}
+                </Button>
+                <DeleteModal
+                  open={deleteModalOpen}
+                  onClose={handleDeleteModalClose}
+                  entity={collection}
+                />
               </Grid>
             )}
           </Grid>

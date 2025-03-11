@@ -123,6 +123,23 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                   <TagsAndEntities entity={questionEntity} />
                   {(question.canEdit || question.canDelete) && (
                     <Box className={styles.buttons}>
+                      {question.canEdit && (
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          startIcon={<EditIcon />}
+                          onClick={() =>
+                            navigate(
+                              editQuestionRoute({
+                                id: question.id.toString(10),
+                              }),
+                            )
+                          }
+                          className="qetaQuestionCardEditBtn"
+                        >
+                          {t('questionPage.editButton')}
+                        </Button>
+                      )}
                       {question.canDelete && (
                         <>
                           <Button
@@ -140,23 +157,6 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                             entity={questionEntity}
                           />
                         </>
-                      )}
-                      {question.canEdit && (
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          startIcon={<EditIcon />}
-                          onClick={() =>
-                            navigate(
-                              editQuestionRoute({
-                                id: question.id.toString(10),
-                              }),
-                            )
-                          }
-                          className="qetaQuestionCardEditBtn"
-                        >
-                          {t('questionPage.editButton')}
-                        </Button>
                       )}
                     </Box>
                   )}

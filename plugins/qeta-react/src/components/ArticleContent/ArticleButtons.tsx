@@ -100,6 +100,23 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
           <LinkButton entity={post} />
           {(post.canEdit || post.canDelete) && (
             <>
+              {post.canEdit && (
+                <Tooltip title={t('articlePage.editButton')}>
+                  <IconButton
+                    size="small"
+                    onClick={() =>
+                      navigate(
+                        editArticleRoute({
+                          id: post.id.toString(10),
+                        }),
+                      )
+                    }
+                    color="primary"
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
               {post.canDelete && (
                 <>
                   <Tooltip title={t('articlePage.deleteButton')}>
@@ -117,23 +134,6 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
                     entity={post}
                   />
                 </>
-              )}
-              {post.canEdit && (
-                <Tooltip title={t('articlePage.editButton')}>
-                  <IconButton
-                    size="small"
-                    onClick={() =>
-                      navigate(
-                        editArticleRoute({
-                          id: post.id.toString(10),
-                        }),
-                      )
-                    }
-                    color="primary"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
               )}
             </>
           )}

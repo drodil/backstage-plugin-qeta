@@ -141,6 +141,17 @@ export const AnswerCard = (props: {
                     <Grid item style={{ alignSelf: 'flex-end' }}>
                       {(answerEntity.canDelete || answerEntity.canEdit) && (
                         <Box className={styles.buttons}>
+                          {answerEntity.canEdit && (
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              startIcon={<EditIcon />}
+                              onClick={() => setEditMode(true)}
+                              className="qetaAnswerCardEditBtn"
+                            >
+                              {t('questionPage.editButton')}
+                            </Button>
+                          )}
                           {!answerEntity.correct && answerEntity.canDelete && (
                             <>
                               <Button
@@ -159,17 +170,6 @@ export const AnswerCard = (props: {
                                 question={question}
                               />
                             </>
-                          )}
-                          {answerEntity.canEdit && (
-                            <Button
-                              variant="outlined"
-                              size="small"
-                              startIcon={<EditIcon />}
-                              onClick={() => setEditMode(true)}
-                              className="qetaAnswerCardEditBtn"
-                            >
-                              {t('questionPage.editButton')}
-                            </Button>
                           )}
                         </Box>
                       )}
