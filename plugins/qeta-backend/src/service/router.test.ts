@@ -119,6 +119,8 @@ describe('createRouter', () => {
   const qetaStore: jest.Mocked<QetaStore> = {
     commentAnswer: jest.fn(),
     commentPost: jest.fn(),
+    updatePostComment: jest.fn(),
+    updateAnswerComment: jest.fn(),
     deleteAnswerComment: jest.fn(),
     deletePostComment: jest.fn(),
     getPosts: jest.fn(),
@@ -421,7 +423,7 @@ describe('createRouter', () => {
     it('deletes question', async () => {
       qetaStore.deletePost.mockResolvedValue(true);
       const response = await request(app).delete('/posts/1');
-      expect(response.status).toEqual(200);
+      expect(response.status).toEqual(204);
     });
 
     it('delete failure', async () => {
@@ -440,7 +442,7 @@ describe('createRouter', () => {
         content: 'content',
       });
 
-      expect(response.status).toEqual(200);
+      expect(response.status).toEqual(201);
       expect(qetaStore.commentPost).toHaveBeenCalledWith(
         1,
         'user:default/mock',
@@ -464,7 +466,7 @@ describe('createRouter', () => {
         created: testDate.toISOString(),
       });
 
-      expect(response.status).toEqual(200);
+      expect(response.status).toEqual(201);
       expect(qetaStore.commentPost).toHaveBeenCalledWith(
         1,
         'user2',
@@ -577,7 +579,7 @@ describe('createRouter', () => {
       const response = await request(app).delete(
         `/posts/${question.id}/answers/${answer.id}`,
       );
-      expect(response.status).toEqual(200);
+      expect(response.status).toEqual(204);
     });
 
     it('delete failure', async () => {
