@@ -2580,11 +2580,9 @@ export class DatabaseQetaStore implements QetaStore {
     postId: number,
     commentsFilter?: PermissionCriteria<QetaFilters>,
   ): Promise<RawCommentEntity[]> {
-    const query = this.db<RawCommentEntity>('comments').where(
-      'comments.postId',
-      '=',
-      postId,
-    );
+    const query = this.db<RawCommentEntity>('comments')
+      .where('comments.postId', '=', postId)
+      .orderBy('created');
     if (commentsFilter) {
       parseFilter(commentsFilter, query, this.db, 'comments');
     }
@@ -2595,11 +2593,9 @@ export class DatabaseQetaStore implements QetaStore {
     answerId: number,
     commentsFilter?: PermissionCriteria<QetaFilters>,
   ): Promise<RawCommentEntity[]> {
-    const query = this.db<RawCommentEntity>('comments').where(
-      'comments.answerId',
-      '=',
-      answerId,
-    );
+    const query = this.db<RawCommentEntity>('comments')
+      .where('comments.answerId', '=', answerId)
+      .orderBy('created');
     if (commentsFilter) {
       parseFilter(commentsFilter, query, this.db, 'comments');
     }
