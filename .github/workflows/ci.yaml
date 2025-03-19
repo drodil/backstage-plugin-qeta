@@ -25,6 +25,7 @@ jobs:
           cache: 'yarn'
       - run: yarn install --immutable
       - run: yarn commitlint --from=origin/main
+        if: github.actor != 'dependabot[bot]'
       - run: yarn lint:all
       - run: yarn prettier:check
       - run: yarn fix --check
