@@ -4,7 +4,7 @@ import { tagRouteRef } from '../../routes';
 import { qetaApiRef } from '../../api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useNavigate } from 'react-router-dom';
-import { MarkdownRenderer } from '../MarkdownRenderer';
+import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { useTagsFollow, useTranslation } from '../../hooks';
 import { Button, Chip, Grid, Tooltip, Typography } from '@material-ui/core';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
