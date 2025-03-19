@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.24.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.24.1...v3.24.2) (2025-03-19)
+
+
+### Bug Fixes
+
+* add to collection button not showing ([ae2ab41](https://github.com/drodil/backstage-plugin-qeta/commit/ae2ab419005c206d57ccc1071518e63005eab366)), closes [#282](https://github.com/drodil/backstage-plugin-qeta/issues/282)
+
 ### [3.24.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.24.0...v3.24.1) (2025-03-19)
 
 ## [3.24.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.23.0...v3.24.0) (2025-03-11)
