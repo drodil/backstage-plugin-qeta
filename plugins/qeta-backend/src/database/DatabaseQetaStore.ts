@@ -292,14 +292,9 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.searchQuery) {
-      query.leftJoin('post_tags as st', 'posts.id', 'st.postId');
-      query.leftJoin('tags as stt', 'st.tagId', 'stt.id');
-      query.leftJoin('post_entities as se', 'posts.id', 'se.postId');
-      query.leftJoin('entities as see', 'se.entityId', 'see.id');
-
       this.applySearchQuery(
         query,
-        ['posts.title', 'posts.content', 'stt.tag', 'see.entity_ref'],
+        ['posts.title', 'posts.content'],
         options.searchQuery,
       );
     }
@@ -2900,19 +2895,10 @@ export class DatabaseQetaStore implements QetaStore {
   ) {
     if (this.db.client.config.client === 'pg') {
       query.whereRaw(
-        `((to_tsvector('english', CONCAT(${columns.join(
+        `((to_tsvector(CONCAT(${columns.join(
           ',',
-        )})) @@ websearch_to_tsquery('english', quote_literal(?))
-          or to_tsvector('english', CONCAT(${columns.join(
-            ',',
-          )})) @@ to_tsquery('english',quote_literal(?))) or LOWER(CONCAT(${columns.join(
-          ',',
-        )})) LIKE LOWER(?))`,
-        [
-          `${searchQuery}`,
-          `${searchQuery.replaceAll(/\s/g, '+')}:*`,
-          `%${searchQuery}%`,
-        ],
+        )})) @@ to_tsquery(quote_literal(?) || ':*')))`,
+        [`${searchQuery}`],
       );
     } else {
       query.whereRaw(`LOWER(CONCAT(${columns.join(',')})) LIKE LOWER(?)`, [

@@ -210,7 +210,7 @@ describe.each(databases.eachSupportedId())(
           content: 'Cannot read config file:',
         });
         const ret = await storage.getPosts('user1', {
-          searchQuery: 'Cannot read config file:',
+          searchQuery: 'config file:',
           type: 'question',
         });
         expect(ret?.posts.length).toEqual(1);

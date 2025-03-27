@@ -44,7 +44,7 @@ async function main() {
     if (options.tags) {
       return options.tags.split(',');
     }
-    return faker.lorem.words(faker.number.int({ min: 1, max: 3 })).split(' ');
+    return faker.lorem.words(faker.number.int({ min: 0, max: 3 })).split(' ');
   };
 
   const getCreated = () => {
@@ -55,7 +55,7 @@ async function main() {
   };
 
   const createCommentsForPost = async id => {
-    const length = options.comments || faker.number.int({ min: 1, max: 6 });
+    const length = options.comments || faker.number.int({ min: 0, max: 6 });
     const comments = Array.from({ length }, () => ({
       content: faker.lorem.paragraphs(
         faker.number.int({ min: 1, max: 6 }),
@@ -78,12 +78,13 @@ async function main() {
         },
       );
       const data = await resp.json();
-      console.log(`- Created comment with id: ${data.id}`);
+      console.log(`- Created comment for post ${id} with id: ${data.id}`);
     }
+    return comments.length;
   };
 
   const createCommentsForAnswer = async (postId, id) => {
-    const length = options.comments || faker.number.int({ min: 1, max: 6 });
+    const length = options.comments || faker.number.int({ min: 0, max: 6 });
     const comments = Array.from({ length }, () => ({
       content: faker.lorem.paragraphs(
         faker.number.int({ min: 1, max: 6 }),
@@ -106,12 +107,15 @@ async function main() {
         },
       );
       const data = await resp.json();
-      console.log(`  - Created comment with id: ${data.id}`);
+      console.log(
+        `  - Created comment for post ${postId} and answer ${id} with id: ${data.id}`,
+      );
     }
+    return comments.length;
   };
 
   const createAnswersForPost = async id => {
-    const length = options.answers || faker.number.int({ min: 1, max: 6 });
+    const length = options.answers || faker.number.int({ min: 0, max: 6 });
     const answers = Array.from({ length }, () => ({
       answer: faker.lorem.paragraphs(
         faker.number.int({ min: 1, max: 6 }),
@@ -120,6 +124,7 @@ async function main() {
       user: getUser(),
       created: getCreated(),
     }));
+    let commentCount = 0;
 
     for (const answer of answers) {
       const resp = await fetch(
@@ -134,11 +139,14 @@ async function main() {
         },
       );
       const data = await resp.json();
-      console.log(`- Created answer with id: ${data.id}`);
-      await createCommentsForAnswer(id, data.id);
+      console.log(`- Created answer for question ${id} with id: ${data.id}`);
+      commentCount += await createCommentsForAnswer(id, data.id);
     }
+    return { answerCount: answers.length, commentCount };
   };
 
+  let answerCount = 0;
+  let commentCount = 0;
   const questions = Array.from({ length: options.number }, () => ({
     title: faker.lorem.sentence(),
     content: `${faker.lorem.paragraphs(
@@ -162,8 +170,10 @@ async function main() {
     const data = await resp.json();
     const id = data.id;
     console.log(`Created question with id: ${id}`);
-    await createAnswersForPost(id);
-    await createCommentsForPost(id);
+    const ret = await createAnswersForPost(id);
+    answerCount += ret.answerCount;
+    commentCount += ret.commentCount;
+    commentCount += await createCommentsForPost(id);
   }
 
   const articles = Array.from({ length: options.articles }, () => ({
@@ -189,8 +199,14 @@ async function main() {
     });
     const data = await resp.json();
     console.log(`Created article with id: ${data.id}`);
-    await createCommentsForPost(data.id);
+    commentCount += await createCommentsForPost(data.id);
   }
+
+  console.log('---------');
+  console.log('DONE!');
+  console.log(
+    `Created ${questions.length} questions, ${articles.length} articles, ${answerCount} answers, and ${commentCount} comments`,
+  );
 }
 
 main().catch(console.error);
