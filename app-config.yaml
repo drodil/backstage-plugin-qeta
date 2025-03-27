@@ -39,6 +39,15 @@ backend:
   reading:
     allow:
       - host: localhost
+  auth:
+    externalAccess:
+      - type: static
+        options:
+          token: FO23CjUG7SNlPWPCO3x25W3TlPC8lh8l
+          subject: generate-content-script
+        accessRestrictions:
+          - plugin: qeta
+
 auth:
   environment: development
   providers:
@@ -74,9 +83,9 @@ qeta:
     # maxSizeImage: 2500000
     # allowedFilesTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/gif']
   allowAnonymous: true
-  allowMetadataInput: false
+  allowMetadataInput: true
   #allowGlobalEdits: true
-  permissions: true
+  permissions: false
   entities:
     max: 2
   tags:
