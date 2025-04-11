@@ -259,7 +259,7 @@ export const PostForm = (props: PostFormProps) => {
     reset(values);
   }, [values, reset]);
 
-  useConfirmNavigationIfEdited(edited);
+  useConfirmNavigationIfEdited(edited && !posting);
 
   const onImageUpload = useCallback(
     (imageId: number) => {

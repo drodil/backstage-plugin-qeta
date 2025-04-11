@@ -72,7 +72,11 @@ export const AutocompleteListboxComponent = React.forwardRef<HTMLDivElement>(
             itemData={itemData}
             height={getHeight() + 2 * LISTBOX_PADDING}
             width="100%"
-            style={{ textWrap: 'nowrap' }}
+            style={{
+              textWrap: 'nowrap',
+              whiteSpace: 'nowrap',
+              overflowX: 'hidden',
+            }}
             ref={gridRef}
             outerElementType={OuterElementType}
             innerElementType="ul"

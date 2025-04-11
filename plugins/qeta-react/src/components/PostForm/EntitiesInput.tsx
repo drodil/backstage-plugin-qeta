@@ -142,14 +142,17 @@ export const EntitiesInput = (props: {
               placement="right"
               title={
                 <>
-                  <Typography>{stringifyEntityRef(option)}</Typography>
+                  <Typography>{getEntityTitle(option)}</Typography>
+                  <Typography variant="caption">
+                    {stringifyEntityRef(option)}
+                  </Typography>
                   <Typography variant="caption">
                     {option.metadata.description}
                   </Typography>
                 </>
               }
             >
-              <span>{getEntityTitle(option)}</span>
+              <span>{getEntityTitle(option, { withType: false })}</span>
             </Tooltip>
           </>
         );

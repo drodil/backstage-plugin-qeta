@@ -49,11 +49,15 @@ export const formatEntityName = (username?: string) => {
     .join(' ');
 };
 
-export const getEntityTitle = (entity: Entity): string => {
+export const getEntityTitle = (
+  entity: Entity,
+  opts?: { withType: boolean },
+): string => {
+  const { withType } = opts || { withType: true };
   const stringified = stringifyEntityRef(entity);
   return `${
     entity.metadata.title ?? formatEntityName(stringified) ?? stringified
-  }${entity.spec?.type ? ` (${entity.spec.type})` : ''}`;
+  }${withType && entity.spec?.type ? ` (${entity.spec.type})` : ''}`;
 };
 
 export const formatDate = (localDate: Date) => {
