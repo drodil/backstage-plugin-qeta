@@ -45,6 +45,8 @@ export const qetaTranslationRef = createTranslationRef({
       followers_zero: 'No followers',
       followers_one: '{{count}} follower',
       followers_other: '{{count}} followers',
+      unsaved_changes:
+        'You have unsaved changes. Are you sure you want to leave?',
     },
     answer: {
       questionTitle: 'Q: {{question}}',

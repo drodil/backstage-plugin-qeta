@@ -26,7 +26,7 @@ import { QuestionFormValues } from './types';
 import { EntitiesInput } from './EntitiesInput';
 import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
-import { confirmNavigationIfEdited } from '../../utils/utils';
+import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 import { useTranslation } from '../../hooks';
@@ -259,9 +259,7 @@ export const PostForm = (props: PostFormProps) => {
     reset(values);
   }, [values, reset]);
 
-  useEffect(() => {
-    return confirmNavigationIfEdited(edited);
-  }, [edited]);
+  useConfirmNavigationIfEdited(edited);
 
   const onImageUpload = useCallback(
     (imageId: number) => {

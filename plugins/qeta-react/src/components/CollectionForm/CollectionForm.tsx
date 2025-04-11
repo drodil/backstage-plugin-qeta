@@ -11,7 +11,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { collectionRouteRef } from '../../routes';
-import { confirmNavigationIfEdited } from '../../utils/utils';
+import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { CollectionFormData } from './types';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
@@ -140,9 +140,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
     reset(values);
   }, [values, reset]);
 
-  useEffect(() => {
-    return confirmNavigationIfEdited(edited);
-  }, [edited]);
+  useConfirmNavigationIfEdited(edited);
 
   const onImageUpload = useCallback(
     (imageId: number) => {

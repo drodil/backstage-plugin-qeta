@@ -1,6 +1,5 @@
 import { Filters, PostFilters } from '../components/FilterPanel/FilterPanel';
 import {
-  confirmNavigationIfEdited,
   FiltersWithDateRange,
   formatDate,
   formatEntityName,
@@ -172,21 +171,5 @@ describe('getEntityTitle', () => {
       metadata: { name: 'test' },
     };
     expect(getEntityTitle(entity)).toBe('Test');
-  });
-});
-
-describe('confirmNavigationIfEdited', () => {
-  it('should add and remove the beforeunload event listener', () => {
-    const removeListener = confirmNavigationIfEdited(true);
-    const event = new Event('beforeunload');
-    const spy = jest.spyOn(event, 'preventDefault');
-
-    window.dispatchEvent(event);
-    expect(spy).toHaveBeenCalled();
-
-    removeListener();
-    spy.mockClear();
-    window.dispatchEvent(event);
-    expect(spy).not.toHaveBeenCalled();
   });
 });

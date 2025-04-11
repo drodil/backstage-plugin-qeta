@@ -10,7 +10,7 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
-import { confirmNavigationIfEdited } from '../../utils/utils';
+import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
 import { Button, Typography } from '@material-ui/core';
@@ -113,9 +113,7 @@ export const AnswerForm = (props: {
     reset(values);
   }, [values, reset]);
 
-  useEffect(() => {
-    return confirmNavigationIfEdited(edited);
-  }, [edited]);
+  useConfirmNavigationIfEdited(edited);
 
   const onImageUpload = useCallback(
     (imageId: number) => {

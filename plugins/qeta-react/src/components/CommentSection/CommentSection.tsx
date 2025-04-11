@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/no-autofocus */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Button, Grid, makeStyles } from '@material-ui/core';
 import {
   AnswerResponse,
@@ -9,11 +9,11 @@ import {
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
-import { confirmNavigationIfEdited } from '../../utils/utils';
 import { useTranslation } from '../../hooks';
 import AddCommentIcon from '@material-ui/icons/AddComment';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { CommentForm } from './CommentForm.tsx';
+import { useConfirmNavigationIfEdited } from '../../utils';
 
 export type QetaCommentSectionClassKey = 'root' | 'addCommentButton';
 
@@ -64,9 +64,7 @@ export const CommentSection = (props: {
     });
   };
 
-  useEffect(() => {
-    return confirmNavigationIfEdited(edited);
-  }, [edited]);
+  useConfirmNavigationIfEdited(edited);
 
   return (
     <Box

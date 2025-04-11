@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/no-autofocus */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button, Grid } from '@material-ui/core';
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor.tsx';
-import { confirmNavigationIfEdited } from '../../utils';
+import { useConfirmNavigationIfEdited } from '../../utils';
 
 export const CommentForm = (props: {
   submit: (data: { content: string }) => void;
@@ -16,9 +16,7 @@ export const CommentForm = (props: {
     defaultValues,
   });
   const [edited, setEdited] = React.useState(false);
-  useEffect(() => {
-    return confirmNavigationIfEdited(edited);
-  }, [edited]);
+  useConfirmNavigationIfEdited(edited);
 
   return (
     <form

@@ -3,6 +3,8 @@ import { Filters } from '../components/FilterPanel/FilterPanel';
 import FileType from 'file-type';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { QetaApi } from '@drodil/backstage-plugin-qeta-common';
+import { useEffect } from 'react';
+import { useTranslation } from '../hooks';
 
 export const imageUpload = (opts: {
   qetaApi: QetaApi;
@@ -113,17 +115,35 @@ export const getFiltersWithDateRange = (filters: Filters) => {
   return filters;
 };
 
-export const confirmNavigationIfEdited = (edited: boolean) => {
-  const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-    if (edited) {
-      event.preventDefault();
-      event.returnValue = ''; // Included for legacy support, e.g. Chrome/Edge < 119
-    }
-  };
+export const useConfirmNavigationIfEdited = (edited: boolean) => {
+  const { t } = useTranslation();
+  const msg = t('common.unsaved_changes');
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (edited) {
+        event.preventDefault();
+        event.returnValue = msg; // Included for legacy support, e.g. Chrome/Edge < 119
+      }
+    };
 
-  window.addEventListener('beforeunload', handleBeforeUnload);
+    const handleLocationChange = (event: any) => {
+      if (edited) {
+        // eslint-disable-next-line no-alert
+        const response = window.confirm(msg);
+        if (!response) {
+          event.preventDefault();
+        }
+      }
+    };
 
-  return () => {
-    window.removeEventListener('beforeunload', handleBeforeUnload);
-  };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    // @ts-ignore
+    window.navigation.addEventListener('navigate', handleLocationChange);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      // @ts-ignore
+      window.navigation.removeEventListener('navigate', handleLocationChange);
+    };
+  }, [edited, msg]);
 };
