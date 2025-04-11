@@ -56,7 +56,7 @@ export class TagsUpdater {
 
     for (const tag of tagsWithoutDescription.tags) {
       if (tag.tag.toLowerCase() in allTags) {
-        await database.updateTag(tag.tag, TAGS[tag.tag]);
+        await database.updateTag(tag.id, TAGS[tag.tag]);
       }
     }
   };

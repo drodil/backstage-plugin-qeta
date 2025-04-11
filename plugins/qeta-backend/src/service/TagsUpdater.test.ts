@@ -79,7 +79,10 @@ describe('TagsUpdater', () => {
 
   describe('updateTags', () => {
     it('should update tags without description', async () => {
-      const tagsWithoutDescription = { tags: [{ tag: 'java' }], total: 1 };
+      const tagsWithoutDescription = {
+        tags: [{ id: 1, tag: 'java' }],
+        total: 1,
+      };
       mockDatabase.getTags = jest
         .fn()
         .mockResolvedValue(tagsWithoutDescription);
@@ -92,7 +95,7 @@ describe('TagsUpdater', () => {
         noDescription: true,
       });
       expect(mockDatabase.updateTag).toHaveBeenCalledWith(
-        'java',
+        1,
         expect.any(String),
       );
     });
