@@ -123,6 +123,10 @@ export const LeftMenu = (props: {
     return (
       <MenuItem
         onClick={e => {
+          if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) {
+            return;
+          }
+          e.preventDefault();
           navigate(route);
           if (props.onClick) {
             props.onClick(e);
@@ -133,6 +137,8 @@ export const LeftMenu = (props: {
             ? styles.selectedMenuItem
             : styles.nonSelectedMenuItem
         }
+        href={route}
+        component="a"
       >
         {children}
       </MenuItem>
