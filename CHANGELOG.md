@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.24.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.24.3...v3.24.4) (2025-04-11)
+
+
+### Bug Fixes
+
+* allow modifier key clicks in left menu ([9855f04](https://github.com/drodil/backstage-plugin-qeta/commit/9855f04570ed18d528144591ecad872d1fec2f7f)), closes [#290](https://github.com/drodil/backstage-plugin-qeta/issues/290)
+* better dirty check for forms ([23b72aa](https://github.com/drodil/backstage-plugin-qeta/commit/23b72aa44ffc6d1094d6de272f831992554837ca)), closes [#289](https://github.com/drodil/backstage-plugin-qeta/issues/289)
+* improve entity picker look&feel ([36f7db1](https://github.com/drodil/backstage-plugin-qeta/commit/36f7db1abc3fed801f64822283f6e3190bf940f6)), closes [#288](https://github.com/drodil/backstage-plugin-qeta/issues/288)
+* tag resource fetching that prevents tag deletion ([51a6b70](https://github.com/drodil/backstage-plugin-qeta/commit/51a6b70c02ea087750151d776d0bc065a06c02fc)), closes [#291](https://github.com/drodil/backstage-plugin-qeta/issues/291)
+* tags updater update tag call to use id ([f889982](https://github.com/drodil/backstage-plugin-qeta/commit/f8899820ced836da021efd09f62c1526e84ea312))
+
 ### [3.24.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.24.2...v3.24.3) (2025-03-27)
 
 
