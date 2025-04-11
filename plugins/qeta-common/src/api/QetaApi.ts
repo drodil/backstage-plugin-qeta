@@ -200,7 +200,7 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<TagResponse | null>;
   updateTag(
-    tag: string,
+    id: number,
     description?: string,
     requestOptions?: RequestOptions,
   ): Promise<TagResponse | null>;

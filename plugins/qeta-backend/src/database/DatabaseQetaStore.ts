@@ -1122,13 +1122,13 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   async updateTag(
-    tag: string,
+    id: number,
     description?: string,
   ): Promise<TagResponse | null> {
     await this.db('tags')
-      .where('tags.tag', '=', tag)
+      .where('tags.id', '=', id)
       .update({ description: description ?? null });
-    return this.getTag(tag);
+    return this.getTagById(id);
   }
 
   async getUsers(

@@ -27,7 +27,7 @@ export const EditTagModal = (props: {
 
   const handleUpdate = () => {
     qetaApi
-      .updateTag(tag.tag, description)
+      .updateTag(tag.id, description)
       .then(ret => {
         if (ret) {
           onClose();

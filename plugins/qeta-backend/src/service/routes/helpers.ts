@@ -213,15 +213,21 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.post('/tags/:tag', async (request, response) => {
-    const description = request.body.description;
-    const tag = await database.getTag(request.params.tag);
-    await authorize(request, qetaEditTagPermission, options, tag);
+    const tagId = Number.parseInt(request.params.tag, 10);
+    if (Number.isNaN(tagId)) {
+      response.status(400).send({ errors: 'Invalid tag id', type: 'body' });
+      return;
+    }
+
+    const tag = await database.getTagById(tagId);
     if (!tag) {
       response.sendStatus(404);
       return;
     }
+    await authorize(request, qetaEditTagPermission, options, tag);
 
-    const resp = await database.updateTag(request.params.tag, description);
+    const description = request.body.description;
+    const resp = await database.updateTag(tagId, description);
     await mapAdditionalFields(request, resp, options);
     auditor?.createEvent({
       eventId: 'update-tag',
@@ -236,22 +242,22 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     response.json(resp);
   });
 
-  router.put('/tags/:tag', async (request, response) => {
+  router.put('/tags', async (request, response) => {
     await authorize(request, qetaCreateTagPermission, options);
 
-    const existing = await database.getTag(request.params.tag);
+    const existing = await database.getTag(request.body.tag);
     if (existing) {
       response.status(409).send({ errors: 'Tag already exists', type: 'body' });
       return;
     }
 
-    if (!isValidTag(request.params.tag)) {
+    if (!isValidTag(request.body.tag)) {
       response.status(400).send({ errors: 'Invalid tag', type: 'body' });
       return;
     }
 
     const description = request.body.description;
-    const tag = await database.createTag(request.params.tag, description);
+    const tag = await database.createTag(request.body.tag, description);
     if (!tag) {
       response.sendStatus(500);
       return;
@@ -270,14 +276,14 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.delete('/tags/:tag', async (request, response) => {
-    await authorize(request, qetaDeleteTagPermission, options);
-
     const tagId = Number.parseInt(request.params.tag, 10);
     if (Number.isNaN(tagId)) {
       response.status(400).send({ errors: 'Invalid tag id', type: 'body' });
       return;
     }
 
+    const tag = await database.getTagById(tagId);
+    await authorize(request, qetaDeleteTagPermission, options, tag);
     const deleted = await database.deleteTag(tagId);
 
     if (deleted) {
