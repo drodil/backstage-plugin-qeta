@@ -159,6 +159,10 @@ export type RawPostAIAnswer = {
   created: Date;
 };
 
+export type RawAttachment = Omit<Attachment, 'created'> & {
+  created: Date | string | number;
+};
+
 function isQetaFilter(filter: any): filter is QetaFilter {
   return filter.hasOwnProperty('property');
 }
@@ -1676,7 +1680,15 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   async getAttachment(uuid: string): Promise<Attachment | undefined> {
-    return this.db<Attachment>('attachments').where('uuid', '=', uuid).first();
+    const rawAttachment = await this.db<RawAttachment>('attachments')
+      .where('uuid', '=', uuid)
+      .first();
+
+    if (!rawAttachment) {
+      return undefined;
+    }
+
+    return this.mapAttachment(rawAttachment);
   }
 
   async getDeletableAttachments(dayLimit: number): Promise<Attachment[]> {
@@ -2550,6 +2562,14 @@ export class DatabaseQetaStore implements QetaStore {
       author: val.author,
       score: val.score,
       timestamp: val.timestamp,
+    };
+  }
+
+  private mapAttachment(val: RawAttachment): Attachment {
+    return {
+      ...val,
+      created:
+        val.created instanceof Date ? val.created : new Date(val.created),
     };
   }
 
