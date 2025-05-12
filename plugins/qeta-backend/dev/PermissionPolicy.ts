@@ -34,9 +34,9 @@ import {
 } from '@drodil/backstage-plugin-qeta-node';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export class PermissionPolicy implements PermissionPolicy {
+  // @ts-ignore
   private catalogApi: CatalogApi;
 
   constructor(private readonly auth: AuthService, discovery: DiscoveryService) {
@@ -66,6 +66,7 @@ export class PermissionPolicy implements PermissionPolicy {
       }
     }
 
+    // @ts-ignore
     const { token } = await this.auth.getPluginRequestToken({
       onBehalfOf: await this.auth.getOwnServiceCredentials(),
       targetPluginId: 'catalog',
@@ -73,6 +74,7 @@ export class PermissionPolicy implements PermissionPolicy {
 
     // Needed to get the entities that the user owns so that it can be used
     // in the permissions.
+    /*
     const ownedEntities = (
       await this.catalogApi.getEntities(
         {
@@ -81,13 +83,14 @@ export class PermissionPolicy implements PermissionPolicy {
         },
         { token },
       )
-    ).items;
+    ).items;*/
 
     // TODO: Could utilize caching here so that these are not fetched on
     //       every authorization request. Adding CacheService is not too bit of
     //       a job.
     // @ts-ignore
-    const ownedEntityRefs = ownedEntities.map(e => stringifyEntityRef(e));
+    // const ownedEntityRefs = ownedEntities.map(e => stringifyEntityRef(e));
+    const ownedEntityRefs = [];
 
     if (
       request.permission.attributes.action === 'create' ||

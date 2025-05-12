@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { DateRangeFilter } from './DateRangeFilter';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
@@ -153,10 +153,27 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const [entities, setEntities] = useState<Entity[] | undefined>(undefined);
   const [starredEntities, setStarredEntities] = useState(false);
   const [ownedEntities, setOwnedEntities] = useState(false);
+  const [ownedEntityRefs, setOwnedEntityRefs] = useState<string[]>([]);
   const starredEntitiesApi = useStarredEntities();
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
   const styles = useStyles();
+
+  useEffect(() => {
+    identityApi.getBackstageIdentity().then(identity => {
+      catalogApi
+        .getEntities({
+          filter: {
+            'spec.owner': identity.ownershipEntityRefs,
+          },
+          fields: ['kind', 'metadata.name', 'metadata.namespace'],
+        })
+        .then(data => {
+          const entityRefs = data.items.map(e => stringifyEntityRef(e));
+          setOwnedEntityRefs(entityRefs);
+        });
+    });
+  }, [catalogApi, identityApi]);
 
   const handleChange = (event: {
     target: {
@@ -173,46 +190,40 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     onChange({ key: event.target.name as keyof T, value });
   };
 
-  const handleStarredEntities = (checked: boolean) => {
-    setStarredEntities(checked);
-    setEntities([]);
-    if (checked) {
-      onChange({
-        key: 'entities',
-        value: [...starredEntitiesApi.starredEntities],
-      });
-    } else {
-      onChange({ key: 'entities', value: [] });
-    }
-  };
+  const handleStarredEntities = useCallback(
+    (checked: boolean) => {
+      setStarredEntities(checked);
+      setEntities([]);
+      if (checked) {
+        onChange({
+          key: 'entities',
+          value: [...starredEntitiesApi.starredEntities],
+        });
+      } else {
+        onChange({ key: 'entities', value: [] });
+      }
+    },
+    [onChange, starredEntitiesApi.starredEntities],
+  );
 
-  const handleOwnedEntities = (checked: boolean) => {
-    setOwnedEntities(checked);
-    setEntities([]);
-    if (checked) {
-      identityApi.getBackstageIdentity().then(identity => {
-        catalogApi
-          .getEntities({
-            filter: {
-              'spec.owner': identity.ownershipEntityRefs,
-            },
-            fields: ['kind', 'metadata.name', 'metadata.namespace'],
-          })
-          .then(data => {
-            const entityRefs = data.items.map(e => stringifyEntityRef(e));
-            onChange([
-              { key: 'entities', value: entityRefs },
-              { key: 'entitiesRelation', value: 'or' },
-            ]);
-          });
-      });
-    } else {
-      onChange([
-        { key: 'entities', value: [] },
-        { key: 'entitiesRelation', value: 'and' },
-      ]);
-    }
-  };
+  const handleOwnedEntities = useCallback(
+    (checked: boolean) => {
+      setOwnedEntities(checked);
+      setEntities([]);
+      if (checked) {
+        onChange([
+          { key: 'entities', value: ownedEntityRefs },
+          { key: 'entitiesRelation', value: 'or' },
+        ]);
+      } else {
+        onChange([
+          { key: 'entities', value: [] },
+          { key: 'entitiesRelation', value: 'and' },
+        ]);
+      }
+    },
+    [onChange, ownedEntityRefs],
+  );
 
   useEffect(() => {
     if (filters.entities) {
