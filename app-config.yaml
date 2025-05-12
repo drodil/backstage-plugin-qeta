@@ -85,7 +85,7 @@ qeta:
   allowAnonymous: true
   allowMetadataInput: true
   #allowGlobalEdits: true
-  permissions: false
+  permissions: true
   entities:
     max: 2
   tags:

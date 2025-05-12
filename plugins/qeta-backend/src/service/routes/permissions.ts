@@ -2,6 +2,7 @@ import {
   qetaAnswerPermissions,
   qetaCollectionPermissions,
   qetaCommentPermissions,
+  qetaPermissions,
   qetaPostPermissions,
   qetaTagPermissions,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -40,6 +41,8 @@ export const permissionsRoute = (_router: Router, options: RouteOptions) => {
   const parseIdArray = (value: string[]) => {
     return value.map(v => Number.parseInt(v.split(':')[2], 10));
   };
+
+  permissionsRegistry.addPermissions(qetaPermissions);
 
   permissionsRegistry.addResourceType({
     resourceRef: postPermissionResourceRef,

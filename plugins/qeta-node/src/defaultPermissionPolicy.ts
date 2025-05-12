@@ -5,6 +5,7 @@
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
+  isPermission,
   isResourcePermission,
   isUpdatePermission,
   PolicyDecision,
@@ -18,6 +19,7 @@ import {
   COLLECTION_RESOUCE_TYPE,
   COMMENT_RESOURCE_TYPE,
   POST_RESOURCE_TYPE,
+  qetaModeratePermission,
   TAG_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
@@ -48,8 +50,9 @@ export class DefaultQetaPermissionPolicy implements PermissionPolicy {
     const moderators =
       this.config?.getOptionalStringArray('qeta.moderators') ?? [];
     if (
-      moderators.includes(user.identity.userEntityRef) ||
-      user.identity.ownershipEntityRefs.some(ref => moderators.includes(ref))
+      isPermission(request.permission, qetaModeratePermission) &&
+      (moderators.includes(user.identity.userEntityRef) ||
+        user.identity.ownershipEntityRefs.some(ref => moderators.includes(ref)))
     ) {
       return { result: AuthorizeResult.ALLOW };
     }

@@ -48,6 +48,7 @@ import {
   qetaEditPostPermission,
   qetaEditTagPermission,
   QetaIdEntity,
+  qetaModeratePermission,
   TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
@@ -146,6 +147,16 @@ export const isModerator = async (
       return true;
     }
 
+    // Authorize moderator using permission framework
+    if (options.permissions) {
+      const result = await options.permissions.authorize(
+        [{ permission: qetaModeratePermission }],
+        { credentials },
+      );
+      return result[0].result === AuthorizeResult.ALLOW;
+    }
+
+    // Authorize moderator using config
     const username = credentials.principal.userEntityRef;
     const user = await options.userInfo.getUserInfo(credentials);
 

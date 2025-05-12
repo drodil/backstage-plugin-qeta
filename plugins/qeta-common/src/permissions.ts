@@ -5,6 +5,11 @@ import {
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
 
+export const qetaModeratePermission = createPermission({
+  name: 'qeta.moderate',
+  attributes: {},
+});
+
 export const qetaCreatePostPermission = createPermission({
   name: 'qeta.create.post',
   attributes: { action: 'create' },
@@ -123,6 +128,7 @@ export const qetaDeleteCollectionPermission = createPermission({
 });
 
 export const qetaPermissions = [
+  qetaModeratePermission,
   qetaReadPostPermission,
   qetaCreatePostPermission,
   qetaCreateAnswerPermission,

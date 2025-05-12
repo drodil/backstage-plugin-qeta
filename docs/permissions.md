@@ -13,6 +13,20 @@ your installation. These include:
 - Only question author can mark answer as correct
 - Except for moderators, who can do these for any post/answer/comment
 
+If you are using your own permission policy, you must configure the moderators using
+`qetaModeratePermission` for example:
+
+```ts
+if (
+  isPermission(request.permission, qetaModeratePermission) &&
+  user.identity.ownershipEntityRefs.some(
+    ref => ref === 'group:default/qeta-moderators',
+  )
+) {
+  return { result: AuthorizeResult.ALLOW };
+}
+```
+
 ## Set up
 
 ```ts
@@ -40,6 +54,7 @@ https://backstage.io/docs/permissions/plugin-authors/02-adding-a-basic-permissio
 
 The Q&A permissions are exported from `@drodil/backstage-plugin-qeta-common` package and are:
 
+- qetaModeratePermission - Allows moderation of Q&A
 - qetaReadPostPermission - Allows or denies reading of posts
 - qetaCreatePostPermission - Allows or denies creating of posts
 - qetaEditPostPermission - Allows or denies editing of posts and marking correct answers
@@ -93,5 +108,5 @@ class BackstagePermissionPolicy implements PermissionPolicy {
 
 This allows users to only edit and delete their own posts, answers, and comments.
 Creation and editing of tags is enabled for everyone.
-Additionally, moderators can edit and delete any post, answer, or comment if the config is passed
-to the `DefaultQetaPermissionPolicy` constructor.
+Additionally, moderators defined in config can edit and delete any post, answer,
+or comment if the config is passed to the `DefaultQetaPermissionPolicy` constructor.

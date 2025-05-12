@@ -5,6 +5,7 @@
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
+  isPermission,
   isResourcePermission,
   isUpdatePermission,
   PolicyDecision,
@@ -16,6 +17,7 @@ import {
   COMMENT_RESOURCE_TYPE,
   isQetaPermission,
   POST_RESOURCE_TYPE,
+  qetaModeratePermission,
   TAG_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
@@ -55,6 +57,13 @@ export class PermissionPolicy implements PermissionPolicy {
     // We cannot do anything without a user
     if (!user) {
       return { result: AuthorizeResult.DENY };
+    }
+
+    // Moderator access using permission framework instead of config value
+    if (isPermission(request.permission, qetaModeratePermission)) {
+      if (user.identity.userEntityRef === 'user:development/guest') {
+        return { result: AuthorizeResult.ALLOW };
+      }
     }
 
     const { token } = await this.auth.getPluginRequestToken({
