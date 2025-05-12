@@ -467,10 +467,9 @@ export class PermissionManager {
       AuthorizePermissionResponse
     >(
       async requests => {
-        const resp = await this.permissions!.authorize([...requests], {
+        return await this.permissions!.authorize([...requests], {
           credentials,
         });
-        return [...resp];
       },
       {
         cacheMap: new ExpiryMap(durationToMilliseconds({ seconds: 10 })),
@@ -495,13 +494,9 @@ export class PermissionManager {
       QueryPermissionResponse
     >(
       async requests => {
-        const resp = await this.permissions!.authorizeConditional(
-          [...requests],
-          {
-            credentials,
-          },
-        );
-        return [...resp];
+        return await this.permissions!.authorizeConditional([...requests], {
+          credentials,
+        });
       },
       {
         cacheMap: new ExpiryMap(durationToMilliseconds({ seconds: 10 })),

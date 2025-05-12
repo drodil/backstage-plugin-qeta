@@ -259,7 +259,7 @@ export class ExpiryMap<K, V> extends Map<K, V> {
 
   set(key: K, value: V) {
     const result = super.set(key, value);
-    this.#timestamps.set(key, Date.now());
+    this.#timestamps.set(key, new Date().getTime());
     this.clearOld();
     return result;
   }
@@ -267,11 +267,6 @@ export class ExpiryMap<K, V> extends Map<K, V> {
   get(key: K) {
     this.clearOld();
     if (!this.has(key)) {
-      return undefined;
-    }
-    const timestamp = this.#timestamps.get(key)!;
-    if (Date.now() - timestamp > this.#ttlMs) {
-      this.delete(key);
       return undefined;
     }
     return super.get(key);
@@ -288,7 +283,7 @@ export class ExpiryMap<K, V> extends Map<K, V> {
   }
 
   clearOld() {
-    const now = Date.now();
+    const now = new Date().getTime();
     this.#timestamps.forEach((val, key) => {
       if (now - val > this.#ttlMs) {
         this.#timestamps.delete(key);

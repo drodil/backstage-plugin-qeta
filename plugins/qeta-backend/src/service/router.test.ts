@@ -202,10 +202,16 @@ describe('createRouter', () => {
   beforeEach(async () => {
     app = await buildApp();
     jest.restoreAllMocks();
-    mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
-    mockedPermissionQuery.mockResolvedValue([
-      { result: AuthorizeResult.ALLOW },
-    ]);
+    mockedAuthorize.mockImplementation(async requests => {
+      return new Array(requests?.length).fill({
+        result: AuthorizeResult.ALLOW,
+      });
+    });
+    mockedPermissionQuery.mockImplementation(async requests => {
+      return new Array(requests?.length).fill({
+        result: AuthorizeResult.ALLOW,
+      });
+    });
   });
 
   describe('GET /health', () => {
