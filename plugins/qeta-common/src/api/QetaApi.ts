@@ -103,6 +103,7 @@ export interface AnswersQuery extends PaginatedQuery {
 
 export interface TagsQuery extends PaginatedQuery {
   orderBy?: 'tag' | 'postsCount' | 'followersCount';
+  checkAccess?: boolean;
 }
 
 export interface UsersQuery extends PaginatedQuery {

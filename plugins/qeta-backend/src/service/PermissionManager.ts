@@ -1,5 +1,7 @@
 import { Request } from 'express';
 import {
+  AuthorizePermissionRequest,
+  AuthorizePermissionResponse,
   AuthorizeResult,
   DefinitivePolicyDecision,
   isCreatePermission,
@@ -19,6 +21,7 @@ import {
 import {
   AuditorService,
   AuthService,
+  BackstageCredentials,
   BackstagePrincipalTypes,
   HttpAuthService,
   PermissionsService,
@@ -37,9 +40,16 @@ import {
   qetaModeratePermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Config } from '@backstage/config';
-import { QetaFilters, transformConditions } from './util.ts';
+import { ExpiryMap, QetaFilters, transformConditions } from './util.ts';
+import DataLoader from 'dataloader';
+import { durationToMilliseconds } from '@backstage/types';
 
 export class PermissionManager {
+  private readonly authorizeLoaderMap: ExpiryMap<
+    string,
+    DataLoader<AuthorizePermissionRequest, AuthorizePermissionResponse>
+  >;
+
   constructor(
     private readonly config: Config,
     private readonly auth: AuthService,
@@ -47,7 +57,11 @@ export class PermissionManager {
     private readonly userInfo: UserInfoService,
     private readonly permissions?: PermissionsService,
     private readonly auditor?: AuditorService,
-  ) {}
+  ) {
+    this.authorizeLoaderMap = new ExpiryMap(
+      durationToMilliseconds({ minutes: 10 }),
+    );
+  }
 
   public async getUsername(
     req: Request<unknown>,
@@ -116,11 +130,11 @@ export class PermissionManager {
 
       // Authorize moderator using permission framework
       if (this.permissions) {
-        const result = await this.permissions.authorize(
-          [{ permission: qetaModeratePermission }],
-          { credentials },
-        );
-        return result[0].result === AuthorizeResult.ALLOW;
+        const loader = this.getLoader(credentials);
+        const result = await loader.load({
+          permission: qetaModeratePermission,
+        });
+        return result.result === AuthorizeResult.ALLOW;
       }
 
       // Authorize moderator using config
@@ -224,6 +238,12 @@ export class PermissionManager {
       );
     }
 
+    const moderator = await this.isModerator(request);
+
+    if (moderator) {
+      return { result: AuthorizeResult.ALLOW };
+    }
+
     const credentials = await this.httpAuth.credentials(request);
     if (!credentials) {
       if (audit) {
@@ -241,6 +261,7 @@ export class PermissionManager {
     }
 
     let decision: DefinitivePolicyDecision = { result: AuthorizeResult.DENY };
+    const loader = this.getLoader(credentials);
     if (isResourcePermission(permission)) {
       if (!resource) {
         if (audit) {
@@ -260,17 +281,9 @@ export class PermissionManager {
 
       const resourceRef = this.getResourceRef(resource);
 
-      decision = (
-        await this.permissions.authorize([{ permission, resourceRef }], {
-          credentials,
-        })
-      )[0];
+      decision = await loader.load({ permission, resourceRef });
     } else {
-      decision = (
-        await this.permissions.authorize([{ permission }], {
-          credentials,
-        })
-      )[0];
+      decision = await loader.load({ permission });
     }
 
     if (decision.result === AuthorizeResult.DENY) {
@@ -386,6 +399,35 @@ export class PermissionManager {
     return undefined;
   }
 
+  private getLoader(credentials: BackstageCredentials) {
+    const key = btoa(JSON.stringify(credentials));
+    const loader = this.authorizeLoaderMap.get(key);
+    if (loader) {
+      return loader;
+    }
+
+    const newLoader = new DataLoader<
+      AuthorizePermissionRequest,
+      AuthorizePermissionResponse
+    >(
+      async requests => {
+        console.log(JSON.stringify(requests));
+        const resp = await this.permissions!.authorize([...requests], {
+          credentials,
+        });
+        return [...resp];
+      },
+      {
+        cacheMap: new ExpiryMap(durationToMilliseconds({ seconds: 10 })),
+        maxBatchSize: 300,
+        batchScheduleFn: cb =>
+          setTimeout(cb, durationToMilliseconds({ milliseconds: 20 })),
+      },
+    );
+    this.authorizeLoaderMap.set(key, newLoader);
+    return newLoader;
+  }
+
   private getResourceRef(resource: QetaIdEntity) {
     if (isPost(resource)) {
       return `qeta:post:${resource.id}`;
@@ -393,11 +435,11 @@ export class PermissionManager {
     if (isAnswer(resource)) {
       return `qeta:answer:${resource.id}`;
     }
-    if (isComment(resource)) {
-      return `qeta:comment:${resource.id}`;
-    }
     if (isTag(resource)) {
       return `qeta:tag:${resource.id}`;
+    }
+    if (isComment(resource)) {
+      return `qeta:comment:${resource.id}`;
     }
     if (isCollection(resource)) {
       return `qeta:collection:${resource.id}`;

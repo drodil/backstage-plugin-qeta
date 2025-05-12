@@ -5165,6 +5165,7 @@ __metadata:
     "@backstage/plugin-search-backend-module-pg": "backstage:^"
     "@backstage/plugin-signals-backend": "backstage:^"
     "@backstage/plugin-signals-node": "backstage:^"
+    "@backstage/types": "backstage:^"
     "@drodil/backstage-plugin-qeta-backend-module-openai": "workspace:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@drodil/backstage-plugin-qeta-node": "workspace:^"
@@ -5177,6 +5178,7 @@ __metadata:
     ajv: "npm:^8.11.0"
     ajv-formats: "npm:^2.1.1"
     body-parser: "npm:^1.20.3"
+    dataloader: "npm:^2.2.3"
     date-fns: "npm:^2.30.0"
     express: "npm:^4.20.0"
     express-promise-router: "npm:^4.1.0"
@@ -14240,6 +14242,13 @@ __metadata:
   version: 2.2.2
   resolution: "dataloader@npm:2.2.2"
   checksum: 10c0/125ec69f821478cf7c6b4360095db6cab939fe57876a0d2060c428091a8deee7152345189923b71a6afa694aaec463779f34b585317164016fd6f54f52cd94ba
+  languageName: node
+  linkType: hard
+
+"dataloader@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "dataloader@npm:2.2.3"
+  checksum: 10c0/9b9a056fbc863ca86da87d59e053e871e263b4966aa4d55e40d61a65e96815fae5530ca220629064ca5f8e3000c0c4ec93292e170c38ff393fb34256b4d7c1aa
   languageName: node
   linkType: hard
 

@@ -13,6 +13,7 @@ import {
   qetaDeleteTagPermission,
   qetaEditTagPermission,
   qetaReadTagPermission,
+  TagsQuery,
 } from '@drodil/backstage-plugin-qeta-common';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
@@ -132,11 +133,17 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       true,
     );
 
-    const tags = await database.getTags(request.query, filter);
+    const opts = request.query as TagsQuery;
+    const tags = await database.getTags(opts, filter);
 
     await Promise.all(
       tags.tags.map(async tag => {
-        await mapAdditionalFields(request, tag, options);
+        await mapAdditionalFields(
+          request,
+          tag,
+          options,
+          opts.checkAccess ?? false,
+        );
       }),
     );
 

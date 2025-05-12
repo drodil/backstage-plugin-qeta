@@ -226,10 +226,6 @@ export class PermissionPolicy implements PermissionPolicy {
       return { result: AuthorizeResult.ALLOW };
     }
 
-    if (!user) {
-      return { result: AuthorizeResult.DENY };
-    }
-
     // Allow updating and deleting only own posts/answers/comments
     if (
       request.permission.attributes.action === 'update' ||

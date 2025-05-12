@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import useDebounce from 'react-use/lib/useDebounce';
@@ -42,6 +42,7 @@ export const TagsGrid = () => {
       api.getTags({
         limit: tagsPerPage,
         offset: (page - 1) * tagsPerPage,
+        checkAccess: true,
         ...filters,
       }),
     [page, tagsPerPage, filters],
