@@ -47,21 +47,17 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const conditions = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        true,
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
       permissionMgr.getAuthorizeConditions(
         request,
         qetaReadCollectionPermission,
-        true,
+        { allowServicePrincipal: true },
       ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        true,
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const postFilters = conditions[0];
@@ -111,21 +107,17 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const [postFilters, filters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        true,
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
       permissionMgr.getAuthorizeConditions(
         request,
         qetaReadCollectionPermission,
-        true,
+        { allowServicePrincipal: true },
       ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        true,
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const opts = request.body;
@@ -246,28 +238,22 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(
-      request,
-      qetaEditCollectionPermission,
-      originalCollection,
-    );
+    await permissionMgr.authorize(request, qetaEditCollectionPermission, {
+      resource: originalCollection,
+    });
 
     const [postFilters, filters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        true,
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
       permissionMgr.getAuthorizeConditions(
         request,
         qetaReadCollectionPermission,
-        true,
+        { allowServicePrincipal: true },
       ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        true,
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     // Act
@@ -333,11 +319,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(
-      request,
-      qetaDeleteCollectionPermission,
-      collection,
-    );
+    await permissionMgr.authorize(request, qetaDeleteCollectionPermission, {
+      resource: collection,
+    });
 
     // Act
     const deleted = await database.deleteCollection(collectionId);
@@ -369,21 +353,17 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
   router.get('/collections/followed', async (request, response) => {
     const username = await permissionMgr.getUsername(request, false);
     const [postFilters, filters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        true,
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
       permissionMgr.getAuthorizeConditions(
         request,
         qetaReadCollectionPermission,
-        true,
+        { allowServicePrincipal: true },
       ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        true,
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const collections = await database.getUserCollections(username, {
@@ -409,11 +389,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
-    await permissionMgr.authorize(
-      request,
-      qetaReadCollectionPermission,
-      collection,
-    );
+    await permissionMgr.authorize(request, qetaReadCollectionPermission, {
+      resource: collection,
+    });
 
     await database.followCollection(username, collectionId);
 
@@ -443,11 +421,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(
-      request,
-      qetaReadCollectionPermission,
-      collection,
-    );
+    await permissionMgr.authorize(request, qetaReadCollectionPermission, {
+      resource: collection,
+    });
     await database.unfollowCollection(username, collectionId);
 
     auditor?.createEvent({
@@ -474,16 +450,12 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const [postFilters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        true,
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        true,
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const collection = await database.getCollection(
@@ -497,11 +469,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(
-      request,
-      qetaReadCollectionPermission,
-      collection,
-    );
+    await permissionMgr.authorize(request, qetaReadCollectionPermission, {
+      resource: collection,
+    });
 
     await mapAdditionalFields(request, collection, options);
 
@@ -540,23 +510,17 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
     );
 
-    await permissionMgr.authorize(
-      request,
-      qetaEditCollectionPermission,
-      collection,
-    );
+    await permissionMgr.authorize(request, qetaEditCollectionPermission, {
+      resource: collection,
+    });
 
     const [postFilters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        true,
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        true,
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const post = await database.getPost(username, request.body.postId, false);
@@ -565,7 +529,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, post);
+    await permissionMgr.authorize(request, qetaReadPostPermission, {
+      resource: post,
+    });
 
     // Act
     collection = await database.addPostToCollection(
@@ -645,23 +611,17 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
     );
 
-    await permissionMgr.authorize(
-      request,
-      qetaEditCollectionPermission,
-      collection,
-    );
+    await permissionMgr.authorize(request, qetaEditCollectionPermission, {
+      resource: collection,
+    });
 
     const [postFilters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        true,
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        true,
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const post = await database.getPost(username, request.body.postId, false);
@@ -670,7 +630,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, post);
+    await permissionMgr.authorize(request, qetaReadPostPermission, {
+      resource: post,
+    });
 
     // Act
     collection = await database.removePostFromCollection(
@@ -741,11 +703,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(
-      request,
-      qetaEditCollectionPermission,
-      collection,
-    );
+    await permissionMgr.authorize(request, qetaEditCollectionPermission, {
+      resource: collection,
+    });
 
     const post = await database.getPost(username, request.body.postId, false);
 
@@ -754,7 +714,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, post);
+    await permissionMgr.authorize(request, qetaReadPostPermission, {
+      resource: post,
+    });
 
     const currentRank = await database.getPostRank(
       collection.id,

@@ -12,6 +12,8 @@ import {
   Permission,
   PermissionCriteria,
   PolicyDecision,
+  QueryPermissionRequest,
+  QueryPermissionResponse,
 } from '@backstage/plugin-permission-common';
 import {
   AuthenticationError,
@@ -49,6 +51,10 @@ export class PermissionManager {
     string,
     DataLoader<AuthorizePermissionRequest, AuthorizePermissionResponse>
   >;
+  private readonly authorizeConditionalLoaderMap: ExpiryMap<
+    string,
+    DataLoader<QueryPermissionRequest, QueryPermissionResponse>
+  >;
 
   constructor(
     private readonly config: Config,
@@ -61,11 +67,25 @@ export class PermissionManager {
     this.authorizeLoaderMap = new ExpiryMap(
       durationToMilliseconds({ minutes: 10 }),
     );
+    this.authorizeConditionalLoaderMap = new ExpiryMap(
+      durationToMilliseconds({ minutes: 10 }),
+    );
+  }
+
+  public async getCredentials(
+    request: Request<unknown>,
+    allowServiceToken?: boolean,
+  ) {
+    const allow: Array<keyof BackstagePrincipalTypes> = allowServiceToken
+      ? ['user', 'service']
+      : ['user'];
+    return await this.httpAuth.credentials(request, { allow });
   }
 
   public async getUsername(
     req: Request<unknown>,
     allowServiceToken?: boolean,
+    creds?: BackstageCredentials,
   ): Promise<string> {
     const allowMetadataInput = this.config.getOptionalBoolean(
       'qeta.allowMetadataInput',
@@ -78,6 +98,10 @@ export class PermissionManager {
     }
 
     try {
+      if (creds && this.auth.isPrincipal(creds, 'user')) {
+        return creds.principal.userEntityRef;
+      }
+
       const credentials = await this.httpAuth.credentials(req, {
         allow: ['user'],
       });
@@ -90,6 +114,10 @@ export class PermissionManager {
 
     if (allowServiceToken) {
       try {
+        if (creds && this.auth.isPrincipal(creds, 'service')) {
+          return creds.principal.subject;
+        }
+
         const credentials = await this.httpAuth.credentials(req, {
           allow: ['service'],
         });
@@ -114,27 +142,38 @@ export class PermissionManager {
     );
   }
 
-  public async isModerator(req: Request<unknown>): Promise<boolean> {
+  public async isModerator(
+    req: Request<unknown>,
+    options?: {
+      credentials?: BackstageCredentials;
+    },
+  ): Promise<boolean> {
     try {
-      const credentials = await this.httpAuth.credentials(req, {
-        allow: ['user', 'service'],
-      });
+      const credentials =
+        options?.credentials ??
+        (await this.httpAuth.credentials(req, {
+          allow: ['user', 'service'],
+        }));
       if (!credentials) {
         return false;
       }
 
       // Service tokens are always moderators
-      if (credentials.principal.type === 'service') {
+      if (this.auth.isPrincipal(credentials, 'service')) {
         return true;
       }
 
       // Authorize moderator using permission framework
       if (this.permissions) {
-        const loader = this.getLoader(credentials);
+        const loader = this.getAuthorizeLoader(credentials);
         const result = await loader.load({
           permission: qetaModeratePermission,
         });
         return result.result === AuthorizeResult.ALLOW;
+      }
+
+      if (!this.auth.isPrincipal(credentials, 'user')) {
+        return false;
       }
 
       // Authorize moderator using config
@@ -155,8 +194,11 @@ export class PermissionManager {
   public async authorizeWithoutPermissions(
     request: Request<unknown>,
     permission: Permission,
-    resource?: QetaIdEntity | null,
-    audit?: boolean,
+    options?: {
+      resource?: QetaIdEntity | null;
+      audit?: boolean;
+      credentials?: BackstageCredentials;
+    },
   ): Promise<DefinitivePolicyDecision> {
     const readPermission = isReadPermission(permission);
     const createPermission = isCreatePermission(permission);
@@ -171,15 +213,15 @@ export class PermissionManager {
       return { result: AuthorizeResult.ALLOW };
     }
 
-    if (!resource) {
-      if (audit) {
+    if (!options?.resource) {
+      if (options?.audit) {
         this.auditor?.createEvent({
           eventId: 'authorize',
           severityLevel: 'high',
           request,
           meta: {
             permission,
-            resource,
+            resource: JSON.stringify(options?.resource),
             failure: 'Resource not found',
           },
         });
@@ -187,7 +229,7 @@ export class PermissionManager {
       throw new NotFoundError('Resource not found');
     }
 
-    const moderator = await this.isModerator(request);
+    const moderator = await this.isModerator(request, options);
 
     if (moderator) {
       return { result: AuthorizeResult.ALLOW };
@@ -201,14 +243,17 @@ export class PermissionManager {
       return { result: AuthorizeResult.ALLOW };
     }
 
-    const username = await this.getUsername(request);
-    if ('author' in resource && username === resource.author) {
+    const username = await this.getUsername(request, true, options.credentials);
+    if ('author' in options.resource && username === options.resource.author) {
       return { result: AuthorizeResult.ALLOW };
-    } else if ('owner' in resource && username === resource.owner) {
+    } else if (
+      'owner' in options.resource &&
+      username === options.resource.owner
+    ) {
       return { result: AuthorizeResult.ALLOW };
     }
 
-    if (audit) {
+    if (options.audit) {
       this.auditor?.createEvent({
         eventId: 'authorize',
         severityLevel: 'high',
@@ -226,27 +271,30 @@ export class PermissionManager {
   public async authorize(
     request: Request<unknown>,
     permission: Permission,
-    resource?: QetaIdEntity | null,
-    audit?: boolean,
+    options?: {
+      resource?: QetaIdEntity | null;
+      audit?: boolean;
+      credentials?: BackstageCredentials;
+    },
   ): Promise<DefinitivePolicyDecision> {
     if (!this.permissions) {
       return await this.authorizeWithoutPermissions(
         request,
         permission,
-        resource,
-        audit,
+        options,
       );
     }
 
-    const moderator = await this.isModerator(request);
+    const moderator = await this.isModerator(request, options);
 
     if (moderator) {
       return { result: AuthorizeResult.ALLOW };
     }
 
-    const credentials = await this.httpAuth.credentials(request);
+    const credentials =
+      options?.credentials ?? (await this.httpAuth.credentials(request));
     if (!credentials) {
-      if (audit) {
+      if (options?.audit) {
         this.auditor?.createEvent({
           eventId: 'authorize',
           severityLevel: 'high',
@@ -261,17 +309,17 @@ export class PermissionManager {
     }
 
     let decision: DefinitivePolicyDecision = { result: AuthorizeResult.DENY };
-    const loader = this.getLoader(credentials);
+    const loader = this.getAuthorizeLoader(credentials);
     if (isResourcePermission(permission)) {
-      if (!resource) {
-        if (audit) {
+      if (!options?.resource) {
+        if (options?.audit) {
           this.auditor?.createEvent({
             eventId: 'authorize',
             severityLevel: 'high',
             request,
             meta: {
               permission,
-              resource,
+              resource: JSON.stringify(options.resource),
               failure: 'Resource not found',
             },
           });
@@ -279,7 +327,7 @@ export class PermissionManager {
         throw new NotFoundError('Resource not found');
       }
 
-      const resourceRef = this.getResourceRef(resource);
+      const resourceRef = this.getResourceRef(options.resource);
 
       decision = await loader.load({ permission, resourceRef });
     } else {
@@ -287,7 +335,7 @@ export class PermissionManager {
     }
 
     if (decision.result === AuthorizeResult.DENY) {
-      if (audit) {
+      if (options?.audit) {
         this.auditor?.createEvent({
           eventId: 'authorize',
           severityLevel: 'high',
@@ -306,21 +354,23 @@ export class PermissionManager {
   public async authorizeConditional(
     request: Request<unknown>,
     permission: Permission,
-    allowServicePrincipal?: boolean,
+    options?: {
+      allowServicePrincipal?: boolean;
+      creds?: BackstageCredentials;
+    },
   ): Promise<PolicyDecision> {
     if (!this.permissions) {
-      return await this.authorizeWithoutPermissions(
-        request,
-        permission,
-        null,
-        true,
-      );
+      return await this.authorizeWithoutPermissions(request, permission, {
+        resource: null,
+        audit: true,
+        ...options,
+      });
     }
 
-    const allow: Array<keyof BackstagePrincipalTypes> = allowServicePrincipal
-      ? ['user', 'service']
-      : ['user'];
-    const credentials = await this.httpAuth.credentials(request, { allow });
+    const allow: Array<keyof BackstagePrincipalTypes> =
+      options?.allowServicePrincipal ? ['user', 'service'] : ['user'];
+    const credentials =
+      options?.creds ?? (await this.httpAuth.credentials(request, { allow }));
 
     if (!credentials) {
       this.auditor?.createEvent({
@@ -336,7 +386,7 @@ export class PermissionManager {
     }
 
     if (
-      allowServicePrincipal &&
+      options?.allowServicePrincipal &&
       this.auth.isPrincipal(credentials, 'service')
     ) {
       return { result: AuthorizeResult.ALLOW };
@@ -344,11 +394,8 @@ export class PermissionManager {
 
     let decision: PolicyDecision = { result: AuthorizeResult.DENY };
     if (isResourcePermission(permission)) {
-      decision = (
-        await this.permissions.authorizeConditional([{ permission }], {
-          credentials,
-        })
-      )[0];
+      const loader = this.getAuthorizeConditionalLoader(credentials);
+      decision = await loader.load({ permission });
     }
 
     if (decision.result === AuthorizeResult.DENY) {
@@ -369,10 +416,16 @@ export class PermissionManager {
   public async authorizeBoolean(
     request: Request<unknown>,
     permission: Permission,
-    resource?: QetaIdEntity | null,
+    options?: {
+      resource?: QetaIdEntity | null;
+      credentials?: BackstageCredentials;
+    },
   ): Promise<boolean> {
     try {
-      const res = await this.authorize(request, permission, resource, false);
+      const res = await this.authorize(request, permission, {
+        audit: false,
+        ...options,
+      });
       return res.result === AuthorizeResult.ALLOW;
     } catch (e) {
       return false;
@@ -382,7 +435,10 @@ export class PermissionManager {
   public async getAuthorizeConditions(
     request: Request<unknown>,
     permission: Permission,
-    allowServicePrincipal?: boolean,
+    options?: {
+      allowServicePrincipal?: boolean;
+      creds?: BackstageCredentials;
+    },
   ): Promise<PermissionCriteria<QetaFilters> | undefined> {
     if (!this.permissions) {
       return undefined;
@@ -391,7 +447,7 @@ export class PermissionManager {
     const decision = await this.authorizeConditional(
       request,
       permission,
-      allowServicePrincipal,
+      options,
     );
     if (decision.result === AuthorizeResult.CONDITIONAL) {
       return transformConditions(decision.conditions);
@@ -399,7 +455,7 @@ export class PermissionManager {
     return undefined;
   }
 
-  private getLoader(credentials: BackstageCredentials) {
+  private getAuthorizeLoader(credentials: BackstageCredentials) {
     const key = btoa(JSON.stringify(credentials));
     const loader = this.authorizeLoaderMap.get(key);
     if (loader) {
@@ -411,7 +467,6 @@ export class PermissionManager {
       AuthorizePermissionResponse
     >(
       async requests => {
-        console.log(JSON.stringify(requests));
         const resp = await this.permissions!.authorize([...requests], {
           credentials,
         });
@@ -425,6 +480,37 @@ export class PermissionManager {
       },
     );
     this.authorizeLoaderMap.set(key, newLoader);
+    return newLoader;
+  }
+
+  private getAuthorizeConditionalLoader(credentials: BackstageCredentials) {
+    const key = btoa(JSON.stringify(credentials));
+    const loader = this.authorizeConditionalLoaderMap.get(key);
+    if (loader) {
+      return loader;
+    }
+
+    const newLoader = new DataLoader<
+      QueryPermissionRequest,
+      QueryPermissionResponse
+    >(
+      async requests => {
+        const resp = await this.permissions!.authorizeConditional(
+          [...requests],
+          {
+            credentials,
+          },
+        );
+        return [...resp];
+      },
+      {
+        cacheMap: new ExpiryMap(durationToMilliseconds({ seconds: 10 })),
+        maxBatchSize: 300,
+        batchScheduleFn: cb =>
+          setTimeout(cb, durationToMilliseconds({ milliseconds: 20 })),
+      },
+    );
+    this.authorizeConditionalLoaderMap.set(key, newLoader);
     return newLoader;
   }
 

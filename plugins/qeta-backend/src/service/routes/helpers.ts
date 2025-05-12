@@ -130,7 +130,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     const filter = await permissionMgr.getAuthorizeConditions(
       request,
       qetaReadTagPermission,
-      true,
+      { allowServicePrincipal: true },
     );
 
     const opts = request.query as TagsQuery;
@@ -155,7 +155,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     const filter = await permissionMgr.getAuthorizeConditions(
       request,
       qetaReadTagPermission,
-      true,
+      { allowServicePrincipal: true },
     );
     const tags = await database.getUserTags(username, filter);
 
@@ -201,7 +201,9 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
-    await permissionMgr.authorize(request, qetaReadTagPermission, tag);
+    await permissionMgr.authorize(request, qetaReadTagPermission, {
+      resource: tag,
+    });
     await mapAdditionalFields(request, tag, options);
     auditor?.createEvent({
       eventId: 'read-tag',
@@ -224,7 +226,9 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
-    await permissionMgr.authorize(request, qetaEditTagPermission, tag);
+    await permissionMgr.authorize(request, qetaEditTagPermission, {
+      resource: tag,
+    });
 
     const description = request.body.description;
     const resp = await database.updateTag(tagId, description);
@@ -283,7 +287,9 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const tag = await database.getTagById(tagId);
-    await permissionMgr.authorize(request, qetaDeleteTagPermission, tag);
+    await permissionMgr.authorize(request, qetaDeleteTagPermission, {
+      resource: tag,
+    });
     const deleted = await database.deleteTag(tagId);
 
     if (deleted) {

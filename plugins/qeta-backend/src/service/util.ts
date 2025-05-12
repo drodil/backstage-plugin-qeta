@@ -35,6 +35,7 @@ import {
 import { rules } from '@drodil/backstage-plugin-qeta-node';
 import { BlobServiceClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 export const getCreated = async (
   req: Request<unknown>,
@@ -79,88 +80,109 @@ export const transformConditions: ConditionTransformer<QetaFilters> =
 
 export const mapAdditionalFields = async (
   request: Request<unknown>,
-  resp: MaybePost | MaybeAnswer | MaybeTag | MaybeCollection,
+  resource: MaybePost | MaybeAnswer | MaybeTag | MaybeCollection,
   options: RouteOptions,
   checkRights = true,
+  creds?: BackstageCredentials,
 ) => {
-  if (!resp) {
-    return resp;
+  if (!resource) {
+    return resource;
   }
 
   const { permissionMgr } = options;
+  const credentials =
+    creds ?? (await permissionMgr.getCredentials(request, true));
 
-  if (isCollection(resp) || isTag(resp)) {
-    resp.canEdit = checkRights
+  if (isCollection(resource) || isTag(resource)) {
+    resource.canEdit = checkRights
       ? await permissionMgr.authorizeBoolean(
           request,
-          isCollection(resp)
+          isCollection(resource)
             ? qetaEditCollectionPermission
             : qetaEditTagPermission,
-          resp,
+          { resource, credentials },
         )
       : undefined;
-    resp.canDelete = checkRights
+    resource.canDelete = checkRights
       ? await permissionMgr.authorizeBoolean(
           request,
-          isCollection(resp)
+          isCollection(resource)
             ? qetaDeleteCollectionPermission
             : qetaDeleteTagPermission,
-          resp,
+          {
+            resource,
+            credentials,
+          },
         )
       : undefined;
-    return resp;
+    return resource;
   }
 
-  const username = await options.permissionMgr.getUsername(request, true);
-  resp.ownVote = resp.votes?.find(v => v.author === username)?.score;
-  resp.own = resp.author === username;
-  resp.canEdit = checkRights
+  const username = await options.permissionMgr.getUsername(
+    request,
+    true,
+    credentials,
+  );
+  resource.ownVote = resource.votes?.find(v => v.author === username)?.score;
+  resource.own = resource.author === username;
+  resource.canEdit = checkRights
     ? await permissionMgr.authorizeBoolean(
         request,
-        isPost(resp) ? qetaEditPostPermission : qetaEditAnswerPermission,
-        resp,
+        isPost(resource) ? qetaEditPostPermission : qetaEditAnswerPermission,
+        { resource, credentials },
       )
     : undefined;
-  resp.canDelete = checkRights
+  resource.canDelete = checkRights
     ? await permissionMgr.authorizeBoolean(
         request,
-        isPost(resp) ? qetaDeletePostPermission : qetaDeleteAnswerPermission,
-        resp,
+        isPost(resource)
+          ? qetaDeletePostPermission
+          : qetaDeleteAnswerPermission,
+        { resource, credentials },
       )
     : undefined;
 
-  if (isPost(resp)) {
+  if (isPost(resource)) {
     await Promise.all(
-      (resp.answers ?? []).map(
-        async a => await mapAdditionalFields(request, a, options, checkRights),
+      (resource.answers ?? []).map(
+        async a =>
+          await mapAdditionalFields(
+            request,
+            a,
+            options,
+            checkRights,
+            credentials,
+          ),
       ),
     );
   }
 
   const comments: (Comment | null)[] = await Promise.all(
-    (resp.comments ?? []).map(async (c: Comment): Promise<Comment | null> => {
-      return {
-        ...c,
-        own: c.author === username,
-        canEdit: checkRights
-          ? await permissionMgr.authorizeBoolean(
-              request,
-              qetaEditCommentPermission,
-              c,
-            )
-          : undefined,
-        canDelete: checkRights
-          ? await permissionMgr.authorizeBoolean(
-              request,
-              qetaDeleteCommentPermission,
-              c,
-            )
-          : undefined,
-      };
-    }),
+    (resource.comments ?? []).map(
+      async (c: Comment): Promise<Comment | null> => {
+        return {
+          ...c,
+          own: c.author === username,
+          canEdit: checkRights
+            ? await permissionMgr.authorizeBoolean(
+                request,
+                qetaEditCommentPermission,
+                { resource: c, credentials },
+              )
+            : undefined,
+          canDelete: checkRights
+            ? await permissionMgr.authorizeBoolean(
+                request,
+                qetaDeleteCommentPermission,
+                { resource: c, credentials },
+              )
+            : undefined,
+        };
+      },
+    ),
   );
-  resp.comments = compact(comments);
-  return resp;
+  resource.comments = compact(comments);
+  return resource;
 };
 
 export const stringDateTime = (dayString: string) => {
