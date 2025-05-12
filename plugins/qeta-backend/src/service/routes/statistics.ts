@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getUsername, stringDateTime } from '../util';
+import { stringDateTime } from '../util';
 import {
   Statistic,
   StatisticResponse,
@@ -8,7 +8,7 @@ import {
 import { RouteOptions } from '../types';
 
 export const statisticRoutes = (router: Router, options: RouteOptions) => {
-  const { database } = options;
+  const { database, permissionMgr } = options;
 
   const getSummary = async (user_ref?: string) => {
     const results = await Promise.all([
@@ -37,7 +37,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   };
 
   router.get('/statistics/user/impact', async (request, response) => {
-    const userRef = await getUsername(request, options);
+    const userRef = await permissionMgr.getUsername(request);
     const userImpact = await database.getTotalViews(userRef, undefined, true);
     const userImpactWeek = await database.getTotalViews(userRef, 7, true);
     return response
@@ -121,7 +121,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     '/statistics/posts/top-upvoted-users',
     async (request, response) => {
       const { period, limit } = request.query;
-      const userRef = await getUsername(request, options);
+      const userRef = await permissionMgr.getUsername(request);
 
       const statsOptions: StatisticsOptions = {
         period: period && stringDateTime(period?.toString()),
@@ -178,7 +178,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     '/statistics/answers/top-upvoted-users',
     async (request, response) => {
       const { period, limit } = request.query;
-      const userRef = await getUsername(request, options);
+      const userRef = await permissionMgr.getUsername(request);
 
       const statsOptions: StatisticsOptions = {
         period: period && stringDateTime(period?.toString()),
@@ -232,7 +232,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     '/statistics/answers/top-correct-upvoted-users',
     async (request, response) => {
       const { period, limit } = request.query;
-      const userRef = await getUsername(request, options);
+      const userRef = await permissionMgr.getUsername(request);
 
       const statsOptions: StatisticsOptions = {
         period: period && stringDateTime(period?.toString()),
@@ -287,7 +287,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   // GET /statistics/posts/most-questions?period=x&limit=x
   router.get('/statistics/posts/most-questions', async (request, response) => {
     const { period, limit } = request.query;
-    const userRef = await getUsername(request, options);
+    const userRef = await permissionMgr.getUsername(request);
 
     const statsOptions: StatisticsOptions = {
       period: period && stringDateTime(period?.toString()),
@@ -336,7 +336,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   // GET /statistics/answers/most-answers?period=x&limit=x
   router.get('/statistics/answers/most-answers', async (request, response) => {
     const { period, limit } = request.query;
-    const userRef = await getUsername(request, options);
+    const userRef = await permissionMgr.getUsername(request);
 
     const statsOptions: StatisticsOptions = {
       period: period && stringDateTime(period?.toString()),

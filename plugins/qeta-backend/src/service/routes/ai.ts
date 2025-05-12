@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { AIQuerySchema, DraftQuestionSchema, RouteOptions } from '../types';
-import { getUsername } from '../util';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import {
@@ -14,7 +13,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const aiRoutes = (router: Router, options: RouteOptions) => {
-  const { database, httpAuth, aiHandler } = options;
+  const { database, httpAuth, aiHandler, permissionMgr } = options;
 
   const isExistingQuestionEnabled = async (
     credentials: BackstageCredentials,
@@ -98,7 +97,7 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const username = await getUsername(request, options);
+    const username = await permissionMgr.getUsername(request);
     const post = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
@@ -183,7 +182,7 @@ export const aiRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const username = await getUsername(request, options);
+    const username = await permissionMgr.getUsername(request);
     const post = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),

@@ -1,12 +1,6 @@
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import {
-  authorize,
-  getAuthorizeConditions,
-  getCreated,
-  getUsername,
-  mapAdditionalFields,
-} from '../util';
+import { getCreated, mapAdditionalFields } from '../util';
 import {
   AnswersQuerySchema,
   CommentSchema,
@@ -41,11 +35,12 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const answersRoutes = (router: Router, options: RouteOptions) => {
-  const { database, events, signals, notificationMgr, auditor } = options;
+  const { database, events, signals, notificationMgr, auditor, permissionMgr } =
+    options;
 
   router.get(`/answers`, async (request, response) => {
     // Validation
-    const username = await getUsername(request, options, true);
+    const username = await permissionMgr.getUsername(request, true);
     const validateQuery = ajv.compile(AnswersQuerySchema);
     if (!validateQuery(request.query)) {
       response
@@ -64,8 +59,16 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const [commentsFilter, answersFilter] = await Promise.all([
-      getAuthorizeConditions(request, qetaReadCommentPermission, options, true),
-      getAuthorizeConditions(request, qetaReadAnswerPermission, options, true),
+      permissionMgr.getAuthorizeConditions(
+        request,
+        qetaReadCommentPermission,
+        true,
+      ),
+      permissionMgr.getAuthorizeConditions(
+        request,
+        qetaReadAnswerPermission,
+        true,
+      ),
     ]);
 
     const opts = request.query as AnswersQuery;
@@ -89,7 +92,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
   router.post(`/answers/query`, async (request, response) => {
     // Validation
-    const username = await getUsername(request, options, true);
+    const username = await permissionMgr.getUsername(request, true);
     const validateQuery = ajv.compile(AnswersQuerySchema);
     if (!validateQuery(request.body)) {
       response
@@ -108,8 +111,16 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const [commentsFilter, answersFilter] = await Promise.all([
-      getAuthorizeConditions(request, qetaReadCommentPermission, options, true),
-      getAuthorizeConditions(request, qetaReadAnswerPermission, options, true),
+      permissionMgr.getAuthorizeConditions(
+        request,
+        qetaReadCommentPermission,
+        true,
+      ),
+      permissionMgr.getAuthorizeConditions(
+        request,
+        qetaReadAnswerPermission,
+        true,
+      ),
     ]);
 
     const opts = request.body;
@@ -146,15 +157,15 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       response.status(400).send({ errors: 'Invalid post id', type: 'body' });
       return;
     }
-    const username = await getUsername(request, options);
+    const username = await permissionMgr.getUsername(request);
     const post = await database.getPost(username, postId, false);
     if (!post || post.type !== 'question') {
       response.status(404).send({ errors: 'Post not found', type: 'body' });
       return;
     }
 
-    await authorize(request, qetaReadPostPermission, options, post);
-    await authorize(request, qetaCreateAnswerPermission, options);
+    await permissionMgr.authorize(request, qetaReadPostPermission, post);
+    await permissionMgr.authorize(request, qetaCreateAnswerPermission);
 
     const created = await getCreated(request, options);
 
@@ -232,7 +243,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const username = await getUsername(request, options);
+    const username = await permissionMgr.getUsername(request);
 
     const postId = Number.parseInt(request.params.id, 10);
     const answerId = Number.parseInt(request.params.answerId, 10);
@@ -247,8 +258,12 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       response.status(404).send({ errors: 'Post not found', type: 'body' });
       return;
     }
-    await authorize(request, qetaReadPostPermission, options, post);
-    await authorize(request, qetaEditAnswerPermission, options, originalAnswer);
+    await permissionMgr.authorize(request, qetaReadPostPermission, post);
+    await permissionMgr.authorize(
+      request,
+      qetaEditAnswerPermission,
+      originalAnswer,
+    );
 
     // Act
     const answer = await database.updateAnswer(
@@ -301,7 +316,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      const username = await getUsername(request, options);
+      const username = await permissionMgr.getUsername(request);
       const post = await database.getPost(username, postId, false);
 
       if (!post) {
@@ -310,9 +325,9 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
       let answer = await database.getAnswer(answerId, username);
 
-      await authorize(request, qetaReadPostPermission, options, post);
-      await authorize(request, qetaReadAnswerPermission, options, answer);
-      await authorize(request, qetaCreateCommentPermission, options);
+      await permissionMgr.authorize(request, qetaReadPostPermission, post);
+      await permissionMgr.authorize(request, qetaReadAnswerPermission, answer);
+      await permissionMgr.authorize(request, qetaCreateCommentPermission);
 
       const created = await getCreated(request, options);
       // Act
@@ -404,7 +419,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      const username = await getUsername(request, options);
+      const username = await permissionMgr.getUsername(request);
       const post = await database.getPost(username, postId, false);
       let answer = await database.getAnswer(answerId, username);
       const comment = await database.getComment(commentId, { answerId });
@@ -416,9 +431,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      await authorize(request, qetaReadPostPermission, options, post);
-      await authorize(request, qetaReadAnswerPermission, options, answer);
-      await authorize(request, qetaEditCommentPermission, options, comment);
+      await permissionMgr.authorize(request, qetaReadPostPermission, post);
+      await permissionMgr.authorize(request, qetaReadAnswerPermission, answer);
+      await permissionMgr.authorize(
+        request,
+        qetaEditCommentPermission,
+        comment,
+      );
 
       // Act
       answer = await database.updateAnswerComment(
@@ -469,7 +488,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      const username = await getUsername(request, options);
+      const username = await permissionMgr.getUsername(request);
       const post = await database.getPost(username, postId, false);
       let answer = await database.getAnswer(answerId, username);
       const comment = await database.getComment(commentId, { answerId });
@@ -481,9 +500,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      await authorize(request, qetaReadPostPermission, options, post);
-      await authorize(request, qetaReadAnswerPermission, options, answer);
-      await authorize(request, qetaDeleteCommentPermission, options, comment);
+      await permissionMgr.authorize(request, qetaReadPostPermission, post);
+      await permissionMgr.authorize(request, qetaReadAnswerPermission, answer);
+      await permissionMgr.authorize(
+        request,
+        qetaDeleteCommentPermission,
+        comment,
+      );
 
       // Act
       answer = await database.deleteAnswerComment(
@@ -520,7 +543,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
   router.get(`/posts/:id/answers/:answerId`, async (request, response) => {
     // Validation
     // Act
-    const username = await getUsername(request, options);
+    const username = await permissionMgr.getUsername(request);
     const postId = Number.parseInt(request.params.id, 10);
     const answerId = Number.parseInt(request.params.answerId, 10);
     if (Number.isNaN(postId) || Number.isNaN(answerId)) {
@@ -530,8 +553,8 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     const post = await database.getPost(username, postId, false);
     let answer = await database.getAnswer(answerId, username);
 
-    await authorize(request, qetaReadPostPermission, options, post);
-    await authorize(request, qetaEditAnswerPermission, options, answer);
+    await permissionMgr.authorize(request, qetaReadPostPermission, post);
+    await permissionMgr.authorize(request, qetaEditAnswerPermission, answer);
 
     answer = await database.getAnswer(answerId, username);
 
@@ -559,7 +582,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
   // DELETE /posts/:id/answers/:answerId
   router.delete('/posts/:id/answers/:answerId', async (request, response) => {
     // Validation
-    const username = await getUsername(request, options);
+    const username = await permissionMgr.getUsername(request);
     const postId = Number.parseInt(request.params.id, 10);
     const answerId = Number.parseInt(request.params.answerId, 10);
     if (Number.isNaN(postId) || Number.isNaN(answerId)) {
@@ -577,8 +600,8 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await authorize(request, qetaReadPostPermission, options, post);
-    await authorize(request, qetaDeleteAnswerPermission, options, answer);
+    await permissionMgr.authorize(request, qetaReadPostPermission, post);
+    await permissionMgr.authorize(request, qetaDeleteAnswerPermission, answer);
 
     // Act
     const deleted = await database.deleteAnswer(answerId);
@@ -622,7 +645,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const username = await getUsername(request, options);
+    const username = await permissionMgr.getUsername(request);
     const post = await database.getPost(username, postId, false);
     const answer = await database.getAnswer(answerId, username);
 
@@ -631,8 +654,9 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await authorize(request, qetaReadPostPermission, options, post);
-    await authorize(request, qetaReadAnswerPermission, options, answer);
+    await permissionMgr.authorize(request, qetaReadPostPermission, post);
+    await permissionMgr.authorize(request, qetaReadAnswerPermission, answer);
+
     if (answer.own) {
       response
         .status(400)
@@ -711,7 +735,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      const username = await getUsername(request, options);
+      const username = await permissionMgr.getUsername(request);
       const post = await database.getPost(username, postId, false);
       const answer = await database.getAnswer(answerId, username);
 
@@ -720,8 +744,8 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      await authorize(request, qetaReadPostPermission, options, post);
-      await authorize(request, qetaReadAnswerPermission, options, answer);
+      await permissionMgr.authorize(request, qetaReadPostPermission, post);
+      await permissionMgr.authorize(request, qetaReadAnswerPermission, answer);
 
       const deleted = await database.deleteAnswerVote(username, answerId);
       if (!deleted) {
@@ -759,7 +783,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
   router.get(
     `/posts/:id/answers/:answerId/correct`,
     async (request, response) => {
-      const username = await getUsername(request, options);
+      const username = await permissionMgr.getUsername(request);
       const postId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
       if (Number.isNaN(postId) || Number.isNaN(answerId)) {
@@ -777,8 +801,8 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      await authorize(request, qetaEditPostPermission, options, post);
-      await authorize(request, qetaReadAnswerPermission, options, answer);
+      await permissionMgr.authorize(request, qetaEditPostPermission, post);
+      await permissionMgr.authorize(request, qetaReadAnswerPermission, answer);
 
       const marked = await database.markAnswerCorrect(postId, answerId);
 
@@ -825,7 +849,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
   router.get(
     `/posts/:id/answers/:answerId/incorrect`,
     async (request, response) => {
-      const username = await getUsername(request, options);
+      const username = await permissionMgr.getUsername(request);
       const postId = Number.parseInt(request.params.id, 10);
       const answerId = Number.parseInt(request.params.answerId, 10);
       if (Number.isNaN(postId) || Number.isNaN(answerId)) {
@@ -842,8 +866,8 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      await authorize(request, qetaEditPostPermission, options, post);
-      await authorize(request, qetaReadAnswerPermission, options, answer);
+      await permissionMgr.authorize(request, qetaEditPostPermission, post);
+      await permissionMgr.authorize(request, qetaReadAnswerPermission, answer);
 
       const marked = await database.markAnswerIncorrect(postId, answerId);
 

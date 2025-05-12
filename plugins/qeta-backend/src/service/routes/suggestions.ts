@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { RouteOptions, SuggestionsQuerySchema } from '../types';
-import { getAuthorizeConditions, getUsername, QetaFilters } from '../util';
+import { QetaFilters } from '../util';
 import {
   Article,
   NewArticleSuggestion,
@@ -19,7 +19,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const suggestionRoutes = (router: Router, options: RouteOptions) => {
-  const { database } = options;
+  const { database, permissionMgr } = options;
 
   const includeNothingOptions: PostOptions = {
     includeVotes: false,
@@ -226,16 +226,15 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
         .send({ errors: validateQuery.errors, type: 'query' });
       return;
     }
-    const username = await getUsername(request, options, false);
+    const username = await permissionMgr.getUsername(request, false);
     let limit = Number(request.query.limit);
     if (isNaN(limit)) {
       limit = 5;
     }
 
-    const filter = await getAuthorizeConditions(
+    const filter = await permissionMgr.getAuthorizeConditions(
       request,
       qetaReadPostPermission,
-      options,
     );
 
     const raw = await Promise.all([

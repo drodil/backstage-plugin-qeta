@@ -14,6 +14,7 @@ import { templateRoutes } from './routes/templates';
 import { aiRoutes } from './routes/ai';
 import { suggestionRoutes } from './routes/suggestions';
 import { permissionsRoute } from './routes/permissions';
+import { PermissionManager } from './PermissionManager.ts';
 
 export async function createRouter(
   options: RouterOptions,
@@ -30,10 +31,21 @@ export async function createRouter(
     options.notifications,
     options.cache,
   );
+
+  const permissionMgr = new PermissionManager(
+    config,
+    options.auth,
+    options.httpAuth,
+    options.userInfo,
+    options.permissions,
+    options.auditor,
+  );
+
   const routeOptions = {
     ...options,
     httpAuth,
     notificationMgr,
+    permissionMgr,
   };
 
   router.get('/health', (_, response) => {

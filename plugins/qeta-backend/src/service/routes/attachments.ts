@@ -12,7 +12,6 @@ import {
   AttachmentStorageEngine,
   AttachmentStorageEngineOptions,
 } from '../upload/attachmentStorageEngine';
-import { getUsername } from '../util';
 import { entityToJsonObject } from './util.ts';
 
 const DEFAULT_IMAGE_SIZE_LIMIT = 2500000;
@@ -41,13 +40,13 @@ const getStorageEngine = (
 };
 
 export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
-  const { database, config, auditor } = options;
+  const { database, config, auditor, permissionMgr } = options;
 
   // POST /attachments
   router.post('/attachments', async (request, response) => {
     let attachment: Attachment;
 
-    const username = await getUsername(request, options);
+    const username = await permissionMgr.getUsername(request);
 
     const storageType =
       config?.getOptionalString('qeta.storage.type') || 'database';

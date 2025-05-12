@@ -29,6 +29,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { AIHandler } from '@drodil/backstage-plugin-qeta-node';
+import { PermissionManager } from './PermissionManager.ts';
 
 export interface RouterOptions {
   database: QetaStore;
@@ -51,6 +52,7 @@ export interface RouterOptions {
 
 export interface RouteOptions extends RouterOptions {
   notificationMgr: NotificationManager;
+  permissionMgr: PermissionManager;
 }
 
 export interface PostContent {

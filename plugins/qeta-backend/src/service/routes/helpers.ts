@@ -5,12 +5,7 @@ import {
   TagsQuerySchema,
   UsersQuerySchema,
 } from '../types';
-import {
-  authorize,
-  getAuthorizeConditions,
-  getUsername,
-  mapAdditionalFields,
-} from '../util';
+import { mapAdditionalFields } from '../util';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   isValidTag,
@@ -26,7 +21,7 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const helperRoutes = (router: Router, options: RouteOptions) => {
-  const { database, catalog, auth, httpAuth, auditor } = options;
+  const { database, catalog, auth, httpAuth, auditor, permissionMgr } = options;
 
   const validateEntityRef = (entityRef: string, kind?: string) => {
     try {
@@ -80,7 +75,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/users/followed', async (request, response) => {
-    const username = await getUsername(request, options, false);
+    const username = await permissionMgr.getUsername(request, false);
     const users = await database.getFollowedUsers(username);
     response.json(users);
   });
@@ -88,7 +83,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   router.put('/users/follow/:userRef(*)', async (request, response) => {
     const { userRef } = request.params;
     validateEntityRef(userRef, 'user');
-    const username = await getUsername(request, options, false);
+    const username = await permissionMgr.getUsername(request, false);
     await database.followUser(username, userRef);
 
     auditor?.createEvent({
@@ -106,7 +101,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   router.delete('/users/follow/:userRef(*)', async (request, response) => {
     const { userRef } = request.params;
     validateEntityRef(userRef, 'user');
-    const username = await getUsername(request, options, false);
+    const username = await permissionMgr.getUsername(request, false);
     await database.unfollowUser(username, userRef);
 
     auditor?.createEvent({
@@ -131,10 +126,9 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const filter = await getAuthorizeConditions(
+    const filter = await permissionMgr.getAuthorizeConditions(
       request,
       qetaReadTagPermission,
-      options,
       true,
     );
 
@@ -150,11 +144,10 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/tags/followed', async (request, response) => {
-    const username = await getUsername(request, options, false);
-    const filter = await getAuthorizeConditions(
+    const username = await permissionMgr.getUsername(request, false);
+    const filter = await permissionMgr.getAuthorizeConditions(
       request,
       qetaReadTagPermission,
-      options,
       true,
     );
     const tags = await database.getUserTags(username, filter);
@@ -164,7 +157,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
   router.put('/tags/follow/:tag', async (request, response) => {
     const { tag } = request.params;
-    const username = await getUsername(request, options, false);
+    const username = await permissionMgr.getUsername(request, false);
     await database.followTag(username, tag);
 
     auditor?.createEvent({
@@ -181,7 +174,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
   router.delete('/tags/follow/:tag', async (request, response) => {
     const { tag } = request.params;
-    const username = await getUsername(request, options, false);
+    const username = await permissionMgr.getUsername(request, false);
     await database.unfollowTag(username, tag);
 
     auditor?.createEvent({
@@ -201,7 +194,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
-    await authorize(request, qetaReadTagPermission, options, tag);
+    await permissionMgr.authorize(request, qetaReadTagPermission, tag);
     await mapAdditionalFields(request, tag, options);
     auditor?.createEvent({
       eventId: 'read-tag',
@@ -224,7 +217,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
-    await authorize(request, qetaEditTagPermission, options, tag);
+    await permissionMgr.authorize(request, qetaEditTagPermission, tag);
 
     const description = request.body.description;
     const resp = await database.updateTag(tagId, description);
@@ -243,7 +236,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.put('/tags', async (request, response) => {
-    await authorize(request, qetaCreateTagPermission, options);
+    await permissionMgr.authorize(request, qetaCreateTagPermission);
 
     const existing = await database.getTag(request.body.tag);
     if (existing) {
@@ -283,7 +276,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const tag = await database.getTagById(tagId);
-    await authorize(request, qetaDeleteTagPermission, options, tag);
+    await permissionMgr.authorize(request, qetaDeleteTagPermission, tag);
     const deleted = await database.deleteTag(tagId);
 
     if (deleted) {
@@ -335,7 +328,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/entities/followed', async (request, response) => {
-    const username = await getUsername(request, options, false);
+    const username = await permissionMgr.getUsername(request, false);
     const tags = await database.getUserEntities(username);
     response.json(tags);
   });
@@ -343,7 +336,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   router.put('/entities/follow/:entityRef(*)', async (request, response) => {
     const { entityRef } = request.params;
     validateEntityRef(entityRef);
-    const username = await getUsername(request, options, false);
+    const username = await permissionMgr.getUsername(request, false);
     await database.followEntity(username, entityRef);
     auditor?.createEvent({
       eventId: 'follow-entity',
@@ -359,7 +352,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   router.delete('/entities/follow/:entityRef(*)', async (request, response) => {
     const { entityRef } = request.params;
     validateEntityRef(entityRef);
-    const username = await getUsername(request, options, false);
+    const username = await permissionMgr.getUsername(request, false);
     await database.unfollowEntity(username, entityRef);
     auditor?.createEvent({
       eventId: 'unfollow-entity',

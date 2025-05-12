@@ -4,21 +4,19 @@ import {
   qetaCreateTagPermission,
   TagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { RouterOptions } from '../types';
-import { authorizeBoolean } from '../util';
+import { RouteOptions } from '../types';
 
 export const getTags = async (
   request: Request,
-  options: RouterOptions,
+  options: RouteOptions,
   existingTags: TagsResponse,
 ) => {
   const maxTags = options.config.getOptionalNumber('qeta.tags.max') ?? 5;
   const allowedTags =
     options.config.getOptionalStringArray('qeta.tags.allowedTags') ?? [];
-  const allowTagCreation = await authorizeBoolean(
+  const allowTagCreation = await options.permissionMgr.authorizeBoolean(
     request,
     qetaCreateTagPermission,
-    options,
   );
 
   const rawTags = request.body.tags;

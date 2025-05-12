@@ -3,14 +3,13 @@ import { RouteOptions, TemplateSchema } from '../types';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { getEntities, getTags } from './routeUtil';
-import { isModerator } from '../util';
 import { entityToJsonObject } from './util.ts';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const templateRoutes = (router: Router, options: RouteOptions) => {
-  const { database, config, events, auditor } = options;
+  const { database, config, events, auditor, permissionMgr } = options;
 
   router.get('/templates', async (_req, response) => {
     const templates = await database.getTemplates();
@@ -36,7 +35,7 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
   // POST /templates
   router.post(`/templates`, async (request, response) => {
     // Validation
-    const mod = await isModerator(request, options);
+    const mod = await permissionMgr.isModerator(request);
     if (!mod) {
       auditor?.createEvent({
         eventId: 'create-template',
@@ -104,7 +103,7 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
 
   router.post(`/templates/:id`, async (request, response) => {
     // Validation
-    const mod = await isModerator(request, options);
+    const mod = await permissionMgr.isModerator(request);
     if (!mod) {
       auditor?.createEvent({
         eventId: 'update-template',
@@ -180,7 +179,7 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
   // DELETE /templates/:id
   router.delete('/templates/:id', async (request, response) => {
     // Validation
-    const mod = await isModerator(request, options);
+    const mod = await permissionMgr.isModerator(request);
     if (!mod) {
       auditor?.createEvent({
         eventId: 'delete-template',
