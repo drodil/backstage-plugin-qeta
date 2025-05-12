@@ -1,14 +1,12 @@
-import React, { useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../api';
 
 let followedEntities: string[] | undefined = undefined;
 
 export const useEntityFollow = () => {
-  const [entities, setEntities] = React.useState<string[]>(
-    followedEntities ?? [],
-  );
-  const [loading, setLoading] = React.useState(followedEntities === undefined);
+  const [entities, setEntities] = useState<string[]>(followedEntities ?? []);
+  const [loading, setLoading] = useState(followedEntities === undefined);
   const qetaApi = useApi(qetaApiRef);
 
   useEffect(() => {

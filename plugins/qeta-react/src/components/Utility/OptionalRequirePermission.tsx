@@ -3,7 +3,6 @@ import {
   RequirePermissionProps,
 } from '@backstage/plugin-permission-react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import React from 'react';
 import { isPermission } from '@backstage/plugin-permission-common';
 import { qetaCreateTagPermission } from '@drodil/backstage-plugin-qeta-common';
 

@@ -1,5 +1,4 @@
 import { UserResponse } from '@drodil/backstage-plugin-qeta-common';
-import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';

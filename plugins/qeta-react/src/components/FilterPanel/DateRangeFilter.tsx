@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDate } from '../../utils/utils';
 import { useTranslation } from '../../hooks';
 import {

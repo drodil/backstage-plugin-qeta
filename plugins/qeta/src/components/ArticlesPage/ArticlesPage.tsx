@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import {
   ButtonContainer,
@@ -17,10 +17,8 @@ import { Grid } from '@material-ui/core';
 export const ArticlesPage = () => {
   const [searchParams] = useSearchParams();
 
-  const [entityRef, setEntityRef] = React.useState<string | undefined>(
-    undefined,
-  );
-  const [tags, setTags] = React.useState<string[] | undefined>(undefined);
+  const [entityRef, setEntityRef] = useState<string | undefined>(undefined);
+  const [tags, setTags] = useState<string[] | undefined>(undefined);
   const { t } = useTranslation();
   useEffect(() => {
     setEntityRef(searchParams.get('entity') ?? undefined);

@@ -3,7 +3,6 @@ import {
   SummaryStatsGrid,
   useQetaApi,
 } from '@drodil/backstage-plugin-qeta-react';
-import React from 'react';
 import { Card, CardContent, Grid } from '@material-ui/core';
 
 export const UserStatsContent = (props: { userRef: string }) => {

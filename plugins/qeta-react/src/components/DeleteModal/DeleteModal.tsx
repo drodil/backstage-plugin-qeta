@@ -7,7 +7,7 @@ import {
 import { Backdrop, Button, Modal, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Delete from '@material-ui/icons/Delete';
-import React from 'react';
+import { useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
@@ -23,7 +23,7 @@ export const DeleteModal = (props: {
   const qetaApi = useApi(qetaApiRef);
   const navigate = useNavigate();
   const { entity, open, question, onClose } = props;
-  const [error, setError] = React.useState(false);
+  const [error, setError] = useState(false);
   const { t } = useTranslation();
   const isQuestion = 'title' in entity;
   const isCollection = 'owner' in entity;

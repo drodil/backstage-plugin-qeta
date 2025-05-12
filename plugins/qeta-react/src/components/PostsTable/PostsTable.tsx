@@ -1,4 +1,4 @@
-import React from 'react';
+import { ChangeEvent, useState } from 'react';
 import { LinkButton, Progress, WarningPanel } from '@backstage/core-components';
 import { PostsTableRow } from './PostsTableRow';
 import { useQetaApi, useTranslation } from '../../hooks';
@@ -26,16 +26,14 @@ export const PostsTable = (props: {
   quickFilter?: QuickFilterType;
   postType?: PostType;
 }) => {
-  const [page, setPage] = React.useState(1);
-  const [questionsPerPage, setQuestionsPerPage] = React.useState(
+  const [page, setPage] = useState(1);
+  const [questionsPerPage, setQuestionsPerPage] = useState(
     props.rowsPerPage ?? 10,
   );
-  const [quickFilter, setQuickFilter] = React.useState(
-    props.quickFilter ?? 'latest',
-  );
-  const [refresh, setRefresh] = React.useState(0);
+  const [quickFilter, setQuickFilter] = useState(props.quickFilter ?? 'latest');
+  const [refresh, setRefresh] = useState(0);
   const { t } = useTranslation();
-  const [filters, setFilters] = React.useState({
+  const [filters, setFilters] = useState({
     order: 'desc',
     orderBy: 'created',
     noAnswers: 'false',
@@ -90,9 +88,7 @@ export const PostsTable = (props: {
     setPage(newPage + 1);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setQuestionsPerPage(parseInt(event.target.value, 10));
     setPage(1);
   };

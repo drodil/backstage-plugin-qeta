@@ -1,7 +1,7 @@
 import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import React, { useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -64,11 +64,11 @@ export const CollectionForm = (props: CollectionFormProps) => {
   const collectionRoute = useRouteRef(collectionRouteRef);
   const navigate = useNavigate();
   const analytics = useAnalytics();
-  const [posting, setPosting] = React.useState(false);
-  const [values, setValues] = React.useState(getDefaultValues());
-  const [error, setError] = React.useState(false);
-  const [edited, setEdited] = React.useState(false);
-  const [images, setImages] = React.useState<number[]>([]);
+  const [posting, setPosting] = useState(false);
+  const [values, setValues] = useState(getDefaultValues());
+  const [error, setError] = useState(false);
+  const [edited, setEdited] = useState(false);
+  const [images, setImages] = useState<number[]>([]);
   const { t } = useTranslation();
 
   const qetaApi = useApi(qetaApiRef);

@@ -1,4 +1,3 @@
-import React from 'react';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import {
   AskQuestionButton,

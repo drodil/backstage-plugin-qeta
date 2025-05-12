@@ -1,5 +1,5 @@
 import { WarningPanel } from '@backstage/core-components';
-import React, { useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   AnswerRequest,
@@ -32,13 +32,13 @@ export const AnswerForm = (props: {
   id?: number;
 }) => {
   const { post, onPost, id } = props;
-  const [values, setValues] = React.useState<AnswerFormData>(
+  const [values, setValues] = useState<AnswerFormData>(
     getDefaultValues(post.id),
   );
   const analytics = useAnalytics();
-  const [error, setError] = React.useState(false);
-  const [images, setImages] = React.useState<number[]>([]);
-  const [edited, setEdited] = React.useState(false);
+  const [error, setError] = useState(false);
+  const [images, setImages] = useState<number[]>([]);
+  const [edited, setEdited] = useState(false);
   const qetaApi = useApi(qetaApiRef);
   const configApi = useApi(configApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');

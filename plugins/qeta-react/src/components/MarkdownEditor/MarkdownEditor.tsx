@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React from 'react';
+import { useState } from 'react';
 import ReactMde from 'react-mde';
 import 'react-mde/lib/styles/css/react-mde.css';
 import 'react-mde/lib/styles/css/react-mde-editor.css';
@@ -141,9 +141,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     autoFocus,
     required = true,
   } = props;
-  const [selectedTab, setSelectedTab] = React.useState<'write' | 'preview'>(
-    'write',
-  );
+  const [selectedTab, setSelectedTab] = useState<'write' | 'preview'>('write');
   const styles = useStyles();
   const errorApi = useApi(errorApiRef);
   const qetaApi = useApi(qetaApiRef);

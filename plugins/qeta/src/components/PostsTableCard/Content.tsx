@@ -1,4 +1,3 @@
-import React from 'react';
 import { PostsTable } from '@drodil/backstage-plugin-qeta-react';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
 

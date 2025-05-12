@@ -2,7 +2,7 @@ import { Collection } from '@drodil/backstage-plugin-qeta-common';
 import { InfoCard } from '@backstage/core-components';
 import { Button, CardContent, CardMedia, Grid } from '@material-ui/core';
 import { MarkdownRenderer } from '../MarkdownRenderer';
-import React from 'react';
+import { useState } from 'react';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteModal } from '../DeleteModal';
@@ -16,7 +16,7 @@ export const CollectionCard = (props: { collection: Collection }) => {
   const { collection } = props;
   const editCollectionRoute = useRouteRef(collectionEditRouteRef);
   const navigate = useNavigate();
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
   const { t } = useTranslation();

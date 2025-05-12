@@ -3,7 +3,6 @@ import {
   StatisticsResponse,
   UserStat,
 } from '@drodil/backstage-plugin-qeta-common';
-import React from 'react';
 import numeral from 'numeral';
 import { useTranslation } from '../../hooks';
 import { isGlobalStat, isUserStat } from '../StatsChart/util';

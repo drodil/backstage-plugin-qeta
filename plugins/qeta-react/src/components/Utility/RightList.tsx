@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { Box, List, ListSubheader, makeStyles, Paper } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const RightListContainer = (props: { children: React.ReactNode }) => {
+export const RightListContainer = (props: { children: ReactNode }) => {
   const styles = useStyles();
   return (
     <Box display={{ md: 'none', lg: 'block' }}>
@@ -19,9 +19,9 @@ export const RightListContainer = (props: { children: React.ReactNode }) => {
 };
 
 export const RightList = (props: {
-  children: React.ReactNode;
+  children: ReactNode;
   title: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 }) => {
   return (
     <List

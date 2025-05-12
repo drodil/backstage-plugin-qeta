@@ -1,6 +1,5 @@
 import { LinkButton } from '@backstage/core-components';
 import HelpOutline from '@material-ui/icons/HelpOutline';
-import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef, writeRouteRef } from '../../routes';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';

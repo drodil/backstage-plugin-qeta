@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 import { Route, Routes } from 'react-router-dom';
 import { AskPage } from '../AskPage';

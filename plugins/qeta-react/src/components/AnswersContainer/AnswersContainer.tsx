@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useSearchParams } from 'react-router-dom';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
@@ -36,14 +36,14 @@ const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-answer-filters-expanded';
 export const AnswersContainer = (props: AnswersContainerProps) => {
   const { tags, author, entity, showFilters, showTitle, title } = props;
   const analytics = useAnalytics();
-  const [page, setPage] = React.useState(1);
-  const [answersPerPage, setAnswersPerPage] = React.useState(10);
-  const [showFilterPanel, setShowFilterPanel] = React.useState(
+  const [page, setPage] = useState(1);
+  const [answersPerPage, setAnswersPerPage] = useState(10);
+  const [showFilterPanel, setShowFilterPanel] = useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
   );
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [filters, setFilters] = React.useState<AnswerFilters>({
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<AnswerFilters>({
     order: 'desc',
     orderBy: 'created',
     searchQuery: '',

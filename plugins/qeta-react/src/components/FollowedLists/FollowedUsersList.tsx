@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation, useUserFollow } from '../../hooks';
 import { RightList, RightListContainer } from '../Utility/RightList';
 import { UserChip } from '../TagsAndEntities/UserChip';

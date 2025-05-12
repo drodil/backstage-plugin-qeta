@@ -4,7 +4,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { Avatar, Grid, makeStyles, Typography } from '@material-ui/core';
 import { MarkdownRenderer } from '../MarkdownRenderer';
-import React from 'react';
+import { useState } from 'react';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { ArticleButtons } from './ArticleButtons';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
@@ -56,7 +56,7 @@ export const ArticleContent = (props: {
   const styles = useStyles();
   const { t } = useTranslation();
   const { name, initials, user } = useEntityAuthor(post);
-  const [postEntity, setPostEntity] = React.useState(post);
+  const [postEntity, setPostEntity] = useState(post);
   const onCommentAction = (q: PostResponse, _?: AnswerResponse) => {
     setPostEntity(q);
   };

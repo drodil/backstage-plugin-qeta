@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import { CSSProperties } from 'react';
 import { IconButton, Tooltip } from '@material-ui/core';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';

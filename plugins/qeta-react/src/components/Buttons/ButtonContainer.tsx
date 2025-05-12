@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(
@@ -14,7 +14,7 @@ const useStyles = makeStyles(
   { name: 'ContentHeaderButtons' },
 );
 
-export const ButtonContainer = (props: { children: React.ReactNode }) => {
+export const ButtonContainer = (props: { children: ReactNode }) => {
   const styles = useStyles();
   return <div className={styles.root}>{props.children}</div>;
 };

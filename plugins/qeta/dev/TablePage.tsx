@@ -1,4 +1,3 @@
-import React from 'react';
 import { Content, Page } from '@backstage/core-components';
 import { PostsTable } from '@drodil/backstage-plugin-qeta-react';
 import { Card, CardContent } from '@material-ui/core';

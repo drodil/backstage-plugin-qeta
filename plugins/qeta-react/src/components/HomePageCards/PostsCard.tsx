@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { PostListItem } from '../PostsContainer';
 import { useQetaApi } from '../../hooks';
@@ -7,7 +7,7 @@ import { Card, CardHeader, Divider, Grid } from '@material-ui/core';
 export const PostsCard = (props: {
   title: string;
   options?: PostsQuery;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   postType?: PostType;
 }) => {
   const { value: response } = useQetaApi(

@@ -5,7 +5,7 @@ import {
   removeMarkdownFormatting,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef } from '../../routes';

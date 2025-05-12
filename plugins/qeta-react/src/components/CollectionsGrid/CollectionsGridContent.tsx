@@ -1,5 +1,4 @@
 import { CollectionsResponse } from '@drodil/backstage-plugin-qeta-common';
-import React from 'react';
 import { WarningPanel } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import { CollectionsGridItem } from './CollectionsGridItem';

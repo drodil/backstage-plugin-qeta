@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Stat } from '@drodil/backstage-plugin-qeta-common';
 import {
   Bar,
@@ -150,7 +150,7 @@ const useChartState = (data: Stat[]) => {
   const isDark = useIsDarkTheme();
   const globalStats = isGlobalStat(data[0]);
   const isUserStats = isUserStat(data[0]);
-  const [stats, setStats] = React.useState<StatType[]>(
+  const [stats, setStats] = useState<StatType[]>(
     DEFAULT_STATS.filter(stat => {
       if (globalStats && !stat.globalStat) {
         return false;
@@ -297,7 +297,7 @@ const StatsLineChart = (props: { data: Stat[] }) => {
 
 export const StatsChart = (props: { data: Stat[] }) => {
   const { t } = useTranslation();
-  const [chart, setChart] = React.useState<'line' | 'bar'>('line');
+  const [chart, setChart] = useState<'line' | 'bar'>('line');
 
   if (!props.data || props.data.length === 0) {
     return <Typography variant="subtitle1">{t('stats.noStats')}</Typography>;

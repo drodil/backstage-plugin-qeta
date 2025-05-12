@@ -7,7 +7,6 @@ import {
   useUserInfo,
 } from '../../hooks';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Avatar,

@@ -2,7 +2,6 @@ import {
   CollectionResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import React from 'react';
 import { EntityChip } from './EntityChip';
 import { TagChip } from './TagChip';
 

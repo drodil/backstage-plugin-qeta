@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core';
-import React from 'react';
+import { ReactNode } from 'react';
 
 const useStyles = makeStyles(
   () => ({
@@ -14,7 +14,7 @@ const useStyles = makeStyles(
   { name: 'QetaVoteButtonContainer' },
 );
 
-export const VoteButtonContainer = (props: { children: React.ReactNode }) => {
+export const VoteButtonContainer = (props: { children: ReactNode }) => {
   const styles = useStyles();
   return <div className={styles.root}>{props.children}</div>;
 };

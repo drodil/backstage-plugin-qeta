@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
 import { CollectionsGridContent } from './CollectionsGridContent';
 import { useQetaApi, useTranslation } from '../../hooks';
@@ -33,15 +33,15 @@ const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-collection-filters-expanded';
 export const CollectionsGrid = (props: CollectionsGridProps) => {
   const { showFilters, owner } = props;
   const { t } = useTranslation();
-  const [page, setPage] = React.useState(1);
-  const [pageCount, setPageCount] = React.useState(1);
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [collectionsPerPage, setCollectionsPerPage] = React.useState(25);
-  const [showFilterPanel, setShowFilterPanel] = React.useState(
+  const [searchQuery, setSearchQuery] = useState('');
+  const [collectionsPerPage, setCollectionsPerPage] = useState(25);
+  const [showFilterPanel, setShowFilterPanel] = useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
   );
-  const [filters, setFilters] = React.useState<CollectionFilters>({
+  const [filters, setFilters] = useState<CollectionFilters>({
     order: 'desc',
     searchQuery: '',
     orderBy: 'created',

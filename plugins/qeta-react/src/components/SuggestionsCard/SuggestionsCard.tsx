@@ -1,5 +1,5 @@
 import { useQetaApi, useTranslation } from '../../hooks';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import {
   NewArticleSuggestion,
   NewQuestionSuggestion,

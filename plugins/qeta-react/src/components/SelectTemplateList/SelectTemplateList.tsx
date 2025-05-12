@@ -2,7 +2,6 @@ import {
   Template,
   TemplatesResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import React from 'react';
 import { useTranslation } from '../../hooks';
 import {
   Button,

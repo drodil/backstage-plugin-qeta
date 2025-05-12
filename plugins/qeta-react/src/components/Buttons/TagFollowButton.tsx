@@ -1,4 +1,3 @@
-import React from 'react';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { useTagsFollow, useTranslation } from '../../hooks';

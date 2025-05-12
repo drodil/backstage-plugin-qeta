@@ -11,7 +11,7 @@ import {
 import AccountBox from '@material-ui/icons/AccountBox';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 import StarIcon from '@material-ui/icons/Star';
-import React, { ReactNode } from 'react';
+import { KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { useApp, useRouteRef } from '@backstage/core-plugin-api';
 import HelpOutlined from '@material-ui/icons/HelpOutlined';
 import { useNavigate } from 'react-router-dom';
@@ -85,9 +85,9 @@ export const useStyles = makeStyles(
 );
 
 export const LeftMenu = (props: {
-  onKeyDown?: (event: React.KeyboardEvent) => void;
+  onKeyDown?: (event: KeyboardEvent) => void;
   autoFocusItem?: boolean;
-  onClick?: (event: React.MouseEvent<EventTarget>) => void;
+  onClick?: (event: MouseEvent<EventTarget>) => void;
   inPopup?: boolean;
 }) => {
   const rootRoute = useRouteRef(qetaRouteRef);

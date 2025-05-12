@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import { useParams, useSearchParams } from 'react-router-dom';
 import {
@@ -30,7 +30,7 @@ export const UserPage = () => {
     error: userError,
   } = useIdentityApi(api => api.getBackstageIdentity(), []);
 
-  const handleChange = (_event: React.ChangeEvent<{}>, newValue: string) => {
+  const handleChange = (_event: ChangeEvent<{}>, newValue: string) => {
     setSearchParams({});
     setTab(newValue);
   };

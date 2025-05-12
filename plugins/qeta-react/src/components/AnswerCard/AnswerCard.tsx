@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { AnswerForm } from '../AnswerForm';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
@@ -75,12 +75,12 @@ export const AnswerCard = (props: {
 }) => {
   const { answer, question } = props;
 
-  const [editMode, setEditMode] = React.useState(false);
-  const [answerEntity, setAnswerEntity] = React.useState(answer);
+  const [editMode, setEditMode] = useState(false);
+  const [answerEntity, setAnswerEntity] = useState(answer);
   const { t } = useTranslation();
   const styles = useStyles();
 
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
   const highlightedAnswer =

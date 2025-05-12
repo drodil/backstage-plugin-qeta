@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { Article, QetaSignal } from '@drodil/backstage-plugin-qeta-common';

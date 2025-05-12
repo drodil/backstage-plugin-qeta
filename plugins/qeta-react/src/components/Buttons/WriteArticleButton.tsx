@@ -1,5 +1,4 @@
 import CreateIcon from '@material-ui/icons/Create';
-import React from 'react';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';

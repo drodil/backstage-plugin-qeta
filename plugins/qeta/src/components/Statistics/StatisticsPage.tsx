@@ -1,4 +1,3 @@
-import React from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import {
   AskQuestionButton,

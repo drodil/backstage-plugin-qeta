@@ -1,4 +1,3 @@
-import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, LinkProps } from '@backstage/core-components';
 import { userRouteRef } from '../../routes';

@@ -4,7 +4,7 @@ import {
   Article,
   Post,
 } from '@drodil/backstage-plugin-qeta-common';
-import React, { useCallback } from 'react';
+import { CSSProperties, useState, useCallback } from 'react';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useAI, useTranslation } from '../../hooks';
 import FlareIcon from '@material-ui/icons/Flare';
@@ -42,17 +42,17 @@ export type AIAnswerCardProps = {
   };
   article?: Article;
   debounceMs?: number;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 };
 
 const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-ai-expanded';
 
 export const AIAnswerCard = (props: AIAnswerCardProps) => {
   const { question, draft, article, style, debounceMs = 3000 } = props;
-  const [answer, setAnswer] = React.useState<AIResponse | null | undefined>(
+  const [answer, setAnswer] = useState<AIResponse | null | undefined>(
     undefined,
   );
-  const [expanded, setExpanded] = React.useState(
+  const [expanded, setExpanded] = useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
   );
   const { t } = useTranslation();

@@ -2,7 +2,7 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -62,8 +62,8 @@ export const QuestionCard = (props: { question: PostResponse }) => {
   const { question } = props;
   const navigate = useNavigate();
   const editQuestionRoute = useRouteRef(editQuestionRouteRef);
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
-  const [questionEntity, setQuestionEntity] = React.useState(question);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [questionEntity, setQuestionEntity] = useState(question);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
   const { t } = useTranslation();

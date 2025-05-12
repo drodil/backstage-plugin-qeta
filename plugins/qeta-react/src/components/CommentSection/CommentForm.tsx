@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/no-autofocus */
-import React from 'react';
+import { useState } from 'react';
 import { Button, Grid } from '@material-ui/core';
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor.tsx';
@@ -15,7 +15,7 @@ export const CommentForm = (props: {
   const { handleSubmit, control } = useForm<{ content: string }>({
     defaultValues,
   });
-  const [edited, setEdited] = React.useState(false);
+  const [edited, setEdited] = useState(false);
   useConfirmNavigationIfEdited(edited);
 
   return (

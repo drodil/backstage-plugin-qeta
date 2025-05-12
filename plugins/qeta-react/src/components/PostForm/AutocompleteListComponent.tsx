@@ -1,5 +1,16 @@
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
-import React from 'react';
+import {
+  HTMLAttributes,
+  ReactNode,
+  cloneElement,
+  createContext,
+  forwardRef,
+  useContext,
+  useRef,
+  useEffect,
+  Children,
+  isValidElement,
+} from 'react';
 import { ListSubheader, useMediaQuery, useTheme } from '@material-ui/core';
 import { AutocompleteRenderGroupParams } from '@material-ui/lab';
 
@@ -7,7 +18,7 @@ const LISTBOX_PADDING = 8; // px
 
 function renderRow(props: ListChildComponentProps) {
   const { data, index, style } = props;
-  return React.cloneElement(data[index], {
+  return cloneElement(data[index], {
     style: {
       ...style,
       top: (style.top as number) + LISTBOX_PADDING,
@@ -15,16 +26,16 @@ function renderRow(props: ListChildComponentProps) {
   });
 }
 
-const OuterElementContext = React.createContext({});
+const OuterElementContext = createContext({});
 
-const OuterElementType = React.forwardRef<HTMLDivElement>((props, ref) => {
-  const outerProps = React.useContext(OuterElementContext);
+const OuterElementType = forwardRef<HTMLDivElement>((props, ref) => {
+  const outerProps = useContext(OuterElementContext);
   return <div ref={ref} {...props} {...outerProps} />;
 });
 
 function useResetCache(data: any) {
-  const ref = React.useRef<VariableSizeList>(null);
-  React.useEffect(() => {
+  const ref = useRef<VariableSizeList>(null);
+  useEffect(() => {
     if (ref.current !== null) {
       ref.current.resetAfterIndex(0, true);
     }
@@ -39,17 +50,17 @@ export const renderGroup = (params: AutocompleteRenderGroupParams) => [
   params.children,
 ];
 
-export const AutocompleteListboxComponent = React.forwardRef<HTMLDivElement>(
-  function ListboxComponent(props: React.HTMLAttributes<HTMLDivElement>, ref) {
+export const AutocompleteListboxComponent = forwardRef<HTMLDivElement>(
+  function ListboxComponent(props: HTMLAttributes<HTMLDivElement>, ref) {
     const { children, ...other } = props;
-    const itemData = React.Children.toArray(children);
+    const itemData = Children.toArray(children);
     const theme = useTheme();
     const smUp = useMediaQuery(theme.breakpoints.up('sm'), { noSsr: true });
     const itemCount = itemData.length;
     const itemSize = smUp ? 36 : 48;
 
-    const getChildSize = (child: React.ReactNode) => {
-      if (React.isValidElement(child) && child.type === ListSubheader) {
+    const getChildSize = (child: ReactNode) => {
+      if (isValidElement(child) && child.type === ListSubheader) {
         return 48;
       }
 

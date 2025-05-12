@@ -1,4 +1,3 @@
-import React from 'react';
 import { CustomHomepageGrid } from '@backstage/plugin-home';
 import { PostsTableCard } from '../src/plugin';
 import { Content, Page } from '@backstage/core-components';

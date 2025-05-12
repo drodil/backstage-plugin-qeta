@@ -1,7 +1,6 @@
 import { Post } from '@drodil/backstage-plugin-qeta-common';
 import { Link } from '@backstage/core-components';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef } from '../../routes';
 import { AuthorLink } from '../Links';

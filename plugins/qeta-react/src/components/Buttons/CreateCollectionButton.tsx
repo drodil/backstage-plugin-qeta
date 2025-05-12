@@ -1,5 +1,4 @@
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
-import React from 'react';
 import { qetaCreateCollectionPermission } from '@drodil/backstage-plugin-qeta-common';
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';

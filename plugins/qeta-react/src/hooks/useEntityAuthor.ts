@@ -6,7 +6,7 @@ import {
   catalogApiRef,
   useEntityPresentation,
 } from '@backstage/plugin-catalog-react';
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   AnswerResponse,
   CollectionResponse,
@@ -49,10 +49,10 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
   const { t } = useTranslation();
-  const [name, setName] = React.useState<string>('');
-  const [user, setUser] = React.useState<UserEntity | null>(null);
-  const [initials, setInitials] = React.useState<string | null>(null);
-  const [currentUser, setCurrentUser] = React.useState<string | null>(null);
+  const [name, setName] = useState<string>('');
+  const [user, setUser] = useState<UserEntity | null>(null);
+  const [initials, setInitials] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
   const ref = entityRef.startsWith('user:') ? entityRef : `user:${entityRef}`;
 
   const {

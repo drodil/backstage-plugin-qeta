@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { DateRangeFilter } from './DateRangeFilter';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
@@ -150,11 +150,9 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     type,
   } = props;
   const { t } = useTranslation();
-  const [entities, setEntities] = React.useState<Entity[] | undefined>(
-    undefined,
-  );
-  const [starredEntities, setStarredEntities] = React.useState(false);
-  const [ownedEntities, setOwnedEntities] = React.useState(false);
+  const [entities, setEntities] = useState<Entity[] | undefined>(undefined);
+  const [starredEntities, setStarredEntities] = useState(false);
+  const [ownedEntities, setOwnedEntities] = useState(false);
   const starredEntitiesApi = useStarredEntities();
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);

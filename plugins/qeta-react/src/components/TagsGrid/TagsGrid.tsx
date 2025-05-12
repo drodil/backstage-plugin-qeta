@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import useDebounce from 'react-use/lib/useDebounce';
@@ -16,12 +16,12 @@ type TagFilters = {
 };
 
 export const TagsGrid = () => {
-  const [page, setPage] = React.useState(1);
-  const [pageCount, setPageCount] = React.useState(1);
-  const [tagsPerPage, setTagsPerPage] = React.useState(25);
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
+  const [tagsPerPage, setTagsPerPage] = useState(25);
+  const [searchQuery, setSearchQuery] = useState('');
   const { t } = useTranslation();
-  const [filters, setFilters] = React.useState<TagFilters>({
+  const [filters, setFilters] = useState<TagFilters>({
     order: 'desc',
     orderBy: 'tag',
     searchQuery: '',
@@ -67,7 +67,7 @@ export const TagsGrid = () => {
     retry();
   };
 
-  const [createModalOpen, setCreateModalOpen] = React.useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const handleCreateModalOpen = () => setCreateModalOpen(true);
   const handleCreateModalClose = () => {
     setCreateModalOpen(false);

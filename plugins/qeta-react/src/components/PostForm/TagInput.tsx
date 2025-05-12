@@ -1,6 +1,13 @@
 import { Autocomplete } from '@material-ui/lab';
 import { TextField, Tooltip, Typography } from '@material-ui/core';
-import React, { useEffect, useMemo } from 'react';
+import {
+  CSSProperties,
+  HTMLAttributes,
+  ComponentType,
+  useState,
+  useEffect,
+  useMemo,
+} from 'react';
 import { qetaApiRef } from '../../api';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
@@ -19,7 +26,7 @@ export const TagInput = (props: {
   error?: FieldError;
   allowCreate?: boolean;
   hideHelpText?: boolean;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }) => {
   const {
     value,
@@ -33,7 +40,7 @@ export const TagInput = (props: {
   const config = useApi(configApiRef);
   const permissions = useApi(permissionApiRef);
   const { t } = useTranslation();
-  const [allowCreation, setAllowCreation] = React.useState<boolean | undefined>(
+  const [allowCreation, setAllowCreation] = useState<boolean | undefined>(
     allowCreate,
   );
   useEffect(() => {
@@ -68,8 +75,8 @@ export const TagInput = (props: {
     () => config.getOptionalNumber('qeta.tags.max') ?? 5,
     [config],
   );
-  const [availableTags, setAvailableTags] = React.useState<string[]>([]);
-  const [tagDescriptions, setTagDescriptions] = React.useState<
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [tagDescriptions, setTagDescriptions] = useState<
     Record<string, string>
   >({});
   useEffect(() => {
@@ -110,8 +117,8 @@ export const TagInput = (props: {
       options={availableTags ?? []}
       freeSolo={allowCreation}
       ListboxComponent={
-        AutocompleteListboxComponent as React.ComponentType<
-          React.HTMLAttributes<HTMLElement>
+        AutocompleteListboxComponent as ComponentType<
+          HTMLAttributes<HTMLElement>
         >
       }
       disableListWrap

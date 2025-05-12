@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import { Tooltip } from '@material-ui/core';
@@ -6,7 +6,7 @@ import { Tooltip } from '@material-ui/core';
 export const RelativeTimeWithTooltip = (props: { value: Date | string }) => {
   const { value } = props;
   let date = value;
-  const [updates, setUpdates] = React.useState(1);
+  const [updates, setUpdates] = useState(1);
 
   useEffect(() => {
     const interval = setInterval(() => {

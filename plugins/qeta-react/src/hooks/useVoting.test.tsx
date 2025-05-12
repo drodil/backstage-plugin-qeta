@@ -5,7 +5,7 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import React from 'react';
+import { ReactNode } from 'react';
 import { MockErrorApi, TestApiProvider } from '@backstage/test-utils';
 import { qetaApiRef } from '../api';
 import { errorApiRef } from '@backstage/core-plugin-api';
@@ -68,7 +68,7 @@ describe('useVoting', () => {
     jest.clearAllMocks();
   });
 
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
+  const wrapper = ({ children }: { children: ReactNode }) => (
     <TestApiProvider
       apis={[
         [qetaApiRef, mockQetaApi],

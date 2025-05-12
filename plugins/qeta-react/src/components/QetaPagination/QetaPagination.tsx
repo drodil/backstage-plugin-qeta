@@ -1,4 +1,4 @@
-import React from 'react';
+import { ChangeEvent } from 'react';
 import { useTranslation } from '../../hooks';
 import {
   FormControl,
@@ -27,8 +27,8 @@ const useStyles = makeStyles(
 
 export const QetaPagination = (props: {
   pageSize: number;
-  handlePageChange: (_event: React.ChangeEvent<unknown>, value: number) => void;
-  handlePageSizeChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
+  handlePageChange: (_event: ChangeEvent<unknown>, value: number) => void;
+  handlePageSizeChange: (event: ChangeEvent<{ value: unknown }>) => void;
   page: number;
   tooltip?: string;
   pageCount: number;

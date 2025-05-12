@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../api';
 
 let followedTags: string[] | undefined = undefined;
 
 export const useTagsFollow = () => {
-  const [tags, setTags] = React.useState<string[]>(followedTags ?? []);
-  const [loading, setLoading] = React.useState(followedTags === undefined);
+  const [tags, setTags] = useState<string[]>(followedTags ?? []);
+  const [loading, setLoading] = useState(followedTags === undefined);
   const qetaApi = useApi(qetaApiRef);
 
   useEffect(() => {

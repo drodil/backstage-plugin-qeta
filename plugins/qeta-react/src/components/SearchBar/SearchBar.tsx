@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { ChangeEvent, useState } from 'react';
 import {
   CircularProgress,
   IconButton,
@@ -46,7 +46,7 @@ export const SearchBar = (props: {
   loading?: boolean;
 }) => {
   const { label, onSearch, loading } = props;
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const classes = useStyles();
 
   return (
@@ -73,7 +73,7 @@ export const SearchBar = (props: {
         inputProps={{
           'aria-label': label,
           onChange: (
-            event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
           ) => {
             onSearch(event.target.value);
             setSearchQuery(event.target.value);

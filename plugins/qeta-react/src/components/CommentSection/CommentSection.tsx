@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/no-autofocus */
-import React, { useState } from 'react';
+import { useState } from 'react';
+
+import * as React from 'react';
 import { Box, Button, Grid, makeStyles } from '@material-ui/core';
 import {
   AnswerResponse,

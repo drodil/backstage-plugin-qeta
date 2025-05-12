@@ -1,6 +1,6 @@
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../api';
-import React, { useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   AIQuery,
   AIStatusResponse,
@@ -10,15 +10,16 @@ let cache: AIStatusResponse | undefined = undefined;
 
 export const useAI = () => {
   const qetaApi = useApi(qetaApiRef);
-  const [isAIEnabled, setIsAIEnabled] = React.useState<boolean>(
+  const [isAIEnabled, setIsAIEnabled] = useState<boolean>(
     cache?.enabled ?? false,
   );
   const [isExistingQuestionsEnabled, setIsExistingQuestionsEnabled] =
-    React.useState<boolean>(cache?.existingQuestions ?? false);
-  const [isNewQuestionsEnabled, setIsNewQuestionsEnabled] =
-    React.useState<boolean>(cache?.newQuestions ?? false);
+    useState<boolean>(cache?.existingQuestions ?? false);
+  const [isNewQuestionsEnabled, setIsNewQuestionsEnabled] = useState<boolean>(
+    cache?.newQuestions ?? false,
+  );
   const [isArticleSummaryEnabled, setIsArticleSummaryEnabled] =
-    React.useState<boolean>(cache?.articleSummaries ?? false);
+    useState<boolean>(cache?.articleSummaries ?? false);
 
   useEffect(() => {
     if (cache?.enabled !== undefined) {

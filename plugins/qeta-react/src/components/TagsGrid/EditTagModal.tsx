@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import React from 'react';
+import { useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
@@ -20,9 +20,9 @@ export const EditTagModal = (props: {
   onClose: () => void;
 }) => {
   const { tag, open, onClose } = props;
-  const [description, setDescription] = React.useState(tag.description);
+  const [description, setDescription] = useState(tag.description);
   const { t } = useTranslation();
-  const [error, setError] = React.useState(false);
+  const [error, setError] = useState(false);
   const qetaApi = useApi(qetaApiRef);
 
   const handleUpdate = () => {

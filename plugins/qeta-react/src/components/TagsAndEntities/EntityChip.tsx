@@ -1,5 +1,5 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
@@ -28,7 +28,7 @@ const EntityTooltip = (props: { entity: Entity | string }) => {
   const { primaryTitle, secondaryTitle, Icon } = useEntityPresentation(entity);
   const { t } = useTranslation();
   const entitiesFollow = useEntityFollow();
-  const [resp, setResp] = React.useState<undefined | EntityResponse>();
+  const [resp, setResp] = useState<undefined | EntityResponse>();
 
   useEffect(() => {
     if (cache.has(entityRef)) {

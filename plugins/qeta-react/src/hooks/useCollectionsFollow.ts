@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../api';
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
@@ -6,12 +6,10 @@ import { Collection } from '@drodil/backstage-plugin-qeta-common';
 let followedCollections: Collection[] | undefined = undefined;
 
 export const useCollectionsFollow = () => {
-  const [collections, setCollections] = React.useState<Collection[]>(
+  const [collections, setCollections] = useState<Collection[]>(
     followedCollections ?? [],
   );
-  const [loading, setLoading] = React.useState(
-    followedCollections === undefined,
-  );
+  const [loading, setLoading] = useState(followedCollections === undefined);
   const qetaApi = useApi(qetaApiRef);
 
   useEffect(() => {

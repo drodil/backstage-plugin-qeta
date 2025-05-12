@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { collectionRouteRef } from '../../routes';
 import { qetaApiRef } from '../../api';
@@ -16,7 +16,7 @@ const CollectionTooltip = (props: { collectionId: number }) => {
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslation();
   const collections = useCollectionsFollow();
-  const [resp, setResp] = React.useState<undefined | Collection>();
+  const [resp, setResp] = useState<undefined | Collection>();
 
   useEffect(() => {
     if (cache.has(collectionId)) {

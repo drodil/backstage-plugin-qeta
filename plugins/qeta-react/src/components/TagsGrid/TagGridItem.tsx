@@ -14,7 +14,7 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
-import React from 'react';
+import { useState } from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
@@ -37,14 +37,14 @@ export const TagGridItem = (props: {
   const { t } = useTranslation();
   const tags = useTagsFollow();
 
-  const [editModalOpen, setEditModalOpen] = React.useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const handleEditModalOpen = () => setEditModalOpen(true);
   const handleEditModalClose = () => {
     setEditModalOpen(false);
     onTagEdit();
   };
 
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => {
     setDeleteModalOpen(false);

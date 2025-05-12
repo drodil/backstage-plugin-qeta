@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect } from 'react';
+import { Children, createElement, PropsWithChildren, useEffect } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import ReactMarkdown from 'react-markdown';
 import {
@@ -184,7 +184,7 @@ const flatten = (text: string, child: any): string => {
 
   return typeof child === 'string'
     ? text + child
-    : React.Children.toArray(child.props.children).reduce(flatten, text);
+    : Children.toArray(child.props.children).reduce(flatten, text);
 };
 
 export const MarkdownRenderer = (props: {
@@ -215,7 +215,7 @@ export const MarkdownRenderer = (props: {
     hProps: PropsWithChildren<{ node: { tagName: string } }>,
   ) => {
     const { node, children } = hProps;
-    const childrenArray = React.Children.toArray(children);
+    const childrenArray = Children.toArray(children);
     const text = childrenArray.reduce(flatten, '');
     const slug = slugger.slug(text);
     const link = (
@@ -232,7 +232,7 @@ export const MarkdownRenderer = (props: {
     );
     return (
       <>
-        {React.createElement(
+        {createElement(
           Typography,
           {
             variant: node.tagName as Variant,
@@ -306,7 +306,7 @@ export const MarkdownRenderer = (props: {
           h6: (p: any) => headingRenderer(p),
           p: (p: any) => {
             const { children } = p;
-            const arr = React.Children.toArray(children);
+            const arr = Children.toArray(children);
             const formatted = arr.map((child: any) => {
               if (typeof child !== 'string') {
                 return child;

@@ -1,5 +1,4 @@
 import { imageUpload } from '../../utils/utils';
-import React from 'react';
 import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';

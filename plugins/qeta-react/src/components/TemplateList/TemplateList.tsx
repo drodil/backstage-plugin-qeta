@@ -1,6 +1,6 @@
 import { useIsModerator, useQetaApi, useTranslation } from '../../hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import EditIcon from '@material-ui/icons/Edit';
 import { qetaApiRef } from '../../api';

@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import * as React from 'react';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {

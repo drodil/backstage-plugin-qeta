@@ -1,5 +1,5 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
-import React from 'react';
+import { useState } from 'react';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import {
   Grid,
@@ -49,7 +49,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const editArticleRoute = useRouteRef(editArticleRouteRef);
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
 

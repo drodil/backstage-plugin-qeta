@@ -6,7 +6,7 @@ import {
   Paper,
   Popper,
 } from '@material-ui/core';
-import React from 'react';
+import { MouseEvent, KeyboardEvent, useState, useRef, useEffect } from 'react';
 import { LeftMenu } from './LeftMenu';
 import MenuIcon from '@material-ui/icons/Menu';
 import { useTranslation } from '../../hooks';
@@ -25,16 +25,16 @@ const useStyles = makeStyles(
 );
 
 export const LeftMenuButton = () => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const styles = useStyles();
   const { t } = useTranslation();
-  const anchorRef = React.useRef<HTMLButtonElement>(null);
+  const anchorRef = useRef<HTMLButtonElement>(null);
 
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen);
   };
 
-  const handleClose = (event: React.MouseEvent<EventTarget>) => {
+  const handleClose = (event: MouseEvent<EventTarget>) => {
     if (
       anchorRef.current &&
       anchorRef.current.contains(event.target as HTMLElement)
@@ -45,7 +45,7 @@ export const LeftMenuButton = () => {
     setOpen(false);
   };
 
-  function handleListKeyDown(event: React.KeyboardEvent) {
+  function handleListKeyDown(event: KeyboardEvent) {
     if (event.key === 'Tab') {
       event.preventDefault();
       setOpen(false);
@@ -53,8 +53,8 @@ export const LeftMenuButton = () => {
   }
 
   // return focus to the button when we transitioned from !open -> open
-  const prevOpen = React.useRef(open);
-  React.useEffect(() => {
+  const prevOpen = useRef(open);
+  useEffect(() => {
     if (prevOpen.current && !open) {
       anchorRef.current!.focus();
     }

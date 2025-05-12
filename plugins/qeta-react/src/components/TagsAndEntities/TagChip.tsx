@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect } from 'react';
+import { useState, CSSProperties, useEffect } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
 import { qetaApiRef } from '../../api';
@@ -17,7 +17,7 @@ const TagTooltip = (props: { tag: string }) => {
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslation();
   const tags = useTagsFollow();
-  const [resp, setResp] = React.useState<undefined | TagResponse>();
+  const [resp, setResp] = useState<undefined | TagResponse>();
 
   useEffect(() => {
     if (cache.has(tag)) {

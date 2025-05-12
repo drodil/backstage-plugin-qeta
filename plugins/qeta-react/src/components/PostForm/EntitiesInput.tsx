@@ -2,7 +2,14 @@ import { Autocomplete } from '@material-ui/lab';
 import { getEntityTitle } from '../../utils/utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { TextField, Tooltip, Typography } from '@material-ui/core';
-import React, { useEffect, useMemo } from 'react';
+import {
+  CSSProperties,
+  HTMLAttributes,
+  ComponentType,
+  useState,
+  useEffect,
+  useMemo,
+} from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useTranslation } from '../../hooks';
@@ -19,7 +26,7 @@ export const EntitiesInput = (props: {
   onChange: (value: Entity[]) => void;
   useOnlyUsedEntities?: boolean;
   hideHelpText?: boolean;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   disabled?: boolean;
 }) => {
   const {
@@ -34,9 +41,9 @@ export const EntitiesInput = (props: {
   const configApi = useApi(configApiRef);
   const catalogApi = useApi(catalogApiRef);
   const qetaApi = useApi(qetaApiRef);
-  const [availableEntities, setAvailableEntities] = React.useState<
-    Entity[] | null
-  >([]);
+  const [availableEntities, setAvailableEntities] = useState<Entity[] | null>(
+    [],
+  );
   const { t } = useTranslation();
 
   const entityKinds: string[] = useMemo(() => {
@@ -120,8 +127,8 @@ export const EntitiesInput = (props: {
       options={availableEntities}
       getOptionLabel={getEntityTitle}
       ListboxComponent={
-        AutocompleteListboxComponent as React.ComponentType<
-          React.HTMLAttributes<HTMLElement>
+        AutocompleteListboxComponent as ComponentType<
+          HTMLAttributes<HTMLElement>
         >
       }
       disableListWrap

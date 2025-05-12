@@ -1,5 +1,5 @@
 import { useAnalytics } from '@backstage/core-plugin-api';
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   FilterKey,
@@ -35,15 +35,15 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
   const { type, tags, author, entities, entity, favorite, initialPageSize } =
     props;
   const analytics = useAnalytics();
-  const [page, setPage] = React.useState(1);
-  const [pageCount, setPageCount] = React.useState(1);
-  const [postsPerPage, setPostsPerPage] = React.useState(initialPageSize ?? 10);
-  const [showFilterPanel, setShowFilterPanel] = React.useState(
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
+  const [postsPerPage, setPostsPerPage] = useState(initialPageSize ?? 10);
+  const [showFilterPanel, setShowFilterPanel] = useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
   );
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [filters, setFilters] = React.useState<PostFilters>({
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<PostFilters>({
     order: props.order ?? 'desc',
     orderBy: props.orderBy ?? 'created',
     noAnswers: props.noAnswers ?? 'false',

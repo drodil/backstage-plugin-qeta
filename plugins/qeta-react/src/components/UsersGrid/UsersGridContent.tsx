@@ -1,4 +1,3 @@
-import React from 'react';
 import { UsersResponse } from '@drodil/backstage-plugin-qeta-common';
 import { WarningPanel } from '@backstage/core-components';
 import { useTranslation } from '../../hooks';

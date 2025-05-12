@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useIsModerator, useTranslation } from '../../hooks';
 import { QetaApi, TemplateRequest } from '@drodil/backstage-plugin-qeta-common';
 import { useApi } from '@backstage/core-plugin-api';
@@ -65,11 +65,11 @@ const getValues = async (
 
 export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
   const { id, onPost } = props;
-  const [posting, setPosting] = React.useState(false);
+  const [posting, setPosting] = useState(false);
   const catalogApi = useApi(catalogApiRef);
   const qetaApi = useApi(qetaApiRef);
-  const [error, setError] = React.useState(false);
-  const [values, setValues] = React.useState(getDefaultValues());
+  const [error, setError] = useState(false);
+  const [values, setValues] = useState(getDefaultValues());
   const { isModerator } = useIsModerator();
   const { t } = useTranslation();
   const {

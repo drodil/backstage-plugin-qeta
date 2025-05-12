@@ -1,5 +1,5 @@
 import { ContentHeader, InfoCard, Progress } from '@backstage/core-components';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   AIAnswerCard,
   PostForm,

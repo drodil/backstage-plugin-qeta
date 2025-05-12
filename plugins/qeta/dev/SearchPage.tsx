@@ -1,4 +1,3 @@
-import React from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import {

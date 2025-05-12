@@ -1,5 +1,5 @@
 import { Box, Grid, Typography } from '@material-ui/core';
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQetaApi, useTranslation } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
@@ -13,11 +13,11 @@ type EntityFilters = {
 };
 
 export const EntitiesGrid = () => {
-  const [page, setPage] = React.useState(1);
-  const [pageCount, setPageCount] = React.useState(1);
-  const [entitiesPerPage, setEntitiesPerPage] = React.useState(25);
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [filters, setFilters] = React.useState<EntityFilters>({
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
+  const [entitiesPerPage, setEntitiesPerPage] = useState(25);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<EntityFilters>({
     order: 'desc',
     searchQuery: '',
   });

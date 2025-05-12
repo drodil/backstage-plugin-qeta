@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from '../../hooks';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
 import { CollectionChip } from '../TagsAndEntities/CollectionChip';

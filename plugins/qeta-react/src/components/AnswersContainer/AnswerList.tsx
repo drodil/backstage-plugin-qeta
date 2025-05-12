@@ -1,5 +1,5 @@
 import { Progress, WarningPanel } from '@backstage/core-components';
-import React, { useRef } from 'react';
+import { ChangeEvent, useRef } from 'react';
 import { AnswersResponse } from '@drodil/backstage-plugin-qeta-common';
 import { AnswerListItem } from './AnswerListItem';
 import { useTranslation } from '../../hooks';
@@ -37,19 +37,14 @@ export const AnswerList = (props: {
   const listRef = useRef<HTMLDivElement | null>(null);
   const { t } = useTranslation();
 
-  const handlePageChange = (
-    _event: React.ChangeEvent<unknown>,
-    value: number,
-  ) => {
+  const handlePageChange = (_event: ChangeEvent<unknown>, value: number) => {
     if (listRef.current) {
       listRef.current.scrollIntoView();
     }
     onPageChange(value);
   };
 
-  const handlePageSizeChange = (
-    event: React.ChangeEvent<{ value: unknown }>,
-  ) => {
+  const handlePageSizeChange = (event: ChangeEvent<{ value: unknown }>) => {
     if (listRef.current) {
       listRef.current.scrollIntoView();
     }

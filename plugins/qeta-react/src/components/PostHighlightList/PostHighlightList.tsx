@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode, Fragment } from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
@@ -12,7 +12,7 @@ export const PostHighlightList = (props: {
   type: string;
   title: string;
   noQuestionsLabel: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   options?: PostsQuery;
   postType?: PostType;
 }) => {
@@ -64,7 +64,7 @@ export const PostHighlightList = (props: {
           posts.map(q => {
             const route = q.type === 'question' ? questionRoute : articleRoute;
             return (
-              <React.Fragment key={q.id}>
+              <Fragment key={q.id}>
                 <Divider />
                 <ListItem
                   dense
@@ -74,7 +74,7 @@ export const PostHighlightList = (props: {
                 >
                   <ListItemText>{q.title}</ListItemText>
                 </ListItem>
-              </React.Fragment>
+              </Fragment>
             );
           })}
       </RightList>

@@ -1,6 +1,6 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import { IconButton, Tooltip } from '@material-ui/core';
-import React from 'react';
+import { useState, Fragment } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
@@ -8,7 +8,7 @@ import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
 
 export const FavoriteButton = (props: { entity: PostResponse }) => {
-  const [entity, setEntity] = React.useState<PostResponse>(props.entity);
+  const [entity, setEntity] = useState<PostResponse>(props.entity);
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslation();
 
@@ -25,7 +25,7 @@ export const FavoriteButton = (props: { entity: PostResponse }) => {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       {entity.favorite ? (
         <Tooltip title={t('favorite.remove')}>
           <IconButton
@@ -49,6 +49,6 @@ export const FavoriteButton = (props: { entity: PostResponse }) => {
           </IconButton>
         </Tooltip>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 };

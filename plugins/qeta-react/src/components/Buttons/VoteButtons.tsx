@@ -5,7 +5,7 @@ import {
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
-import React from 'react';
+import { Fragment } from 'react';
 import { useVoting } from '../../hooks/useVoting';
 import {
   Box,
@@ -58,7 +58,7 @@ export const VoteButtons = (props: {
   const classes = useStyles();
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Tooltip title={voteUpTooltip}>
         <span>
           <IconButton
@@ -116,6 +116,6 @@ export const VoteButtons = (props: {
             </Tooltip>
           </Box>
         )}
-    </React.Fragment>
+    </Fragment>
   );
 };

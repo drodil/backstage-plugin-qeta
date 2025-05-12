@@ -6,7 +6,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import React, { useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -116,13 +116,13 @@ export const PostForm = (props: PostFormProps) => {
   const articleRoute = useRouteRef(articleRouteRef);
   const navigate = useNavigate();
   const analytics = useAnalytics();
-  const [entityRef, setEntityRef] = React.useState(entity);
-  const [posting, setPosting] = React.useState(false);
-  const [values, setValues] = React.useState(getDefaultValues(props));
-  const [error, setError] = React.useState(false);
-  const [edited, setEdited] = React.useState(false);
+  const [entityRef, setEntityRef] = useState(entity);
+  const [posting, setPosting] = useState(false);
+  const [values, setValues] = useState(getDefaultValues(props));
+  const [error, setError] = useState(false);
+  const [edited, setEdited] = useState(false);
 
-  const [images, setImages] = React.useState<number[]>([]);
+  const [images, setImages] = useState<number[]>([]);
   const [searchParams, _setSearchParams] = useSearchParams();
   const { t } = useTranslation();
 

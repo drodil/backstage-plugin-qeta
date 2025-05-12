@@ -12,7 +12,6 @@ import {
   useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import React from 'react';
 import { Grid } from '@material-ui/core';
 
 export const HomePage = () => {

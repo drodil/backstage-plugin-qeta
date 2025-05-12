@@ -1,4 +1,3 @@
-import React from 'react';
 import { DateTime } from 'luxon';
 import { Link } from '@backstage/core-components';
 import {

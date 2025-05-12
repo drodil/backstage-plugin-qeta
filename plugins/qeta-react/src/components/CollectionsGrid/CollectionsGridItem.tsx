@@ -3,7 +3,6 @@ import {
   removeMarkdownFormatting,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
-import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionRouteRef } from '../../routes';
 import {

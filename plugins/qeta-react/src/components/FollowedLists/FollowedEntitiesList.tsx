@@ -1,4 +1,3 @@
-import React from 'react';
 import { EntityChip } from '../TagsAndEntities/EntityChip';
 import { useEntityFollow, useTranslation } from '../../hooks';
 import { RightList, RightListContainer } from '../Utility/RightList';

@@ -1,5 +1,5 @@
 import { WarningPanel } from '@backstage/core-components';
-import React, { useRef } from 'react';
+import { ChangeEvent, useRef } from 'react';
 import { PostListItem } from './PostListItem';
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { NoPostsCard } from './NoPostsCard';
@@ -39,19 +39,14 @@ export const PostList = (props: {
   const listRef = useRef<HTMLDivElement | null>(null);
   const { t } = useTranslation();
 
-  const handlePageChange = (
-    _event: React.ChangeEvent<unknown>,
-    value: number,
-  ) => {
+  const handlePageChange = (_event: ChangeEvent<unknown>, value: number) => {
     if (listRef.current) {
       listRef.current.scrollIntoView();
     }
     onPageChange(value);
   };
 
-  const handlePageSizeChange = (
-    event: React.ChangeEvent<{ value: unknown }>,
-  ) => {
+  const handlePageSizeChange = (event: ChangeEvent<{ value: unknown }>) => {
     if (listRef.current) {
       listRef.current.scrollIntoView();
     }

@@ -1,5 +1,5 @@
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
-import React, { useRef } from 'react';
+import { ChangeEvent, useRef } from 'react';
 import { WarningPanel } from '@backstage/core-components';
 import { NoPostsCard } from '../PostsContainer/NoPostsCard';
 import { Box, Grid } from '@material-ui/core';
@@ -44,19 +44,14 @@ export const PostsGridContent = (props: {
   const { t } = useTranslation();
   const gridRef = useRef<HTMLDivElement | null>(null);
 
-  const handlePageChange = (
-    _event: React.ChangeEvent<unknown>,
-    value: number,
-  ) => {
+  const handlePageChange = (_event: ChangeEvent<unknown>, value: number) => {
     if (gridRef.current) {
       gridRef.current.scrollIntoView();
     }
     onPageChange(value);
   };
 
-  const handlePageSizeChange = (
-    event: React.ChangeEvent<{ value: unknown }>,
-  ) => {
+  const handlePageSizeChange = (event: ChangeEvent<{ value: unknown }>) => {
     if (gridRef.current) {
       gridRef.current.scrollIntoView();
     }

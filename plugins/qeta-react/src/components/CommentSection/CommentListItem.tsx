@@ -3,7 +3,8 @@ import { MarkdownRenderer } from '../MarkdownRenderer';
 import { AuthorLink } from '../Links';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { Link } from '@backstage/core-components';
-import React, { useState } from 'react';
+import { useState } from 'react';
+import * as React from 'react';
 import { useTranslation } from '../../hooks';
 import {
   AnswerResponse,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import {
   TemplateList,
   useIsModerator,
@@ -17,7 +17,7 @@ export const ModeratorPage = () => {
     return null;
   }
 
-  const handleChange = (_event: React.ChangeEvent<{}>, newValue: string) => {
+  const handleChange = (_event: ChangeEvent<{}>, newValue: string) => {
     setTab(newValue);
   };
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from '../../hooks';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 

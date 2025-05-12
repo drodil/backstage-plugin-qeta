@@ -2,7 +2,6 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import React from 'react';
 import { Box, Divider } from '@material-ui/core';
 import { CommentListItem } from './CommentListItem.tsx';
 

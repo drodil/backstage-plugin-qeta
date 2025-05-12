@@ -1,5 +1,5 @@
 import { Collection, PostResponse } from '@drodil/backstage-plugin-qeta-common';
-import React from 'react';
+import { useState } from 'react';
 import {
   Button,
   Dialog,
@@ -21,7 +21,7 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
   const { value: response, retry } = useQetaApi(api => {
     return api.getCollections({ checkAccess: true });
   }, []);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const qetaApi = useApi(qetaApiRef);
 
   const handleClickOpen = () => {

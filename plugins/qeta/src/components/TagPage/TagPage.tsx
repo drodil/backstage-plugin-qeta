@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
@@ -22,7 +22,7 @@ import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 export const TagPage = () => {
   const { tag } = useParams();
   const { t } = useTranslation();
-  const [resp, setResp] = React.useState<undefined | TagResponse>();
+  const [resp, setResp] = useState<undefined | TagResponse>();
 
   const qetaApi = useApi(qetaApiRef);
 

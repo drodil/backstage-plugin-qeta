@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { PostForm, useTranslation } from '@drodil/backstage-plugin-qeta-react';

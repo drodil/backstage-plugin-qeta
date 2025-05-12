@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import { CSSProperties } from 'react';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { useTranslation, useUserFollow } from '../../hooks';

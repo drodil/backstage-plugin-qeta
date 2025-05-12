@@ -1,5 +1,4 @@
 import { TagGridItem } from './TagGridItem';
-import React from 'react';
 import { TagsResponse } from '@drodil/backstage-plugin-qeta-common';
 import { WarningPanel } from '@backstage/core-components';
 import { useTranslation } from '../../hooks';

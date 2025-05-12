@@ -1,4 +1,3 @@
-import React from 'react';
 import numeral from 'numeral';
 import { useQetaApi, useTranslation } from '../../hooks';
 import { Box, Card, CardContent, Typography } from '@material-ui/core';

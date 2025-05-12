@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core';
-import React from 'react';
+import { ReactNode, forwardRef } from 'react';
 
 const useStyles = makeStyles(theme => ({
   content: {
@@ -19,10 +19,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const ModalContent = React.forwardRef<
+export const ModalContent = forwardRef<
   HTMLDivElement,
   { children: React.ReactNode }
->((props: { children: React.ReactNode }, ref) => {
+>((props: { children: ReactNode }, ref) => {
   const styles = useStyles();
   return (
     <div tabIndex={-1} className={styles.content} ref={ref}>
