@@ -7,13 +7,13 @@ export const qetaRouteRef = createRouteRef({
 export const askRouteRef = createSubRouteRef({
   id: 'qeta.ask',
   parent: qetaRouteRef,
-  path: '/ask',
+  path: '/questions/ask',
 });
 
 export const favoriteQuestionsRouteRef = createSubRouteRef({
   id: 'qeta.favoriteQuestions',
   parent: qetaRouteRef,
-  path: '/questions/favorite',
+  path: '/favorites',
 });
 
 export const statisticsRouteRef = createSubRouteRef({
@@ -61,7 +61,7 @@ export const collectionEditRouteRef = createSubRouteRef({
 export const writeRouteRef = createSubRouteRef({
   id: 'qeta.write',
   parent: qetaRouteRef,
-  path: '/write',
+  path: '/articles/write',
 });
 
 export const articlesRouteRef = createSubRouteRef({

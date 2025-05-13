@@ -115,9 +115,11 @@ export const LeftMenu = (props: {
 
   const CustomMenuItem = ({
     route,
+    hasSubRoutes,
     children,
   }: {
     route: string;
+    hasSubRoutes?: boolean;
     children: ReactNode[];
   }) => {
     return (
@@ -133,7 +135,8 @@ export const LeftMenu = (props: {
           }
         }}
         className={
-          route === location.pathname
+          route === location.pathname ||
+          (hasSubRoutes && location.pathname?.startsWith(route))
             ? styles.selectedMenuItem
             : styles.nonSelectedMenuItem
         }
@@ -172,13 +175,13 @@ export const LeftMenu = (props: {
         <ListItem>
           <Typography variant="subtitle2">{t('leftMenu.content')}</Typography>
         </ListItem>
-        <CustomMenuItem route={questionsRoute()}>
+        <CustomMenuItem route={questionsRoute()} hasSubRoutes>
           <ListItemIcon className={styles.menuIcon}>
             <HelpOutlined fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.questions')}
         </CustomMenuItem>
-        <CustomMenuItem route={articlesRoute()}>
+        <CustomMenuItem route={articlesRoute()} hasSubRoutes>
           <ListItemIcon className={styles.menuIcon}>
             <CollectionsBookmarkIcon fontSize="small" />
           </ListItemIcon>
@@ -190,13 +193,13 @@ export const LeftMenu = (props: {
           </ListItemIcon>
           {t('leftMenu.favoriteQuestions')}
         </CustomMenuItem>
-        <CustomMenuItem route={entitiesRoute()}>
+        <CustomMenuItem route={entitiesRoute()} hasSubRoutes>
           <ListItemIcon className={styles.menuIcon}>
             <EntityIcon fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.entities')}
         </CustomMenuItem>
-        <CustomMenuItem route={tagsRoute()}>
+        <CustomMenuItem route={tagsRoute()} hasSubRoutes>
           <ListItemIcon className={styles.menuIcon}>
             <LoyaltyOutlined fontSize="small" />
           </ListItemIcon>
@@ -205,7 +208,7 @@ export const LeftMenu = (props: {
         <ListItem>
           <Typography variant="subtitle2">{t('leftMenu.community')}</Typography>
         </ListItem>
-        <CustomMenuItem route={collectionsRoute()}>
+        <CustomMenuItem route={collectionsRoute()} hasSubRoutes>
           <ListItemIcon className={styles.menuIcon}>
             <PlaylistPlay fontSize="small" />
           </ListItemIcon>
