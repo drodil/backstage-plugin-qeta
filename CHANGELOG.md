@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.25.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.24.5...v3.25.0) (2025-05-13)
+
+
+### Features
+
+* allow setting moderator access using permissions ([623b762](https://github.com/drodil/backstage-plugin-qeta/commit/623b762f2d3824f6182ffc26e63f16ff41d251b7))
+
+
+### Bug Fixes
+
+* add attachment mapper to support different knex dialects ([c77fec6](https://github.com/drodil/backstage-plugin-qeta/commit/c77fec60229a01f838a3b5cec21f58bf841be41b))
+* add loading to stats + improve performance ([ab3a5d4](https://github.com/drodil/backstage-plugin-qeta/commit/ab3a5d4161152a71b22595ace61d2c8c6c58eabf)), closes [#287](https://github.com/drodil/backstage-plugin-qeta/issues/287)
+* authorize mocks in tests ([7b2a98d](https://github.com/drodil/backstage-plugin-qeta/commit/7b2a98dfbaa36b112507243b114e859776271534))
+* fetch owned entities only once for filter panel ([9e147a4](https://github.com/drodil/backstage-plugin-qeta/commit/9e147a4aea9e2ff045ceb6727528348cfd65e4f4))
+* show active menu for subpaths ([6ba4e49](https://github.com/drodil/backstage-plugin-qeta/commit/6ba4e49a92ecb61ae87ab1bc2a11506cfd39a08e))
+
 ### [3.24.5](https://github.com/drodil/backstage-plugin-qeta/compare/v3.24.4...v3.24.5) (2025-04-11)
 
 ### [3.24.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.24.3...v3.24.4) (2025-04-11)
