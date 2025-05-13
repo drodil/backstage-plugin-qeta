@@ -1762,7 +1762,7 @@ export class DatabaseQetaStore implements QetaStore {
       .insert({
         totalQuestions: await this.getCount('posts', { type: 'question' }),
         totalAnswers: await this.getCount('answers'),
-        totalUsers: (await this.getUsers()).total,
+        totalUsers: await this.getUsersCount(),
         totalTags: await this.getCount('tags'),
         totalViews: await this.getCount('post_views'),
         totalComments: await this.getCount('comments'),
