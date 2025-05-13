@@ -407,6 +407,7 @@ export interface QetaStore {
   getUsers(
     options?: { entityRefs?: string[] } & UsersQuery,
   ): Promise<UsersResponse>;
+  getUsersCount(): Promise<number>;
   getUser(user_ref: string): Promise<UserResponse | null>;
   getUserTags(
     user_ref: string,

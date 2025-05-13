@@ -3,7 +3,7 @@ import {
   SummaryStatsGrid,
   useQetaApi,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Card, CardContent, Grid } from '@material-ui/core';
+import { Card, CardContent, CircularProgress, Grid } from '@material-ui/core';
 
 export const GlobalStatsContent = () => {
   const {
@@ -11,7 +11,7 @@ export const GlobalStatsContent = () => {
     loading,
     error,
   } = useQetaApi(api => api.getGlobalStats(), []);
-  if (loading || error || !response) {
+  if (error) {
     return null;
   }
   return (
@@ -19,12 +19,13 @@ export const GlobalStatsContent = () => {
       <Grid item xs={12}>
         <Card>
           <CardContent>
-            <StatsChart data={response.statistics} />
+            {!loading && response && <StatsChart data={response.statistics} />}
+            {loading && <CircularProgress />}
           </CardContent>
         </Card>
       </Grid>
       <Grid item xs={12}>
-        <SummaryStatsGrid stats={response} />
+        {!loading && response && <SummaryStatsGrid stats={response} />}
       </Grid>
     </Grid>
   );

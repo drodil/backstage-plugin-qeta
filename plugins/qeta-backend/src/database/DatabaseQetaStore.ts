@@ -1135,6 +1135,11 @@ export class DatabaseQetaStore implements QetaStore {
     return this.getTagById(id);
   }
 
+  async getUsersCount(): Promise<number> {
+    const query = await this.db('unique_authors').count('author as CNT');
+    return Number(query[0].CNT);
+  }
+
   async getUsers(
     options?: { entityRefs?: string[] } & UsersQuery,
   ): Promise<UsersResponse> {

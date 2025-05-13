@@ -21,7 +21,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       database.getCount('post_votes', { author: user_ref }),
       database.getCount('answer_votes', { author: user_ref }),
       database.getCount('posts', { author: user_ref, type: 'article' }),
-      !user_ref ? database.getUsers() : undefined,
+      !user_ref ? database.getUsersCount() : undefined,
       !user_ref ? database.getCount('tags') : undefined,
     ]);
     return {
@@ -31,7 +31,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       totalComments: results[3],
       totalVotes: results[4] + results[5],
       totalArticles: results[6],
-      totalUsers: results[7] ? results[7].total : undefined,
+      totalUsers: results[7],
       totalTags: results[8],
     };
   };

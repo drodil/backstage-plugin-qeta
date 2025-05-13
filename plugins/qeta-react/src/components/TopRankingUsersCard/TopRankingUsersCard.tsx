@@ -154,6 +154,7 @@ export const RankingCard = (props: {
               position={authorStats.position || 0}
               userRef={authorStats.author}
               unit={props.unit}
+              key={authorStats.author}
             />
           );
         })}
@@ -239,7 +240,7 @@ export const TopRankingUsers = (props: {
   } else if (topStatistics && topStatistics.length > 0) {
     content = topStatistics?.map((stats, index) => {
       return (
-        <CardTab label={tabData[index].title}>
+        <CardTab label={tabData[index].title} key={tabData[index].title}>
           <RankingCard
             description={tabData[index].description}
             limit={props.limit}
