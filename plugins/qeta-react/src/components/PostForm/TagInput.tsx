@@ -110,6 +110,22 @@ export const TagInput = (props: {
     return null;
   }
 
+  const getHelperText = () => {
+    if (hideHelpText) {
+      return '';
+    }
+
+    if (!allowCreation) {
+      return t('tagsInput.helperText', {
+        max: maximumTags.toString(10),
+      });
+    }
+
+    return `${t('tagsInput.helperText', {
+      max: maximumTags.toString(10),
+    })}. ${t('tagsInput.allowAddHelperText')}`;
+  };
+
   return (
     <Autocomplete
       multiple
@@ -161,13 +177,10 @@ export const TagInput = (props: {
           margin="normal"
           label={t('tagsInput.label')}
           placeholder={t('tagsInput.placeholder')}
-          helperText={
-            hideHelpText
-              ? ''
-              : t('tagsInput.helperText', {
-                  max: maximumTags.toString(10),
-                })
-          }
+          helperText={getHelperText()}
+          FormHelperTextProps={{
+            style: { marginLeft: '0.2em' },
+          }}
           error={error !== undefined}
         />
       )}

@@ -50,6 +50,9 @@ export const HeaderImageInput = (props: {
           variant="outlined"
           onChange={e => onChange(e.target.value)}
           helperText={t('fileInput.helperText')}
+          FormHelperTextProps={{
+            style: { marginLeft: '0.2em' },
+          }}
         />
       </Grid>
       {!isUploadDisabled && (

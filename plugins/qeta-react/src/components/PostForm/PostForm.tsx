@@ -302,6 +302,9 @@ export const PostForm = (props: PostFormProps) => {
         margin="normal"
         variant="outlined"
         helperText={t('postForm.titleInput.helperText', { type })}
+        FormHelperTextProps={{
+          style: { marginLeft: '0.2em' },
+        }}
         {
           // @ts-ignore
           ...register('title', { required: true, maxLength: 255 })

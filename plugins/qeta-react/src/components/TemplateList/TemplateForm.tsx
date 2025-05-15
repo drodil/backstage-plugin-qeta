@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useIsModerator, useTranslation } from '../../hooks';
 import { QetaApi, TemplateRequest } from '@drodil/backstage-plugin-qeta-common';
 import { useApi } from '@backstage/core-plugin-api';
@@ -142,6 +142,9 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
         margin="normal"
         variant="outlined"
         helperText={t('templateList.titleInput.helperText')}
+        FormHelperTextProps={{
+          style: { marginLeft: '0.2em' },
+        }}
         {
           // @ts-ignore
           ...register('title', { required: true, maxLength: 255 })
@@ -157,6 +160,9 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
         margin="normal"
         variant="outlined"
         helperText={t('templateList.descriptionInput.helperText')}
+        FormHelperTextProps={{
+          style: { marginLeft: '0.2em' },
+        }}
         {
           // @ts-ignore
           ...register('description', { required: true, maxLength: 255 })
@@ -170,6 +176,9 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
         error={'questionTitle' in errors}
         margin="normal"
         variant="outlined"
+        FormHelperTextProps={{
+          style: { marginLeft: '0.2em' },
+        }}
         helperText={t('templateList.questionTitleInput.helperText')}
         {
           // @ts-ignore

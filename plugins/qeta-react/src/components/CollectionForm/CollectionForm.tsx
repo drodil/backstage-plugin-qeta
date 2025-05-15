@@ -1,7 +1,7 @@
 import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -180,6 +180,9 @@ export const CollectionForm = (props: CollectionFormProps) => {
         margin="normal"
         variant="outlined"
         helperText={t('collectionForm.titleInput.helperText')}
+        FormHelperTextProps={{
+          style: { marginLeft: '0.2em' },
+        }}
         {
           // @ts-ignore
           ...register('title', { required: true, maxLength: 255 })

@@ -185,6 +185,9 @@ export const EntitiesInput = (props: {
           margin="normal"
           label={t('entitiesInput.label')}
           placeholder={t('entitiesInput.placeholder')}
+          FormHelperTextProps={{
+            style: { marginLeft: '0.2em' },
+          }}
           helperText={
             hideHelpText
               ? ''

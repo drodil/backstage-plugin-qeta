@@ -125,6 +125,8 @@ export const qetaTranslationRef = createTranslationRef({
       label: 'Tags',
       placeholder: 'Type or select tags',
       helperText: 'Add up to {{max}} tags to categorize your question',
+      allowAddHelperText:
+        'You can create new tags by typing the tag and pressing enter',
     },
     askPage: {
       title: {

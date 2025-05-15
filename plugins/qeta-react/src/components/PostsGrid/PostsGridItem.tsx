@@ -15,6 +15,7 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  Grid,
   IconButton,
   Tooltip,
   Typography,
@@ -105,28 +106,33 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
       <CardContent style={{ paddingTop: '0.5rem' }}>
         <TagsAndEntities entity={post} />
         <Box style={{ paddingLeft: '0.2rem', paddingTop: '0.5rem' }}>
-          <Typography variant="caption">
-            <SmallAvatar
-              src={user?.spec?.profile?.picture}
-              alt={name}
-              variant="rounded"
-            >
-              {initials}
-            </SmallAvatar>
-            <UserLink entityRef={post.author} anonymous={post.anonymous} />{' '}
-            <Link to={href} className="qetaPostListItemQuestionBtn">
-              <RelativeTimeWithTooltip value={post.created} />
-            </Link>
-            {' · '}
-            {t('common.views', { count: views })}
-          </Typography>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Typography variant="subtitle2">
+                {t('common.views', { count: views })}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <SmallAvatar
+                src={user?.spec?.profile?.picture}
+                alt={name}
+                variant="rounded"
+              >
+                {initials}
+              </SmallAvatar>
+              <UserLink entityRef={post.author} anonymous={post.anonymous} />{' '}
+              <Link to={href} className="qetaPostListItemQuestionBtn">
+                <RelativeTimeWithTooltip value={post.created} />
+              </Link>
+            </Grid>
+          </Grid>
         </Box>
         {allowRanking && (
           <Box
             style={{
               paddingRight: '0.2em',
-              paddingTop: '0.5em',
-              paddingBottom: '0.5em',
+              paddingTop: '0.8em',
+              paddingBottom: '0.2em',
               float: 'right',
             }}
           >
