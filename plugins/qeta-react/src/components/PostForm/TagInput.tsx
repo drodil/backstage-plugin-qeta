@@ -1,12 +1,12 @@
 import { Autocomplete } from '@material-ui/lab';
 import { TextField, Tooltip, Typography } from '@material-ui/core';
 import {
+  ComponentType,
   CSSProperties,
   HTMLAttributes,
-  ComponentType,
-  useState,
   useEffect,
   useMemo,
+  useState,
 } from 'react';
 import { qetaApiRef } from '../../api';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
@@ -43,6 +43,7 @@ export const TagInput = (props: {
   const [allowCreation, setAllowCreation] = useState<boolean | undefined>(
     allowCreate,
   );
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (allowCreate !== undefined) {
       return;
@@ -84,6 +85,7 @@ export const TagInput = (props: {
       .getTags()
       .catch(_ => setAvailableTags([]))
       .then(data => {
+        setLoading(false);
         if (!data) {
           return;
         }
@@ -114,8 +116,13 @@ export const TagInput = (props: {
       id="tags-select"
       className="qetaTagInput"
       value={value}
+      loading={loading}
+      autoHighlight
+      autoComplete
+      loadingText={t('common.loading')}
       options={availableTags ?? []}
       freeSolo={allowCreation}
+      handleHomeEndKeys
       ListboxComponent={
         AutocompleteListboxComponent as ComponentType<
           HTMLAttributes<HTMLElement>
@@ -126,15 +133,13 @@ export const TagInput = (props: {
       renderOption={option => {
         if (tagDescriptions[option]) {
           return (
-            <>
-              <Tooltip
-                arrow
-                placement="right"
-                title={<Typography>{tagDescriptions[option]}</Typography>}
-              >
-                <span>{option}</span>
-              </Tooltip>
-            </>
+            <Tooltip
+              arrow
+              placement="right"
+              title={<Typography>{tagDescriptions[option]}</Typography>}
+            >
+              <span>{option}</span>
+            </Tooltip>
           );
         }
         return option;

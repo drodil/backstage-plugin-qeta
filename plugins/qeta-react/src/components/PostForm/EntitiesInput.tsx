@@ -3,12 +3,12 @@ import { getEntityTitle } from '../../utils/utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { TextField, Tooltip, Typography } from '@material-ui/core';
 import {
+  ComponentType,
   CSSProperties,
   HTMLAttributes,
-  ComponentType,
-  useState,
   useEffect,
   useMemo,
+  useState,
 } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -44,6 +44,7 @@ export const EntitiesInput = (props: {
   const [availableEntities, setAvailableEntities] = useState<Entity[] | null>(
     [],
   );
+  const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
 
   const entityKinds: string[] = useMemo(() => {
@@ -61,6 +62,7 @@ export const EntitiesInput = (props: {
   useEffect(() => {
     if (singleValue) {
       catalogApi.getEntityByRef(singleValue).then(data => {
+        setLoading(false);
         if (data) {
           setAvailableEntities([data]);
         }
@@ -76,9 +78,15 @@ export const EntitiesInput = (props: {
     if (useOnlyUsedEntities) {
       qetaApi.getEntities().then(data => {
         const refs = data.entities.map(r => r.entityRef);
-        catalogApi.getEntitiesByRefs({ entityRefs: refs }).then(catalogData => {
-          setAvailableEntities(compact(catalogData.items));
-        });
+        catalogApi
+          .getEntitiesByRefs({ entityRefs: refs })
+          .catch(_ => setAvailableEntities(null))
+          .then(catalogData => {
+            setLoading(false);
+            setAvailableEntities(
+              catalogData ? compact(catalogData.items) : null,
+            );
+          });
       });
       return;
     }
@@ -98,9 +106,10 @@ export const EntitiesInput = (props: {
           ],
         })
         .catch(_ => setAvailableEntities(null))
-        .then(data =>
-          data ? setAvailableEntities(data.items) : setAvailableEntities(null),
-        );
+        .then(data => {
+          setLoading(false);
+          setAvailableEntities(data ? data.items : null);
+        });
     }
   }, [
     catalogApi,
@@ -111,19 +120,24 @@ export const EntitiesInput = (props: {
     qetaApi,
   ]);
 
-  if (!availableEntities || availableEntities.length === 0) {
+  if (!availableEntities) {
     return null;
   }
 
   return (
     <Autocomplete
       multiple
+      autoHighlight
+      autoComplete
       className="qetaEntitiesInput"
       value={value}
       disabled={disabled}
+      loading={loading}
+      loadingText={t('common.loading')}
       groupBy={entityKinds.length > 1 ? option => option.kind : undefined}
       renderGroup={renderGroup}
       id="entities-select"
+      handleHomeEndKeys
       options={availableEntities}
       getOptionLabel={getEntityTitle}
       ListboxComponent={

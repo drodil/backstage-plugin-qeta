@@ -6,7 +6,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -333,14 +333,6 @@ export const PostForm = (props: PostFormProps) => {
       />
       <Controller
         control={control}
-        render={({
-          field: { onChange, value },
-          fieldState: { error: tagError },
-        }) => <TagInput value={value} onChange={onChange} error={tagError} />}
-        name="tags"
-      />
-      <Controller
-        control={control}
         render={({ field: { onChange, value } }) => (
           <EntitiesInput
             value={value}
@@ -349,6 +341,14 @@ export const PostForm = (props: PostFormProps) => {
           />
         )}
         name="entities"
+      />
+      <Controller
+        control={control}
+        render={({
+          field: { onChange, value },
+          fieldState: { error: tagError },
+        }) => <TagInput value={value} onChange={onChange} error={tagError} />}
+        name="tags"
       />
       {allowAnonymouns && !id && (
         <PostAnonymouslyCheckbox
