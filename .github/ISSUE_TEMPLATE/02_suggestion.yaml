@@ -1,5 +1,5 @@
 name: '💡 Suggest a change'
-description: 'Suggest an idea for a new feature or change to Backstage'
+description: 'Suggest an idea for a new feature or change to Q&A'
 title: '[Feat]: '
 labels:
   - type:enhancement
