@@ -87,13 +87,13 @@ qeta:
   #allowGlobalEdits: true
   permissions: true
   entities:
-    max: 2
+    max: 5
   tags:
     #allowCreation: false
     #allowedTags:
       #- test
       #- another_tag
-    max: 3
+    max: 6
   moderators:
     - 'user:development/guest'
   entityKinds:

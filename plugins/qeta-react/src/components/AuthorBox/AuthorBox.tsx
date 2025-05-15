@@ -50,21 +50,14 @@ export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
             <RelativeTimeWithTooltip value={entity.created} />
           </Typography>
         </Grid>
-        {entity.updated && entity.updatedBy && (
-          <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0 }}>
-            <Typography className="qetaAuthorBoxUpdated" variant="caption">
-              {t('authorBox.updatedAtTime')}{' '}
-              <RelativeTimeWithTooltip value={entity.updated} />{' '}
-              {t('authorBox.updatedBy')} <UpdatedByLink entity={entity} />
-            </Typography>
-          </Grid>
-        )}
-        <Grid item xs={2} style={{ paddingTop: 0 }}>
+
+        <Grid item style={{ paddingTop: 0 }}>
           <Avatar
             src={user?.spec?.profile?.picture}
             className="qetaAuthorBoxAvatar avatar"
             alt={name}
             variant="rounded"
+            style={{ width: '1.2em', height: '1.2em' }}
           >
             {initials}
           </Avatar>
@@ -79,10 +72,19 @@ export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
             whiteSpace: 'nowrap',
           }}
         >
-          <Box style={{ paddingLeft: '5px' }}>
+          <Box style={{ paddingLeft: '0.3em' }}>
             <AuthorLink entity={entity} />
           </Box>
         </Grid>
+        {entity.updated && entity.updatedBy && (
+          <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0 }}>
+            <Typography className="qetaAuthorBoxUpdated" variant="caption">
+              {t('authorBox.updatedAtTime')}{' '}
+              <RelativeTimeWithTooltip value={entity.updated} />{' '}
+              {t('authorBox.updatedBy')} <UpdatedByLink entity={entity} />
+            </Typography>
+          </Grid>
+        )}
       </Grid>
     </Box>
   );

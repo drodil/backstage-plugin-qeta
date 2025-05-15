@@ -292,87 +292,85 @@ export const MarkdownRenderer = (props: {
   }
 
   return (
-    <>
-      <ReactMarkdown
-        remarkPlugins={[gfm]}
-        rehypePlugins={rehypePlugins}
-        className={`${classes.markdown} ${mainClassName ?? ''}`.trim()}
-        components={{
-          h1: (p: any) => headingRenderer(p),
-          h2: (p: any) => headingRenderer(p),
-          h3: (p: any) => headingRenderer(p),
-          h4: (p: any) => headingRenderer(p),
-          h5: (p: any) => headingRenderer(p),
-          h6: (p: any) => headingRenderer(p),
-          p: (p: any) => {
-            const { children } = p;
-            const arr = Children.toArray(children);
-            const formatted = arr.map((child: any) => {
-              if (typeof child !== 'string') {
-                return child;
+    <ReactMarkdown
+      remarkPlugins={[gfm]}
+      rehypePlugins={rehypePlugins}
+      className={`${classes.markdown} ${mainClassName ?? ''}`.trim()}
+      components={{
+        h1: (p: any) => headingRenderer(p),
+        h2: (p: any) => headingRenderer(p),
+        h3: (p: any) => headingRenderer(p),
+        h4: (p: any) => headingRenderer(p),
+        h5: (p: any) => headingRenderer(p),
+        h6: (p: any) => headingRenderer(p),
+        p: (p: any) => {
+          const { children } = p;
+          const arr = Children.toArray(children);
+          const formatted = arr.map((child: any) => {
+            if (typeof child !== 'string') {
+              return child;
+            }
+            const userMentions = findUserMentions(child);
+            const tagMentions = findTagMentions(child);
+            if (userMentions.length === 0 && tagMentions.length === 0) {
+              return child;
+            }
+
+            return child.split(' ').map((word: string) => {
+              const userMention = userMentions.find(m => word === m);
+              if (userMention) {
+                return (
+                  <>
+                    <EntityRefLink
+                      entityRef={userMention.slice(1)}
+                      hideIcon
+                      target={useBlankLinks ? '_blank' : undefined}
+                    />{' '}
+                  </>
+                );
               }
-              const userMentions = findUserMentions(child);
-              const tagMentions = findTagMentions(child);
-              if (userMentions.length === 0 && tagMentions.length === 0) {
-                return child;
+
+              const tagMention = tagMentions.find(m => word === m);
+              if (tagMention) {
+                return (
+                  <>
+                    <TagChip
+                      tag={tagMention.slice(1)}
+                      style={{ marginBottom: 0 }}
+                      useHref={useBlankLinks}
+                    />
+                  </>
+                );
               }
 
-              return child.split(' ').map((word: string) => {
-                const userMention = userMentions.find(m => word === m);
-                if (userMention) {
-                  return (
-                    <>
-                      <EntityRefLink
-                        entityRef={userMention.slice(1)}
-                        hideIcon
-                        target={useBlankLinks ? '_blank' : undefined}
-                      />{' '}
-                    </>
-                  );
-                }
-
-                const tagMention = tagMentions.find(m => word === m);
-                if (tagMention) {
-                  return (
-                    <>
-                      <TagChip
-                        tag={tagMention.slice(1)}
-                        style={{ marginBottom: 0 }}
-                        useHref={useBlankLinks}
-                      />
-                    </>
-                  );
-                }
-
-                return <>{word} </>;
-              });
+              return <>{word} </>;
             });
+          });
 
-            return <p>{formatted}</p>;
-          },
-          code(p: any) {
-            const { children, className, node, ...rest } = p;
-            const match = /language-(\w+)/.exec(className || '');
-            return match ? (
-              <SyntaxHighlighter
-                {...rest}
-                PreTag="div"
-                language={match[1]}
-                style={darkTheme ? a11yDark : a11yLight}
-                showLineNumbers
-              >
-                {String(children).replace(/\n$/, '')}
-              </SyntaxHighlighter>
-            ) : (
-              <code {...rest} className={className}>
-                {children}
-              </code>
-            );
-          },
-        }}
-      >
-        {content}
-      </ReactMarkdown>
-    </>
+          return <p>{formatted}</p>;
+        },
+        code(p: any) {
+          const { children, className, node, ...rest } = p;
+          const match = /language-(\w+)/.exec(className || '');
+          return match ? (
+            <SyntaxHighlighter
+              {...rest}
+              PreTag="div"
+              language={match[1]}
+              style={darkTheme ? a11yDark : a11yLight}
+              showLineNumbers
+            >
+              {String(children).replace(/\n$/, '')}
+            </SyntaxHighlighter>
+          ) : (
+            <code {...rest} className={className}>
+              {children}
+            </code>
+          );
+        },
+      }}
+    >
+      {content}
+    </ReactMarkdown>
   );
 };

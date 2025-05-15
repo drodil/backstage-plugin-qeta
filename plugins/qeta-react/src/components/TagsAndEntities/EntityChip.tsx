@@ -1,5 +1,5 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
@@ -53,9 +53,18 @@ const EntityTooltip = (props: { entity: Entity | string }) => {
       <Grid item xs={12}>
         <Box style={{ display: 'flex', alignItems: 'center' }}>
           {Icon ? <Icon fontSize="small" /> : null}
-          <Typography variant="h6">{primaryTitle}</Typography>
+          <Typography
+            variant="subtitle1"
+            style={{
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {primaryTitle}
+          </Typography>
         </Box>
-        <Typography variant="subtitle1">{secondaryTitle}</Typography>
+        <Typography variant="subtitle2">{secondaryTitle}</Typography>
       </Grid>
       <Grid item xs={12}>
         <Typography variant="subtitle2">

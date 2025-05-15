@@ -39,9 +39,10 @@ export interface PostListItemProps {
 
 const useStyles = makeStyles(() => ({
   author: {
-    float: 'right',
     alignItems: 'center',
     display: 'flex',
+    height: '24px',
+    marginBottom: '8px',
   },
   timestamp: {
     marginLeft: '0.3em',
@@ -94,57 +95,82 @@ export const PostListItem = (props: PostListItemProps) => {
       </Grid>
       <Grid
         item
-        style={{ display: 'inline-block', width: 'calc(100% - 80px)' }}
+        style={{ display: 'inline-block', width: 'calc(100% - 53px)' }}
       >
         <Grid container>
           <Grid
             item
+            container
+            alignItems="center"
+            spacing={0}
+            justifyContent="space-between"
             xs={12}
             style={{
               paddingTop: '0.3em',
-              paddingBottom: '0.4em',
+              paddingBottom: '0.0em',
               marginLeft: '-0.2em',
             }}
           >
-            {type === undefined && (
-              <Chip
-                color="secondary"
-                size="small"
-                label={`${capitalize(post.type)}`}
-                icon={
-                  post.type === 'question' ? (
-                    <HelpOutlined />
-                  ) : (
-                    <CollectionsBookmarkIcon />
-                  )
-                }
-              />
-            )}
-            {post.type === 'question' && (
+            <Grid item>
+              {type === undefined && (
+                <Chip
+                  color="secondary"
+                  size="small"
+                  label={`${capitalize(post.type)}`}
+                  icon={
+                    post.type === 'question' ? (
+                      <HelpOutlined />
+                    ) : (
+                      <CollectionsBookmarkIcon />
+                    )
+                  }
+                />
+              )}
+              {post.type === 'question' && (
+                <Chip
+                  variant="outlined"
+                  size="small"
+                  style={{
+                    userSelect: 'none',
+                    // eslint-disable-next-line no-nested-ternary
+                    borderColor: correctAnswer
+                      ? theme.palette.success.main
+                      : answersCount === 0
+                      ? theme.palette.warning.main
+                      : undefined,
+                  }}
+                  label={t('common.answers', {
+                    count: answersCount,
+                  })}
+                />
+              )}
               <Chip
                 variant="outlined"
                 size="small"
-                style={{
-                  userSelect: 'none',
-                  // eslint-disable-next-line no-nested-ternary
-                  borderColor: correctAnswer
-                    ? theme.palette.success.main
-                    : answersCount === 0
-                    ? theme.palette.warning.main
-                    : undefined,
-                }}
-                label={t('common.answers', {
-                  count: answersCount,
+                label={t('common.viewsShort', {
+                  count: views,
                 })}
               />
-            )}
-            <Chip
-              variant="outlined"
-              size="small"
-              label={t('common.viewsShort', {
-                count: views,
-              })}
-            />
+            </Grid>
+            <Grid item>
+              <Typography
+                variant="caption"
+                display="inline"
+                className={styles.author}
+              >
+                <SmallAvatar
+                  src={user?.spec?.profile?.picture}
+                  alt={name}
+                  variant="rounded"
+                >
+                  {initials}
+                </SmallAvatar>
+                <UserLink entityRef={post.author} anonymous={post.anonymous} />{' '}
+                <Link to={href} className={styles.timestamp}>
+                  <RelativeTimeWithTooltip value={post.created} />
+                </Link>
+              </Typography>
+            </Grid>
           </Grid>
           <Grid item xs={12} style={{ paddingTop: '0px' }}>
             <Typography variant="h5" component="div">
@@ -153,11 +179,11 @@ export const PostListItem = (props: PostListItemProps) => {
               </Link>
             </Typography>
             <Typography
-              variant="caption"
+              variant="body2"
               noWrap
               component="div"
               className="qetaPostListItemContent"
-              style={{ marginBottom: '5px' }}
+              style={{ marginTop: '0.6em' }}
             >
               {DOMPurify.sanitize(
                 truncate(removeMarkdownFormatting(post.content), 150),
@@ -166,23 +192,6 @@ export const PostListItem = (props: PostListItemProps) => {
           </Grid>
           <Grid item xs={12}>
             <TagsAndEntities entity={post} />
-            <Typography
-              variant="caption"
-              display="inline"
-              className={styles.author}
-            >
-              <SmallAvatar
-                src={user?.spec?.profile?.picture}
-                alt={name}
-                variant="rounded"
-              >
-                {initials}
-              </SmallAvatar>
-              <UserLink entityRef={post.author} anonymous={post.anonymous} />{' '}
-              <Link to={href} className={styles.timestamp}>
-                <RelativeTimeWithTooltip value={post.created} />
-              </Link>
-            </Typography>
           </Grid>
         </Grid>
       </Grid>

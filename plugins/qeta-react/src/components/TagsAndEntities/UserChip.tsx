@@ -41,22 +41,27 @@ export const UserTooltip = (props: {
     <Grid container style={{ padding: '0.5em' }} spacing={1}>
       <Grid item xs={12}>
         <Box style={{ display: 'flex', alignItems: 'center' }}>
-          <Box style={{ display: 'inline-block', marginRight: '1em' }}>
+          <Box style={{ display: 'inline-block', marginRight: '0.5em' }}>
             <Avatar
               src={user?.spec?.profile?.picture}
               alt={name}
               variant="rounded"
-              style={{ width: '1em', height: '1em' }}
+              style={{ width: '0.9em', height: '0.9em' }}
             >
               {initials}
             </Avatar>
           </Box>
-          <Typography variant="h6" style={{ display: 'inline' }}>
+          <Typography
+            variant="subtitle1"
+            style={{
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {name}
           </Typography>
         </Box>
-      </Grid>
-      <Grid item xs={12}>
         <Typography variant="subtitle2">{secondaryTitle}</Typography>
       </Grid>
       {!users.loading && currentUser?.userEntityRef !== entityRef && (

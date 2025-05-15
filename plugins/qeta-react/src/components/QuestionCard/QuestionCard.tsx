@@ -2,7 +2,7 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -119,8 +119,13 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                 alignItems="flex-end"
                 className={styles.metadata}
               >
-                <Grid item style={{ alignSelf: 'flex-end' }}>
+                <Grid item xs={8}>
                   <TagsAndEntities entity={questionEntity} />
+                </Grid>
+                <Grid item xs={3}>
+                  <AuthorBox entity={questionEntity} />
+                </Grid>
+                <Grid item xs={12}>
                   {(question.canEdit || question.canDelete) && (
                     <Box className={styles.buttons}>
                       {question.canEdit && (
@@ -160,9 +165,6 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                       )}
                     </Box>
                   )}
-                </Grid>
-                <Grid item xs={3}>
-                  <AuthorBox entity={questionEntity} />
                 </Grid>
               </Grid>
             </Grid>
