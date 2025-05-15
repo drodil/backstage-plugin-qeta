@@ -4,7 +4,7 @@ import {
   Article,
   Post,
 } from '@drodil/backstage-plugin-qeta-common';
-import { CSSProperties, useState, useCallback } from 'react';
+import { CSSProperties, useCallback, useState } from 'react';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useAI, useTranslation } from '../../hooks';
 import FlareIcon from '@material-ui/icons/Flare';
@@ -49,9 +49,7 @@ const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-ai-expanded';
 
 export const AIAnswerCard = (props: AIAnswerCardProps) => {
   const { question, draft, article, style, debounceMs = 3000 } = props;
-  const [answer, setAnswer] = useState<AIResponse | null | undefined>(
-    undefined,
-  );
+  const [answer, setAnswer] = useState<AIResponse | null | undefined>(null);
   const [expanded, setExpanded] = useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
   );
@@ -73,14 +71,19 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   const fetchAnswer = useCallback(
     (options?: AIQuery) => {
       if (!isAIEnabled) {
+        setAnswer(null);
         return;
       }
 
       if (question) {
-        answerExistingQuestion(question.id, options).then(res => {
-          setAnswer(res);
-        });
+        setAnswer(undefined);
+        answerExistingQuestion(question.id, options)
+          .catch(_ => setAnswer(null))
+          .then(res => {
+            setAnswer(res ?? null);
+          });
       } else if (article) {
+        setAnswer(undefined);
         summarizeArticle(article.id, options).then(res => {
           setAnswer(res);
         });
@@ -90,6 +93,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
         draft.content &&
         draft.title.length + draft.content.length > 30
       ) {
+        setAnswer(undefined);
         answerDraftQuestion(draft).then(res => {
           setAnswer(res);
         });
