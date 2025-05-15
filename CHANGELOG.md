@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.26.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.25.1...v3.26.0) (2025-05-15)
+
+
+### Features
+
+* add help text for adding tags ([0e0654f](https://github.com/drodil/backstage-plugin-qeta/commit/0e0654f1030fcccb9c5c0770d77fd5cc083fcabf)), closes [#281](https://github.com/drodil/backstage-plugin-qeta/issues/281)
+* show loading text for entity and tag inputs ([6aa9f43](https://github.com/drodil/backstage-plugin-qeta/commit/6aa9f4311816eeee975926258d3558235c7e7a7e)), closes [#298](https://github.com/drodil/backstage-plugin-qeta/issues/298)
+
 ### [3.25.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.25.0...v3.25.1) (2025-05-13)
 
 
