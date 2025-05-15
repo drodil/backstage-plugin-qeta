@@ -1,6 +1,6 @@
 name: '🪲 Report a bug'
 description: 'Report a bug that you have encountered'
-title: '[Bug]: '
+title: 'bug: '
 labels:
   - type:bug
 body:

@@ -1,6 +1,6 @@
 name: '💡 Suggest a change'
 description: 'Suggest an idea for a new feature or change to Q&A'
-title: '[Feat]: '
+title: 'feat: '
 labels:
   - type:enhancement
 body:
