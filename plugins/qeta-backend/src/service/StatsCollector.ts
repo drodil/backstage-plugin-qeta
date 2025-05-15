@@ -49,6 +49,8 @@ export class StatsCollector {
     for (const user of users.users) {
       logger.info(`Collecting stats for ${user.userRef}`);
       await database.saveUserStats(user, now);
+      // Give some slack for the processing
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     const historyDays =

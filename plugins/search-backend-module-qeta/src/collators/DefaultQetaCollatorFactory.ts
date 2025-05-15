@@ -123,6 +123,9 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
           },
         };
       }
+
+      // Give some slack for the processing
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     let totalCollections = Number.MAX_VALUE;
@@ -173,6 +176,9 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
           headerImage: collection.headerImage,
         };
       }
+
+      // Give some slack for the processing
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
 }
