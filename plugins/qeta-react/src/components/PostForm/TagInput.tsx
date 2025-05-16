@@ -160,14 +160,19 @@ export const TagInput = (props: {
         }
         return option;
       }}
+     
       onChange={(_e, newValue) => {
-        const tags = filterTags(newValue);
+      
+        const sanitizedTags = newValue.map(tag =>
+          tag.trim().toLowerCase().replace(/\s+/g, '-'),
+        );
+        const tags = filterTags(sanitizedTags);
         if (
           tags &&
           tags.length <= maximumTags &&
-          tags.length === newValue.length
+          tags.length === sanitizedTags.length
         ) {
-          onChange(newValue);
+          onChange(sanitizedTags);
         }
       }}
       renderInput={params => (
