@@ -260,7 +260,7 @@ export const isTagExpert = createPermissionRule({
   },
   toQuery: ({ claims = [], userRef }) => {
     return {
-      property: 'tags.expert' as TagFilter['property'],
+      property: 'tag.experts' as TagFilter['property'],
       values: [userRef, ...claims].filter(Boolean),
     };
   },

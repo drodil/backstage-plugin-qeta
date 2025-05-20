@@ -65,6 +65,7 @@ export type QetaFilter = {
     | 'comments.id'
     | 'comments.author'
     | 'tags.tag'
+    | 'tag.experts'
     | 'collections.owner'
     | 'collections.id';
   values: Array<string | undefined>;
