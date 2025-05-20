@@ -9,7 +9,8 @@ import {
 import { MouseEvent, KeyboardEvent, useState, useRef, useEffect } from 'react';
 import { LeftMenu } from './LeftMenu';
 import MenuIcon from '@material-ui/icons/Menu';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 const useStyles = makeStyles(
   () => ({
@@ -27,7 +28,7 @@ const useStyles = makeStyles(
 export const LeftMenuButton = () => {
   const [open, setOpen] = useState(false);
   const styles = useStyles();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const anchorRef = useRef<HTMLButtonElement>(null);
 
   const handleToggle = () => {

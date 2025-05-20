@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useQetaApi, useTranslation } from '../../hooks';
+import { useEffect, useState } from 'react';
+import { useQetaApi } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { UsersGridContent } from './UsersGridContent';
 import useDebounce from 'react-use/lib/useDebounce';
 import { SearchBar } from '../SearchBar/SearchBar';
 import { Grid, Typography } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 type EntityFilters = {
   order: 'asc' | 'desc';
@@ -21,7 +23,7 @@ export const UsersGrid = () => {
     order: 'desc',
     searchQuery: '',
   });
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const {
     value: response,

@@ -5,12 +5,13 @@ import { useApi } from '@backstage/core-plugin-api';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import { qetaApiRef } from '../../api';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export const FavoriteButton = (props: { entity: PostResponse }) => {
   const [entity, setEntity] = useState<PostResponse>(props.entity);
   const qetaApi = useApi(qetaApiRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const favoriteQuestion = () => {
     qetaApi.favoritePost(entity.id).then(response => {

@@ -2,7 +2,8 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { IconButton, Tooltip } from '@material-ui/core';
 import Link from '@material-ui/icons/Link';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
@@ -12,7 +13,7 @@ export const LinkButton = (props: {
   className?: string;
 }) => {
   const isQuestion = 'title' in props.entity;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const alertApi = useApi(alertApiRef);
   const copyToClipboard = () => {
     const url = new URL(window.location.href);

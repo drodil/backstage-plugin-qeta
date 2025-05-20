@@ -10,7 +10,8 @@ import { Alert } from '@material-ui/lab';
 import { useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { ModalContent } from '../Utility/ModalContent';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { EntitiesInput } from '../PostForm/EntitiesInput.tsx';
@@ -24,7 +25,7 @@ export const CreateTagModal = (props: {
   const [tag, setTag] = useState('');
   const [description, setDescription] = useState('');
   const [experts, setExperts] = useState<Entity[]>([]);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [error, setError] = useState(false);
   const qetaApi = useApi(qetaApiRef);
 

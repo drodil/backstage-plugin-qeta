@@ -11,7 +11,8 @@ import { useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { ModalContent } from '../Utility/ModalContent';
 
 export const DeleteModal = (props: {
@@ -24,7 +25,7 @@ export const DeleteModal = (props: {
   const navigate = useNavigate();
   const { entity, open, question, onClose } = props;
   const [error, setError] = useState(false);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const isQuestion = 'title' in entity;
   const isCollection = 'owner' in entity;
   const isTag = 'tag' in entity;

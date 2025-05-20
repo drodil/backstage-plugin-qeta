@@ -15,7 +15,8 @@ import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { CollectionFormData } from './types';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 const formToRequest = (
   form: CollectionFormData,
@@ -69,7 +70,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
   const [error, setError] = useState(false);
   const [edited, setEdited] = useState(false);
   const [images, setImages] = useState<number[]>([]);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const qetaApi = useApi(qetaApiRef);
   const {

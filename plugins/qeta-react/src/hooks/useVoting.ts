@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../api';
-import { useTranslation } from './useTranslation';
 import { useSignal } from '@backstage/plugin-signals-react';
 import {
   AnswerResponse,
   PostResponse,
   QetaSignal,
 } from '@drodil/backstage-plugin-qeta-common';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../translation.ts';
 
 function isPostResponse(
   resp: PostResponse | AnswerResponse,
@@ -27,7 +28,7 @@ export function useVoting(resp: PostResponse | AnswerResponse) {
   const [score, setScore] = useState(entity.score);
   const analytics = useAnalytics();
   const qetaApi = useApi(qetaApiRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const isPost = isPostResponse(resp);
   const own = entity.own ?? false;

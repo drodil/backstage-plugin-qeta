@@ -17,7 +17,8 @@ import {
 } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { qetaApiRef } from '../../api';
 import { compact } from 'lodash';
 import {
@@ -61,7 +62,7 @@ export const EntitiesInput = (props: {
     [],
   );
   const [loading, setLoading] = useState(true);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const entityKinds: string[] = useMemo(() => {
     if (kind) {
@@ -172,8 +173,13 @@ export const EntitiesInput = (props: {
         stringifyEntityRef(o) === stringifyEntityRef(v)
       }
       onChange={(_e, newValue) => {
-        if (!newValue || max === null || newValue.length <= max) {
-          onChange(newValue);
+        if (!newValue) {
+          onChange([]);
+          return;
+        }
+        const val = Array.isArray(newValue) ? newValue : [newValue];
+        if (max === null || val.length <= max) {
+          onChange(val as Entity[]);
         }
       }}
       renderOption={option => {

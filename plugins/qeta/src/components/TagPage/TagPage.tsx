@@ -9,9 +9,9 @@ import {
   PostHighlightList,
   PostsContainer,
   qetaApiRef,
+  qetaTranslationRef,
   TagFollowButton,
   TagsGrid,
-  useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import Whatshot from '@material-ui/icons/Whatshot';
@@ -19,10 +19,11 @@ import { useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const TagPage = () => {
   const { tag } = useParams();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [resp, setResp] = useState<undefined | TagResponse>();
 
   const qetaApi = useApi(qetaApiRef);

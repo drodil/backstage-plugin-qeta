@@ -4,7 +4,8 @@ import { WarningPanel } from '@backstage/core-components';
 import { NoPostsCard } from '../PostsContainer/NoPostsCard';
 import { Box, Grid } from '@material-ui/core';
 import { PostsGridItem } from './PostsGridItem';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 
@@ -41,7 +42,7 @@ export const PostsGridContent = (props: {
     page,
     pageCount,
   } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const gridRef = useRef<HTMLDivElement | null>(null);
 
   const handlePageChange = (_event: ChangeEvent<unknown>, value: number) => {

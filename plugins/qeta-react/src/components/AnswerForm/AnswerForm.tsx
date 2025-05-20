@@ -1,5 +1,5 @@
 import { WarningPanel } from '@backstage/core-components';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   AnswerRequest,
@@ -12,9 +12,10 @@ import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
-import { useTranslation } from '../../hooks';
 import { Button, Typography } from '@material-ui/core';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 type AnswerFormData = {
   postId: number;
@@ -42,7 +43,7 @@ export const AnswerForm = (props: {
   const qetaApi = useApi(qetaApiRef);
   const configApi = useApi(configApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const {
     handleSubmit,

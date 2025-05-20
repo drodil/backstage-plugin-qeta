@@ -18,7 +18,8 @@ import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { capitalize } from 'lodash';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import HelpOutlined from '@material-ui/icons/HelpOutlined';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
 import { UserLink } from '../Links';
@@ -55,7 +56,7 @@ export const PostListItem = (props: PostListItemProps) => {
   const [correctAnswer, setCorrectAnswer] = useState(post.correctAnswer);
   const [answersCount, setAnswersCount] = useState(post.answersCount);
   const [views, setViews] = useState(post.views);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
 
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);

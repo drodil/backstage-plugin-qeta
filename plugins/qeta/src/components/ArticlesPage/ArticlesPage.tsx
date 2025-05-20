@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import {
   ButtonContainer,
@@ -7,19 +7,20 @@ import {
   FollowedTagsList,
   PostHighlightList,
   PostsGrid,
-  useTranslation,
+  qetaTranslationRef,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import Whatshot from '@material-ui/icons/Whatshot';
 import { Grid } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const ArticlesPage = () => {
   const [searchParams] = useSearchParams();
 
   const [entityRef, setEntityRef] = useState<string | undefined>(undefined);
   const [tags, setTags] = useState<string[] | undefined>(undefined);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   useEffect(() => {
     setEntityRef(searchParams.get('entity') ?? undefined);
     setTags(filterTags(searchParams.get('tags')));

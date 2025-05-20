@@ -18,7 +18,8 @@ import {
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Visibility from '@material-ui/icons/Visibility';
@@ -29,7 +30,7 @@ export interface PostsGridItemProps {
 
 export const CollectionsGridItem = (props: PostsGridItemProps) => {
   const { collection } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const collectionRoute = useRouteRef(collectionRouteRef);
   const navigate = useNavigate();

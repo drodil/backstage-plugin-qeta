@@ -1,11 +1,13 @@
 import { EntityChip } from '../TagsAndEntities/EntityChip';
-import { useEntityFollow, useTranslation } from '../../hooks';
+import { useEntityFollow } from '../../hooks';
 import { RightList, RightListContainer } from '../Utility/RightList';
 import { ListItem } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export const FollowedEntitiesList = () => {
   const entities = useEntityFollow();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   if (entities.entities.length === 0 || entities.loading) {
     return null;

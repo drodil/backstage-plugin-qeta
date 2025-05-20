@@ -9,7 +9,8 @@ import { DeleteModal } from '../DeleteModal';
 import EditIcon from '@material-ui/icons/Edit';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionEditRouteRef } from '../../routes';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { useNavigate } from 'react-router-dom';
 
 export const CollectionCard = (props: { collection: Collection }) => {
@@ -19,7 +20,7 @@ export const CollectionCard = (props: { collection: Collection }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   return (
     <InfoCard>
       {collection.headerImage && (

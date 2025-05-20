@@ -1,15 +1,16 @@
 import {
   FollowedUsersList,
   PostHighlightList,
+  qetaTranslationRef,
   UsersGrid,
-  useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
 import { ContentHeader } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import Whatshot from '@material-ui/icons/Whatshot';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const UsersPage = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   return (
     <Grid container spacing={4}>

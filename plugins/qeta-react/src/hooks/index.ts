@@ -1,6 +1,5 @@
 export * from './useQetaApi';
 export * from './useTagsFollow';
-export * from './useTranslation';
 export * from './useEntityFollow';
 export * from './useEntityAuthor';
 export * from './useUserFollow';

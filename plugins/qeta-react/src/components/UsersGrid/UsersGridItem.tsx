@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { userRouteRef } from '../../routes';
 import { parseEntityRef } from '@backstage/catalog-model';
-import { useIdentityApi, useTranslation, useUserFollow } from '../../hooks';
+import { useIdentityApi, useUserFollow } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import {
   Avatar,
@@ -20,12 +20,14 @@ import {
 } from '@material-ui/core';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Visibility from '@material-ui/icons/Visibility';
+import { qetaTranslationRef } from '../../translation.ts';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const UsersGridItem = (props: { user: UserResponse }) => {
   const { user } = props;
   const userRoute = useRouteRef(userRouteRef);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const compound = parseEntityRef(user.userRef);
   const { primaryTitle, Icon } = useEntityPresentation(compound);
   const { name, initials, user: userEntity } = useEntityAuthor(user);

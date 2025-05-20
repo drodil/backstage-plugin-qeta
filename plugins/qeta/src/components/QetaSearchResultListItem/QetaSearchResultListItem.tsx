@@ -20,12 +20,13 @@ import {
   removeMarkdownFormatting,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from '@drodil/backstage-plugin-qeta-react';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import HelpOutlined from '@material-ui/icons/HelpOutlined';
 import PlaylistPlay from '@material-ui/icons/PlaylistPlay';
 import DOMPurify from 'dompurify';
 import { capitalize } from 'lodash';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
 
 const useStyles = makeStyles({
   excerptText: {
@@ -76,7 +77,7 @@ const Excerpt = (props: {
 }) => {
   const { document, highlight } = props;
   const classes = useStyles();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const text = DOMPurify.sanitize(
     truncate(

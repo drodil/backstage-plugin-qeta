@@ -1,8 +1,9 @@
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 
 export const NoUsersCard = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   return (
     <Card style={{ marginTop: '2em' }}>

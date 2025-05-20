@@ -4,7 +4,8 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef, writeRouteRef } from '../../routes';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
 import CreateIcon from '@material-ui/icons/Create';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityQueryParameter } from '../../hooks/useEntityQueryParameter';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 
@@ -18,7 +19,7 @@ export const NoPostsCard = (props: {
   const { showNoPostsBtn, entity, entityPage, tags, type } = props;
   const askRoute = useRouteRef(askRouteRef);
   const writeRoute = useRouteRef(writeRouteRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const entityRef = useEntityQueryParameter(entity) ?? entity;
 
   const queryParams = new URLSearchParams();

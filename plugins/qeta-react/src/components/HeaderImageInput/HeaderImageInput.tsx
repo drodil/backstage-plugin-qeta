@@ -1,7 +1,8 @@
 import { imageUpload } from '../../utils/utils';
 import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import {
   Button,
   Grid,
@@ -32,7 +33,7 @@ export const HeaderImageInput = (props: {
   const configApi = useApi(configApiRef);
   const qetaApi = useApi(qetaApiRef);
   const errorApi = useApi(errorApiRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
 
   const isUploadDisabled =

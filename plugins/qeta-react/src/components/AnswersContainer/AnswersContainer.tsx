@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useSearchParams } from 'react-router-dom';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
@@ -12,10 +12,12 @@ import {
   FilterPanel,
 } from '../FilterPanel/FilterPanel';
 import { AnswerList } from './AnswerList';
-import { useQetaApi, useTranslation } from '../../hooks';
+import { useQetaApi } from '../../hooks';
 import { SearchBar } from '../SearchBar/SearchBar';
 import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
 import FilterList from '@material-ui/icons/FilterList';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export interface AnswersContainerProps {
   tags?: string[];
@@ -52,7 +54,7 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
     tags: tags ?? [],
     noVotes: 'false',
   });
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   useEffect(() => {
     localStorage.setItem(

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
 import { CollectionsGridContent } from './CollectionsGridContent';
-import { useQetaApi, useTranslation } from '../../hooks';
+import { useQetaApi } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import {
@@ -16,6 +16,8 @@ import { getFiltersWithDateRange } from '../../utils';
 import { SearchBar } from '../SearchBar/SearchBar';
 import { useSearchParams } from 'react-router-dom';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export type CollectionsGridProps = {
   owner?: string;
@@ -32,7 +34,7 @@ const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-collection-filters-expanded';
 
 export const CollectionsGrid = (props: CollectionsGridProps) => {
   const { showFilters, owner } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();

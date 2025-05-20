@@ -11,7 +11,8 @@ import { Alert } from '@material-ui/lab';
 import { useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { ModalContent } from '../Utility/ModalContent';
 import { EntitiesInput } from '../PostForm/EntitiesInput.tsx';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
@@ -27,7 +28,7 @@ export const EditTagModal = (props: {
   const { tag, open, onClose, isModerator } = props;
   const [description, setDescription] = useState(tag.description);
   const [experts, setExperts] = useState<Entity[]>([]);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [error, setError] = useState(false);
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);

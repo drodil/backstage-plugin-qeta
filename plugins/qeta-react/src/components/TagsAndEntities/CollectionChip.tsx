@@ -5,7 +5,8 @@ import { qetaApiRef } from '../../api';
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
 import { useNavigate } from 'react-router-dom';
 import { MarkdownRenderer } from '../MarkdownRenderer';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
 import { Button, Chip, Grid, Tooltip, Typography } from '@material-ui/core';
 
@@ -14,7 +15,7 @@ const cache: Map<number, Collection> = new Map();
 const CollectionTooltip = (props: { collectionId: number }) => {
   const { collectionId } = props;
   const qetaApi = useApi(qetaApiRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const collections = useCollectionsFollow();
   const [resp, setResp] = useState<undefined | Collection>();
 

@@ -4,7 +4,8 @@ import {
   UserStat,
 } from '@drodil/backstage-plugin-qeta-common';
 import numeral from 'numeral';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { isGlobalStat, isUserStat } from '../StatsChart/util';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 
@@ -31,7 +32,7 @@ export const SummaryStatsGrid = (props: {
   stats: StatisticsResponse<UserStat | GlobalStat>;
 }) => {
   const { stats } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   if (!stats.summary) {
     return <Typography variant="subtitle1">{t('stats.noStats')}</Typography>;
   }

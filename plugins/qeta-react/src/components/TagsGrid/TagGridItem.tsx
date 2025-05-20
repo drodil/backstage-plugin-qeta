@@ -20,13 +20,15 @@ import { tagRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
 import { EditTagModal } from './EditTagModal';
 import DOMPurify from 'dompurify';
-import { useTagsFollow, useTranslation } from '../../hooks';
+import { useTagsFollow } from '../../hooks';
 import { DeleteModal } from '../DeleteModal';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export const TagGridItem = (props: {
   tag: TagResponse;
@@ -36,7 +38,7 @@ export const TagGridItem = (props: {
   const { tag, onTagEdit, isModerator } = props;
   const tagRoute = useRouteRef(tagRouteRef);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const tags = useTagsFollow();
 
   const [editModalOpen, setEditModalOpen] = useState(false);

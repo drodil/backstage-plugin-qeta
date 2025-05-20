@@ -17,7 +17,9 @@ import {
 import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
 import { TrophyIcon } from './TrophyIcon';
 import { UserLink } from '../Links';
-import { useQetaApi, useTranslation } from '../../hooks';
+import { useQetaApi } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 const useStyles = makeStyles(theme => {
   return {
@@ -182,7 +184,7 @@ export const TopRankingUsers = (props: {
   hideTitle?: boolean;
   limit?: number;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const {
     value: topStatistics,
     loading,

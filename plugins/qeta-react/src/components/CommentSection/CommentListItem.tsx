@@ -5,7 +5,8 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { Link } from '@backstage/core-components';
 import * as React from 'react';
 import { useState } from 'react';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import {
   AnswerResponse,
   Comment,
@@ -38,7 +39,7 @@ export const CommentListItem = (props: {
   post: PostResponse;
   answer?: AnswerResponse;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const { comment, onCommentAction, post, answer } = props;
   const qetaApi = useApi(qetaApiRef);
   const [posting, setPosting] = React.useState(false);

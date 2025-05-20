@@ -3,7 +3,8 @@ import { ChangeEvent, useRef } from 'react';
 import { PostListItem } from './PostListItem';
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { NoPostsCard } from './NoPostsCard';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 import { Box, Card, Divider, Grid } from '@material-ui/core';
@@ -37,7 +38,7 @@ export const PostList = (props: {
     type,
   } = props;
   const listRef = useRef<HTMLDivElement | null>(null);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const handlePageChange = (_event: ChangeEvent<unknown>, value: number) => {
     if (listRef.current) {

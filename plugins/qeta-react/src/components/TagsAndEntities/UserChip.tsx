@@ -1,11 +1,6 @@
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { userRouteRef } from '../../routes';
-import {
-  useIdentityApi,
-  useTranslation,
-  useUserFollow,
-  useUserInfo,
-} from '../../hooks';
+import { useIdentityApi, useUserFollow, useUserInfo } from '../../hooks';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -19,13 +14,15 @@ import {
 } from '@material-ui/core';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Visibility from '@material-ui/icons/Visibility';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export const UserTooltip = (props: {
   entityRef: string;
   anonymous?: boolean;
 }) => {
   const { entityRef, anonymous } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const { name, initials, user, secondaryTitle } = useUserInfo(
     entityRef,
     anonymous ?? entityRef === 'anonymous',
@@ -99,7 +96,7 @@ export const UserChip = (props: { entityRef: string }) => {
   const navigate = useNavigate();
   const { entityRef } = props;
   const userRoute = useRouteRef(userRouteRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const { primaryTitle: userName } = useEntityPresentation(
     entityRef.startsWith('user:') ? entityRef : `user:${entityRef}`,
   );

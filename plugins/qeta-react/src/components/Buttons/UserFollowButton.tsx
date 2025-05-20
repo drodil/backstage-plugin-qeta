@@ -1,15 +1,17 @@
 import { CSSProperties } from 'react';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import { useTranslation, useUserFollow } from '../../hooks';
+import { useUserFollow } from '../../hooks';
 import { IconButton, Tooltip } from '@material-ui/core';
+import { qetaTranslationRef } from '../../translation.ts';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const UserFollowButton = (props: {
   userRef: string;
   style?: CSSProperties;
 }) => {
   const { userRef, style } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const users = useUserFollow();
   if (users.loading) {
     return null;

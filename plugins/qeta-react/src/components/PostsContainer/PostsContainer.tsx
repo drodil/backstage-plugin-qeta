@@ -14,7 +14,8 @@ import {
   PaginatedPostsProps,
   usePaginatedPosts,
 } from '../../hooks/usePaginatedPosts';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { SearchBar } from '../SearchBar/SearchBar';
 import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
 import FilterList from '@material-ui/icons/FilterList';
@@ -53,7 +54,7 @@ export const PostsContainer = (
     postsPerPage,
     pageCount,
   } = usePaginatedPosts(props);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const itemType = capitalize(t(`common.${type ?? 'post'}`, {}));
   let shownTitle = title;

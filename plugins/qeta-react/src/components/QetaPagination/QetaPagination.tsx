@@ -1,5 +1,6 @@
 import { ChangeEvent } from 'react';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import {
   FormControl,
   Grid,
@@ -35,7 +36,7 @@ export const QetaPagination = (props: {
 }) => {
   const { handlePageChange, handlePageSizeChange, page, pageCount, tooltip } =
     props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
   return (
     <Grid

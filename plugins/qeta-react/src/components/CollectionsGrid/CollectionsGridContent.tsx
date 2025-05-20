@@ -2,7 +2,8 @@ import { CollectionsResponse } from '@drodil/backstage-plugin-qeta-common';
 import { WarningPanel } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import { CollectionsGridItem } from './CollectionsGridItem';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 import { NoCollectionsCard } from './NoCollectionsCard';
 
@@ -12,7 +13,7 @@ export const CollectionsGridContent = (props: {
   response?: CollectionsResponse;
 }) => {
   const { loading, error, response } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   if (loading) {
     return <LoadingGrid />;

@@ -1,11 +1,13 @@
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import { useTagsFollow, useTranslation } from '../../hooks';
+import { useTagsFollow } from '../../hooks';
 import { IconButton, Tooltip } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export const TagFollowButton = (props: { tag: string }) => {
   const { tag } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const tags = useTagsFollow();
   if (tags.loading) {
     return null;

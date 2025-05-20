@@ -4,7 +4,8 @@ import FileType from 'file-type';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { QetaApi } from '@drodil/backstage-plugin-qeta-common';
 import { useEffect } from 'react';
-import { useTranslation } from '../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../translation.ts';
 
 export const imageUpload = (opts: {
   qetaApi: QetaApi;
@@ -120,7 +121,7 @@ export const getFiltersWithDateRange = (filters: Filters) => {
 };
 
 export const useConfirmNavigationIfEdited = (edited: boolean) => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const msg = t('common.unsaved_changes');
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {

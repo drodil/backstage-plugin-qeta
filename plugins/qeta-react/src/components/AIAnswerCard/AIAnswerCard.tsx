@@ -6,7 +6,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { CSSProperties, useCallback, useState } from 'react';
 import { MarkdownRenderer } from '../MarkdownRenderer';
-import { useAI, useTranslation } from '../../hooks';
+import { useAI } from '../../hooks';
 import FlareIcon from '@material-ui/icons/Flare';
 import useDebounce from 'react-use/lib/useDebounce';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
@@ -25,6 +25,8 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -53,7 +55,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   const [expanded, setExpanded] = useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
   );
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const config = useApi(configApiRef);
   const botName = config.getOptionalString('qeta.aiBotName') ?? 'AI';
   const styles = useStyles();

@@ -13,11 +13,13 @@ import RemoveCircle from '@material-ui/icons/RemoveCircle';
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
-import { useQetaApi, useTranslation } from '../../hooks';
+import { useQetaApi } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export const AddToCollectionButton = (props: { post: PostResponse }) => {
   const { post } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const { value: response, retry } = useQetaApi(api => {
     return api.getCollections({ checkAccess: true });
   }, []);

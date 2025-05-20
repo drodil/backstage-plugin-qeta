@@ -1,9 +1,10 @@
 import { SvgIconProps, Tooltip } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export const ExpertIcon = (props: SvgIconProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   return (
     <Tooltip title={t('common.tagExpert')}>
       <StarIcon

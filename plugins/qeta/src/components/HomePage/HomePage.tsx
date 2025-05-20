@@ -7,15 +7,16 @@ import {
   FollowedTagsList,
   ImpactCard,
   PostsCard,
+  qetaTranslationRef,
   SuggestionsCard,
   useIdentityApi,
-  useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Grid } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const HomePage = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const {
     value: user,
     loading: loadingUser,

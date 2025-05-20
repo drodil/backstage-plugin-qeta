@@ -16,15 +16,17 @@ import { useNavigate } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
 import { parseEntityRef } from '@backstage/catalog-model';
-import { useEntityFollow, useTranslation } from '../../hooks';
+import { useEntityFollow } from '../../hooks';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Visibility from '@material-ui/icons/Visibility';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
   const { entity } = props;
   const entityRoute = useRouteRef(entityRouteRef);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const entityFollow = useEntityFollow();
   const compound = parseEntityRef(entity.entityRef);
   const { primaryTitle, Icon } = useEntityPresentation(compound);
