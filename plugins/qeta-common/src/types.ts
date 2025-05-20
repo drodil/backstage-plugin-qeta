@@ -127,7 +127,7 @@ export type CommentFilter = {
 };
 
 export type TagFilter = {
-  property: 'tags.tag';
+  property: 'tags.tag' | 'tag_experts.entityRef';
   values: Array<string | undefined>;
 };
 

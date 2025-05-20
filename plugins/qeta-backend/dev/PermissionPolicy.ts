@@ -329,6 +329,22 @@ export class PermissionPolicy implements PermissionPolicy {
         });
       }
 
+      // Only allow tag experts to update tags
+      /**
+       if (
+        isResourcePermission(request.permission, TAG_RESOURCE_TYPE) &&
+        isUpdatePermission(request.permission)
+      ) {
+        return createTagConditionalDecision(request.permission, {
+          allOf: [
+            tagExpertConditionFactory({
+              userRef: user.identity.userEntityRef,
+            }),
+          ],
+        });
+      }
+      */
+
       // Allow updating any tag by anyone
       if (
         isResourcePermission(request.permission, TAG_RESOURCE_TYPE) &&

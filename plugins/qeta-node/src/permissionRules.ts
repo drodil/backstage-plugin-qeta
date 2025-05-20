@@ -239,7 +239,36 @@ export const isTag = createPermissionRule({
 
 export const tagConditionFactory = createConditionFactory(isTag);
 
-export const tagRules = { isTag };
+export const isTagExpert = createPermissionRule({
+  name: 'IS_TAG_EXPERT',
+  description: 'Allows only if user is tag expert',
+  resourceRef: tagPermissionResourceRef,
+  paramsSchema: z.object({
+    userRef: z
+      .string()
+      .describe('User ID to match on the tag expert')
+      .optional(),
+    claims: z
+      .array(z.string())
+      .optional()
+      .describe('List of claims to match at least one on within tag expert'),
+  }),
+  apply: (resource: TagResponse, { userRef, claims }) => {
+    return Boolean(
+      resource?.experts?.some(e => e === userRef || claims?.includes(e)),
+    );
+  },
+  toQuery: ({ claims = [], userRef }) => {
+    return {
+      property: 'tags.expert' as TagFilter['property'],
+      values: [userRef, ...claims].filter(Boolean),
+    };
+  },
+});
+
+export const tagExpertConditionFactory = createConditionFactory(isTagExpert);
+
+export const tagRules = { isTag, isTagExpert };
 
 export const isCollectionOwner = createPermissionRule({
   name: 'IS_OWNER',
