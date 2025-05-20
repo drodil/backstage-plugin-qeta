@@ -8,26 +8,46 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
 import { ModalContent } from '../Utility/ModalContent';
+import { EntitiesInput } from '../PostForm/EntitiesInput.tsx';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { compact } from 'lodash';
 
 export const EditTagModal = (props: {
   tag: TagResponse;
   open: boolean;
   onClose: () => void;
+  isModerator?: boolean;
 }) => {
-  const { tag, open, onClose } = props;
+  const { tag, open, onClose, isModerator } = props;
   const [description, setDescription] = useState(tag.description);
+  const [experts, setExperts] = useState<Entity[]>([]);
   const { t } = useTranslation();
   const [error, setError] = useState(false);
   const qetaApi = useApi(qetaApiRef);
+  const catalogApi = useApi(catalogApiRef);
+
+  useEffect(() => {
+    if (!isModerator || !tag.experts || tag.experts.length === 0) {
+      return;
+    }
+    catalogApi.getEntitiesByRefs({ entityRefs: tag.experts }).then(resp => {
+      setExperts(compact(resp.items));
+    });
+  }, [catalogApi, isModerator, tag.experts]);
 
   const handleUpdate = () => {
     qetaApi
-      .updateTag(tag.id, description)
+      .updateTag(
+        tag.id,
+        description,
+        isModerator ? experts.map(stringifyEntityRef) : undefined,
+      )
       .then(ret => {
         if (ret) {
           onClose();
@@ -78,7 +98,21 @@ export const EditTagModal = (props: {
               onChange={e => setDescription(e.target.value)}
             />
           </Grid>
+          {isModerator && (
+            <Grid item xs={12}>
+              <EntitiesInput
+                value={experts}
+                onChange={setExperts}
+                maximum={null}
+                kind={['User']}
+                hideHelpText
+                label={t('editTagModal.expertsLabel')}
+                placeholder={t('editTagModal.expertsPlaceholder')}
+              />
+            </Grid>
+          )}
         </Grid>
+
         <Button
           onClick={handleUpdate}
           className="qetaEditTagModalSaveBtn"

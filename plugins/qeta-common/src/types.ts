@@ -141,6 +141,7 @@ export interface Answer extends PostAnswerEntity {
   correct: boolean;
   post?: Post;
   images: number[];
+  expert?: boolean;
 }
 
 export interface Collection extends CollectionEntity {
@@ -160,7 +161,9 @@ export interface Vote {
   timestamp: Date;
 }
 
-export interface Comment extends QetaEntity {}
+export interface Comment extends QetaEntity {
+  expert?: boolean;
+}
 
 export interface Attachment {
   id: number;
@@ -275,6 +278,7 @@ export type AnswerResponseBody = Answer | ErrorResponse;
 export interface TagResponse extends QetaIdEntity {
   tag: string;
   description?: string;
+  experts?: string[];
   postsCount: number;
   followerCount: number;
   canEdit?: boolean;

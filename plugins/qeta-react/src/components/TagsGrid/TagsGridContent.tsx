@@ -11,8 +11,9 @@ export const TagsGridContent = (props: {
   error: any;
   response?: TagsResponse;
   onTagEdit: () => void;
+  isModerator?: boolean;
 }) => {
-  const { response, onTagEdit, loading, error } = props;
+  const { response, onTagEdit, loading, error, isModerator } = props;
   const { t } = useTranslation();
 
   if (loading) {
@@ -34,7 +35,12 @@ export const TagsGridContent = (props: {
   return (
     <Grid container item xs={12} alignItems="stretch">
       {response?.tags.map(tag => (
-        <TagGridItem tag={tag} key={tag.tag} onTagEdit={onTagEdit} />
+        <TagGridItem
+          tag={tag}
+          key={tag.tag}
+          onTagEdit={onTagEdit}
+          isModerator={isModerator}
+        />
       ))}
     </Grid>
   );

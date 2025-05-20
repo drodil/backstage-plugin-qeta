@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useQetaApi, useTranslation } from '../../hooks';
+import { useIsModerator, useQetaApi, useTranslation } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import useDebounce from 'react-use/lib/useDebounce';
 import { TagsGridContent } from './TagsGridContent';
@@ -21,6 +21,7 @@ export const TagsGrid = () => {
   const [tagsPerPage, setTagsPerPage] = useState(25);
   const [searchQuery, setSearchQuery] = useState('');
   const { t } = useTranslation();
+  const { isModerator } = useIsModerator();
   const [filters, setFilters] = useState<TagFilters>({
     order: 'desc',
     orderBy: 'tag',
@@ -111,6 +112,7 @@ export const TagsGrid = () => {
               <CreateTagModal
                 open={createModalOpen}
                 onClose={handleCreateModalClose}
+                isModerator={isModerator}
               />
             </OptionalRequirePermission>
           </Grid>
@@ -120,6 +122,7 @@ export const TagsGrid = () => {
           onTagEdit={onTagsModify}
           loading={loading}
           error={error}
+          isModerator={isModerator}
         />
         {response && response?.total > 0 && (
           <QetaPagination

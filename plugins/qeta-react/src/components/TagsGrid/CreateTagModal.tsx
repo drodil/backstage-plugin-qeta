@@ -12,25 +12,34 @@ import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslation } from '../../hooks';
 import { ModalContent } from '../Utility/ModalContent';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { EntitiesInput } from '../PostForm/EntitiesInput.tsx';
 
 export const CreateTagModal = (props: {
   open: boolean;
   onClose: () => void;
+  isModerator?: boolean;
 }) => {
-  const { open, onClose } = props;
+  const { open, onClose, isModerator } = props;
   const [tag, setTag] = useState('');
   const [description, setDescription] = useState('');
+  const [experts, setExperts] = useState<Entity[]>([]);
   const { t } = useTranslation();
   const [error, setError] = useState(false);
   const qetaApi = useApi(qetaApiRef);
 
   const handleCreate = () => {
     qetaApi
-      .createTag(tag, description)
+      .createTag(
+        tag,
+        description,
+        isModerator ? experts.map(stringifyEntityRef) : undefined,
+      )
       .then(ret => {
         if (ret) {
           setTag('');
           setDescription('');
+          setExperts([]);
           onClose();
           return;
         }
@@ -89,6 +98,19 @@ export const CreateTagModal = (props: {
               onChange={e => setDescription(e.target.value)}
             />
           </Grid>
+          {isModerator && (
+            <Grid item xs={12}>
+              <EntitiesInput
+                value={experts}
+                onChange={setExperts}
+                maximum={null}
+                kind={['User']}
+                hideHelpText
+                label={t('editTagModal.expertsLabel')}
+                placeholder={t('editTagModal.expertsPlaceholder')}
+              />
+            </Grid>
+          )}
         </Grid>
         <Button
           onClick={handleCreate}

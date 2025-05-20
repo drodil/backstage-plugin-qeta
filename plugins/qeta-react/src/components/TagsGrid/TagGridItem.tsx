@@ -26,12 +26,14 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 export const TagGridItem = (props: {
   tag: TagResponse;
   onTagEdit: () => void;
+  isModerator?: boolean;
 }) => {
-  const { tag, onTagEdit } = props;
+  const { tag, onTagEdit, isModerator } = props;
   const tagRoute = useRouteRef(tagRouteRef);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -65,6 +67,19 @@ export const TagGridItem = (props: {
               {' · '}
               {t('common.followers', { count: tag.followerCount })}
             </Typography>
+            <br />
+            {tag.experts && tag.experts.length > 0 && (
+              <Typography variant="caption">
+                {t('common.experts')}
+                {': '}
+                {tag.experts.map((e, i) => (
+                  <>
+                    <EntityRefLink key={e} entityRef={e} />
+                    {i === tag.experts!.length - 1 ? '' : ','}
+                  </>
+                ))}
+              </Typography>
+            )}
             <Typography variant="body2">
               {' '}
               {DOMPurify.sanitize(
@@ -139,6 +154,7 @@ export const TagGridItem = (props: {
         tag={tag}
         open={editModalOpen}
         onClose={handleEditModalClose}
+        isModerator={isModerator}
       />
     </Grid>
   );

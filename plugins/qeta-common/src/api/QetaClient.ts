@@ -320,13 +320,14 @@ export class QetaClient implements QetaApi {
   async updateTag(
     id: number,
     description?: string,
+    experts?: string[],
     requestOptions?: RequestOptions,
   ): Promise<TagResponse | null> {
     const response = await this.fetch(`/tags/${id}`, {
       requestOptions,
       reqInit: {
         method: 'POST',
-        body: JSON.stringify({ description }),
+        body: JSON.stringify({ description, experts }),
         headers: { 'Content-Type': 'application/json' },
       },
     });
@@ -339,13 +340,14 @@ export class QetaClient implements QetaApi {
   async createTag(
     tag: string,
     description?: string,
+    experts?: string[],
     requestOptions?: RequestOptions,
   ): Promise<TagResponse | null> {
     const response = await this.fetch(`/tags`, {
       requestOptions,
       reqInit: {
         method: 'PUT',
-        body: JSON.stringify({ tag, description }),
+        body: JSON.stringify({ tag, description, experts }),
         headers: { 'Content-Type': 'application/json' },
       },
     });

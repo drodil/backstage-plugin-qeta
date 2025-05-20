@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { format, subDays } from 'date-fns';
 import {
+  isAnswer,
   isCollection,
   isPost,
   isTag,
@@ -81,15 +82,19 @@ export const transformConditions: ConditionTransformer<QetaFilters> =
 export const mapAdditionalFields = async (
   request: Request<unknown>,
   resource: MaybePost | MaybeAnswer | MaybeTag | MaybeCollection,
-  options: RouteOptions,
-  checkRights = true,
-  creds?: BackstageCredentials,
+  routeOpts: RouteOptions,
+  options?: {
+    checkRights?: boolean;
+    creds?: BackstageCredentials;
+    experts?: string[];
+  },
 ) => {
   if (!resource) {
     return resource;
   }
 
-  const { permissionMgr } = options;
+  const { creds, experts, checkRights = true } = options ?? {};
+  const { permissionMgr } = routeOpts;
   const credentials =
     creds ?? (await permissionMgr.getCredentials(request, true));
 
@@ -118,11 +123,19 @@ export const mapAdditionalFields = async (
     return resource;
   }
 
-  const username = await options.permissionMgr.getUsername(
+  const username = await routeOpts.permissionMgr.getUsername(
     request,
     true,
     credentials,
   );
+
+  let resourceExperts: string[] | undefined = experts;
+  if (isPost(resource) && resource.tags) {
+    resourceExperts = await routeOpts.database.getTagExperts(resource.tags);
+  } else if (isAnswer(resource)) {
+    resource.expert = resourceExperts?.includes(resource.author);
+  }
+
   resource.ownVote = resource.votes?.find(v => v.author === username)?.score;
   resource.own = resource.author === username;
   resource.canEdit = checkRights
@@ -146,13 +159,11 @@ export const mapAdditionalFields = async (
     await Promise.all(
       (resource.answers ?? []).map(
         async a =>
-          await mapAdditionalFields(
-            request,
-            a,
-            options,
+          await mapAdditionalFields(request, a, routeOpts, {
             checkRights,
-            credentials,
-          ),
+            creds: credentials,
+            experts: resourceExperts,
+          }),
       ),
     );
   }
@@ -163,6 +174,7 @@ export const mapAdditionalFields = async (
         return {
           ...c,
           own: c.author === username,
+          expert: resourceExperts?.includes(c.author),
           canEdit: checkRights
             ? await permissionMgr.authorizeBoolean(
                 request,

@@ -138,12 +138,9 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
     await Promise.all(
       tags.tags.map(async tag => {
-        await mapAdditionalFields(
-          request,
-          tag,
-          options,
-          opts.checkAccess ?? false,
-        );
+        await mapAdditionalFields(request, tag, options, {
+          checkRights: opts.checkAccess ?? false,
+        });
       }),
     );
 
@@ -231,14 +228,22 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     });
 
     const description = request.body.description;
-    const resp = await database.updateTag(tagId, description);
+    const experts = request.body.experts;
+    if (experts) {
+      const isMod = await permissionMgr.isModerator(request);
+      if (!isMod) {
+        response.sendStatus(401);
+        return;
+      }
+    }
+    const resp = await database.updateTag(tagId, description, experts);
     await mapAdditionalFields(request, resp, options);
     auditor?.createEvent({
       eventId: 'update-tag',
       severityLevel: 'medium',
       request,
       meta: {
-        tag: tag.tag,
+        ...resp,
         tagId: tag.id,
       },
     });
@@ -261,7 +266,20 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const description = request.body.description;
-    const tag = await database.createTag(request.body.tag, description);
+    const experts = request.body.experts;
+    if (experts) {
+      const isMod = await permissionMgr.isModerator(request);
+      if (!isMod) {
+        response.sendStatus(401);
+        return;
+      }
+    }
+
+    const tag = await database.createTag(
+      request.body.tag,
+      description,
+      experts,
+    );
     if (!tag) {
       response.sendStatus(500);
       return;
@@ -272,7 +290,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       severityLevel: 'medium',
       request,
       meta: {
-        tag: tag.tag,
+        ...tag,
         tagId: tag.id,
       },
     });

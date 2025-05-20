@@ -400,9 +400,18 @@ export interface QetaStore {
   ): Promise<TagsResponse>;
   getTagById(id: number): Promise<TagResponse | null>;
   getTag(tag: string): Promise<TagResponse | null>;
-  createTag(tag: string, description?: string): Promise<TagResponse | null>;
-  updateTag(id: number, description?: string): Promise<TagResponse | null>;
+  createTag(
+    tag: string,
+    description?: string,
+    experts?: string[],
+  ): Promise<TagResponse | null>;
+  updateTag(
+    id: number,
+    description?: string,
+    experts?: string[],
+  ): Promise<TagResponse | null>;
   deleteTag(id: number): Promise<boolean>;
+  getTagExperts(tags: string[]): Promise<string[]>;
 
   getUsers(
     options?: { entityRefs?: string[] } & UsersQuery,

@@ -145,6 +145,11 @@ export type RawUserImpact = {
   date: Date;
 };
 
+export type RawTagExpert = {
+  tagId: number;
+  entityRef: string;
+};
+
 export type RawTemplate = {
   id: number;
   title: string;
@@ -1063,15 +1068,18 @@ export class DatabaseQetaStore implements QetaStore {
 
     return {
       total,
-      tags: rows.map(tag => {
-        return {
-          id: tag.id,
-          tag: tag.tag,
-          description: tag.description,
-          postsCount: this.mapToInteger(tag.postsCount),
-          followerCount: this.mapToInteger(tag.followerCount),
-        };
-      }),
+      tags: await Promise.all(
+        rows.map(async tag => {
+          return {
+            id: tag.id,
+            tag: tag.tag,
+            description: tag.description,
+            postsCount: this.mapToInteger(tag.postsCount),
+            followerCount: this.mapToInteger(tag.followerCount),
+            experts: await this.getTagExpertsById(tag.id),
+          };
+        }),
+      ),
     };
   }
 
@@ -1088,6 +1096,7 @@ export class DatabaseQetaStore implements QetaStore {
       description: tags[0].description,
       postsCount: this.mapToInteger(tags[0].postsCount),
       followerCount: this.mapToInteger(tags[0].followerCount),
+      experts: await this.getTagExpertsById(tags[0].id),
     };
   }
 
@@ -1104,6 +1113,7 @@ export class DatabaseQetaStore implements QetaStore {
       description: tags[0].description,
       postsCount: this.mapToInteger(tags[0].postsCount),
       followerCount: this.mapToInteger(tags[0].followerCount),
+      experts: await this.getTagExpertsById(tags[0].id),
     };
   }
 
@@ -1112,26 +1122,46 @@ export class DatabaseQetaStore implements QetaStore {
     return !!(await query.delete());
   }
 
+  async getTagExperts(tags: string[]): Promise<string[]> {
+    if (tags.length === 0) {
+      return [];
+    }
+    const query = this.db<RawTagExpert>('tag_experts')
+      .leftJoin('tags', 'tag_experts.tagId', 'tags.id')
+      .whereIn('tags.tag', tags);
+    const resp = await query.select('entityRef');
+    return [...new Set(resp.map(r => r.entityRef))];
+  }
+
   async createTag(
     tag: string,
     description?: string,
+    experts?: string[],
   ): Promise<TagResponse | null> {
     const trimmed = tag.trim();
-    await this.db
+    const ret = await this.db
       .insert({ tag: trimmed, description })
       .into('tags')
+      .returning(['id'])
       .onConflict('tag')
       .ignore();
+    if (ret && experts && experts.length > 0) {
+      await this.updateTagExperts(ret[0].id, experts);
+    }
     return this.getTag(trimmed);
   }
 
   async updateTag(
     id: number,
     description?: string,
+    experts?: string[],
   ): Promise<TagResponse | null> {
     await this.db('tags')
       .where('tags.id', '=', id)
       .update({ description: description ?? null });
+    if (experts && experts.length > 0) {
+      await this.updateTagExperts(id, experts);
+    }
     return this.getTagById(id);
   }
 
@@ -1292,11 +1322,19 @@ export class DatabaseQetaStore implements QetaStore {
       return [];
     }
 
-    const users = await this.db('user_tags')
+    const followingUsersQuery = this.db('user_tags')
       .leftJoin('tags', 'user_tags.tagId', 'tags.id')
       .whereIn('tags.tag', tags)
       .select('userRef');
-    return users.map(user => user.userRef);
+
+    const [followingUsers, experts] = await Promise.all([
+      followingUsersQuery,
+      this.getTagExperts(tags),
+    ]);
+
+    return [
+      ...new Set([...followingUsers.map(user => user.userRef), ...experts]),
+    ];
   }
 
   async followTag(user_ref: string, tag: string): Promise<boolean> {
@@ -2255,6 +2293,22 @@ export class DatabaseQetaStore implements QetaStore {
       .where('collectionId', collectionId)
       .where('postId', postId)
       .update({ rank });
+  }
+
+  private async getTagExpertsById(id: number) {
+    const rows = await this.db('tag_experts')
+      .where('tagId', id)
+      .select('entityRef');
+    return rows.map(r => r.entityRef);
+  }
+
+  private async updateTagExperts(id: number, experts: string[]) {
+    await this.db('tag_experts').where('tagId', id).delete();
+    await this.db
+      .insert(experts.map(e => ({ tagId: id, entityRef: e })))
+      .into('tag_experts')
+      .onConflict(['tagId', 'entityRef'])
+      .merge();
   }
 
   private getEntitiesBaseQuery() {

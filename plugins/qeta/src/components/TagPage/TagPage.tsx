@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
@@ -18,6 +18,7 @@ import Whatshot from '@material-ui/icons/Whatshot';
 import { useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 export const TagPage = () => {
   const { tag } = useParams();
@@ -60,6 +61,19 @@ export const TagPage = () => {
                 {' · '}
                 {t('common.followers', { count: resp.followerCount })}
               </Typography>
+              <br />
+              {resp.experts && resp.experts.length > 0 && (
+                <Typography variant="caption">
+                  {t('common.experts')}
+                  {': '}
+                  {resp.experts.map((e, i) => (
+                    <>
+                      <EntityRefLink key={e} entityRef={e} />
+                      {i === resp.experts!.length - 1 ? '' : ','}
+                    </>
+                  ))}
+                </Typography>
+              )}
               {resp.description && (
                 <MarkdownRenderer content={resp.description} />
               )}

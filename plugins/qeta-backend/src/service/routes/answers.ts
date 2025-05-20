@@ -75,12 +75,9 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
     await Promise.all(
       answers.answers.map(async answer => {
-        await mapAdditionalFields(
-          request,
-          answer,
-          options,
-          opts.checkAccess ?? false,
-        );
+        await mapAdditionalFields(request, answer, options, {
+          checkRights: opts.checkAccess ?? false,
+        });
       }),
     );
     response.json(answers);
@@ -122,12 +119,9 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     });
     await Promise.all(
       answers.answers.map(async answer => {
-        await mapAdditionalFields(
-          request,
-          answer,
-          options,
-          opts.checkAccess ?? false,
-        );
+        await mapAdditionalFields(request, answer, options, {
+          checkRights: opts.checkAccess ?? false,
+        });
       }),
     );
     response.json(answers);
@@ -209,7 +203,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'post_answer' },
     });
 
-    await mapAdditionalFields(request, answer, options);
+    const tagExperts = await database.getTagExperts(post.tags ?? []);
+    await mapAdditionalFields(request, answer, options, {
+      experts: tagExperts,
+    });
 
     signalPostStats(signals, post);
     auditor?.createEvent({
@@ -284,7 +281,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, answer, options);
+    const tagExperts = await database.getTagExperts(post.tags ?? []);
+    await mapAdditionalFields(request, answer, options, {
+      experts: tagExperts,
+    });
 
     // Response
     response.json(answer);
@@ -382,7 +382,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         metadata: { action: 'comment_answer' },
       });
 
-      await mapAdditionalFields(request, answer, options);
+      const tagExperts = await database.getTagExperts(post.tags ?? []);
+      await mapAdditionalFields(request, answer, options, {
+        experts: tagExperts,
+      });
 
       auditor?.createEvent({
         eventId: 'comment-answer',
@@ -464,7 +467,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         },
       });
 
-      await mapAdditionalFields(request, answer, options);
+      const tagExperts = await database.getTagExperts(post.tags ?? []);
+      await mapAdditionalFields(request, answer, options, {
+        experts: tagExperts,
+      });
 
       // Response
       response.json(answer);
@@ -703,7 +709,8 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'vote_answer' },
     });
 
-    await mapAdditionalFields(request, resp, options);
+    const tagExperts = await database.getTagExperts(post.tags ?? []);
+    await mapAdditionalFields(request, resp, options, { experts: tagExperts });
     resp.ownVote = score;
 
     auditor?.createEvent({

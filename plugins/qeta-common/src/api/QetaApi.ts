@@ -198,11 +198,13 @@ export interface QetaApi {
   createTag(
     tag: string,
     description?: string,
+    experts?: string[],
     requestOptions?: RequestOptions,
   ): Promise<TagResponse | null>;
   updateTag(
     id: number,
     description?: string,
+    experts?: string[],
     requestOptions?: RequestOptions,
   ): Promise<TagResponse | null>;
 

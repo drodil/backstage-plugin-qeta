@@ -110,12 +110,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
     await Promise.all(
       posts.posts.map(async post => {
-        await mapAdditionalFields(
-          request,
-          post,
-          options,
-          opts.checkAccess ?? false,
-        );
+        await mapAdditionalFields(request, post, options, {
+          checkRights: opts.checkAccess ?? false,
+        });
       }),
     );
     response.json(posts);
@@ -155,12 +152,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
     await Promise.all(
       posts.posts.map(async post => {
-        await mapAdditionalFields(
-          request,
-          post,
-          options,
-          opts.checkAccess ?? false,
-        );
+        await mapAdditionalFields(request, post, options, {
+          checkRights: opts.checkAccess ?? false,
+        });
       }),
     );
     response.json(posts);
@@ -213,12 +207,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     await Promise.all(
       posts.posts.map(async post => {
-        await mapAdditionalFields(
-          request,
-          post,
-          options,
-          opts.checkAccess ?? false,
-        );
+        await mapAdditionalFields(request, post, options, {
+          checkRights: opts.checkAccess ?? false,
+        });
       }),
     );
     response.json(posts);
@@ -347,6 +338,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         database.getFollowingUsers(username),
         database.getUsersWhoFavoritedPost(post.id),
       ]);
+
       const sent = await notificationMgr.onNewPostComment(
         username,
         post,

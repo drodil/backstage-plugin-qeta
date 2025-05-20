@@ -74,12 +74,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
     await Promise.all(
       collections.collections.map(async collection => {
-        await mapAdditionalFields(
-          request,
-          collection,
-          options,
-          opts.checkAccess ?? false,
-        );
+        await mapAdditionalFields(request, collection, options, {
+          checkRights: opts.checkAccess ?? false,
+        });
       }),
     );
 
@@ -131,12 +128,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
     await Promise.all(
       collections.collections.map(async collection => {
-        await mapAdditionalFields(
-          request,
-          collection,
-          options,
-          opts.checkAccess ?? false,
-        );
+        await mapAdditionalFields(request, collection, options, {
+          checkRights: opts.checkAccess ?? false,
+        });
       }),
     );
 
