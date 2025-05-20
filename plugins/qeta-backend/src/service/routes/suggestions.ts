@@ -14,6 +14,7 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { PostOptions } from '../../database/QetaStore';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { postPermissionResourceRef } from '@drodil/backstage-plugin-qeta-node';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -235,6 +236,7 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
     const filter = await permissionMgr.getAuthorizeConditions(
       request,
       qetaReadPostPermission,
+      postPermissionResourceRef,
     );
 
     const raw = await Promise.all([

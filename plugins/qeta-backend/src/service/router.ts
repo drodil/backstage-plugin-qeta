@@ -38,6 +38,7 @@ export async function createRouter(
     options.httpAuth,
     options.userInfo,
     options.permissions,
+    options.permissionsRegistry,
     options.auditor,
   );
 

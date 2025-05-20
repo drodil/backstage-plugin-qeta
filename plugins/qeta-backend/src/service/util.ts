@@ -29,11 +29,6 @@ import {
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { HttpsProxyAgent } from 'hpagent';
 import { compact } from 'lodash';
-import {
-  ConditionTransformer,
-  createConditionTransformer,
-} from '@backstage/plugin-permission-node';
-import { rules } from '@drodil/backstage-plugin-qeta-node';
 import { BlobServiceClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
@@ -75,9 +70,6 @@ export type QetaFilters =
   | { allOf: QetaFilter[] }
   | { not: QetaFilter }
   | QetaFilter;
-
-export const transformConditions: ConditionTransformer<QetaFilters> =
-  createConditionTransformer(Object.values(rules));
 
 export const mapAdditionalFields = async (
   request: Request<unknown>,

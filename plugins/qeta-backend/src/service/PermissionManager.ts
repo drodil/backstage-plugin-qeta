@@ -26,6 +26,7 @@ import {
   BackstageCredentials,
   BackstagePrincipalTypes,
   HttpAuthService,
+  PermissionsRegistryService,
   PermissionsService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
@@ -42,9 +43,18 @@ import {
   qetaModeratePermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Config } from '@backstage/config';
-import { ExpiryMap, QetaFilters, transformConditions } from './util.ts';
+import { ExpiryMap, QetaFilters } from './util.ts';
 import DataLoader from 'dataloader';
 import { durationToMilliseconds } from '@backstage/types';
+import {
+  ConditionTransformer,
+  createConditionTransformer,
+  PermissionResourceRef,
+} from '@backstage/plugin-permission-node';
+import { rules } from '@drodil/backstage-plugin-qeta-node';
+
+const transformConditions: ConditionTransformer<QetaFilters> =
+  createConditionTransformer(Object.values(rules));
 
 export class PermissionManager {
   private readonly authorizeLoaderMap: ExpiryMap<
@@ -62,6 +72,7 @@ export class PermissionManager {
     private readonly httpAuth: HttpAuthService,
     private readonly userInfo: UserInfoService,
     private readonly permissions?: PermissionsService,
+    private readonly permissionsRegistry?: PermissionsRegistryService,
     private readonly auditor?: AuditorService,
   ) {
     this.authorizeLoaderMap = new ExpiryMap(
@@ -435,6 +446,7 @@ export class PermissionManager {
   public async getAuthorizeConditions(
     request: Request<unknown>,
     permission: Permission,
+    resourceRef: PermissionResourceRef<any, QetaFilters, any>,
     options?: {
       allowServicePrincipal?: boolean;
       creds?: BackstageCredentials;
@@ -450,7 +462,12 @@ export class PermissionManager {
       options,
     );
     if (decision.result === AuthorizeResult.CONDITIONAL) {
-      return transformConditions(decision.conditions);
+      const transformer = this.permissionsRegistry
+        ? createConditionTransformer(
+            this.permissionsRegistry.getPermissionRuleset(resourceRef),
+          )
+        : transformConditions;
+      return transformer(decision.conditions);
     }
     return undefined;
   }
