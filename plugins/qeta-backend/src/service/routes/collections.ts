@@ -19,11 +19,6 @@ import {
   RouteOptions,
 } from '../types';
 import { entityToJsonObject, validateDateRange, wrapAsync } from './util';
-import {
-  collectionPermissionResourceRef,
-  postPermissionResourceRef,
-  tagPermissionResourceRef,
-} from '@drodil/backstage-plugin-qeta-node';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -52,28 +47,17 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const conditions = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        postPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
       permissionMgr.getAuthorizeConditions(
         request,
         qetaReadCollectionPermission,
-        collectionPermissionResourceRef,
         { allowServicePrincipal: true },
       ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        tagPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const postFilters = conditions[0];
@@ -120,28 +104,17 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const [postFilters, filters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        postPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
       permissionMgr.getAuthorizeConditions(
         request,
         qetaReadCollectionPermission,
-        collectionPermissionResourceRef,
         { allowServicePrincipal: true },
       ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        tagPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const opts = request.body;
@@ -264,28 +237,17 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     const [postFilters, filters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        postPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
       permissionMgr.getAuthorizeConditions(
         request,
         qetaReadCollectionPermission,
-        collectionPermissionResourceRef,
         { allowServicePrincipal: true },
       ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        tagPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     // Act
@@ -385,28 +347,17 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
   router.get('/collections/followed', async (request, response) => {
     const username = await permissionMgr.getUsername(request, false);
     const [postFilters, filters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        postPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
       permissionMgr.getAuthorizeConditions(
         request,
         qetaReadCollectionPermission,
-        collectionPermissionResourceRef,
         { allowServicePrincipal: true },
       ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        tagPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const collections = await database.getUserCollections(username, {
@@ -493,22 +444,12 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const [postFilters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        postPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        tagPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const collection = await database.getCollection(
@@ -568,22 +509,12 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     const [postFilters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        postPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        tagPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const post = await database.getPost(username, request.body.postId, false);
@@ -679,22 +610,12 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     const [postFilters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        postPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        tagPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const post = await database.getPost(username, request.body.postId, false);

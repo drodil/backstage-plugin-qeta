@@ -17,7 +17,6 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import { tagPermissionResourceRef } from '@drodil/backstage-plugin-qeta-node';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -131,7 +130,6 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     const filter = await permissionMgr.getAuthorizeConditions(
       request,
       qetaReadTagPermission,
-      tagPermissionResourceRef,
       { allowServicePrincipal: true },
     );
 
@@ -154,7 +152,6 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     const filter = await permissionMgr.getAuthorizeConditions(
       request,
       qetaReadTagPermission,
-      tagPermissionResourceRef,
       { allowServicePrincipal: true },
     );
     const tags = await database.getUserTags(username, filter);

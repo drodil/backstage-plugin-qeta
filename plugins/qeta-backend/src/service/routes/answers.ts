@@ -30,10 +30,6 @@ import {
   validateDateRange,
   wrapAsync,
 } from './util';
-import {
-  answerPermissionResourceRef,
-  commentPermissionResourceRef,
-} from '@drodil/backstage-plugin-qeta-node';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -63,22 +59,12 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const [commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadCommentPermission,
-        commentPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadAnswerPermission,
-        answerPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const opts = request.query as AnswersQuery;
@@ -118,22 +104,12 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const [commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadCommentPermission,
-        commentPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadAnswerPermission,
-        answerPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const opts = request.body;

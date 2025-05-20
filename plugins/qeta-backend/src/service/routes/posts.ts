@@ -31,12 +31,6 @@ import {
 } from './util';
 import { getEntities, getTags } from './routeUtil';
 import { PostOptions } from '../../database/QetaStore';
-import {
-  answerPermissionResourceRef,
-  commentPermissionResourceRef,
-  postPermissionResourceRef,
-  tagPermissionResourceRef,
-} from '@drodil/backstage-plugin-qeta-node';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -54,29 +48,18 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
   const getPostFilters = async (request: Request, opts: PostOptions) => {
     return await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadPostPermission,
-        postPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+        allowServicePrincipal: true,
+      }),
       opts.includeTags
-        ? permissionMgr.getAuthorizeConditions(
-            request,
-            qetaReadTagPermission,
-            tagPermissionResourceRef,
-            {
-              allowServicePrincipal: true,
-            },
-          )
+        ? permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+            allowServicePrincipal: true,
+          })
         : undefined,
       opts.includeComments
         ? permissionMgr.getAuthorizeConditions(
             request,
             qetaReadCommentPermission,
-            commentPermissionResourceRef,
             { allowServicePrincipal: true },
           )
         : undefined,
@@ -84,7 +67,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         ? permissionMgr.getAuthorizeConditions(
             request,
             qetaReadAnswerPermission,
-            answerPermissionResourceRef,
             { allowServicePrincipal: true },
           )
         : undefined,
@@ -245,30 +227,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        tagPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadCommentPermission,
-        commentPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadAnswerPermission,
-        answerPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const post = await database.getPost(
@@ -333,30 +300,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     await permissionMgr.authorize(request, qetaCreateCommentPermission);
 
     const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        tagPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadCommentPermission,
-        commentPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadAnswerPermission,
-        answerPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     post = await database.commentPost(
@@ -444,30 +396,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        tagPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadCommentPermission,
-        commentPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadAnswerPermission,
-        answerPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const post = await database.updatePostComment(
@@ -530,30 +467,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadTagPermission,
-        tagPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadCommentPermission,
-        commentPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadAnswerPermission,
-        answerPermissionResourceRef,
-        {
-          allowServicePrincipal: true,
-        },
-      ),
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
+        allowServicePrincipal: true,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
+        allowServicePrincipal: true,
+      }),
     ]);
 
     const post = await database.deletePostComment(postId, commentId, username, {
@@ -707,21 +629,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       await Promise.all([
         getTags(request, options, existingTags),
         getEntities(request, config),
-        permissionMgr.getAuthorizeConditions(
-          request,
-          qetaReadTagPermission,
-          tagPermissionResourceRef,
-        ),
+        permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission),
         permissionMgr.getAuthorizeConditions(
           request,
           qetaReadCommentPermission,
-          commentPermissionResourceRef,
         ),
-        permissionMgr.getAuthorizeConditions(
-          request,
-          qetaReadAnswerPermission,
-          answerPermissionResourceRef,
-        ),
+        permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission),
       ]);
 
     // Act
