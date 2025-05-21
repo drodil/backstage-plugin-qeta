@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.27.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.26.0...v3.27.0) (2025-05-21)
+
+
+### Features
+
+* add circular progress for pickers ([17674ca](https://github.com/drodil/backstage-plugin-qeta/commit/17674ca4367e0715f8c946f27bf8fde9bfff903d))
+* add permission rule for tag experts ([5a79ca0](https://github.com/drodil/backstage-plugin-qeta/commit/5a79ca02bfef02e725c64800143f95853abceaa5))
+* allow defining tag experts ([a57f6d6](https://github.com/drodil/backstage-plugin-qeta/commit/a57f6d6b25de2fdf350586f099d61223b352d2e7)), closes [#229](https://github.com/drodil/backstage-plugin-qeta/issues/229)
+
+
+### Bug Fixes
+
+* tsc errors ([cb210fa](https://github.com/drodil/backstage-plugin-qeta/commit/cb210fa22446c68e533463b10183706a343a9069))
+
 ## [3.26.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.25.1...v3.26.0) (2025-05-15)
 
 
