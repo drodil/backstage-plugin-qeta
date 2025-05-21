@@ -27,6 +27,7 @@ jobs:
       - run: yarn commitlint --from=origin/main
         if: github.actor != 'dependabot[bot]'
       - run: yarn lint:all
+      - run: yarn dedupe --check
       - run: yarn prettier:check
       - run: yarn fix --check
       - run: yarn tsc

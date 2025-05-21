@@ -68,6 +68,9 @@
     "package.json": [
       "yarn fix",
       "yarn knip:check:deps"
+    ],
+    "yarn.lock": [
+      "yarn dedupe"
     ]
   },
   "packageManager": "yarn@4.5.0"
