@@ -4736,7 +4736,7 @@ __metadata:
     remark-gfm: "npm:^4.0.0"
     unist-util-find: "npm:^3.0.0"
   peerDependencies:
-    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^18.0.0 || ^19.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -4775,8 +4775,8 @@ __metadata:
     react-use: "npm:^17.4.0"
   peerDependencies:
     "@backstage/catalog-client": ^1.10.0
-    react: ^17.0.0 || ^18.0.0 || ^19.0.0
-    react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: " ^18.0.0 || ^19.0.0"
+    react-dom: ^18.0.0 || ^19.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
