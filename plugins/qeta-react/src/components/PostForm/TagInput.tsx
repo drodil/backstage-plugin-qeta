@@ -1,5 +1,10 @@
 import { Autocomplete } from '@material-ui/lab';
-import { TextField, Tooltip, Typography } from '@material-ui/core';
+import {
+  CircularProgress,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import {
   ComponentType,
   CSSProperties,
@@ -181,6 +186,17 @@ export const TagInput = (props: {
           helperText={getHelperText()}
           FormHelperTextProps={{
             style: { marginLeft: '0.2em' },
+          }}
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {loading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
           }}
           error={error !== undefined}
         />
