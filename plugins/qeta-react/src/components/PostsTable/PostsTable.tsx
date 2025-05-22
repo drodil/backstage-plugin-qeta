@@ -55,6 +55,7 @@ export const PostsTable = (props: {
         limit: questionsPerPage,
         offset: (page - 1) * questionsPerPage,
         includeEntities: true,
+        includeExperts: false,
         ...(filters as any),
       }),
     [page, filters, questionsPerPage, refresh],

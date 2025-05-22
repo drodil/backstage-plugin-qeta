@@ -58,6 +58,7 @@ export interface QetaEntity extends QetaIdEntity {
   canDelete?: boolean;
   updated?: Date;
   updatedBy?: string;
+  experts?: string[];
 }
 
 export interface PostAnswerEntity extends QetaEntity {
@@ -74,6 +75,7 @@ export interface CollectionEntity extends QetaIdEntity {
   owner: string;
   created: Date;
   headerImage?: string;
+  experts?: string[];
 }
 
 export type PostType = 'question' | 'article';
@@ -112,12 +114,23 @@ export interface Article extends Post {
 }
 
 export type AnswerFilter = {
-  property: 'answers.author' | 'answers.id' | 'tags' | 'entityRefs';
+  property:
+    | 'answers.author'
+    | 'answers.id'
+    | 'tags'
+    | 'entityRefs'
+    | 'tag.experts';
   values: Array<string | undefined>;
 };
 
 export type PostFilter = {
-  property: 'posts.author' | 'posts.id' | 'tags' | 'entityRefs' | 'posts.type';
+  property:
+    | 'posts.author'
+    | 'posts.id'
+    | 'tags'
+    | 'entityRefs'
+    | 'posts.type'
+    | 'tag.experts';
   values: Array<string | undefined>;
 };
 
@@ -132,7 +145,12 @@ export type TagFilter = {
 };
 
 export type CollectionFilter = {
-  property: 'collections.owner' | 'collections.id' | 'tags' | 'entityRefs';
+  property:
+    | 'collections.owner'
+    | 'collections.id'
+    | 'tags'
+    | 'entityRefs'
+    | 'tag.experts';
   values: Array<string | undefined>;
 };
 
@@ -190,6 +208,7 @@ export interface QetaPostDocument extends QetaSearchDocument {
   entityRefs?: string[];
   answerCount: number;
   created: Date;
+  trend?: number;
   views: number;
   tags?: string[];
   correctAnswer?: boolean;

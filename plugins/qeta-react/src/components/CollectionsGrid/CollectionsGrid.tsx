@@ -66,6 +66,7 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
         limit: collectionsPerPage,
         offset: (page - 1) * collectionsPerPage,
         includePosts: false,
+        includeExperts: false,
         owner,
         ...(getFiltersWithDateRange(filters) as any),
       });

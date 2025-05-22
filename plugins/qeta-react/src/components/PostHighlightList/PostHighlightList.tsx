@@ -33,6 +33,7 @@ export const PostHighlightList = (props: {
         includeAnswers: false,
         includeVotes: false,
         includeEntities: false,
+        includeExperts: false,
         ...props.options,
       }),
     [],

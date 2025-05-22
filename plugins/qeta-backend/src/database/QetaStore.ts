@@ -133,6 +133,7 @@ export type PostOptions = {
   includeComments?: boolean;
   includeAttachments?: boolean;
   includeTotal?: boolean;
+  includeExperts?: boolean;
 };
 
 export type CollectionOptions = {
@@ -140,6 +141,7 @@ export type CollectionOptions = {
   postFilters?: PermissionCriteria<QetaFilters>;
   tagFilters?: PermissionCriteria<QetaFilters>;
   includePosts?: boolean;
+  includeExperts?: boolean;
 };
 
 export type AnswerOptions = {
@@ -147,6 +149,7 @@ export type AnswerOptions = {
   includeVotes?: boolean;
   includeComments?: boolean;
   includePost?: boolean;
+  includeExperts?: boolean;
   commentsFilter?: PermissionCriteria<QetaFilters>;
 };
 

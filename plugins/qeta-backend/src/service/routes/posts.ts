@@ -107,6 +107,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       includeAnswers: false,
       includeComments: false,
       includeAttachments: false,
+      includeExperts: false,
     });
     await Promise.all(
       posts.posts.map(async post => {
@@ -149,6 +150,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       includeAnswers: false,
       includeComments: false,
       includeAttachments: false,
+      includeExperts: false,
     });
     await Promise.all(
       posts.posts.map(async post => {
@@ -199,6 +201,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       includeEntities: false,
       includeTags: false,
       includeVotes: false,
+      includeExperts: false,
       includeComments: false,
       commentsFilter,
       tagsFilter,

@@ -24,13 +24,16 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   answerAuthorConditionFactory,
+  answerTagExpertConditionFactory,
   collectionOwnerConditionFactory,
+  collectionTagExpertConditionFactory,
   commentAuthorConditionFactory,
   createAnswerConditionalDecision,
   createCollectionConditionalDecision,
   createCommentConditionalDecision,
   createPostConditionalDecision,
   postAuthorConditionFactory,
+  postTagExpertConditionFactory,
 } from '@drodil/backstage-plugin-qeta-node';
 import { Config } from '@backstage/config';
 
@@ -64,16 +67,19 @@ export class DefaultQetaPermissionPolicy implements PermissionPolicy {
       return { result: AuthorizeResult.ALLOW };
     }
 
-    // Allow updating and deleting only own posts/answers/comments
     if (
       request.permission.attributes.action === 'update' ||
       request.permission.attributes.action === 'delete'
     ) {
       if (isResourcePermission(request.permission, POST_RESOURCE_TYPE)) {
         return createPostConditionalDecision(request.permission, {
-          allOf: [
+          anyOf: [
             // Can edit and delete own questions
             postAuthorConditionFactory({
+              userRef: user.identity.userEntityRef,
+            }),
+            // Can edit and delete if tag expert
+            postTagExpertConditionFactory({
               userRef: user.identity.userEntityRef,
             }),
           ],
@@ -82,8 +88,11 @@ export class DefaultQetaPermissionPolicy implements PermissionPolicy {
 
       if (isResourcePermission(request.permission, ANSWER_RESOURCE_TYPE)) {
         return createAnswerConditionalDecision(request.permission, {
-          allOf: [
+          anyOf: [
             answerAuthorConditionFactory({
+              userRef: user.identity.userEntityRef,
+            }),
+            answerTagExpertConditionFactory({
               userRef: user.identity.userEntityRef,
             }),
           ],
@@ -101,11 +110,15 @@ export class DefaultQetaPermissionPolicy implements PermissionPolicy {
         });
       }
 
-      // Allow deleting and updating only own collections
       if (isResourcePermission(request.permission, COLLECTION_RESOUCE_TYPE)) {
         return createCollectionConditionalDecision(request.permission, {
-          allOf: [
+          anyOf: [
+            // Allow deleting and updating only own collections
             collectionOwnerConditionFactory({
+              userRef: user.identity.userEntityRef,
+            }),
+            // Allow deleting and updating if tag expert
+            collectionTagExpertConditionFactory({
               userRef: user.identity.userEntityRef,
             }),
           ],

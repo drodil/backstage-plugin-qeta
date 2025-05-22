@@ -87,14 +87,13 @@ export const mapAdditionalFields = async (
   options?: {
     checkRights?: boolean;
     creds?: BackstageCredentials;
-    experts?: string[];
   },
 ) => {
   if (!resource) {
     return resource;
   }
 
-  const { creds, experts, checkRights = true } = options ?? {};
+  const { creds, checkRights = true } = options ?? {};
   const { permissionMgr } = routeOpts;
   const credentials =
     creds ?? (await permissionMgr.getCredentials(request, true));
@@ -130,13 +129,6 @@ export const mapAdditionalFields = async (
     credentials,
   );
 
-  let resourceExperts: string[] | undefined = experts;
-  if (isPost(resource) && resource.tags) {
-    resourceExperts = await routeOpts.database.getTagExperts(resource.tags);
-  } else if (isAnswer(resource)) {
-    resource.expert = resourceExperts?.includes(resource.author);
-  }
-
   resource.ownVote = resource.votes?.find(v => v.author === username)?.score;
   resource.own = resource.author === username;
   resource.canEdit = checkRights
@@ -156,6 +148,10 @@ export const mapAdditionalFields = async (
       )
     : undefined;
 
+  if (isAnswer(resource)) {
+    resource.expert = resource.experts?.includes(resource.author);
+  }
+
   if (isPost(resource)) {
     await Promise.all(
       (resource.answers ?? []).map(
@@ -163,7 +159,6 @@ export const mapAdditionalFields = async (
           await mapAdditionalFields(request, a, routeOpts, {
             checkRights,
             creds: credentials,
-            experts: resourceExperts,
           }),
       ),
     );
@@ -175,7 +170,7 @@ export const mapAdditionalFields = async (
         return {
           ...c,
           own: c.author === username,
-          expert: resourceExperts?.includes(c.author),
+          expert: c.experts?.includes(c.author),
           canEdit: checkRights
             ? await permissionMgr.authorizeBoolean(
                 request,

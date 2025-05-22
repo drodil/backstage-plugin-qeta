@@ -229,8 +229,18 @@ export class PermissionManager {
       throw new NotFoundError('Resource not found');
     }
 
-    const moderator = await this.isModerator(request, options);
+    const username = await this.getUsername(request, true, options.credentials);
 
+    // Experts can edit and delete
+    if (
+      'experts' in options.resource &&
+      Array.isArray(options.resource.experts) &&
+      options.resource.experts.includes(username)
+    ) {
+      return { result: AuthorizeResult.ALLOW };
+    }
+
+    const moderator = await this.isModerator(request, options);
     if (moderator) {
       return { result: AuthorizeResult.ALLOW };
     }
@@ -243,7 +253,6 @@ export class PermissionManager {
       return { result: AuthorizeResult.ALLOW };
     }
 
-    const username = await this.getUsername(request, true, options.credentials);
     if ('author' in options.resource && username === options.resource.author) {
       return { result: AuthorizeResult.ALLOW };
     } else if (

@@ -21,7 +21,11 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
   const { post } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const { value: response, retry } = useQetaApi(api => {
-    return api.getCollections({ checkAccess: true });
+    return api.getCollections({
+      checkAccess: true,
+      includeExperts: false,
+      includePosts: false,
+    });
   }, []);
   const [open, setOpen] = useState(false);
   const qetaApi = useApi(qetaApiRef);
