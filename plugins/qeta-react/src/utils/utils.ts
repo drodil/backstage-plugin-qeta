@@ -142,14 +142,14 @@ export const useConfirmNavigationIfEdited = (edited: boolean) => {
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
-    if ('navigation' in window) {
+    if ('navigation' in window && window.navigation) {
       // @ts-ignore
       window.navigation.addEventListener('navigate', handleLocationChange);
     }
 
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      if ('navigation' in window) {
+      if ('navigation' in window && window.navigation) {
         // @ts-ignore
         window.navigation.removeEventListener('navigate', handleLocationChange);
       }
