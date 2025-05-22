@@ -469,11 +469,12 @@ export class DatabaseQetaStore implements QetaStore {
         rows.map(async val => {
           return this.mapPostEntity(val, user_ref, {
             ...opts,
-            includeAnswers: options.includeAnswers,
-            includeVotes: options.includeVotes,
-            includeEntities: options.includeEntities,
-            includeAttachments: options.includeAttachments,
-            includeExperts: options.includeExperts,
+            includeAnswers: options.includeAnswers ?? opts?.includeAnswers,
+            includeVotes: options.includeVotes ?? opts?.includeVotes,
+            includeEntities: options.includeEntities ?? opts?.includeEntities,
+            includeAttachments:
+              options.includeAttachments ?? opts?.includeAttachments,
+            includeExperts: options.includeExperts ?? opts?.includeExperts,
           });
         }),
       ),
@@ -1993,8 +1994,8 @@ export class DatabaseQetaStore implements QetaStore {
         rows.map(async val => {
           return this.mapCollectionEntity(val, user_ref, {
             ...opts,
-            includePosts: options.includePosts,
-            includeExperts: options.includeExperts,
+            includePosts: options.includePosts ?? opts?.includePosts,
+            includeExperts: options.includeExperts ?? opts?.includeExperts,
           });
         }),
       ),
@@ -2482,11 +2483,7 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     options?: CollectionOptions,
   ): Promise<Collection> {
-    const {
-      postFilters,
-      includePosts = true,
-      includeExperts = true,
-    } = options ?? {};
+    const { postFilters, includePosts = true } = options ?? {};
     const results = await Promise.all([
       includePosts
         ? this.getPosts(
@@ -2500,6 +2497,7 @@ export class DatabaseQetaStore implements QetaStore {
               includeAttachments: false,
               includeVotes: false,
               includeTotal: false,
+              includeExperts: options?.includeExperts ?? false,
             },
           )
         : { posts: [] },
@@ -2509,7 +2507,9 @@ export class DatabaseQetaStore implements QetaStore {
         .as('followers')
         .where('collectionId', val.id)
         .first(),
-      includeExperts ? this.getCollectionExperts(val.id) : undefined,
+      options?.includeExperts ?? true
+        ? this.getCollectionExperts(val.id)
+        : undefined,
     ]);
 
     const entities = compact([

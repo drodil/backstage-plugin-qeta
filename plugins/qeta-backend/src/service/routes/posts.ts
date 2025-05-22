@@ -113,6 +113,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       posts.posts.map(async post => {
         await mapAdditionalFields(request, post, options, {
           checkRights: opts.checkAccess ?? false,
+          username,
         });
       }),
     );
@@ -156,6 +157,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       posts.posts.map(async post => {
         await mapAdditionalFields(request, post, options, {
           checkRights: opts.checkAccess ?? false,
+          username,
         });
       }),
     );
@@ -212,6 +214,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       posts.posts.map(async post => {
         await mapAdditionalFields(request, post, options, {
           checkRights: opts.checkAccess ?? false,
+          username,
         });
       }),
     );
@@ -257,7 +260,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       resource: post,
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
     signalPostStats(signals, post);
 
     auditor?.createEvent({
@@ -329,7 +332,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     wrapAsync(async () => {
       if (!post) {
@@ -440,7 +443,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     // Response
     response.json(post);
@@ -504,7 +507,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     // Response
     response.json(post);
@@ -589,7 +592,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     // Response
     response.status(201).json(post);
@@ -667,7 +670,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'update_post' },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     auditor?.createEvent({
       eventId: 'update-post',
@@ -792,7 +795,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'vote_post' },
     });
 
-    await mapAdditionalFields(request, resp, options);
+    await mapAdditionalFields(request, resp, options, { username });
     resp.ownVote = score;
 
     auditor?.createEvent({
@@ -866,7 +869,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'delete_vote' },
     });
 
-    await mapAdditionalFields(request, resp, options);
+    await mapAdditionalFields(request, resp, options, { username });
     resp.ownVote = undefined;
 
     auditor?.createEvent({
@@ -930,7 +933,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       meta: { post: entityToJsonObject(post) },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     // Response
     response.json(post);
@@ -988,7 +991,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       meta: { post: entityToJsonObject(post) },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     // Response
     response.json(post);

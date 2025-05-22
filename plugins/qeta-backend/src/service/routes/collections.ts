@@ -76,6 +76,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       collections.collections.map(async collection => {
         await mapAdditionalFields(request, collection, options, {
           checkRights: opts.checkAccess ?? false,
+          username,
         });
       }),
     );
@@ -130,6 +131,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       collections.collections.map(async collection => {
         await mapAdditionalFields(request, collection, options, {
           checkRights: opts.checkAccess ?? false,
+          username,
         });
       }),
     );
@@ -190,7 +192,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'new_collection' },
     });
 
-    await mapAdditionalFields(request, collection, options);
+    await mapAdditionalFields(request, collection, options, { username });
 
     auditor?.createEvent({
       eventId: 'create-collection',
@@ -275,7 +277,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'update_collection' },
     });
 
-    await mapAdditionalFields(request, collection, options);
+    await mapAdditionalFields(request, collection, options, { username });
 
     auditor?.createEvent({
       eventId: 'update-collection',
@@ -467,7 +469,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       resource: collection,
     });
 
-    await mapAdditionalFields(request, collection, options);
+    await mapAdditionalFields(request, collection, options, { username });
 
     auditor?.createEvent({
       eventId: 'read-collection',
@@ -564,7 +566,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'update_collection' },
     });
 
-    await mapAdditionalFields(request, collection, options);
+    await mapAdditionalFields(request, collection, options, { username });
 
     auditor?.createEvent({
       eventId: 'add-to-collection',
@@ -652,7 +654,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'update_collection' },
     });
 
-    await mapAdditionalFields(request, collection, options);
+    await mapAdditionalFields(request, collection, options, { username });
 
     auditor?.createEvent({
       eventId: 'delete-from-collection',

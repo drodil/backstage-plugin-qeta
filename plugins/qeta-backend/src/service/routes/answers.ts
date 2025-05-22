@@ -121,6 +121,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       answers.answers.map(async answer => {
         await mapAdditionalFields(request, answer, options, {
           checkRights: opts.checkAccess ?? false,
+          username,
         });
       }),
     );
@@ -203,7 +204,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'post_answer' },
     });
 
-    await mapAdditionalFields(request, answer, options);
+    await mapAdditionalFields(request, answer, options, { username });
 
     signalPostStats(signals, post);
     auditor?.createEvent({
@@ -278,7 +279,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, answer, options);
+    await mapAdditionalFields(request, answer, options, { username });
 
     // Response
     response.json(answer);
@@ -376,7 +377,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         metadata: { action: 'comment_answer' },
       });
 
-      await mapAdditionalFields(request, answer, options);
+      await mapAdditionalFields(request, answer, options, { username });
 
       auditor?.createEvent({
         eventId: 'comment-answer',
@@ -458,7 +459,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         },
       });
 
-      await mapAdditionalFields(request, answer, options);
+      await mapAdditionalFields(request, answer, options, { username });
 
       // Response
       response.json(answer);
@@ -563,7 +564,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await mapAdditionalFields(request, answer, options);
+    await mapAdditionalFields(request, answer, options, { username });
 
     auditor?.createEvent({
       eventId: 'read-answer',
@@ -697,7 +698,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'vote_answer' },
     });
 
-    await mapAdditionalFields(request, resp, options);
+    await mapAdditionalFields(request, resp, options, { username });
     resp.ownVote = score;
 
     auditor?.createEvent({
@@ -781,7 +782,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         },
       });
 
-      await mapAdditionalFields(request, resp, options);
+      await mapAdditionalFields(request, resp, options, { username });
       resp.ownVote = undefined;
 
       signalAnswerStats(signals, resp);
