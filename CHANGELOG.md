@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.28.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.28.0...v3.28.1) (2025-05-22)
+
+
+### Bug Fixes
+
+* also check for undefined window.navigation ([550722d](https://github.com/drodil/backstage-plugin-qeta/commit/550722d20d23219ad084acb568fe718681b276c8))
+* check for navigation in window to fix firefox ([9d213aa](https://github.com/drodil/backstage-plugin-qeta/commit/9d213aac0da0055fed9c1f6b48b6cf999078dc35))
+
 ## [3.28.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.27.0...v3.28.0) (2025-05-22)
 
 
