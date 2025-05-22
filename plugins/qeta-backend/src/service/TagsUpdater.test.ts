@@ -93,6 +93,7 @@ describe('TagsUpdater', () => {
       expect(mockLogger.info).toHaveBeenCalledWith('Updating tags');
       expect(mockDatabase.getTags).toHaveBeenCalledWith({
         noDescription: true,
+        includeExperts: false,
       });
       expect(mockDatabase.updateTag).toHaveBeenCalledWith(
         1,
@@ -110,6 +111,7 @@ describe('TagsUpdater', () => {
       expect(mockLogger.info).toHaveBeenCalledWith('Updating tags');
       expect(mockDatabase.getTags).toHaveBeenCalledWith({
         noDescription: true,
+        includeExperts: false,
       });
       expect(mockDatabase.updateTag).not.toHaveBeenCalled();
     });

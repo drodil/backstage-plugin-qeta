@@ -191,6 +191,7 @@ export const TagsQuerySchema: JSONSchemaType<TagsQuery> = {
     order: { type: 'string', enum: ['desc', 'asc'], nullable: true },
     searchQuery: { type: 'string', nullable: true },
     checkAccess: { type: 'boolean', nullable: true },
+    includeExperts: { type: 'boolean', nullable: true },
   },
   required: [],
   additionalProperties: false,

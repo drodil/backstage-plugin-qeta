@@ -203,10 +203,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'post_answer' },
     });
 
-    const tagExperts = await database.getTagExperts(post.tags ?? []);
-    await mapAdditionalFields(request, answer, options, {
-      experts: tagExperts,
-    });
+    await mapAdditionalFields(request, answer, options);
 
     signalPostStats(signals, post);
     auditor?.createEvent({
@@ -281,10 +278,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    const tagExperts = await database.getTagExperts(post.tags ?? []);
-    await mapAdditionalFields(request, answer, options, {
-      experts: tagExperts,
-    });
+    await mapAdditionalFields(request, answer, options);
 
     // Response
     response.json(answer);
@@ -382,10 +376,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         metadata: { action: 'comment_answer' },
       });
 
-      const tagExperts = await database.getTagExperts(post.tags ?? []);
-      await mapAdditionalFields(request, answer, options, {
-        experts: tagExperts,
-      });
+      await mapAdditionalFields(request, answer, options);
 
       auditor?.createEvent({
         eventId: 'comment-answer',
@@ -467,10 +458,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         },
       });
 
-      const tagExperts = await database.getTagExperts(post.tags ?? []);
-      await mapAdditionalFields(request, answer, options, {
-        experts: tagExperts,
-      });
+      await mapAdditionalFields(request, answer, options);
 
       // Response
       response.json(answer);
@@ -709,8 +697,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'vote_answer' },
     });
 
-    const tagExperts = await database.getTagExperts(post.tags ?? []);
-    await mapAdditionalFields(request, resp, options, { experts: tagExperts });
+    await mapAdditionalFields(request, resp, options);
     resp.ownVote = score;
 
     auditor?.createEvent({
