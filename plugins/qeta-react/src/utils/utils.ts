@@ -142,13 +142,17 @@ export const useConfirmNavigationIfEdited = (edited: boolean) => {
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
-    // @ts-ignore
-    window.navigation.addEventListener('navigate', handleLocationChange);
+    if ('navigation' in window) {
+      // @ts-ignore
+      window.navigation.addEventListener('navigate', handleLocationChange);
+    }
 
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      // @ts-ignore
-      window.navigation.removeEventListener('navigate', handleLocationChange);
+      if ('navigation' in window) {
+        // @ts-ignore
+        window.navigation.removeEventListener('navigate', handleLocationChange);
+      }
     };
   }, [edited, msg]);
 };
