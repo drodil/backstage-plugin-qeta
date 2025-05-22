@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.28.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.27.0...v3.28.0) (2025-05-22)
+
+
+### Features
+
+* allow tag experts to edit/delete resources ([56843a7](https://github.com/drodil/backstage-plugin-qeta/commit/56843a7b4b483e31fb124f707dcbd68e83dbe910))
+
+
+### Bug Fixes
+
+* overall performance improvements ([c7829ee](https://github.com/drodil/backstage-plugin-qeta/commit/c7829eed7b9e88f3e41457a3599fd0abc60cde58))
+* tests for tag updater, tag query typing ([8f98f57](https://github.com/drodil/backstage-plugin-qeta/commit/8f98f57b04d28de37ad2b217444453bd44b03c8c))
+
 ## [3.27.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.26.0...v3.27.0) (2025-05-21)
 
 
