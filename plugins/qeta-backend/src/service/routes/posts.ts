@@ -571,7 +571,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       );
       const mentions = findUserMentions(request.body.content);
       if (mentions.length > 0) {
-        await notificationMgr.onMention(username, post, sent, mentions);
+        await notificationMgr.onMention(username, post, mentions, sent);
       }
     });
 
