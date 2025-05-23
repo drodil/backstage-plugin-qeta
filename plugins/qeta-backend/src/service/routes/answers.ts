@@ -190,7 +190,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       );
       const mentions = findUserMentions(answer.content);
       if (mentions.length > 0) {
-        await notificationMgr.onMention(username, answer, sent, mentions);
+        await notificationMgr.onMention(username, answer, mentions, sent);
       }
     });
 
