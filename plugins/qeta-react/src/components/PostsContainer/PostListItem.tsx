@@ -43,7 +43,6 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     display: 'flex',
     height: '24px',
-    marginBottom: '8px',
   },
   timestamp: {
     marginLeft: '0.3em',
@@ -88,7 +87,7 @@ export const PostListItem = (props: PostListItemProps) => {
       justifyContent="flex-start"
       style={{ padding: '0.7em', paddingBottom: '1.0em' }}
     >
-      <Grid item style={{ paddingTop: '0px' }}>
+      <Grid item style={{ paddingTop: '0em', marginTop: '-0.5em' }}>
         <VoteButtonContainer>
           <VoteButtons entity={post} />
           <FavoriteButton entity={post} />
@@ -107,16 +106,17 @@ export const PostListItem = (props: PostListItemProps) => {
             justifyContent="space-between"
             xs={12}
             style={{
-              paddingTop: '0.3em',
-              paddingBottom: '0.0em',
+              paddingTop: '0',
+              paddingBottom: '0.5em',
               marginLeft: '-0.2em',
             }}
           >
-            <Grid item>
+            <Grid item style={{ display: 'flex', alignItems: 'center' }}>
               {type === undefined && (
                 <Chip
                   color="secondary"
                   size="small"
+                  style={{ marginBottom: 0 }}
                   label={`${capitalize(post.type)}`}
                   icon={
                     post.type === 'question' ? (
@@ -132,6 +132,7 @@ export const PostListItem = (props: PostListItemProps) => {
                   variant="outlined"
                   size="small"
                   style={{
+                    marginBottom: 0,
                     userSelect: 'none',
                     // eslint-disable-next-line no-nested-ternary
                     borderColor: correctAnswer
@@ -148,6 +149,7 @@ export const PostListItem = (props: PostListItemProps) => {
               <Chip
                 variant="outlined"
                 size="small"
+                style={{ marginBottom: 0 }}
                 label={t('common.viewsShort', {
                   count: views,
                 })}
