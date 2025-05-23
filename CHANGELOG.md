@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.28.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.28.1...v3.28.2) (2025-05-23)
+
+
+### Bug Fixes
+
+* **backend:** parameter order of onMention calls ([84360bd](https://github.com/drodil/backstage-plugin-qeta/commit/84360bd6d60f666fc7887d19babb3e19ae7e29e9))
+* small tuning for post list item ui ([c043963](https://github.com/drodil/backstage-plugin-qeta/commit/c043963973ae70543d39852438a2b92fb7dbe8f5))
+
 ### [3.28.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.28.0...v3.28.1) (2025-05-22)
 
 
