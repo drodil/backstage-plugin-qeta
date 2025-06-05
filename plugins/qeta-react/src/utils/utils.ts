@@ -123,6 +123,7 @@ export const getFiltersWithDateRange = (filters: Filters) => {
 export const useConfirmNavigationIfEdited = (edited: boolean) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const msg = t('common.unsaved_changes');
+
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (edited) {
@@ -142,17 +143,40 @@ export const useConfirmNavigationIfEdited = (edited: boolean) => {
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Modern browsers with Navigation API
     if ('navigation' in window && window.navigation) {
       // @ts-ignore
       window.navigation.addEventListener('navigate', handleLocationChange);
+
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        // @ts-ignore
+        window.navigation.removeEventListener('navigate', handleLocationChange);
+      };
     }
+
+    // Fallback: Use popstate + history monitoring
+    window.addEventListener('popstate', handleLocationChange);
+
+    const originalPushState = window.history.pushState;
+    const originalReplaceState = window.history.replaceState;
+
+    window.history.pushState = (...args) => {
+      originalPushState.apply(window.history, args);
+      handleLocationChange(new PopStateEvent('navigate', { state: args[0] }));
+    };
+
+    window.history.replaceState = (...args) => {
+      originalReplaceState.apply(window.history, args);
+      handleLocationChange(new PopStateEvent('navigate', { state: args[0] }));
+    };
 
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      if ('navigation' in window && window.navigation) {
-        // @ts-ignore
-        window.navigation.removeEventListener('navigate', handleLocationChange);
-      }
+      window.removeEventListener('popstate', handleLocationChange);
+      window.history.pushState = originalPushState;
+      window.history.replaceState = originalReplaceState;
     };
   }, [edited, msg]);
 };
