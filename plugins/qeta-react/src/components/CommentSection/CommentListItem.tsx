@@ -18,15 +18,34 @@ import { CommentForm } from './CommentForm.tsx';
 import { ExpertIcon } from '../Icons/ExpertIcon.tsx';
 
 const useStyles = makeStyles(
-  () => ({
+  theme => ({
     root: {},
     box: {
-      padding: '0.5em',
+      padding: theme.spacing(1.5),
+      transition: 'all 0.2s ease-in-out',
+      '&:hover': {
+        backgroundColor: theme.palette.action.hover,
+      },
     },
     content: {
       display: 'inline',
       '& *:last-child': {
         display: 'inline',
+      },
+      fontSize: '0.8rem',
+      lineHeight: 1.5,
+    },
+    metadata: {
+      color: theme.palette.text.secondary,
+      fontSize: '0.85rem',
+      marginTop: theme.spacing(0.5),
+      '& a': {
+        color: theme.palette.primary.main,
+        transition: 'all 0.2s ease-in-out',
+        '&:hover': {
+          textDecoration: 'underline',
+          opacity: 0.8,
+        },
       },
     },
   }),
@@ -92,7 +111,7 @@ export const CommentListItem = (props: {
             content={comment.content}
             className={styles.content}
           />
-          <Typography variant="caption" className="qetaCommentMetadata">
+          <Typography variant="caption" className={styles.metadata}>
             {' – '}
             <AuthorLink entity={comment} />
             {comment.expert && <ExpertIcon />}{' '}
