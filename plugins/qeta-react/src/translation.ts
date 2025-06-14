@@ -71,6 +71,7 @@ export const qetaTranslationRef = createTranslationRef({
         "By enabling this, other users won't be able to see you as an author",
       answerAnonymously: 'Answer anonymously',
       postAnonymously: 'Post anonymously',
+      info: 'Your name will not be shown to others.',
     },
     fileInput: {
       label: 'Header image',
@@ -99,14 +100,32 @@ export const qetaTranslationRef = createTranslationRef({
         label: 'Title',
         helperText:
           'Write good title for your {{type}} that people can understand',
+        placeholder: 'e.g. How do I deploy a Backstage plugin?',
       },
       contentInput: {
-        placeholder: 'Your {{type}}',
+        label: 'Your {{type}}',
+        placeholder_question:
+          'Describe your problem in detail. What have you tried? What did you expect to happen?',
+        placeholder_article:
+          'Write your article content here. Use headings, lists, and images to organize your information.',
+        markdownHelp: 'Use markdown to format your {{type}}',
       },
       submit: {
         existingPost: 'Save',
         newPost: 'Post',
       },
+      successPosting: 'Your {{type}} was posted successfully!',
+      submitting: 'Posting...',
+      tips_question_1: 'Describe your problem in detail.',
+      tips_question_2:
+        'Include what you have tried and what you expected to happen.',
+      tips_question_3:
+        'Share error messages, logs, or screenshots if possible.',
+      tips_question_4: 'Use code blocks for code or configuration.',
+      tips_article_1: 'Write a clear and engaging introduction.',
+      tips_article_2: 'Organize your content with headings and lists.',
+      tips_article_3: 'Add images or diagrams to illustrate your points.',
+      tips_article_4: 'Cite sources or link to relevant documentation.',
     },
     answerForm: {
       errorPosting: 'Could not post answer',
@@ -121,12 +140,12 @@ export const qetaTranslationRef = createTranslationRef({
     entitiesInput: {
       label: 'Entities',
       placeholder: 'Type or select entities',
-      helperText: 'Add up to {{max}} entities this question relates to',
+      helperText: 'Add up to {{max}} entities',
     },
     tagsInput: {
       label: 'Tags',
       placeholder: 'Type or select tags',
-      helperText: 'Add up to {{max}} tags to categorize your question',
+      helperText: 'Add up to {{max}} tags',
       allowAddHelperText:
         'You can create new tags by typing the tag and pressing enter',
     },

@@ -20,12 +20,15 @@ import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission'
 import { CommentForm } from './CommentForm.tsx';
 import { useConfirmNavigationIfEdited } from '../../utils';
 
-export type QetaCommentSectionClassKey = 'root' | 'addCommentButton' | 'commentSection' | 'commentForm';
+export type QetaCommentSectionClassKey =
+  | 'root'
+  | 'addCommentButton'
+  | 'commentSection'
+  | 'commentForm';
 
 const useStyles = makeStyles(
   theme => ({
-    root: {
-    },
+    root: {},
     commentSection: {
       position: 'relative',
       marginLeft: theme.spacing(3.5),
@@ -112,8 +115,14 @@ export const CommentSection = (props: {
           <Button
             size="small"
             onClick={() => setCommentsVisible(v => !v)}
-            style={{ textTransform: 'none', padding: '0.5rem 0.8rem'}}
-            endIcon={commentsVisible ? <ExpandMoreIcon fontSize="small" /> : <ExpandLessIcon fontSize="small" />}
+            style={{ textTransform: 'none', padding: '0.5rem 0.8rem' }}
+            endIcon={
+              commentsVisible ? (
+                <ExpandMoreIcon fontSize="small" />
+              ) : (
+                <ExpandLessIcon fontSize="small" />
+              )
+            }
           >
             {`${commentsCount} ${t('common.comments')}`}
           </Button>

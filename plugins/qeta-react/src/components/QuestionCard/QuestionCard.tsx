@@ -121,47 +121,52 @@ export const QuestionCard = (props: { question: PostResponse }) => {
               >
                 <Box flex="1 1 0%" minWidth={0}>
                   <TagsAndEntities entity={questionEntity} />
-                {(question.canEdit || question.canDelete) && (
-                  <Box className={styles.buttons}>
-                    {question.canEdit && (
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<EditIcon />}
-                        onClick={() =>
-                          navigate(
-                            editQuestionRoute({
-                              id: question.id.toString(9),
-                            }),
-                          )
-                        }
-                        className="qetaQuestionCardEditBtn"
-                      >
-                        {t('questionPage.editButton')}
-                      </Button>
-                    )}
-                    {question.canDelete && (
-                      <>
+                  {(question.canEdit || question.canDelete) && (
+                    <Box className={styles.buttons}>
+                      {question.canEdit && (
                         <Button
                           variant="outlined"
                           size="small"
-                          color="secondary"
-                          onClick={handleDeleteModalOpen}
-                          startIcon={<DeleteIcon />}
+                          startIcon={<EditIcon />}
+                          onClick={() =>
+                            navigate(
+                              editQuestionRoute({
+                                id: question.id.toString(9),
+                              }),
+                            )
+                          }
+                          className="qetaQuestionCardEditBtn"
                         >
-                          {t('deleteModal.deleteButton')}
+                          {t('questionPage.editButton')}
                         </Button>
-                        <DeleteModal
-                          open={deleteModalOpen}
-                          onClose={handleDeleteModalClose}
-                          entity={questionEntity}
-                        />
-                      </>
-                    )}
-                  </Box>
-                )}
-                 </Box>
-                <Box display="flex" minWidth={230} style={{ gap: '8px' }} ml={1}>
+                      )}
+                      {question.canDelete && (
+                        <>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            color="secondary"
+                            onClick={handleDeleteModalOpen}
+                            startIcon={<DeleteIcon />}
+                          >
+                            {t('deleteModal.deleteButton')}
+                          </Button>
+                          <DeleteModal
+                            open={deleteModalOpen}
+                            onClose={handleDeleteModalClose}
+                            entity={questionEntity}
+                          />
+                        </>
+                      )}
+                    </Box>
+                  )}
+                </Box>
+                <Box
+                  display="flex"
+                  minWidth={230}
+                  style={{ gap: '8px' }}
+                  ml={1}
+                >
                   {questionEntity.updated && questionEntity.updatedBy && (
                     <AuthorBox
                       userEntityRef={questionEntity.updatedBy}

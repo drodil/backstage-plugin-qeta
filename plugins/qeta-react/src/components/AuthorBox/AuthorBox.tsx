@@ -55,7 +55,13 @@ const useStyles = makeStyles(
   { name: 'QetaAuthorBox' },
 );
 
-export const AuthorBox = (props: { userEntityRef: string, time: string | Date, label: string, expert?: boolean, anonymous?: boolean }) => {
+export const AuthorBox = (props: {
+  userEntityRef: string;
+  time: string | Date;
+  label: string;
+  expert?: boolean;
+  anonymous?: boolean;
+}) => {
   const { userEntityRef, time, label, expert, anonymous } = props;
   const { name, initials, user } = useUserInfo(userEntityRef);
   const styles = useStyles();
@@ -70,8 +76,7 @@ export const AuthorBox = (props: { userEntityRef: string, time: string | Date, l
       >
         <Grid item xs={12} style={{ paddingBottom: 0 }}>
           <Typography className="qetaAuthorBoxCreated" variant="caption">
-            {label}{' '}
-            <RelativeTimeWithTooltip value={time} />
+            {label} <RelativeTimeWithTooltip value={time} />
           </Typography>
         </Grid>
 

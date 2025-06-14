@@ -210,8 +210,13 @@ export const EntitiesInput = (props: {
           {...params}
           variant="outlined"
           margin="normal"
-          label={label ?? t('entitiesInput.label')}
-          placeholder={placeholder ?? t('entitiesInput.placeholder')}
+          label={label || t('entitiesInput.label')}
+          placeholder={placeholder || t('entitiesInput.placeholder')}
+          helperText={
+            !hideHelpText
+              ? t('entitiesInput.helperText', { max: max.toString() })
+              : ''
+          }
           FormHelperTextProps={{
             style: { marginLeft: '0.2em' },
           }}
@@ -226,13 +231,6 @@ export const EntitiesInput = (props: {
               </>
             ),
           }}
-          helperText={
-            hideHelpText || max === null
-              ? ''
-              : t('entitiesInput.helperText', {
-                  max: max.toString(10),
-                })
-          }
         />
       )}
       {...autocompleteProps}

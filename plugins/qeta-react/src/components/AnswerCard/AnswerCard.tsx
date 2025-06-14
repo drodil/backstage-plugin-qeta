@@ -177,7 +177,12 @@ export const AnswerCard = (props: {
                         </Box>
                       )}
                     </Box>
-                    <Box display="flex" minWidth={220} style={{ gap: '8px' }} ml={1}>
+                    <Box
+                      display="flex"
+                      minWidth={220}
+                      style={{ gap: '8px' }}
+                      ml={1}
+                    >
                       {answerEntity.updated && answerEntity.updatedBy && (
                         <AuthorBox
                           userEntityRef={answerEntity.updatedBy}
