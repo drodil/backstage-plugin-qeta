@@ -385,6 +385,10 @@ export const qetaTranslationRef = createTranslationRef({
       aria: 'Copy link to clipboard',
       copied: 'Link copied to clipboard',
     },
+    code: {
+      aria: 'Copy code to clipboard',
+      copied: 'Code copied to clipboard',
+    },
     voteButtons: {
       answer: {
         markCorrect: 'Mark this answer correct',

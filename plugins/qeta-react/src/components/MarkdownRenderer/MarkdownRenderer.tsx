@@ -17,6 +17,7 @@ import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { BackstageOverrides } from '@backstage/core-components';
 import LinkIcon from '@material-ui/icons/Link';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -156,6 +157,18 @@ const useStyles = makeStyles(
           ? overrides.BackstageMarkdownContent
           : {}),
       },
+      codeBlockContainer: {
+        position: 'relative',
+        '& .copyCodeButton': {
+          opacity: 0,
+          pointerEvents: 'none',
+          transition: 'opacity 0.2s',
+        },
+        '&:hover .copyCodeButton': {
+          opacity: 1,
+          pointerEvents: 'auto',
+        },
+      },
       header: {
         '& .anchor-link': {
           display: 'none',
@@ -223,6 +236,15 @@ export const MarkdownRenderer = (props: {
     window.navigator.clipboard.writeText(url.toString());
     alertApi.post({
       message: t('link.copied'),
+      severity: 'info',
+      display: 'transient',
+    });
+  };
+
+  const copyCodeToClipboard = (code: string) => {
+    window.navigator.clipboard.writeText(code);
+    alertApi.post({
+      message: t('code.copied'),
       severity: 'info',
       display: 'transient',
     });
@@ -369,16 +391,35 @@ export const MarkdownRenderer = (props: {
         code(p: any) {
           const { children, className, node, ...rest } = p;
           const match = /language-(\w+)/.exec(className || '');
+          const codeString = String(children).replace(/\n$/, '');
           return match ? (
-            <SyntaxHighlighter
-              {...rest}
-              PreTag="div"
-              language={match[1]}
-              style={darkTheme ? a11yDark : a11yLight}
-              showLineNumbers
-            >
-              {String(children).replace(/\n$/, '')}
-            </SyntaxHighlighter>
+            <div className={classes.codeBlockContainer}>
+              <SyntaxHighlighter
+                {...rest}
+                PreTag="div"
+                language={match[1]}
+                style={darkTheme ? a11yDark : a11yLight}
+                showLineNumbers
+              >
+                {codeString}
+              </SyntaxHighlighter>
+              <Tooltip title={t('code.aria')}>
+                <IconButton
+                  aria-label={t('code.aria')}
+                  size="small"
+                  className="copyCodeButton"
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    zIndex: 2,
+                  }}
+                  onClick={() => copyCodeToClipboard(codeString)}
+                >
+                  <FileCopyIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </div>
           ) : (
             <code {...rest} className={className}>
               {children}
