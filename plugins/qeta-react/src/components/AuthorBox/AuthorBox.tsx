@@ -1,12 +1,6 @@
-import {
-  AnswerResponse,
-  PostResponse,
-} from '@drodil/backstage-plugin-qeta-common';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import { AuthorLink, UpdatedByLink, UserLink } from '../Links';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { qetaTranslationRef } from '../../translation.ts';
-import { useEntityAuthor, useUserInfo } from '../../hooks/useEntityAuthor';
+import { UserLink } from '../Links';
+import { useUserInfo } from '../../hooks/useEntityAuthor';
 import { Avatar, Box, Grid, makeStyles, Typography } from '@material-ui/core';
 import { ExpertIcon } from '../Icons/ExpertIcon.tsx';
 

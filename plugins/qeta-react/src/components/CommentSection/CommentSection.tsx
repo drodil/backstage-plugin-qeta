@@ -14,6 +14,8 @@ import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import AddCommentIcon from '@material-ui/icons/AddComment';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { CommentForm } from './CommentForm.tsx';
 import { useConfirmNavigationIfEdited } from '../../utils';
@@ -71,6 +73,11 @@ export const CommentSection = (props: {
   const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
 
+  // Determine the entity to get comments from
+  const entity = answer ?? post;
+  const commentsCount = entity.comments?.length || 0;
+  const [commentsVisible, setCommentsVisible] = useState(true);
+
   const postComment = (data: { content: string }) => {
     setPosting(true);
     if (answer) {
@@ -99,13 +106,29 @@ export const CommentSection = (props: {
     <Box
       className={`${styles.root} ${styles.commentSection} ${props.className} qetaCommentSection`}
     >
-      <Box pl={1}>
-        <CommentList
-          post={post}
-          answer={answer}
-          onCommentAction={onCommentAction}
-        />
-      </Box>
+      {/* Hide/Show Comments Button */}
+      {commentsCount > 0 && (
+        <Box display="flex" alignItems="center" pl={1}>
+          <Button
+            size="small"
+            onClick={() => setCommentsVisible(v => !v)}
+            style={{ textTransform: 'none', padding: '0.5rem 0.8rem'}}
+            endIcon={commentsVisible ? <ExpandMoreIcon fontSize="small" /> : <ExpandLessIcon fontSize="small" />}
+          >
+            {`${commentsCount} ${t('common.comments')}`}
+          </Button>
+        </Box>
+      )}
+      {/* Comments List */}
+      {commentsVisible && (
+        <Box pl={1}>
+          <CommentList
+            post={post}
+            answer={answer}
+            onCommentAction={onCommentAction}
+          />
+        </Box>
+      )}
       <OptionalRequirePermission
         permission={qetaCreateCommentPermission}
         errorPage={<></>}
