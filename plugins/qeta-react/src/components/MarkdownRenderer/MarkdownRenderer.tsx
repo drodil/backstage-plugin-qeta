@@ -42,32 +42,41 @@ const useStyles = makeStyles(
     const overrides = theme.overrides as BackstageOverrides;
     return {
       markdown: {
+        lineHeight: 1.75,
         '& p': {
           ...theme.typography?.body1,
+          margin: '0 0 1em 0',
+          wordBreak: 'break-word',
         },
         '& h1': {
           ...theme.typography?.h1,
           marginBottom: 2,
+          marginTop: '1.5em',
         },
         '& h2': {
           ...theme.typography?.h2,
           marginBottom: 2,
+          marginTop: '1.2em',
         },
         '& h3': {
           ...theme.typography?.h3,
           marginBottom: 2,
+          marginTop: '1em',
         },
         '& h4': {
           ...theme.typography?.h4,
           marginBottom: 2,
+          marginTop: '0.8em',
         },
         '& h5': {
           ...theme.typography?.h5,
           marginBottom: 2,
+          marginTop: '0.7em',
         },
         '& h6': {
           ...theme.typography?.h6,
           marginBottom: 2,
+          marginTop: '0.6em',
         },
         '& table': {
           borderCollapse: 'collapse',
@@ -107,25 +116,32 @@ const useStyles = makeStyles(
           display: 'block',
           width: '100%',
           overflowX: 'auto',
+          borderRadius: 4,
+          padding: '0.2em 0.4em',
+          fontSize: '0.97em',
         },
         '& em': {
           fontStyle: 'italic !important',
         },
         '& ol': {
           listStyle: 'decimal',
+          marginLeft: '2em',
+          marginBottom: '1em',
+          marginTop: '1em',
         },
         '& ul': {
           listStyle: 'disc',
+          marginLeft: '2em',
+          marginBottom: '1em',
+          marginTop: '1em',
         },
         '& blockquote': {
           backgroundColor: theme.palette.background.paper,
           border: `1px solid ${theme.palette.divider}`,
-          padding: '1em',
-        },
-        '& ol, ul': {
-          marginLeft: '1em',
-          marginTop: '1em',
-          marginBottom: '1em',
+          padding: '1em 1.5em',
+          margin: '1.5em 0',
+          color: theme.palette.text.secondary,
+          borderLeft: `4px solid ${theme.palette.divider}`,
         },
         '& li': {
           marginTop: '0.5em',
