@@ -373,6 +373,7 @@ export const qetaTranslationRef = createTranslationRef({
       postedAtTime: 'Posted',
       updatedAtTime: 'Updated',
       updatedBy: 'by',
+      answeredAtTime: 'Answered',
     },
     favorite: {
       remove: 'Remove this post from favorites',

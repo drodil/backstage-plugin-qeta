@@ -36,7 +36,7 @@ export type QuestionCardClassKeys =
   | 'metadata';
 
 const useStyles = makeStyles(
-  () => ({
+  theme => ({
     root: {},
     contentContainer: {
       marginLeft: '0.5em',
@@ -53,7 +53,7 @@ const useStyles = makeStyles(
       },
     },
     metadata: {
-      marginTop: '1em',
+      marginTop: theme.spacing(3),
     },
   }),
   { name: 'QetaQuestionCard' },
@@ -112,62 +112,72 @@ export const QuestionCard = (props: { question: PostResponse }) => {
               <Grid item className={styles.markdownContainer}>
                 <MarkdownRenderer content={questionEntity.content} />
               </Grid>
-              <Grid
-                container
-                item
-                spacing={1}
-                justifyContent="space-between"
+              <Box
+                display="flex"
                 alignItems="flex-end"
+                justifyContent="space-between"
                 className={styles.metadata}
+                style={{ width: '100%' }}
               >
-                <Grid item xs={8}>
+                <Box flex="1 1 0%" minWidth={0}>
                   <TagsAndEntities entity={questionEntity} />
-                </Grid>
-                <Grid item xs={3}>
-                  <AuthorBox entity={questionEntity} />
-                </Grid>
-                <Grid item xs={12}>
-                  {(question.canEdit || question.canDelete) && (
-                    <Box className={styles.buttons}>
-                      {question.canEdit && (
+                {(question.canEdit || question.canDelete) && (
+                  <Box className={styles.buttons}>
+                    {question.canEdit && (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<EditIcon />}
+                        onClick={() =>
+                          navigate(
+                            editQuestionRoute({
+                              id: question.id.toString(9),
+                            }),
+                          )
+                        }
+                        className="qetaQuestionCardEditBtn"
+                      >
+                        {t('questionPage.editButton')}
+                      </Button>
+                    )}
+                    {question.canDelete && (
+                      <>
                         <Button
                           variant="outlined"
                           size="small"
-                          startIcon={<EditIcon />}
-                          onClick={() =>
-                            navigate(
-                              editQuestionRoute({
-                                id: question.id.toString(10),
-                              }),
-                            )
-                          }
-                          className="qetaQuestionCardEditBtn"
+                          color="secondary"
+                          onClick={handleDeleteModalOpen}
+                          startIcon={<DeleteIcon />}
                         >
-                          {t('questionPage.editButton')}
+                          {t('deleteModal.deleteButton')}
                         </Button>
-                      )}
-                      {question.canDelete && (
-                        <>
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            color="secondary"
-                            onClick={handleDeleteModalOpen}
-                            startIcon={<DeleteIcon />}
-                          >
-                            {t('deleteModal.deleteButton')}
-                          </Button>
-                          <DeleteModal
-                            open={deleteModalOpen}
-                            onClose={handleDeleteModalClose}
-                            entity={questionEntity}
-                          />
-                        </>
-                      )}
-                    </Box>
+                        <DeleteModal
+                          open={deleteModalOpen}
+                          onClose={handleDeleteModalClose}
+                          entity={questionEntity}
+                        />
+                      </>
+                    )}
+                  </Box>
+                )}
+                 </Box>
+                <Box display="flex" minWidth={230} style={{ gap: '8px' }} ml={1}>
+                  {questionEntity.updated && questionEntity.updatedBy && (
+                    <AuthorBox
+                      userEntityRef={questionEntity.updatedBy}
+                      time={questionEntity.updated}
+                      label={t('authorBox.updatedAtTime')}
+                      anonymous={questionEntity.anonymous}
+                    />
                   )}
-                </Grid>
-              </Grid>
+                  <AuthorBox
+                    userEntityRef={questionEntity.author}
+                    time={questionEntity.created}
+                    label={t('authorBox.postedAtTime')}
+                    anonymous={questionEntity.anonymous}
+                  />
+                </Box>
+              </Box>
             </Grid>
           </Grid>
         </CardContent>

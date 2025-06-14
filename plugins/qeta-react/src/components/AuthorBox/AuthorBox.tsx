@@ -3,39 +3,67 @@ import {
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import { AuthorLink, UpdatedByLink } from '../Links';
+import { AuthorLink, UpdatedByLink, UserLink } from '../Links';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { useEntityAuthor } from '../../hooks/useEntityAuthor';
+import { useEntityAuthor, useUserInfo } from '../../hooks/useEntityAuthor';
 import { Avatar, Box, Grid, makeStyles, Typography } from '@material-ui/core';
 import { ExpertIcon } from '../Icons/ExpertIcon.tsx';
 
 const useStyles = makeStyles(
   theme => ({
     authorBox: {
-      padding: theme.spacing(1),
+      padding: theme.spacing(1.5, 2),
       float: 'right',
-      maxWidth: '200px',
-      border: `1px solid ${theme.palette.action.selected}`,
-      '& .avatar': {
-        width: theme.spacing(3),
-        height: theme.spacing(3),
-        fontSize: '1rem',
-      },
+      maxWidth: 220,
+      background: theme.palette.background.paper,
+      borderRadius: theme.shape.borderRadius,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: theme.spacing(0.5),
+    },
+    authorRow: {
+      display: 'flex',
+      alignItems: 'center',
+      width: '100%',
+      marginTop: theme.spacing(0.5),
+      marginBottom: theme.spacing(0.5),
+    },
+    avatar: {
+      width: theme.spacing(3),
+      height: theme.spacing(3),
+      fontSize: '1rem',
+      marginRight: theme.spacing(1),
     },
     authorLink: {
       textOverflow: 'ellipsis',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
+      fontWeight: 600,
+      fontSize: '1.05rem',
+      color: theme.palette.text.primary,
+      display: 'flex',
+      alignItems: 'center',
+      gap: theme.spacing(0.5),
+    },
+    expertIcon: {
+      marginLeft: theme.spacing(0.5),
+      verticalAlign: 'middle',
+    },
+    meta: {
+      color: theme.palette.text.secondary,
+      fontSize: '0.85rem',
+      textAlign: 'center',
+      margin: 0,
     },
   }),
   { name: 'QetaAuthorBox' },
 );
 
-export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
-  const { entity } = props;
-  const { t } = useTranslationRef(qetaTranslationRef);
-  const { name, initials, user } = useEntityAuthor(entity);
+export const AuthorBox = (props: { userEntityRef: string, time: string | Date, label: string, expert?: boolean, anonymous?: boolean }) => {
+  const { userEntityRef, time, label, expert, anonymous } = props;
+  const { name, initials, user } = useUserInfo(userEntityRef);
   const styles = useStyles();
 
   return (
@@ -48,8 +76,8 @@ export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
       >
         <Grid item xs={12} style={{ paddingBottom: 0 }}>
           <Typography className="qetaAuthorBoxCreated" variant="caption">
-            {t('authorBox.postedAtTime')}{' '}
-            <RelativeTimeWithTooltip value={entity.created} />
+            {label}{' '}
+            <RelativeTimeWithTooltip value={time} />
           </Typography>
         </Grid>
 
@@ -75,19 +103,10 @@ export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
           }}
         >
           <Box style={{ paddingLeft: '0.3em' }}>
-            <AuthorLink entity={entity} />
-            {'expert' in entity && entity.expert && <ExpertIcon />}
+            <UserLink entityRef={userEntityRef} anonymous={anonymous} />
+            {expert && <ExpertIcon />}
           </Box>
         </Grid>
-        {entity.updated && entity.updatedBy && (
-          <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0 }}>
-            <Typography className="qetaAuthorBoxUpdated" variant="caption">
-              {t('authorBox.updatedAtTime')}{' '}
-              <RelativeTimeWithTooltip value={entity.updated} />{' '}
-              {t('authorBox.updatedBy')} <UpdatedByLink entity={entity} />
-            </Typography>
-          </Grid>
-        )}
       </Grid>
     </Box>
   );
