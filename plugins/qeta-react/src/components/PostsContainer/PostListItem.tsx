@@ -20,14 +20,18 @@ import {
   useTheme,
   Box,
   Tooltip,
+  Chip,
 } from '@material-ui/core';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import numeral from 'numeral';
+import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
+import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 
 export interface PostListItemProps {
   post: PostResponse;
   entity?: string;
   type?: PostType;
+  showTypeLabel?: boolean;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -142,6 +146,25 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     height: '100%',
   },
+  titleContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+    justifyContent: 'space-between',
+  },
+  titleWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+    flex: 1,
+    minWidth: 0,
+  },
+  typeLabel: {
+    marginLeft: theme.spacing(1),
+    fontSize: '0.75rem',
+    padding: '0.5rem 0.5rem',
+    flexShrink: 0,
+  },
 }));
 
 function formatShortNumber(num: number): string {
@@ -149,7 +172,7 @@ function formatShortNumber(num: number): string {
 }
 
 export const PostListItem = (props: PostListItemProps) => {
-  const { post, entity } = props;
+  const { post, entity, showTypeLabel } = props;
   const [correctAnswer, setCorrectAnswer] = useState(post.correctAnswer);
   const [answersCount, setAnswersCount] = useState(post.answersCount);
   const [views, setViews] = useState(post.views);
@@ -194,21 +217,23 @@ export const PostListItem = (props: PostListItemProps) => {
             </div>
           </Box>
         </Tooltip>
-        <Box
-          className={
-            correctAnswer
-              ? `${styles.metaBox} ${styles.answersBoxAnswered}`
-              : `${styles.metaBox} ${styles.answersBox}`
-          }
-          aria-label={t('common.answersCount', { count: answersCount })}
-        >
-          <Tooltip title={answersCount >= 1000 ? answersCount : ''} arrow>
-            <span>{formatShortNumber(answersCount)}</span>
-          </Tooltip>
-          <div style={{ fontWeight: 400, fontSize: '0.75rem' }}>
-            {t('common.answers')}
-          </div>
-        </Box>
+        {post.type === 'question' && (
+          <Box
+            className={
+              correctAnswer
+                ? `${styles.metaBox} ${styles.answersBoxAnswered}`
+                : `${styles.metaBox} ${styles.answersBox}`
+            }
+            aria-label={t('common.answersCount', { count: answersCount })}
+          >
+            <Tooltip title={answersCount >= 1000 ? answersCount : ''} arrow>
+              <span>{formatShortNumber(answersCount)}</span>
+            </Tooltip>
+            <div style={{ fontWeight: 400, fontSize: '0.75rem' }}>
+              {t('common.answers')}
+            </div>
+          </Box>
+        )}
         <Tooltip title={views >= 1000 ? views : ''} arrow>
           <Box
             className={styles.metaBox}
@@ -228,17 +253,35 @@ export const PostListItem = (props: PostListItemProps) => {
         </Tooltip>
       </Box>
       <Box className={styles.contentContainer}>
-        <Typography component="div" className={styles.title}>
-          <Link
-            to={href}
-            className="qetaPostListItemQuestionBtn"
-            aria-label={post.title}
-            tabIndex={0}
-            style={{ color: 'inherit', textDecoration: 'none' }}
-          >
-            {post.title}
-          </Link>
-        </Typography>
+        <Box className={styles.titleContainer}>
+          <Box className={styles.titleWrapper}>
+            <Typography component="div" className={styles.title}>
+              <Link
+                to={href}
+                className="qetaPostListItemQuestionBtn"
+                aria-label={post.title}
+                tabIndex={0}
+                style={{ color: 'inherit', textDecoration: 'none' }}
+              >
+                {post.title}
+              </Link>
+            </Typography>
+          </Box>
+          {showTypeLabel && post.type && (
+            <Chip
+              size="small"
+              icon={
+                post.type === 'question' ? (
+                  <QuestionAnswer />
+                ) : (
+                  <CollectionsBookmarkIcon />
+                )
+              }
+              label={t(`common.${post.type}`)}
+              className={styles.typeLabel}
+            />
+          )}
+        </Box>
         <Typography variant="body2" component="div" className={styles.content}>
           <Link
             to={href}
@@ -246,7 +289,7 @@ export const PostListItem = (props: PostListItemProps) => {
             aria-label={t('common.readMore')}
           >
             {DOMPurify.sanitize(
-              truncate(removeMarkdownFormatting(post.content), 150),
+              truncate(removeMarkdownFormatting(post.content), 200),
             )}
           </Link>
         </Typography>

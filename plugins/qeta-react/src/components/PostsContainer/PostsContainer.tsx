@@ -24,6 +24,7 @@ export const PostsContainer = (
   props: PaginatedPostsProps & {
     entity?: string;
     filterPanelProps?: CommonFilterPanelProps;
+    showTypeLabel?: boolean;
   },
 ) => {
   const {
@@ -38,6 +39,7 @@ export const PostsContainer = (
     showAskButton,
     showWriteButton,
     showNoQuestionsBtn,
+    showTypeLabel,
   } = props;
   const {
     onSearchQueryChange,
@@ -168,6 +170,7 @@ export const PostsContainer = (
         entityPage={entity !== undefined}
         tags={tags ?? filters.tags}
         type={type}
+        showTypeLabel={showTypeLabel}
       />
     </Box>
   );

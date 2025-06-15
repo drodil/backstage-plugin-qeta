@@ -124,24 +124,56 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
       <CardContent style={{ padding: '6px 16px 8px 16px' }}>
         <TagsAndEntities entity={post} />
         <Box style={{ paddingLeft: '0.2rem', paddingTop: '0.5rem' }}>
-          <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item>
-              <Typography variant="subtitle2">
-                {t('common.viewsCount', { count: views })}
-              </Typography>
+          <Grid container alignItems="center" spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    {t('common.viewsCount', { count: views })}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    {t('common.votesCount', { count: post.score })}
+                  </Typography>
+                </Grid>
+                {post.type === 'question' && (
+                  <Grid item>
+                    <Typography variant="subtitle2" color="textSecondary">
+                      {t('common.answersCount', { count: post.answersCount })}
+                    </Typography>
+                  </Grid>
+                )}
+              </Grid>
             </Grid>
-            <Grid item>
-              <SmallAvatar
-                src={user?.spec?.profile?.picture}
-                alt={name}
-                variant="rounded"
+            <Grid item xs={12} sm={6}>
+              <Grid
+                container
+                spacing={1}
+                alignItems="center"
+                justifyContent="flex-end"
               >
-                {initials}
-              </SmallAvatar>
-              <UserLink entityRef={post.author} anonymous={post.anonymous} />{' '}
-              <Link to={href} className="qetaPostListItemQuestionBtn">
-                <RelativeTimeWithTooltip value={post.created} />
-              </Link>
+                <Grid item>
+                  <SmallAvatar
+                    src={user?.spec?.profile?.picture}
+                    alt={name}
+                    variant="rounded"
+                  >
+                    {initials}
+                  </SmallAvatar>
+                </Grid>
+                <Grid item>
+                  <UserLink
+                    entityRef={post.author}
+                    anonymous={post.anonymous}
+                  />
+                </Grid>
+                <Grid item>
+                  <Link to={href} className="qetaPostListItemQuestionBtn">
+                    <RelativeTimeWithTooltip value={post.created} />
+                  </Link>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </Box>

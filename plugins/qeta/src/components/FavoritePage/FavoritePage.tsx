@@ -22,7 +22,7 @@ export const FavoritePage = () => {
             <WriteArticleButton />
           </ButtonContainer>
         </ContentHeader>
-        <PostsContainer favorite showNoQuestionsBtn={false} />
+        <PostsContainer favorite showNoQuestionsBtn={false} showTypeLabel />
       </Grid>
       <Grid item lg={3} xl={2}>
         <PostHighlightList
