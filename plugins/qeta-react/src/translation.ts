@@ -85,20 +85,36 @@ export const qetaTranslationRef = createTranslationRef({
       helperText: 'URL of the header image to be used',
       uploadHeaderImage: 'Upload image',
       preview: 'Preview image',
+      dropHere: 'Drop your image here',
+      dragAndDrop: 'Drag and drop an image here',
+      supportedFormats: 'Supported formats: {{formats}}',
+      selectFile: 'Select File',
+      imageLoadError: 'Could not load image. Please check the URL.',
     },
     collectionForm: {
-      errorPosting: 'Could not create collection',
+      errorPosting: 'Could not post collection',
       titleInput: {
         label: 'Title',
-        helperText: 'Name of the colleciton',
+        helperText: 'Title of the collection',
+        placeholder: 'e.g. Questions about Backstage',
       },
       descriptionInput: {
-        placeholder: 'Collection description, what does it contain?',
+        label: 'Description',
+        placeholder:
+          'Describe your collection in detail. What topics does it cover?',
+        markdownHelp: 'Markdown help',
       },
       submit: {
         existingCollection: 'Save',
-        newCollection: 'Create',
+        newCollection: 'Create Collection',
       },
+      submitting: 'Creating...',
+      tips_1:
+        "Choose a clear and descriptive title that reflects the collection's purpose",
+      tips_2:
+        'Provide a detailed description of what topics or questions the collection will contain',
+      tips_3:
+        'Use markdown formatting to describe your collection with headings, lists, and links',
     },
     postForm: {
       errorPosting: 'Could not post {{type}}',
@@ -115,7 +131,7 @@ export const qetaTranslationRef = createTranslationRef({
           'Describe your problem in detail. What have you tried? What did you expect to happen?',
         placeholder_article:
           'Write your article content here. Use headings, lists, and images to organize your information.',
-        markdownHelp: 'Use markdown to format your {{type}}',
+        markdownHelp: 'Markdown help',
       },
       submit: {
         existingPost: 'Save',

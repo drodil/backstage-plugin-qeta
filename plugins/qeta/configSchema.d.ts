@@ -82,6 +82,11 @@ export interface Config {
        * @visibility frontend
        */
       disabled?: boolean;
+      /**
+       * Allowed mime types for images.
+       * @visibility frontend
+       */
+      allowedMimeTypes?: string[];
     };
     /**
      * Name of the AI bot that responds to users questions. Defaults to 'AI'

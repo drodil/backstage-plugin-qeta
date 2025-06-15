@@ -357,7 +357,7 @@ export const PostForm = (props: PostFormProps) => {
             rel="noopener noreferrer"
             style={{ fontSize: 12 }}
           >
-            {t('postForm.contentInput.markdownHelp', { type })}
+            {t('postForm.contentInput.markdownHelp')}
           </a>
         </Box>
       </Box>
