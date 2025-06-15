@@ -36,13 +36,22 @@ export const UserPage = () => {
     setTab(newValue);
   };
   const title = (
-    <Box style={{ display: 'flex', alignItems: 'center' }}>
+    <Box
+      style={{ display: 'flex', alignItems: 'center' }}
+      role="banner"
+      aria-label={t('userPage.profileHeader')}
+    >
       <Box style={{ display: 'inline-block', marginRight: '0.5em' }}>
-        <Avatar src={user?.spec?.profile?.picture} alt={name} variant="rounded">
+        <Avatar
+          src={user?.spec?.profile?.picture}
+          alt={name}
+          variant="rounded"
+          aria-label={t('userPage.profilePicture', { name })}
+        >
           {initials}
         </Avatar>
       </Box>
-      <Typography variant="h5" component="h2">
+      <Typography variant="h5" component="h2" id="user-name">
         {name}
       </Typography>
       {!loadingUser &&
@@ -51,6 +60,7 @@ export const UserPage = () => {
           <UserFollowButton
             userRef={identity}
             style={{ marginLeft: '0.5em' }}
+            aria-label={t('userPage.followUser', { name })}
           />
         )}
     </Box>
@@ -69,6 +79,7 @@ export const UserPage = () => {
           <TabList
             onChange={handleChange}
             aria-label={t('userPage.profileTab')}
+            aria-labelledby="user-name"
           >
             <Tab label={t('userPage.statistics')} value="statistics" />
             <Tab label={t('userPage.questions')} value="questions" />

@@ -11,7 +11,7 @@ import {
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags, Template } from '@drodil/backstage-plugin-qeta-common';
-import { Grid } from '@material-ui/core';
+import { Grid, Box } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const AskPage = () => {
@@ -44,7 +44,11 @@ export const AskPage = () => {
   }
 
   if (loading) {
-    return <Progress />;
+    return (
+      <Box role="status" aria-label={t('common.loading')}>
+        <Progress />
+      </Box>
+    );
   }
 
   if (
@@ -55,10 +59,13 @@ export const AskPage = () => {
     template === undefined
   ) {
     return (
-      <SelectTemplateList
-        templates={value}
-        onTemplateSelect={temp => setTemplate(temp)}
-      />
+      <Box role="region" aria-label={t('askPage.templateSelection')}>
+        <SelectTemplateList
+          templates={value}
+          onTemplateSelect={temp => setTemplate(temp)}
+          aria-label={t('askPage.selectTemplate')}
+        />
+      </Box>
     );
   }
 
@@ -86,6 +93,7 @@ export const AskPage = () => {
               type="question"
               template={template}
               onFormChange={handleFormChange}
+              aria-label={t('askPage.questionForm')}
             />
             <AIAnswerCard draft={draft} />
           </InfoCard>

@@ -178,6 +178,9 @@ export const qetaTranslationRef = createTranslationRef({
         entityQuestion: 'Ask a question about {{entity}}',
         newQuestion: 'Ask a question',
       },
+      templateSelection: 'Select a template for your question',
+      questionForm: 'Ask a question',
+      selectTemplate: 'Select a template for your question',
     },
     writePage: {
       title: {
@@ -400,6 +403,7 @@ export const qetaTranslationRef = createTranslationRef({
       notFound: 'Could not find the question',
       sortAnswers: {
         label: 'Sort answers',
+        menuLabel: 'Sort answers menu',
         default: 'Default',
         createdDesc: 'Created (desc)',
         createdAsc: 'Created (asc)',
@@ -632,6 +636,9 @@ export const qetaTranslationRef = createTranslationRef({
       answers: 'Answers',
       collections: 'Collections',
       articles: 'Articles',
+      followUser: 'Follow {{name}}',
+      profilePicture: 'Profile picture of {{name}}',
+      profileHeader: 'User profile',
     },
     stats: {
       noStats: 'No statistics available. Check back later!',
