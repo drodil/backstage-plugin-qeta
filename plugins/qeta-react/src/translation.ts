@@ -264,6 +264,7 @@ export const qetaTranslationRef = createTranslationRef({
     },
     suggestionsCard: {
       title: 'Suggestions',
+      noSuggestions: 'No suggestions',
       noCorrectAnswer:
         'Your question "{{title}}" does not have a correct answer',
       newQuestion: 'Do you have an answer for "{{title}}"?',

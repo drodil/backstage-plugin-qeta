@@ -134,6 +134,14 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'flex-end',
   },
+  contentContainer: {
+    flex: 1,
+    minWidth: 0,
+    display: 'flex',
+    justifyContent: 'stretch',
+    flexDirection: 'column',
+    height: '100%',
+  },
 }));
 
 function formatShortNumber(num: number): string {
@@ -219,16 +227,7 @@ export const PostListItem = (props: PostListItemProps) => {
           </Box>
         </Tooltip>
       </Box>
-      <Box
-        style={{
-          flex: 1,
-          minWidth: 0,
-          display: 'flex',
-          justifyContent: 'stretch',
-          flexDirection: 'column',
-          height: '100%',
-        }}
-      >
+      <Box className={styles.contentContainer}>
         <Typography component="div" className={styles.title}>
           <Link
             to={href}
