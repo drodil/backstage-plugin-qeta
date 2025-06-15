@@ -146,7 +146,7 @@ export const QuestionPage = () => {
           </React.Fragment>
         )}
         <Box fontWeight="fontWeightMedium" className={dStyles.box}>
-          {t('common.views', { count: views })}
+          {t('common.viewsCount', { count: views })}
         </Box>
       </span>
     );
@@ -188,7 +188,7 @@ export const QuestionPage = () => {
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h6">
-              {t('common.answers', {
+              {t('common.answersCount', {
                 count: answersCount,
               })}
             </Typography>

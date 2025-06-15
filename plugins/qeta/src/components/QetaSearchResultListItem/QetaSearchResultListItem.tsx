@@ -100,7 +100,7 @@ const Excerpt = (props: {
           {' · '}
           {t('common.viewsShort', { count: document.views })}
           {' · '}
-          {t('common.answers', { count: document.answerCount })}
+          {t('common.answersCount', { count: document.answerCount })}
         </span>
         <>
           {highlight?.fields.text ? (

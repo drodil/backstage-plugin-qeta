@@ -8,13 +8,11 @@ const useStyles = makeStyles(
   theme => ({
     authorBox: {
       padding: theme.spacing(1.5, 2),
-      float: 'right',
-      maxWidth: 220,
+      width: 220,
       background: theme.palette.background.paper,
       borderRadius: theme.shape.borderRadius,
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center',
       gap: theme.spacing(0.5),
     },
     authorRow: {

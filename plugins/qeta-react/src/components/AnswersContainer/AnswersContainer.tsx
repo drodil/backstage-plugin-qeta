@@ -226,7 +226,7 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
       <Grid container justifyContent="space-between">
         <Grid item>
           <Typography variant="h6" className="qetaAnswersContainerAnswerCount">
-            {t('common.answers', { count: response?.total ?? 0 })}
+            {t('common.answersCount', { count: response?.total ?? 0 })}
           </Typography>
         </Grid>
         {(showFilters ?? true) && (

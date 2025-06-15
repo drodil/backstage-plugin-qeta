@@ -1,5 +1,5 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { useEffect, useState } from 'react';
+import { CSSProperties, useEffect, useState } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
@@ -112,6 +112,7 @@ const EntityTooltip = (props: { entity: Entity | string }) => {
 
 export const EntityChip = (props: {
   entity: Entity | string;
+  style?: CSSProperties;
   useHref?: boolean;
 }) => {
   const { entity } = props;
@@ -130,6 +131,7 @@ export const EntityChip = (props: {
       <Chip
         label={primaryTitle}
         size="small"
+        style={props.style}
         icon={Icon ? <Icon fontSize="small" /> : undefined}
         variant="outlined"
         className="qetaEntityChip"

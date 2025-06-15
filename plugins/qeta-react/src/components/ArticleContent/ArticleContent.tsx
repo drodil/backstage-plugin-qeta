@@ -85,7 +85,7 @@ export const ArticleContent = (props: {
         <Grid item>
           <Typography variant="subtitle1">{name}</Typography>
           <Typography variant="caption">
-            {t('common.views', { count: views })} {' · '}
+            {t('common.viewsCount', { count: views })} {' · '}
             {t('authorBox.postedAtTime')}{' '}
             <RelativeTimeWithTooltip value={postEntity.created} />
           </Typography>

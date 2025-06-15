@@ -69,7 +69,7 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
                 itemType: 'question',
               })}
               {' · '}
-              {t('common.answers', {
+              {t('common.answersCount', {
                 count: user.totalAnswers,
               })}
               {' · '}
@@ -83,7 +83,7 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
                 itemType: 'comment',
               })}
               {' · '}
-              {t('common.votes', {
+              {t('common.votesCount', {
                 count: user.totalVotes,
               })}
               {' · '}

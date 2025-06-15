@@ -84,33 +84,50 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
 
   return (
     <Card style={{ height: '100%' }}>
-      <CardActionArea onClick={() => navigate(href)}>
+      <CardActionArea
+        onClick={() => navigate(href)}
+        aria-label={post.title}
+        tabIndex={0}
+        role="link"
+        style={{ outline: 'none' }}
+      >
         {post.headerImage && (
           <CardMedia
             component="img"
             height="140"
             image={post.headerImage}
             alt={post.title}
+            style={{ objectFit: 'cover' }}
           />
         )}
-        <CardContent style={{ paddingBottom: '0.5rem' }}>
-          <Typography gutterBottom variant="h6" component="div">
+        <CardContent style={{ padding: '10px 16px 6px 16px' }}>
+          <Typography
+            gutterBottom
+            variant="h6"
+            component="div"
+            style={{ fontSize: '1.08rem', fontWeight: 600, marginBottom: 4 }}
+          >
             {post.title}
           </Typography>
-          <Typography variant="body2" color="textSecondary" gutterBottom>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            gutterBottom
+            style={{ marginBottom: 0 }}
+          >
             {DOMPurify.sanitize(
               truncate(removeMarkdownFormatting(post.content), 400),
             )}
           </Typography>
         </CardContent>
       </CardActionArea>
-      <CardContent style={{ paddingTop: '0.5rem' }}>
+      <CardContent style={{ padding: '6px 16px 8px 16px' }}>
         <TagsAndEntities entity={post} />
         <Box style={{ paddingLeft: '0.2rem', paddingTop: '0.5rem' }}>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item>
               <Typography variant="subtitle2">
-                {t('common.views', { count: views })}
+                {t('common.viewsCount', { count: views })}
               </Typography>
             </Grid>
             <Grid item>
