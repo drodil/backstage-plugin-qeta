@@ -27,6 +27,8 @@ export const qetaTranslationRef = createTranslationRef({
       views: 'views',
       postStats: 'Post stats',
       anonymousAuthor: 'Anonymous',
+      search: 'Search',
+      clear: 'Clear search',
       answersCount_zero: 'No answers',
       answersCount_one: '{{count}} answer',
       answersCount_other: '{{count}} answers',

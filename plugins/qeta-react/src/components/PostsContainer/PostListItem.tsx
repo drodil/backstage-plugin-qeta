@@ -224,6 +224,7 @@ export const PostListItem = (props: PostListItemProps) => {
           flex: 1,
           minWidth: 0,
           display: 'flex',
+          justifyContent: 'stretch',
           flexDirection: 'column',
           height: '100%',
         }}
