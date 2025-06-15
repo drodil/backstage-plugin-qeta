@@ -7,12 +7,14 @@ import { ExpertIcon } from '../Icons/ExpertIcon.tsx';
 const useStyles = makeStyles(
   theme => ({
     authorBox: {
-      padding: theme.spacing(1.5, 2),
+      padding: theme.spacing(0, 1.5, 0, 0),
+      textAlign: 'right',
       width: 220,
       background: theme.palette.background.paper,
       borderRadius: theme.shape.borderRadius,
       display: 'flex',
       flexDirection: 'column',
+      justifyContent: 'flex-start',
       gap: theme.spacing(0.5),
     },
     authorRow: {
@@ -69,7 +71,7 @@ export const AuthorBox = (props: {
       <Grid
         container
         alignItems="stretch"
-        justifyContent="flex-start"
+        justifyContent="flex-end"
         spacing={0}
       >
         <Grid item xs={12} style={{ paddingBottom: 0 }}>
@@ -91,7 +93,6 @@ export const AuthorBox = (props: {
         </Grid>
         <Grid
           item
-          xs={10}
           style={{
             paddingTop: 0,
             textOverflow: 'ellipsis',
