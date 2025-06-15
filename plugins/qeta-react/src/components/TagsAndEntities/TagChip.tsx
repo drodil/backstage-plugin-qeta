@@ -5,7 +5,7 @@ import { qetaApiRef } from '../../api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useNavigate } from 'react-router-dom';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
-import { useTagsFollow, useTranslation } from '../../hooks';
+import { useTagsFollow } from '../../hooks';
 import {
   Box,
   Button,
@@ -17,13 +17,15 @@ import {
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Visibility from '@material-ui/icons/Visibility';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 const cache: Map<string, TagResponse> = new Map();
 
 const TagTooltip = (props: { tag: string }) => {
   const { tag } = props;
   const qetaApi = useApi(qetaApiRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const tags = useTagsFollow();
   const [resp, setResp] = useState<undefined | TagResponse>();
 

@@ -10,7 +10,8 @@ import { ArticleButtons } from './ArticleButtons';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
 import { WarningPanel } from '@backstage/core-components';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 
 export type QetaArticleContentClassKey =
@@ -54,7 +55,7 @@ export const ArticleContent = (props: {
 }) => {
   const { post, views } = props;
   const styles = useStyles();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const { name, initials, user } = useEntityAuthor(post);
   const [postEntity, setPostEntity] = useState(post);
   const onCommentAction = (q: PostResponse, _?: AnswerResponse) => {

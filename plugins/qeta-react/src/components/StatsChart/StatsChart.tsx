@@ -23,7 +23,8 @@ import {
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { isGlobalStat, isUserStat } from './util';
 
 export type QetaStatsChartClassKey =
@@ -296,7 +297,7 @@ const StatsLineChart = (props: { data: Stat[] }) => {
 };
 
 export const StatsChart = (props: { data: Stat[] }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [chart, setChart] = useState<'line' | 'bar'>('line');
 
   if (!props.data || props.data.length === 0) {

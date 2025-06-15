@@ -61,6 +61,8 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
         {
           includeAnswers: true,
           includeComments: true,
+          includeExperts: false,
+          includeAttachments: false,
           orderBy: 'created',
           order: 'asc',
           limit: 50,
@@ -113,6 +115,7 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
           author: post.author,
           created: post.created,
           score: post.score,
+          trend: post.trend,
           entityRefs: post.entities,
           answerCount: post.answersCount,
           views: post.views,
@@ -148,6 +151,8 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
           order: 'asc',
           limit: 50,
           offset: indexedCollections,
+          includePosts: false,
+          includeExperts: false,
         },
         { token: tok },
       );

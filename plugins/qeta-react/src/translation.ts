@@ -15,6 +15,8 @@ export const qetaTranslationRef = createTranslationRef({
     },
     common: {
       post: 'post',
+      experts: 'Experts',
+      tagExpert: 'This user is an expert in this area',
       question: 'question',
       article: 'article',
       collection: 'collection',
@@ -184,6 +186,8 @@ export const qetaTranslationRef = createTranslationRef({
       title: 'Edit tag {{tag}}',
       description: 'Tag description',
       errorPosting: 'Failed to edit',
+      expertsLabel: 'Experts',
+      expertsPlaceholder: 'Tag experts',
       saveButton: 'Save',
       cancelButton: 'Cancel',
     },

@@ -3,7 +3,8 @@ import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef } from '../../routes';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { Box } from '@material-ui/core';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 
@@ -14,7 +15,7 @@ export const AskQuestionButton = (props: {
 }) => {
   const { entity, entityPage, tags } = props;
   const askRoute = useRouteRef(askRouteRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const params = new URLSearchParams();
   if (entity) {

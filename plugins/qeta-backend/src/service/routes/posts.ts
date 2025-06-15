@@ -107,15 +107,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       includeAnswers: false,
       includeComments: false,
       includeAttachments: false,
+      includeExperts: false,
     });
     await Promise.all(
       posts.posts.map(async post => {
-        await mapAdditionalFields(
-          request,
-          post,
-          options,
-          opts.checkAccess ?? false,
-        );
+        await mapAdditionalFields(request, post, options, {
+          checkRights: opts.checkAccess ?? false,
+          username,
+        });
       }),
     );
     response.json(posts);
@@ -152,15 +151,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       includeAnswers: false,
       includeComments: false,
       includeAttachments: false,
+      includeExperts: false,
     });
     await Promise.all(
       posts.posts.map(async post => {
-        await mapAdditionalFields(
-          request,
-          post,
-          options,
-          opts.checkAccess ?? false,
-        );
+        await mapAdditionalFields(request, post, options, {
+          checkRights: opts.checkAccess ?? false,
+          username,
+        });
       }),
     );
     response.json(posts);
@@ -205,6 +203,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       includeEntities: false,
       includeTags: false,
       includeVotes: false,
+      includeExperts: false,
       includeComments: false,
       commentsFilter,
       tagsFilter,
@@ -213,12 +212,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     await Promise.all(
       posts.posts.map(async post => {
-        await mapAdditionalFields(
-          request,
-          post,
-          options,
-          opts.checkAccess ?? false,
-        );
+        await mapAdditionalFields(request, post, options, {
+          checkRights: opts.checkAccess ?? false,
+          username,
+        });
       }),
     );
     response.json(posts);
@@ -263,7 +260,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       resource: post,
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
     signalPostStats(signals, post);
 
     auditor?.createEvent({
@@ -335,7 +332,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     wrapAsync(async () => {
       if (!post) {
@@ -347,6 +344,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         database.getFollowingUsers(username),
         database.getUsersWhoFavoritedPost(post.id),
       ]);
+
       const sent = await notificationMgr.onNewPostComment(
         username,
         post,
@@ -445,7 +443,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     // Response
     response.json(post);
@@ -509,7 +507,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     // Response
     response.json(post);
@@ -573,7 +571,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       );
       const mentions = findUserMentions(request.body.content);
       if (mentions.length > 0) {
-        await notificationMgr.onMention(username, post, sent, mentions);
+        await notificationMgr.onMention(username, post, mentions, sent);
       }
     });
 
@@ -594,7 +592,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     // Response
     response.status(201).json(post);
@@ -672,7 +670,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'update_post' },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     auditor?.createEvent({
       eventId: 'update-post',
@@ -797,7 +795,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'vote_post' },
     });
 
-    await mapAdditionalFields(request, resp, options);
+    await mapAdditionalFields(request, resp, options, { username });
     resp.ownVote = score;
 
     auditor?.createEvent({
@@ -871,7 +869,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'delete_vote' },
     });
 
-    await mapAdditionalFields(request, resp, options);
+    await mapAdditionalFields(request, resp, options, { username });
     resp.ownVote = undefined;
 
     auditor?.createEvent({
@@ -935,7 +933,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       meta: { post: entityToJsonObject(post) },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     // Response
     response.json(post);
@@ -993,7 +991,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       meta: { post: entityToJsonObject(post) },
     });
 
-    await mapAdditionalFields(request, post, options);
+    await mapAdditionalFields(request, post, options, { username });
 
     // Response
     response.json(post);

@@ -8,21 +8,22 @@ import {
   CollectionsGrid,
   PostsContainer,
   PostsGrid,
+  qetaTranslationRef,
   useIdentityApi,
   UserFollowButton,
-  useTranslation,
   useUserInfo,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { UserStatsContent } from './UserStatsContent';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { Avatar, Box, Tab, Typography } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
   const { name, initials, user, secondaryTitle } = useUserInfo(identity);
   const [tab, setTab] = useState('statistics');
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [_searchParams, setSearchParams] = useSearchParams();
   const {
     value: currentUser,

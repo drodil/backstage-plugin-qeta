@@ -47,6 +47,7 @@ export class TagsUpdater {
     logger.info('Updating tags');
     const tagsWithoutDescription = await database.getTags({
       noDescription: true,
+      includeExperts: false,
     });
 
     const allTags: Record<string, string> = {

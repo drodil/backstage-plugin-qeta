@@ -1,4 +1,4 @@
-import { useIsModerator, useQetaApi, useTranslation } from '../../hooks';
+import { useIsModerator, useQetaApi } from '../../hooks';
 import { Progress, WarningPanel } from '@backstage/core-components';
 import { useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
@@ -17,6 +17,8 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export const TemplateList = () => {
   const { isModerator } = useIsModerator();
@@ -29,7 +31,7 @@ export const TemplateList = () => {
   const { value, loading, error, retry } = useQetaApi(api =>
     api.getTemplates(),
   );
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   useEffect(() => {
     const [, hashMode] = (hash ?? '').split(':');

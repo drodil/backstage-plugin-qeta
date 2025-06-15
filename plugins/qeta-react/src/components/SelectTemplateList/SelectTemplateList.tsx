@@ -2,7 +2,8 @@ import {
   Template,
   TemplatesResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import {
   Button,
   Card,
@@ -19,7 +20,7 @@ export const SelectTemplateList = (props: {
   onTemplateSelect: (template: Template | null) => void;
 }) => {
   const { templates, onTemplateSelect } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   if (templates.total === 0) {
     return null;
   }

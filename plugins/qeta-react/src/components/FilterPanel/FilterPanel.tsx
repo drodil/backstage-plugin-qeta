@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { DateRangeFilter } from './DateRangeFilter';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { TagInput } from '../PostForm/TagInput';
 import {
@@ -149,7 +150,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     showTagFilter = true,
     type,
   } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [entities, setEntities] = useState<Entity[] | undefined>(undefined);
   const [starredEntities, setStarredEntities] = useState(false);
   const [ownedEntities, setOwnedEntities] = useState(false);

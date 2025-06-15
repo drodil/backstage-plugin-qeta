@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useIsModerator, useTranslation } from '../../hooks';
+import { useIsModerator } from '../../hooks';
 import { QetaApi, TemplateRequest } from '@drodil/backstage-plugin-qeta-common';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
@@ -14,6 +14,8 @@ import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { TemplateFormValues } from '../PostForm/types';
 import { Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 const formToRequest = (form: TemplateFormValues): TemplateRequest => {
   return {
@@ -71,7 +73,7 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
   const [error, setError] = useState(false);
   const [values, setValues] = useState(getDefaultValues());
   const { isModerator } = useIsModerator();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const {
     register,
     handleSubmit,

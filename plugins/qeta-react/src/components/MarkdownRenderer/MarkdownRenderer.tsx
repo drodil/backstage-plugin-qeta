@@ -18,7 +18,8 @@ import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { BackstageOverrides } from '@backstage/core-components';
 import LinkIcon from '@material-ui/icons/Link';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { Variant } from '@material-ui/core/styles/createTypography';
 import GithubSlugger from 'github-slugger';
 import { HtmlElementNode } from '@jsdevtools/rehype-toc/lib/types';
@@ -195,7 +196,7 @@ export const MarkdownRenderer = (props: {
 }) => {
   const { content, className: mainClassName, showToc, useBlankLinks } = props;
   const darkTheme = useIsDarkTheme();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   slugger.reset();

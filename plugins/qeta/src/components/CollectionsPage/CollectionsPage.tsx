@@ -4,13 +4,14 @@ import {
   CollectionsGrid,
   CreateCollectionButton,
   FollowedCollectionsList,
+  qetaTranslationRef,
   useCollectionsFollow,
-  useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Grid } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const CollectionsPage = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const collections = useCollectionsFollow();
 
   return (

@@ -58,6 +58,7 @@ export interface QetaEntity extends QetaIdEntity {
   canDelete?: boolean;
   updated?: Date;
   updatedBy?: string;
+  experts?: string[];
 }
 
 export interface PostAnswerEntity extends QetaEntity {
@@ -74,6 +75,7 @@ export interface CollectionEntity extends QetaIdEntity {
   owner: string;
   created: Date;
   headerImage?: string;
+  experts?: string[];
 }
 
 export type PostType = 'question' | 'article';
@@ -112,12 +114,23 @@ export interface Article extends Post {
 }
 
 export type AnswerFilter = {
-  property: 'answers.author' | 'answers.id' | 'tags' | 'entityRefs';
+  property:
+    | 'answers.author'
+    | 'answers.id'
+    | 'tags'
+    | 'entityRefs'
+    | 'tag.experts';
   values: Array<string | undefined>;
 };
 
 export type PostFilter = {
-  property: 'posts.author' | 'posts.id' | 'tags' | 'entityRefs' | 'posts.type';
+  property:
+    | 'posts.author'
+    | 'posts.id'
+    | 'tags'
+    | 'entityRefs'
+    | 'posts.type'
+    | 'tag.experts';
   values: Array<string | undefined>;
 };
 
@@ -127,12 +140,17 @@ export type CommentFilter = {
 };
 
 export type TagFilter = {
-  property: 'tags.tag';
+  property: 'tags.tag' | 'tag.experts';
   values: Array<string | undefined>;
 };
 
 export type CollectionFilter = {
-  property: 'collections.owner' | 'collections.id' | 'tags' | 'entityRefs';
+  property:
+    | 'collections.owner'
+    | 'collections.id'
+    | 'tags'
+    | 'entityRefs'
+    | 'tag.experts';
   values: Array<string | undefined>;
 };
 
@@ -141,6 +159,7 @@ export interface Answer extends PostAnswerEntity {
   correct: boolean;
   post?: Post;
   images: number[];
+  expert?: boolean;
 }
 
 export interface Collection extends CollectionEntity {
@@ -160,7 +179,9 @@ export interface Vote {
   timestamp: Date;
 }
 
-export interface Comment extends QetaEntity {}
+export interface Comment extends QetaEntity {
+  expert?: boolean;
+}
 
 export interface Attachment {
   id: number;
@@ -187,6 +208,7 @@ export interface QetaPostDocument extends QetaSearchDocument {
   entityRefs?: string[];
   answerCount: number;
   created: Date;
+  trend?: number;
   views: number;
   tags?: string[];
   correctAnswer?: boolean;
@@ -275,6 +297,7 @@ export type AnswerResponseBody = Answer | ErrorResponse;
 export interface TagResponse extends QetaIdEntity {
   tag: string;
   description?: string;
+  experts?: string[];
   postsCount: number;
   followerCount: number;
   canEdit?: boolean;

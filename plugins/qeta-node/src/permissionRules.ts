@@ -108,11 +108,42 @@ export const postHasType = createPermissionRule({
 
 export const postHasTypeConditionFactory = createConditionFactory(postHasType);
 
+export const isPostTagExpert = createPermissionRule({
+  name: 'IS_POST_TAG_EXPERT',
+  description: 'Allows if post has tags the user is expert of',
+  resourceRef: postPermissionResourceRef,
+  paramsSchema: z.object({
+    userRef: z
+      .string()
+      .describe('User ID to match on the tag expert')
+      .optional(),
+    claims: z
+      .array(z.string())
+      .optional()
+      .describe('List of claims to match at least one on within tag expert'),
+  }),
+  apply: (resource: Post, { userRef, claims }) => {
+    return Boolean(
+      resource?.experts?.some(e => e === userRef || claims?.includes(e)),
+    );
+  },
+  toQuery: ({ claims = [], userRef }) => {
+    return {
+      property: 'tag.experts' as PostFilter['property'],
+      values: [userRef, ...claims].filter(Boolean),
+    };
+  },
+});
+
+export const postTagExpertConditionFactory =
+  createConditionFactory(isPostTagExpert);
+
 export const postRules = {
   isPostAuthor,
   postHasTags,
   postHasEntities,
   postHasType,
+  isPostTagExpert,
 };
 
 export const isAnswerAuthor = createPermissionRule({
@@ -186,10 +217,41 @@ export const answerQuestionEntitiesConditionFactory = createConditionFactory(
   answerQuestionHasEntityRefs,
 );
 
+export const isAnswerTagExpert = createPermissionRule({
+  name: 'IS_ANSWER_TAG_EXPERT',
+  description: 'Allows if answers post has tags the user is expert of',
+  resourceRef: answerPermissionResourceRef,
+  paramsSchema: z.object({
+    userRef: z
+      .string()
+      .describe('User ID to match on the tag expert')
+      .optional(),
+    claims: z
+      .array(z.string())
+      .optional()
+      .describe('List of claims to match at least one on within tag expert'),
+  }),
+  apply: (resource: Answer, { userRef, claims }) => {
+    return Boolean(
+      resource?.experts?.some(e => e === userRef || claims?.includes(e)),
+    );
+  },
+  toQuery: ({ claims = [], userRef }) => {
+    return {
+      property: 'tag.experts' as AnswerFilter['property'],
+      values: [userRef, ...claims].filter(Boolean),
+    };
+  },
+});
+
+export const answerTagExpertConditionFactory =
+  createConditionFactory(isAnswerTagExpert);
+
 export const answerRules = {
   isAnswerAuthor,
   answerQuestionHasTags,
   answerQuestionHasEntityRefs,
+  isAnswerTagExpert,
 };
 
 export const isCommentAuthor = createPermissionRule({
@@ -239,7 +301,36 @@ export const isTag = createPermissionRule({
 
 export const tagConditionFactory = createConditionFactory(isTag);
 
-export const tagRules = { isTag };
+export const isTagExpert = createPermissionRule({
+  name: 'IS_TAG_EXPERT',
+  description: 'Allows only if user is tag expert',
+  resourceRef: tagPermissionResourceRef,
+  paramsSchema: z.object({
+    userRef: z
+      .string()
+      .describe('User ID to match on the tag expert')
+      .optional(),
+    claims: z
+      .array(z.string())
+      .optional()
+      .describe('List of claims to match at least one on within tag expert'),
+  }),
+  apply: (resource: TagResponse, { userRef, claims }) => {
+    return Boolean(
+      resource?.experts?.some(e => e === userRef || claims?.includes(e)),
+    );
+  },
+  toQuery: ({ claims = [], userRef }) => {
+    return {
+      property: 'tag.experts' as TagFilter['property'],
+      values: [userRef, ...claims].filter(Boolean),
+    };
+  },
+});
+
+export const tagExpertConditionFactory = createConditionFactory(isTagExpert);
+
+export const tagRules = { isTag, isTagExpert };
 
 export const isCollectionOwner = createPermissionRule({
   name: 'IS_OWNER',
@@ -316,10 +407,42 @@ export const collectionHasEntitiesConditionFactory = createConditionFactory(
   collectionHasEntities,
 );
 
+export const isCollectionTagExpert = createPermissionRule({
+  name: 'IS_COLLECTION_TAG_EXPERT',
+  description: 'Allows if collection has tags the user is expert of',
+  resourceRef: collectionPermissionResourceRef,
+  paramsSchema: z.object({
+    userRef: z
+      .string()
+      .describe('User ID to match on the tag expert')
+      .optional(),
+    claims: z
+      .array(z.string())
+      .optional()
+      .describe('List of claims to match at least one on within tag expert'),
+  }),
+  apply: (resource: Collection, { userRef, claims }) => {
+    return Boolean(
+      resource?.experts?.some(e => e === userRef || claims?.includes(e)),
+    );
+  },
+  toQuery: ({ claims = [], userRef }) => {
+    return {
+      property: 'tag.experts' as CollectionFilter['property'],
+      values: [userRef, ...claims].filter(Boolean),
+    };
+  },
+});
+
+export const collectionTagExpertConditionFactory = createConditionFactory(
+  isCollectionTagExpert,
+);
+
 export const collectionRules = {
   isCollectionOwner,
   collectionHasTags,
   collectionHasEntities,
+  isCollectionTagExpert,
 };
 
 export const rules = {

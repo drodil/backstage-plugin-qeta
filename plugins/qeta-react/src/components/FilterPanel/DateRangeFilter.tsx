@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { formatDate } from '../../utils/utils';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import {
   Grid,
   makeStyles,
@@ -37,7 +38,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
   const [dateRangeOption, setDateRangeOption] = useState<string | undefined>(
     value,
   );
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const localDate = formatDate(new Date());
   const [fromDate, setFromDate] = useState(localDate);
   const [toDate, setToDate] = useState(localDate);

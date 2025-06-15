@@ -62,6 +62,7 @@ export interface PostsQuery extends PaginatedQuery {
   includeComments?: boolean;
   includeTags?: boolean;
   includeAttachments?: boolean;
+  includeExperts?: boolean;
   fromDate?: string;
   toDate?: string;
   type?: PostType;
@@ -81,6 +82,7 @@ export interface CollectionsQuery extends PaginatedQuery {
   toDate?: string;
   ids?: number[];
   checkAccess?: boolean;
+  includeExperts?: boolean;
 }
 
 export interface AnswersQuery extends PaginatedQuery {
@@ -95,6 +97,7 @@ export interface AnswersQuery extends PaginatedQuery {
   includeVotes?: boolean;
   includeEntities?: boolean;
   includeComments?: boolean;
+  includeExperts?: boolean;
   fromDate?: string;
   toDate?: string;
   ids?: number[];
@@ -104,6 +107,7 @@ export interface AnswersQuery extends PaginatedQuery {
 export interface TagsQuery extends PaginatedQuery {
   orderBy?: 'tag' | 'postsCount' | 'followersCount';
   checkAccess?: boolean;
+  includeExperts?: boolean;
 }
 
 export interface UsersQuery extends PaginatedQuery {
@@ -198,11 +202,13 @@ export interface QetaApi {
   createTag(
     tag: string,
     description?: string,
+    experts?: string[],
     requestOptions?: RequestOptions,
   ): Promise<TagResponse | null>;
   updateTag(
     id: number,
     description?: string,
+    experts?: string[],
     requestOptions?: RequestOptions,
   ): Promise<TagResponse | null>;
 

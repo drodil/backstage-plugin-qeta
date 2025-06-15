@@ -12,7 +12,6 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { DeleteModal } from '../DeleteModal';
-import { useTranslation } from '../../hooks';
 import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
 import {
   Box,
@@ -22,6 +21,8 @@ import {
   Grid,
   makeStyles,
 } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export type AnswerCardClassKeys =
   | 'root'
@@ -77,7 +78,7 @@ export const AnswerCard = (props: {
 
   const [editMode, setEditMode] = useState(false);
   const [answerEntity, setAnswerEntity] = useState(answer);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);

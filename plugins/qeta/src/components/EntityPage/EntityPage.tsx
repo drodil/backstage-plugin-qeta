@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
@@ -10,7 +10,7 @@ import {
   PostHighlightList,
   PostsContainer,
   qetaApiRef,
-  useTranslation,
+  qetaTranslationRef,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import Whatshot from '@material-ui/icons/Whatshot';
@@ -18,10 +18,11 @@ import { useApi } from '@backstage/core-plugin-api';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const EntityPage = () => {
   const { entityRef } = useParams();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [resp, setResp] = useState<undefined | EntityResponse>();
 
   const qetaApi = useApi(qetaApiRef);

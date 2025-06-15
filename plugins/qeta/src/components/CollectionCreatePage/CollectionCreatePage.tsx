@@ -2,13 +2,14 @@ import { useParams } from 'react-router-dom';
 import { ContentHeader, InfoCard } from '@backstage/core-components';
 import {
   CollectionForm,
-  useTranslation,
+  qetaTranslationRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Grid } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const CollectionCreatePage = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   let title;
   if (id) {

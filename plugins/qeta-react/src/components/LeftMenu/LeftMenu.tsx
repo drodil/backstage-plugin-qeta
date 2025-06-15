@@ -35,7 +35,9 @@ import {
   usersRouteRef,
 } from '../../routes';
 import { TrophyIcon } from '../TopRankingUsersCard';
-import { useIdentityApi, useIsModerator, useTranslation } from '../../hooks';
+import { useIdentityApi, useIsModerator } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export type QetaLeftMenuClassKey =
   | 'leftMenu'
@@ -102,7 +104,7 @@ export const LeftMenu = (props: {
   const usersRoute = useRouteRef(usersRouteRef);
   const moderatorRoute = useRouteRef(moderatorRouteRef);
   const styles = useStyles();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const location = useLocation();
   const navigate = useNavigate();
   const { isModerator } = useIsModerator();

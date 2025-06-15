@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useQetaApi, useTranslation } from '../../hooks';
+import { useIsModerator, useQetaApi } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import useDebounce from 'react-use/lib/useDebounce';
 import { TagsGridContent } from './TagsGridContent';
@@ -8,6 +8,8 @@ import { Button, Grid, Typography } from '@material-ui/core';
 import { CreateTagModal } from './CreateTagModal';
 import { qetaCreateTagPermission } from '@drodil/backstage-plugin-qeta-common';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 type TagFilters = {
   order: 'asc' | 'desc';
@@ -20,7 +22,8 @@ export const TagsGrid = () => {
   const [pageCount, setPageCount] = useState(1);
   const [tagsPerPage, setTagsPerPage] = useState(25);
   const [searchQuery, setSearchQuery] = useState('');
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
+  const { isModerator } = useIsModerator();
   const [filters, setFilters] = useState<TagFilters>({
     order: 'desc',
     orderBy: 'tag',
@@ -111,6 +114,7 @@ export const TagsGrid = () => {
               <CreateTagModal
                 open={createModalOpen}
                 onClose={handleCreateModalClose}
+                isModerator={isModerator}
               />
             </OptionalRequirePermission>
           </Grid>
@@ -120,6 +124,7 @@ export const TagsGrid = () => {
           onTagEdit={onTagsModify}
           loading={loading}
           error={error}
+          isModerator={isModerator}
         />
         {response && response?.total > 0 && (
           <QetaPagination

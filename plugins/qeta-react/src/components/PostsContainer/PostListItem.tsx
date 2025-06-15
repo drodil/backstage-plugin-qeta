@@ -18,7 +18,8 @@ import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { capitalize } from 'lodash';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import HelpOutlined from '@material-ui/icons/HelpOutlined';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
 import { UserLink } from '../Links';
@@ -42,7 +43,6 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     display: 'flex',
     height: '24px',
-    marginBottom: '8px',
   },
   timestamp: {
     marginLeft: '0.3em',
@@ -55,7 +55,7 @@ export const PostListItem = (props: PostListItemProps) => {
   const [correctAnswer, setCorrectAnswer] = useState(post.correctAnswer);
   const [answersCount, setAnswersCount] = useState(post.answersCount);
   const [views, setViews] = useState(post.views);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
 
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
@@ -87,7 +87,7 @@ export const PostListItem = (props: PostListItemProps) => {
       justifyContent="flex-start"
       style={{ padding: '0.7em', paddingBottom: '1.0em' }}
     >
-      <Grid item style={{ paddingTop: '0px' }}>
+      <Grid item style={{ paddingTop: '0em', marginTop: '-0.5em' }}>
         <VoteButtonContainer>
           <VoteButtons entity={post} />
           <FavoriteButton entity={post} />
@@ -106,16 +106,17 @@ export const PostListItem = (props: PostListItemProps) => {
             justifyContent="space-between"
             xs={12}
             style={{
-              paddingTop: '0.3em',
-              paddingBottom: '0.0em',
+              paddingTop: '0',
+              paddingBottom: '0.5em',
               marginLeft: '-0.2em',
             }}
           >
-            <Grid item>
+            <Grid item style={{ display: 'flex', alignItems: 'center' }}>
               {type === undefined && (
                 <Chip
                   color="secondary"
                   size="small"
+                  style={{ marginBottom: 0 }}
                   label={`${capitalize(post.type)}`}
                   icon={
                     post.type === 'question' ? (
@@ -131,6 +132,7 @@ export const PostListItem = (props: PostListItemProps) => {
                   variant="outlined"
                   size="small"
                   style={{
+                    marginBottom: 0,
                     userSelect: 'none',
                     // eslint-disable-next-line no-nested-ternary
                     borderColor: correctAnswer
@@ -147,6 +149,7 @@ export const PostListItem = (props: PostListItemProps) => {
               <Chip
                 variant="outlined"
                 size="small"
+                style={{ marginBottom: 0 }}
                 label={t('common.viewsShort', {
                   count: views,
                 })}

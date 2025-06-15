@@ -10,7 +10,8 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { questionRouteRef } from '../../routes';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
 import { Grid, makeStyles, Typography } from '@material-ui/core';
@@ -38,7 +39,7 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
 
   const questionRoute = useRouteRef(questionRouteRef);
   const { name, initials, user } = useEntityAuthor(answer);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
 
   const getAnswerLink = () => {

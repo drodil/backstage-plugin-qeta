@@ -4,14 +4,15 @@ import {
   ButtonContainer,
   PostHighlightList,
   PostsContainer,
-  useTranslation,
+  qetaTranslationRef,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import Whatshot from '@material-ui/icons/Whatshot';
 import { Grid } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const FavoritePage = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   return (
     <Grid container spacing={4}>
       <Grid item md={12} lg={9} xl={10}>

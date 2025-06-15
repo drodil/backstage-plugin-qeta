@@ -17,7 +17,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteModal } from '../DeleteModal';
 import EditIcon from '@material-ui/icons/Edit';
 import { useVoting } from '../../hooks/useVoting';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { useNavigate } from 'react-router-dom';
 
 export type QetaArticleButtonsClassKey = 'container' | 'scoreText';
@@ -46,7 +47,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
   const { voteUpTooltip, ownVote, voteUp, score, voteDownTooltip, voteDown } =
     useVoting(post);
   const styles = useLocalStyles();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const navigate = useNavigate();
   const editArticleRoute = useRouteRef(editArticleRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);

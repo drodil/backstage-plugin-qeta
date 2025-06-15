@@ -3,15 +3,16 @@ import { useState } from 'react';
 import {
   AIAnswerCard,
   PostForm,
+  qetaTranslationRef,
   SelectTemplateList,
   useAI,
   useQetaApi,
-  useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags, Template } from '@drodil/backstage-plugin-qeta-common';
 import { Grid } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const AskPage = () => {
   const { id } = useParams();
@@ -28,7 +29,7 @@ export const AskPage = () => {
   const entity = searchParams.get('entity') ?? undefined;
   const entityPage = searchParams.get('entityPage') === 'true';
   const tags = filterTags(searchParams.get('tags'));
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   let title;
   if (id) {
     title = t('askPage.title.existingQuestion');

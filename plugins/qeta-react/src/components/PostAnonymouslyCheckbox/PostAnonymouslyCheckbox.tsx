@@ -1,5 +1,6 @@
 import { Control, Controller } from 'react-hook-form';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { Box, Checkbox, FormControlLabel, Tooltip } from '@material-ui/core';
 
 export const PostAnonymouslyCheckbox = (props: {
@@ -7,7 +8,7 @@ export const PostAnonymouslyCheckbox = (props: {
   label: string;
 }) => {
   const { control, label } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   return (
     <Box style={{ marginLeft: '0.2em' }}>
       <Controller

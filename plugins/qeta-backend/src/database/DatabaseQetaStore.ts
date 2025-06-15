@@ -145,6 +145,11 @@ export type RawUserImpact = {
   date: Date;
 };
 
+export type RawTagExpert = {
+  tagId: number;
+  entityRef: string;
+};
+
 export type RawTemplate = {
   id: number;
   title: string;
@@ -194,6 +199,44 @@ function parseFilter(
         .select('post_tags.postId');
       query.whereIn(fk, postIds);
       return query;
+    }
+    if (filter.property === 'tag.experts') {
+      if (type === 'post') {
+        const postIds = db('tags')
+          .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
+          .leftJoin('tag_experts', 'tag_experts.tagId', 'tags.id')
+          .where('tag_experts.entityRef', 'in', values)
+          .select('post_tags.postId');
+        query.whereIn(fk, postIds);
+        return query;
+      } else if (type === 'answer') {
+        const answerIds = db('answers')
+          .leftJoin('posts', 'answers.postId', 'posts.id')
+          .leftJoin('post_tags', 'post_tags.postId', 'posts.id')
+          .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
+          .leftJoin('tag_experts', 'tag_experts.tagId', 'tags.id')
+          .where('tag_experts.entityRef', 'in', values)
+          .select('answers.id');
+        query.whereIn(fk, answerIds);
+        return query;
+      } else if (type === 'tags') {
+        const tagIds = db('tag_experts')
+          .leftJoin('tags', 'tag_experts.tagId', 'tags.id')
+          .where('tag_experts.entityRef', 'in', values)
+          .select('tag_experts.tagId');
+        query.whereIn(fk, tagIds);
+        return query;
+      } else if (type === 'collection') {
+        const collectionIds = db('collection_posts')
+          .leftJoin('posts', 'collection_posts.postId', 'posts.id')
+          .leftJoin('post_tags', 'post_tags.postId', 'posts.id')
+          .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
+          .leftJoin('tag_experts', 'tag_experts.tagId', 'tags.id')
+          .where('tag_experts.entityRef', 'in', values)
+          .select('collection_posts.collectionId');
+        query.whereIn(fk, collectionIds);
+        return query;
+      }
     }
 
     if (filter.property === 'entityRefs') {
@@ -426,10 +469,12 @@ export class DatabaseQetaStore implements QetaStore {
         rows.map(async val => {
           return this.mapPostEntity(val, user_ref, {
             ...opts,
-            includeAnswers: options.includeAnswers,
-            includeVotes: options.includeVotes,
-            includeEntities: options.includeEntities,
-            includeAttachments: options.includeAttachments,
+            includeAnswers: options.includeAnswers ?? opts?.includeAnswers,
+            includeVotes: options.includeVotes ?? opts?.includeVotes,
+            includeEntities: options.includeEntities ?? opts?.includeEntities,
+            includeAttachments:
+              options.includeAttachments ?? opts?.includeAttachments,
+            includeExperts: options.includeExperts ?? opts?.includeExperts,
           });
         }),
       ),
@@ -1018,6 +1063,7 @@ export class DatabaseQetaStore implements QetaStore {
     options?: { noDescription?: boolean; ids?: number[] } & TagsQuery,
     filters?: PermissionCriteria<QetaFilters>,
   ): Promise<TagsResponse> {
+    const { includeExperts = true } = options ?? {};
     const query = this.getTagBaseQuery();
     if (options?.noDescription) {
       query.whereNull('tags.description');
@@ -1063,15 +1109,20 @@ export class DatabaseQetaStore implements QetaStore {
 
     return {
       total,
-      tags: rows.map(tag => {
-        return {
-          id: tag.id,
-          tag: tag.tag,
-          description: tag.description,
-          postsCount: this.mapToInteger(tag.postsCount),
-          followerCount: this.mapToInteger(tag.followerCount),
-        };
-      }),
+      tags: await Promise.all(
+        rows.map(async tag => {
+          return {
+            id: tag.id,
+            tag: tag.tag,
+            description: tag.description,
+            postsCount: this.mapToInteger(tag.postsCount),
+            followerCount: this.mapToInteger(tag.followerCount),
+            experts: includeExperts
+              ? await this.getTagExpertsById(tag.id)
+              : undefined,
+          };
+        }),
+      ),
     };
   }
 
@@ -1088,6 +1139,7 @@ export class DatabaseQetaStore implements QetaStore {
       description: tags[0].description,
       postsCount: this.mapToInteger(tags[0].postsCount),
       followerCount: this.mapToInteger(tags[0].followerCount),
+      experts: await this.getTagExpertsById(tags[0].id),
     };
   }
 
@@ -1104,6 +1156,7 @@ export class DatabaseQetaStore implements QetaStore {
       description: tags[0].description,
       postsCount: this.mapToInteger(tags[0].postsCount),
       followerCount: this.mapToInteger(tags[0].followerCount),
+      experts: await this.getTagExpertsById(tags[0].id),
     };
   }
 
@@ -1112,26 +1165,46 @@ export class DatabaseQetaStore implements QetaStore {
     return !!(await query.delete());
   }
 
+  async getTagExperts(tags: string[]): Promise<string[]> {
+    if (tags.length === 0) {
+      return [];
+    }
+    const query = this.db<RawTagExpert>('tag_experts')
+      .leftJoin('tags', 'tag_experts.tagId', 'tags.id')
+      .whereIn('tags.tag', tags);
+    const resp = await query.select('entityRef');
+    return [...new Set(resp.map(r => r.entityRef))];
+  }
+
   async createTag(
     tag: string,
     description?: string,
+    experts?: string[],
   ): Promise<TagResponse | null> {
     const trimmed = tag.trim();
-    await this.db
+    const ret = await this.db
       .insert({ tag: trimmed, description })
       .into('tags')
+      .returning(['id'])
       .onConflict('tag')
       .ignore();
+    if (ret && experts && experts.length > 0) {
+      await this.updateTagExperts(ret[0].id, experts);
+    }
     return this.getTag(trimmed);
   }
 
   async updateTag(
     id: number,
     description?: string,
+    experts?: string[],
   ): Promise<TagResponse | null> {
     await this.db('tags')
       .where('tags.id', '=', id)
       .update({ description: description ?? null });
+    if (experts && experts.length > 0) {
+      await this.updateTagExperts(id, experts);
+    }
     return this.getTagById(id);
   }
 
@@ -1292,11 +1365,19 @@ export class DatabaseQetaStore implements QetaStore {
       return [];
     }
 
-    const users = await this.db('user_tags')
+    const followingUsersQuery = this.db('user_tags')
       .leftJoin('tags', 'user_tags.tagId', 'tags.id')
       .whereIn('tags.tag', tags)
       .select('userRef');
-    return users.map(user => user.userRef);
+
+    const [followingUsers, experts] = await Promise.all([
+      followingUsersQuery,
+      this.getTagExperts(tags),
+    ]);
+
+    return [
+      ...new Set([...followingUsers.map(user => user.userRef), ...experts]),
+    ];
   }
 
   async followTag(user_ref: string, tag: string): Promise<boolean> {
@@ -1913,7 +1994,8 @@ export class DatabaseQetaStore implements QetaStore {
         rows.map(async val => {
           return this.mapCollectionEntity(val, user_ref, {
             ...opts,
-            includePosts: options.includePosts,
+            includePosts: options.includePosts ?? opts?.includePosts,
+            includeExperts: options.includeExperts ?? opts?.includeExperts,
           });
         }),
       ),
@@ -2257,6 +2339,22 @@ export class DatabaseQetaStore implements QetaStore {
       .update({ rank });
   }
 
+  private async getTagExpertsById(id: number) {
+    const rows = await this.db('tag_experts')
+      .where('tagId', id)
+      .select('entityRef');
+    return rows.map(r => r.entityRef);
+  }
+
+  private async updateTagExperts(id: number, experts: string[]) {
+    await this.db('tag_experts').where('tagId', id).delete();
+    await this.db
+      .insert(experts.map(e => ({ tagId: id, entityRef: e })))
+      .into('tag_experts')
+      .onConflict(['tagId', 'entityRef'])
+      .merge();
+  }
+
   private getEntitiesBaseQuery() {
     const entityId = this.db.ref('entities.id');
     const entityRef = this.db.ref('entities.entity_ref');
@@ -2399,6 +2497,7 @@ export class DatabaseQetaStore implements QetaStore {
               includeAttachments: false,
               includeVotes: false,
               includeTotal: false,
+              includeExperts: options?.includeExperts ?? false,
             },
           )
         : { posts: [] },
@@ -2408,6 +2507,9 @@ export class DatabaseQetaStore implements QetaStore {
         .as('followers')
         .where('collectionId', val.id)
         .first(),
+      options?.includeExperts ?? true
+        ? this.getCollectionExperts(val.id)
+        : undefined,
     ]);
 
     const entities = compact([
@@ -2430,7 +2532,22 @@ export class DatabaseQetaStore implements QetaStore {
       tags,
       images: results[1].map(r => r.id),
       followers: this.mapToInteger(results[2]!.count),
+      experts: results[3],
     };
+  }
+
+  private async getCollectionExperts(collectionId: number): Promise<string[]> {
+    const rows = await this.db('tag_experts')
+      .leftJoin('tags', 'tag_experts.tagId', 'tags.id')
+      .leftJoin('post_tags', 'post_tags.tagId', 'tags.id')
+      .leftJoin(
+        'collection_posts',
+        'collection_posts.postId',
+        'post_tags.postId',
+      )
+      .where('collection_posts.collectionId', collectionId)
+      .select('tag_experts.entityRef');
+    return [...new Set(rows.map(r => r.entityRef))];
   }
 
   private async mapTemplateEntity(val: RawTemplate): Promise<Template> {
@@ -2461,6 +2578,7 @@ export class DatabaseQetaStore implements QetaStore {
       includeEntities = true,
       includeComments = true,
       includeAttachments = true,
+      includeExperts = true,
       tagsFilter,
     } = options ?? {};
     // TODO: This could maybe done with join
@@ -2483,6 +2601,7 @@ export class DatabaseQetaStore implements QetaStore {
       includeAttachments
         ? this.db('attachments').select('id').where('postId', val.id)
         : undefined,
+      includeExperts ? this.getPostExperts(val.id) : undefined,
     ]);
     return {
       id: val.id,
@@ -2510,6 +2629,7 @@ export class DatabaseQetaStore implements QetaStore {
       type: val.type,
       headerImage: val.headerImage,
       images: additionalInfo[5]?.map(r => r.id),
+      experts: additionalInfo[6],
     };
   }
 
@@ -2533,6 +2653,7 @@ export class DatabaseQetaStore implements QetaStore {
       includeVotes = true,
       includeComments = true,
       includePost = true,
+      includeExperts = true,
     } = options ?? {};
     const additionalInfo = await Promise.all([
       includeVotes ? this.getAnswerVotes(val.id) : undefined,
@@ -2541,6 +2662,7 @@ export class DatabaseQetaStore implements QetaStore {
         : undefined,
       includePost ? this.getPost(user_ref, val.postId, false) : undefined,
       this.db('attachments').select('id').where('answerId', val.id),
+      includeExperts ? this.getAnswerExperts(val.id) : undefined,
     ]);
     return {
       id: val.id,
@@ -2559,6 +2681,7 @@ export class DatabaseQetaStore implements QetaStore {
       anonymous: val.anonymous,
       post: additionalInfo[2] ?? undefined,
       images: additionalInfo[3].map(r => r.id),
+      experts: additionalInfo[4] ?? undefined,
     };
   }
 
@@ -2609,6 +2732,14 @@ export class DatabaseQetaStore implements QetaStore {
     return query.select();
   }
 
+  private async getPostExperts(postId: number): Promise<string[]> {
+    const rows = await this.db('tag_experts')
+      .leftJoin('post_tags', 'tag_experts.tagId', 'post_tags.tagId')
+      .where('post_tags.postId', postId)
+      .select('tag_experts.entityRef');
+    return [...new Set(rows.map(r => r.entityRef))];
+  }
+
   private async getAnswerComments(
     answerId: number,
     commentsFilter?: PermissionCriteria<QetaFilters>,
@@ -2646,6 +2777,16 @@ export class DatabaseQetaStore implements QetaStore {
       .where('answerId', '=', answerId)
       .select()) as RawAnswerVoteEntity[];
     return rows.map(val => this.mapVote(val));
+  }
+
+  private async getAnswerExperts(answerId: number): Promise<string[]> {
+    const rows = await this.db('tag_experts')
+      .leftJoin('tags', 'tag_experts.tagId', 'tags.id')
+      .leftJoin('post_tags', 'post_tags.tagId', 'tags.id')
+      .leftJoin('answers', 'answers.postId', 'post_tags.postId')
+      .where('answers.id', answerId)
+      .select('tag_experts.entityRef');
+    return [...new Set(rows.map(r => r.entityRef))];
   }
 
   private getAnswerBaseQuery() {

@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from 'react';
 import { LinkButton, Progress, WarningPanel } from '@backstage/core-components';
 import { PostsTableRow } from './PostsTableRow';
-import { useQetaApi, useTranslation } from '../../hooks';
+import { useQetaApi } from '../../hooks';
 import {
   Button,
   ButtonGroup,
@@ -17,6 +17,8 @@ import {
 } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
+import { qetaTranslationRef } from '../../translation.ts';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 type QuickFilterType = 'latest' | 'favorites' | 'most_viewed';
 
@@ -32,7 +34,7 @@ export const PostsTable = (props: {
   );
   const [quickFilter, setQuickFilter] = useState(props.quickFilter ?? 'latest');
   const [refresh, setRefresh] = useState(0);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [filters, setFilters] = useState({
     order: 'desc',
     orderBy: 'created',
@@ -53,6 +55,7 @@ export const PostsTable = (props: {
         limit: questionsPerPage,
         offset: (page - 1) * questionsPerPage,
         includeEntities: true,
+        includeExperts: false,
         ...(filters as any),
       }),
     [page, filters, questionsPerPage, refresh],

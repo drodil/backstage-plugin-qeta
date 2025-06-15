@@ -17,7 +17,8 @@ import {
   PaginatedPostsProps,
   usePaginatedPosts,
 } from '../../hooks/usePaginatedPosts';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { SearchBar } from '../SearchBar/SearchBar';
 import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
 
@@ -41,7 +42,7 @@ export const PostsGrid = (props: PostGridProps) => {
     showNoQuestionsBtn,
     allowRanking,
   } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const {
     onSearchQueryChange,
     filters,

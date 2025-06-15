@@ -1,6 +1,7 @@
 import { UsersResponse } from '@drodil/backstage-plugin-qeta-common';
 import { WarningPanel } from '@backstage/core-components';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { UsersGridItem } from './UsersGridItem';
 import { NoUsersCard } from './NoUsersCard';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
@@ -12,7 +13,7 @@ export const UsersGridContent = (props: {
   response?: UsersResponse;
 }) => {
   const { response, error, loading } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   if (loading) {
     return <LoadingGrid />;

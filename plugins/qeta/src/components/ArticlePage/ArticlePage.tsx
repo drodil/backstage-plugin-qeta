@@ -8,16 +8,17 @@ import {
   AIAnswerCard,
   ArticleContent,
   ButtonContainer,
+  qetaTranslationRef,
   useQetaApi,
-  useTranslation,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Container } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const ArticlePage = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const [views, setViews] = useState(0);
 

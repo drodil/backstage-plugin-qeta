@@ -54,7 +54,7 @@
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "standard-version": "^9.5.0",
-    "typescript": "~5.0.0"
+    "typescript": "~5.8.0"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {
@@ -68,6 +68,9 @@
     "package.json": [
       "yarn fix",
       "yarn knip:check:deps"
+    ],
+    "yarn.lock": [
+      "yarn dedupe"
     ]
   },
   "packageManager": "yarn@4.5.0"

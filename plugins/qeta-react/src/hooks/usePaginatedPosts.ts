@@ -1,5 +1,5 @@
 import { useAnalytics } from '@backstage/core-plugin-api';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   FilterKey,
@@ -180,6 +180,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
         includeAnswers: false,
         includeComments: false,
         includeAttachments: false,
+        includeExperts: false,
         author,
         favorite,
         ...(getFiltersWithDateRange(filters) as any),

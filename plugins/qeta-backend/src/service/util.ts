@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { format, subDays } from 'date-fns';
 import {
+  isAnswer,
   isCollection,
   isPost,
   isTag,
@@ -13,7 +14,10 @@ import { Config } from '@backstage/config';
 import { S3Client } from '@aws-sdk/client-s3';
 import { RouteOptions } from './types';
 import {
+  AnswerResponse,
+  CollectionResponse,
   Comment,
+  PostResponse,
   qetaDeleteAnswerPermission,
   qetaDeleteCollectionPermission,
   qetaDeleteCommentPermission,
@@ -24,6 +28,7 @@ import {
   qetaEditCommentPermission,
   qetaEditPostPermission,
   qetaEditTagPermission,
+  TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { HttpsProxyAgent } from 'hpagent';
@@ -36,6 +41,7 @@ import { rules } from '@drodil/backstage-plugin-qeta-node';
 import { BlobServiceClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { PermissionManager } from './PermissionManager.ts';
 
 export const getCreated = async (
   req: Request<unknown>,
@@ -64,6 +70,7 @@ export type QetaFilter = {
     | 'comments.id'
     | 'comments.author'
     | 'tags.tag'
+    | 'tag.experts'
     | 'collections.owner'
     | 'collections.id';
   values: Array<string | undefined>;
@@ -78,110 +85,267 @@ export type QetaFilters =
 export const transformConditions: ConditionTransformer<QetaFilters> =
   createConditionTransformer(Object.values(rules));
 
-export const mapAdditionalFields = async (
+const mapTagAdditionalFields = async (
   request: Request<unknown>,
-  resource: MaybePost | MaybeAnswer | MaybeTag | MaybeCollection,
-  options: RouteOptions,
-  checkRights = true,
-  creds?: BackstageCredentials,
+  resource: TagResponse,
+  permissionMgr: PermissionManager,
+  credentials: BackstageCredentials,
+  checkRights?: boolean,
 ) => {
-  if (!resource) {
-    return resource;
-  }
+  const [canEdit, canDelete] = await Promise.all([
+    checkRights
+      ? permissionMgr.authorizeBoolean(request, qetaEditTagPermission, {
+          resource,
+          credentials,
+        })
+      : undefined,
+    checkRights
+      ? permissionMgr.authorizeBoolean(request, qetaDeleteTagPermission, {
+          resource,
+          credentials,
+        })
+      : undefined,
+  ]);
 
-  const { permissionMgr } = options;
-  const credentials =
-    creds ?? (await permissionMgr.getCredentials(request, true));
+  resource.canEdit = canEdit;
+  resource.canDelete = canDelete;
+  return resource;
+};
 
-  if (isCollection(resource) || isTag(resource)) {
-    resource.canEdit = checkRights
-      ? await permissionMgr.authorizeBoolean(
+const mapCollectionAdditionalFields = async (
+  request: Request<unknown>,
+  resource: CollectionResponse,
+  permissionMgr: PermissionManager,
+  credentials: BackstageCredentials,
+  checkRights?: boolean,
+) => {
+  const [canEdit, canDelete] = await Promise.all([
+    checkRights
+      ? permissionMgr.authorizeBoolean(request, qetaEditCollectionPermission, {
+          resource,
+          credentials,
+        })
+      : undefined,
+    checkRights
+      ? permissionMgr.authorizeBoolean(
           request,
-          isCollection(resource)
-            ? qetaEditCollectionPermission
-            : qetaEditTagPermission,
-          { resource, credentials },
-        )
-      : undefined;
-    resource.canDelete = checkRights
-      ? await permissionMgr.authorizeBoolean(
-          request,
-          isCollection(resource)
-            ? qetaDeleteCollectionPermission
-            : qetaDeleteTagPermission,
+          qetaDeleteCollectionPermission,
           {
             resource,
             credentials,
           },
         )
-      : undefined;
+      : undefined,
+  ]);
+
+  resource.canEdit = canEdit;
+  resource.canDelete = canDelete;
+  return resource;
+};
+
+const mapResourceComments = async (
+  request: Request<unknown>,
+  resource: AnswerResponse | PostResponse,
+  permissionMgr: PermissionManager,
+  credentials: BackstageCredentials,
+  username: string,
+  checkRights?: boolean,
+) => {
+  const commentArr = resource.comments ?? [];
+  const editPermissions = await Promise.all(
+    commentArr.map(async (c: Comment) => {
+      if (!checkRights) {
+        return undefined;
+      }
+      return permissionMgr.authorizeBoolean(
+        request,
+        qetaEditCommentPermission,
+        { resource: c, credentials },
+      );
+    }),
+  );
+
+  const deletePermissions = await Promise.all(
+    commentArr.map(async (c: Comment) => {
+      if (!checkRights) {
+        return undefined;
+      }
+      return permissionMgr.authorizeBoolean(
+        request,
+        qetaDeleteCommentPermission,
+        { resource: c, credentials },
+      );
+    }),
+  );
+
+  const comments: (Comment | null)[] = commentArr.map(
+    (c: Comment, index): Comment => {
+      return {
+        ...c,
+        own: c.author === username,
+        expert: c.experts?.includes(c.author),
+        canEdit: editPermissions[index],
+        canDelete: deletePermissions[index],
+      };
+    },
+  );
+  return compact(comments);
+};
+
+const mapAnswerAdditionalFields = async (
+  request: Request<unknown>,
+  resource: AnswerResponse,
+  permissionMgr: PermissionManager,
+  credentials: BackstageCredentials,
+  username: string,
+  checkRights?: boolean,
+) => {
+  const [canEdit, canDelete, comments] = await Promise.all([
+    checkRights
+      ? permissionMgr.authorizeBoolean(request, qetaEditAnswerPermission, {
+          resource,
+          credentials,
+        })
+      : undefined,
+    checkRights
+      ? permissionMgr.authorizeBoolean(request, qetaDeleteAnswerPermission, {
+          resource,
+          credentials,
+        })
+      : undefined,
+    mapResourceComments(
+      request,
+      resource,
+      permissionMgr,
+      credentials,
+      username,
+      checkRights,
+    ),
+  ]);
+
+  resource.ownVote = resource.votes?.find(v => v.author === username)?.score;
+  resource.own = resource.author === username;
+  resource.canEdit = canEdit;
+  resource.canDelete = canDelete;
+  resource.expert = resource.experts?.includes(resource.author);
+  resource.comments = comments;
+
+  return resource;
+};
+
+const mapPostAdditionalFields = async (
+  request: Request<unknown>,
+  resource: PostResponse,
+  permissionMgr: PermissionManager,
+  credentials: BackstageCredentials,
+  username: string,
+  checkRights?: boolean,
+) => {
+  resource.ownVote = resource.votes?.find(v => v.author === username)?.score;
+  resource.own = resource.author === username;
+
+  const [canEdit, canDelete, answers, comments] = await Promise.all([
+    checkRights
+      ? permissionMgr.authorizeBoolean(request, qetaEditPostPermission, {
+          resource,
+          credentials,
+        })
+      : undefined,
+    checkRights
+      ? permissionMgr.authorizeBoolean(request, qetaDeletePostPermission, {
+          resource,
+          credentials,
+        })
+      : undefined,
+    Promise.all(
+      (resource.answers ?? []).map(async a =>
+        mapAnswerAdditionalFields(
+          request,
+          a,
+          permissionMgr,
+          credentials,
+          username,
+          checkRights,
+        ),
+      ),
+    ),
+    mapResourceComments(
+      request,
+      resource,
+      permissionMgr,
+      credentials,
+      username,
+      checkRights,
+    ),
+  ]);
+  resource.canEdit = canEdit;
+  resource.canDelete = canDelete;
+  resource.answers = answers;
+  resource.comments = comments;
+  return resource;
+};
+
+export const mapAdditionalFields = async (
+  request: Request<unknown>,
+  resource: MaybePost | MaybeAnswer | MaybeTag | MaybeCollection,
+  routeOpts: RouteOptions,
+  options?: {
+    checkRights?: boolean;
+    creds?: BackstageCredentials;
+    username?: string;
+  },
+) => {
+  if (!resource) {
     return resource;
   }
 
-  const username = await options.permissionMgr.getUsername(
-    request,
-    true,
-    credentials,
-  );
-  resource.ownVote = resource.votes?.find(v => v.author === username)?.score;
-  resource.own = resource.author === username;
-  resource.canEdit = checkRights
-    ? await permissionMgr.authorizeBoolean(
-        request,
-        isPost(resource) ? qetaEditPostPermission : qetaEditAnswerPermission,
-        { resource, credentials },
-      )
-    : undefined;
-  resource.canDelete = checkRights
-    ? await permissionMgr.authorizeBoolean(
-        request,
-        isPost(resource)
-          ? qetaDeletePostPermission
-          : qetaDeleteAnswerPermission,
-        { resource, credentials },
-      )
-    : undefined;
+  const { creds, username, checkRights = true } = options ?? {};
+  const { permissionMgr } = routeOpts;
+  const credentials =
+    creds ?? (await permissionMgr.getCredentials(request, true));
 
-  if (isPost(resource)) {
-    await Promise.all(
-      (resource.answers ?? []).map(
-        async a =>
-          await mapAdditionalFields(
-            request,
-            a,
-            options,
-            checkRights,
-            credentials,
-          ),
-      ),
+  if (isTag(resource)) {
+    return mapTagAdditionalFields(
+      request,
+      resource,
+      permissionMgr,
+      credentials,
+      checkRights,
+    );
+  } else if (isCollection(resource)) {
+    return mapCollectionAdditionalFields(
+      request,
+      resource,
+      permissionMgr,
+      credentials,
+      checkRights,
     );
   }
 
-  const comments: (Comment | null)[] = await Promise.all(
-    (resource.comments ?? []).map(
-      async (c: Comment): Promise<Comment | null> => {
-        return {
-          ...c,
-          own: c.author === username,
-          canEdit: checkRights
-            ? await permissionMgr.authorizeBoolean(
-                request,
-                qetaEditCommentPermission,
-                { resource: c, credentials },
-              )
-            : undefined,
-          canDelete: checkRights
-            ? await permissionMgr.authorizeBoolean(
-                request,
-                qetaDeleteCommentPermission,
-                { resource: c, credentials },
-              )
-            : undefined,
-        };
-      },
-    ),
-  );
-  resource.comments = compact(comments);
+  const user =
+    username ??
+    (await routeOpts.permissionMgr.getUsername(request, true, credentials));
+
+  if (isPost(resource)) {
+    return mapPostAdditionalFields(
+      request,
+      resource,
+      permissionMgr,
+      credentials,
+      user,
+      checkRights,
+    );
+  } else if (isAnswer(resource)) {
+    return mapAnswerAdditionalFields(
+      request,
+      resource,
+      permissionMgr,
+      credentials,
+      user,
+      checkRights,
+    );
+  }
+
   return resource;
 };
 

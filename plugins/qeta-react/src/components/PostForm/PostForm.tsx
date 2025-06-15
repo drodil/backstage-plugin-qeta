@@ -29,7 +29,8 @@ import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymou
 import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 const formToRequest = (
   form: QuestionFormValues,
@@ -124,7 +125,7 @@ export const PostForm = (props: PostFormProps) => {
 
   const [images, setImages] = useState<number[]>([]);
   const [searchParams, _setSearchParams] = useSearchParams();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);

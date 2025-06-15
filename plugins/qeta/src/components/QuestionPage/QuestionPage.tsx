@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as React from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
@@ -9,11 +9,11 @@ import {
   AnswerForm,
   AskQuestionButton,
   ButtonContainer,
+  qetaTranslationRef,
   QuestionCard,
   RelativeTimeWithTooltip,
   UpdatedByLink,
   useQetaApi,
-  useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
 import {
   Answer,
@@ -33,6 +33,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useDescriptionStyles = makeStyles(
   () => ({
@@ -46,7 +47,7 @@ const useDescriptionStyles = makeStyles(
 
 export const QuestionPage = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
   const [answerSort, setAnswerSort] = React.useState<string>('default');
   const dStyles = useDescriptionStyles();

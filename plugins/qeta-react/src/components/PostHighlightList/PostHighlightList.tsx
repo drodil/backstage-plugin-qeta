@@ -1,12 +1,14 @@
-import { ReactNode, Fragment } from 'react';
+import { Fragment, ReactNode } from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, questionRouteRef } from '../../routes';
 import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
-import { useQetaApi, useTranslation } from '../../hooks';
+import { useQetaApi } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { RightList, RightListContainer } from '../Utility/RightList';
 import { Divider, ListItem, ListItemText } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+import { qetaTranslationRef } from '../../translation.ts';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const PostHighlightList = (props: {
   type: string;
@@ -31,11 +33,12 @@ export const PostHighlightList = (props: {
         includeAnswers: false,
         includeVotes: false,
         includeEntities: false,
+        includeExperts: false,
         ...props.options,
       }),
     [],
   );
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const navigate = useNavigate();
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);

@@ -11,7 +11,8 @@ import {
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import AddCommentIcon from '@material-ui/icons/AddComment';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { CommentForm } from './CommentForm.tsx';
@@ -41,7 +42,7 @@ export const CommentSection = (props: {
   const [posting, setPosting] = React.useState(false);
   const [formVisible, setFormVisible] = useState(false);
   const [edited, setEdited] = React.useState(false);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
 
   const postComment = (data: { content: string }) => {

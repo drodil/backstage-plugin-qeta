@@ -1,9 +1,13 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import { PostForm, useTranslation } from '@drodil/backstage-plugin-qeta-react';
+import {
+  PostForm,
+  qetaTranslationRef,
+} from '@drodil/backstage-plugin-qeta-react';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { ContentHeader, InfoCard } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const WritePage = () => {
   const { id } = useParams();
@@ -11,7 +15,7 @@ export const WritePage = () => {
   const entity = searchParams.get('entity') ?? undefined;
   const entityPage = searchParams.get('entityPage') === 'true';
   const tags = filterTags(searchParams.get('tags'));
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   let title;
   if (id) {
     title = t('writePage.title.existingArticle');

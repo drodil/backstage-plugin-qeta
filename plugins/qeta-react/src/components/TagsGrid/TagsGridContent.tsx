@@ -1,7 +1,8 @@
 import { TagGridItem } from './TagGridItem';
 import { TagsResponse } from '@drodil/backstage-plugin-qeta-common';
 import { WarningPanel } from '@backstage/core-components';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { NoTagsCard } from './NoTagsCard';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 import { Grid } from '@material-ui/core';
@@ -11,9 +12,10 @@ export const TagsGridContent = (props: {
   error: any;
   response?: TagsResponse;
   onTagEdit: () => void;
+  isModerator?: boolean;
 }) => {
-  const { response, onTagEdit, loading, error } = props;
-  const { t } = useTranslation();
+  const { response, onTagEdit, loading, error, isModerator } = props;
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   if (loading) {
     return <LoadingGrid />;
@@ -34,7 +36,12 @@ export const TagsGridContent = (props: {
   return (
     <Grid container item xs={12} alignItems="stretch">
       {response?.tags.map(tag => (
-        <TagGridItem tag={tag} key={tag.tag} onTagEdit={onTagEdit} />
+        <TagGridItem
+          tag={tag}
+          key={tag.tag}
+          onTagEdit={onTagEdit}
+          isModerator={isModerator}
+        />
       ))}
     </Grid>
   );

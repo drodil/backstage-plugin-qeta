@@ -2,7 +2,8 @@ import { Progress, WarningPanel } from '@backstage/core-components';
 import { ChangeEvent, useRef } from 'react';
 import { AnswersResponse } from '@drodil/backstage-plugin-qeta-common';
 import { AnswerListItem } from './AnswerListItem';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import {
   Box,
@@ -35,7 +36,7 @@ export const AnswerList = (props: {
     onPageSizeChange,
   } = props;
   const listRef = useRef<HTMLDivElement | null>(null);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const handlePageChange = (_event: ChangeEvent<unknown>, value: number) => {
     if (listRef.current) {

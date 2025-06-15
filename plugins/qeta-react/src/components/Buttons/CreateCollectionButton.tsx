@@ -3,12 +3,13 @@ import { qetaCreateCollectionPermission } from '@drodil/backstage-plugin-qeta-co
 import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionCreateRouteRef } from '../../routes';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 
 export const CreateCollectionButton = () => {
   const createRoute = useRouteRef(collectionCreateRouteRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   return (
     <OptionalRequirePermission

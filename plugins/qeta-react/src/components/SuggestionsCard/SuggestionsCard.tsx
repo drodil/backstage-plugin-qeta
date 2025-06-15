@@ -1,4 +1,4 @@
-import { useQetaApi, useTranslation } from '../../hooks';
+import { useQetaApi } from '../../hooks';
 import { ReactNode } from 'react';
 import {
   NewArticleSuggestion,
@@ -20,6 +20,8 @@ import {
   ListItem,
   ListItemIcon,
 } from '@material-ui/core';
+import { qetaTranslationRef } from '../../translation.ts';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const SuggestionListItem = (props: {
   children: ReactNode;
@@ -39,7 +41,7 @@ const NoCorrectAnswerSuggestionItem = (props: {
   suggestion: NoCorrectAnswerSuggestion;
 }) => {
   const { suggestion } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const questionRoute = useRouteRef(questionRouteRef);
   return (
     <SuggestionListItem
@@ -57,7 +59,7 @@ const NewQuestionSuggestionItem = (props: {
   suggestion: NewQuestionSuggestion;
 }) => {
   const { suggestion } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const questionRoute = useRouteRef(questionRouteRef);
   return (
     <SuggestionListItem
@@ -75,7 +77,7 @@ const NewArticleSuggestionItem = (props: {
   suggestion: NewArticleSuggestion;
 }) => {
   const { suggestion } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const articleRoute = useRouteRef(articleRouteRef);
   return (
     <SuggestionListItem
@@ -96,7 +98,7 @@ const suggestionTypeMap: Record<SuggestionType, any> = {
 };
 
 export const SuggestionsCard = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const { value: response } = useQetaApi(api => api.getSuggestions(), []);
 
   const suggestions = response?.suggestions ?? [];

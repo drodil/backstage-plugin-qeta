@@ -25,7 +25,8 @@ import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { Link } from '@backstage/core-components';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { qetaApiRef } from '../../api';
 import VerticalAlignTopIcon from '@material-ui/icons/VerticalAlignTop';
@@ -48,7 +49,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
   const { post, entity, allowRanking, onRankUpdate, collectionId } = props;
   const [views, setViews] = useState(post.views);
   const qetaApi = useApi(qetaApiRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
 

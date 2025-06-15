@@ -3,9 +3,10 @@ import { MarkdownRenderer } from '../MarkdownRenderer';
 import { AuthorLink } from '../Links';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { Link } from '@backstage/core-components';
-import { useState } from 'react';
 import * as React from 'react';
-import { useTranslation } from '../../hooks';
+import { useState } from 'react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import {
   AnswerResponse,
   Comment,
@@ -14,6 +15,7 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api.ts';
 import { CommentForm } from './CommentForm.tsx';
+import { ExpertIcon } from '../Icons/ExpertIcon.tsx';
 
 const useStyles = makeStyles(
   () => ({
@@ -37,7 +39,7 @@ export const CommentListItem = (props: {
   post: PostResponse;
   answer?: AnswerResponse;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const { comment, onCommentAction, post, answer } = props;
   const qetaApi = useApi(qetaApiRef);
   const [posting, setPosting] = React.useState(false);
@@ -92,7 +94,8 @@ export const CommentListItem = (props: {
           />
           <Typography variant="caption" className="qetaCommentMetadata">
             {' – '}
-            <AuthorLink entity={comment} />{' '}
+            <AuthorLink entity={comment} />
+            {comment.expert && <ExpertIcon />}{' '}
             <RelativeTimeWithTooltip value={comment.created} />
             {comment.canEdit && (
               <>

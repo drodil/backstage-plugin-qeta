@@ -5,16 +5,17 @@ import {
   CollectionFollowButton,
   CreateCollectionButton,
   PostsGrid,
+  qetaTranslationRef,
   useQetaApi,
-  useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { Grid, Typography } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const CollectionPage = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const {
     value: collection,

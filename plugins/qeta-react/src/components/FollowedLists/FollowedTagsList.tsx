@@ -1,11 +1,13 @@
 import { TagChip } from '../TagsAndEntities/TagChip';
-import { useTagsFollow, useTranslation } from '../../hooks';
+import { useTagsFollow } from '../../hooks';
 import { RightList, RightListContainer } from '../Utility/RightList';
 import { ListItem } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export const FollowedTagsList = () => {
   const tags = useTagsFollow();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   if (tags.tags.length === 0 || tags.loading) {
     return null;

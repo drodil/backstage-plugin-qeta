@@ -1,7 +1,12 @@
 import { Autocomplete } from '@material-ui/lab';
 import { getEntityTitle } from '../../utils/utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { TextField, Tooltip, Typography } from '@material-ui/core';
+import {
+  CircularProgress,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import {
   ComponentType,
   CSSProperties,
@@ -12,13 +17,15 @@ import {
 } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { qetaApiRef } from '../../api';
 import { compact } from 'lodash';
 import {
   AutocompleteListboxComponent,
   renderGroup,
 } from './AutocompleteListComponent';
+import { AutocompleteProps } from '@material-ui/lab/Autocomplete/Autocomplete';
 
 export const EntitiesInput = (props: {
   value?: Entity[];
@@ -28,6 +35,11 @@ export const EntitiesInput = (props: {
   hideHelpText?: boolean;
   style?: CSSProperties;
   disabled?: boolean;
+  kind?: string[];
+  maximum?: number | null;
+  label?: string;
+  placeholder?: string;
+  autocompleteProps?: AutocompleteProps<any, any, any, any>;
 }) => {
   const {
     value,
@@ -37,6 +49,11 @@ export const EntitiesInput = (props: {
     hideHelpText = false,
     style,
     disabled,
+    kind,
+    maximum,
+    label,
+    placeholder,
+    autocompleteProps,
   } = props;
   const configApi = useApi(configApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -45,19 +62,24 @@ export const EntitiesInput = (props: {
     [],
   );
   const [loading, setLoading] = useState(true);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const entityKinds: string[] = useMemo(() => {
+    if (kind) {
+      return kind;
+    }
     let kinds = configApi.getOptionalStringArray('qeta.entityKinds');
     if (!kinds) {
       kinds = configApi.getOptionalStringArray('qeta.entities.kinds');
     }
     return kinds || ['Component', 'System'];
-  }, [configApi]);
-  const max = useMemo(
-    () => configApi.getOptionalNumber('qeta.entities.max') ?? 3,
-    [configApi],
-  );
+  }, [configApi, kind]);
+  const max = useMemo(() => {
+    if (maximum) {
+      return maximum;
+    }
+    return configApi.getOptionalNumber('qeta.entities.max') ?? 3;
+  }, [configApi, maximum]);
 
   useEffect(() => {
     if (singleValue) {
@@ -151,8 +173,13 @@ export const EntitiesInput = (props: {
         stringifyEntityRef(o) === stringifyEntityRef(v)
       }
       onChange={(_e, newValue) => {
-        if (!newValue || newValue.length <= max) {
-          onChange(newValue);
+        if (!newValue) {
+          onChange([]);
+          return;
+        }
+        const val = Array.isArray(newValue) ? newValue : [newValue];
+        if (max === null || val.length <= max) {
+          onChange(val as Entity[]);
         }
       }}
       renderOption={option => {
@@ -183,13 +210,24 @@ export const EntitiesInput = (props: {
           {...params}
           variant="outlined"
           margin="normal"
-          label={t('entitiesInput.label')}
-          placeholder={t('entitiesInput.placeholder')}
+          label={label ?? t('entitiesInput.label')}
+          placeholder={placeholder ?? t('entitiesInput.placeholder')}
           FormHelperTextProps={{
             style: { marginLeft: '0.2em' },
           }}
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {loading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
+          }}
           helperText={
-            hideHelpText
+            hideHelpText || max === null
               ? ''
               : t('entitiesInput.helperText', {
                   max: max.toString(10),
@@ -197,6 +235,7 @@ export const EntitiesInput = (props: {
           }
         />
       )}
+      {...autocompleteProps}
     />
   );
 };

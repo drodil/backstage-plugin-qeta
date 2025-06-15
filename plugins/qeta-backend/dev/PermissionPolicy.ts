@@ -23,7 +23,9 @@ import {
 import {
   answerAuthorConditionFactory,
   answerQuestionEntitiesConditionFactory,
+  answerTagExpertConditionFactory,
   collectionOwnerConditionFactory,
+  collectionTagExpertConditionFactory,
   commentAuthorConditionFactory,
   createAnswerConditionalDecision,
   createCollectionConditionalDecision,
@@ -31,6 +33,7 @@ import {
   createPostConditionalDecision,
   postAuthorConditionFactory,
   postHasEntitiesConditionFactory,
+  postTagExpertConditionFactory,
 } from '@drodil/backstage-plugin-qeta-node';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
@@ -62,7 +65,7 @@ export class PermissionPolicy implements PermissionPolicy {
     // Moderator access using permission framework instead of config value
     if (isPermission(request.permission, qetaModeratePermission)) {
       if (user.identity.userEntityRef === 'user:development/guest') {
-        return { result: AuthorizeResult.ALLOW };
+        // return { result: AuthorizeResult.ALLOW };
       }
     }
 
@@ -289,6 +292,10 @@ export class PermissionPolicy implements PermissionPolicy {
             postHasEntitiesConditionFactory({
               entityRefs: ['component:default/test-component'],
             }),
+            // If user is expert of the post tags
+            postTagExpertConditionFactory({
+              userRef: user.identity.userEntityRef,
+            }),
           ],
         });
       }
@@ -302,6 +309,10 @@ export class PermissionPolicy implements PermissionPolicy {
             }),
             answerQuestionEntitiesConditionFactory({
               entityRefs: ['component:default/test-component'],
+            }),
+            // Is expert of tag in question tags
+            answerTagExpertConditionFactory({
+              userRef: user.identity.userEntityRef,
             }),
           ],
         });
@@ -318,16 +329,36 @@ export class PermissionPolicy implements PermissionPolicy {
         });
       }
 
-      // Allow deleting and updating only own collections
       if (isResourcePermission(request.permission, COLLECTION_RESOUCE_TYPE)) {
         return createCollectionConditionalDecision(request.permission, {
-          allOf: [
+          anyOf: [
+            // Allow deleting and updating only own collections
             collectionOwnerConditionFactory({
+              userRef: user.identity.userEntityRef,
+            }),
+            // Or if user is expert of the tag used in collection
+            collectionTagExpertConditionFactory({
               userRef: user.identity.userEntityRef,
             }),
           ],
         });
       }
+
+      // Only allow tag experts to update tags
+      /**
+       if (
+        isResourcePermission(request.permission, TAG_RESOURCE_TYPE) &&
+        isUpdatePermission(request.permission)
+      ) {
+        return createTagConditionalDecision(request.permission, {
+          allOf: [
+            tagExpertConditionFactory({
+              userRef: user.identity.userEntityRef,
+            }),
+          ],
+        });
+      }
+      */
 
       // Allow updating any tag by anyone
       if (

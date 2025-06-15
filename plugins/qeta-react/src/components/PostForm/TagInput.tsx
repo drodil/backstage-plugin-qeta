@@ -1,5 +1,10 @@
 import { Autocomplete } from '@material-ui/lab';
-import { TextField, Tooltip, Typography } from '@material-ui/core';
+import {
+  CircularProgress,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import {
   ComponentType,
   CSSProperties,
@@ -14,7 +19,8 @@ import {
   filterTags,
   qetaCreateTagPermission,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { FieldError } from 'react-hook-form';
 import { AutocompleteListboxComponent } from './AutocompleteListComponent';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
@@ -39,7 +45,7 @@ export const TagInput = (props: {
   const qetaApi = useApi(qetaApiRef);
   const config = useApi(configApiRef);
   const permissions = useApi(permissionApiRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [allowCreation, setAllowCreation] = useState<boolean | undefined>(
     allowCreate,
   );
@@ -185,6 +191,17 @@ export const TagInput = (props: {
           helperText={getHelperText()}
           FormHelperTextProps={{
             style: { marginLeft: '0.2em' },
+          }}
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {loading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
           }}
           error={error !== undefined}
         />

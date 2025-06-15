@@ -7,7 +7,7 @@
     "frontend",
     "backstage.io"
   ],
-  "version": "3.26.0",
+  "version": "3.28.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "prepublishOnly": "yarn tsc && yarn build",
@@ -82,7 +82,7 @@
     "unist-util-find": "^3.0.0"
   },
   "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "react": "^18.0.0 || ^19.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {

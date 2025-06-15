@@ -16,7 +16,8 @@ import { LinkButton } from '../Buttons/LinkButton';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { editQuestionRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
 import {
   Box,
@@ -66,7 +67,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
   const [questionEntity, setQuestionEntity] = useState(question);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const onCommentAction = (q: PostResponse, _?: AnswerResponse) => {
     setQuestionEntity(q);
   };

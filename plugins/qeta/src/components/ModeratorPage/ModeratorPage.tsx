@@ -1,17 +1,18 @@
 import { ChangeEvent, useState } from 'react';
 import {
+  qetaTranslationRef,
   TemplateList,
   useIsModerator,
-  useTranslation,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Box, Tab } from '@material-ui/core';
 import { ContentHeader } from '@backstage/core-components';
 import { Alert, TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const ModeratorPage = () => {
   const { isModerator } = useIsModerator();
   const [tab, setTab] = useState('templates');
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   if (!isModerator) {
     return null;

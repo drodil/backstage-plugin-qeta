@@ -133,6 +133,7 @@ export type PostOptions = {
   includeComments?: boolean;
   includeAttachments?: boolean;
   includeTotal?: boolean;
+  includeExperts?: boolean;
 };
 
 export type CollectionOptions = {
@@ -140,6 +141,7 @@ export type CollectionOptions = {
   postFilters?: PermissionCriteria<QetaFilters>;
   tagFilters?: PermissionCriteria<QetaFilters>;
   includePosts?: boolean;
+  includeExperts?: boolean;
 };
 
 export type AnswerOptions = {
@@ -147,6 +149,7 @@ export type AnswerOptions = {
   includeVotes?: boolean;
   includeComments?: boolean;
   includePost?: boolean;
+  includeExperts?: boolean;
   commentsFilter?: PermissionCriteria<QetaFilters>;
 };
 
@@ -400,9 +403,18 @@ export interface QetaStore {
   ): Promise<TagsResponse>;
   getTagById(id: number): Promise<TagResponse | null>;
   getTag(tag: string): Promise<TagResponse | null>;
-  createTag(tag: string, description?: string): Promise<TagResponse | null>;
-  updateTag(id: number, description?: string): Promise<TagResponse | null>;
+  createTag(
+    tag: string,
+    description?: string,
+    experts?: string[],
+  ): Promise<TagResponse | null>;
+  updateTag(
+    id: number,
+    description?: string,
+    experts?: string[],
+  ): Promise<TagResponse | null>;
   deleteTag(id: number): Promise<boolean>;
+  getTagExperts(tags: string[]): Promise<string[]>;
 
   getUsers(
     options?: { entityRefs?: string[] } & UsersQuery,

@@ -4,9 +4,11 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { AuthorLink, UpdatedByLink } from '../Links';
-import { useTranslation } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { Avatar, Box, Grid, makeStyles, Typography } from '@material-ui/core';
+import { ExpertIcon } from '../Icons/ExpertIcon.tsx';
 
 const useStyles = makeStyles(
   theme => ({
@@ -32,7 +34,7 @@ const useStyles = makeStyles(
 
 export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
   const { entity } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const { name, initials, user } = useEntityAuthor(entity);
   const styles = useStyles();
 
@@ -74,6 +76,7 @@ export const AuthorBox = (props: { entity: PostResponse | AnswerResponse }) => {
         >
           <Box style={{ paddingLeft: '0.3em' }}>
             <AuthorLink entity={entity} />
+            {'expert' in entity && entity.expert && <ExpertIcon />}
           </Box>
         </Grid>
         {entity.updated && entity.updatedBy && (

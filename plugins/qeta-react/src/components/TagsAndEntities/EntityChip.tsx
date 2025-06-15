@@ -5,7 +5,7 @@ import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
 import { qetaApiRef } from '../../api';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
-import { useEntityFollow, useTranslation } from '../../hooks';
+import { useEntityFollow } from '../../hooks';
 import {
   Box,
   Button,
@@ -17,6 +17,8 @@ import {
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Visibility from '@material-ui/icons/Visibility';
 import { useNavigate } from 'react-router-dom';
+import { qetaTranslationRef } from '../../translation.ts';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const cache: Map<string, EntityResponse> = new Map();
 
@@ -26,7 +28,7 @@ const EntityTooltip = (props: { entity: Entity | string }) => {
     typeof entity === 'string' ? entity : stringifyEntityRef(entity);
   const qetaApi = useApi(qetaApiRef);
   const { primaryTitle, secondaryTitle, Icon } = useEntityPresentation(entity);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const entitiesFollow = useEntityFollow();
   const [resp, setResp] = useState<undefined | EntityResponse>();
 

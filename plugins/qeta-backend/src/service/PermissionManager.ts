@@ -46,6 +46,11 @@ import { ExpiryMap, QetaFilters, transformConditions } from './util.ts';
 import DataLoader from 'dataloader';
 import { durationToMilliseconds } from '@backstage/types';
 
+const BATCH_SCHEDULE_TIMEOUT = durationToMilliseconds({ milliseconds: 20 });
+const LOADER_MAP_EXPIRY = durationToMilliseconds({ minutes: 10 });
+const LOADER_CACHE_TIMEOUT = durationToMilliseconds({ seconds: 5 });
+const MAX_BATCH_SIZE = 100;
+
 export class PermissionManager {
   private readonly authorizeLoaderMap: ExpiryMap<
     string,
@@ -64,12 +69,8 @@ export class PermissionManager {
     private readonly permissions?: PermissionsService,
     private readonly auditor?: AuditorService,
   ) {
-    this.authorizeLoaderMap = new ExpiryMap(
-      durationToMilliseconds({ minutes: 10 }),
-    );
-    this.authorizeConditionalLoaderMap = new ExpiryMap(
-      durationToMilliseconds({ minutes: 10 }),
-    );
+    this.authorizeLoaderMap = new ExpiryMap(LOADER_MAP_EXPIRY);
+    this.authorizeConditionalLoaderMap = new ExpiryMap(LOADER_MAP_EXPIRY);
   }
 
   public async getCredentials(
@@ -229,8 +230,18 @@ export class PermissionManager {
       throw new NotFoundError('Resource not found');
     }
 
-    const moderator = await this.isModerator(request, options);
+    const username = await this.getUsername(request, true, options.credentials);
 
+    // Experts can edit and delete
+    if (
+      'experts' in options.resource &&
+      Array.isArray(options.resource.experts) &&
+      options.resource.experts.includes(username)
+    ) {
+      return { result: AuthorizeResult.ALLOW };
+    }
+
+    const moderator = await this.isModerator(request, options);
     if (moderator) {
       return { result: AuthorizeResult.ALLOW };
     }
@@ -243,7 +254,6 @@ export class PermissionManager {
       return { result: AuthorizeResult.ALLOW };
     }
 
-    const username = await this.getUsername(request, true, options.credentials);
     if ('author' in options.resource && username === options.resource.author) {
       return { result: AuthorizeResult.ALLOW };
     } else if (
@@ -455,16 +465,27 @@ export class PermissionManager {
     return undefined;
   }
 
+  private getLoaderKey(credentials: BackstageCredentials) {
+    if (this.auth.isPrincipal(credentials, 'user')) {
+      return btoa(`user.${credentials.principal.userEntityRef}`);
+    } else if (this.auth.isPrincipal(credentials, 'service')) {
+      return btoa(`service.${credentials.principal.subject}`);
+    } else if (this.auth.isPrincipal(credentials, 'none')) {
+      return btoa('none');
+    }
+    return btoa('unknown');
+  }
+
   private getAuthorizeLoader(credentials: BackstageCredentials) {
-    const key = btoa(JSON.stringify(credentials));
+    const key = this.getLoaderKey(credentials);
     const loader = this.authorizeLoaderMap.get(key);
     if (loader) {
       return loader;
     }
-
     const newLoader = new DataLoader<
       AuthorizePermissionRequest,
-      AuthorizePermissionResponse
+      AuthorizePermissionResponse,
+      string
     >(
       async requests => {
         return await this.permissions!.authorize([...requests], {
@@ -472,10 +493,12 @@ export class PermissionManager {
         });
       },
       {
-        cacheMap: new ExpiryMap(durationToMilliseconds({ seconds: 10 })),
-        maxBatchSize: 300,
-        batchScheduleFn: cb =>
-          setTimeout(cb, durationToMilliseconds({ milliseconds: 20 })),
+        cacheMap: new ExpiryMap(LOADER_CACHE_TIMEOUT),
+        maxBatchSize: MAX_BATCH_SIZE,
+        batchScheduleFn: cb => setTimeout(cb, BATCH_SCHEDULE_TIMEOUT),
+        cacheKeyFn: req => {
+          return btoa(JSON.stringify(req));
+        },
       },
     );
     this.authorizeLoaderMap.set(key, newLoader);
@@ -483,7 +506,7 @@ export class PermissionManager {
   }
 
   private getAuthorizeConditionalLoader(credentials: BackstageCredentials) {
-    const key = btoa(JSON.stringify(credentials));
+    const key = this.getLoaderKey(credentials);
     const loader = this.authorizeConditionalLoaderMap.get(key);
     if (loader) {
       return loader;
@@ -491,7 +514,8 @@ export class PermissionManager {
 
     const newLoader = new DataLoader<
       QueryPermissionRequest,
-      QueryPermissionResponse
+      QueryPermissionResponse,
+      string
     >(
       async requests => {
         return await this.permissions!.authorizeConditional([...requests], {
@@ -499,10 +523,12 @@ export class PermissionManager {
         });
       },
       {
-        cacheMap: new ExpiryMap(durationToMilliseconds({ seconds: 10 })),
-        maxBatchSize: 300,
-        batchScheduleFn: cb =>
-          setTimeout(cb, durationToMilliseconds({ milliseconds: 20 })),
+        cacheMap: new ExpiryMap(LOADER_CACHE_TIMEOUT),
+        maxBatchSize: MAX_BATCH_SIZE,
+        batchScheduleFn: cb => setTimeout(cb, BATCH_SCHEDULE_TIMEOUT),
+        cacheKeyFn: req => {
+          return btoa(JSON.stringify(req));
+        },
       },
     );
     this.authorizeConditionalLoaderMap.set(key, newLoader);

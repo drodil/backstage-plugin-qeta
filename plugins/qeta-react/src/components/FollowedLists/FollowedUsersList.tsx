@@ -1,11 +1,13 @@
-import { useTranslation, useUserFollow } from '../../hooks';
+import { useUserFollow } from '../../hooks';
 import { RightList, RightListContainer } from '../Utility/RightList';
 import { UserChip } from '../TagsAndEntities/UserChip';
 import { ListItem } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export const FollowedUsersList = () => {
   const users = useUserFollow();
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   if (users.users.length === 0 || users.loading) {
     return null;

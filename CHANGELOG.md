@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.28.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.28.1...v3.28.2) (2025-05-23)
+
+
+### Bug Fixes
+
+* **backend:** parameter order of onMention calls ([84360bd](https://github.com/drodil/backstage-plugin-qeta/commit/84360bd6d60f666fc7887d19babb3e19ae7e29e9))
+* small tuning for post list item ui ([c043963](https://github.com/drodil/backstage-plugin-qeta/commit/c043963973ae70543d39852438a2b92fb7dbe8f5))
+
+### [3.28.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.28.0...v3.28.1) (2025-05-22)
+
+
+### Bug Fixes
+
+* also check for undefined window.navigation ([550722d](https://github.com/drodil/backstage-plugin-qeta/commit/550722d20d23219ad084acb568fe718681b276c8))
+* check for navigation in window to fix firefox ([9d213aa](https://github.com/drodil/backstage-plugin-qeta/commit/9d213aac0da0055fed9c1f6b48b6cf999078dc35))
+
+## [3.28.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.27.0...v3.28.0) (2025-05-22)
+
+
+### Features
+
+* allow tag experts to edit/delete resources ([56843a7](https://github.com/drodil/backstage-plugin-qeta/commit/56843a7b4b483e31fb124f707dcbd68e83dbe910))
+
+
+### Bug Fixes
+
+* overall performance improvements ([c7829ee](https://github.com/drodil/backstage-plugin-qeta/commit/c7829eed7b9e88f3e41457a3599fd0abc60cde58))
+* tests for tag updater, tag query typing ([8f98f57](https://github.com/drodil/backstage-plugin-qeta/commit/8f98f57b04d28de37ad2b217444453bd44b03c8c))
+
+## [3.27.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.26.0...v3.27.0) (2025-05-21)
+
+
+### Features
+
+* add circular progress for pickers ([17674ca](https://github.com/drodil/backstage-plugin-qeta/commit/17674ca4367e0715f8c946f27bf8fde9bfff903d))
+* add permission rule for tag experts ([5a79ca0](https://github.com/drodil/backstage-plugin-qeta/commit/5a79ca02bfef02e725c64800143f95853abceaa5))
+* allow defining tag experts ([a57f6d6](https://github.com/drodil/backstage-plugin-qeta/commit/a57f6d6b25de2fdf350586f099d61223b352d2e7)), closes [#229](https://github.com/drodil/backstage-plugin-qeta/issues/229)
+
+
+### Bug Fixes
+
+* tsc errors ([cb210fa](https://github.com/drodil/backstage-plugin-qeta/commit/cb210fa22446c68e533463b10183706a343a9069))
+
 ## [3.26.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.25.1...v3.26.0) (2025-05-15)
 
 

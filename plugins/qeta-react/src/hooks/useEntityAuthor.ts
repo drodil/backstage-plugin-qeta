@@ -6,14 +6,15 @@ import {
   catalogApiRef,
   useEntityPresentation,
 } from '@backstage/plugin-catalog-react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AnswerResponse,
   CollectionResponse,
   PostResponse,
   UserResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useTranslation } from './useTranslation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../translation.ts';
 
 const userCache: Map<string, UserEntity> = new Map();
 const dataLoaderFactory = (catalogApi: CatalogApi) =>
@@ -48,7 +49,7 @@ const dataLoaderFactory = (catalogApi: CatalogApi) =>
 export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
-  const { t } = useTranslation();
+  const { t } = useTranslationRef(qetaTranslationRef);
   const [name, setName] = useState<string>('');
   const [user, setUser] = useState<UserEntity | null>(null);
   const [initials, setInitials] = useState<string | null>(null);
