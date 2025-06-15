@@ -37,6 +37,15 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'flex-start',
     padding: theme.spacing(0.5, 2, 2, 2),
     minHeight: 64,
+    transition: 'all 0.2s ease-in-out',
+    '&:hover': {
+      '& $title': {
+        color: theme.palette.primary.main,
+        '& a': {
+          textDecoration: 'underline',
+        },
+      },
+    },
   },
   metaCol: {
     minWidth: 55,
@@ -80,6 +89,10 @@ const useStyles = makeStyles(theme => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     lineHeight: 1.2,
+    '& a': {
+      color: 'inherit',
+      textDecoration: 'none',
+    },
   },
   content: {
     fontSize: '0.98rem',
@@ -227,9 +240,15 @@ export const PostListItem = (props: PostListItemProps) => {
           </Link>
         </Typography>
         <Typography variant="body2" component="div" className={styles.content}>
-          {DOMPurify.sanitize(
-            truncate(removeMarkdownFormatting(post.content), 150),
-          )}
+          <Link
+            to={href}
+            style={{ color: 'inherit', textDecoration: 'none' }}
+            aria-label={t('common.readMore')}
+          >
+            {DOMPurify.sanitize(
+              truncate(removeMarkdownFormatting(post.content), 150),
+            )}
+          </Link>
         </Typography>
         <Box className={styles.tagsRow}>
           <Box className={styles.tags}>
