@@ -427,8 +427,15 @@ export class DatabaseQetaStore implements QetaStore {
     if (options.includeTrend || options.orderBy === 'trend') {
       query.select(
         this.db.raw(
-          '((EXTRACT(EPOCH FROM posts.created) / EXTRACT(EPOCH FROM now())) * (SELECT coalesce(NULLIF(COUNT(*),0), 1) FROM post_views WHERE ?? = ??) * (SELECT coalesce(NULLIF(COUNT(*),0), 1) FROM answers WHERE ?? = ??) * (SELECT coalesce(NULLIF(SUM(score),0), 1) FROM post_votes WHERE ?? = ??)) as trend',
-          ['postId', 'posts.id', 'postId', 'posts.id', 'postId', 'posts.id'],
+          `(
+            (SELECT COALESCE(SUM(score), 0) FROM post_votes WHERE "postId" = posts.id) * 2 + 
+            (SELECT COALESCE(COUNT(*), 0) FROM answers WHERE "postId" = posts.id) * 1.5 +
+            (SELECT COALESCE(COUNT(*), 0) FROM post_views WHERE "postId" = posts.id) * 0.5
+          ) / 
+          POWER(
+            EXTRACT(EPOCH FROM (now() - posts.created)) / 45000 + 2,
+            1.8
+          ) as trend`,
         ),
       );
     }
