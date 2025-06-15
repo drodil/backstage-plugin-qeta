@@ -9,6 +9,7 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { articleRouteRef, questionRouteRef } from '../../routes.ts';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import numeral from 'numeral';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -59,6 +60,9 @@ const useStyles = makeStyles(theme => ({
     flex: 1,
   },
 }));
+function formatShortNumber(num: number): string {
+  return num >= 1000 ? numeral(num).format('0.0 a') : num.toString();
+}
 
 export const PostHighlightList = (props: {
   type: string;
@@ -125,11 +129,11 @@ export const PostHighlightList = (props: {
         {!error &&
           posts.map(q => {
             const route = q.type === 'question' ? questionRoute : articleRoute;
-            const vote = q.score;
+            const vote = formatShortNumber(q.score);
             let voteBoxClass = classes.voteBox;
             if (q.correctAnswer) {
               voteBoxClass = `${classes.voteBox} ${classes.voteBoxPositive}`;
-            } else if (vote < 0) {
+            } else if (q.score < 0) {
               voteBoxClass = `${classes.voteBox} ${classes.voteBoxNegative}`;
             }
             return (
