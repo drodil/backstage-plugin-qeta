@@ -27,6 +27,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import HelpIcon from '@material-ui/icons/Help';
 
 const formToRequest = (
   form: CollectionFormData,
@@ -235,6 +236,10 @@ export const CollectionForm = (props: CollectionFormProps) => {
           >
             {t('collectionForm.descriptionInput.markdownHelp')}
           </a>
+          <HelpIcon
+            fontSize="small"
+            style={{ marginLeft: 4, verticalAlign: 'middle' }}
+          />
         </Box>
       </Box>
       <Collapse in={showTips}>
