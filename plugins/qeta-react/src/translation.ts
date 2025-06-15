@@ -28,6 +28,7 @@ export const qetaTranslationRef = createTranslationRef({
       postStats: 'Post stats',
       anonymousAuthor: 'Anonymous',
       search: 'Search',
+      readMore: 'Read more',
       clear: 'Clear search',
       answersCount_zero: 'No answers',
       answersCount_one: '{{count}} answer',
@@ -276,6 +277,7 @@ export const qetaTranslationRef = createTranslationRef({
     impactCard: {
       title: 'Your impact',
       views: 'views',
+      error: 'Failed to load impact data',
       contributions: 'Your contributions helped {{lastWeek}} people this week',
     },
     rightMenu: {
