@@ -458,7 +458,7 @@ export const qetaTranslationRef = createTranslationRef({
       invalidRange:
         "Date range invalid, 'To date' should be greater than 'From date'",
       range: {
-        label: 'Date range',
+        label: 'Posted',
         default: 'Select',
         last7days: 'Last 7 days',
         last30days: 'Last 30 days',

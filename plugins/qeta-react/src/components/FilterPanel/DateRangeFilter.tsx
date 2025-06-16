@@ -82,18 +82,18 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
         <TextField
           select
           className={styles.textInput}
-          label={t('datePicker.range.label')}
-          value={dateRangeOption || 'select'}
+          value={dateRangeOption || 'date-range'}
           onChange={e => {
             if (e.target.value !== 'custom') {
-              onChange(e.target.value === 'select' ? '' : e.target.value);
+              onChange(e.target.value === 'date-range' ? '' : e.target.value);
             }
             setDateRangeOption(e.target.value);
           }}
           variant="outlined"
-          defaultValue="select"
+          defaultValue="date-range"
+          fullWidth
         >
-          <MenuItem value="select">{t('datePicker.range.default')}</MenuItem>
+          <MenuItem value="date-range">{t('datePicker.range.label')}</MenuItem>
           <MenuItem value="7-days">{t('datePicker.range.last7days')}</MenuItem>
           <MenuItem value="30-days">
             {t('datePicker.range.last30days')}
