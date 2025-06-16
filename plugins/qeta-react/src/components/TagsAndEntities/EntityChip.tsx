@@ -19,6 +19,7 @@ import Visibility from '@material-ui/icons/Visibility';
 import { useNavigate } from 'react-router-dom';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTooltipStyles } from '../../hooks/useTooltipStyles';
 
 const cache: Map<string, EntityResponse> = new Map();
 
@@ -121,12 +122,17 @@ export const EntityChip = (props: {
   const navigate = useNavigate();
   const entityRef =
     typeof entity === 'string' ? entity : stringifyEntityRef(entity);
+  const classes = useTooltipStyles();
   return (
     <Tooltip
       title={<EntityTooltip entity={entity} />}
       arrow
       enterDelay={400}
       interactive
+      classes={{
+        tooltip: classes.tooltip,
+        arrow: classes.tooltipArrow,
+      }}
     >
       <Chip
         label={primaryTitle}

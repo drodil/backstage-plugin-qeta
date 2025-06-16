@@ -5,6 +5,7 @@ import { Answer, Comment, Post } from '@drodil/backstage-plugin-qeta-common';
 import { useUserInfo } from '../../hooks';
 import { UserTooltip } from '../TagsAndEntities/UserChip';
 import { Tooltip } from '@material-ui/core';
+import { useTooltipStyles } from '../../hooks/useTooltipStyles';
 
 export const UserLink = (props: {
   entityRef: string;
@@ -17,12 +18,17 @@ export const UserLink = (props: {
     entityRef,
     anonymous ?? entityRef === 'anonymous',
   );
+  const classes = useTooltipStyles();
   return (
     <Tooltip
       arrow
       title={<UserTooltip entityRef={entityRef} anonymous={anonymous} />}
       enterDelay={400}
       interactive
+      classes={{
+        tooltip: classes.tooltip,
+        arrow: classes.tooltipArrow,
+      }}
     >
       <Link to={`${userRoute()}/${entityRef}`} {...linkProps}>
         {name}
