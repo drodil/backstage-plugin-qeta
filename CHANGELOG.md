@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.29.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.29.1...v3.29.2) (2025-06-16)
+
+
+### Bug Fixes
+
+* force comment post button to min-width 100% ([96dadfe](https://github.com/drodil/backstage-plugin-qeta/commit/96dadfeba5d9dd5bd1722b062e29e144db8a6687))
+* post editing ([5cf2764](https://github.com/drodil/backstage-plugin-qeta/commit/5cf276472efce5f51685ff0db0ceac88ba133218))
+
 ### [3.29.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.29.0...v3.29.1) (2025-06-16)
 
 
