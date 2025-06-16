@@ -9,7 +9,7 @@ export const filterTags = (input?: null | string | string[]) => {
   if (!input) {
     return [];
   }
-  return (Array.isArray(input) ? input : input.split(',')).filter(v =>
-    isValidTag(v),
-  );
+  return (Array.isArray(input) ? input : input.split(','))
+    .map(tag => tag.trim().toLocaleLowerCase().replace(/\s+/g, '-'))
+    .filter(v => isValidTag(v));
 };

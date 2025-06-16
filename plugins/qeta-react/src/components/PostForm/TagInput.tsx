@@ -211,7 +211,7 @@ export const TagInput = (props: {
             tags.length <= maximumTags &&
             tags.length === newValue.length
           ) {
-            onChange(newValue);
+            onChange(tags);
           }
         }}
         renderInput={params => (
