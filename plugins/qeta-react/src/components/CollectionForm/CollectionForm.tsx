@@ -95,7 +95,6 @@ export const CollectionForm = (props: CollectionFormProps) => {
   } = useForm<CollectionFormData>({
     values,
     defaultValues: getDefaultValues(),
-    mode: 'onChange',
   });
 
   const postQuestion = (data: CollectionFormData) => {
@@ -277,7 +276,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
           color="primary"
           type="submit"
           variant="contained"
-          disabled={posting || isSubmitting || !isValid}
+          disabled={posting || isSubmitting}
           size="large"
         >
           {posting ? (

@@ -19,27 +19,33 @@ export interface Config {
      */
     entityKinds?: string[];
     /**
-     * Entities configuration for questions.
+     * Entities configuration for posts.
      *
      * @visibility frontend
      */
     entities?: {
       /**
-       * Determine what kind of entities can be attached to questions.
+       * Determine what kind of entities can be attached to posts.
        * For example [System, Component, API, Location, Template]. Default is [Component, System].
        *
        * @visibility frontend
        */
       kinds?: string[];
       /**
-       * Maximum entities to attach to questions.
+       * Maximum entities to attach to posts.
        *
        * @visibility frontend
        */
       max?: number;
+      /**
+       * Minimum entities required to attach to post.
+       *
+       * @visibility frontend
+       */
+      min?: number;
     };
     /**
-     * Question tags specific configuration
+     * Posts tags specific configuration
      *
      * @visibility frontend
      */
@@ -51,18 +57,24 @@ export interface Config {
        */
       allowCreation?: boolean;
       /**
-       * Allowed tags to be used with questions.
+       * Allowed tags to be used with posts.
        * Only valid if allowCreation is false.
        *
        * @visibility frontend
        */
       allowedTags?: string[];
       /**
-       * Maximum number of tags per question. Default: 5
+       * Maximum number of tags per post. Default: 5
        *
        * @visibility frontend
        */
       max?: number;
+      /**
+       * Minimum number of tags required per post.
+       *
+       * @visibility frontend
+       */
+      min?: number;
     };
     /**
      * List of users/groups that can moderate questions and answers in case permission framework is not in use.

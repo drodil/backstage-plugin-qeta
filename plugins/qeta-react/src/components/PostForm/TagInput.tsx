@@ -82,6 +82,7 @@ export const TagInput = (props: {
     () => config.getOptionalNumber('qeta.tags.max') ?? 5,
     [config],
   );
+
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [tagDescriptions, setTagDescriptions] = useState<
     Record<string, string>
@@ -121,14 +122,14 @@ export const TagInput = (props: {
       return '';
     }
 
-    if (!allowCreation) {
-      return t('tagsInput.helperText', {
-        max: maximumTags.toString(10),
-      });
-    }
-    return `${t('tagsInput.helperText', {
+    const baseText = t('tagsInput.helperText', {
       max: maximumTags.toString(10),
-    })}. ${t('tagsInput.allowAddHelperText')}`;
+    });
+
+    if (!allowCreation) {
+      return baseText;
+    }
+    return `${baseText}. ${t('tagsInput.allowAddHelperText')}`;
   };
 
   return (
@@ -182,7 +183,7 @@ export const TagInput = (props: {
           margin="normal"
           label={t('tagsInput.label')}
           placeholder={t('tagsInput.placeholder')}
-          helperText={getHelperText()}
+          helperText={error !== undefined ? error.message : getHelperText()}
           FormHelperTextProps={{
             style: { marginLeft: '0.2em' },
           }}

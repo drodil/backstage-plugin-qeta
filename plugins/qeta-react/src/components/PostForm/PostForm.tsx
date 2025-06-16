@@ -143,17 +143,19 @@ export const PostForm = (props: PostFormProps) => {
   const catalogApi = useApi(catalogApiRef);
   const configApi = useApi(configApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
+  const minEntities = configApi.getOptionalNumber('qeta.entities.min') ?? 0;
+  const minTags = configApi.getOptionalNumber('qeta.tags.min') ?? 0;
+
   const {
     handleSubmit,
     control,
     reset,
     getValues: getFormValues,
     setValue,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting },
   } = useForm<QuestionFormValues>({
     values,
     defaultValues: getDefaultValues(props),
-    mode: 'onChange',
   });
 
   const [showTips, setShowTips] = useState(false);
@@ -409,9 +411,11 @@ export const PostForm = (props: PostFormProps) => {
             onImageUpload={onImageUpload}
             postId={id ? Number(id) : undefined}
             onTagsChange={tags => {
-              const existing = getFormValues('tags') ?? [];
-              const newTags = [...new Set([...existing, ...tags])];
-              setValue('tags', newTags, { shouldValidate: true });
+              if (tags && tags.length > 0) {
+                const existing = getFormValues('tags') ?? [];
+                const newTags = [...new Set([...existing, ...tags])];
+                setValue('tags', newTags, { shouldValidate: true });
+              }
             }}
           />
         )}
@@ -420,11 +424,21 @@ export const PostForm = (props: PostFormProps) => {
       <Box mt={1} mb={1}>
         <Controller
           control={control}
-          render={({ field: { onChange, value } }) => (
+          rules={{
+            validate: value => {
+              if (minEntities > 0 && value && value.length < minEntities) {
+                return t('entitiesInput.minimumError', {
+                  min: minEntities.toString(),
+                });
+              }
+              return true;
+            },
+          }}
+          render={({ field, fieldState: { error: entityError } }) => (
             <EntitiesInput
-              value={value}
-              onChange={onChange}
+              {...field}
               singleValue={entityRef}
+              error={entityError}
             />
           )}
           name="entities"
@@ -433,10 +447,17 @@ export const PostForm = (props: PostFormProps) => {
       <Box mt={1} mb={1}>
         <Controller
           control={control}
-          render={({
-            field: { onChange, value },
-            fieldState: { error: tagError },
-          }) => <TagInput value={value} onChange={onChange} error={tagError} />}
+          rules={{
+            validate: value => {
+              if (minTags > 0 && value && value.length < minTags) {
+                return t('tagsInput.minimumError', { min: minTags.toString() });
+              }
+              return true;
+            },
+          }}
+          render={({ field, fieldState: { error: tagError } }) => {
+            return <TagInput {...field} error={tagError} />;
+          }}
           name="tags"
         />
       </Box>
@@ -456,7 +477,7 @@ export const PostForm = (props: PostFormProps) => {
           color="primary"
           type="submit"
           variant="contained"
-          disabled={posting || isSubmitting || !isValid}
+          disabled={posting || isSubmitting}
           size="large"
         >
           {/* eslint-disable-next-line no-nested-ternary */}

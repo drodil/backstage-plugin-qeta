@@ -88,12 +88,14 @@ qeta:
   permissions: true
   entities:
     max: 5
+    min: 1
   tags:
     #allowCreation: false
     #allowedTags:
       #- test
       #- another_tag
     max: 6
+    min: 1
   moderators:
     - 'user:development/guest'
   entityKinds:

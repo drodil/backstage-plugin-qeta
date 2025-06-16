@@ -26,6 +26,7 @@ import {
   renderGroup,
 } from './AutocompleteListComponent';
 import { AutocompleteProps } from '@material-ui/lab/Autocomplete/Autocomplete';
+import { FieldError } from 'react-hook-form';
 
 export const EntitiesInput = (props: {
   value?: Entity[];
@@ -37,6 +38,7 @@ export const EntitiesInput = (props: {
   disabled?: boolean;
   kind?: string[];
   maximum?: number | null;
+  error?: FieldError;
   label?: string;
   placeholder?: string;
   autocompleteProps?: AutocompleteProps<any, any, any, any>;
@@ -50,11 +52,13 @@ export const EntitiesInput = (props: {
     style,
     disabled,
     kind,
+    error,
     maximum,
     label,
     placeholder,
     autocompleteProps,
   } = props;
+
   const configApi = useApi(configApiRef);
   const catalogApi = useApi(catalogApiRef);
   const qetaApi = useApi(qetaApiRef);
@@ -205,34 +209,42 @@ export const EntitiesInput = (props: {
           </>
         );
       }}
-      renderInput={params => (
-        <TextField
-          {...params}
-          variant="outlined"
-          margin="normal"
-          label={label || t('entitiesInput.label')}
-          placeholder={placeholder || t('entitiesInput.placeholder')}
-          helperText={
-            !hideHelpText
-              ? t('entitiesInput.helperText', { max: max.toString() })
-              : ''
+      renderInput={params => {
+        let helperText = '';
+        if (!hideHelpText) {
+          if (error && error.message) {
+            helperText = error.message;
+          } else {
+            helperText = t('entitiesInput.helperText', { max: max.toString() });
           }
-          FormHelperTextProps={{
-            style: { marginLeft: '0.2em' },
-          }}
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <>
-                {loading ? (
-                  <CircularProgress color="inherit" size={20} />
-                ) : null}
-                {params.InputProps.endAdornment}
-              </>
-            ),
-          }}
-        />
-      )}
+        }
+
+        return (
+          <TextField
+            {...params}
+            variant="outlined"
+            margin="normal"
+            label={label || t('entitiesInput.label')}
+            placeholder={placeholder || t('entitiesInput.placeholder')}
+            helperText={helperText}
+            FormHelperTextProps={{
+              style: { marginLeft: '0.2em' },
+            }}
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {loading ? (
+                    <CircularProgress color="inherit" size={20} />
+                  ) : null}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            }}
+            error={error !== undefined}
+          />
+        );
+      }}
       {...autocompleteProps}
     />
   );

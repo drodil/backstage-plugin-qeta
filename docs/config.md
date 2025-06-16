@@ -38,14 +38,16 @@ The allowed configuration values are:
 
 ## Entities
 
-- `entities.kinds`, string array, what kind of catalog entities can be attached to a question. Default is ['Component']
-- `entities.max`, integer, maximum number of entities to attach to a question. Default is `3`
+- `entities.kinds`, string array, what kind of catalog entities can be attached to a post. Default is ['Component']
+- `entities.max`, integer, maximum number of entities to attach to a post. Default is `3`
+- `entities.min`, integer, minimum number of entities that has to be attached to a post. Default is `0`.
 
 ## Tags
 
-- `tags.allowCreation`, boolean, determines whether it's possible to add new tags when creating question. Only affects if permissions are not enabled. Moderators can always add tags from the UI even if this is false. Default is `true`
-- `tags.allowedTags`, string array, list of allowed tags to be attached to questions. Only used if `tags.allowCreation` is set to `false`.
-- `tags.max`, integer, maximum number of tags to be attached to a question. Default is `5`.
+- `tags.allowCreation`, boolean, determines whether it's possible to add new tags when creating a post. Only affects if permissions are not enabled. Moderators can always add tags from the UI even if this is false. Default is `true`
+- `tags.allowedTags`, string array, list of allowed tags to be attached to posts. Only used if `tags.allowCreation` is set to `false`.
+- `tags.max`, integer, maximum number of tags to be attached to a post. Default is `5`.
+- `tags.min`, integer, minimum number of tags that has to be attached to a post. Default is `0`.
 
 ## Storage
 
