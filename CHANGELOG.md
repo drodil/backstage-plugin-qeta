@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.29.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.28.2...v3.29.0) (2025-06-16)
+
+
+### Features
+
+* add copy code to clipboard in markdown renderer ([1ffdd2c](https://github.com/drodil/backstage-plugin-qeta/commit/1ffdd2cd09a8209ad9d18a160faff1f0f7fe8342))
+* add icon to markdown help link ([f3d4f28](https://github.com/drodil/backstage-plugin-qeta/commit/f3d4f282f84736380ec81e642f23e29ade5afb75))
+* add more info to post form ([a2b51a0](https://github.com/drodil/backstage-plugin-qeta/commit/a2b51a095b02308d2b6ee0c125dd71145f25e696))
+* add more readable markdown content ([d48402c](https://github.com/drodil/backstage-plugin-qeta/commit/d48402c06896c0339e84c60955cd4e4f65d68157))
+* add support for generate content for code blocks ([db2edec](https://github.com/drodil/backstage-plugin-qeta/commit/db2edeceff31ac62ffa73da291c845690b123297))
+* allow hiding comments in comment section ([56174ec](https://github.com/drodil/backstage-plugin-qeta/commit/56174eca9686d1a27c3d5edcc380a1fb2d0297d7))
+* allow switching between list and grid views ([ff1f7a2](https://github.com/drodil/backstage-plugin-qeta/commit/ff1f7a2740377956e8c502650dbbdc3227389eba))
+* header image upload ui improvements ([25121c5](https://github.com/drodil/backstage-plugin-qeta/commit/25121c51d91adcb13c6b819132526ec3aedf6d64))
+* improve authorbox rendering in questions ([ba3957b](https://github.com/drodil/backstage-plugin-qeta/commit/ba3957bb17a333e08663b8fb37804244c6072d2f))
+* improve comment section rendering ([b598bb0](https://github.com/drodil/backstage-plugin-qeta/commit/b598bb04c61bdd7a116df6024bb7a86b8cf3f8eb))
+* improve favorite page to show the post type ([947b3df](https://github.com/drodil/backstage-plugin-qeta/commit/947b3df339d2712e4f7708d4853be9df43f5de64))
+* improve grid layout ([323e78d](https://github.com/drodil/backstage-plugin-qeta/commit/323e78d8c70a0d09452909190ee4f8ef145aa428))
+* improve grid list item footer styling ([0123180](https://github.com/drodil/backstage-plugin-qeta/commit/01231802d4b475792d34b1c0bf0422f9b1714b8d))
+* improve impact card usability ([8c5b32a](https://github.com/drodil/backstage-plugin-qeta/commit/8c5b32af2c1ea5cb216f7bd2f8444089baeafd7d))
+* improve pagination page size selection ([5c6016a](https://github.com/drodil/backstage-plugin-qeta/commit/5c6016af353ec92d6a43b7e5e2b4f64b1cbb102f))
+* improve posts grid and list item usability ([79fbabe](https://github.com/drodil/backstage-plugin-qeta/commit/79fbabe90b0e4901fbe93b447205bfc3ad5f0ac0))
+* improve right list rendering ([4113ad0](https://github.com/drodil/backstage-plugin-qeta/commit/4113ad0c95e4f8a624a3e7cd79c283a1e7c6d560))
+* improve search functionality and add more indexes ([e39b368](https://github.com/drodil/backstage-plugin-qeta/commit/e39b368cdca2be39e55c0c83910807f192722845))
+* improve suggestions card layaout ([dabe106](https://github.com/drodil/backstage-plugin-qeta/commit/dabe1067461639932326e3a06b92cfe30ec1f506))
+* improve texts in date filter ([a523169](https://github.com/drodil/backstage-plugin-qeta/commit/a52316912b5eb8295cb8d3050053e43d98493174))
+* improve the grid styling ([54f3f2f](https://github.com/drodil/backstage-plugin-qeta/commit/54f3f2fe1b11394563f456355e03e44988b2bd29))
+* improve tooltip styling ([55480e2](https://github.com/drodil/backstage-plugin-qeta/commit/55480e2bae40e0052f5222032936becad2f56f20))
+* improve trend calculation weights and add time decay ([8419143](https://github.com/drodil/backstage-plugin-qeta/commit/841914335f462bf12b8dae3b0be21d739110fbf7))
+* make the left menu a bit more beautiful ([3db9123](https://github.com/drodil/backstage-plugin-qeta/commit/3db9123b6657d478cde84c4e7f0e1bb24b9a246c))
+* more improvements on post list item and author box ([d39d50c](https://github.com/drodil/backstage-plugin-qeta/commit/d39d50c8e5d1145805d7adc277820b6533a0da39))
+* more post list item improvements ([65a9c55](https://github.com/drodil/backstage-plugin-qeta/commit/65a9c55da76b12192a9fba129f348e2225fede29))
+* new ui for the right list items ([70b2387](https://github.com/drodil/backstage-plugin-qeta/commit/70b2387ebb0472ad4b3168cd3e039c2e0596fdef))
+* overall accessibility improvements ([054b097](https://github.com/drodil/backstage-plugin-qeta/commit/054b097b0d26ebc752c517cdee2c37530a74317b))
+* remember filter panel settings ([16b0cc1](https://github.com/drodil/backstage-plugin-qeta/commit/16b0cc1931b6fd41a64027ac45bcb3544bb6b50c)), closes [#301](https://github.com/drodil/backstage-plugin-qeta/issues/301)
+* render long numbers in highlight list ([18561ce](https://github.com/drodil/backstage-plugin-qeta/commit/18561ce1172be1f7f2bdeed6edcda6b51076a331))
+* search bar ui improvements ([f7248b6](https://github.com/drodil/backstage-plugin-qeta/commit/f7248b604c4af16c8b45ba94c39c7e29d2ff85b8))
+* stats chart ui improvements ([112b15d](https://github.com/drodil/backstage-plugin-qeta/commit/112b15d68358df4e2dacc48e885c32e55bb1ae05))
+* stats improvements ([d2001ca](https://github.com/drodil/backstage-plugin-qeta/commit/d2001ca255507cbb76fd03083cbe457ed74d3c07))
+* unify the grid look-and-feel ([0bef7c7](https://github.com/drodil/backstage-plugin-qeta/commit/0bef7c7b8f7387ed2aa3f0ccea9be513ad550efc))
+* unify the titles of different pages ([e672d3a](https://github.com/drodil/backstage-plugin-qeta/commit/e672d3a7b79624515a05a91a84c95ef13d7bcab9))
+
+
+### Bug Fixes
+
+* add fallback for window.navigation if unsupported ([3b05f8c](https://github.com/drodil/backstage-plugin-qeta/commit/3b05f8c7e51207b81f0bc5242d492005ec9f90c4))
+* couple of tooltip fixes for grid items ([b0bd847](https://github.com/drodil/backstage-plugin-qeta/commit/b0bd8475fdc2b6c9a1a1be12101197b878286504))
+
 ### [3.28.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.28.1...v3.28.2) (2025-05-23)
 
 
