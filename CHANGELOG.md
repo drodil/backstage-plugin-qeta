@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.30.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.29.2...v3.30.0) (2025-06-16)
+
+
+### Features
+
+* allow specifying minimum tags and entities ([75ab569](https://github.com/drodil/backstage-plugin-qeta/commit/75ab569f61ea377f6eb67e084865b5f5ea6e63f7)), closes [#308](https://github.com/drodil/backstage-plugin-qeta/issues/308)
+* suggest tags based on the post content ([2c3df79](https://github.com/drodil/backstage-plugin-qeta/commit/2c3df795ae9352cda4022f42b662472f50767984)), closes [#307](https://github.com/drodil/backstage-plugin-qeta/issues/307)
+
+
+### Bug Fixes
+
+* make filterTags also remove invalid characters ([a896e9f](https://github.com/drodil/backstage-plugin-qeta/commit/a896e9f9a922ea36b624a827a4f5fafbae3fb84c)), closes [#283](https://github.com/drodil/backstage-plugin-qeta/issues/283)
+* tsc errors ([18eed8f](https://github.com/drodil/backstage-plugin-qeta/commit/18eed8fd31015c26bdf0fc38371fba760f3ce21f))
+
 ### [3.29.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.29.1...v3.29.2) (2025-06-16)
 
 
