@@ -3067,19 +3067,13 @@ export class DatabaseQetaStore implements QetaStore {
     searchQuery: string,
   ) {
     if (this.db.client.config.client === 'pg') {
-      const searchTerms = searchQuery
-        .split(/\s+/)
-        .filter(term => term.length > 0)
-        .map(term => `${term}:*`)
-        .join(' & ');
-
       query.whereRaw(
         `(
           to_tsvector('english', ${columns.join(
             " || ' ' || ",
-          )}) @@ to_tsquery(?)
+          )}) @@ plainto_tsquery('english', ?)
         )`,
-        [searchTerms],
+        [searchQuery],
       );
     } else {
       const searchTerms = searchQuery
