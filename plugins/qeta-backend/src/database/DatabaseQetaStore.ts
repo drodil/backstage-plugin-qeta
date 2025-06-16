@@ -3067,13 +3067,22 @@ export class DatabaseQetaStore implements QetaStore {
     searchQuery: string,
   ) {
     if (this.db.client.config.client === 'pg') {
+      const searchTerms = searchQuery
+        .split(/\s+/)
+        .filter(term => term.length > 0)
+        .map(term => {
+          const escapedTerm = term.replace(/[&|!(){}[\]^"~*?:\\]/g, ' ').trim();
+          return escapedTerm ? `${escapedTerm}:*` : '';
+        })
+        .filter(term => term.length > 0);
+
       query.whereRaw(
         `(
           to_tsvector('english', ${columns.join(
             " || ' ' || ",
-          )}) @@ plainto_tsquery('english', ?)
+          )}) @@ to_tsquery('english', ?)
         )`,
-        [searchQuery],
+        [searchTerms.join(' & ')],
       );
     } else {
       const searchTerms = searchQuery
@@ -3082,12 +3091,11 @@ export class DatabaseQetaStore implements QetaStore {
         .map(term => `%${term}%`);
 
       query.where(function () {
-        searchTerms.forEach(term => {
-          this.andWhere(function () {
-            columns.forEach(column => {
-              this.orWhereRaw(`LOWER(${column}) LIKE LOWER(?)`, [term]);
-            });
-          });
+        searchTerms.forEach((term: string) => {
+          this.andWhereRaw(
+            `LOWER(${columns.join(" || ' ' || ")}) LIKE LOWER(?)`,
+            [term],
+          );
         });
       });
     }

@@ -18,7 +18,6 @@ import {
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import CloseIcon from '@material-ui/icons/Close';
 import { useState, useCallback, useEffect } from 'react';
-import DOMPurify from 'dompurify';
 import { useDropzone } from 'react-dropzone';
 
 const useStyles = makeStyles(theme => ({
@@ -253,7 +252,7 @@ export const HeaderImageInput = (props: {
             ) : (
               <img
                 className={styles.headerImage}
-                src={sanitizeUrl(debouncedValue)}
+                src={debouncedValue}
                 alt="header"
                 onError={() => setImageError(true)}
               />
