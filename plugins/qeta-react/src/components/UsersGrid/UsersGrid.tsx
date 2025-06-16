@@ -63,7 +63,7 @@ export const UsersGrid = () => {
         loading={loading}
         onSearch={setSearchQuery}
       />
-      <Grid container>
+      <Grid container justifyContent="center">
         <UsersGridContent response={response} loading={loading} error={error} />
         {response && response?.total > 0 && (
           <QetaPagination

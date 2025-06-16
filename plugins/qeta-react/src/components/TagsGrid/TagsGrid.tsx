@@ -111,7 +111,7 @@ export const TagsGrid = () => {
           )
         }
       />
-      <Grid container justifyContent="space-between">
+      <Grid container justifyContent="center">
         <TagsGridContent
           response={response}
           onTagEdit={onTagsModify}

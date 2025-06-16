@@ -63,11 +63,7 @@ export const TagGridItem = (props: {
         <CardActionArea onClick={() => navigate(tagRoute({ tag: tag.tag }))}>
           <CardHeader
             className={classes.cardHeader}
-            title={
-              <Tooltip title={tag.tag} arrow>
-                <span className={classes.ellipsis}>{tag.tag}</span>
-              </Tooltip>
-            }
+            title={<span className={classes.ellipsis}>{tag.tag}</span>}
             titleTypographyProps={{ variant: 'h6' }}
           />
           <CardContent className={classes.cardContent}>

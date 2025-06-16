@@ -31,7 +31,8 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const entityFollow = useEntityFollow();
   const compound = parseEntityRef(entity.entityRef);
-  const { primaryTitle, Icon } = useEntityPresentation(compound);
+  const { primaryTitle, Icon, secondaryTitle } =
+    useEntityPresentation(compound);
 
   return (
     <Grid item xs={12} sm={6} md={4} xl={3}>
@@ -42,7 +43,7 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
           <CardHeader
             className={classes.cardHeader}
             title={
-              <Tooltip title={primaryTitle} arrow>
+              <Tooltip title={secondaryTitle ?? ''} arrow>
                 <span className={classes.ellipsis}>{primaryTitle}</span>
               </Tooltip>
             }

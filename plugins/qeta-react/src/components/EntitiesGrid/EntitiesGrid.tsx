@@ -70,22 +70,24 @@ export const EntitiesGrid = () => {
         loading={loading}
         onSearch={onSearchQueryChange}
       />
-      <Grid container justifyContent="space-between">
+      <Grid container justifyContent="center">
         <EntitiesGridContent
           response={response}
           loading={loading}
           error={error}
         />
+        {response && response?.total > 0 && (
+          <QetaPagination
+            pageSize={entitiesPerPage}
+            handlePageChange={(_e, p) => setPage(p)}
+            handlePageSizeChange={e =>
+              setEntitiesPerPage(Number(e.target.value))
+            }
+            page={page}
+            pageCount={pageCount}
+          />
+        )}
       </Grid>
-      {response && response?.total > 0 && (
-        <QetaPagination
-          pageSize={entitiesPerPage}
-          handlePageChange={(_e, p) => setPage(p)}
-          handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
-          page={page}
-          pageCount={pageCount}
-        />
-      )}
     </Box>
   );
 };

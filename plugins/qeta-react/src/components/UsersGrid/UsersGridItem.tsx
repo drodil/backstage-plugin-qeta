@@ -32,7 +32,12 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const compound = parseEntityRef(user.userRef);
   const { primaryTitle, Icon } = useEntityPresentation(compound);
-  const { name, initials, user: userEntity } = useEntityAuthor(user);
+  const {
+    name,
+    initials,
+    user: userEntity,
+    secondaryTitle,
+  } = useEntityAuthor(user);
   const users = useUserFollow();
   const {
     value: currentUser,
@@ -49,7 +54,7 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
           <CardHeader
             className={classes.cardHeader}
             title={
-              <Tooltip title={primaryTitle} arrow>
+              <Tooltip title={secondaryTitle ?? ''} arrow>
                 <span className={classes.ellipsis}>{primaryTitle}</span>
               </Tooltip>
             }
