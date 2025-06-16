@@ -105,6 +105,7 @@ const useStyles = makeStyles(theme => ({
     WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    minHeight: '24px',
   },
   authorRow: {
     display: 'flex',
