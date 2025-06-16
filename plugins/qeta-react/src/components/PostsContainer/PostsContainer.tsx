@@ -9,6 +9,7 @@ import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { TagFollowButton } from '../Buttons/TagFollowButton';
 import { EntityFollowButton } from '../Buttons/EntityFollowButton';
 import { WriteArticleButton } from '../Buttons';
+import { ViewToggle, ViewType } from '../ViewToggle/ViewToggle';
 import { capitalize } from 'lodash';
 import {
   PaginatedPostsProps,
@@ -25,6 +26,8 @@ export const PostsContainer = (
     entity?: string;
     filterPanelProps?: CommonFilterPanelProps;
     showTypeLabel?: boolean;
+    view?: ViewType;
+    onViewChange?: (view: ViewType) => void;
   },
 ) => {
   const {
@@ -40,6 +43,8 @@ export const PostsContainer = (
     showWriteButton,
     showNoQuestionsBtn,
     showTypeLabel,
+    view,
+    onViewChange,
   } = props;
   const {
     onSearchQueryChange,
@@ -136,19 +141,28 @@ export const PostsContainer = (
                 {t('common.posts', { count: response?.total ?? 0, itemType })}
               </Typography>
             </Grid>
-            {(showFilters ?? true) && (
-              <Grid item>
-                <Button
-                  onClick={() => {
-                    setShowFilterPanel(!showFilterPanel);
-                  }}
-                  className="qetaPostsContainerFilterPanelBtn"
-                  startIcon={<FilterList />}
-                >
-                  {t('filterPanel.filterButton')}
-                </Button>
+            <Grid item>
+              <Grid container spacing={1} alignItems="center">
+                {view && onViewChange && (
+                  <Grid item>
+                    <ViewToggle view={view} onChange={onViewChange} />
+                  </Grid>
+                )}
+                {(showFilters ?? true) && (
+                  <Grid item>
+                    <Button
+                      onClick={() => {
+                        setShowFilterPanel(!showFilterPanel);
+                      }}
+                      className="qetaPostsContainerFilterPanelBtn"
+                      startIcon={<FilterList />}
+                    >
+                      {t('filterPanel.filterButton')}
+                    </Button>
+                  </Grid>
+                )}
               </Grid>
-            )}
+            </Grid>
           </Grid>
         </Box>
       )}

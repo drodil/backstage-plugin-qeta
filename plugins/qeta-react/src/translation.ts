@@ -693,6 +693,10 @@ export const qetaTranslationRef = createTranslationRef({
       tooltip:
         'By following a user, you will get notified when ever a new post by that user is posted',
     },
+    viewToggle: {
+      listView: 'List View',
+      gridView: 'Grid View',
+    },
   },
 });
 

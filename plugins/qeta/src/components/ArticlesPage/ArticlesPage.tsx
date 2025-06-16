@@ -7,8 +7,10 @@ import {
   FollowedTagsList,
   PostHighlightList,
   PostsGrid,
+  PostsContainer,
   qetaTranslationRef,
   WriteArticleButton,
+  ViewType,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import Whatshot from '@material-ui/icons/Whatshot';
@@ -17,6 +19,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const ArticlesPage = () => {
   const [searchParams] = useSearchParams();
+  const [view, setView] = useState<ViewType>('grid');
 
   const [entityRef, setEntityRef] = useState<string | undefined>(undefined);
   const [tags, setTags] = useState<string[] | undefined>(undefined);
@@ -34,7 +37,11 @@ export const ArticlesPage = () => {
             <WriteArticleButton entity={entityRef} tags={tags} />
           </ButtonContainer>
         </ContentHeader>
-        <PostsGrid type="article" />
+        {view === 'grid' ? (
+          <PostsGrid type="article" view={view} onViewChange={setView} />
+        ) : (
+          <PostsContainer type="article" view={view} onViewChange={setView} />
+        )}
       </Grid>
       <Grid item lg={3} xl={2}>
         <PostHighlightList

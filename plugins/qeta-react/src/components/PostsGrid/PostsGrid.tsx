@@ -5,6 +5,7 @@ import {
   TagFollowButton,
   WriteArticleButton,
 } from '../Buttons';
+import { ViewToggle, ViewType } from '../ViewToggle/ViewToggle';
 import FilterList from '@material-ui/icons/FilterList';
 import {
   CommonFilterPanelProps,
@@ -25,6 +26,8 @@ import { SearchBar } from '../SearchBar/SearchBar.tsx';
 export type PostGridProps = PaginatedPostsProps & {
   allowRanking?: boolean;
   filterPanelProps?: CommonFilterPanelProps;
+  view?: ViewType;
+  onViewChange?: (view: ViewType) => void;
 };
 
 export const PostsGrid = (props: PostGridProps) => {
@@ -41,6 +44,8 @@ export const PostsGrid = (props: PostGridProps) => {
     showWriteButton,
     showNoQuestionsBtn,
     allowRanking,
+    view,
+    onViewChange,
   } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const {
@@ -132,17 +137,26 @@ export const PostsGrid = (props: PostGridProps) => {
                 {t('common.posts', { count: response?.total ?? 0, itemType })}
               </Typography>
             </Grid>
-            {(showFilters ?? true) && (
-              <Grid item>
-                <Button
-                  onClick={() => setShowFilterPanel(!showFilterPanel)}
-                  className="qetaPostsContainerFilterPanelBtn"
-                  startIcon={<FilterList />}
-                >
-                  {t('filterPanel.filterButton')}
-                </Button>
+            <Grid item>
+              <Grid container spacing={1} alignItems="center">
+                {view && onViewChange && (
+                  <Grid item>
+                    <ViewToggle view={view} onChange={onViewChange} />
+                  </Grid>
+                )}
+                {(showFilters ?? true) && (
+                  <Grid item>
+                    <Button
+                      onClick={() => setShowFilterPanel(!showFilterPanel)}
+                      className="qetaPostsContainerFilterPanelBtn"
+                      startIcon={<FilterList />}
+                    >
+                      {t('filterPanel.filterButton')}
+                    </Button>
+                  </Grid>
+                )}
               </Grid>
-            )}
+            </Grid>
           </Grid>
         </Box>
       )}
