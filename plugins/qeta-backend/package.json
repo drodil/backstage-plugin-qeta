@@ -1,6 +1,6 @@
 {
   "name": "@drodil/backstage-plugin-qeta-backend",
-  "version": "3.29.0",
+  "version": "3.29.1",
   "description": "Backstage.io Q&A plugin backend",
   "keywords": [
     "backstage",

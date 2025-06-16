@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.29.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.29.0...v3.29.1) (2025-06-16)
+
+
+### Bug Fixes
+
+* also fix the font size in post grid item ([ba885b4](https://github.com/drodil/backstage-plugin-qeta/commit/ba885b478a45147a6e949b2b42afe95b6d445eea))
+* list item content to take enough space ([b3d7b74](https://github.com/drodil/backstage-plugin-qeta/commit/b3d7b744ecb3a22395e1322f39cdfafa57eecce3))
+* remove custom font sizes ([b9bcd00](https://github.com/drodil/backstage-plugin-qeta/commit/b9bcd00a19f1ed870431c1d37197fa4e6d20c236))
+
 ## [3.29.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.28.2...v3.29.0) (2025-06-16)
 
 
