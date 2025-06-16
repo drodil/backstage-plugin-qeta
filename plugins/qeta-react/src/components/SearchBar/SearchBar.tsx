@@ -133,7 +133,7 @@ export const SearchBar = (props: {
           className={classes.iconButton}
         >
           {loading ? (
-            <CircularProgress size={20} className={classes.loadingIcon} />
+            <CircularProgress size={24} className={classes.loadingIcon} />
           ) : (
             <SearchIcon className={classes.searchIcon} />
           )}

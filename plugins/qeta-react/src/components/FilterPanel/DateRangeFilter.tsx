@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { formatDate } from '../../utils/utils';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -27,6 +27,9 @@ const useStyles = makeStyles(
       minWidth: '230px',
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
+      '& input[type="date"]': {
+        colorScheme: theme.palette.type === 'dark' ? 'dark' : 'light',
+      },
     },
   }),
   { name: 'QetaDateRangeFilter' },
@@ -55,19 +58,22 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
     }
   }, [value]);
 
-  const handleCustom = (from?: string, to?: string) => {
-    const startDate = new Date(from ?? fromDate);
-    const endDate = new Date(to ?? toDate);
-    if (startDate <= endDate) {
-      setValidation({ isValid: true });
-      onChange(`${formatDate(startDate)}--${formatDate(endDate)}`);
-    } else {
-      setValidation({
-        isValid: false,
-        message: t('datePicker.invalidRange'),
-      });
-    }
-  };
+  const handleCustom = useCallback(
+    (from?: string, to?: string) => {
+      const startDate = new Date(from ?? fromDate);
+      const endDate = new Date(to ?? toDate);
+      if (startDate <= endDate) {
+        setValidation({ isValid: true });
+        onChange(`${formatDate(startDate)}--${formatDate(endDate)}`);
+      } else {
+        setValidation({
+          isValid: false,
+          message: t('datePicker.invalidRange'),
+        });
+      }
+    },
+    [onChange, fromDate, toDate, t],
+  );
 
   return (
     <Grid container className={styles.root}>
@@ -86,6 +92,8 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
           onChange={e => {
             if (e.target.value !== 'custom') {
               onChange(e.target.value === 'date-range' ? '' : e.target.value);
+            } else {
+              handleCustom();
             }
             setDateRangeOption(e.target.value);
           }}
