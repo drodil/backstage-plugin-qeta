@@ -24,6 +24,13 @@ export interface Config {
          */
         articleSummary?: boolean;
       };
+      post?: {
+        /**
+         * Whether to enable OpenAI for tag suggestions. Defaults to true.
+         * Setting this false will disable AI tag suggestions in the post form.
+         */
+        tagSuggestions?: boolean;
+      };
       /**
        * Cache time-to-live for OpenAI responses. Defaults to 1 hour.
        */

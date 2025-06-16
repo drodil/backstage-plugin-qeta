@@ -173,6 +173,7 @@ export const qetaTranslationRef = createTranslationRef({
       allowAddHelperText:
         'You can create new tags by typing the tag and pressing enter',
       minimumError: 'Please add at least {{min}} tags',
+      suggestedTags: 'Suggested tags',
     },
     askPage: {
       title: {

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  DraftQuestionSchema,
   EntitiesQuerySchema,
   RouteOptions,
   TagsQuerySchema,
@@ -8,6 +9,7 @@ import {
 import { mapAdditionalFields } from '../util';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import {
+  filterTags,
   isValidTag,
   qetaCreateTagPermission,
   qetaDeleteTagPermission,
@@ -22,7 +24,16 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const helperRoutes = (router: Router, options: RouteOptions) => {
-  const { database, catalog, auth, httpAuth, auditor, permissionMgr } = options;
+  const {
+    database,
+    catalog,
+    auth,
+    httpAuth,
+    auditor,
+    logger,
+    permissionMgr,
+    aiHandler,
+  } = options;
 
   const validateEntityRef = (entityRef: string, kind?: string) => {
     try {
@@ -190,6 +201,55 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       },
     });
     response.status(204).send();
+  });
+
+  router.post('/tags/suggest', async (request, response) => {
+    const validateRequestBody = ajv.compile(DraftQuestionSchema);
+    if (!validateRequestBody(request.body)) {
+      response.status(400).send({ errors: validateRequestBody.errors });
+      return;
+    }
+
+    try {
+      if (aiHandler?.suggestTags) {
+        const { tags } = await aiHandler.suggestTags(
+          request.body.title,
+          request.body.content,
+        );
+        response.json({
+          tags: tags
+            .filter(filterTags)
+            .map(tag => tag.toLocaleLowerCase())
+            .slice(0, 8),
+        });
+        return;
+      }
+    } catch (error) {
+      logger.error(
+        'Failed to generate tag suggestions using AI, fallback to database',
+        error,
+      );
+    }
+
+    try {
+      const { tags: existingTags } = await database.getTags();
+
+      const titleLower = request.body.title.toLowerCase();
+      const contentLower = request.body.content.toLowerCase();
+
+      const suggestedTags = existingTags
+        .map(tag => tag.tag)
+        .filter(
+          tag =>
+            titleLower.includes(tag.toLowerCase()) ||
+            contentLower.includes(tag.toLowerCase()),
+        );
+      response.json({ tags: suggestedTags.filter(filterTags).slice(0, 8) });
+    } catch (error) {
+      response
+        .status(500)
+        .json({ error: 'Failed to generate tag suggestions' });
+    }
   });
 
   router.get('/tags/:tag', async (request, response) => {

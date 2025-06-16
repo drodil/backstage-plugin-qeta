@@ -32,6 +32,7 @@ import {
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
+  TagSuggestionsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export interface PaginatedQuery {
@@ -128,6 +129,11 @@ export type RequestOptions = {
 
 export interface SuggestionsQuery {
   limit?: number;
+}
+
+export interface TagSuggestionsQuery {
+  title: string;
+  content: string;
 }
 
 export interface QetaApi {
@@ -484,4 +490,9 @@ export interface QetaApi {
     options?: SuggestionsQuery,
     requestOptions?: RequestOptions,
   ): Promise<SuggestionsResponse>;
+
+  getTagSuggestions(
+    options: TagSuggestionsQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<TagSuggestionsResponse>;
 }

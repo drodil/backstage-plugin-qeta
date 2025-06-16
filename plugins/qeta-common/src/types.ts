@@ -428,3 +428,12 @@ export interface NewArticleSuggestion extends Suggestion {
 export interface SuggestionsResponse {
   suggestions: Suggestion[];
 }
+
+export interface TagSuggestionsResponse {
+  tags: string[];
+}
+
+export interface TagSuggestionsQuery {
+  title: string;
+  content: string;
+}

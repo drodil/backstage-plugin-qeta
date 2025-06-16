@@ -456,7 +456,14 @@ export const PostForm = (props: PostFormProps) => {
             },
           }}
           render={({ field, fieldState: { error: tagError } }) => {
-            return <TagInput {...field} error={tagError} />;
+            return (
+              <TagInput
+                {...field}
+                error={tagError}
+                title={getFormValues('title')}
+                content={getFormValues('content')}
+              />
+            );
           }}
           name="tags"
         />

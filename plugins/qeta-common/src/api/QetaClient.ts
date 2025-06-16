@@ -11,6 +11,10 @@ import {
   TagsQuery,
   UsersQuery,
 } from './QetaApi';
+import {
+  TagSuggestionsQuery,
+  TagSuggestionsResponse,
+} from '@drodil/backstage-plugin-qeta-common';
 import { CustomErrorBase } from '@backstage/errors';
 import {
   AIResponse,
@@ -1382,6 +1386,21 @@ export class QetaClient implements QetaApi {
       requestOptions,
     });
     return (await response.json()) as SuggestionsResponse;
+  }
+
+  async getTagSuggestions(
+    options: TagSuggestionsQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<TagSuggestionsResponse> {
+    const response = await this.fetch('/tags/suggest', {
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify(options),
+        headers: { 'Content-Type': 'application/json' },
+      },
+      requestOptions,
+    });
+    return (await response.json()) as TagSuggestionsResponse;
   }
 
   private async getBaseUrl(): Promise<string> {

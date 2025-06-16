@@ -110,6 +110,35 @@ export class OpenAIHandler implements AIHandler {
     return { answer: completion };
   }
 
+  async suggestTags(
+    title: string,
+    content: string,
+    options?: { credentials?: BackstageCredentials<BackstageUserPrincipal> },
+  ): Promise<{ tags: string[] }> {
+    const enabled = this.config.getOptionalBoolean(
+      'qeta.openai.post.tagSuggestions',
+    );
+    if (enabled === false) {
+      throw new Error('OpenAI is disabled for tag suggestions');
+    }
+
+    this.logger.info(`Suggesting tags for post "${title}" using OpenAI`);
+    const prompt = `Based on the following post title and content, suggest relevant tags. Always place the most relevant tags first. Tags should be single words, no spaces. Return only a comma-separated list of tags, nothing else.\nTitle: ${title}\nContent: ${content}`;
+    const completion = await this.getCompletion(
+      prompt,
+      options?.credentials?.principal.userEntityRef,
+    );
+
+    console.log('completion', completion);
+
+    const tags = completion
+      .split(',')
+      .map(tag => tag.trim())
+      .filter(tag => tag.length > 0);
+
+    return { tags };
+  }
+
   private async getCompletion(prompt: string, user?: string) {
     const client = this.getClient();
 

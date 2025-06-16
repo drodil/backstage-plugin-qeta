@@ -36,6 +36,15 @@ export interface AIHandler {
   ): Promise<AIResponse>;
 
   /**
+   * Suggest tags based on post title and content
+   */
+  suggestTags?(
+    title: string,
+    content: string,
+    options?: { credentials?: BackstageCredentials<BackstageUserPrincipal> },
+  ): Promise<{ tags: string[] }>;
+
+  /**
    * Check if answering existing questions is enabled for specific credentials. Defaults to true.
    * Must also implement the `answerExistingQuestion` method.
    */

@@ -52,6 +52,16 @@ backend.add(
             ): Promise<AIResponse> {
               return { answer: 'This article is about the meaning of life' };
             },
+
+            async suggestTags(
+              title: string,
+              content: string,
+              options?: {
+                credentials?: BackstageCredentials<BackstageUserPrincipal>;
+              },
+            ): Promise<{ tags: string[] }> {
+              return { tags: ['github', 'logging'] };
+            },
           });
         },
       });
@@ -113,6 +123,8 @@ qeta:
       newQuestions: false # disables/enables answer in ask a question page
       existingQuestions: true # disables/enables answer in question page
       articleSummary: false # disables/enables article summaries by AI
+    post:
+      tagSuggestions: false # disables/enables tag suggestions by AI
     project: 'your-open-ai-project'
     organization: 'your-open-ai-organization'
     model: 'gpt-4o-mini' # defaults to gpt-3.5-turbo
