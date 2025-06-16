@@ -13,6 +13,8 @@ import {
   ListItemText,
   makeStyles,
   Typography,
+  Paper,
+  Box,
 } from '@material-ui/core';
 import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
 import { TrophyIcon } from './TrophyIcon';
@@ -23,19 +25,80 @@ import { qetaTranslationRef } from '../../translation.ts';
 
 const useStyles = makeStyles(theme => {
   return {
+    root: {
+      '& .MuiTabbedCard-root': {
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+      },
+      '& .MuiCardHeader-root': {
+        padding: theme.spacing(2, 3),
+        borderBottom: `1px solid ${theme.palette.divider}`,
+      },
+      '& .MuiTabs-root': {
+        backgroundColor: theme.palette.background.paper,
+        borderBottom: `1px solid ${theme.palette.divider}`,
+      },
+    },
     trophyIcon: {
-      backgroundColor: 'initial',
+      backgroundColor: theme.palette.background.paper,
       color: theme.palette.text.primary,
       borderRadius: '50%',
       boxSizing: 'border-box',
       padding: '0.5rem',
-      height: 50,
-      width: 50,
+      height: 48,
+      width: 48,
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+      transition: 'transform 0.2s ease-in-out',
+      '&:hover': {
+        transform: 'scale(1.05)',
+      },
     },
     votesText: {
-      display: 'grid',
-      placeItems: 'center',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       marginLeft: '16px',
+      backgroundColor: theme.palette.background.paper,
+      padding: theme.spacing(0.5, 2),
+      borderRadius: '20px',
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+    },
+    rankingCard: {
+      padding: theme.spacing(2),
+    },
+    rankingCardDescription: {
+      color: theme.palette.text.secondary,
+      marginBottom: theme.spacing(2),
+      fontSize: '0.9rem',
+    },
+    rankingCardList: {
+      '& .MuiListItem-root': {
+        marginBottom: theme.spacing(1),
+        borderRadius: '8px',
+        transition: 'background-color 0.2s ease-in-out',
+        '&:hover': {
+          backgroundColor: theme.palette.action.hover,
+        },
+      },
+    },
+    rankingRow: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: theme.spacing(1, 2),
+    },
+    userInfo: {
+      display: 'flex',
+      alignItems: 'center',
+      flex: 1,
+    },
+    position: {
+      fontWeight: 600,
+      marginRight: theme.spacing(1),
+      color: theme.palette.text.primary,
+    },
+    divider: {
+      margin: theme.spacing(2, 0),
+      opacity: 0.5,
     },
   };
 });
@@ -103,31 +166,26 @@ export const RankingRow = (props: {
   const rankingIcon = props?.position > 3 ? userIcon : topRankingIcon;
 
   return (
-    <ListItem className="qetaRankingCardRow">
+    <ListItem className={classes.rankingRow}>
       <ListItemAvatar>
         <Avatar className={classes.trophyIcon}>{rankingIcon}</Avatar>
       </ListItemAvatar>
 
       <ListItemText
         disableTypography
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-        }}
+        className={classes.userInfo}
         primary={
-          <div style={{ display: 'flex' }}>
-            <Typography
-              style={{ marginRight: '10px', fontWeight: 400 }}
-              variant="subtitle1"
-            >
-              {`${ordinalPosition}`} <UserLink entityRef={userRef ?? ''} />
+          <Box display="flex" alignItems="center">
+            <Typography className={classes.position} variant="subtitle1">
+              {ordinalPosition}
             </Typography>
-          </div>
+            <UserLink entityRef={userRef ?? ''} />
+          </Box>
         }
       />
 
       <div className={classes.votesText}>
-        <Typography variant="subtitle1">
+        <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
           {props?.total} {props.unit}
         </Typography>
       </div>
@@ -141,31 +199,32 @@ export const RankingCard = (props: {
   statistic?: StatisticResponse;
   unit: string;
 }) => {
+  const classes = useStyles();
   const rankingStats = props.limit
     ? props.statistic?.ranking.slice(0, props.limit)
     : props.statistic?.ranking;
 
   return (
-    <div style={{ display: 'block' }} className="qetaRankingCard">
-      <span className="qetaRankingCardDescription">{props.description}</span>
-      <List className="qetaRankingCardList">
-        {rankingStats?.map(authorStats => {
-          return (
-            <RankingRow
-              total={authorStats.total || 0}
-              position={authorStats.position || 0}
-              userRef={authorStats.author}
-              unit={props.unit}
-              key={authorStats.author}
-            />
-          );
-        })}
+    <Paper elevation={0} className={classes.rankingCard}>
+      <Typography className={classes.rankingCardDescription}>
+        {props.description}
+      </Typography>
+      <List className={classes.rankingCardList}>
+        {rankingStats?.map(authorStats => (
+          <RankingRow
+            total={authorStats.total || 0}
+            position={authorStats.position || 0}
+            userRef={authorStats.author}
+            unit={props.unit}
+            key={authorStats.author}
+          />
+        ))}
         {!rankingStats?.some(
           authorStats =>
             authorStats.author === props.statistic?.loggedUser?.author,
         ) && (
           <>
-            <hr />
+            <hr className={classes.divider} />
             <RankingRow
               total={props.statistic?.loggedUser?.total || 0}
               position={props.statistic?.loggedUser?.position || 0}
@@ -175,7 +234,7 @@ export const RankingCard = (props: {
           </>
         )}
       </List>
-    </div>
+    </Paper>
   );
 };
 
@@ -184,6 +243,7 @@ export const TopRankingUsers = (props: {
   hideTitle?: boolean;
   limit?: number;
 }) => {
+  const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
   const {
     value: topStatistics,
@@ -236,7 +296,9 @@ export const TopRankingUsers = (props: {
   if (loading) {
     content = [
       <CardTab>
-        <Progress />
+        <Box display="flex" justifyContent="center" p={3}>
+          <Progress />
+        </Box>
       </CardTab>,
     ];
   } else if (topStatistics && topStatistics.length > 0) {
@@ -253,12 +315,20 @@ export const TopRankingUsers = (props: {
       );
     });
   } else {
-    content = [<CardTab>{t('statistics.notAvailable')}</CardTab>];
+    content = [
+      <CardTab>
+        <Box display="flex" justifyContent="center" p={3}>
+          {t('statistics.notAvailable')}
+        </Box>
+      </CardTab>,
+    ];
   }
 
   return (
-    <TabbedCard title={props.title || t('statistics.ranking')}>
-      {content}
-    </TabbedCard>
+    <div className={classes.root}>
+      <TabbedCard title={props.title || t('statistics.ranking')}>
+        {content}
+      </TabbedCard>
+    </div>
   );
 };

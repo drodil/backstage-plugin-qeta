@@ -16,8 +16,47 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { UserStatsContent } from './UserStatsContent';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import { Avatar, Box, Tab, Typography, Tooltip } from '@material-ui/core';
+import {
+  Avatar,
+  Box,
+  Tab,
+  Typography,
+  Tooltip,
+  makeStyles,
+} from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import AssessmentIcon from '@material-ui/icons/Assessment';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import CollectionsIcon from '@material-ui/icons/Collections';
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+
+const useStyles = makeStyles(theme => ({
+  tabIcon: {
+    fontSize: '1.2rem',
+    marginRight: theme.spacing(1),
+  },
+  tabPanel: {
+    padding: theme.spacing(3),
+  },
+  avatar: {
+    width: theme.spacing(6),
+    height: theme.spacing(6),
+    marginRight: theme.spacing(2),
+  },
+  headerContent: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(2),
+  },
+  tabList: {},
+  tabLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    minWidth: 0,
+  },
+}));
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
@@ -25,6 +64,7 @@ export const UserPage = () => {
   const [tab, setTab] = useState('statistics');
   const { t } = useTranslationRef(qetaTranslationRef);
   const [_searchParams, setSearchParams] = useSearchParams();
+  const classes = useStyles();
   const {
     value: currentUser,
     loading: loadingUser,
@@ -35,36 +75,51 @@ export const UserPage = () => {
     setSearchParams({});
     setTab(newValue);
   };
+
+  const TabLabel = ({
+    icon,
+    label,
+  }: {
+    icon: React.ReactNode;
+    label: string;
+  }) => (
+    <div className={classes.tabLabel}>
+      {icon}
+      <span>{label}</span>
+    </div>
+  );
+
   const title = (
     <Box
-      style={{ display: 'flex', alignItems: 'center' }}
+      className={classes.headerContent}
       role="banner"
       aria-label={t('userPage.profileHeader')}
     >
-      <Box style={{ display: 'inline-block', marginRight: '1em' }}>
-        <Avatar
-          src={user?.spec?.profile?.picture}
-          alt={name}
-          variant="rounded"
-          aria-label={t('userPage.profilePicture', { name })}
-        >
-          {initials}
-        </Avatar>
+      <Avatar
+        src={user?.spec?.profile?.picture}
+        alt={name}
+        variant="rounded"
+        className={classes.avatar}
+        aria-label={t('userPage.profilePicture', { name })}
+      >
+        {initials}
+      </Avatar>
+      <Box>
+        <Tooltip title={secondaryTitle || ''} arrow>
+          <Typography variant="h5" component="h2" id="user-name">
+            {name}
+          </Typography>
+        </Tooltip>
+        {!loadingUser &&
+          !userError &&
+          currentUser?.userEntityRef !== identity && (
+            <UserFollowButton
+              userRef={identity}
+              style={{ marginLeft: '0.5em' }}
+              aria-label={t('userPage.followUser', { name })}
+            />
+          )}
       </Box>
-      <Tooltip title={secondaryTitle || ''} arrow>
-        <Typography variant="h5" component="h2" id="user-name">
-          {name}
-        </Typography>
-      </Tooltip>
-      {!loadingUser &&
-        !userError &&
-        currentUser?.userEntityRef !== identity && (
-          <UserFollowButton
-            userRef={identity}
-            style={{ marginLeft: '0.5em' }}
-            aria-label={t('userPage.followUser', { name })}
-          />
-        )}
     </Box>
   );
 
@@ -77,40 +132,82 @@ export const UserPage = () => {
         </ButtonContainer>
       </ContentHeader>
       <TabContext value={tab}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box className={classes.tabList}>
           <TabList
             onChange={handleChange}
             aria-label={t('userPage.profileTab')}
             aria-labelledby="user-name"
+            variant="scrollable"
+            scrollButtons="auto"
           >
-            <Tab label={t('userPage.statistics')} value="statistics" />
-            <Tab label={t('userPage.questions')} value="questions" />
-            <Tab label={t('userPage.articles')} value="articles" />
-            <Tab label={t('userPage.collections')} value="collections" />
-            <Tab label={t('userPage.answers')} value="answers" />
+            <Tab
+              value="statistics"
+              label={
+                <TabLabel
+                  icon={<AssessmentIcon className={classes.tabIcon} />}
+                  label={t('userPage.statistics')}
+                />
+              }
+            />
+            <Tab
+              value="questions"
+              label={
+                <TabLabel
+                  icon={<HelpOutlineIcon className={classes.tabIcon} />}
+                  label={t('userPage.questions')}
+                />
+              }
+            />
+            <Tab
+              value="articles"
+              label={
+                <TabLabel
+                  icon={<CollectionsBookmarkIcon className={classes.tabIcon} />}
+                  label={t('userPage.articles')}
+                />
+              }
+            />
+            <Tab
+              value="collections"
+              label={
+                <TabLabel
+                  icon={<CollectionsIcon className={classes.tabIcon} />}
+                  label={t('userPage.collections')}
+                />
+              }
+            />
+            <Tab
+              value="answers"
+              label={
+                <TabLabel
+                  icon={<QuestionAnswerIcon className={classes.tabIcon} />}
+                  label={t('userPage.answers')}
+                />
+              }
+            />
           </TabList>
         </Box>
-        <TabPanel value="statistics">
+        <TabPanel value="statistics" className={classes.tabPanel}>
           <UserStatsContent userRef={identity ?? ''} />
         </TabPanel>
-        <TabPanel value="questions">
+        <TabPanel value="questions" className={classes.tabPanel}>
           <PostsContainer
             author={identity ?? ''}
             showNoQuestionsBtn={false}
             type="question"
           />
         </TabPanel>
-        <TabPanel value="articles">
+        <TabPanel value="articles" className={classes.tabPanel}>
           <PostsGrid
             author={identity ?? ''}
             type="article"
             showNoQuestionsBtn={false}
           />
         </TabPanel>
-        <TabPanel value="collections">
+        <TabPanel value="collections" className={classes.tabPanel}>
           <CollectionsGrid owner={identity ?? ''} />
         </TabPanel>
-        <TabPanel value="answers">
+        <TabPanel value="answers" className={classes.tabPanel}>
           <AnswersContainer
             author={identity ?? ''}
             title={t('userPage.answers')}
