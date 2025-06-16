@@ -432,8 +432,3 @@ export interface SuggestionsResponse {
 export interface TagSuggestionsResponse {
   tags: string[];
 }
-
-export interface TagSuggestionsQuery {
-  title: string;
-  content: string;
-}

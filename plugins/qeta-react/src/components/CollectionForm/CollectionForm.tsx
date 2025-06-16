@@ -91,7 +91,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
     control,
     reset,
     setValue,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting },
   } = useForm<CollectionFormData>({
     values,
     defaultValues: getDefaultValues(),
