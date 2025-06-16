@@ -3,11 +3,10 @@ import { useQetaApi } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { UsersGridContent } from './UsersGridContent';
 import useDebounce from 'react-use/lib/useDebounce';
-import { SearchBar } from '../SearchBar/SearchBar';
-import { Grid, Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { QetaGridHeader } from '../Utility/QetaGridHeader';
+import { Grid } from '@material-ui/core';
 
 type EntityFilters = {
   order: 'asc' | 'desc';

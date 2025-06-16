@@ -43,7 +43,7 @@ export const EntityPage = () => {
   let shownTitle: string = t('entitiesPage.defaultTitle');
   let link = undefined;
   if (entityRef) {
-    shownTitle = t(`postsContainer.title.about`, { itemType: 'Post' });
+    shownTitle = '';
     link = <EntityRefLink entityRef={entityRef} />;
   }
 
@@ -52,13 +52,19 @@ export const EntityPage = () => {
       <Grid item md={12} lg={9} xl={10}>
         <ContentHeader
           titleComponent={
-            <Typography variant="h5" component="h2">
-              {shownTitle} {link}
-            </Typography>
+            <span style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography
+                variant="h5"
+                component="h2"
+                style={{ marginRight: '0.5em' }}
+              >
+                {shownTitle} {link}
+              </Typography>
+              {entityRef && <EntityFollowButton entityRef={entityRef} />}
+            </span>
           }
         >
           <ButtonContainer>
-            {entityRef && <EntityFollowButton entityRef={entityRef} />}
             <AskQuestionButton entity={entityRef} />
             <WriteArticleButton entity={entityRef} />
           </ButtonContainer>

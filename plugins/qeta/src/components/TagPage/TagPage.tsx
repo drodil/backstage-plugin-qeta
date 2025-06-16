@@ -44,13 +44,35 @@ export const TagPage = () => {
   return (
     <Grid container spacing={4}>
       <Grid item md={12} lg={9} xl={10}>
-        <ContentHeader title={tag ? `#${tag}` : t('tagPage.defaultTitle')}>
-          <ButtonContainer>
-            {tag && <TagFollowButton tag={tag} />}
-            <AskQuestionButton tags={tag ? [tag] : undefined} />
-            <WriteArticleButton tags={tag ? [tag] : undefined} />
-          </ButtonContainer>
-        </ContentHeader>
+        {tag ? (
+          <ContentHeader
+            titleComponent={
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <Typography
+                  variant="h5"
+                  component="h2"
+                  id="tag-title"
+                  style={{ marginRight: '0.5em' }}
+                >
+                  #{tag}
+                </Typography>
+                <TagFollowButton tag={tag} />
+              </span>
+            }
+          >
+            <ButtonContainer>
+              <AskQuestionButton tags={[tag]} />
+              <WriteArticleButton tags={[tag]} />
+            </ButtonContainer>
+          </ContentHeader>
+        ) : (
+          <ContentHeader title={t('tagPage.defaultTitle')}>
+            <ButtonContainer>
+              <AskQuestionButton />
+              <WriteArticleButton />
+            </ButtonContainer>
+          </ContentHeader>
+        )}
         {resp && (
           <Card variant="outlined" style={{ marginBottom: '1em' }}>
             <CardContent>

@@ -16,7 +16,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { UserStatsContent } from './UserStatsContent';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import { Avatar, Box, Tab, Typography } from '@material-ui/core';
+import { Avatar, Box, Tab, Typography, Tooltip } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const UserPage = () => {
@@ -41,7 +41,7 @@ export const UserPage = () => {
       role="banner"
       aria-label={t('userPage.profileHeader')}
     >
-      <Box style={{ display: 'inline-block', marginRight: '0.5em' }}>
+      <Box style={{ display: 'inline-block', marginRight: '1em' }}>
         <Avatar
           src={user?.spec?.profile?.picture}
           alt={name}
@@ -51,9 +51,11 @@ export const UserPage = () => {
           {initials}
         </Avatar>
       </Box>
-      <Typography variant="h5" component="h2" id="user-name">
-        {name}
-      </Typography>
+      <Tooltip title={secondaryTitle || ''} arrow>
+        <Typography variant="h5" component="h2" id="user-name">
+          {name}
+        </Typography>
+      </Tooltip>
       {!loadingUser &&
         !userError &&
         currentUser?.userEntityRef !== identity && (
@@ -68,7 +70,7 @@ export const UserPage = () => {
 
   return (
     <>
-      <ContentHeader titleComponent={title} description={secondaryTitle}>
+      <ContentHeader titleComponent={title}>
         <ButtonContainer>
           <AskQuestionButton />
           <WriteArticleButton />
