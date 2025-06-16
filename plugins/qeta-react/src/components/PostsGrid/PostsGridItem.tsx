@@ -19,6 +19,7 @@ import {
   IconButton,
   Tooltip,
   Typography,
+  makeStyles,
 } from '@material-ui/core';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
@@ -45,11 +46,57 @@ export interface PostsGridItemProps {
   collectionId?: number;
 }
 
+const useStyles = makeStyles(theme => ({
+  card: {
+    height: '100%',
+  },
+  cardContent: {
+    padding: theme.spacing(1.5, 2, 1, 2),
+  },
+  cardContentFooter: {
+    padding: theme.spacing(1, 2, 1.5, 2),
+  },
+  title: {
+    fontSize: '1.08rem',
+    fontWeight: 600,
+    marginBottom: theme.spacing(0.5),
+  },
+  content: {
+    marginBottom: 0,
+  },
+  footer: {
+    paddingTop: theme.spacing(1),
+    borderTop: `1px solid ${theme.palette.divider}`,
+    marginTop: theme.spacing(0.5),
+  },
+  metadataItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(0.5),
+  },
+  avatar: {
+    width: 24,
+    height: 24,
+  },
+  rankingControls: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: theme.spacing(0.5),
+    marginTop: theme.spacing(1),
+    paddingTop: theme.spacing(1),
+    borderTop: `1px solid ${theme.palette.divider}`,
+  },
+  rankingButton: {
+    padding: theme.spacing(0.5),
+  },
+}));
+
 export const PostsGridItem = (props: PostsGridItemProps) => {
   const { post, entity, allowRanking, onRankUpdate, collectionId } = props;
   const [views, setViews] = useState(post.views);
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
+  const classes = useStyles();
 
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
 
@@ -83,7 +130,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
   };
 
   return (
-    <Card style={{ height: '100%' }}>
+    <Card className={classes.card}>
       <CardActionArea
         onClick={() => navigate(href)}
         aria-label={post.title}
@@ -100,12 +147,12 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             style={{ objectFit: 'cover' }}
           />
         )}
-        <CardContent style={{ padding: '10px 16px 6px 16px' }}>
+        <CardContent className={classes.cardContent}>
           <Typography
             gutterBottom
             variant="h6"
             component="div"
-            style={{ fontSize: '1.08rem', fontWeight: 600, marginBottom: 4 }}
+            className={classes.title}
           >
             {post.title}
           </Typography>
@@ -113,7 +160,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             variant="body2"
             color="textSecondary"
             gutterBottom
-            style={{ marginBottom: 0 }}
+            className={classes.content}
           >
             {DOMPurify.sanitize(
               truncate(removeMarkdownFormatting(post.content), 400),
@@ -121,25 +168,37 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
           </Typography>
         </CardContent>
       </CardActionArea>
-      <CardContent style={{ padding: '6px 16px 8px 16px' }}>
+      <CardContent className={classes.cardContentFooter}>
         <TagsAndEntities entity={post} />
-        <Box style={{ paddingLeft: '0.2rem', paddingTop: '0.5rem' }}>
+        <Box className={classes.footer}>
           <Grid container alignItems="center" spacing={2}>
             <Grid item xs={12} sm={6}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item>
-                  <Typography variant="subtitle2" color="textSecondary">
+                  <Typography
+                    variant="subtitle2"
+                    color="textSecondary"
+                    className={classes.metadataItem}
+                  >
                     {t('common.viewsCount', { count: views })}
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Typography variant="subtitle2" color="textSecondary">
+                  <Typography
+                    variant="subtitle2"
+                    color="textSecondary"
+                    className={classes.metadataItem}
+                  >
                     {t('common.votesCount', { count: post.score })}
                   </Typography>
                 </Grid>
                 {post.type === 'question' && (
                   <Grid item>
-                    <Typography variant="subtitle2" color="textSecondary">
+                    <Typography
+                      variant="subtitle2"
+                      color="textSecondary"
+                      className={classes.metadataItem}
+                    >
                       {t('common.answersCount', { count: post.answersCount })}
                     </Typography>
                   </Grid>
@@ -158,6 +217,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
                     src={user?.spec?.profile?.picture}
                     alt={name}
                     variant="rounded"
+                    className={classes.avatar}
                   >
                     {initials}
                   </SmallAvatar>
@@ -176,38 +236,47 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               </Grid>
             </Grid>
           </Grid>
+          {allowRanking && (
+            <Box className={classes.rankingControls}>
+              <Tooltip title={t('ranking.top')}>
+                <IconButton
+                  size="small"
+                  onClick={() => rank('top')}
+                  className={classes.rankingButton}
+                >
+                  <VerticalAlignTopIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t('ranking.up')}>
+                <IconButton
+                  size="small"
+                  onClick={() => rank('up')}
+                  className={classes.rankingButton}
+                >
+                  <KeyboardArrowUpIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t('ranking.down')}>
+                <IconButton
+                  size="small"
+                  onClick={() => rank('down')}
+                  className={classes.rankingButton}
+                >
+                  <KeyboardArrowDownIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t('ranking.bottom')}>
+                <IconButton
+                  size="small"
+                  onClick={() => rank('bottom')}
+                  className={classes.rankingButton}
+                >
+                  <VerticalAlignBottomIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
         </Box>
-        {allowRanking && (
-          <Box
-            style={{
-              paddingRight: '0.2em',
-              paddingTop: '0.8em',
-              paddingBottom: '0.2em',
-              float: 'right',
-            }}
-          >
-            <Tooltip title={t('ranking.top')}>
-              <IconButton size="small" onClick={() => rank('top')}>
-                <VerticalAlignTopIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={t('ranking.up')}>
-              <IconButton size="small" onClick={() => rank('up')}>
-                <KeyboardArrowUpIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={t('ranking.down')}>
-              <IconButton size="small" onClick={() => rank('down')}>
-                <KeyboardArrowDownIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={t('ranking.bottom')}>
-              <IconButton size="small" onClick={() => rank('bottom')}>
-                <VerticalAlignBottomIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
       </CardContent>
     </Card>
   );
