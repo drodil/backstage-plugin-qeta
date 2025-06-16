@@ -3,7 +3,7 @@ import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import { ListItem, ListItemText, Box, makeStyles } from '@material-ui/core';
+import { Box, ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -36,7 +36,6 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
     borderRadius: 4,
     fontWeight: 600,
-    fontSize: '0.9rem',
     marginRight: theme.spacing(1),
     marginLeft: theme.spacing(0.5),
     background: theme.palette.background.paper,
@@ -52,7 +51,6 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.getContrastText(theme.palette.error.main),
   },
   listItemText: {
-    fontSize: '0.8rem',
     color: theme.palette.text.primary,
     whiteSpace: 'nowrap',
     overflow: 'hidden',

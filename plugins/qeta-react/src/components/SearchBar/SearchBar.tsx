@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useEffect, useCallback, useMemo } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   CircularProgress,
   IconButton,
@@ -44,7 +44,6 @@ const useStyles = makeStyles(
     input: {
       marginLeft: theme.spacing(1),
       flex: 1,
-      fontSize: '0.9rem',
     },
     iconButton: {
       padding: 5,

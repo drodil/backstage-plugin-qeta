@@ -1,12 +1,12 @@
 import {
   Box,
+  Divider,
   ListItemIcon,
   makeStyles,
   MenuItem,
   MenuList,
   SvgIcon,
   Typography,
-  Divider,
 } from '@material-ui/core';
 import AccountBox from '@material-ui/icons/AccountBox';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
@@ -102,7 +102,6 @@ export const useStyles = makeStyles(
         padding: theme.spacing(1, 2, 0.5, 2),
         marginTop: theme.spacing(2),
         color: theme.palette.text.secondary,
-        fontSize: '0.875rem',
         fontWeight: 600,
         textTransform: 'uppercase',
         letterSpacing: '0.5px',

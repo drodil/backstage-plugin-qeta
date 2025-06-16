@@ -4,8 +4,8 @@ import {
   NewArticleSuggestion,
   NewQuestionSuggestion,
   NoCorrectAnswerSuggestion,
-  SuggestionType,
   SuggestionsResponse,
+  SuggestionType,
 } from '@drodil/backstage-plugin-qeta-common';
 import AssistantIcon from '@material-ui/icons/Assistant';
 import HelpOutlinedIcon from '@material-ui/icons/HelpOutlined';
@@ -18,15 +18,15 @@ import { articleRouteRef, questionRouteRef } from '../../routes';
 import {
   Card,
   CardHeader,
+  CircularProgress,
+  Divider,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  IconButton,
-  CircularProgress,
-  Typography,
-  Divider,
   makeStyles,
+  Typography,
 } from '@material-ui/core';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -57,7 +57,6 @@ const useStyles = makeStyles(theme => ({
   },
   timestamp: {
     color: theme.palette.text.secondary,
-    fontSize: '0.875rem',
   },
   emptyState: {
     padding: theme.spacing(3),

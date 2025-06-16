@@ -32,12 +32,10 @@ const useStyles = makeStyles(
       '& *:last-child': {
         display: 'inline',
       },
-      fontSize: '0.8rem',
       lineHeight: 1.5,
     },
     metadata: {
       color: theme.palette.text.secondary,
-      fontSize: '0.85rem',
       marginTop: theme.spacing(0.5),
       '& a': {
         color: theme.palette.primary.main,

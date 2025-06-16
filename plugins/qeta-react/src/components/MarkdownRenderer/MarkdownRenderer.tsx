@@ -119,7 +119,6 @@ const useStyles = makeStyles(
           overflowX: 'auto',
           borderRadius: 4,
           padding: '0.2em 0.4em',
-          fontSize: '0.97em',
         },
         '& em': {
           fontStyle: 'italic !important',

@@ -7,14 +7,14 @@ import {
 } from '@backstage/core-components';
 import {
   Avatar,
+  Box,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   makeStyles,
-  Typography,
   Paper,
-  Box,
+  Typography,
 } from '@material-ui/core';
 import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
 import { TrophyIcon } from './TrophyIcon';
@@ -69,7 +69,6 @@ const useStyles = makeStyles(theme => {
     rankingCardDescription: {
       color: theme.palette.text.secondary,
       marginBottom: theme.spacing(2),
-      fontSize: '0.9rem',
     },
     rankingCardList: {
       '& .MuiListItem-root': {

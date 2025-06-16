@@ -4,7 +4,6 @@ const useStyles = makeStyles(() => ({
   root: {
     display: 'inline-flex !important',
     marginRight: '0.25rem',
-    fontSize: '1rem',
     maxWidth: '1rem',
     maxHeight: '1rem',
   },

@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/no-autofocus */
-import { useState } from 'react';
-
 import * as React from 'react';
+import { useState } from 'react';
 import { Box, Button, Grid, makeStyles } from '@material-ui/core';
 import {
   AnswerResponse,
@@ -45,7 +44,6 @@ const useStyles = makeStyles(
       },
     },
     addCommentButton: {
-      fontSize: '0.875rem',
       textTransform: 'none',
       color: theme.palette.text.secondary,
       '&:hover': {
@@ -109,13 +107,18 @@ export const CommentSection = (props: {
     <Box
       className={`${styles.root} ${styles.commentSection} ${props.className} qetaCommentSection`}
     >
-      {/* Hide/Show Comments Button */}
       {commentsCount > 0 && (
         <Box display="flex" alignItems="center" pl={1}>
           <Button
             size="small"
+            variant="text"
             onClick={() => setCommentsVisible(v => !v)}
-            style={{ textTransform: 'none', padding: '0.5rem 0.8rem' }}
+            style={{
+              textTransform: 'none',
+              padding: '0.5rem 0.8rem',
+              border: 'none',
+              backgroundColor: 'transparent',
+            }}
             endIcon={
               commentsVisible ? (
                 <ExpandMoreIcon fontSize="small" />
@@ -128,7 +131,6 @@ export const CommentSection = (props: {
           </Button>
         </Box>
       )}
-      {/* Comments List */}
       {commentsVisible && (
         <Box pl={1}>
           <CommentList

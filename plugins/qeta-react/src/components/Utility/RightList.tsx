@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    lineHeight: '1rem',
+    lineHeight: 1.5,
   },
   list: {
     '& li': {

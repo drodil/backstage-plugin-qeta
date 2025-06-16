@@ -27,7 +27,6 @@ const useStyles = makeStyles(
     avatar: {
       width: theme.spacing(3),
       height: theme.spacing(3),
-      fontSize: '1rem',
       marginRight: theme.spacing(1),
     },
     authorLink: {
@@ -35,7 +34,6 @@ const useStyles = makeStyles(
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       fontWeight: 600,
-      fontSize: '1.05rem',
       color: theme.palette.text.primary,
       display: 'flex',
       alignItems: 'center',
@@ -47,7 +45,6 @@ const useStyles = makeStyles(
     },
     meta: {
       color: theme.palette.text.secondary,
-      fontSize: '0.85rem',
       textAlign: 'center',
       margin: 0,
     },
@@ -68,12 +65,7 @@ export const AuthorBox = (props: {
 
   return (
     <Box className={`qetaAuthorBox ${styles.authorBox}`}>
-      <Grid
-        container
-        alignItems="stretch"
-        justifyContent="flex-end"
-        spacing={0}
-      >
+      <Grid container alignItems="center" justifyContent="flex-end" spacing={0}>
         <Grid item xs={12} style={{ paddingBottom: 0 }}>
           <Typography className="qetaAuthorBoxCreated" variant="caption">
             {label} <RelativeTimeWithTooltip value={time} />

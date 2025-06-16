@@ -19,10 +19,10 @@ import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import {
   Avatar,
   Box,
-  Tab,
-  Typography,
-  Tooltip,
   makeStyles,
+  Tab,
+  Tooltip,
+  Typography,
 } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import AssessmentIcon from '@material-ui/icons/Assessment';
@@ -33,7 +33,6 @@ import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 
 const useStyles = makeStyles(theme => ({
   tabIcon: {
-    fontSize: '1.2rem',
     marginRight: theme.spacing(1),
   },
   tabPanel: {

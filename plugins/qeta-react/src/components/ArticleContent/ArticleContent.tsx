@@ -23,7 +23,6 @@ export const useStyles = makeStyles(
   theme => {
     return {
       content: {
-        fontSize: '110%',
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         marginBottom: theme.spacing(2),

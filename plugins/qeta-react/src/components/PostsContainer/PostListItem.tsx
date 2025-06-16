@@ -15,12 +15,12 @@ import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import {
+  Box,
+  Chip,
   makeStyles,
+  Tooltip,
   Typography,
   useTheme,
-  Box,
-  Tooltip,
-  Chip,
 } from '@material-ui/core';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import numeral from 'numeral';
@@ -65,13 +65,13 @@ const useStyles = makeStyles(theme => ({
     width: 55,
     textAlign: 'center',
     borderRadius: 6,
-    padding: '6px 0',
+    padding: '6px 0px',
     fontWeight: 600,
-    fontSize: '1rem',
+    fontSize: '18px',
     background: theme.palette.background.paper,
     color: theme.palette.text.primary,
     border: `1px solid ${theme.palette.divider}`,
-    lineHeight: 1.1,
+    lineHeight: '16px',
   },
   answersBox: {
     background: theme.palette.warning.light,
@@ -85,7 +85,6 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     fontWeight: 700,
-    fontSize: '1.18rem',
     color: theme.palette.text.primary,
     marginBottom: 2,
     marginTop: 0,
@@ -99,7 +98,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
   content: {
-    fontSize: '0.98rem',
     color: theme.palette.text.secondary,
     margin: '2px 0 4px 0',
     display: '-webkit-box',
@@ -161,7 +159,6 @@ const useStyles = makeStyles(theme => ({
   },
   typeLabel: {
     marginLeft: theme.spacing(1),
-    fontSize: '0.75rem',
     padding: '0.5rem 0.5rem',
     flexShrink: 0,
   },
@@ -209,7 +206,7 @@ export const PostListItem = (props: PostListItemProps) => {
             <div
               style={{
                 fontWeight: 400,
-                fontSize: '0.75rem',
+                fontSize: '13px',
                 color: theme.palette.text.secondary,
               }}
             >
@@ -229,7 +226,7 @@ export const PostListItem = (props: PostListItemProps) => {
             <Tooltip title={answersCount >= 1000 ? answersCount : ''} arrow>
               <span>{formatShortNumber(answersCount)}</span>
             </Tooltip>
-            <div style={{ fontWeight: 400, fontSize: '0.75rem' }}>
+            <div style={{ fontWeight: 400, fontSize: '13px' }}>
               {t('common.answers')}
             </div>
           </Box>
@@ -243,7 +240,7 @@ export const PostListItem = (props: PostListItemProps) => {
             <div
               style={{
                 fontWeight: 400,
-                fontSize: '0.75rem',
+                fontSize: '13px',
                 color: theme.palette.text.secondary,
               }}
             >

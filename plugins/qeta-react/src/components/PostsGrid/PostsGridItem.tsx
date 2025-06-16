@@ -16,9 +16,9 @@ import {
   CardContent,
   CardMedia,
   IconButton,
+  makeStyles,
   Tooltip,
   Typography,
-  makeStyles,
 } from '@material-ui/core';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
@@ -57,7 +57,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 2, 1.5, 2),
   },
   title: {
-    fontSize: '1.08rem',
     fontWeight: 600,
     marginBottom: theme.spacing(0.5),
   },
@@ -97,7 +96,6 @@ const useStyles = makeStyles(theme => ({
   },
   statLabel: {
     fontWeight: 400,
-    fontSize: '0.75rem',
     color: theme.palette.text.secondary,
   },
   answersBox: {
