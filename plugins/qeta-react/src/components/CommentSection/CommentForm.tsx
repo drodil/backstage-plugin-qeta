@@ -57,6 +57,7 @@ export const CommentForm = (props: {
             type="submit"
             color="primary"
             disabled={disabled}
+            style={{ minWidth: '100%' }}
           >
             {saveButtonTitle}
           </Button>
