@@ -21,9 +21,11 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Visibility from '@material-ui/icons/Visibility';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
 
 export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
   const { entity } = props;
+  const classes = useGridItemStyles();
   const entityRoute = useRouteRef(entityRouteRef);
   const navigate = useNavigate();
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -32,16 +34,19 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
   const { primaryTitle, Icon } = useEntityPresentation(compound);
 
   return (
-    <Grid item xs={3}>
-      <Card
-        variant="outlined"
-        style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-      >
+    <Grid item xs={12} sm={6} md={4}>
+      <Card className={classes.card} variant="outlined">
         <CardActionArea
           onClick={() => navigate(entityRoute({ entityRef: entity.entityRef }))}
         >
           <CardHeader
-            title={primaryTitle}
+            className={classes.cardHeader}
+            title={
+              <Tooltip title={primaryTitle} arrow>
+                <span className={classes.ellipsis}>{primaryTitle}</span>
+              </Tooltip>
+            }
+            titleTypographyProps={{ variant: 'h6' }}
             avatar={
               Icon ? (
                 <Avatar>
@@ -50,8 +55,8 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
               ) : null
             }
           />
-          <CardContent>
-            <Typography variant="caption">
+          <CardContent className={classes.cardContent}>
+            <Typography className={classes.stats} variant="caption">
               {t('common.posts', {
                 count: entity.postsCount,
                 itemType: 'post',
@@ -61,11 +66,12 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
             </Typography>
           </CardContent>
         </CardActionArea>
-        <CardActions style={{ marginTop: 'auto' }}>
+        <CardActions className={classes.cardActions}>
           <Grid container justifyContent="center">
             <Grid item>
               <Tooltip title={t('entityButton.tooltip')}>
                 <Button
+                  className={classes.actionButton}
                   size="small"
                   variant="outlined"
                   color={

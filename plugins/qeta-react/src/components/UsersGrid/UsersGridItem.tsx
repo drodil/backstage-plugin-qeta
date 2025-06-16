@@ -22,9 +22,11 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Visibility from '@material-ui/icons/Visibility';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
 
 export const UsersGridItem = (props: { user: UserResponse }) => {
   const { user } = props;
+  const classes = useGridItemStyles();
   const userRoute = useRouteRef(userRouteRef);
   const navigate = useNavigate();
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -39,16 +41,19 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
   } = useIdentityApi(api => api.getBackstageIdentity(), []);
 
   return (
-    <Grid item xs={4}>
-      <Card
-        variant="outlined"
-        style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-      >
+    <Grid item xs={12} sm={6} md={4}>
+      <Card className={classes.card} variant="outlined">
         <CardActionArea
           onClick={() => navigate(`${userRoute()}/${user.userRef}`)}
         >
           <CardHeader
-            title={primaryTitle}
+            className={classes.cardHeader}
+            title={
+              <Tooltip title={primaryTitle} arrow>
+                <span className={classes.ellipsis}>{primaryTitle}</span>
+              </Tooltip>
+            }
+            titleTypographyProps={{ variant: 'h6' }}
             avatar={
               Icon ? (
                 <Avatar
@@ -62,8 +67,8 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
               ) : null
             }
           />
-          <CardContent>
-            <Typography variant="caption">
+          <CardContent className={classes.cardContent}>
+            <Typography className={classes.stats} variant="caption">
               {t('common.posts', {
                 count: user.totalQuestions,
                 itemType: 'question',
@@ -96,11 +101,12 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
         {!loadingUser &&
           !userError &&
           currentUser?.userEntityRef !== user.userRef && (
-            <CardActions style={{ marginTop: 'auto' }}>
+            <CardActions className={classes.cardActions}>
               <Grid container justifyContent="center">
                 <Grid item>
                   <Tooltip title={t('userButton.tooltip')}>
                     <Button
+                      className={classes.actionButton}
                       size="small"
                       variant="outlined"
                       color={
