@@ -202,6 +202,8 @@ export const qetaTranslationRef = createTranslationRef({
       title: 'Collections',
       manage: 'Add or remove this post from collections',
       close: 'Close',
+      removed: 'Removed from collection {{collection}}',
+      added: 'Added to collection {{collection}}',
     },
     writeArticleButton: {
       title: 'Write an article',

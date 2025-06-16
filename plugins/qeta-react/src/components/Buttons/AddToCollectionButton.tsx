@@ -11,7 +11,7 @@ import {
 import AddCircle from '@material-ui/icons/AddCircle';
 import RemoveCircle from '@material-ui/icons/RemoveCircle';
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
-import { useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useQetaApi } from '../../hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -20,11 +20,12 @@ import { qetaTranslationRef } from '../../translation.ts';
 export const AddToCollectionButton = (props: { post: PostResponse }) => {
   const { post } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
+  const alertApi = useApi(alertApiRef);
   const { value: response, retry } = useQetaApi(api => {
     return api.getCollections({
       checkAccess: true,
       includeExperts: false,
-      includePosts: false,
+      includePosts: true,
     });
   }, []);
   const [open, setOpen] = useState(false);
@@ -41,10 +42,24 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
   const handleClick = (collection: Collection) => {
     if (collection.posts?.find(p => p.id === post.id)) {
       qetaApi.removePostFromCollection(collection.id, post.id).then(() => {
+        alertApi.post({
+          message: t('addToCollectionButton.removed', {
+            collection: collection.title,
+          }),
+          severity: 'success',
+          display: 'transient',
+        });
         retry();
       });
     } else {
       qetaApi.addPostToCollection(collection.id, post.id).then(() => {
+        alertApi.post({
+          message: t('addToCollectionButton.added', {
+            collection: collection.title,
+          }),
+          severity: 'success',
+          display: 'transient',
+        });
         retry();
       });
     }

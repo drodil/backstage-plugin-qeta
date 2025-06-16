@@ -8,10 +8,12 @@ import {
   MarkdownRenderer,
   PostHighlightList,
   PostsContainer,
+  PostsGrid,
   qetaApiRef,
   qetaTranslationRef,
   TagFollowButton,
   TagsGrid,
+  ViewType,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import Whatshot from '@material-ui/icons/Whatshot';
@@ -25,6 +27,7 @@ export const TagPage = () => {
   const { tag } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
   const [resp, setResp] = useState<undefined | TagResponse>();
+  const [view, setView] = useState<ViewType>('list');
 
   const qetaApi = useApi(qetaApiRef);
 
@@ -103,14 +106,24 @@ export const TagPage = () => {
             </CardContent>
           </Card>
         )}
-        {tag ? (
-          <PostsContainer
-            tags={[tag ?? '']}
-            filterPanelProps={{ showTagFilter: false }}
-          />
-        ) : (
-          <TagsGrid />
-        )}
+        {tag &&
+          (view === 'grid' ? (
+            <PostsGrid
+              tags={[tag ?? '']}
+              filterPanelProps={{ showTagFilter: false }}
+              view={view}
+              onViewChange={setView}
+            />
+          ) : (
+            <PostsContainer
+              tags={[tag ?? '']}
+              filterPanelProps={{ showTagFilter: false }}
+              view={view}
+              showTypeLabel
+              onViewChange={setView}
+            />
+          ))}
+        {!tag && <TagsGrid />}
       </Grid>
       <Grid item lg={3} xl={2}>
         <FollowedTagsList />

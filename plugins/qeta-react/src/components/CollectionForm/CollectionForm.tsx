@@ -1,12 +1,12 @@
 import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
-  Button,
-  TextField,
   Box,
-  Typography,
-  Tooltip,
-  IconButton,
+  Button,
   Collapse,
+  IconButton,
+  TextField,
+  Tooltip,
+  Typography,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useCallback, useEffect, useState } from 'react';
@@ -91,10 +91,11 @@ export const CollectionForm = (props: CollectionFormProps) => {
     control,
     reset,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<CollectionFormData>({
     values,
     defaultValues: getDefaultValues(),
+    mode: 'onChange',
   });
 
   const postQuestion = (data: CollectionFormData) => {
@@ -276,11 +277,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
           color="primary"
           type="submit"
           variant="contained"
-          disabled={
-            posting ||
-            !control._formValues.title ||
-            !control._formValues.description
-          }
+          disabled={posting || isSubmitting || !isValid}
           size="large"
         >
           {posting ? (

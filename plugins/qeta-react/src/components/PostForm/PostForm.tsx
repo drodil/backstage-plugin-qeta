@@ -5,13 +5,13 @@ import {
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import {
-  Button,
-  TextField,
   Box,
-  Tooltip,
-  Typography,
+  Button,
   Collapse,
   IconButton,
+  TextField,
+  Tooltip,
+  Typography,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useCallback, useEffect, useState } from 'react';
@@ -149,10 +149,11 @@ export const PostForm = (props: PostFormProps) => {
     reset,
     getValues: getFormValues,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<QuestionFormValues>({
     values,
     defaultValues: getDefaultValues(props),
+    mode: 'onChange',
   });
 
   const [showTips, setShowTips] = useState(false);
@@ -455,11 +456,7 @@ export const PostForm = (props: PostFormProps) => {
           color="primary"
           type="submit"
           variant="contained"
-          disabled={
-            posting ||
-            !control._formValues.title ||
-            !control._formValues.content
-          }
+          disabled={posting || isSubmitting || !isValid}
           size="large"
         >
           {/* eslint-disable-next-line no-nested-ternary */}

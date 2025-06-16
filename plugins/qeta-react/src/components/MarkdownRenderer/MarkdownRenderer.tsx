@@ -153,9 +153,7 @@ const useStyles = makeStyles(
         '& *:last-child': {
           marginBottom: 0,
         },
-        ...(overrides?.BackstageMarkdownContent
-          ? overrides.BackstageMarkdownContent
-          : {}),
+        ...(overrides?.BackstageMarkdownContent ?? {}),
       },
       codeBlockContainer: {
         position: 'relative',
@@ -372,13 +370,12 @@ export const MarkdownRenderer = (props: {
               const tagMention = tagMentions.find(m => word === m);
               if (tagMention) {
                 return (
-                  <>
-                    <TagChip
-                      tag={tagMention.slice(1)}
-                      style={{ marginBottom: 0 }}
-                      useHref={useBlankLinks}
-                    />
-                  </>
+                  <TagChip
+                    tag={tagMention.slice(1)}
+                    style={{ marginBottom: 0 }}
+                    useHref={useBlankLinks}
+                    key={tagMention}
+                  />
                 );
               }
 

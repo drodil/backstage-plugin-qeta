@@ -34,7 +34,7 @@ export const TagsGridContent = (props: {
   }
 
   return (
-    <Grid container item xs={12} justifyContent="center" alignItems="stretch">
+    <Grid container item xs={12} alignItems="stretch">
       {response?.tags.map(tag => (
         <TagGridItem
           tag={tag}
