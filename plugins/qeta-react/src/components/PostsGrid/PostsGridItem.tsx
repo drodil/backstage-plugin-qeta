@@ -76,6 +76,7 @@ const useStyles = makeStyles(theme => ({
   },
   statsGroup: {
     display: 'flex',
+    alignItems: 'center',
     gap: theme.spacing(1),
   },
   statBox: {
@@ -88,11 +89,11 @@ const useStyles = makeStyles(theme => ({
     border: `1px solid ${theme.palette.divider}`,
     minWidth: 60,
     gap: theme.spacing(0.5),
+    lineHeight: 1.1,
   },
   statValue: {
     fontWeight: 600,
-    fontSize: '1rem',
-    lineHeight: 1.1,
+    fontSize: '16px',
   },
   statLabel: {
     fontWeight: 400,
