@@ -114,7 +114,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
               </Grid>
               <Box
                 display="flex"
-                alignItems="flex-end"
+                alignItems="flex-start"
                 justifyContent="space-between"
                 className={styles.metadata}
                 style={{ width: '100%' }}
@@ -131,7 +131,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                           onClick={() =>
                             navigate(
                               editQuestionRoute({
-                                id: question.id.toString(9),
+                                id: question.id.toString(10),
                               }),
                             )
                           }
