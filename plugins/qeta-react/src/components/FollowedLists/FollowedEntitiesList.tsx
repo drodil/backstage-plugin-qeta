@@ -16,7 +16,7 @@ export const FollowedEntitiesList = () => {
   return (
     <RightListContainer>
       <RightList title={t('rightMenu.followedEntities')}>
-        <ListItem style={{ display: 'block' }} dense>
+        <ListItem style={{ display: 'block' }} dense disableGutters>
           {entities.entities.map(entity => (
             <EntityChip key={entity} entity={entity} />
           ))}

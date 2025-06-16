@@ -14,6 +14,12 @@ const useStyles = makeStyles(theme => ({
     textOverflow: 'ellipsis',
     lineHeight: '1rem',
   },
+  list: {
+    '& li': {
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    },
+  },
 }));
 
 export const RightListContainer = (props: { children: ReactNode }) => {
@@ -35,6 +41,7 @@ export const RightList = (props: {
     <List
       component="nav"
       aria-labelledby="nested-list-subheader"
+      className={styles.list}
       subheader={
         <ListSubheader
           disableSticky
