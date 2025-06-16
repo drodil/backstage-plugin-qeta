@@ -77,7 +77,7 @@ export const SearchBar = (props: {
     label,
     onSearch,
     loading = false,
-    minSearchLength = 2,
+    minSearchLength = 1,
     debounceTime = 150,
   } = props;
   const [searchQuery, setSearchQuery] = useState('');

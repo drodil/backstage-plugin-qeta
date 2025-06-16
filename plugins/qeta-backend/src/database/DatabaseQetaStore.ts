@@ -428,12 +428,12 @@ export class DatabaseQetaStore implements QetaStore {
       query.select(
         this.db.raw(
           `(
-            (SELECT COALESCE(SUM(score), 0) FROM post_votes WHERE "postId" = posts.id) * 2 + 
-            (SELECT COALESCE(COUNT(*), 0) FROM answers WHERE "postId" = posts.id) * 1.5 +
-            (SELECT COALESCE(COUNT(*), 0) FROM post_views WHERE "postId" = posts.id) * 0.5
+            (SELECT COALESCE(SUM(score), 0) FROM post_votes WHERE "postId" = posts.id) * 40 + 
+            (SELECT COALESCE(COUNT(*), 0) FROM answers WHERE "postId" = posts.id) * 20 +
+            (SELECT COALESCE(COUNT(*), 0) FROM post_views WHERE "postId" = posts.id) * 8
           ) / 
           POWER(
-            EXTRACT(EPOCH FROM (now() - posts.created)) / 45000 + 2,
+            EXTRACT(EPOCH FROM (now() - posts.created)) / 21600 + 1,
             1.8
           ) as trend`,
         ),
@@ -3067,16 +3067,40 @@ export class DatabaseQetaStore implements QetaStore {
     searchQuery: string,
   ) {
     if (this.db.client.config.client === 'pg') {
+      const searchTerms = searchQuery
+        .split(/\s+/)
+        .filter(term => term.length > 0)
+        .map(term => `${term}:*`)
+        .join(' & ');
+
       query.whereRaw(
-        `((to_tsvector(CONCAT(${columns.join(
-          ',',
-        )})) @@ to_tsquery(quote_literal(?) || ':*')))`,
-        [`${searchQuery}`],
+        `(
+          to_tsvector('english', ${columns.join(
+            " || ' ' || ",
+          )}) @@ to_tsquery(?)
+        )`,
+        [searchTerms],
       );
     } else {
-      query.whereRaw(`LOWER(CONCAT(${columns.join(',')})) LIKE LOWER(?)`, [
-        `%${searchQuery}%`,
-      ]);
+      const searchTerms = searchQuery
+        .split(/\s+/)
+        .filter(term => term.length > 0)
+        .map(term => `%${term}%`);
+
+      query.where(function () {
+        searchTerms.forEach(term => {
+          this.andWhere(function () {
+            columns.forEach(column => {
+              this.orWhereRaw(`LOWER(${column}) LIKE LOWER(?)`, [term]);
+            });
+          });
+        });
+      });
     }
+  }
+
+  // Add a method to manually update trends if needed
+  async updatePostTrends(): Promise<void> {
+    await this.db.raw('SELECT update_all_post_trends();');
   }
 }
