@@ -95,11 +95,12 @@ export const PostsGridContent = (props: {
           container
           direction="row"
           alignItems="stretch"
+          justifyContent="space-between"
           style={{ marginTop: '1rem' }}
         >
           {response.posts.map(p => {
             return (
-              <Grid item xs={12} key={p.id}>
+              <Grid item lg={12} xl={6} key={p.id}>
                 <PostsGridItem
                   post={p}
                   type={type}
