@@ -29,6 +29,7 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
 
 export const TagGridItem = (props: {
   tag: TagResponse;
@@ -40,6 +41,7 @@ export const TagGridItem = (props: {
   const navigate = useNavigate();
   const { t } = useTranslationRef(qetaTranslationRef);
   const tags = useTagsFollow();
+  const classes = useGridItemStyles();
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const handleEditModalOpen = () => setEditModalOpen(true);
@@ -56,45 +58,45 @@ export const TagGridItem = (props: {
   };
 
   return (
-    <Grid item xs={4}>
-      <Card
-        variant="outlined"
-        style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-      >
+    <Grid item xs={12} sm={6} md={4} xl={3}>
+      <Card className={classes.card} variant="outlined">
         <CardActionArea onClick={() => navigate(tagRoute({ tag: tag.tag }))}>
-          <CardHeader title={tag.tag} />
-          <CardContent>
-            <Typography variant="caption">
+          <CardHeader
+            className={classes.cardHeader}
+            title={<span className={classes.ellipsis}>{tag.tag}</span>}
+            titleTypographyProps={{ variant: 'h6' }}
+          />
+          <CardContent className={classes.cardContent}>
+            <Typography className={classes.stats} variant="caption">
               {t('common.posts', { count: tag.postsCount, itemType: 'post' })}
               {' · '}
               {t('common.followers', { count: tag.followerCount })}
             </Typography>
-            <br />
             {tag.experts && tag.experts.length > 0 && (
-              <Typography variant="caption">
+              <Typography className={classes.experts} variant="caption">
                 {t('common.experts')}
                 {': '}
                 {tag.experts.map((e, i) => (
                   <>
                     <EntityRefLink key={e} entityRef={e} />
-                    {i === tag.experts!.length - 1 ? '' : ','}
+                    {i === tag.experts!.length - 1 ? '' : ', '}
                   </>
                 ))}
               </Typography>
             )}
-            <Typography variant="body2">
-              {' '}
+            <Typography className={classes.description} variant="body2">
               {DOMPurify.sanitize(
                 truncate(removeMarkdownFormatting(tag.description ?? ''), 150),
               )}
             </Typography>
           </CardContent>
         </CardActionArea>
-        <CardActions style={{ marginTop: 'auto' }}>
-          <Grid container justifyContent="center">
+        <CardActions className={classes.cardActions}>
+          <Grid container justifyContent="center" spacing={1}>
             <Grid item>
               <Tooltip title={t('tagButton.tooltip')}>
                 <Button
+                  className={classes.actionButton}
                   size="small"
                   variant="outlined"
                   color={tags.isFollowingTag(tag.tag) ? 'secondary' : 'primary'}
@@ -122,6 +124,7 @@ export const TagGridItem = (props: {
             {tag.canEdit && (
               <Grid item>
                 <Button
+                  className={classes.actionButton}
                   size="small"
                   onClick={handleEditModalOpen}
                   variant="outlined"
@@ -134,6 +137,7 @@ export const TagGridItem = (props: {
             {tag.canDelete && (
               <Grid item>
                 <Button
+                  className={classes.actionButton}
                   size="small"
                   onClick={handleDeleteModalOpen}
                   variant="contained"

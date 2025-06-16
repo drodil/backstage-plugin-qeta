@@ -95,7 +95,7 @@ export const QetaPage = (props?: Props) => {
               item
               md={12}
               lg={10}
-              style={{ paddingLeft: '0', paddingRight: '0' }}
+              style={{ paddingLeft: '8px', paddingRight: '0' }}
             >
               <Routes>
                 <Route path="/" element={<HomePage />} />

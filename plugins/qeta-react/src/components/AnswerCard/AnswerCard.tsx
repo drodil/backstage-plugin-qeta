@@ -131,17 +131,19 @@ export const AnswerCard = (props: {
                   <Grid item className={styles.markdownContainer}>
                     <MarkdownRenderer content={answerEntity.content} />
                   </Grid>
-                  <Grid
-                    container
-                    item
-                    spacing={1}
-                    justifyContent="space-between"
+                  <Box
+                    display="flex"
                     alignItems="flex-end"
+                    justifyContent="space-between"
                     className={styles.metadata}
+                    style={{ width: '100%' }}
                   >
-                    <Grid item style={{ alignSelf: 'flex-end' }}>
+                    <Box flex="1 1 0%" minWidth={0}>
                       {(answerEntity.canDelete || answerEntity.canEdit) && (
-                        <Box className={styles.buttons}>
+                        <Box
+                          className={styles.buttons}
+                          style={{ alignSelf: 'flex-end' }}
+                        >
                           {answerEntity.canEdit && (
                             <Button
                               variant="outlined"
@@ -174,11 +176,31 @@ export const AnswerCard = (props: {
                           )}
                         </Box>
                       )}
-                    </Grid>
-                    <Grid item xs={3}>
-                      <AuthorBox entity={answerEntity} />
-                    </Grid>
-                  </Grid>
+                    </Box>
+                    <Box
+                      display="flex"
+                      minWidth={220}
+                      style={{ gap: '8px' }}
+                      ml={1}
+                    >
+                      {answerEntity.updated && answerEntity.updatedBy && (
+                        <AuthorBox
+                          userEntityRef={answerEntity.updatedBy}
+                          time={answerEntity.updated}
+                          label={t('authorBox.updatedAtTime')}
+                          expert={answerEntity.expert}
+                          anonymous={answerEntity.anonymous}
+                        />
+                      )}
+                      <AuthorBox
+                        userEntityRef={answerEntity.author}
+                        time={answerEntity.created}
+                        label={t('authorBox.answeredAtTime')}
+                        expert={answerEntity.expert}
+                        anonymous={answerEntity.anonymous}
+                      />
+                    </Box>
+                  </Box>
                 </>
               )}
             </Grid>

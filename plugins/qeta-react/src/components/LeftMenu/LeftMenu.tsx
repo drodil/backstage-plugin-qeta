@@ -1,12 +1,12 @@
 import {
   Box,
-  ListItem,
   ListItemIcon,
   makeStyles,
   MenuItem,
   MenuList,
   SvgIcon,
   Typography,
+  Divider,
 } from '@material-ui/core';
 import AccountBox from '@material-ui/icons/AccountBox';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
@@ -52,34 +52,64 @@ export const useStyles = makeStyles(
     return {
       leftMenu: {
         top: '0',
-        width: '165px',
-        paddingTop: '1em',
+        width: '200px',
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
+        transition: 'all 0.2s ease-in-out',
       },
       inPopup: {
         marginRight: 0,
-        padding: '0.5rem',
+        padding: theme.spacing(1),
       },
       outsidePopup: {
-        marginRight: theme.spacing(5),
+        marginRight: theme.spacing(3),
         float: 'right',
         position: 'sticky',
+        top: theme.spacing(2),
       },
       selectedMenuItem: {
         color: theme.palette.primary.contrastText,
-        backgroundColor: theme.palette.primary.light,
+        backgroundColor: theme.palette.primary.main,
         borderRadius: theme.shape.borderRadius,
+        margin: theme.spacing(0.5, 1),
+        padding: theme.spacing(0.75, 1.5),
+        transition: 'all 0.2s ease-in-out',
         '&:hover': {
           backgroundColor: theme.palette.primary.dark,
+          color: theme.palette.primary.contrastText,
+          transform: 'translateX(4px)',
         },
         '& svg': {
           color: theme.palette.primary.contrastText,
         },
       },
       nonSelectedMenuItem: {
-        backgroundColor: 'initial',
+        margin: theme.spacing(0.5, 1),
+        padding: theme.spacing(0.75, 1.5),
+        borderRadius: theme.shape.borderRadius,
+        transition: 'all 0.2s ease-in-out',
+        color: theme.palette.text.primary,
+        '&:hover': {
+          backgroundColor: theme.palette.action.hover,
+          transform: 'translateX(4px)',
+        },
       },
       menuIcon: {
-        minWidth: '26px',
+        minWidth: '32px',
+        color: 'inherit',
+      },
+      sectionHeader: {
+        padding: theme.spacing(1, 2, 0.5, 2),
+        marginTop: theme.spacing(2),
+        color: theme.palette.text.secondary,
+        fontSize: '0.875rem',
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+      },
+      divider: {
+        margin: theme.spacing(1, 2),
+        backgroundColor: theme.palette.divider,
       },
     };
   },
@@ -174,54 +204,66 @@ export const LeftMenu = (props: {
           </ListItemIcon>
           {t('leftMenu.home')}
         </CustomMenuItem>
-        <ListItem>
-          <Typography variant="subtitle2">{t('leftMenu.content')}</Typography>
-        </ListItem>
+
+        <Typography className={styles.sectionHeader}>
+          {t('leftMenu.content')}
+        </Typography>
+        <Divider className={styles.divider} />
+
         <CustomMenuItem route={questionsRoute()} hasSubRoutes>
           <ListItemIcon className={styles.menuIcon}>
             <HelpOutlined fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.questions')}
         </CustomMenuItem>
+
         <CustomMenuItem route={articlesRoute()} hasSubRoutes>
           <ListItemIcon className={styles.menuIcon}>
             <CollectionsBookmarkIcon fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.articles')}
         </CustomMenuItem>
+
         <CustomMenuItem route={favoritesRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <StarIcon fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.favoriteQuestions')}
         </CustomMenuItem>
+
         <CustomMenuItem route={entitiesRoute()} hasSubRoutes>
           <ListItemIcon className={styles.menuIcon}>
             <EntityIcon fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.entities')}
         </CustomMenuItem>
+
         <CustomMenuItem route={tagsRoute()} hasSubRoutes>
           <ListItemIcon className={styles.menuIcon}>
             <LoyaltyOutlined fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.tags')}
         </CustomMenuItem>
-        <ListItem>
-          <Typography variant="subtitle2">{t('leftMenu.community')}</Typography>
-        </ListItem>
+
+        <Typography className={styles.sectionHeader}>
+          {t('leftMenu.community')}
+        </Typography>
+        <Divider className={styles.divider} />
+
         <CustomMenuItem route={collectionsRoute()} hasSubRoutes>
           <ListItemIcon className={styles.menuIcon}>
             <PlaylistPlay fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.collections')}
         </CustomMenuItem>
+
         <CustomMenuItem route={usersRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <GroupIcon fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.users')}
         </CustomMenuItem>
+
         {user && !loadingUser && !userError && (
           <CustomMenuItem route={`${userRoute()}/${user.userEntityRef}`}>
             <ListItemIcon className={styles.menuIcon}>
@@ -230,19 +272,21 @@ export const LeftMenu = (props: {
             {t('leftMenu.profile')}
           </CustomMenuItem>
         )}
+
         <CustomMenuItem route={statisticsRoute()}>
           <ListItemIcon className={styles.menuIcon}>
             <TrophyIcon />
           </ListItemIcon>
           {t('leftMenu.statistics')}
         </CustomMenuItem>
+
         {isModerator && (
           <>
-            <ListItem>
-              <Typography variant="subtitle2">
-                {t('leftMenu.manage')}
-              </Typography>
-            </ListItem>
+            <Typography className={styles.sectionHeader}>
+              {t('leftMenu.manage')}
+            </Typography>
+            <Divider className={styles.divider} />
+
             <CustomMenuItem route={moderatorRoute()}>
               <ListItemIcon className={styles.menuIcon}>
                 <SettingsIcon />

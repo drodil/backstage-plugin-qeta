@@ -19,6 +19,7 @@ import Visibility from '@material-ui/icons/Visibility';
 import LoyaltyOutlined from '@material-ui/icons/LoyaltyOutlined';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { useTooltipStyles } from '../../hooks/useTooltipStyles';
 
 const cache: Map<string, TagResponse> = new Map();
 
@@ -119,12 +120,17 @@ export const TagChip = (props: {
   const tagRoute = useRouteRef(tagRouteRef);
   const navigate = useNavigate();
   const { tag } = props;
+  const classes = useTooltipStyles();
   return (
     <Tooltip
       arrow
       title={<TagTooltip tag={tag} />}
       enterDelay={400}
       interactive
+      classes={{
+        tooltip: classes.tooltip,
+        arrow: classes.tooltipArrow,
+      }}
     >
       <Chip
         label={tag}

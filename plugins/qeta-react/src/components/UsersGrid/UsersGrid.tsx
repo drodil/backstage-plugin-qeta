@@ -3,10 +3,10 @@ import { useQetaApi } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { UsersGridContent } from './UsersGridContent';
 import useDebounce from 'react-use/lib/useDebounce';
-import { SearchBar } from '../SearchBar/SearchBar';
-import { Grid, Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { QetaGridHeader } from '../Utility/QetaGridHeader';
+import { Grid } from '@material-ui/core';
 
 type EntityFilters = {
   order: 'asc' | 'desc';
@@ -57,23 +57,13 @@ export const UsersGrid = () => {
 
   return (
     <>
-      <Grid container className="qetaUsersContainer">
-        <Grid item xs={12} md={4}>
-          <SearchBar
-            onSearch={setSearchQuery}
-            label={t('usersPage.search.label')}
-            loading={loading}
-          />
-        </Grid>
-      </Grid>
-      <Grid container>
-        {response && (
-          <Grid item xs={12}>
-            <Typography variant="h6" className="qetaUsersContainerTitle">
-              {t('usersPage.users', { count: response.total })}
-            </Typography>
-          </Grid>
-        )}
+      <QetaGridHeader
+        title={response ? t('usersPage.users', { count: response.total }) : ''}
+        searchBarLabel={t('usersPage.search.label')}
+        loading={loading}
+        onSearch={setSearchQuery}
+      />
+      <Grid container justifyContent="center">
         <UsersGridContent response={response} loading={loading} error={error} />
         {response && response?.total > 0 && (
           <QetaPagination

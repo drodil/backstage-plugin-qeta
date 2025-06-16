@@ -9,8 +9,10 @@ import {
   FollowedEntitiesList,
   PostHighlightList,
   PostsContainer,
+  PostsGrid,
   qetaApiRef,
   qetaTranslationRef,
+  ViewType,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import Whatshot from '@material-ui/icons/Whatshot';
@@ -24,6 +26,7 @@ export const EntityPage = () => {
   const { entityRef } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
   const [resp, setResp] = useState<undefined | EntityResponse>();
+  const [view, setView] = useState<ViewType>('list');
 
   const qetaApi = useApi(qetaApiRef);
 
@@ -43,7 +46,7 @@ export const EntityPage = () => {
   let shownTitle: string = t('entitiesPage.defaultTitle');
   let link = undefined;
   if (entityRef) {
-    shownTitle = t(`postsContainer.title.about`, { itemType: 'Post' });
+    shownTitle = '';
     link = <EntityRefLink entityRef={entityRef} />;
   }
 
@@ -52,13 +55,19 @@ export const EntityPage = () => {
       <Grid item md={12} lg={9} xl={10}>
         <ContentHeader
           titleComponent={
-            <Typography variant="h5" component="h2">
-              {shownTitle} {link}
-            </Typography>
+            <span style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography
+                variant="h5"
+                component="h2"
+                style={{ marginRight: '0.5em' }}
+              >
+                {shownTitle} {link}
+              </Typography>
+              {entityRef && <EntityFollowButton entityRef={entityRef} />}
+            </span>
           }
         >
           <ButtonContainer>
-            {entityRef && <EntityFollowButton entityRef={entityRef} />}
             <AskQuestionButton entity={entityRef} />
             <WriteArticleButton entity={entityRef} />
           </ButtonContainer>
@@ -77,14 +86,24 @@ export const EntityPage = () => {
             </CardContent>
           </Card>
         )}
-        {entityRef ? (
-          <PostsContainer
-            entity={entityRef}
-            filterPanelProps={{ showEntityFilter: false }}
-          />
-        ) : (
-          <EntitiesGrid />
-        )}
+        {entityRef &&
+          (view === 'grid' ? (
+            <PostsGrid
+              entity={entityRef}
+              filterPanelProps={{ showEntityFilter: false }}
+              view={view}
+              onViewChange={setView}
+            />
+          ) : (
+            <PostsContainer
+              entity={entityRef}
+              filterPanelProps={{ showEntityFilter: false }}
+              view={view}
+              showTypeLabel
+              onViewChange={setView}
+            />
+          ))}
+        {!entityRef && <EntitiesGrid />}
       </Grid>
       <Grid item lg={3} xl={2}>
         <FollowedEntitiesList />

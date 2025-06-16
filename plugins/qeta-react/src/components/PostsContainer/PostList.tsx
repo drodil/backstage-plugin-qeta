@@ -23,6 +23,7 @@ export const PostList = (props: {
   showNoQuestionsBtn?: boolean;
   entityPage?: boolean;
   type?: PostType;
+  showTypeLabel?: boolean;
 }) => {
   const {
     loading,
@@ -36,6 +37,7 @@ export const PostList = (props: {
     entityPage,
     tags,
     type,
+    showTypeLabel,
   } = props;
   const listRef = useRef<HTMLDivElement | null>(null);
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -96,7 +98,12 @@ export const PostList = (props: {
             {response.posts.map((post, i) => {
               return (
                 <Grid item xs={12} key={post.id}>
-                  <PostListItem post={post} entity={entity} type={type} />
+                  <PostListItem
+                    post={post}
+                    entity={entity}
+                    type={type}
+                    showTypeLabel={showTypeLabel}
+                  />
                   {i !== response.total - 1 && <Divider />}
                 </Grid>
               );

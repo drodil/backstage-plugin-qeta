@@ -17,9 +17,11 @@ const useStyles = makeStyles(
   () => ({
     root: {
       marginTop: '2em',
+      marginBottom: '2em',
     },
     pageSizeSelect: {
       marginRight: '1em',
+      maxHeight: '42px',
     },
     pagination: {},
   }),

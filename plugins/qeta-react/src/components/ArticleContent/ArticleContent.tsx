@@ -32,7 +32,7 @@ export const useStyles = makeStyles(
       headerImage: {
         marginBottom: theme.spacing(2),
         marginTop: theme.spacing(2),
-        height: '250px',
+        height: '300px',
         objectFit: 'cover',
         width: '100%',
         border: `1px solid ${theme.palette.background.paper}`,
@@ -85,7 +85,7 @@ export const ArticleContent = (props: {
         <Grid item>
           <Typography variant="subtitle1">{name}</Typography>
           <Typography variant="caption">
-            {t('common.views', { count: views })} {' · '}
+            {t('common.viewsCount', { count: views })} {' · '}
             {t('authorBox.postedAtTime')}{' '}
             <RelativeTimeWithTooltip value={postEntity.created} />
           </Typography>

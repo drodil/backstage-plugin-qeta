@@ -5,6 +5,7 @@ import {
   TagFollowButton,
   WriteArticleButton,
 } from '../Buttons';
+import { ViewToggle, ViewType } from '../ViewToggle/ViewToggle';
 import FilterList from '@material-ui/icons/FilterList';
 import {
   CommonFilterPanelProps,
@@ -19,12 +20,14 @@ import {
 } from '../../hooks/usePaginatedPosts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { SearchBar } from '../SearchBar/SearchBar';
 import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
+import { SearchBar } from '../SearchBar/SearchBar.tsx';
 
 export type PostGridProps = PaginatedPostsProps & {
   allowRanking?: boolean;
   filterPanelProps?: CommonFilterPanelProps;
+  view?: ViewType;
+  onViewChange?: (view: ViewType) => void;
 };
 
 export const PostsGrid = (props: PostGridProps) => {
@@ -41,6 +44,8 @@ export const PostsGrid = (props: PostGridProps) => {
     showWriteButton,
     showNoQuestionsBtn,
     allowRanking,
+    view,
+    onViewChange,
   } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const {
@@ -120,29 +125,41 @@ export const PostsGrid = (props: PostGridProps) => {
           </Grid>
         )}
       </Grid>
-      <Grid container justifyContent="space-between">
-        {response && (
-          <Grid item>
-            <Typography
-              variant="h6"
-              className="qetaPostsContainerQuestionCount"
-            >
-              {t('common.posts', { count: response?.total ?? 0, itemType })}
-            </Typography>
+      {response && (
+        <Box mt={2} mb={2}>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Typography
+                variant="h6"
+                className="qetaPostsContainerQuestionCount"
+                style={{ fontWeight: 500, paddingBottom: 2 }}
+              >
+                {t('common.posts', { count: response?.total ?? 0, itemType })}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Grid container spacing={1} alignItems="center">
+                {view && onViewChange && (
+                  <Grid item>
+                    <ViewToggle view={view} onChange={onViewChange} />
+                  </Grid>
+                )}
+                {(showFilters ?? true) && (
+                  <Grid item>
+                    <Button
+                      onClick={() => setShowFilterPanel(!showFilterPanel)}
+                      className="qetaPostsContainerFilterPanelBtn"
+                      startIcon={<FilterList />}
+                    >
+                      {t('filterPanel.filterButton')}
+                    </Button>
+                  </Grid>
+                )}
+              </Grid>
+            </Grid>
           </Grid>
-        )}
-        {response && (showFilters ?? true) && (
-          <Grid item>
-            <Button
-              onClick={() => setShowFilterPanel(!showFilterPanel)}
-              className="qetaPostsContainerFilterPanelBtn"
-              startIcon={<FilterList />}
-            >
-              {t('filterPanel.filterButton')}
-            </Button>
-          </Grid>
-        )}
-      </Grid>
+        </Box>
+      )}
       {(showFilters ?? true) && (
         <Collapse in={showFilterPanel}>
           <FilterPanel<PostFilters>

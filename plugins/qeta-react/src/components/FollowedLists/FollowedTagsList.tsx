@@ -16,7 +16,7 @@ export const FollowedTagsList = () => {
   return (
     <RightListContainer>
       <RightList title={t('rightMenu.followedTags')}>
-        <ListItem style={{ display: 'block' }} dense>
+        <ListItem style={{ display: 'block' }} dense disableGutters>
           {tags.tags.map(tag => (
             <TagChip key={tag} tag={tag} />
           ))}

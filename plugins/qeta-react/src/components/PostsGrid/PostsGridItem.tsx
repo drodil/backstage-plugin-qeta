@@ -15,10 +15,10 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
-  Grid,
   IconButton,
   Tooltip,
   Typography,
+  makeStyles,
 } from '@material-ui/core';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
@@ -35,6 +35,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import { UserLink } from '../Links';
 import { SmallAvatar } from '../Utility/SmallAvatar';
+import numeral from 'numeral';
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -45,17 +46,107 @@ export interface PostsGridItemProps {
   collectionId?: number;
 }
 
+const useStyles = makeStyles(theme => ({
+  card: {
+    height: '100%',
+  },
+  cardContent: {
+    padding: theme.spacing(1.5, 2, 1, 2),
+  },
+  cardContentFooter: {
+    padding: theme.spacing(1, 2, 1.5, 2),
+  },
+  title: {
+    fontSize: '1.08rem',
+    fontWeight: 600,
+    marginBottom: theme.spacing(0.5),
+  },
+  content: {
+    marginBottom: 0,
+  },
+  footer: {
+    paddingTop: theme.spacing(1),
+    marginTop: theme.spacing(0.5),
+  },
+  statsContainer: {
+    display: 'flex',
+    gap: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  statsGroup: {
+    display: 'flex',
+    gap: theme.spacing(1),
+  },
+  statBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: theme.spacing(0.5, 1),
+    borderRadius: theme.spacing(0.75),
+    background: theme.palette.background.paper,
+    border: `1px solid ${theme.palette.divider}`,
+    minWidth: 60,
+    gap: theme.spacing(0.5),
+  },
+  statValue: {
+    fontWeight: 600,
+    fontSize: '1rem',
+    lineHeight: 1.1,
+  },
+  statLabel: {
+    fontWeight: 400,
+    fontSize: '0.75rem',
+    color: theme.palette.text.secondary,
+  },
+  answersBox: {
+    background: theme.palette.warning.light,
+    color: theme.palette.text.primary,
+    border: `1px solid ${theme.palette.warning.main}`,
+  },
+  answersBoxAnswered: {
+    background: theme.palette.success.main,
+    color: theme.palette.getContrastText(theme.palette.success.main),
+    border: `1px solid ${theme.palette.success.dark}`,
+  },
+  avatar: {
+    width: 24,
+    height: 24,
+  },
+  rankingControls: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: theme.spacing(0.5),
+    marginTop: theme.spacing(1),
+    paddingTop: theme.spacing(1),
+    borderTop: `1px solid ${theme.palette.divider}`,
+  },
+  rankingButton: {
+    padding: theme.spacing(0.5),
+  },
+}));
+
+function formatShortNumber(num: number): string {
+  return num >= 1000 ? numeral(num).format('0.0 a') : num.toString();
+}
+
 export const PostsGridItem = (props: PostsGridItemProps) => {
   const { post, entity, allowRanking, onRankUpdate, collectionId } = props;
   const [views, setViews] = useState(post.views);
+  const [correctAnswer, setCorrectAnswer] = useState(post.correctAnswer);
+  const [answersCount, setAnswersCount] = useState(post.answersCount);
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
+  const classes = useStyles();
 
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
 
   useEffect(() => {
     if (lastSignal?.type === 'post_stats') {
       setViews(lastSignal.views);
+      setCorrectAnswer(lastSignal.correctAnswer);
+      setAnswersCount(lastSignal.answersCount);
     }
   }, [lastSignal]);
 
@@ -83,82 +174,144 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
   };
 
   return (
-    <Card style={{ height: '100%' }}>
-      <CardActionArea onClick={() => navigate(href)}>
+    <Card className={classes.card}>
+      <CardActionArea
+        onClick={() => navigate(href)}
+        aria-label={post.title}
+        tabIndex={0}
+        role="link"
+        style={{ outline: 'none' }}
+      >
         {post.headerImage && (
           <CardMedia
             component="img"
             height="140"
             image={post.headerImage}
             alt={post.title}
+            style={{ objectFit: 'cover' }}
           />
         )}
-        <CardContent style={{ paddingBottom: '0.5rem' }}>
-          <Typography gutterBottom variant="h6" component="div">
+        <CardContent className={classes.cardContent}>
+          <Typography
+            gutterBottom
+            variant="h6"
+            component="div"
+            className={classes.title}
+          >
             {post.title}
           </Typography>
-          <Typography variant="body2" color="textSecondary" gutterBottom>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            gutterBottom
+            className={classes.content}
+          >
             {DOMPurify.sanitize(
               truncate(removeMarkdownFormatting(post.content), 400),
             )}
           </Typography>
         </CardContent>
       </CardActionArea>
-      <CardContent style={{ paddingTop: '0.5rem' }}>
+      <CardContent className={classes.cardContentFooter}>
         <TagsAndEntities entity={post} />
-        <Box style={{ paddingLeft: '0.2rem', paddingTop: '0.5rem' }}>
-          <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item>
-              <Typography variant="subtitle2">
-                {t('common.views', { count: views })}
-              </Typography>
-            </Grid>
-            <Grid item>
+        <Box className={classes.footer}>
+          <Box className={classes.statsContainer}>
+            <Box className={classes.statsGroup}>
+              <Tooltip title={post.score >= 1000 ? post.score : ''} arrow>
+                <Box className={classes.statBox}>
+                  <Typography className={classes.statValue}>
+                    {formatShortNumber(post.score)}
+                  </Typography>
+                  <Typography className={classes.statLabel}>
+                    {t('common.votes')}
+                  </Typography>
+                </Box>
+              </Tooltip>
+              {post.type === 'question' && (
+                <Tooltip title={answersCount >= 1000 ? answersCount : ''} arrow>
+                  <Box
+                    className={`${classes.statBox} ${
+                      correctAnswer
+                        ? classes.answersBoxAnswered
+                        : classes.answersBox
+                    }`}
+                  >
+                    <Typography className={classes.statValue}>
+                      {formatShortNumber(answersCount)}
+                    </Typography>
+                    <Typography className={classes.statLabel}>
+                      {t('common.answers')}
+                    </Typography>
+                  </Box>
+                </Tooltip>
+              )}
+              <Tooltip title={views >= 1000 ? views : ''} arrow>
+                <Box className={classes.statBox}>
+                  <Typography className={classes.statValue}>
+                    {formatShortNumber(views)}
+                  </Typography>
+                  <Typography className={classes.statLabel}>
+                    {t('common.views')}
+                  </Typography>
+                </Box>
+              </Tooltip>
+            </Box>
+            <Box className={classes.statsGroup}>
               <SmallAvatar
                 src={user?.spec?.profile?.picture}
                 alt={name}
                 variant="rounded"
+                className={classes.avatar}
               >
                 {initials}
               </SmallAvatar>
-              <UserLink entityRef={post.author} anonymous={post.anonymous} />{' '}
+              <UserLink entityRef={post.author} anonymous={post.anonymous} />
               <Link to={href} className="qetaPostListItemQuestionBtn">
                 <RelativeTimeWithTooltip value={post.created} />
               </Link>
-            </Grid>
-          </Grid>
-        </Box>
-        {allowRanking && (
-          <Box
-            style={{
-              paddingRight: '0.2em',
-              paddingTop: '0.8em',
-              paddingBottom: '0.2em',
-              float: 'right',
-            }}
-          >
-            <Tooltip title={t('ranking.top')}>
-              <IconButton size="small" onClick={() => rank('top')}>
-                <VerticalAlignTopIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={t('ranking.up')}>
-              <IconButton size="small" onClick={() => rank('up')}>
-                <KeyboardArrowUpIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={t('ranking.down')}>
-              <IconButton size="small" onClick={() => rank('down')}>
-                <KeyboardArrowDownIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={t('ranking.bottom')}>
-              <IconButton size="small" onClick={() => rank('bottom')}>
-                <VerticalAlignBottomIcon />
-              </IconButton>
-            </Tooltip>
+            </Box>
           </Box>
-        )}
+          {allowRanking && (
+            <Box className={classes.rankingControls}>
+              <Tooltip title={t('ranking.top')}>
+                <IconButton
+                  size="small"
+                  onClick={() => rank('top')}
+                  className={classes.rankingButton}
+                >
+                  <VerticalAlignTopIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t('ranking.up')}>
+                <IconButton
+                  size="small"
+                  onClick={() => rank('up')}
+                  className={classes.rankingButton}
+                >
+                  <KeyboardArrowUpIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t('ranking.down')}>
+                <IconButton
+                  size="small"
+                  onClick={() => rank('down')}
+                  className={classes.rankingButton}
+                >
+                  <KeyboardArrowDownIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t('ranking.bottom')}>
+                <IconButton
+                  size="small"
+                  onClick={() => rank('bottom')}
+                  className={classes.rankingButton}
+                >
+                  <VerticalAlignBottomIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
+        </Box>
       </CardContent>
     </Card>
   );

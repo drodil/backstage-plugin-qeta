@@ -1,5 +1,5 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { useEffect, useState } from 'react';
+import { CSSProperties, useEffect, useState } from 'react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
@@ -19,6 +19,7 @@ import Visibility from '@material-ui/icons/Visibility';
 import { useNavigate } from 'react-router-dom';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTooltipStyles } from '../../hooks/useTooltipStyles';
 
 const cache: Map<string, EntityResponse> = new Map();
 
@@ -112,6 +113,7 @@ const EntityTooltip = (props: { entity: Entity | string }) => {
 
 export const EntityChip = (props: {
   entity: Entity | string;
+  style?: CSSProperties;
   useHref?: boolean;
 }) => {
   const { entity } = props;
@@ -120,16 +122,22 @@ export const EntityChip = (props: {
   const navigate = useNavigate();
   const entityRef =
     typeof entity === 'string' ? entity : stringifyEntityRef(entity);
+  const classes = useTooltipStyles();
   return (
     <Tooltip
       title={<EntityTooltip entity={entity} />}
       arrow
       enterDelay={400}
       interactive
+      classes={{
+        tooltip: classes.tooltip,
+        arrow: classes.tooltipArrow,
+      }}
     >
       <Chip
         label={primaryTitle}
         size="small"
+        style={props.style}
         icon={Icon ? <Icon fontSize="small" /> : undefined}
         variant="outlined"
         className="qetaEntityChip"

@@ -1,5 +1,13 @@
 import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { Button, TextField } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Collapse,
+  IconButton,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -17,6 +25,9 @@ import { CollectionFormData } from './types';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import HelpIcon from '@material-ui/icons/Help';
 
 const formToRequest = (
   form: CollectionFormData,
@@ -70,18 +81,21 @@ export const CollectionForm = (props: CollectionFormProps) => {
   const [error, setError] = useState(false);
   const [edited, setEdited] = useState(false);
   const [images, setImages] = useState<number[]>([]);
+  const [showTips, setShowTips] = useState(false);
+  const [titleCharCount, setTitleCharCount] = useState(values.title.length);
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const qetaApi = useApi(qetaApiRef);
   const {
-    register,
     handleSubmit,
     control,
     reset,
-    formState: { errors },
+    setValue,
+    formState: { errors, isSubmitting, isValid },
   } = useForm<CollectionFormData>({
     values,
     defaultValues: getDefaultValues(),
+    mode: 'onChange',
   });
 
   const postQuestion = (data: CollectionFormData) => {
@@ -150,6 +164,11 @@ export const CollectionForm = (props: CollectionFormProps) => {
     [setImages],
   );
 
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitleCharCount(e.target.value.length);
+    setValue('title', e.target.value, { shouldValidate: true });
+  };
+
   return (
     <form
       onSubmit={handleSubmit(postQuestion)}
@@ -172,35 +191,80 @@ export const CollectionForm = (props: CollectionFormProps) => {
         )}
         name="headerImage"
       />
-      <TextField
-        label={t('collectionForm.titleInput.label')}
-        className="qetaCollectionFormTitle"
-        required
-        fullWidth
-        error={'title' in errors}
-        margin="normal"
-        variant="outlined"
-        helperText={t('collectionForm.titleInput.helperText')}
-        FormHelperTextProps={{
-          style: { marginLeft: '0.2em' },
-        }}
-        {
-          // @ts-ignore
-          ...register('title', { required: true, maxLength: 255 })
-        }
-      />
-
+      <Box mb={2}>
+        <TextField
+          label={t('collectionForm.titleInput.label')}
+          className="qetaCollectionFormTitle"
+          required
+          fullWidth
+          error={'title' in errors}
+          margin="normal"
+          variant="outlined"
+          helperText={
+            <span>
+              {t('collectionForm.titleInput.helperText')}{' '}
+              <span style={{ float: 'right' }}>{titleCharCount}/255</span>
+            </span>
+          }
+          FormHelperTextProps={{
+            style: { marginLeft: '0.2em' },
+          }}
+          value={control._formValues.title}
+          onChange={handleTitleChange}
+          inputProps={{ maxLength: 255 }}
+        />
+      </Box>
+      <Box
+        mb={1}
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
+          {t('collectionForm.descriptionInput.label')}
+          <Tooltip title="Tips for a good collection">
+            <IconButton size="small" onClick={() => setShowTips(v => !v)}>
+              {showTips ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+          </Tooltip>
+        </Typography>
+        <Box>
+          <a
+            href="https://www.markdownguide.org/cheat-sheet/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: 12 }}
+          >
+            {t('collectionForm.descriptionInput.markdownHelp')}
+          </a>
+          <HelpIcon
+            fontSize="small"
+            style={{ marginLeft: 4, verticalAlign: 'middle' }}
+          />
+        </Box>
+      </Box>
+      <Collapse in={showTips}>
+        <Box mb={2} p={2}>
+          <Typography variant="body2">
+            <ul style={{ margin: 0, paddingLeft: 20 }}>
+              <li>{t('collectionForm.tips_1')}</li>
+              <li>{t('collectionForm.tips_2')}</li>
+              <li>{t('collectionForm.tips_3')}</li>
+            </ul>
+          </Typography>
+        </Box>
+      </Collapse>
       <Controller
         control={control}
         rules={{
-          required: false,
+          required: true,
         }}
         render={({ field: { onChange, value } }) => (
           <MarkdownEditor
             value={value ?? ''}
             onChange={onChange}
             height={400}
-            error={'content' in errors}
+            error={'description' in errors}
             placeholder={t('collectionForm.descriptionInput.placeholder')}
             onImageUpload={onImageUpload}
             collectionId={id ? Number(id) : undefined}
@@ -208,16 +272,28 @@ export const CollectionForm = (props: CollectionFormProps) => {
         )}
         name="description"
       />
-      <Button
-        color="primary"
-        type="submit"
-        variant="contained"
-        disabled={posting}
-      >
-        {id
-          ? t('collectionForm.submit.existingCollection')
-          : t('collectionForm.submit.newCollection')}
-      </Button>
+      <Box mt={3}>
+        <Button
+          color="primary"
+          type="submit"
+          variant="contained"
+          disabled={posting || isSubmitting || !isValid}
+          size="large"
+        >
+          {posting ? (
+            <span>
+              {t('collectionForm.submitting')}{' '}
+              <span className="spinner-border spinner-border-sm" />
+            </span>
+          ) : (
+            t(
+              id
+                ? 'collectionForm.submit.existingCollection'
+                : 'collectionForm.submit.newCollection',
+            )
+          )}
+        </Button>
+      </Box>
     </form>
   );
 };

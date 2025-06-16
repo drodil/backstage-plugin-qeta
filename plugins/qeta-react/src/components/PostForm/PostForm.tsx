@@ -4,7 +4,15 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import { Button, TextField } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Collapse,
+  IconButton,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -31,6 +39,10 @@ import { qetaApiRef } from '../../api';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import InfoIcon from '@material-ui/icons/Info';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import HelpIcon from '@material-ui/icons/Help';
 
 const formToRequest = (
   form: QuestionFormValues,
@@ -132,17 +144,20 @@ export const PostForm = (props: PostFormProps) => {
   const configApi = useApi(configApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const {
-    register,
     handleSubmit,
     control,
     reset,
     getValues: getFormValues,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<QuestionFormValues>({
     values,
     defaultValues: getDefaultValues(props),
+    mode: 'onChange',
   });
+
+  const [showTips, setShowTips] = useState(false);
+  const [titleCharCount, setTitleCharCount] = useState(values.title.length);
 
   const postQuestion = (data: QuestionFormValues) => {
     setPosting(true);
@@ -269,6 +284,11 @@ export const PostForm = (props: PostFormProps) => {
     [setImages],
   );
 
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitleCharCount(e.target.value.length);
+    setValue('title', e.target.value, { shouldValidate: true });
+  };
+
   return (
     <form
       onSubmit={handleSubmit(postQuestion)}
@@ -294,24 +314,82 @@ export const PostForm = (props: PostFormProps) => {
           name="headerImage"
         />
       )}
-      <TextField
-        label="Title"
-        className="qetaAskFormTitle"
-        required
-        fullWidth
-        error={'title' in errors}
-        margin="normal"
-        variant="outlined"
-        helperText={t('postForm.titleInput.helperText', { type })}
-        FormHelperTextProps={{
-          style: { marginLeft: '0.2em' },
-        }}
-        {
-          // @ts-ignore
-          ...register('title', { required: true, maxLength: 255 })
-        }
-      />
-
+      <Box mb={2}>
+        <TextField
+          label={t('postForm.titleInput.label')}
+          className="qetaAskFormTitle"
+          required
+          fullWidth
+          error={'title' in errors}
+          margin="normal"
+          variant="outlined"
+          helperText={
+            <span>
+              {t('postForm.titleInput.helperText', { type })}{' '}
+              <span style={{ float: 'right' }}>{titleCharCount}/255</span>
+            </span>
+          }
+          placeholder={t('postForm.titleInput.placeholder')}
+          FormHelperTextProps={{
+            style: { marginLeft: '0.2em' },
+          }}
+          value={control._formValues.title}
+          onChange={handleTitleChange}
+          inputProps={{ maxLength: 255 }}
+        />
+      </Box>
+      <Box
+        mb={1}
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
+          {t('postForm.contentInput.label', { type })}
+          <Tooltip title="Tips for a good question">
+            <IconButton size="small" onClick={() => setShowTips(v => !v)}>
+              {showTips ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+          </Tooltip>
+        </Typography>
+        <Box>
+          <a
+            href="https://www.markdownguide.org/cheat-sheet/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: 12 }}
+          >
+            {t('postForm.contentInput.markdownHelp')}
+          </a>
+          <HelpIcon
+            fontSize="small"
+            style={{ marginLeft: 4, verticalAlign: 'middle' }}
+          />
+        </Box>
+      </Box>
+      <Collapse in={showTips}>
+        <Box mb={2} p={2}>
+          <Typography variant="body2">
+            <ul style={{ margin: 0, paddingLeft: 20 }}>
+              {type === 'article' ? (
+                <>
+                  <li>{t('postForm.tips_article_1')}</li>
+                  <li>{t('postForm.tips_article_2')}</li>
+                  <li>{t('postForm.tips_article_3')}</li>
+                  <li>{t('postForm.tips_article_4')}</li>
+                </>
+              ) : (
+                <>
+                  <li>{t('postForm.tips_question_1')}</li>
+                  <li>{t('postForm.tips_question_2')}</li>
+                  <li>{t('postForm.tips_question_3')}</li>
+                  <li>{t('postForm.tips_question_4')}</li>
+                </>
+              )}
+            </ul>
+          </Typography>
+        </Box>
+      </Collapse>
       <Controller
         control={control}
         rules={{
@@ -323,7 +401,11 @@ export const PostForm = (props: PostFormProps) => {
             onChange={onChange}
             height={400}
             error={'content' in errors}
-            placeholder={t('postForm.contentInput.placeholder', { type })}
+            placeholder={
+              type === 'article'
+                ? t('postForm.contentInput.placeholder_article')
+                : t('postForm.contentInput.placeholder_question')
+            }
             onImageUpload={onImageUpload}
             postId={id ? Number(id) : undefined}
             onTagsChange={tags => {
@@ -335,39 +417,61 @@ export const PostForm = (props: PostFormProps) => {
         )}
         name="content"
       />
-      <Controller
-        control={control}
-        render={({ field: { onChange, value } }) => (
-          <EntitiesInput
-            value={value}
-            onChange={onChange}
-            singleValue={entityRef}
-          />
-        )}
-        name="entities"
-      />
-      <Controller
-        control={control}
-        render={({
-          field: { onChange, value },
-          fieldState: { error: tagError },
-        }) => <TagInput value={value} onChange={onChange} error={tagError} />}
-        name="tags"
-      />
-      {allowAnonymouns && !id && (
-        <PostAnonymouslyCheckbox
+      <Box mt={1} mb={1}>
+        <Controller
           control={control}
-          label={t('anonymousCheckbox.postAnonymously')}
+          render={({ field: { onChange, value } }) => (
+            <EntitiesInput
+              value={value}
+              onChange={onChange}
+              singleValue={entityRef}
+            />
+          )}
+          name="entities"
         />
+      </Box>
+      <Box mt={1} mb={1}>
+        <Controller
+          control={control}
+          render={({
+            field: { onChange, value },
+            fieldState: { error: tagError },
+          }) => <TagInput value={value} onChange={onChange} error={tagError} />}
+          name="tags"
+        />
+      </Box>
+      {allowAnonymouns && !id && (
+        <Box mt={2} mb={2} display="flex" alignItems="center">
+          <PostAnonymouslyCheckbox
+            control={control}
+            label={t('anonymousCheckbox.postAnonymously')}
+          />
+          <Tooltip title={t('anonymousCheckbox.tooltip')}>
+            <InfoIcon fontSize="small" style={{ marginLeft: 4 }} />
+          </Tooltip>
+        </Box>
       )}
-      <Button
-        color="primary"
-        type="submit"
-        variant="contained"
-        disabled={posting}
-      >
-        {id ? t('postForm.submit.existingPost') : t('postForm.submit.newPost')}
-      </Button>
+      <Box mt={3}>
+        <Button
+          color="primary"
+          type="submit"
+          variant="contained"
+          disabled={posting || isSubmitting || !isValid}
+          size="large"
+        >
+          {/* eslint-disable-next-line no-nested-ternary */}
+          {posting ? (
+            <span>
+              {t('postForm.submitting')}{' '}
+              <span className="spinner-border spinner-border-sm" />
+            </span>
+          ) : id ? (
+            t('postForm.submit.existingPost')
+          ) : (
+            t('postForm.submit.newPost')
+          )}
+        </Button>
+      </Box>
     </form>
   );
 };

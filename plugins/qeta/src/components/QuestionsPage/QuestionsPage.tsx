@@ -7,7 +7,9 @@ import {
   FollowedTagsList,
   PostHighlightList,
   PostsContainer,
+  PostsGrid,
   qetaTranslationRef,
+  ViewType,
 } from '@drodil/backstage-plugin-qeta-react';
 import { ContentHeader } from '@backstage/core-components';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
@@ -17,6 +19,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const QuestionsPage = () => {
   const [searchParams] = useSearchParams();
+  const [view, setView] = useState<ViewType>('list');
 
   const [entityRef, setEntityRef] = useState<string | undefined>(undefined);
   const [tags, setTags] = useState<string[] | undefined>(undefined);
@@ -34,7 +37,11 @@ export const QuestionsPage = () => {
             <AskQuestionButton entity={entityRef} tags={tags} />
           </ButtonContainer>
         </ContentHeader>
-        <PostsContainer entity={entityRef} tags={tags} type="question" />
+        {view === 'grid' ? (
+          <PostsGrid type="question" view={view} onViewChange={setView} />
+        ) : (
+          <PostsContainer type="question" view={view} onViewChange={setView} />
+        )}
       </Grid>
       <Grid item lg={3} xl={2}>
         <PostHighlightList

@@ -16,7 +16,7 @@ export const FollowedUsersList = () => {
   return (
     <RightListContainer>
       <RightList title={t('rightMenu.followedUsers')}>
-        <ListItem style={{ display: 'block' }} dense>
+        <ListItem style={{ display: 'block' }} dense disableGutters>
           {users.users.map(user => (
             <UserChip key={user} entityRef={user} />
           ))}

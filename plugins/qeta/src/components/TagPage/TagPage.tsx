@@ -8,10 +8,12 @@ import {
   MarkdownRenderer,
   PostHighlightList,
   PostsContainer,
+  PostsGrid,
   qetaApiRef,
   qetaTranslationRef,
   TagFollowButton,
   TagsGrid,
+  ViewType,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import Whatshot from '@material-ui/icons/Whatshot';
@@ -25,6 +27,7 @@ export const TagPage = () => {
   const { tag } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
   const [resp, setResp] = useState<undefined | TagResponse>();
+  const [view, setView] = useState<ViewType>('list');
 
   const qetaApi = useApi(qetaApiRef);
 
@@ -44,13 +47,35 @@ export const TagPage = () => {
   return (
     <Grid container spacing={4}>
       <Grid item md={12} lg={9} xl={10}>
-        <ContentHeader title={tag ? `#${tag}` : t('tagPage.defaultTitle')}>
-          <ButtonContainer>
-            {tag && <TagFollowButton tag={tag} />}
-            <AskQuestionButton tags={tag ? [tag] : undefined} />
-            <WriteArticleButton tags={tag ? [tag] : undefined} />
-          </ButtonContainer>
-        </ContentHeader>
+        {tag ? (
+          <ContentHeader
+            titleComponent={
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <Typography
+                  variant="h5"
+                  component="h2"
+                  id="tag-title"
+                  style={{ marginRight: '0.5em' }}
+                >
+                  #{tag}
+                </Typography>
+                <TagFollowButton tag={tag} />
+              </span>
+            }
+          >
+            <ButtonContainer>
+              <AskQuestionButton tags={[tag]} />
+              <WriteArticleButton tags={[tag]} />
+            </ButtonContainer>
+          </ContentHeader>
+        ) : (
+          <ContentHeader title={t('tagPage.defaultTitle')}>
+            <ButtonContainer>
+              <AskQuestionButton />
+              <WriteArticleButton />
+            </ButtonContainer>
+          </ContentHeader>
+        )}
         {resp && (
           <Card variant="outlined" style={{ marginBottom: '1em' }}>
             <CardContent>
@@ -81,14 +106,24 @@ export const TagPage = () => {
             </CardContent>
           </Card>
         )}
-        {tag ? (
-          <PostsContainer
-            tags={[tag ?? '']}
-            filterPanelProps={{ showTagFilter: false }}
-          />
-        ) : (
-          <TagsGrid />
-        )}
+        {tag &&
+          (view === 'grid' ? (
+            <PostsGrid
+              tags={[tag ?? '']}
+              filterPanelProps={{ showTagFilter: false }}
+              view={view}
+              onViewChange={setView}
+            />
+          ) : (
+            <PostsContainer
+              tags={[tag ?? '']}
+              filterPanelProps={{ showTagFilter: false }}
+              view={view}
+              showTypeLabel
+              onViewChange={setView}
+            />
+          ))}
+        {!tag && <TagsGrid />}
       </Grid>
       <Grid item lg={3} xl={2}>
         <FollowedTagsList />

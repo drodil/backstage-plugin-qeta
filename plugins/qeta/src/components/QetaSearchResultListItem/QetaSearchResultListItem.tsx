@@ -100,7 +100,7 @@ const Excerpt = (props: {
           {' · '}
           {t('common.viewsShort', { count: document.views })}
           {' · '}
-          {t('common.answers', { count: document.answerCount })}
+          {t('common.answersCount', { count: document.answerCount })}
         </span>
         <>
           {highlight?.fields.text ? (
@@ -187,21 +187,29 @@ export const QetaSearchResultListItem = (
 
   return (
     <>
-      <ListItem alignItems="center">
+      <ListItem
+        alignItems="center"
+        role="article"
+        aria-labelledby={`search-result-${result.title}`}
+      >
         {hideIcon !== true && (
           <ListItemIcon>
-            <ResultIcon document={result} />
+            <ResultIcon document={result} aria-hidden="true" />
           </ListItemIcon>
         )}
         <ListItemText
           primary={title}
           secondary={<Excerpt document={result} highlight={highlight} />}
           className={classes.itemText}
-          primaryTypographyProps={{ variant: 'h6' }}
+          primaryTypographyProps={{
+            variant: 'h6',
+            id: `search-result-${result.title}`,
+            component: 'h3',
+          }}
         />
       </ListItem>
 
-      <Divider component="li" />
+      <Divider component="li" aria-hidden="true" />
     </>
   );
 };

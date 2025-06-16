@@ -126,7 +126,6 @@ export const TagInput = (props: {
         max: maximumTags.toString(10),
       });
     }
-
     return `${t('tagsInput.helperText', {
       max: maximumTags.toString(10),
     })}. ${t('tagsInput.allowAddHelperText')}`;

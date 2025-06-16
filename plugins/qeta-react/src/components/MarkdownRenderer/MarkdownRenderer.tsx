@@ -17,6 +17,7 @@ import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { BackstageOverrides } from '@backstage/core-components';
 import LinkIcon from '@material-ui/icons/Link';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -42,32 +43,41 @@ const useStyles = makeStyles(
     const overrides = theme.overrides as BackstageOverrides;
     return {
       markdown: {
+        lineHeight: 1.75,
         '& p': {
           ...theme.typography?.body1,
+          margin: '0 0 1em 0',
+          wordBreak: 'break-word',
         },
         '& h1': {
           ...theme.typography?.h1,
           marginBottom: 2,
+          marginTop: '1.5em',
         },
         '& h2': {
           ...theme.typography?.h2,
           marginBottom: 2,
+          marginTop: '1.2em',
         },
         '& h3': {
           ...theme.typography?.h3,
           marginBottom: 2,
+          marginTop: '1em',
         },
         '& h4': {
           ...theme.typography?.h4,
           marginBottom: 2,
+          marginTop: '0.8em',
         },
         '& h5': {
           ...theme.typography?.h5,
           marginBottom: 2,
+          marginTop: '0.7em',
         },
         '& h6': {
           ...theme.typography?.h6,
           marginBottom: 2,
+          marginTop: '0.6em',
         },
         '& table': {
           borderCollapse: 'collapse',
@@ -107,25 +117,32 @@ const useStyles = makeStyles(
           display: 'block',
           width: '100%',
           overflowX: 'auto',
+          borderRadius: 4,
+          padding: '0.2em 0.4em',
+          fontSize: '0.97em',
         },
         '& em': {
           fontStyle: 'italic !important',
         },
         '& ol': {
           listStyle: 'decimal',
+          marginLeft: '2em',
+          marginBottom: '1em',
+          marginTop: '1em',
         },
         '& ul': {
           listStyle: 'disc',
+          marginLeft: '2em',
+          marginBottom: '1em',
+          marginTop: '1em',
         },
         '& blockquote': {
           backgroundColor: theme.palette.background.paper,
           border: `1px solid ${theme.palette.divider}`,
-          padding: '1em',
-        },
-        '& ol, ul': {
-          marginLeft: '1em',
-          marginTop: '1em',
-          marginBottom: '1em',
+          padding: '1em 1.5em',
+          margin: '1.5em 0',
+          color: theme.palette.text.secondary,
+          borderLeft: `4px solid ${theme.palette.divider}`,
         },
         '& li': {
           marginTop: '0.5em',
@@ -136,9 +153,19 @@ const useStyles = makeStyles(
         '& *:last-child': {
           marginBottom: 0,
         },
-        ...(overrides?.BackstageMarkdownContent
-          ? overrides.BackstageMarkdownContent
-          : {}),
+        ...(overrides?.BackstageMarkdownContent ?? {}),
+      },
+      codeBlockContainer: {
+        position: 'relative',
+        '& .copyCodeButton': {
+          opacity: 0,
+          pointerEvents: 'none',
+          transition: 'opacity 0.2s',
+        },
+        '&:hover .copyCodeButton': {
+          opacity: 1,
+          pointerEvents: 'auto',
+        },
       },
       header: {
         '& .anchor-link': {
@@ -207,6 +234,15 @@ export const MarkdownRenderer = (props: {
     window.navigator.clipboard.writeText(url.toString());
     alertApi.post({
       message: t('link.copied'),
+      severity: 'info',
+      display: 'transient',
+    });
+  };
+
+  const copyCodeToClipboard = (code: string) => {
+    window.navigator.clipboard.writeText(code);
+    alertApi.post({
+      message: t('code.copied'),
       severity: 'info',
       display: 'transient',
     });
@@ -334,13 +370,12 @@ export const MarkdownRenderer = (props: {
               const tagMention = tagMentions.find(m => word === m);
               if (tagMention) {
                 return (
-                  <>
-                    <TagChip
-                      tag={tagMention.slice(1)}
-                      style={{ marginBottom: 0 }}
-                      useHref={useBlankLinks}
-                    />
-                  </>
+                  <TagChip
+                    tag={tagMention.slice(1)}
+                    style={{ marginBottom: 0 }}
+                    useHref={useBlankLinks}
+                    key={tagMention}
+                  />
                 );
               }
 
@@ -353,16 +388,35 @@ export const MarkdownRenderer = (props: {
         code(p: any) {
           const { children, className, node, ...rest } = p;
           const match = /language-(\w+)/.exec(className || '');
+          const codeString = String(children).replace(/\n$/, '');
           return match ? (
-            <SyntaxHighlighter
-              {...rest}
-              PreTag="div"
-              language={match[1]}
-              style={darkTheme ? a11yDark : a11yLight}
-              showLineNumbers
-            >
-              {String(children).replace(/\n$/, '')}
-            </SyntaxHighlighter>
+            <div className={classes.codeBlockContainer}>
+              <SyntaxHighlighter
+                {...rest}
+                PreTag="div"
+                language={match[1]}
+                style={darkTheme ? a11yDark : a11yLight}
+                showLineNumbers
+              >
+                {codeString}
+              </SyntaxHighlighter>
+              <Tooltip title={t('code.aria')}>
+                <IconButton
+                  aria-label={t('code.aria')}
+                  size="small"
+                  className="copyCodeButton"
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    zIndex: 2,
+                  }}
+                  onClick={() => copyCodeToClipboard(codeString)}
+                >
+                  <FileCopyIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </div>
           ) : (
             <code {...rest} className={className}>
               {children}

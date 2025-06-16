@@ -22,7 +22,7 @@ program
     '-c, --comments <comments>',
     'Number of comments to generate, defaults to random',
   )
-  .option('-r --articles <articles>', 'Number of articles to generate', 0);
+  .option('-r --articles <articles>', 'Number of articles to generate', 1);
 
 async function main() {
   program.parse();
@@ -52,6 +52,55 @@ async function main() {
       return options.created;
     }
     return faker.date.recent();
+  };
+
+  const generateCodeBlock = () => {
+    if (!faker.datatype.boolean()) {
+      return '';
+    }
+
+    const languages = [
+      'javascript',
+      'python',
+      'java',
+      'typescript',
+      'go',
+      'rust',
+    ];
+    const language = faker.helpers.arrayElement(languages);
+
+    // Generate random code based on language
+    let code = '';
+    switch (language) {
+      case 'javascript':
+      case 'typescript':
+        code = `function ${faker.hacker.noun()}() {\n  const ${faker.hacker.noun()} = ${faker.number.int(
+          100,
+        )};\n  return ${faker.hacker.verb()}(${faker.hacker.noun()});\n}`;
+        break;
+      case 'python':
+        code = `def ${faker.hacker.noun()}():\n    ${faker.hacker.noun()} = ${faker.number.int(
+          100,
+        )}\n    return ${faker.hacker.verb()}(${faker.hacker.noun()})`;
+        break;
+      case 'java':
+        code = `public class ${faker.hacker.noun()} {\n    public static void main(String[] args) {\n        int ${faker.hacker.noun()} = ${faker.number.int(
+          100,
+        )};\n        System.out.println(${faker.hacker.verb()}(${faker.hacker.noun()}));\n    }\n}`;
+        break;
+      case 'go':
+        code = `func ${faker.hacker.noun()}() {\n    ${faker.hacker.noun()} := ${faker.number.int(
+          100,
+        )}\n    return ${faker.hacker.verb()}(${faker.hacker.noun()})\n}`;
+        break;
+      case 'rust':
+        code = `fn ${faker.hacker.noun()}() -> i32 {\n    let ${faker.hacker.noun()} = ${faker.number.int(
+          100,
+        )};\n    ${faker.hacker.verb()}(${faker.hacker.noun()})\n}`;
+        break;
+    }
+
+    return `\n\n\`\`\`${language}\n${code}\n\`\`\``;
   };
 
   const createCommentsForPost = async id => {
@@ -117,10 +166,10 @@ async function main() {
   const createAnswersForPost = async id => {
     const length = options.answers || faker.number.int({ min: 0, max: 6 });
     const answers = Array.from({ length }, () => ({
-      answer: faker.lorem.paragraphs(
+      answer: `${faker.lorem.paragraphs(
         faker.number.int({ min: 1, max: 6 }),
         '\n\n',
-      ),
+      )}${generateCodeBlock()}`,
       user: getUser(),
       created: getCreated(),
     }));
@@ -151,7 +200,7 @@ async function main() {
     title: faker.lorem.sentence(),
     content: `${faker.lorem.paragraphs(
       faker.number.int({ min: 1, max: 6 }, '\n\n'),
-    )}\n\n\`\`\`${faker.hacker.phrase()}\`\`\``,
+    )}${generateCodeBlock()}`,
     tags: getTags(),
     user: getUser(),
     created: getCreated(),
@@ -181,7 +230,7 @@ async function main() {
     content: `${faker.lorem.paragraphs(
       faker.number.int({ min: 8, max: 30 }),
       '\n\n',
-    )}`,
+    )}${generateCodeBlock()}`,
     tags: getTags(),
     user: getUser(),
     created: getCreated(),

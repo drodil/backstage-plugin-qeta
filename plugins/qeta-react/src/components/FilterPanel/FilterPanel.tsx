@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { DateRangeFilter } from './DateRangeFilter';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
@@ -11,6 +11,7 @@ import {
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import { useSearchParams } from 'react-router-dom';
 import {
   Box,
   Checkbox,
@@ -159,7 +160,32 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
   const styles = useStyles();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initializedRef = useRef(false);
 
+  // Initialize filters from URL parameters only once
+  useEffect(() => {
+    if (initializedRef.current) {
+      return;
+    }
+    initializedRef.current = true;
+
+    const changes: Change<T>[] = [];
+    searchParams.forEach((value, key) => {
+      if (filterKeys.includes(key as FilterKey)) {
+        if (key === 'tags' || key === 'entities') {
+          changes.push({ key: key as keyof T, value: value.split(',') });
+        } else {
+          changes.push({ key: key as keyof T, value });
+        }
+      }
+    });
+    if (changes.length > 0) {
+      onChange(changes);
+    }
+  }, [searchParams, onChange]);
+
+  // Handle owned entities
   useEffect(() => {
     identityApi.getBackstageIdentity().then(identity => {
       catalogApi
@@ -188,6 +214,24 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     if (event.target.type === 'checkbox') {
       value = event.target.checked ? 'true' : 'false';
     }
+
+    // Update URL parameters
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      if (
+        !value ||
+        value === 'false' ||
+        (Array.isArray(value) && value.length === 0)
+      ) {
+        newParams.delete(event.target.name);
+      } else if (Array.isArray(value)) {
+        newParams.set(event.target.name, value.join(','));
+      } else {
+        newParams.set(event.target.name, value);
+      }
+      return newParams;
+    });
+
     onChange({ key: event.target.name as keyof T, value });
   };
 

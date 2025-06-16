@@ -16,7 +16,7 @@ export const FollowedCollectionsList = () => {
   return (
     <RightListContainer>
       <RightList title={t('rightMenu.followedCollections')}>
-        <ListItem style={{ display: 'block' }} dense>
+        <ListItem style={{ display: 'block' }} dense disableGutters>
           {collections.collections.map(collection => (
             <CollectionChip key={collection.id} collection={collection} />
           ))}

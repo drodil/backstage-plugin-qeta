@@ -22,19 +22,26 @@ export const qetaTranslationRef = createTranslationRef({
       collection: 'collection',
       score: '{{score}} score',
       comments: 'Comments',
+      answers: 'answers',
+      votes: 'votes',
+      views: 'views',
+      postStats: 'Post stats',
       anonymousAuthor: 'Anonymous',
-      answers_zero: 'No answers',
-      answers_one: '{{count}} answer',
-      answers_other: '{{count}} answers',
-      views_zero: 'Viewed {{count}} times',
-      views_one: 'Viewed {{count}} time',
-      views_other: 'Viewed {{count}} times',
+      search: 'Search',
+      readMore: 'Read more',
+      clear: 'Clear search',
+      answersCount_zero: 'No answers',
+      answersCount_one: '{{count}} answer',
+      answersCount_other: '{{count}} answers',
+      viewsCount_zero: 'Viewed {{count}} times',
+      viewsCount_one: 'Viewed {{count}} time',
+      viewsCount_other: 'Viewed {{count}} times',
       viewsShort_zero: '0 views',
       viewsShort_one: '{{count}} view',
       viewsShort_other: '{{count}} views',
-      votes_zero: '0 votes',
-      votes_one: '{{count}} vote',
-      votes_other: '{{count}} votes',
+      votesCount_zero: '0 votes',
+      votesCount_one: '{{count}} vote',
+      votesCount_other: '{{count}} votes',
       posts_zero: 'No {{itemType}}s',
       posts_one: '{{count}} {{itemType}}',
       posts_other: '{{count}} {{itemType}}s',
@@ -71,26 +78,43 @@ export const qetaTranslationRef = createTranslationRef({
         "By enabling this, other users won't be able to see you as an author",
       answerAnonymously: 'Answer anonymously',
       postAnonymously: 'Post anonymously',
+      info: 'Your name will not be shown to others.',
     },
     fileInput: {
       label: 'Header image',
       helperText: 'URL of the header image to be used',
       uploadHeaderImage: 'Upload image',
       preview: 'Preview image',
+      dropHere: 'Drop your image here',
+      dragAndDrop: 'Drag and drop an image here',
+      supportedFormats: 'Supported formats: {{formats}}',
+      selectFile: 'Select File',
+      imageLoadError: 'Could not load image. Please check the URL.',
     },
     collectionForm: {
-      errorPosting: 'Could not create collection',
+      errorPosting: 'Could not post collection',
       titleInput: {
         label: 'Title',
-        helperText: 'Name of the colleciton',
+        helperText: 'Title of the collection',
+        placeholder: 'e.g. Questions about Backstage',
       },
       descriptionInput: {
-        placeholder: 'Collection description, what does it contain?',
+        label: 'Description',
+        placeholder:
+          'Describe your collection in detail. What topics does it cover?',
+        markdownHelp: 'Markdown help',
       },
       submit: {
         existingCollection: 'Save',
-        newCollection: 'Create',
+        newCollection: 'Create Collection',
       },
+      submitting: 'Creating...',
+      tips_1:
+        "Choose a clear and descriptive title that reflects the collection's purpose",
+      tips_2:
+        'Provide a detailed description of what topics or questions the collection will contain',
+      tips_3:
+        'Use markdown formatting to describe your collection with headings, lists, and links',
     },
     postForm: {
       errorPosting: 'Could not post {{type}}',
@@ -99,14 +123,32 @@ export const qetaTranslationRef = createTranslationRef({
         label: 'Title',
         helperText:
           'Write good title for your {{type}} that people can understand',
+        placeholder: 'e.g. How do I deploy a Backstage plugin?',
       },
       contentInput: {
-        placeholder: 'Your {{type}}',
+        label: 'Your {{type}}',
+        placeholder_question:
+          'Describe your problem in detail. What have you tried? What did you expect to happen?',
+        placeholder_article:
+          'Write your article content here. Use headings, lists, and images to organize your information.',
+        markdownHelp: 'Markdown help',
       },
       submit: {
         existingPost: 'Save',
         newPost: 'Post',
       },
+      successPosting: 'Your {{type}} was posted successfully!',
+      submitting: 'Posting...',
+      tips_question_1: 'Describe your problem in detail.',
+      tips_question_2:
+        'Include what you have tried and what you expected to happen.',
+      tips_question_3:
+        'Share error messages, logs, or screenshots if possible.',
+      tips_question_4: 'Use code blocks for code or configuration.',
+      tips_article_1: 'Write a clear and engaging introduction.',
+      tips_article_2: 'Organize your content with headings and lists.',
+      tips_article_3: 'Add images or diagrams to illustrate your points.',
+      tips_article_4: 'Cite sources or link to relevant documentation.',
     },
     answerForm: {
       errorPosting: 'Could not post answer',
@@ -121,12 +163,12 @@ export const qetaTranslationRef = createTranslationRef({
     entitiesInput: {
       label: 'Entities',
       placeholder: 'Type or select entities',
-      helperText: 'Add up to {{max}} entities this question relates to',
+      helperText: 'Add up to {{max}} entities',
     },
     tagsInput: {
       label: 'Tags',
       placeholder: 'Type or select tags',
-      helperText: 'Add up to {{max}} tags to categorize your question',
+      helperText: 'Add up to {{max}} tags',
       allowAddHelperText:
         'You can create new tags by typing the tag and pressing enter',
     },
@@ -136,6 +178,9 @@ export const qetaTranslationRef = createTranslationRef({
         entityQuestion: 'Ask a question about {{entity}}',
         newQuestion: 'Ask a question',
       },
+      templateSelection: 'Select a template for your question',
+      questionForm: 'Ask a question',
+      selectTemplate: 'Select a template for your question',
     },
     writePage: {
       title: {
@@ -157,6 +202,8 @@ export const qetaTranslationRef = createTranslationRef({
       title: 'Collections',
       manage: 'Add or remove this post from collections',
       close: 'Close',
+      removed: 'Removed from collection {{collection}}',
+      added: 'Added to collection {{collection}}',
     },
     writeArticleButton: {
       title: 'Write an article',
@@ -239,6 +286,7 @@ export const qetaTranslationRef = createTranslationRef({
     },
     suggestionsCard: {
       title: 'Suggestions',
+      noSuggestions: 'No suggestions',
       noCorrectAnswer:
         'Your question "{{title}}" does not have a correct answer',
       newQuestion: 'Do you have an answer for "{{title}}"?',
@@ -250,6 +298,7 @@ export const qetaTranslationRef = createTranslationRef({
     impactCard: {
       title: 'Your impact',
       views: 'views',
+      error: 'Failed to load impact data',
       contributions: 'Your contributions helped {{lastWeek}} people this week',
     },
     rightMenu: {
@@ -356,6 +405,7 @@ export const qetaTranslationRef = createTranslationRef({
       notFound: 'Could not find the question',
       sortAnswers: {
         label: 'Sort answers',
+        menuLabel: 'Sort answers menu',
         default: 'Default',
         createdDesc: 'Created (desc)',
         createdAsc: 'Created (asc)',
@@ -373,6 +423,7 @@ export const qetaTranslationRef = createTranslationRef({
       postedAtTime: 'Posted',
       updatedAtTime: 'Updated',
       updatedBy: 'by',
+      answeredAtTime: 'Answered',
     },
     favorite: {
       remove: 'Remove this post from favorites',
@@ -383,6 +434,10 @@ export const qetaTranslationRef = createTranslationRef({
       answer: 'Copy link to this answer to clipboard',
       aria: 'Copy link to clipboard',
       copied: 'Link copied to clipboard',
+    },
+    code: {
+      aria: 'Copy code to clipboard',
+      copied: 'Code copied to clipboard',
     },
     voteButtons: {
       answer: {
@@ -405,7 +460,7 @@ export const qetaTranslationRef = createTranslationRef({
       invalidRange:
         "Date range invalid, 'To date' should be greater than 'From date'",
       range: {
-        label: 'Date range',
+        label: 'Posted',
         default: 'Select',
         last7days: 'Last 7 days',
         last30days: 'Last 30 days',
@@ -583,6 +638,9 @@ export const qetaTranslationRef = createTranslationRef({
       answers: 'Answers',
       collections: 'Collections',
       articles: 'Articles',
+      followUser: 'Follow {{name}}',
+      profilePicture: 'Profile picture of {{name}}',
+      profileHeader: 'User profile',
     },
     stats: {
       noStats: 'No statistics available. Check back later!',
@@ -595,6 +653,21 @@ export const qetaTranslationRef = createTranslationRef({
       followers: 'Followers',
       users: 'Users',
       tags: 'Tags',
+      barChart: 'Bar Chart',
+      lineChart: 'Line Chart',
+      chartType: 'Chart Type',
+      tooltip: 'Chart Tooltip',
+      dateAxis: 'Date Axis',
+      valueAxis: 'Value Axis',
+      totalViews: 'Total views',
+      totalQuestions: 'Total questions',
+      totalAnswers: 'Total answers',
+      totalComments: 'Total comments',
+      totalVotes: 'Total votes',
+      totalUsers: 'Total users',
+      totalTags: 'Total tags',
+      totalArticles: 'Total articles',
+      totalFollowers: 'Total followers',
     },
     collectionButton: {
       follow: 'Follow',
@@ -621,6 +694,10 @@ export const qetaTranslationRef = createTranslationRef({
       unfollow: 'Unfollow',
       tooltip:
         'By following a user, you will get notified when ever a new post by that user is posted',
+    },
+    viewToggle: {
+      listView: 'List View',
+      gridView: 'Grid View',
     },
   },
 });

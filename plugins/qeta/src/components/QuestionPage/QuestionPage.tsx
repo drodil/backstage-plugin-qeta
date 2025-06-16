@@ -146,19 +146,32 @@ export const QuestionPage = () => {
           </React.Fragment>
         )}
         <Box fontWeight="fontWeightMedium" className={dStyles.box}>
-          {t('common.views', { count: views })}
+          {t('common.viewsCount', { count: views })}
         </Box>
       </span>
     );
   };
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return (
+      <Box role="status" aria-label={t('common.loading')}>
+        <Skeleton variant="rect" height={200} animation="wave" />
+        <Box mt={2}>
+          <Skeleton variant="text" height={40} width="60%" animation="wave" />
+          <Skeleton variant="text" height={20} width="40%" animation="wave" />
+          <Skeleton variant="text" height={20} width="80%" animation="wave" />
+        </Box>
+      </Box>
+    );
   }
 
   if (error || question === undefined) {
     return (
-      <WarningPanel severity="error" title={t('questionPage.errorLoading')}>
+      <WarningPanel
+        severity="error"
+        title={t('questionPage.errorLoading')}
+        aria-live="assertive"
+      >
         {error?.message}
       </WarningPanel>
     );
@@ -188,7 +201,7 @@ export const QuestionPage = () => {
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h6">
-              {t('common.answers', {
+              {t('common.answersCount', {
                 count: answersCount,
               })}
             </Typography>
@@ -205,8 +218,15 @@ export const QuestionPage = () => {
                   inputProps={{
                     name: 'sortAnswers',
                     id: 'sort-answers',
+                    'aria-label': t('questionPage.sortAnswers.label'),
+                    'aria-describedby': 'sort-answers-helper',
                   }}
                   variant="outlined"
+                  SelectProps={{
+                    MenuProps: {
+                      'aria-label': t('questionPage.sortAnswers.menuLabel'),
+                    },
+                  }}
                 >
                   <MenuItem value="default">
                     {t('questionPage.sortAnswers.default')}

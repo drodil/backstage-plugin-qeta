@@ -427,8 +427,15 @@ export class DatabaseQetaStore implements QetaStore {
     if (options.includeTrend || options.orderBy === 'trend') {
       query.select(
         this.db.raw(
-          '((EXTRACT(EPOCH FROM posts.created) / EXTRACT(EPOCH FROM now())) * (SELECT coalesce(NULLIF(COUNT(*),0), 1) FROM post_views WHERE ?? = ??) * (SELECT coalesce(NULLIF(COUNT(*),0), 1) FROM answers WHERE ?? = ??) * (SELECT coalesce(NULLIF(SUM(score),0), 1) FROM post_votes WHERE ?? = ??)) as trend',
-          ['postId', 'posts.id', 'postId', 'posts.id', 'postId', 'posts.id'],
+          `(
+            (SELECT COALESCE(SUM(score), 0) FROM post_votes WHERE "postId" = posts.id) * 40 + 
+            (SELECT COALESCE(COUNT(*), 0) FROM answers WHERE "postId" = posts.id) * 20 +
+            (SELECT COALESCE(COUNT(*), 0) FROM post_views WHERE "postId" = posts.id) * 8
+          ) / 
+          POWER(
+            EXTRACT(EPOCH FROM (now() - posts.created)) / 21600 + 1,
+            1.8
+          ) as trend`,
         ),
       );
     }
@@ -3060,16 +3067,42 @@ export class DatabaseQetaStore implements QetaStore {
     searchQuery: string,
   ) {
     if (this.db.client.config.client === 'pg') {
+      const searchTerms = searchQuery
+        .split(/\s+/)
+        .filter(term => term.length > 0)
+        .map(term => {
+          const escapedTerm = term.replace(/[&|!(){}[\]^"~*?:\\]/g, ' ').trim();
+          return escapedTerm ? `${escapedTerm}:*` : '';
+        })
+        .filter(term => term.length > 0);
+
       query.whereRaw(
-        `((to_tsvector(CONCAT(${columns.join(
-          ',',
-        )})) @@ to_tsquery(quote_literal(?) || ':*')))`,
-        [`${searchQuery}`],
+        `(
+          to_tsvector('english', ${columns.join(
+            " || ' ' || ",
+          )}) @@ to_tsquery('english', ?)
+        )`,
+        [searchTerms.join(' & ')],
       );
     } else {
-      query.whereRaw(`LOWER(CONCAT(${columns.join(',')})) LIKE LOWER(?)`, [
-        `%${searchQuery}%`,
-      ]);
+      const searchTerms = searchQuery
+        .split(/\s+/)
+        .filter(term => term.length > 0)
+        .map(term => `%${term}%`);
+
+      query.where(function () {
+        searchTerms.forEach((term: string) => {
+          this.andWhereRaw(
+            `LOWER(${columns.join(" || ' ' || ")}) LIKE LOWER(?)`,
+            [term],
+          );
+        });
+      });
     }
+  }
+
+  // Add a method to manually update trends if needed
+  async updatePostTrends(): Promise<void> {
+    await this.db.raw('SELECT update_all_post_trends();');
   }
 }
