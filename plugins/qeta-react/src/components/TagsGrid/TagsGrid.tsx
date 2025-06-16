@@ -3,13 +3,14 @@ import { useIsModerator, useQetaApi } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import useDebounce from 'react-use/lib/useDebounce';
 import { TagsGridContent } from './TagsGridContent';
-import { SearchBar } from '../SearchBar/SearchBar';
-import { Button, Grid, Typography } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
 import { CreateTagModal } from './CreateTagModal';
 import { qetaCreateTagPermission } from '@drodil/backstage-plugin-qeta-common';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { QetaGridHeader } from '../Utility/QetaGridHeader';
+import Add from '@material-ui/icons/Add';
 
 type TagFilters = {
   order: 'asc' | 'desc';
@@ -80,32 +81,22 @@ export const TagsGrid = () => {
 
   return (
     <>
-      <Grid container className="qetaTagsContainer">
-        <Grid item xs={12} md={4}>
-          <SearchBar
-            onSearch={onSearchQueryChange}
-            label={t('tagPage.search.label')}
-            loading={loading}
-          />
-        </Grid>
-      </Grid>
-      <Grid container justifyContent="space-between">
-        {response && (
-          <Grid item xs={8}>
-            <Typography variant="h6" className="qetaTagsContainerTitle">
-              {t('tagPage.tags', { count: response.total })}
-            </Typography>
-          </Grid>
-        )}
-        {response && (
-          <Grid item xs={4}>
+      <QetaGridHeader
+        title={response ? t('tagPage.tags', { count: response.total }) : ''}
+        searchBarLabel={t('tagPage.search.label')}
+        loading={loading}
+        onSearch={onSearchQueryChange}
+        buttons={
+          response && (
             <OptionalRequirePermission
               permission={qetaCreateTagPermission}
               errorPage={<></>}
             >
               <Button
-                variant="contained"
+                variant="outlined"
                 color="primary"
+                startIcon={<Add />}
+                size="small"
                 onClick={handleCreateModalOpen}
                 style={{ float: 'right' }}
               >
@@ -117,8 +108,10 @@ export const TagsGrid = () => {
                 isModerator={isModerator}
               />
             </OptionalRequirePermission>
-          </Grid>
-        )}
+          )
+        }
+      />
+      <Grid container justifyContent="space-between">
         <TagsGridContent
           response={response}
           onTagEdit={onTagsModify}

@@ -7,6 +7,7 @@ import { SearchBar } from '../SearchBar/SearchBar';
 import { Grid, Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { QetaGridHeader } from '../Utility/QetaGridHeader';
 
 type EntityFilters = {
   order: 'asc' | 'desc';
@@ -57,23 +58,13 @@ export const UsersGrid = () => {
 
   return (
     <>
-      <Grid container className="qetaUsersContainer">
-        <Grid item xs={12} md={4}>
-          <SearchBar
-            onSearch={setSearchQuery}
-            label={t('usersPage.search.label')}
-            loading={loading}
-          />
-        </Grid>
-      </Grid>
+      <QetaGridHeader
+        title={response ? t('usersPage.users', { count: response.total }) : ''}
+        searchBarLabel={t('usersPage.search.label')}
+        loading={loading}
+        onSearch={setSearchQuery}
+      />
       <Grid container>
-        {response && (
-          <Grid item xs={12}>
-            <Typography variant="h6" className="qetaUsersContainerTitle">
-              {t('usersPage.users', { count: response.total })}
-            </Typography>
-          </Grid>
-        )}
         <UsersGridContent response={response} loading={loading} error={error} />
         {response && response?.total > 0 && (
           <QetaPagination

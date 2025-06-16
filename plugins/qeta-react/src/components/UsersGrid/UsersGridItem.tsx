@@ -41,7 +41,7 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
   } = useIdentityApi(api => api.getBackstageIdentity(), []);
 
   return (
-    <Grid item xs={12} sm={6} md={4}>
+    <Grid item xs={12} sm={6} md={4} xl={3}>
       <Card className={classes.card} variant="outlined">
         <CardActionArea
           onClick={() => navigate(`${userRoute()}/${user.userRef}`)}

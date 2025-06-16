@@ -83,15 +83,37 @@ export const PostsContainer = (
   return (
     <Box className="qetaPostsContainer">
       {showTitle && (
-        <Typography
-          variant="h5"
-          className="qetaPostsContainerTitle"
-          style={{ marginBottom: '1.5em' }}
-        >
-          {shownTitle} {link} {btn}
-        </Typography>
+        <Box mb={3}>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Typography
+                variant="h5"
+                className="qetaPostsContainerTitle"
+                style={{ fontWeight: 500, paddingBottom: 2 }}
+              >
+                {shownTitle} {link} {btn}
+              </Typography>
+            </Grid>
+            <Grid item>
+              {showAskButton && (
+                <AskQuestionButton
+                  entity={entity ?? filters.entity}
+                  entityPage={entity !== undefined}
+                  tags={tags}
+                />
+              )}
+              {showWriteButton && (
+                <WriteArticleButton
+                  entity={entity ?? filters.entity}
+                  entityPage={entity !== undefined}
+                  tags={tags}
+                />
+              )}
+            </Grid>
+          </Grid>
+        </Box>
       )}
-      <Grid container justifyContent="space-between">
+      <Grid container alignItems="flex-end" justifyContent="space-between">
         <Grid item xs={12} md={4}>
           <SearchBar
             onSearch={onSearchQueryChange}
@@ -101,50 +123,35 @@ export const PostsContainer = (
             loading={loading}
           />
         </Grid>
-        {showAskButton && (
-          <Grid item>
-            <AskQuestionButton
-              entity={entity ?? filters.entity}
-              entityPage={entity !== undefined}
-              tags={tags}
-            />
-          </Grid>
-        )}
-        {showWriteButton && (
-          <Grid item>
-            <WriteArticleButton
-              entity={entity ?? filters.entity}
-              entityPage={entity !== undefined}
-              tags={tags}
-            />
-          </Grid>
-        )}
       </Grid>
-      <Grid container justifyContent="space-between">
-        {response && (
-          <Grid item>
-            <Typography
-              variant="h6"
-              className="qetaPostsContainerQuestionCount"
-            >
-              {t('common.posts', { count: response?.total ?? 0, itemType })}
-            </Typography>
+      {response && (
+        <Box mt={2} mb={2}>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Typography
+                variant="h6"
+                className="qetaPostsContainerQuestionCount"
+                style={{ fontWeight: 500, paddingBottom: 2 }}
+              >
+                {t('common.posts', { count: response?.total ?? 0, itemType })}
+              </Typography>
+            </Grid>
+            {(showFilters ?? true) && (
+              <Grid item>
+                <Button
+                  onClick={() => {
+                    setShowFilterPanel(!showFilterPanel);
+                  }}
+                  className="qetaPostsContainerFilterPanelBtn"
+                  startIcon={<FilterList />}
+                >
+                  {t('filterPanel.filterButton')}
+                </Button>
+              </Grid>
+            )}
           </Grid>
-        )}
-        {response && (showFilters ?? true) && (
-          <Grid item>
-            <Button
-              onClick={() => {
-                setShowFilterPanel(!showFilterPanel);
-              }}
-              className="qetaPostsContainerFilterPanelBtn"
-              startIcon={<FilterList />}
-            >
-              {t('filterPanel.filterButton')}
-            </Button>
-          </Grid>
-        )}
-      </Grid>
+        </Box>
+      )}
       {(showFilters ?? true) && (
         <Collapse in={showFilterPanel}>
           <FilterPanel<PostFilters>

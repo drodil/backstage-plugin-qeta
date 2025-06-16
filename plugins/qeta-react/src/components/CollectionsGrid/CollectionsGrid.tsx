@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
+import { Box, Button, Collapse } from '@material-ui/core';
 import { CollectionsGridContent } from './CollectionsGridContent';
 import { useQetaApi } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
@@ -13,11 +13,11 @@ import {
 } from '../FilterPanel/FilterPanel';
 import FilterList from '@material-ui/icons/FilterList';
 import { getFiltersWithDateRange } from '../../utils';
-import { SearchBar } from '../SearchBar/SearchBar';
 import { useSearchParams } from 'react-router-dom';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { QetaGridHeader } from '../Utility/QetaGridHeader';
 
 export type CollectionsGridProps = {
   owner?: string;
@@ -164,25 +164,14 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
 
   return (
     <Box>
-      <Grid container justifyContent="space-between">
-        <Grid item xs={12} md={4}>
-          <SearchBar
-            onSearch={setSearchQuery}
-            label={t('collectionsPage.search.label')}
-            loading={loading}
-          />
-        </Grid>
-      </Grid>
-      <Grid container justifyContent="space-between">
-        {response && (
-          <Grid item>
-            <Typography variant="h6" className="qetaCollectionsContainerdCount">
-              {t('common.collections', { count: response?.total ?? 0 })}
-            </Typography>
-          </Grid>
-        )}
-        {response && (showFilters ?? true) && (
-          <Grid item>
+      <QetaGridHeader
+        title={t('common.collections', { count: response?.total ?? 0 })}
+        searchBarLabel={t('collectionsPage.search.label')}
+        loading={loading}
+        onSearch={setSearchQuery}
+        buttons={
+          response &&
+          (showFilters ?? true) && (
             <Button
               onClick={() => {
                 setShowFilterPanel(!showFilterPanel);
@@ -192,9 +181,9 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
             >
               {t('filterPanel.filterButton')}
             </Button>
-          </Grid>
-        )}
-      </Grid>
+          )
+        }
+      />
       {(showFilters ?? true) && (
         <Collapse in={showFilterPanel}>
           <FilterPanel<CollectionFilters>

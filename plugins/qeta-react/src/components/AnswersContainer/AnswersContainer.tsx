@@ -206,15 +206,21 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
   return (
     <Box className="qetaAnswersContainer">
       {showTitle && (
-        <Typography
-          variant="h5"
-          className="qetaAnswersContainerTitle"
-          style={{ marginBottom: '1.5em' }}
-        >
-          {shownTitle} {link}
-        </Typography>
+        <Box mb={3}>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Typography
+                variant="h5"
+                className="qetaAnswersContainerTitle"
+                style={{ fontWeight: 500, paddingBottom: 2 }}
+              >
+                {shownTitle} {link}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Box>
       )}
-      <Grid container justifyContent="space-between">
+      <Grid container alignItems="flex-end" justifyContent="space-between">
         <Grid item xs={12} md={4}>
           <SearchBar
             onSearch={onSearchQueryChange}
@@ -223,26 +229,34 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
           />
         </Grid>
       </Grid>
-      <Grid container justifyContent="space-between">
-        <Grid item>
-          <Typography variant="h6" className="qetaAnswersContainerAnswerCount">
-            {t('common.answersCount', { count: response?.total ?? 0 })}
-          </Typography>
-        </Grid>
-        {(showFilters ?? true) && (
-          <Grid item>
-            <Button
-              onClick={() => {
-                setShowFilterPanel(!showFilterPanel);
-              }}
-              className="qetaAnswerContainerFilterPanelBtn"
-              startIcon={<FilterList />}
-            >
-              {t('filterPanel.filterButton')}
-            </Button>
+      {response && (
+        <Box mt={2} mb={2}>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Typography
+                variant="h6"
+                className="qetaAnswersContainerAnswerCount"
+                style={{ fontWeight: 500, paddingBottom: 2 }}
+              >
+                {t('common.answersCount', { count: response?.total ?? 0 })}
+              </Typography>
+            </Grid>
+            {(showFilters ?? true) && (
+              <Grid item>
+                <Button
+                  onClick={() => {
+                    setShowFilterPanel(!showFilterPanel);
+                  }}
+                  className="qetaAnswerContainerFilterPanelBtn"
+                  startIcon={<FilterList />}
+                >
+                  {t('filterPanel.filterButton')}
+                </Button>
+              </Grid>
+            )}
           </Grid>
-        )}
-      </Grid>
+        </Box>
+      )}
       {(showFilters ?? true) && (
         <Collapse in={showFilterPanel}>
           <FilterPanel<AnswerFilters>

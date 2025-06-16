@@ -74,7 +74,6 @@ export const useStyles = makeStyles(
         margin: theme.spacing(0.5, 1),
         padding: theme.spacing(0.75, 1.5),
         transition: 'all 0.2s ease-in-out',
-        fontWeight: 500,
         '&:hover': {
           backgroundColor: theme.palette.primary.dark,
           color: theme.palette.primary.contrastText,
