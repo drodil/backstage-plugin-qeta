@@ -47,6 +47,7 @@ export const TagInput = (props: {
     allowCreate,
     hideHelpText = false,
     style,
+    name = 'tags',
     title,
     content,
   } = props;

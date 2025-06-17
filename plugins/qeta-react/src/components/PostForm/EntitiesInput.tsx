@@ -56,7 +56,7 @@ export const EntitiesInput = (props: {
     error,
     maximum,
     label,
-    name,
+    name = 'entities',
     placeholder,
     autocompleteProps,
   } = props;
