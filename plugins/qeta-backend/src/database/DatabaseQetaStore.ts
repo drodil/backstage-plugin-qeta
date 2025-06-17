@@ -2346,6 +2346,11 @@ export class DatabaseQetaStore implements QetaStore {
       .update({ rank });
   }
 
+  // Add a method to manually update trends if needed
+  async updatePostTrends(): Promise<void> {
+    await this.db.raw('SELECT update_all_post_trends();');
+  }
+
   private async getTagExpertsById(id: number) {
     const rows = await this.db('tag_experts')
       .where('tagId', id)
@@ -3067,42 +3072,16 @@ export class DatabaseQetaStore implements QetaStore {
     searchQuery: string,
   ) {
     if (this.db.client.config.client === 'pg') {
-      const searchTerms = searchQuery
-        .split(/\s+/)
-        .filter(term => term.length > 0)
-        .map(term => {
-          const escapedTerm = term.replace(/[&|!(){}[\]^"~*?:\\]/g, ' ').trim();
-          return escapedTerm ? `${escapedTerm}:*` : '';
-        })
-        .filter(term => term.length > 0);
-
       query.whereRaw(
-        `(
-          to_tsvector('english', ${columns.join(
-            " || ' ' || ",
-          )}) @@ to_tsquery('english', ?)
-        )`,
-        [searchTerms.join(' & ')],
+        `((to_tsvector(CONCAT(${columns.join(
+          ',',
+        )})) @@ to_tsquery(quote_literal(?) || ':*')))`,
+        [`${searchQuery}`],
       );
     } else {
-      const searchTerms = searchQuery
-        .split(/\s+/)
-        .filter(term => term.length > 0)
-        .map(term => `%${term}%`);
-
-      query.where(function () {
-        searchTerms.forEach((term: string) => {
-          this.andWhereRaw(
-            `LOWER(${columns.join(" || ' ' || ")}) LIKE LOWER(?)`,
-            [term],
-          );
-        });
-      });
+      query.whereRaw(`LOWER(CONCAT(${columns.join(',')})) LIKE LOWER(?)`, [
+        `%${searchQuery}%`,
+      ]);
     }
-  }
-
-  // Add a method to manually update trends if needed
-  async updatePostTrends(): Promise<void> {
-    await this.db.raw('SELECT update_all_post_trends();');
   }
 }

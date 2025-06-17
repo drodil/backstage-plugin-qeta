@@ -28,7 +28,11 @@ export const UsersGridContent = (props: {
   }
 
   if (!response?.users || response.users.length === 0) {
-    return <NoUsersCard />;
+    return (
+      <Grid xs={12}>
+        <NoUsersCard />
+      </Grid>
+    );
   }
 
   return (

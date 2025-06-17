@@ -6,7 +6,7 @@ export const NoUsersCard = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
 
   return (
-    <Card style={{ marginTop: '2em' }}>
+    <Card>
       <CardContent>
         <Grid
           container

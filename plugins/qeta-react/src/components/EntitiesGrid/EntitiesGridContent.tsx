@@ -28,7 +28,11 @@ export const EntitiesGridContent = (props: {
   }
 
   if (!response?.entities || response.entities.length === 0) {
-    return <NoEntitiesCard />;
+    return (
+      <Grid item xs={12}>
+        <NoEntitiesCard />
+      </Grid>
+    );
   }
 
   return (

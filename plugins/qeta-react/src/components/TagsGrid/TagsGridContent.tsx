@@ -30,7 +30,11 @@ export const TagsGridContent = (props: {
   }
 
   if (!response?.tags || response.tags.length === 0) {
-    return <NoTagsCard />;
+    return (
+      <Grid item xs={12}>
+        <NoTagsCard />
+      </Grid>
+    );
   }
 
   return (
