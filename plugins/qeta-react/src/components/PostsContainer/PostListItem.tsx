@@ -39,6 +39,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
+    height: '100%',
     padding: theme.spacing(0.5, 2, 2, 2),
     minHeight: 64,
     transition: 'all 0.2s ease-in-out',
@@ -106,6 +107,7 @@ const useStyles = makeStyles(theme => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     minHeight: '24px',
+    flexGrow: 1,
   },
   authorRow: {
     display: 'flex',

@@ -5,6 +5,7 @@ const useGridItemStyles = makeStyles(theme => ({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'space-between',
     transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
     '&:hover': {
       transform: 'translateY(-4px)',
@@ -13,7 +14,7 @@ const useGridItemStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.default,
   },
   cardHeader: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(2, 2, 1, 2),
     '& .MuiTypography-h6': {
       fontSize: '1.25rem',
       fontWeight: 600,
@@ -24,7 +25,7 @@ const useGridItemStyles = makeStyles(theme => ({
     },
   },
   cardContent: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(0, 2, 2, 2),
     flexGrow: 1,
   },
   stats: {
@@ -46,6 +47,9 @@ const useGridItemStyles = makeStyles(theme => ({
   description: {
     color: theme.palette.text.primary,
     lineHeight: 1.5,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   cardActions: {
     padding: theme.spacing(2),

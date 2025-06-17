@@ -30,6 +30,7 @@ import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
+import { useTooltipStyles } from '../../hooks/useTooltipStyles.ts';
 
 export const TagGridItem = (props: {
   tag: TagResponse;
@@ -42,6 +43,7 @@ export const TagGridItem = (props: {
   const { t } = useTranslationRef(qetaTranslationRef);
   const tags = useTagsFollow();
   const classes = useGridItemStyles();
+  const tooltipStyles = useTooltipStyles();
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const handleEditModalOpen = () => setEditModalOpen(true);
@@ -84,11 +86,22 @@ export const TagGridItem = (props: {
                 ))}
               </Typography>
             )}
-            <Typography className={classes.description} variant="body2">
-              {DOMPurify.sanitize(
-                truncate(removeMarkdownFormatting(tag.description ?? ''), 150),
-              )}
-            </Typography>
+            {tag.description && (
+              <Tooltip
+                title={tag.description}
+                arrow
+                classes={{
+                  tooltip: tooltipStyles.tooltip,
+                  arrow: tooltipStyles.tooltipArrow,
+                }}
+              >
+                <Typography className={classes.description} variant="body2">
+                  {DOMPurify.sanitize(
+                    truncate(removeMarkdownFormatting(tag.description), 80),
+                  )}
+                </Typography>
+              </Tooltip>
+            )}
           </CardContent>
         </CardActionArea>
         <CardActions className={classes.cardActions}>
