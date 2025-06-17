@@ -19,6 +19,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
+import { eng, removeStopwords } from 'stopword';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -224,28 +225,48 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         });
         return;
       }
-    } catch (error) {
-      logger.error(
-        'Failed to generate tag suggestions using AI, fallback to database',
-        error,
-      );
+    } catch (_error) {
+      // NOOP: Fallback to database suggestions
     }
+
+    const cleanWords = (words: string[]): string[] =>
+      removeStopwords(words, [...eng]);
 
     try {
       const { tags: existingTags } = await database.getTags();
 
-      const titleLower = request.body.title.toLowerCase();
-      const contentLower = request.body.content.toLowerCase();
+      const titleLower = request.body.title.toLocaleLowerCase();
+      const titleWords = cleanWords(
+        titleLower.split(/\s+/).map(word => word.toLocaleLowerCase()),
+      );
+      const contentLower = request.body.content.toLocaleLowerCase();
+      const contentWords = cleanWords(
+        contentLower.split(/\s+/).map(word => word.toLocaleLowerCase()),
+      );
 
       const suggestedTags = existingTags
-        .map(tag => tag.tag)
-        .filter(
-          tag =>
-            titleLower.includes(tag.toLowerCase()) ||
-            contentLower.includes(tag.toLowerCase()),
-        );
+        .filter(tag => {
+          if (
+            titleLower.includes(tag.tag.toLocaleLowerCase()) ||
+            contentLower.includes(tag.tag.toLocaleLowerCase())
+          ) {
+            return true;
+          }
+
+          const descriptionWords = cleanWords(
+            tag.description?.toLocaleLowerCase().split(/\s+/) || [],
+          );
+
+          return (
+            titleWords.some(word => descriptionWords.includes(word)) ||
+            contentWords.some(word => descriptionWords.includes(word))
+          );
+        })
+        .map(tag => tag.tag);
+
       response.json({ tags: suggestedTags.filter(filterTags).slice(0, 8) });
     } catch (error) {
+      logger.error(`Failed to generate tag suggestions: ${error}`);
       response
         .status(500)
         .json({ error: 'Failed to generate tag suggestions' });

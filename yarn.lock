@@ -4450,6 +4450,7 @@ __metadata:
     "@smithy/node-http-handler": "npm:^4.0.2"
     "@types/express": "npm:*"
     "@types/multiparty": "npm:^0.0.33"
+    "@types/stopword": "npm:^2.0.3"
     "@types/supertest": "npm:^2.0.12"
     "@types/uuid": "npm:^9.0.4"
     ajv: "npm:^8.11.0"
@@ -4464,6 +4465,7 @@ __metadata:
     knex: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
     multiparty: "npm:^4.2.3"
+    stopword: "npm:^3.1.5"
     supertest: "npm:^6.2.4"
     uuid: "npm:^9.0.1"
     zod: "npm:^3.22.4"
@@ -9384,6 +9386,13 @@ __metadata:
   version: 2.0.3
   resolution: "@types/stack-utils@npm:2.0.3"
   checksum: 10c0/1f4658385ae936330581bcb8aa3a066df03867d90281cdf89cc356d404bd6579be0f11902304e1f775d92df22c6dd761d4451c804b0a4fba973e06211e9bd77c
+  languageName: node
+  linkType: hard
+
+"@types/stopword@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@types/stopword@npm:2.0.3"
+  checksum: 10c0/f525530936c3caf36565c252be4150c3d27cf8acf2055124c569d7b83afc8f98683da55098c1613c85189dcc9f38392be44dfc491b430e1c53a8591e10f07111
   languageName: node
   linkType: hard
 
@@ -26031,6 +26040,13 @@ __metadata:
   version: 1.1.0
   resolution: "stoppable@npm:1.1.0"
   checksum: 10c0/ba91b65e6442bf6f01ce837a727ece597a977ed92a05cb9aea6bf446c5e0dcbccc28f31b793afa8aedd8f34baaf3335398d35f903938d5493f7fbe386a1e090e
+  languageName: node
+  linkType: hard
+
+"stopword@npm:^3.1.5":
+  version: 3.1.5
+  resolution: "stopword@npm:3.1.5"
+  checksum: 10c0/b252d9fa1b3cee80746529465416ca22f60c77ae2076340cb83d3d5329baaa6658e1e641b7cd194257b9d4d2f4f2829210398a1553ab212c5f8d3606e54795df
   languageName: node
   linkType: hard
 

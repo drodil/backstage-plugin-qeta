@@ -129,8 +129,6 @@ export class OpenAIHandler implements AIHandler {
       options?.credentials?.principal.userEntityRef,
     );
 
-    console.log('completion', completion);
-
     const tags = completion
       .split(',')
       .map(tag => tag.trim())
