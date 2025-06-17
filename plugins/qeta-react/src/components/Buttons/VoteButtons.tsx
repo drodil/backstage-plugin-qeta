@@ -57,15 +57,45 @@ export const VoteButtons = (props: {
   const own = props.entity.own ?? false;
   const classes = useStyles();
 
+  const isDisabled = (isCorrectButton = false) => {
+    if (isCorrectButton) {
+      return 'status' in props.entity && props.entity.status !== 'active';
+    }
+    return (
+      own || ('status' in props.entity && props.entity.status !== 'active')
+    );
+  };
+
+  const getVoteUpTooltip = () => {
+    if (isDisabled()) {
+      return '';
+    }
+    return voteUpTooltip;
+  };
+
+  const getVoteDownTooltip = () => {
+    if (isDisabled()) {
+      return '';
+    }
+    return voteDownTooltip;
+  };
+
+  const getCorrectTooltip = () => {
+    if (isDisabled(true)) {
+      return '';
+    }
+    return correctTooltip;
+  };
+
   return (
     <Fragment>
-      <Tooltip title={voteUpTooltip}>
+      <Tooltip title={getVoteUpTooltip()}>
         <span>
           <IconButton
             aria-label="vote up"
             color={ownVote > 0 ? 'primary' : 'default'}
             className={ownVote > 0 ? 'qetaVoteUpSelected' : 'qetaVoteUp'}
-            disabled={own}
+            disabled={isDisabled()}
             size="small"
             onClick={voteUp}
           >
@@ -76,13 +106,13 @@ export const VoteButtons = (props: {
       <Typography variant="h6" style={{ userSelect: 'none' }}>
         {score}
       </Typography>
-      <Tooltip title={voteDownTooltip}>
+      <Tooltip title={getVoteDownTooltip()}>
         <span>
           <IconButton
             aria-label="vote down"
             color={ownVote < 0 ? 'primary' : 'default'}
             className={ownVote < 0 ? 'qetaVoteDownSelected' : 'qetaVoteDown'}
-            disabled={own}
+            disabled={isDisabled()}
             size="small"
             onClick={voteDown}
           >
@@ -93,11 +123,12 @@ export const VoteButtons = (props: {
       {'correct' in props.entity &&
         (props.post?.own || props.post?.canEdit || correctAnswer) && (
           <Box>
-            <Tooltip title={correctTooltip}>
+            <Tooltip title={getCorrectTooltip()}>
               <span>
                 <IconButton
                   aria-label="mark correct"
                   size="small"
+                  disabled={isDisabled(true)}
                   onClick={
                     props.post?.own || props.post?.canEdit
                       ? toggleCorrectAnswer

@@ -56,6 +56,7 @@ export const permissionsRoute = (_router: Router, options: RouteOptions) => {
       }
 
       const opts: PostOptions = {
+        includeDraftFilter: false,
         includeComments: false,
         includeAnswers: false,
         includeVotes: false,

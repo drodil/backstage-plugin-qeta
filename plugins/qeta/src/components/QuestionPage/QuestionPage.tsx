@@ -14,6 +14,7 @@ import {
   RelativeTimeWithTooltip,
   UpdatedByLink,
   useQetaApi,
+  DraftBanner,
 } from '@drodil/backstage-plugin-qeta-react';
 import {
   Answer,
@@ -195,90 +196,97 @@ export const QuestionPage = () => {
           <AddToCollectionButton post={question} />
         </ButtonContainer>
       </ContentHeader>
+      {question.status === 'draft' && <DraftBanner />}
       <QuestionCard question={question} />
       <AIAnswerCard question={question} debounceMs={0} />
-      <Box sx={{ mt: 3, mb: 2 }}>
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="h6">
-              {t('common.answersCount', {
-                count: answersCount,
-              })}
-            </Typography>
-          </Grid>
-          {allAnswers.length > 1 && (
-            <Grid item>
-              <FormControl>
-                <TextField
-                  select
-                  size="small"
-                  label={t('questionPage.sortAnswers.label')}
-                  value={answerSort}
-                  onChange={val => setAnswerSort(val.target.value as string)}
-                  inputProps={{
-                    name: 'sortAnswers',
-                    id: 'sort-answers',
-                    'aria-label': t('questionPage.sortAnswers.label'),
-                    'aria-describedby': 'sort-answers-helper',
-                  }}
-                  variant="outlined"
-                  SelectProps={{
-                    MenuProps: {
-                      'aria-label': t('questionPage.sortAnswers.menuLabel'),
-                    },
-                  }}
-                >
-                  <MenuItem value="default">
-                    {t('questionPage.sortAnswers.default')}
-                  </MenuItem>
-                  <MenuItem value="created_desc">
-                    {t('questionPage.sortAnswers.createdDesc')}
-                  </MenuItem>
-                  <MenuItem value="created_asc">
-                    {t('questionPage.sortAnswers.createdAsc')}
-                  </MenuItem>
-                  <MenuItem value="score_desc">
-                    {t('questionPage.sortAnswers.scoreDesc')}
-                  </MenuItem>
-                  <MenuItem value="score_asc">
-                    {t('questionPage.sortAnswers.scoreAsc')}
-                  </MenuItem>
-                  <MenuItem value="comments_desc">
-                    {t('questionPage.sortAnswers.commentsDesc')}
-                  </MenuItem>
-                  <MenuItem value="comments_asc">
-                    {t('questionPage.sortAnswers.commentsAsc')}
-                  </MenuItem>
-                  <MenuItem value="author_desc">
-                    {t('questionPage.sortAnswers.authorDesc')}
-                  </MenuItem>
-                  <MenuItem value="author_asc">
-                    {t('questionPage.sortAnswers.authorAsc')}
-                  </MenuItem>
-                  <MenuItem value="updated_desc">
-                    {t('questionPage.sortAnswers.updatedDesc')}
-                  </MenuItem>
-                  <MenuItem value="updated_asc">
-                    {t('questionPage.sortAnswers.updatedAsc')}
-                  </MenuItem>
-                </TextField>
-              </FormControl>
+      {question.status === 'active' && (
+        <>
+          <Box sx={{ mt: 3, mb: 2 }}>
+            <Grid container justifyContent="space-between" alignItems="center">
+              <Grid item>
+                <Typography variant="h6">
+                  {t('common.answersCount', {
+                    count: answersCount,
+                  })}
+                </Typography>
+              </Grid>
+              {allAnswers.length > 1 && (
+                <Grid item>
+                  <FormControl>
+                    <TextField
+                      select
+                      size="small"
+                      label={t('questionPage.sortAnswers.label')}
+                      value={answerSort}
+                      onChange={val =>
+                        setAnswerSort(val.target.value as string)
+                      }
+                      inputProps={{
+                        name: 'sortAnswers',
+                        id: 'sort-answers',
+                        'aria-label': t('questionPage.sortAnswers.label'),
+                        'aria-describedby': 'sort-answers-helper',
+                      }}
+                      variant="outlined"
+                      SelectProps={{
+                        MenuProps: {
+                          'aria-label': t('questionPage.sortAnswers.menuLabel'),
+                        },
+                      }}
+                    >
+                      <MenuItem value="default">
+                        {t('questionPage.sortAnswers.default')}
+                      </MenuItem>
+                      <MenuItem value="created_desc">
+                        {t('questionPage.sortAnswers.createdDesc')}
+                      </MenuItem>
+                      <MenuItem value="created_asc">
+                        {t('questionPage.sortAnswers.createdAsc')}
+                      </MenuItem>
+                      <MenuItem value="score_desc">
+                        {t('questionPage.sortAnswers.scoreDesc')}
+                      </MenuItem>
+                      <MenuItem value="score_asc">
+                        {t('questionPage.sortAnswers.scoreAsc')}
+                      </MenuItem>
+                      <MenuItem value="comments_desc">
+                        {t('questionPage.sortAnswers.commentsDesc')}
+                      </MenuItem>
+                      <MenuItem value="comments_asc">
+                        {t('questionPage.sortAnswers.commentsAsc')}
+                      </MenuItem>
+                      <MenuItem value="author_desc">
+                        {t('questionPage.sortAnswers.authorDesc')}
+                      </MenuItem>
+                      <MenuItem value="author_asc">
+                        {t('questionPage.sortAnswers.authorAsc')}
+                      </MenuItem>
+                      <MenuItem value="updated_desc">
+                        {t('questionPage.sortAnswers.updatedDesc')}
+                      </MenuItem>
+                      <MenuItem value="updated_asc">
+                        {t('questionPage.sortAnswers.updatedAsc')}
+                      </MenuItem>
+                    </TextField>
+                  </FormControl>
+                </Grid>
+              )}
             </Grid>
-          )}
-        </Grid>
-      </Box>
-      <Divider />
-      {sortedAnswers.map(a => {
-        return (
-          <React.Fragment key={a.id}>
-            <Box key={a.id} sx={{ mb: 1 }}>
-              <AnswerCard answer={a} question={question} />
-            </Box>
-          </React.Fragment>
-        );
-      })}
-      <Divider />
-      <AnswerForm post={question} onPost={onAnswerPost} />
+          </Box>
+          <Divider />
+          {sortedAnswers.map(a => {
+            return (
+              <React.Fragment key={a.id}>
+                <Box key={a.id} sx={{ mb: 1 }}>
+                  <AnswerCard answer={a} question={question} />
+                </Box>
+              </React.Fragment>
+            );
+          })}
+          <Divider />
+          <AnswerForm post={question} onPost={onAnswerPost} />
+        </>
+      )}
     </>
   );
 };

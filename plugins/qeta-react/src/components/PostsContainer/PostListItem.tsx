@@ -26,6 +26,7 @@ import { AuthorBox } from '../AuthorBox/AuthorBox';
 import numeral from 'numeral';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import { StatusChip } from '../Utility/StatusChip';
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -267,6 +268,7 @@ export const PostListItem = (props: PostListItemProps) => {
               </Link>
             </Typography>
           </Box>
+          <StatusChip status={post.status} />
           {showTypeLabel && post.type && (
             <Chip
               size="small"

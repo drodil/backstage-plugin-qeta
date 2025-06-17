@@ -80,6 +80,8 @@ export interface CollectionEntity extends QetaIdEntity {
 
 export type PostType = 'question' | 'article';
 
+export type PostStatus = 'draft' | 'active' | 'deleted';
+
 export interface Post extends PostAnswerEntity {
   title: string;
   views: number;
@@ -93,6 +95,7 @@ export interface Post extends PostAnswerEntity {
   type: PostType;
   headerImage?: string;
   images?: number[];
+  status: PostStatus;
 }
 
 export interface Template {
@@ -267,6 +270,7 @@ export interface PostRequest {
   images?: number[];
   headerImage?: string;
   type: PostType;
+  status?: PostStatus;
 }
 
 export interface TemplateRequest {

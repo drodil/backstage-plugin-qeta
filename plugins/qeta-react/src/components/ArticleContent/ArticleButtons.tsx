@@ -56,17 +56,35 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
 
   const own = props.post.own ?? false;
 
+  const isDisabled = () => {
+    return own || post.status !== 'active';
+  };
+
+  const getVoteUpTooltip = () => {
+    if (isDisabled()) {
+      return '';
+    }
+    return voteUpTooltip;
+  };
+
+  const getVoteDownTooltip = () => {
+    if (isDisabled()) {
+      return '';
+    }
+    return voteDownTooltip;
+  };
+
   return (
     <div className={styles.container}>
       <Grid container justifyContent="space-between">
         <Grid item>
-          <Tooltip title={voteUpTooltip}>
+          <Tooltip title={getVoteUpTooltip()}>
             <span>
               <IconButton
                 aria-label="vote up"
                 color={ownVote > 0 ? 'primary' : 'default'}
                 className={ownVote > 0 ? 'qetaVoteUpSelected' : 'qetaVoteUp'}
-                disabled={own}
+                disabled={isDisabled()}
                 size="small"
                 onClick={voteUp}
               >
@@ -74,7 +92,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
               </IconButton>
             </span>
           </Tooltip>
-          <Tooltip title={voteDownTooltip}>
+          <Tooltip title={getVoteDownTooltip()}>
             <span>
               <IconButton
                 aria-label="vote down"
@@ -82,7 +100,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
                 className={
                   ownVote < 0 ? 'qetaVoteDownSelected' : 'qetaVoteDown'
                 }
-                disabled={own}
+                disabled={isDisabled()}
                 size="small"
                 onClick={voteDown}
               >

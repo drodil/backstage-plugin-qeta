@@ -13,6 +13,7 @@ import { WarningPanel } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
+import { DraftBanner } from '../Utility/DraftBanner';
 
 export type QetaArticleContentClassKey =
   | 'content'
@@ -70,6 +71,7 @@ export const ArticleContent = (props: {
   return (
     <>
       <Typography variant="h2">{postEntity.title}</Typography>
+      {postEntity.status === 'draft' && <DraftBanner />}
       <Grid container alignItems="center">
         <Grid item>
           <Avatar

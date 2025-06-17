@@ -65,6 +65,10 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
     }
   };
 
+  if (post.status !== 'active') {
+    return null;
+  }
+
   const collections = (response?.collections ?? []).filter(c => c.canEdit);
   if (!collections.length) {
     return null;

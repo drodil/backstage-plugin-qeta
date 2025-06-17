@@ -83,6 +83,7 @@ const question: Post = {
   correctAnswer: false,
   type: 'question',
   images: [],
+  status: 'active',
 };
 
 const answer: Answer = {

@@ -38,6 +38,7 @@ import {
   GlobalStat,
   Post,
   PostsQuery,
+  PostStatus,
   PostType,
   Statistic,
   StatisticsRequestParameters,
@@ -74,6 +75,7 @@ export type RawPostEntity = {
   author: string;
   title: string;
   content: string;
+  status: string;
   created: Date | string;
   updated: Date | string;
   updatedBy: string;
@@ -305,7 +307,7 @@ export class DatabaseQetaStore implements QetaStore {
     filters?: PermissionCriteria<QetaFilters>,
     opts?: PostOptions,
   ): Promise<Posts> {
-    const { includeTotal = true } = opts ?? {};
+    const { includeTotal = true, includeDraftFilter = true } = opts ?? {};
     const query = this.getPostsBaseQuery(user_ref);
     if (options.type) {
       query.where('posts.type', options.type);
@@ -332,6 +334,20 @@ export class DatabaseQetaStore implements QetaStore {
 
     if (options.excludeAuthors) {
       query.whereNotIn('posts.author', options.excludeAuthors);
+    }
+
+    if (options.status) {
+      query.where('posts.status', '=', options.status);
+    } else if (includeDraftFilter) {
+      query.where(q => {
+        q.where('posts.status', 'active').orWhere(q2 => {
+          q2.where('posts.status', 'draft').where(
+            'posts.author',
+            '=',
+            user_ref,
+          );
+        });
+      });
     }
 
     if (filters) {
@@ -500,17 +516,16 @@ export class DatabaseQetaStore implements QetaStore {
       '=',
       id,
     );
+
     if (!rows || rows.length === 0) {
       return null;
     }
-    if (recordView === undefined || recordView) {
+    const post = rows[0] as unknown as RawPostEntity;
+
+    if ((recordView === undefined || recordView) && post.status === 'active') {
       this.recordPostView(id, user_ref);
     }
-    return await this.mapPostEntity(
-      rows[0] as unknown as RawPostEntity,
-      user_ref,
-      options,
-    );
+    return await this.mapPostEntity(post, user_ref, options);
   }
 
   async getPostByAnswerId(
@@ -546,6 +561,7 @@ export class DatabaseQetaStore implements QetaStore {
     anonymous?: boolean;
     type?: PostType;
     headerImage?: string;
+    status?: PostStatus;
     opts?: PostOptions;
   }): Promise<Post> {
     const {
@@ -560,6 +576,7 @@ export class DatabaseQetaStore implements QetaStore {
       type = 'question',
       headerImage,
       opts,
+      status = 'active',
     } = options;
     const posts = await this.db
       .insert(
@@ -571,6 +588,7 @@ export class DatabaseQetaStore implements QetaStore {
           anonymous: anonymous ?? false,
           type: type ?? 'question',
           headerImage,
+          status,
         },
         ['id'],
       )
@@ -583,6 +601,7 @@ export class DatabaseQetaStore implements QetaStore {
         'created',
         'anonymous',
         'type',
+        'status',
       ]);
 
     await Promise.all([
@@ -701,6 +720,7 @@ export class DatabaseQetaStore implements QetaStore {
     entities?: string[];
     images?: number[];
     headerImage?: string;
+    status?: PostStatus;
     opts?: PostOptions;
   }): Promise<MaybePost> {
     const {
@@ -713,14 +733,16 @@ export class DatabaseQetaStore implements QetaStore {
       images,
       headerImage,
       opts,
+      status = 'active',
     } = options;
     const query = this.db('posts').where('posts.id', '=', id);
     const rows = await query.update({
       title,
       content,
       headerImage,
-      updatedBy: user_ref,
-      updated: new Date(),
+      updatedBy: status === 'active' ? user_ref : undefined,
+      updated: status === 'active' ? new Date() : undefined,
+      status,
     });
 
     if (!rows) {
@@ -744,8 +766,10 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   async deletePost(id: number): Promise<boolean> {
-    const query = this.db('posts').where('id', '=', id);
-    return !!(await query.delete());
+    const rows = await this.db('posts').where('id', '=', id).update({
+      status: 'deleted',
+    });
+    return rows > 0;
   }
 
   async answerPost(
@@ -2625,6 +2649,7 @@ export class DatabaseQetaStore implements QetaStore {
       created: val.created as Date,
       updated: val.updated as Date,
       updatedBy: val.updatedBy,
+      status: val.status as PostStatus,
       score: this.mapToInteger(val.score),
       views: this.mapToInteger(val.views),
       answersCount: this.mapToInteger(val.answersCount),

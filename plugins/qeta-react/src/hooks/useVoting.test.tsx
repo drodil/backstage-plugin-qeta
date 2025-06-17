@@ -43,6 +43,7 @@ describe('useVoting', () => {
     score: 10,
     ownVote: 0,
     own: true,
+    status: 'active',
   };
 
   const testAnswer: AnswerResponse = {

@@ -134,6 +134,7 @@ export const PostForm = (props: PostFormProps) => {
   const [values, setValues] = useState(getDefaultValues(props));
   const [error, setError] = useState(false);
   const [edited, setEdited] = useState(false);
+  const [draftId, setDraftId] = useState<string | undefined>(id);
 
   const [images, setImages] = useState<number[]>([]);
   const [searchParams, _setSearchParams] = useSearchParams();
@@ -173,17 +174,25 @@ export const PostForm = (props: PostFormProps) => {
       queryParams.set('entityPage', 'true');
     }
 
-    if (id) {
+    const postId = data.status === 'draft' ? draftId : id;
+
+    if (postId) {
       qetaApi
-        .updatePost(id, formToRequest(data, images))
+        .updatePost(postId, formToRequest(data, images))
         .then(q => {
           if (!q || !q.id) {
             setError(true);
             return;
           }
           setEdited(false);
-          reset();
           analytics.captureEvent('edit', type);
+          if (data.status === 'draft') {
+            setDraftId(q.id.toString(10));
+            setPosting(false);
+            return;
+          }
+
+          reset();
           if (onPost) {
             onPost(q);
           } else if (entity) {
@@ -210,6 +219,12 @@ export const PostForm = (props: PostFormProps) => {
           return;
         }
         setEdited(false);
+        if (data.status === 'draft') {
+          analytics.captureEvent('draft', type);
+          setDraftId(q.id.toString(10));
+          setPosting(false);
+          return;
+        }
         analytics.captureEvent('post', type);
         reset();
         if (entity) {
@@ -291,9 +306,41 @@ export const PostForm = (props: PostFormProps) => {
     setValue('title', e.target.value, { shouldValidate: true });
   };
 
+  const getSubmitButtonText = () => {
+    if (posting) {
+      return (
+        <span>
+          {t('postForm.submitting')}{' '}
+          <span className="spinner-border spinner-border-sm" />
+        </span>
+      );
+    }
+    if (id) {
+      return t('postForm.submit.existingPost');
+    }
+    return t('postForm.submit.newPost');
+  };
+
+  const getDraftButtonText = () => {
+    if (posting) {
+      return (
+        <span>
+          {t('postForm.savingDraft')}{' '}
+          <span className="spinner-border spinner-border-sm" />
+        </span>
+      );
+    }
+    if (draftId) {
+      return t('postForm.updateDraft');
+    }
+    return t('postForm.saveDraft');
+  };
+
   return (
     <form
-      onSubmit={handleSubmit(postQuestion)}
+      onSubmit={handleSubmit(data =>
+        postQuestion({ ...data, status: 'active' }),
+      )}
       onChange={() => {
         setEdited(true);
         onFormChange?.(control._formValues as QuestionFormValues);
@@ -480,7 +527,7 @@ export const PostForm = (props: PostFormProps) => {
           </Tooltip>
         </Box>
       )}
-      <Box mt={3}>
+      <Box mt={3} display="flex" style={{ gap: '16px' }}>
         <Button
           color="primary"
           type="submit"
@@ -488,17 +535,18 @@ export const PostForm = (props: PostFormProps) => {
           disabled={posting || isSubmitting}
           size="large"
         >
-          {/* eslint-disable-next-line no-nested-ternary */}
-          {posting ? (
-            <span>
-              {t('postForm.submitting')}{' '}
-              <span className="spinner-border spinner-border-sm" />
-            </span>
-          ) : id ? (
-            t('postForm.submit.existingPost')
-          ) : (
-            t('postForm.submit.newPost')
+          {getSubmitButtonText()}
+        </Button>
+        <Button
+          color="secondary"
+          variant="outlined"
+          disabled={posting || isSubmitting}
+          size="large"
+          onClick={handleSubmit(data =>
+            postQuestion({ ...data, status: 'draft' }),
           )}
+        >
+          {getDraftButtonText()}
         </Button>
       </Box>
     </form>

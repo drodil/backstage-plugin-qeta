@@ -10,6 +10,7 @@ import {
   GlobalStat,
   Post,
   PostsQuery,
+  PostStatus,
   PostType,
   QetaIdEntity,
   Statistic,
@@ -126,6 +127,7 @@ export type PostOptions = {
   tagsFilter?: PermissionCriteria<QetaFilters>;
   commentsFilter?: PermissionCriteria<QetaFilters>;
   answersFilter?: PermissionCriteria<QetaFilters>;
+  includeDraftFilter?: boolean;
   includeTags?: boolean;
   includeAnswers?: boolean;
   includeVotes?: boolean;
@@ -203,6 +205,7 @@ export interface QetaStore {
     anonymous?: boolean;
     type?: PostType;
     headerImage?: string;
+    status?: PostStatus;
     opts?: PostOptions;
   }): Promise<Post>;
 
@@ -247,6 +250,7 @@ export interface QetaStore {
     entities?: string[];
     images?: number[];
     headerImage?: string;
+    status?: PostStatus;
     opts?: PostOptions;
   }): Promise<MaybePost>;
 

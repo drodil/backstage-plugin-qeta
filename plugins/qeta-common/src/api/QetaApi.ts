@@ -33,6 +33,7 @@ import {
   UserTagsResponse,
   UserUsersResponse,
   TagSuggestionsResponse,
+  PostStatus,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export interface PaginatedQuery {
@@ -70,6 +71,7 @@ export interface PostsQuery extends PaginatedQuery {
   collectionId?: number;
   ids?: number[];
   checkAccess?: boolean;
+  status?: PostStatus;
 }
 
 export interface CollectionsQuery extends PaginatedQuery {

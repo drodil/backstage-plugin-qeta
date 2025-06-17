@@ -57,6 +57,8 @@ export const qetaTranslationRef = createTranslationRef({
       unsaved_changes:
         'You have unsaved changes. Are you sure you want to leave?',
       loading: 'Loading...',
+      draft: 'Draft',
+      deleted: 'Deleted',
     },
     answer: {
       questionTitle: 'Q: {{question}}',
@@ -139,6 +141,9 @@ export const qetaTranslationRef = createTranslationRef({
       },
       successPosting: 'Your {{type}} was posted successfully!',
       submitting: 'Posting...',
+      savingDraft: 'Saving draft...',
+      saveDraft: 'Save as draft',
+      updateDraft: 'Update draft',
       tips_question_1: 'Describe your problem in detail.',
       tips_question_2:
         'Include what you have tried and what you expected to happen.',
@@ -406,6 +411,7 @@ export const qetaTranslationRef = createTranslationRef({
       errorLoading: 'Could not load question',
       editButton: 'Edit',
       notFound: 'Could not find the question',
+      draftStatus: 'This is a draft post',
       sortAnswers: {
         label: 'Sort answers',
         menuLabel: 'Sort answers menu',
