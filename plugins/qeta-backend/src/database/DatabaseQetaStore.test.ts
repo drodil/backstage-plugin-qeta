@@ -386,7 +386,7 @@ describe.each(databases.eachSupportedId())(
         expect(deleted).toBeTruthy();
 
         ret1 = await storage.getPost('user', id1.id);
-        expect(ret1).toBeNull();
+        expect(ret1?.status).toEqual('deleted');
       });
 
       it('should get post by answer', async () => {

@@ -300,7 +300,6 @@ describe('createRouter', () => {
         'user:default/mock',
         1,
         true,
-        {},
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
@@ -336,6 +335,7 @@ describe('createRouter', () => {
           tags: ['java'],
           entities: ['component:default/comp1'],
           type: 'question',
+          status: 'active',
         });
       expect(response.body).toEqual({
         ...question,
@@ -351,6 +351,7 @@ describe('createRouter', () => {
         tags: ['java'],
         entities: ['component:default/comp1'],
         anonymous: false,
+        status: 'active',
         type: 'question',
         opts: {
           includeAnswers: false,
@@ -386,6 +387,7 @@ describe('createRouter', () => {
         entities: ['component:default/comp1'],
         anonymous: false,
         type: 'question',
+        status: 'active',
         opts: {
           includeAnswers: false,
           includeComments: false,
