@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.30.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.30.1...v3.30.2) (2025-06-17)
+
+
+### Bug Fixes
+
+* add missing name properties to inputs ([2e63c70](https://github.com/drodil/backstage-plugin-qeta/commit/2e63c705289f81bea9a3d17e708c7edb9e8c2d9e))
+* grid item style improvements ([6d9f505](https://github.com/drodil/backstage-plugin-qeta/commit/6d9f5054496dce0f09c71f1704bb7633900aee27))
+* tag input tsc error ([bb7e000](https://github.com/drodil/backstage-plugin-qeta/commit/bb7e000b967532d2c4041e4ebc83894e13e59ed3))
+
 ### [3.30.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.30.0...v3.30.1) (2025-06-17)
 
 
