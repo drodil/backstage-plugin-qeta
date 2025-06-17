@@ -154,6 +154,10 @@ export const qetaTranslationRef = createTranslationRef({
       tips_article_2: 'Organize your content with headings and lists.',
       tips_article_3: 'Add images or diagrams to illustrate your points.',
       tips_article_4: 'Cite sources or link to relevant documentation.',
+      autoSaveDraft: 'Auto-save',
+      autoSaveDraftTooltip:
+        'Automatically save your post every 3 seconds when changes are made',
+      autoSaveSuccess: 'Saved automatically',
     },
     answerForm: {
       errorPosting: 'Could not post answer',

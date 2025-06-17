@@ -651,6 +651,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       resource: originalPost,
     });
 
+    if (request.body.status !== 'active' && originalPost.status === 'active') {
+      response
+        .status(400)
+        .json({ errors: validateRequestBody.errors, type: 'body' });
+      return;
+    }
+
     const existingTags = await database.getTags();
     const [tags, entities, tagsFilter, commentsFilter, answersFilter] =
       await Promise.all([
