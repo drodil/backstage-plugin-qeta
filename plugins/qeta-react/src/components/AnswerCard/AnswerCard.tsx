@@ -188,7 +188,7 @@ export const AnswerCard = (props: {
                           userEntityRef={answerEntity.updatedBy}
                           time={answerEntity.updated}
                           label={t('authorBox.updatedAtTime')}
-                          expert={answerEntity.expert}
+                          expert={false}
                           anonymous={answerEntity.anonymous}
                         />
                       )}
