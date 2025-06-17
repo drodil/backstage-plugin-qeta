@@ -142,6 +142,7 @@ export const SearchBar = (props: {
         className={classes.input}
         placeholder={label}
         value={searchQuery}
+        name="search"
         onKeyDown={handleKeyDown}
         inputProps={{
           'aria-label': label,

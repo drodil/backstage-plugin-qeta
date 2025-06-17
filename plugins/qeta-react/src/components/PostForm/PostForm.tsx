@@ -325,6 +325,7 @@ export const PostForm = (props: PostFormProps) => {
           error={'title' in errors}
           margin="normal"
           variant="outlined"
+          name="title"
           helperText={
             <span>
               {t('postForm.titleInput.helperText', { type })}{' '}

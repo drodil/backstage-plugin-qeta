@@ -198,6 +198,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
           fullWidth
           error={'title' in errors}
           margin="normal"
+          name="title"
           variant="outlined"
           helperText={
             <span>
@@ -263,6 +264,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
             value={value ?? ''}
             onChange={onChange}
             height={400}
+            name="description"
             error={'description' in errors}
             placeholder={t('collectionForm.descriptionInput.placeholder')}
             onImageUpload={onImageUpload}

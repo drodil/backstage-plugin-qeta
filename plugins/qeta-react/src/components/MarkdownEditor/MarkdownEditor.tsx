@@ -107,6 +107,7 @@ export type MarkdownEditorProps = {
   onChange: (value: string) => void;
   onTagsChange?: (tags: string[]) => void;
   height: number;
+  name?: string;
   error?: boolean;
   placeholder?: string;
   onImageUpload?: (imageId: number) => void;
@@ -133,6 +134,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     placeholder,
     disableAttachments,
     onTagsChange,
+    name,
     disableToolbar,
     disablePreview,
     postId,
@@ -243,6 +245,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
           placeholder,
           disabled,
           autoFocus,
+          name,
           onBlur: () => {
             if (onTagsChange) {
               onTagsChange(findTagMentions(value).map(t => t.slice(1)));

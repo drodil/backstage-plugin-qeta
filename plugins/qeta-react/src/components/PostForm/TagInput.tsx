@@ -1,11 +1,11 @@
 import { Autocomplete } from '@material-ui/lab';
 import {
+  Box,
+  Chip,
   CircularProgress,
   TextField,
   Tooltip,
   Typography,
-  Chip,
-  Box,
 } from '@material-ui/core';
 import {
   ComponentType,
@@ -37,6 +37,7 @@ export const TagInput = (props: {
   hideHelpText?: boolean;
   style?: CSSProperties;
   title?: string;
+  name?: string;
   content?: string;
 }) => {
   const {
@@ -225,6 +226,7 @@ export const TagInput = (props: {
             FormHelperTextProps={{
               style: { marginLeft: '0.2em' },
             }}
+            name={name}
             InputProps={{
               ...params.InputProps,
               endAdornment: (

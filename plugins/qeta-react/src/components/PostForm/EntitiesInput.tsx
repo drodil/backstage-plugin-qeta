@@ -40,6 +40,7 @@ export const EntitiesInput = (props: {
   maximum?: number | null;
   error?: FieldError;
   label?: string;
+  name?: string;
   placeholder?: string;
   autocompleteProps?: AutocompleteProps<any, any, any, any>;
 }) => {
@@ -55,6 +56,7 @@ export const EntitiesInput = (props: {
     error,
     maximum,
     label,
+    name,
     placeholder,
     autocompleteProps,
   } = props;
@@ -227,6 +229,7 @@ export const EntitiesInput = (props: {
             label={label || t('entitiesInput.label')}
             placeholder={placeholder || t('entitiesInput.placeholder')}
             helperText={helperText}
+            name={name}
             FormHelperTextProps={{
               style: { marginLeft: '0.2em' },
             }}
