@@ -45,7 +45,10 @@ const useStyles = makeStyles(
     },
     addCommentButton: {
       textTransform: 'none',
+      backgroundColor: 'transparent',
+      border: 'none',
       color: theme.palette.text.secondary,
+      marginTop: '3px',
       '&:hover': {
         backgroundColor: 'transparent',
         color: theme.palette.primary.main,
