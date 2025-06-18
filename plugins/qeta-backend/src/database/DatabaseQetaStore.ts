@@ -11,6 +11,7 @@ import {
   CollectionOptions,
   CollectionPostRank,
   Collections,
+  CommentOptions,
   EntitiesResponse,
   EntityResponse,
   MaybeAnswer,
@@ -28,6 +29,7 @@ import {
 import {
   AIResponse,
   Answer,
+  AnswerCommentStatus,
   AnswersQuery,
   Attachment,
   Collection,
@@ -111,6 +113,7 @@ export type RawAnswerEntity = {
   updated: Date;
   updatedBy: string;
   anonymous: boolean;
+  status: string;
 };
 
 export type RawPostVoteEntity = {
@@ -139,6 +142,7 @@ export type RawCommentEntity = {
   created: Date;
   updated: Date;
   updatedBy: string;
+  status: string;
 };
 
 export type RawUserImpact = {
@@ -660,12 +664,18 @@ export class DatabaseQetaStore implements QetaStore {
     post_id: number,
     id: number,
     user_ref: string,
+    permanently?: boolean,
     options?: PostOptions,
   ): Promise<MaybePost> {
     const query = this.db('comments')
       .where('id', '=', id)
       .where('postId', '=', post_id);
-    await query.delete();
+    if (permanently) {
+      await query.delete();
+    } else {
+      await query.update({ status: 'deleted' });
+    }
+
     return this.getPost(user_ref, post_id, false, options);
   }
 
@@ -705,12 +715,17 @@ export class DatabaseQetaStore implements QetaStore {
     answer_id: number,
     id: number,
     user_ref: string,
+    permanently?: boolean,
     options?: AnswerOptions,
   ): Promise<MaybeAnswer> {
     const query = this.db('comments')
       .where('id', '=', id)
       .where('answerId', '=', answer_id);
-    await query.delete();
+    if (permanently) {
+      await query.delete();
+    } else {
+      await query.update({ status: 'deleted' });
+    }
     return this.getAnswer(answer_id, user_ref, options);
   }
 
@@ -843,7 +858,11 @@ export class DatabaseQetaStore implements QetaStore {
     filters?: PermissionCriteria<QetaFilters>,
     opts?: AnswerOptions,
   ): Promise<Answers> {
+    const { includeStatusFilter = true } = opts ?? {};
     const query = this.getAnswerBaseQuery();
+    if (includeStatusFilter) {
+      query.where('answers.status', '=', 'active');
+    }
     if (options.fromDate && options.toDate) {
       query.whereBetween('answers.created', [
         `${options.fromDate} 00:00:00.000+00`,
@@ -954,14 +973,23 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     options?: AnswerOptions,
   ): Promise<MaybeAnswer> {
-    const answers = await this.getAnswerBaseQuery().where('id', '=', answerId);
+    const answers = await this.getAnswerBaseQuery()
+      .where('status', '=', 'active')
+      .where('id', '=', answerId);
     return this.mapAnswer(answers[0], user_ref, options);
   }
 
-  async getComments(options?: { ids?: number[] }): Promise<Comment[]> {
+  async getComments(
+    options?: { ids?: number[] },
+    opts?: CommentOptions,
+  ): Promise<Comment[]> {
+    const { includeStatusFilter = true } = opts ?? {};
     const query = this.db('comments');
     if (options?.ids) {
       query.whereIn('id', options.ids);
+    }
+    if (includeStatusFilter) {
+      query.where('status', '=', 'active');
     }
     const comments = await query.select();
     return await Promise.all(comments.map(this.mapComment));
@@ -972,7 +1000,8 @@ export class DatabaseQetaStore implements QetaStore {
     opts?: { postId?: number; answerId?: number },
   ): Promise<MaybeComment> {
     const query = this.db<RawCommentEntity>('comments') // nosonar
-      .where('comments.id', '=', commentId);
+      .where('comments.id', '=', commentId)
+      .where('status', '=', 'active');
     if (opts?.postId) {
       query.andWhere('comments.postId', '=', opts.postId);
     }
@@ -987,9 +1016,13 @@ export class DatabaseQetaStore implements QetaStore {
     return await this.mapComment(comments[0]);
   }
 
-  async deleteAnswer(id: number): Promise<boolean> {
+  async deleteAnswer(id: number, permanently?: boolean): Promise<boolean> {
     const query = this.db('answers').where('id', '=', id);
-    return !!(await query.delete());
+    if (permanently) {
+      return !!(await query.delete());
+    }
+    const rows = await query.update({ status: 'deleted' });
+    return rows > 0;
   }
 
   async deletePostVote(user_ref: string, postId: number): Promise<boolean> {
@@ -2677,7 +2710,7 @@ export class DatabaseQetaStore implements QetaStore {
     };
   }
 
-  private async mapComment(val: RawCommentEntity): Promise<Comment> {
+  private mapComment(val: RawCommentEntity): Comment {
     return {
       id: val.id,
       author: val.author,
@@ -2685,6 +2718,7 @@ export class DatabaseQetaStore implements QetaStore {
       created: val.created,
       updated: val.updated,
       updatedBy: val.updatedBy,
+      status: val.status as AnswerCommentStatus,
     };
   }
 
@@ -2720,6 +2754,7 @@ export class DatabaseQetaStore implements QetaStore {
       updated: val.updated,
       updatedBy: val.updatedBy,
       score: this.mapToInteger(val.score),
+      status: val.status as AnswerCommentStatus,
       votes: additionalInfo[0],
       comments: additionalInfo[1],
       anonymous: val.anonymous,
@@ -2766,14 +2801,16 @@ export class DatabaseQetaStore implements QetaStore {
   private async getPostComments(
     postId: number,
     commentsFilter?: PermissionCriteria<QetaFilters>,
-  ): Promise<RawCommentEntity[]> {
+  ): Promise<Comment[]> {
     const query = this.db<RawCommentEntity>('comments')
       .where('comments.postId', '=', postId)
+      .where('comments.status', '=', 'active')
       .orderBy('created');
     if (commentsFilter) {
       parseFilter(commentsFilter, query, this.db, 'comments');
     }
-    return query.select();
+    const rows = await query.select();
+    return rows.map(val => this.mapComment(val));
   }
 
   private async getPostExperts(postId: number): Promise<string[]> {
@@ -2787,14 +2824,16 @@ export class DatabaseQetaStore implements QetaStore {
   private async getAnswerComments(
     answerId: number,
     commentsFilter?: PermissionCriteria<QetaFilters>,
-  ): Promise<RawCommentEntity[]> {
+  ): Promise<Comment[]> {
     const query = this.db<RawCommentEntity>('comments')
       .where('comments.answerId', '=', answerId)
+      .where('comments.status', '=', 'active')
       .orderBy('created');
     if (commentsFilter) {
       parseFilter(commentsFilter, query, this.db, 'comments');
     }
-    return query.select();
+    const rows = await query.select();
+    return rows.map(val => this.mapComment(val));
   }
 
   private async getRelatedEntities(
@@ -2854,6 +2893,7 @@ export class DatabaseQetaStore implements QetaStore {
   ): Promise<Answer[]> {
     const query = this.getAnswerBaseQuery()
       .where('postId', '=', postId)
+      .where('answers.status', '=', 'active')
       .orderBy('answers.correct', 'desc')
       .orderBy('answers.created');
 
@@ -2898,12 +2938,14 @@ export class DatabaseQetaStore implements QetaStore {
 
     const answersCount = this.db('answers')
       .where('answers.postId', postRef)
+      .where('answers.status', '=', 'active')
       .count('*')
       .as('answersCount');
 
     const correctAnswers = this.db('answers')
       .where('answers.postId', postRef)
       .where('answers.correct', '=', true)
+      .where('answers.status', '=', 'active')
       .count('*')
       .as('correctAnswers');
 

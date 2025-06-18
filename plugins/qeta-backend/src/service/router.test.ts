@@ -95,6 +95,7 @@ const answer: Answer = {
   correct: false,
   created: new Date('2022-01-01T00:00:00Z'),
   images: [],
+  status: 'active',
 };
 
 const comment: Comment = {
@@ -102,6 +103,7 @@ const comment: Comment = {
   author: 'user',
   content: 'content',
   created: new Date('2022-01-01T00:00:00Z'),
+  status: 'active',
 };
 
 const answerWithComment: Answer = {
@@ -300,6 +302,7 @@ describe('createRouter', () => {
         'user:default/mock',
         1,
         true,
+        {},
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({

@@ -148,11 +148,16 @@ export type CollectionOptions = {
 
 export type AnswerOptions = {
   filter?: PermissionCriteria<QetaFilters>;
+  includeStatusFilter?: boolean;
   includeVotes?: boolean;
   includeComments?: boolean;
   includePost?: boolean;
   includeExperts?: boolean;
   commentsFilter?: PermissionCriteria<QetaFilters>;
+};
+
+export type CommentOptions = {
+  includeStatusFilter?: boolean;
 };
 
 /**
@@ -235,6 +240,7 @@ export interface QetaStore {
     question_id: number,
     id: number,
     user_ref: string,
+    permanently?: boolean,
     options?: PostOptions,
   ): Promise<MaybePost>;
 
@@ -299,6 +305,7 @@ export interface QetaStore {
     answer_id: number,
     id: number,
     user_ref: string,
+    permanently?: boolean,
     options?: AnswerOptions,
   ): Promise<MaybeAnswer>;
 
@@ -332,7 +339,10 @@ export interface QetaStore {
     options?: AnswerOptions,
   ): Promise<MaybeAnswer>;
 
-  getComments(options?: { ids?: number[] }): Promise<Comment[]>;
+  getComments(
+    options?: { ids?: number[] },
+    opts?: CommentOptions,
+  ): Promise<Comment[]>;
   getComment(
     commentId: number,
     opts?: { postId?: number; answerId?: number },
@@ -342,7 +352,7 @@ export interface QetaStore {
    * Delete answer. Only the user who created the answer can delete it.
    * @param id answer id
    */
-  deleteAnswer(id: number): Promise<boolean>;
+  deleteAnswer(id: number, permanently?: boolean): Promise<boolean>;
 
   /**
    * Vote question with given score

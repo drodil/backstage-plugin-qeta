@@ -57,6 +57,7 @@ describe('useVoting', () => {
     score: 5,
     ownVote: 0,
     own: false,
+    status: 'active',
   };
 
   beforeEach(() => {

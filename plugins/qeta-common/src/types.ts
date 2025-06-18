@@ -82,6 +82,8 @@ export type PostType = 'question' | 'article';
 
 export type PostStatus = 'draft' | 'active' | 'deleted';
 
+export type AnswerCommentStatus = 'active' | 'deleted';
+
 export interface Post extends PostAnswerEntity {
   title: string;
   views: number;
@@ -163,6 +165,7 @@ export interface Answer extends PostAnswerEntity {
   post?: Post;
   images: number[];
   expert?: boolean;
+  status: AnswerCommentStatus;
 }
 
 export interface Collection extends CollectionEntity {
@@ -184,6 +187,7 @@ export interface Vote {
 
 export interface Comment extends QetaEntity {
   expert?: boolean;
+  status: AnswerCommentStatus;
 }
 
 export interface Attachment {

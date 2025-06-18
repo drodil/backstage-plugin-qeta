@@ -499,16 +499,38 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       resource: comment,
     });
 
-    const updatedPost = await database.deletePostComment(
-      postId,
-      commentId,
-      username,
-      {
-        tagsFilter,
-        commentsFilter,
-        answersFilter,
-      },
-    );
+    let updatedPost = null;
+    if (comment.status === 'deleted') {
+      if (!(await permissionMgr.isModerator(request))) {
+        response
+          .status(404)
+          .send({ errors: 'Comment not found', type: 'query' });
+        return;
+      }
+      updatedPost = await database.deletePostComment(
+        postId,
+        commentId,
+        username,
+        true,
+        {
+          tagsFilter,
+          commentsFilter,
+          answersFilter,
+        },
+      );
+    } else {
+      updatedPost = await database.deletePostComment(
+        postId,
+        commentId,
+        username,
+        false,
+        {
+          tagsFilter,
+          commentsFilter,
+          answersFilter,
+        },
+      );
+    }
 
     if (updatedPost === null) {
       response

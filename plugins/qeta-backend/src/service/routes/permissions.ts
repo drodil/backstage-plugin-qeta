@@ -89,6 +89,7 @@ export const permissionsRoute = (_router: Router, options: RouteOptions) => {
       }
 
       const opts: AnswerOptions = {
+        includeStatusFilter: false,
         includeVotes: false,
         includePost: false,
         includeComments: false,
@@ -119,9 +120,12 @@ export const permissionsRoute = (_router: Router, options: RouteOptions) => {
         return [];
       }
 
-      return await options.database.getComments({
-        ids: commentIds,
-      });
+      return await options.database.getComments(
+        {
+          ids: commentIds,
+        },
+        { includeStatusFilter: false },
+      );
     },
     permissions: qetaCommentPermissions,
     rules: Object.values(commentRules),
