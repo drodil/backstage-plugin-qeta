@@ -618,7 +618,7 @@ export class DatabaseQetaStore implements QetaStore {
 
     await this.updateAttachments(
       'postId',
-      content,
+      content ?? '',
       images ?? [],
       posts[0].id,
       headerImage,
@@ -732,8 +732,8 @@ export class DatabaseQetaStore implements QetaStore {
   async updatePost(options: {
     id: number;
     user_ref: string;
-    title: string;
-    content: string;
+    title?: string;
+    content?: string;
     tags?: string[];
     entities?: string[];
     images?: number[];
@@ -776,7 +776,7 @@ export class DatabaseQetaStore implements QetaStore {
 
     await this.updateAttachments(
       'postId',
-      content,
+      content ?? '',
       images ?? [],
       id,
       headerImage,
@@ -975,9 +975,12 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     options?: AnswerOptions,
   ): Promise<MaybeAnswer> {
-    const answers = await this.getAnswerBaseQuery()
-      .where('status', '=', 'active')
-      .where('id', '=', answerId);
+    const { includeStatusFilter = true } = options ?? {};
+    const query = this.getAnswerBaseQuery().where('id', '=', answerId);
+    if (includeStatusFilter) {
+      query.where('answers.status', '=', 'active');
+    }
+    const answers = await query.select();
     return this.mapAnswer(answers[0], user_ref, options);
   }
 
@@ -999,11 +1002,14 @@ export class DatabaseQetaStore implements QetaStore {
 
   async getComment(
     commentId: number,
-    opts?: { postId?: number; answerId?: number },
+    opts?: CommentOptions & { postId?: number; answerId?: number },
   ): Promise<MaybeComment> {
+    const { includeStatusFilter = true } = opts ?? {};
     const query = this.db<RawCommentEntity>('comments') // nosonar
-      .where('comments.id', '=', commentId)
-      .where('status', '=', 'active');
+      .where('comments.id', '=', commentId);
+    if (includeStatusFilter) {
+      query.where('status', '=', 'active');
+    }
     if (opts?.postId) {
       query.andWhere('comments.postId', '=', opts.postId);
     }
@@ -2803,11 +2809,15 @@ export class DatabaseQetaStore implements QetaStore {
   private async getPostComments(
     postId: number,
     commentsFilter?: PermissionCriteria<QetaFilters>,
+    opts?: CommentOptions,
   ): Promise<Comment[]> {
+    const { includeStatusFilter = true } = opts ?? {};
     const query = this.db<RawCommentEntity>('comments')
       .where('comments.postId', '=', postId)
-      .where('comments.status', '=', 'active')
       .orderBy('created');
+    if (includeStatusFilter) {
+      query.where('comments.status', '=', 'active');
+    }
     if (commentsFilter) {
       parseFilter(commentsFilter, query, this.db, 'comments');
     }
@@ -2826,11 +2836,15 @@ export class DatabaseQetaStore implements QetaStore {
   private async getAnswerComments(
     answerId: number,
     commentsFilter?: PermissionCriteria<QetaFilters>,
+    opts?: CommentOptions,
   ): Promise<Comment[]> {
+    const { includeStatusFilter = true } = opts ?? {};
     const query = this.db<RawCommentEntity>('comments')
       .where('comments.answerId', '=', answerId)
-      .where('comments.status', '=', 'active')
       .orderBy('created');
+    if (includeStatusFilter) {
+      query.where('comments.status', '=', 'active');
+    }
     if (commentsFilter) {
       parseFilter(commentsFilter, query, this.db, 'comments');
     }
@@ -2893,11 +2907,14 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     options?: AnswerOptions,
   ): Promise<Answer[]> {
+    const { includeStatusFilter = true } = options ?? {};
     const query = this.getAnswerBaseQuery()
       .where('postId', '=', postId)
-      .where('answers.status', '=', 'active')
       .orderBy('answers.correct', 'desc')
       .orderBy('answers.created');
+    if (includeStatusFilter) {
+      query.where('answers.status', '=', 'active');
+    }
 
     if (options?.filter) {
       parseFilter(options.filter, query, this.db, 'answer');
@@ -2925,7 +2942,8 @@ export class DatabaseQetaStore implements QetaStore {
       .into('post_views');
   }
 
-  private getPostsBaseQuery(user: string) {
+  private getPostsBaseQuery(user: string, opts?: AnswerOptions) {
+    const { includeStatusFilter = true } = opts ?? {};
     const postRef = this.db.ref('posts.id');
 
     const score = this.db('post_votes')
@@ -2940,16 +2958,20 @@ export class DatabaseQetaStore implements QetaStore {
 
     const answersCount = this.db('answers')
       .where('answers.postId', postRef)
-      .where('answers.status', '=', 'active')
       .count('*')
       .as('answersCount');
+    if (includeStatusFilter) {
+      answersCount.where('answers.status', '=', 'active');
+    }
 
     const correctAnswers = this.db('answers')
       .where('answers.postId', postRef)
       .where('answers.correct', '=', true)
-      .where('answers.status', '=', 'active')
       .count('*')
       .as('correctAnswers');
+    if (includeStatusFilter) {
+      correctAnswers.where('answers.status', '=', 'active');
+    }
 
     const favorite = this.db('user_favorite')
       .where('user_favorite.user', '=', user)
@@ -2966,14 +2988,15 @@ export class DatabaseQetaStore implements QetaStore {
       .groupBy('posts.id');
   }
 
-  private getCollectionsBaseQuery() {
+  private getCollectionsBaseQuery(opts?: PostOptions) {
+    const { includeDraftFilter = true } = opts ?? {};
     const collectionRef = this.db.ref('collections.id');
     const postsCount = this.db('collection_posts')
       .where('collection_posts.collectionId', collectionRef)
       .count('*')
       .as('postsCount');
 
-    return this.db<RawCollectionEntity>('collections')
+    const query = this.db<RawCollectionEntity>('collections')
       .select('collections.*', postsCount)
       .leftJoin(
         'collection_posts',
@@ -2982,6 +3005,10 @@ export class DatabaseQetaStore implements QetaStore {
       )
       .leftJoin('posts', 'collection_posts.postId', 'posts.id')
       .groupBy('collections.id');
+    if (includeDraftFilter) {
+      query.where('posts.status', '=', 'active');
+    }
+    return query;
   }
 
   private async addTags(

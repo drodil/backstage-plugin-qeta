@@ -668,9 +668,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     if (request.body.status !== 'active' && originalPost.status === 'active') {
-      response
-        .status(400)
-        .json({ errors: validateRequestBody.errors, type: 'body' });
+      if (!(await permissionMgr.isModerator(request))) {
+        response
+          .status(400)
+          .json({ errors: validateRequestBody.errors, type: 'body' });
+      }
       return;
     }
 
@@ -840,6 +842,63 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     // Response
     response.json(resp);
   };
+
+  // POST /posts/:id/restore
+  router.post('/posts/:id/restore', async (request, response) => {
+    const ret = await getPostAndCheckStatus(request, response, false, true);
+    if (!ret) return;
+
+    if (!(await permissionMgr.isModerator(request))) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return;
+    }
+    const {
+      post: originalPost,
+      postId,
+      username,
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
+
+    // Act
+    const post = await database.updatePost({
+      id: postId,
+      status: 'active',
+      user_ref: username,
+      setUpdatedBy: false,
+      opts: { tagsFilter, commentsFilter, answersFilter },
+    });
+
+    if (!post) {
+      response.sendStatus(401);
+      return;
+    }
+
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        post,
+        author: username,
+      },
+      metadata: { action: 'restore_post' },
+    });
+
+    await mapAdditionalFields(request, post, options, { username });
+
+    auditor?.createEvent({
+      eventId: 'restore-post',
+      severityLevel: 'medium',
+      request,
+      meta: {
+        from: entityToJsonObject(originalPost),
+        to: entityToJsonObject(post),
+      },
+    });
+
+    // Response
+    response.json(post);
+  });
 
   // GET /posts/:id/upvote
   router.get(`/posts/:id/upvote`, async (request, response) => {

@@ -250,8 +250,8 @@ export interface QetaStore {
   updatePost(options: {
     id: number;
     user_ref: string;
-    title: string;
-    content: string;
+    title?: string;
+    content?: string;
     tags?: string[];
     entities?: string[];
     images?: number[];
@@ -346,7 +346,7 @@ export interface QetaStore {
   ): Promise<Comment[]>;
   getComment(
     commentId: number,
-    opts?: { postId?: number; answerId?: number },
+    opts?: CommentOptions & { postId?: number; answerId?: number },
   ): Promise<MaybeComment>;
 
   /**

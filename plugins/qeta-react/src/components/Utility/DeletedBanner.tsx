@@ -6,8 +6,8 @@ import { qetaTranslationRef } from '../../translation.ts';
 const useStyles = makeStyles(
   theme => ({
     draftBanner: {
-      backgroundColor: theme.palette.warning.light,
-      color: theme.palette.warning.contrastText,
+      backgroundColor: theme.palette.error.light,
+      color: theme.palette.error.contrastText,
       padding: '8px 16px',
       marginBottom: '16px',
       display: 'flex',
@@ -18,14 +18,14 @@ const useStyles = makeStyles(
   { name: 'QetaDraftBanner' },
 );
 
-export const DraftBanner = () => {
+export const DeletedBanner = () => {
   const styles = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
 
   return (
     <Paper className={styles.draftBanner} elevation={0}>
       <DraftsIcon fontSize="small" />
-      <Typography variant="body2">{t('questionPage.draftStatus')}</Typography>
+      <Typography variant="body2">{t('questionPage.deletedStatus')}</Typography>
     </Paper>
   );
 };

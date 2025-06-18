@@ -43,7 +43,11 @@ export const ModeratorPage = () => {
           <TemplateList />
         </TabPanel>
         <TabPanel value="deletedPosts">
-          <PostsContainer status="deleted" showNoQuestionsBtn={false} />
+          <PostsContainer
+            status="deleted"
+            showNoQuestionsBtn={false}
+            showTypeLabel
+          />
         </TabPanel>
       </TabContext>
     </>

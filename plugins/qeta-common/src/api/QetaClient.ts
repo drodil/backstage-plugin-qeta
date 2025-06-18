@@ -12,11 +12,6 @@ import {
   UsersQuery,
 } from './QetaApi';
 import {
-  TagSuggestionsQuery,
-  TagSuggestionsResponse,
-} from '@drodil/backstage-plugin-qeta-common';
-import { CustomErrorBase } from '@backstage/errors';
-import {
   AIResponse,
   AIStatusResponse,
   Answer,
@@ -47,6 +42,8 @@ import {
   SuggestionsResponse,
   TagResponse,
   TagsResponse,
+  TagSuggestionsQuery,
+  TagSuggestionsResponse,
   TemplateRequest,
   TemplateResponse,
   TemplatesResponse,
@@ -57,6 +54,7 @@ import {
   UserTagsResponse,
   UserUsersResponse,
 } from '@drodil/backstage-plugin-qeta-common';
+import { CustomErrorBase } from '@backstage/errors';
 import omitBy from 'lodash/omitBy';
 import crossFetch from 'cross-fetch';
 import qs from 'qs';
@@ -744,6 +742,26 @@ export class QetaClient implements QetaApi {
     });
     const data = await response;
     return data.ok;
+  }
+
+  async restorePost(
+    id: string | number,
+    requestOptions?: RequestOptions,
+  ): Promise<Post> {
+    const response = await this.fetch(`/posts/${id}/restore`, {
+      reqInit: {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      },
+      requestOptions,
+    });
+    const data = (await response.json()) as PostResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to restore post', data.errors);
+    }
+
+    return data;
   }
 
   async updatePost(

@@ -358,6 +358,7 @@ export const qetaTranslationRef = createTranslationRef({
       notFound: 'Could not find the article',
       errorLoading: 'Could not load article',
       editButton: 'Edit this article',
+      restoreButton: 'Restore this article',
       deleteButton: 'Delete this article',
     },
     templateList: {
@@ -416,9 +417,12 @@ export const qetaTranslationRef = createTranslationRef({
     questionPage: {
       errorLoading: 'Could not load question',
       editButton: 'Edit',
+      restoreButton: 'Restore',
       notFound: 'Could not find the question',
       draftStatus:
         'This is a draft post. Please edit and publish it to make it visible to others.',
+      deletedStatus:
+        'This post has been deleted. You can delete it permanently or restore it.',
       sortAnswers: {
         label: 'Sort answers',
         menuLabel: 'Sort answers menu',

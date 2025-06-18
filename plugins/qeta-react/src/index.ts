@@ -12,5 +12,3 @@ export * from './components/ViewToggle/ViewToggle';
 export * from './hooks';
 export * from './translation';
 export type { QetaOverrides } from './overridableComponents';
-export * from './components/Utility/DraftBanner';
-export * from './components/Utility/StatusChip';

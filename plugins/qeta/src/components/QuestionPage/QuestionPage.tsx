@@ -9,12 +9,13 @@ import {
   AnswerForm,
   AskQuestionButton,
   ButtonContainer,
+  DeletedBanner,
+  DraftBanner,
   qetaTranslationRef,
   QuestionCard,
   RelativeTimeWithTooltip,
   UpdatedByLink,
   useQetaApi,
-  DraftBanner,
 } from '@drodil/backstage-plugin-qeta-react';
 import {
   Answer,
@@ -197,6 +198,7 @@ export const QuestionPage = () => {
         </ButtonContainer>
       </ContentHeader>
       {question.status === 'draft' && <DraftBanner />}
+      {question.status === 'deleted' && <DeletedBanner />}
       <QuestionCard question={question} />
       <AIAnswerCard question={question} debounceMs={0} />
       {question.status === 'active' && (

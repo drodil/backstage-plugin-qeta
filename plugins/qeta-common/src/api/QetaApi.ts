@@ -16,6 +16,7 @@ import {
   PostRequest,
   PostResponse,
   PostsResponse,
+  PostStatus,
   PostType,
   StatisticResponse,
   StatisticsRequestParameters,
@@ -23,6 +24,7 @@ import {
   SuggestionsResponse,
   TagResponse,
   TagsResponse,
+  TagSuggestionsResponse,
   TemplateRequest,
   TemplateResponse,
   TemplatesResponse,
@@ -32,8 +34,6 @@ import {
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
-  TagSuggestionsResponse,
-  PostStatus,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export interface PaginatedQuery {
@@ -355,14 +355,19 @@ export interface QetaApi {
   deletePost(postId: number, requestOptions?: RequestOptions): Promise<boolean>;
 
   deleteAnswer(
-    questionId: number,
+    postId: number | string,
     id: number,
     requestOptions?: RequestOptions,
   ): Promise<boolean>;
 
   updatePost(
-    id: string,
+    id: string | number,
     question: PostRequest,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
+
+  restorePost(
+    id: string | number,
     requestOptions?: RequestOptions,
   ): Promise<PostResponse>;
 
