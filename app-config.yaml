@@ -80,6 +80,7 @@ search:
 qeta:
   storage:
     type: database
+    useRelativeUrls: false
     # maxSizeImage: 2500000
     # allowedFilesTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/gif']
   allowAnonymous: true

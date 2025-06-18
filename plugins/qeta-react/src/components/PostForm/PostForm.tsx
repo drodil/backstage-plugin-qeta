@@ -353,11 +353,21 @@ export const PostForm = (props: PostFormProps) => {
   };
 
   const autoSavePost = useCallback(() => {
-    if (autoSaveEnabled && edited && isValid) {
+    if (autoSaveEnabled && edited && isValid && !posting) {
       const formData = getFormValues();
-      postQuestion({ ...formData, status }, true);
+      if (formData.title && formData.content) {
+        postQuestion({ ...formData, status }, true);
+      }
     }
-  }, [autoSaveEnabled, edited, getFormValues, status, postQuestion, isValid]);
+  }, [
+    autoSaveEnabled,
+    edited,
+    getFormValues,
+    status,
+    posting,
+    postQuestion,
+    isValid,
+  ]);
 
   useDebounce(autoSavePost, 3100, [edited, autoSaveEnabled, isValid]);
 

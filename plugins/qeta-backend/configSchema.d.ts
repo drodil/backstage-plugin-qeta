@@ -95,6 +95,11 @@ export interface Config {
       blobStorageAccountName?: string;
       blobStorageConnectionString?: string;
       blobStorageContainer?: string;
+      /**
+       * Use relative URLs for attachments. This is by default true,
+       * but should be set to false if you cannot see images in the frontend.
+       */
+      useRelativeUrls?: boolean;
     };
     /**
      * Stats config

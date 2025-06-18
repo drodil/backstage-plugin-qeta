@@ -14,15 +14,20 @@ import {
 class AzureBlobStorageEngine implements AttachmentStorageEngine {
   config: Config;
   database: QetaStore;
-  backendBaseUrl: string;
   qetaUrl: string;
   container: string;
 
   constructor(opts: AttachmentStorageEngineOptions) {
     this.config = opts.config;
     this.database = opts.database;
-    this.backendBaseUrl = this.config.getString('backend.baseUrl');
-    this.qetaUrl = `${this.backendBaseUrl}/api/qeta/attachments`;
+    const useRelativeUrls =
+      this.config.getOptionalBoolean('qeta.storage.useRelativeUrls') ?? true;
+    if (useRelativeUrls) {
+      this.qetaUrl = `/api/qeta/attachments`;
+    } else {
+      const backendBaseUrl = this.config.getString('backend.baseUrl');
+      this.qetaUrl = `${backendBaseUrl}/api/qeta/attachments`;
+    }
     this.container =
       this.config.getOptionalString('qeta.storage.blobStorageContainer') ||
       'backstage-qeta-images';
