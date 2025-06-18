@@ -295,6 +295,7 @@ export const qetaTranslationRef = createTranslationRef({
       templates: 'Templates',
       templatesInfo:
         'Templates can be used to prefill question content for the user',
+      deletedPosts: 'Deleted posts',
     },
     suggestionsCard: {
       title: 'Suggestions',

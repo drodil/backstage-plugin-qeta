@@ -8,7 +8,7 @@ import {
 } from '../components/FilterPanel/FilterPanel';
 import useDebounce from 'react-use/lib/useDebounce';
 import { getFiltersWithDateRange } from '../utils';
-import { filterTags } from '@drodil/backstage-plugin-qeta-common';
+import { filterTags, PostStatus } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from './useQetaApi';
 
 export type PaginatedPostsProps = PostFilters & {
@@ -22,6 +22,7 @@ export type PaginatedPostsProps = PostFilters & {
   showNoQuestionsBtn?: boolean;
   initialPageSize?: number;
   collectionId?: number;
+  status?: PostStatus;
 };
 
 export type PostFilterChange = {
@@ -32,8 +33,16 @@ export type PostFilterChange = {
 const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-post-filters-expanded';
 
 export function usePaginatedPosts(props: PaginatedPostsProps) {
-  const { type, tags, author, entities, entity, favorite, initialPageSize } =
-    props;
+  const {
+    type,
+    tags,
+    author,
+    entities,
+    entity,
+    favorite,
+    initialPageSize,
+    status,
+  } = props;
   const analytics = useAnalytics();
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
@@ -54,6 +63,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     tags: tags,
     dateRange: '',
     collectionId: props.collectionId,
+    status,
     type,
   });
 
@@ -183,6 +193,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
         includeExperts: false,
         author,
         favorite,
+        status,
         ...(getFiltersWithDateRange(filters) as any),
       });
     },

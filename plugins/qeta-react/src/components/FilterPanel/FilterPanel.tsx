@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { DateRangeFilter } from './DateRangeFilter';
-import { PostType } from '@drodil/backstage-plugin-qeta-common';
+import { PostStatus, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
@@ -86,6 +86,7 @@ export type PostFilters = Filters & {
   tags?: string[];
   tagsRelation?: 'and' | 'or';
   entitiesRelation?: 'and' | 'or';
+  status?: PostStatus;
 };
 
 export type AnswerFilters = Filters & {
