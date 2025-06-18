@@ -139,6 +139,7 @@ export const PostForm = (props: PostFormProps) => {
   const [posting, setPosting] = useState(false);
   const [values, setValues] = useState(getDefaultValues(props));
   const [error, setError] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const [edited, setEdited] = useState(false);
   const [draftId, setDraftId] = useState<string | undefined>(id);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(() => {
@@ -310,11 +311,16 @@ export const PostForm = (props: PostFormProps) => {
 
   useEffect(() => {
     if (id) {
-      getValues(qetaApi, catalogApi, type, id).then(data => {
-        setValues(data);
-        setImages(data.images);
-        setStatus(data.status ?? 'draft');
-      });
+      getValues(qetaApi, catalogApi, type, id)
+        .then(data => {
+          setValues(data);
+          setImages(data.images);
+          setStatus(data.status ?? 'draft');
+        })
+        .catch(() => {
+          setDraftId(undefined);
+          setLoadError(true);
+        });
     }
   }, [qetaApi, catalogApi, type, id]);
 
@@ -418,6 +424,12 @@ export const PostForm = (props: PostFormProps) => {
     setAutoSaveEnabled(newValue);
     localStorage.setItem('qeta-auto-save-enabled', JSON.stringify(newValue));
   };
+
+  if (loadError) {
+    return (
+      <Alert severity="error">{t('postForm.errorLoading', { type })}</Alert>
+    );
+  }
 
   return (
     <form

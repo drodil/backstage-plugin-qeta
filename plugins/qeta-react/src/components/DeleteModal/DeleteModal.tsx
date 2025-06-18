@@ -8,22 +8,36 @@ import { Backdrop, Button, Modal, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Delete from '@material-ui/icons/Delete';
 import { useState } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { ModalContent } from '../Utility/ModalContent';
+import {
+  articlesRouteRef,
+  collectionsRouteRef,
+  questionsRouteRef,
+  tagsRouteRef,
+} from '../../routes.ts';
 
 export const DeleteModal = (props: {
   entity: PostResponse | AnswerResponse | CollectionResponse | TagResponse;
   open: boolean;
   onClose: () => void;
   question?: PostResponse;
+  onDelete?: (
+    entity: PostResponse | AnswerResponse | CollectionResponse | TagResponse,
+  ) => void;
 }) => {
   const qetaApi = useApi(qetaApiRef);
+  const alertApi = useApi(alertApiRef);
   const navigate = useNavigate();
-  const { entity, open, question, onClose } = props;
+  const collectionsRoute = useRouteRef(collectionsRouteRef);
+  const tagsRoute = useRouteRef(tagsRouteRef);
+  const questionsRoute = useRouteRef(questionsRouteRef);
+  const articlesRoute = useRouteRef(articlesRouteRef);
+  const { entity, open, question, onClose, onDelete } = props;
   const [error, setError] = useState(false);
   const { t } = useTranslationRef(qetaTranslationRef);
   const isQuestion = 'title' in entity;
@@ -54,7 +68,13 @@ export const DeleteModal = (props: {
         .then(ret => {
           if (ret) {
             onClose();
-            navigate(-1);
+            onDelete?.(entity);
+            alertApi.post({
+              message: t('deleteModal.collectionDeleted'),
+              severity: 'success',
+              display: 'transient',
+            });
+            navigate(collectionsRoute());
           } else {
             setError(true);
           }
@@ -66,6 +86,13 @@ export const DeleteModal = (props: {
         .then(ret => {
           if (ret) {
             onClose();
+            onDelete?.(entity);
+            alertApi.post({
+              message: t('deleteModal.tagDeleted'),
+              severity: 'success',
+              display: 'transient',
+            });
+            navigate(tagsRoute());
           } else {
             setError(true);
           }
@@ -77,7 +104,18 @@ export const DeleteModal = (props: {
         .then(ret => {
           if (ret) {
             onClose();
-            navigate(-1);
+            onDelete?.(entity);
+            alertApi.post({
+              message:
+                entity.type === 'question'
+                  ? t('deleteModal.questionDeleted')
+                  : t('deleteModal.articleDeleted'),
+              severity: 'success',
+              display: 'transient',
+            });
+            navigate(
+              entity.type === 'question' ? questionsRoute() : articlesRoute(),
+            );
           } else {
             setError(true);
           }
@@ -89,7 +127,12 @@ export const DeleteModal = (props: {
         .then(ret => {
           if (ret) {
             onClose();
-            window.location.reload();
+            onDelete?.(entity);
+            alertApi.post({
+              message: t('deleteModal.answerDeleted'),
+              severity: 'success',
+              display: 'transient',
+            });
           } else {
             setError(true);
           }

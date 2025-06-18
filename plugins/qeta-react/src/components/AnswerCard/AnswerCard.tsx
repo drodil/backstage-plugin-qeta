@@ -73,6 +73,7 @@ const useStyles = makeStyles(
 export const AnswerCard = (props: {
   answer: AnswerResponse;
   question: PostResponse;
+  onAnswerDelete?: (answer: AnswerResponse) => void;
 }) => {
   const { answer, question } = props;
 
@@ -171,6 +172,9 @@ export const AnswerCard = (props: {
                                 onClose={handleDeleteModalClose}
                                 entity={answerEntity}
                                 question={question}
+                                onDelete={() =>
+                                  props.onAnswerDelete?.(answerEntity)
+                                }
                               />
                             </>
                           )}

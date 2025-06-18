@@ -120,6 +120,7 @@ export const qetaTranslationRef = createTranslationRef({
     },
     postForm: {
       errorPosting: 'Could not post {{type}}',
+      errorLoading: 'Could not load {{type}}',
       uploadHeaderImage: 'Upload header image',
       titleInput: {
         label: 'Title',
@@ -269,6 +270,11 @@ export const qetaTranslationRef = createTranslationRef({
       errorDeleting: 'Failed to delete',
       deleteButton: 'Delete',
       cancelButton: 'Cancel',
+      tagDeleted: 'Tag deleted',
+      collectionDeleted: 'Collection deleted',
+      questionDeleted: 'Question deleted',
+      articleDeleted: 'Article deleted',
+      answerDeleted: 'Answer deleted',
     },
     favoritePage: {
       title: 'Favorited posts',

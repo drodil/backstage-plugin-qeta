@@ -50,6 +50,7 @@ const useDescriptionStyles = makeStyles(
 export const QuestionPage = () => {
   const { id } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const [answers, setAnswers] = useState<AnswerResponse[]>([]);
   const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
   const [answerSort, setAnswerSort] = React.useState<string>('default');
   const dStyles = useDescriptionStyles();
@@ -69,6 +70,7 @@ export const QuestionPage = () => {
     if (question) {
       setAnswersCount(question.answersCount);
       setViews(question.views);
+      setAnswers(question.answers ?? []);
     }
   }, [question]);
 
@@ -118,15 +120,20 @@ export const QuestionPage = () => {
     [answerSort],
   );
 
-  const allAnswers = (question?.answers ?? []).concat(newAnswers);
-  const sortedAnswers = useMemo(
-    () => allAnswers.sort(sortAnswers),
-    [allAnswers, sortAnswers],
-  );
+  const sortedAnswers = useMemo(() => {
+    const allAnswers = [...answers, ...newAnswers];
+    return allAnswers.sort(sortAnswers);
+  }, [answers, newAnswers, sortAnswers]);
 
   const onAnswerPost = (answer: AnswerResponse) => {
     setNewAnswers(newAnswers.concat([answer]));
     setAnswersCount(prev => prev + 1);
+  };
+
+  const onAnswerDelete = (answer: AnswerResponse) => {
+    setNewAnswers(newAnswers.filter(a => a.id !== answer.id));
+    setAnswers(answers.filter(a => a.id !== answer.id));
+    setAnswersCount(prev => prev - 1);
   };
 
   const getDescription = (q: PostResponse) => {
@@ -212,7 +219,7 @@ export const QuestionPage = () => {
                   })}
                 </Typography>
               </Grid>
-              {allAnswers.length > 1 && (
+              {sortedAnswers.length > 1 && (
                 <Grid item>
                   <FormControl>
                     <TextField
@@ -280,7 +287,11 @@ export const QuestionPage = () => {
             return (
               <React.Fragment key={a.id}>
                 <Box key={a.id} sx={{ mb: 1 }}>
-                  <AnswerCard answer={a} question={question} />
+                  <AnswerCard
+                    answer={a}
+                    question={question}
+                    onAnswerDelete={onAnswerDelete}
+                  />
                 </Box>
               </React.Fragment>
             );
