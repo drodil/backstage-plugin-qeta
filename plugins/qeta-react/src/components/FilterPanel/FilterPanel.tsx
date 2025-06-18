@@ -117,7 +117,7 @@ function isCollectionFilters(filters: Filters): filters is CollectionFilters {
 
 export type Change<T extends Filters> = {
   key: keyof T;
-  value: string | string[];
+  value?: string | string[];
 };
 
 export interface CommonFilterPanelProps {
@@ -206,7 +206,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
 
   const handleChange = (event: {
     target: {
-      value: string | string[];
+      value?: string | string[];
       type?: string;
       name: string;
       checked?: boolean;
