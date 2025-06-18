@@ -493,6 +493,9 @@ export const qetaTranslationRef = createTranslationRef({
       noAnswers: {
         label: 'No answers',
       },
+      drafts: {
+        label: 'My drafts',
+      },
       noCorrectAnswers: {
         label: 'No correct answers',
       },

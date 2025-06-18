@@ -256,6 +256,7 @@ export interface QetaStore {
     entities?: string[];
     images?: number[];
     headerImage?: string;
+    setUpdatedBy?: boolean;
     status?: PostStatus;
     opts?: PostOptions;
   }): Promise<MaybePost>;

@@ -691,6 +691,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       images: request.body.images,
       headerImage: request.body.headerImage,
       status: request.body.status || 'active',
+      setUpdatedBy: originalPost.status !== 'draft',
       opts: { tagsFilter, commentsFilter, answersFilter },
     });
 

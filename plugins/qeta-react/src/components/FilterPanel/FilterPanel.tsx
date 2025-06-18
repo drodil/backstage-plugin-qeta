@@ -65,6 +65,7 @@ export type Filters = {
   tags?: string[];
   tagsRelation?: 'and' | 'or';
   dateRange?: string;
+  status?: PostStatus;
 };
 
 export type PostFilters = Filters & {
@@ -313,6 +314,24 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                     />
                   }
                   label={t('filterPanel.noAnswers.label')}
+                />
+              )}
+              {postFilters && (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      name="status"
+                      onChange={e => {
+                        const newStatus = e.target.checked
+                          ? 'draft'
+                          : undefined;
+                        onChange({ key: 'status', value: newStatus });
+                      }}
+                      checked={filters.status === 'draft'}
+                    />
+                  }
+                  label={t('filterPanel.drafts.label')}
                 />
               )}
               {(postFilters || answerFilters) && type !== 'article' && (

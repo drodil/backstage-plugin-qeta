@@ -359,7 +359,7 @@ export const PostForm = (props: PostFormProps) => {
     }
   }, [autoSaveEnabled, edited, getFormValues, status, postQuestion, isValid]);
 
-  useDebounce(autoSavePost, 3000, [edited, autoSaveEnabled, isValid]);
+  useDebounce(autoSavePost, 3100, [edited, autoSaveEnabled, isValid]);
 
   const getSubmitButtonText = () => {
     if (posting) {

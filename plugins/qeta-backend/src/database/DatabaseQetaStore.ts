@@ -738,6 +738,7 @@ export class DatabaseQetaStore implements QetaStore {
     entities?: string[];
     images?: number[];
     headerImage?: string;
+    setUpdatedBy?: boolean;
     status?: PostStatus;
     opts?: PostOptions;
   }): Promise<MaybePost> {
@@ -750,6 +751,7 @@ export class DatabaseQetaStore implements QetaStore {
       entities,
       images,
       headerImage,
+      setUpdatedBy = true,
       opts,
       status = 'active',
     } = options;
@@ -758,8 +760,8 @@ export class DatabaseQetaStore implements QetaStore {
       title,
       content,
       headerImage,
-      updatedBy: status === 'active' ? user_ref : undefined,
-      updated: status === 'active' ? new Date() : undefined,
+      updatedBy: setUpdatedBy ? user_ref : undefined,
+      updated: setUpdatedBy ? new Date() : undefined,
       status,
     });
 
