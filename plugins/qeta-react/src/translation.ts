@@ -57,6 +57,8 @@ export const qetaTranslationRef = createTranslationRef({
       unsaved_changes:
         'You have unsaved changes. Are you sure you want to leave?',
       loading: 'Loading...',
+      draft: 'Draft',
+      deleted: 'Deleted',
     },
     answer: {
       questionTitle: 'Q: {{question}}',
@@ -135,10 +137,13 @@ export const qetaTranslationRef = createTranslationRef({
       },
       submit: {
         existingPost: 'Save',
-        newPost: 'Post',
+        publish: 'Publish',
       },
       successPosting: 'Your {{type}} was posted successfully!',
       submitting: 'Posting...',
+      savingDraft: 'Saving draft...',
+      saveDraft: 'Save as draft',
+      updateDraft: 'Save draft',
       tips_question_1: 'Describe your problem in detail.',
       tips_question_2:
         'Include what you have tried and what you expected to happen.',
@@ -149,6 +154,10 @@ export const qetaTranslationRef = createTranslationRef({
       tips_article_2: 'Organize your content with headings and lists.',
       tips_article_3: 'Add images or diagrams to illustrate your points.',
       tips_article_4: 'Cite sources or link to relevant documentation.',
+      autoSaveDraft: 'Auto-save',
+      autoSaveDraftTooltip:
+        'Automatically save your post every 3 seconds when changes are made',
+      autoSaveSuccess: 'Saved automatically',
     },
     answerForm: {
       errorPosting: 'Could not post answer',
@@ -286,6 +295,7 @@ export const qetaTranslationRef = createTranslationRef({
       templates: 'Templates',
       templatesInfo:
         'Templates can be used to prefill question content for the user',
+      deletedPosts: 'Deleted posts',
     },
     suggestionsCard: {
       title: 'Suggestions',
@@ -294,6 +304,7 @@ export const qetaTranslationRef = createTranslationRef({
         'Your question "{{title}}" does not have a correct answer',
       newQuestion: 'Do you have an answer for "{{title}}"?',
       newArticle: 'You might like to read "{{title}}"',
+      draftPost: 'Ready to finalize draft post "{{title}}"?',
     },
     homePage: {
       title: 'Home',
@@ -347,6 +358,7 @@ export const qetaTranslationRef = createTranslationRef({
       notFound: 'Could not find the article',
       errorLoading: 'Could not load article',
       editButton: 'Edit this article',
+      restoreButton: 'Restore this article',
       deleteButton: 'Delete this article',
     },
     templateList: {
@@ -405,7 +417,12 @@ export const qetaTranslationRef = createTranslationRef({
     questionPage: {
       errorLoading: 'Could not load question',
       editButton: 'Edit',
+      restoreButton: 'Restore',
       notFound: 'Could not find the question',
+      draftStatus:
+        'This is a draft post. Please edit and publish it to make it visible to others.',
+      deletedStatus:
+        'This post has been deleted. You can delete it permanently or restore it.',
       sortAnswers: {
         label: 'Sort answers',
         menuLabel: 'Sort answers menu',
@@ -480,6 +497,9 @@ export const qetaTranslationRef = createTranslationRef({
       filterButton: 'Filter',
       noAnswers: {
         label: 'No answers',
+      },
+      drafts: {
+        label: 'My drafts',
       },
       noCorrectAnswers: {
         label: 'No correct answers',

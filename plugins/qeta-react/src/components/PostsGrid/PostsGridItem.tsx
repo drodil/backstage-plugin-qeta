@@ -35,6 +35,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import { UserLink } from '../Links';
 import { SmallAvatar } from '../Utility/SmallAvatar';
+import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
 
 export interface PostsGridItemProps {
@@ -191,14 +192,21 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
           />
         )}
         <CardContent className={classes.cardContent}>
-          <Typography
-            gutterBottom
-            variant="h6"
-            component="div"
-            className={classes.title}
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
           >
-            {post.title}
-          </Typography>
+            <Typography
+              gutterBottom
+              variant="h6"
+              component="div"
+              className={classes.title}
+            >
+              {post.title}
+            </Typography>
+            <StatusChip status={post.status} />
+          </Box>
           <Typography
             variant="body2"
             color="textSecondary"

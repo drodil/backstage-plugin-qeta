@@ -7,11 +7,12 @@ import { VoteButtons } from '../Buttons/VoteButtons';
 import { DeleteModal } from '../DeleteModal/DeleteModal';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import RestoreIcon from '@material-ui/icons/Restore';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { LinkButton } from '../Buttons/LinkButton';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { editQuestionRouteRef } from '../../routes';
@@ -27,6 +28,8 @@ import {
   Grid,
   makeStyles,
 } from '@material-ui/core';
+import { useIsModerator } from '../../hooks';
+import { qetaApiRef } from '../../api.ts';
 
 export type QuestionCardClassKeys =
   | 'root'
@@ -65,6 +68,8 @@ export const QuestionCard = (props: { question: PostResponse }) => {
   const editQuestionRoute = useRouteRef(editQuestionRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [questionEntity, setQuestionEntity] = useState(question);
+  const qetaApi = useApi(qetaApiRef);
+  const { isModerator } = useIsModerator();
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -86,6 +91,12 @@ export const QuestionCard = (props: { question: PostResponse }) => {
       }
     }
   }, [highlightedAnswer]);
+
+  const restoreQuestion = async () => {
+    qetaApi.restorePost(question.id).then(q => {
+      setQuestionEntity(q);
+    });
+  };
 
   return (
     <>
@@ -121,45 +132,58 @@ export const QuestionCard = (props: { question: PostResponse }) => {
               >
                 <Box flex="1 1 0%" minWidth={0}>
                   <TagsAndEntities entity={questionEntity} />
-                  {(question.canEdit || question.canDelete) && (
-                    <Box className={styles.buttons}>
-                      {question.canEdit && (
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          startIcon={<EditIcon />}
-                          onClick={() =>
-                            navigate(
-                              editQuestionRoute({
-                                id: question.id.toString(10),
-                              }),
-                            )
-                          }
-                          className="qetaQuestionCardEditBtn"
-                        >
-                          {t('questionPage.editButton')}
-                        </Button>
-                      )}
-                      {question.canDelete && (
-                        <>
+                  <Box className={styles.buttons}>
+                    {(question.canEdit || question.canDelete) && (
+                      <>
+                        {question.canEdit && (
                           <Button
                             variant="outlined"
                             size="small"
-                            color="secondary"
-                            onClick={handleDeleteModalOpen}
-                            startIcon={<DeleteIcon />}
+                            startIcon={<EditIcon />}
+                            onClick={() =>
+                              navigate(
+                                editQuestionRoute({
+                                  id: question.id.toString(10),
+                                }),
+                              )
+                            }
+                            className="qetaQuestionCardEditBtn"
                           >
-                            {t('deleteModal.deleteButton')}
+                            {t('questionPage.editButton')}
                           </Button>
-                          <DeleteModal
-                            open={deleteModalOpen}
-                            onClose={handleDeleteModalClose}
-                            entity={questionEntity}
-                          />
-                        </>
-                      )}
-                    </Box>
-                  )}
+                        )}
+                        {question.canDelete && (
+                          <>
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              color="secondary"
+                              onClick={handleDeleteModalOpen}
+                              startIcon={<DeleteIcon />}
+                            >
+                              {t('deleteModal.deleteButton')}
+                            </Button>
+                            <DeleteModal
+                              open={deleteModalOpen}
+                              onClose={handleDeleteModalClose}
+                              entity={questionEntity}
+                            />
+                          </>
+                        )}
+                      </>
+                    )}
+                    {isModerator && questionEntity.status === 'deleted' && (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<RestoreIcon />}
+                        onClick={() => restoreQuestion()}
+                        className="qetaQuestionCardRestoreBtn"
+                      >
+                        {t('questionPage.restoreButton')}
+                      </Button>
+                    )}
+                  </Box>
                 </Box>
                 <Box
                   display="flex"

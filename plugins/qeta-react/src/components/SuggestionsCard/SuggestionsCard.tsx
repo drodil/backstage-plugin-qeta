@@ -1,6 +1,7 @@
 import { useQetaApi } from '../../hooks';
 import { ReactNode } from 'react';
 import {
+  DraftPostSuggestion,
   NewArticleSuggestion,
   NewQuestionSuggestion,
   NoCorrectAnswerSuggestion,
@@ -140,6 +141,28 @@ const NewQuestionSuggestionItem = (props: {
   );
 };
 
+const DraftPostSuggestionItem = (props: {
+  suggestion: DraftPostSuggestion;
+}) => {
+  const { suggestion } = props;
+  const { t } = useTranslationRef(qetaTranslationRef);
+  const questionRoute = useRouteRef(questionRouteRef);
+  const articleRoute = useRouteRef(articleRouteRef);
+  const route =
+    suggestion.post.type === 'question' ? questionRoute : articleRoute;
+  return (
+    <SuggestionListItem
+      href={route({ id: suggestion.post.id.toString(10) })}
+      icon={<HelpOutlinedIcon />}
+      timestamp={<RelativeTimeWithTooltip value={suggestion.post.created} />}
+    >
+      {t('suggestionsCard.draftPost', {
+        title: suggestion.post.title,
+      })}
+    </SuggestionListItem>
+  );
+};
+
 const NewArticleSuggestionItem = (props: {
   suggestion: NewArticleSuggestion;
 }) => {
@@ -163,6 +186,7 @@ const suggestionTypeMap: Record<SuggestionType, any> = {
   noCorrectAnswer: NoCorrectAnswerSuggestionItem,
   newQuestion: NewQuestionSuggestionItem,
   newArticle: NewArticleSuggestionItem,
+  draftPost: DraftPostSuggestionItem,
 };
 
 export const SuggestionsCard = () => {

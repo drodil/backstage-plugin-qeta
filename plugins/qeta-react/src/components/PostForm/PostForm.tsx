@@ -1,4 +1,5 @@
 import {
+  alertApiRef,
   configApiRef,
   useAnalytics,
   useApi,
@@ -8,7 +9,9 @@ import {
   Box,
   Button,
   Collapse,
+  FormControlLabel,
   IconButton,
+  Switch,
   TextField,
   Tooltip,
   Typography,
@@ -20,6 +23,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   PostRequest,
   PostResponse,
+  PostStatus,
   PostType,
   QetaApi,
   Template,
@@ -43,6 +47,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import HelpIcon from '@material-ui/icons/Help';
+import { useDebounce } from 'react-use';
 
 const formToRequest = (
   form: QuestionFormValues,
@@ -119,6 +124,7 @@ const getValues = async (
     type,
     headerImage: post.headerImage,
     images: post.images ?? [],
+    status: post.status,
   };
 };
 
@@ -134,14 +140,20 @@ export const PostForm = (props: PostFormProps) => {
   const [values, setValues] = useState(getDefaultValues(props));
   const [error, setError] = useState(false);
   const [edited, setEdited] = useState(false);
-
+  const [draftId, setDraftId] = useState<string | undefined>(id);
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(() => {
+    const saved = localStorage.getItem('qeta-auto-save-enabled');
+    return saved ? JSON.parse(saved) : false;
+  });
   const [images, setImages] = useState<number[]>([]);
+  const [status, setStatus] = useState<PostStatus>('draft');
   const [searchParams, _setSearchParams] = useSearchParams();
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
   const configApi = useApi(configApiRef);
+  const alertApi = useApi(alertApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const minEntities = configApi.getOptionalNumber('qeta.entities.min') ?? 0;
   const minTags = configApi.getOptionalNumber('qeta.tags.min') ?? 0;
@@ -152,41 +164,93 @@ export const PostForm = (props: PostFormProps) => {
     reset,
     getValues: getFormValues,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<QuestionFormValues>({
     values,
     defaultValues: getDefaultValues(props),
   });
 
-  const [showTips, setShowTips] = useState(false);
-  const [titleCharCount, setTitleCharCount] = useState(values.title.length);
+  const postQuestion = useCallback(
+    (data: QuestionFormValues, autoSave: boolean = false) => {
+      setPosting(true);
+      const route = type === 'question' ? questionRoute : articleRoute;
 
-  const postQuestion = (data: QuestionFormValues) => {
-    setPosting(true);
-    const route = type === 'question' ? questionRoute : articleRoute;
+      const queryParams = new URLSearchParams();
+      if (entity) {
+        queryParams.set('entity', entity);
+      }
+      if (entityPage) {
+        queryParams.set('entityPage', 'true');
+      }
 
-    const queryParams = new URLSearchParams();
-    if (entity) {
-      queryParams.set('entity', entity);
-    }
-    if (entityPage) {
-      queryParams.set('entityPage', 'true');
-    }
+      const postId = data.status === 'draft' ? draftId : id;
 
-    if (id) {
+      if (postId) {
+        qetaApi
+          .updatePost(postId, formToRequest(data, images))
+          .then(q => {
+            if (!q || !q.id) {
+              setError(true);
+              return;
+            }
+            setEdited(false);
+            analytics.captureEvent('edit', type);
+            if (data.status === 'draft' || autoSave) {
+              setDraftId(q.id.toString(10));
+              setPosting(false);
+              if (autoSave) {
+                alertApi.post({
+                  message: t('postForm.autoSaveSuccess'),
+                  severity: 'success',
+                  display: 'transient',
+                });
+              }
+              return;
+            }
+
+            reset();
+            if (onPost) {
+              onPost(q);
+            } else if (entity) {
+              navigate(
+                `${route({
+                  id: q.id.toString(10),
+                })}?${queryParams.toString()}`,
+              );
+            } else {
+              navigate(route({ id: q.id.toString(10) }));
+            }
+          })
+          .catch(_e => {
+            setError(true);
+            setPosting(false);
+          });
+        return;
+      }
       qetaApi
-        .updatePost(id, formToRequest(data, images))
+        .createPost(formToRequest(data, images))
         .then(q => {
           if (!q || !q.id) {
             setError(true);
             return;
           }
           setEdited(false);
+          if (data.status === 'draft' || autoSave) {
+            analytics.captureEvent('draft', type);
+            setDraftId(q.id.toString(10));
+            setPosting(false);
+            if (autoSave) {
+              alertApi.post({
+                message: t('postForm.autoSaveSuccess'),
+                severity: 'success',
+                display: 'transient',
+              });
+            }
+            return;
+          }
+          analytics.captureEvent('post', type);
           reset();
-          analytics.captureEvent('edit', type);
-          if (onPost) {
-            onPost(q);
-          } else if (entity) {
+          if (entity) {
             navigate(
               `${route({
                 id: q.id.toString(10),
@@ -200,33 +264,28 @@ export const PostForm = (props: PostFormProps) => {
           setError(true);
           setPosting(false);
         });
-      return;
-    }
-    qetaApi
-      .createPost(formToRequest(data, images))
-      .then(q => {
-        if (!q || !q.id) {
-          setError(true);
-          return;
-        }
-        setEdited(false);
-        analytics.captureEvent('post', type);
-        reset();
-        if (entity) {
-          navigate(
-            `${route({
-              id: q.id.toString(10),
-            })}?${queryParams.toString()}`,
-          );
-        } else {
-          navigate(route({ id: q.id.toString(10) }));
-        }
-      })
-      .catch(_e => {
-        setError(true);
-        setPosting(false);
-      });
-  };
+    },
+    [
+      type,
+      questionRoute,
+      articleRoute,
+      entity,
+      entityPage,
+      draftId,
+      id,
+      qetaApi,
+      analytics,
+      reset,
+      onPost,
+      navigate,
+      images,
+      alertApi,
+      t,
+    ],
+  );
+
+  const [showTips, setShowTips] = useState(false);
+  const [titleCharCount, setTitleCharCount] = useState(values.title.length);
 
   useEffect(() => {
     if (!entityRef) {
@@ -242,6 +301,7 @@ export const PostForm = (props: PostFormProps) => {
       getValues(qetaApi, catalogApi, type, id).then(data => {
         setValues(data);
         setImages(data.images);
+        setStatus(data.status ?? 'draft');
       });
     }
   }, [qetaApi, catalogApi, type, id]);
@@ -282,6 +342,7 @@ export const PostForm = (props: PostFormProps) => {
   const onImageUpload = useCallback(
     (imageId: number) => {
       setImages(prevImages => [...prevImages, imageId]);
+      setEdited(true);
     },
     [setImages],
   );
@@ -291,9 +352,56 @@ export const PostForm = (props: PostFormProps) => {
     setValue('title', e.target.value, { shouldValidate: true });
   };
 
+  const autoSavePost = useCallback(() => {
+    if (autoSaveEnabled && edited && isValid) {
+      const formData = getFormValues();
+      postQuestion({ ...formData, status }, true);
+    }
+  }, [autoSaveEnabled, edited, getFormValues, status, postQuestion, isValid]);
+
+  useDebounce(autoSavePost, 3100, [edited, autoSaveEnabled, isValid]);
+
+  const getSubmitButtonText = () => {
+    if (posting) {
+      return (
+        <span>
+          {t('postForm.submitting')}{' '}
+          <span className="spinner-border spinner-border-sm" />
+        </span>
+      );
+    }
+    if (status === 'draft') {
+      return t('postForm.submit.publish');
+    }
+    return t('postForm.submit.existingPost');
+  };
+
+  const getDraftButtonText = () => {
+    if (posting) {
+      return (
+        <span>
+          {t('postForm.savingDraft')}{' '}
+          <span className="spinner-border spinner-border-sm" />
+        </span>
+      );
+    }
+    if (draftId) {
+      return t('postForm.updateDraft');
+    }
+    return t('postForm.saveDraft');
+  };
+
+  const handleAutoSaveChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.checked;
+    setAutoSaveEnabled(newValue);
+    localStorage.setItem('qeta-auto-save-enabled', JSON.stringify(newValue));
+  };
+
   return (
     <form
-      onSubmit={handleSubmit(postQuestion)}
+      onSubmit={handleSubmit(data =>
+        postQuestion({ ...data, status: 'active' }),
+      )}
       onChange={() => {
         setEdited(true);
         onFormChange?.(control._formValues as QuestionFormValues);
@@ -480,26 +588,48 @@ export const PostForm = (props: PostFormProps) => {
           </Tooltip>
         </Box>
       )}
-      <Box mt={3}>
-        <Button
-          color="primary"
-          type="submit"
-          variant="contained"
-          disabled={posting || isSubmitting}
-          size="large"
-        >
-          {/* eslint-disable-next-line no-nested-ternary */}
-          {posting ? (
-            <span>
-              {t('postForm.submitting')}{' '}
-              <span className="spinner-border spinner-border-sm" />
-            </span>
-          ) : id ? (
-            t('postForm.submit.existingPost')
-          ) : (
-            t('postForm.submit.newPost')
+      <Box
+        mt={3}
+        display="flex"
+        style={{ gap: '16px' }}
+        justifyContent="space-between"
+      >
+        <Box display="flex" style={{ gap: '16px' }}>
+          <Button
+            color="primary"
+            type="submit"
+            variant="contained"
+            disabled={posting || isSubmitting}
+            size="large"
+          >
+            {getSubmitButtonText()}
+          </Button>
+          {status === 'draft' && (
+            <Button
+              color="secondary"
+              variant="outlined"
+              disabled={posting || isSubmitting}
+              size="large"
+              onClick={handleSubmit(data =>
+                postQuestion({ ...data, status: 'draft' }),
+              )}
+            >
+              {getDraftButtonText()}
+            </Button>
           )}
-        </Button>
+        </Box>
+        <FormControlLabel
+          control={
+            <Tooltip title={t('postForm.autoSaveDraftTooltip')}>
+              <Switch
+                checked={autoSaveEnabled}
+                onChange={handleAutoSaveChange}
+                color="primary"
+              />
+            </Tooltip>
+          }
+          label={t('postForm.autoSaveDraft')}
+        />
       </Box>
     </form>
   );

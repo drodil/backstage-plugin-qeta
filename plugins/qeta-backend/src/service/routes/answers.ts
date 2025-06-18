@@ -506,11 +506,26 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       });
 
       // Act
-      answer = await database.deleteAnswerComment(
-        answerId,
-        commentId,
-        username,
-      );
+      if (comment.status === 'deleted') {
+        if (!permissionMgr.isModerator(request)) {
+          response
+            .status(404)
+            .send({ errors: 'Comment not found', type: 'query' });
+          return;
+        }
+        answer = await database.deleteAnswerComment(
+          answerId,
+          commentId,
+          username,
+          true,
+        );
+      } else {
+        answer = await database.deleteAnswerComment(
+          answerId,
+          commentId,
+          username,
+        );
+      }
 
       if (!answer) {
         response.sendStatus(404);
@@ -609,7 +624,18 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     });
 
     // Act
-    const deleted = await database.deleteAnswer(answerId);
+    let deleted = false;
+    if (answer.status === 'deleted') {
+      if (!(await permissionMgr.isModerator(request))) {
+        response
+          .status(404)
+          .send({ errors: 'Answer not found', type: 'query' });
+        return;
+      }
+      deleted = await database.deleteAnswer(answerId, true);
+    } else {
+      deleted = await database.deleteAnswer(answerId);
+    }
 
     if (deleted) {
       signalPostStats(signals, post);

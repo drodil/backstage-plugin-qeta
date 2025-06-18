@@ -1,5 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import {
+  PostsContainer,
   qetaTranslationRef,
   TemplateList,
   useIsModerator,
@@ -32,11 +33,21 @@ export const ModeratorPage = () => {
             aria-label={t('moderatorPage.tools')}
           >
             <Tab label={t('moderatorPage.templates')} value="templates" />
+            <Tab label={t('moderatorPage.deletedPosts')} value="deletedPosts" />
           </TabList>
         </Box>
         <TabPanel value="templates">
-          <Alert severity="info">{t('moderatorPage.templatesInfo')}</Alert>
+          <Alert severity="info" style={{ marginBottom: '1em' }}>
+            {t('moderatorPage.templatesInfo')}
+          </Alert>
           <TemplateList />
+        </TabPanel>
+        <TabPanel value="deletedPosts">
+          <PostsContainer
+            status="deleted"
+            showNoQuestionsBtn={false}
+            showTypeLabel
+          />
         </TabPanel>
       </TabContext>
     </>

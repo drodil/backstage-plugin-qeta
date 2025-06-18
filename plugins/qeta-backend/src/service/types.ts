@@ -22,6 +22,7 @@ import {
   CollectionsQuery,
   EntitiesQuery,
   PostsQuery,
+  PostStatus,
   PostType,
   SuggestionsQuery,
   TagsQuery,
@@ -66,6 +67,7 @@ export interface PostContent {
   headerImage?: string;
   anonymous?: boolean;
   type: PostType;
+  status?: PostStatus;
 }
 
 export interface TemplateContent {
@@ -154,6 +156,11 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     hasAnswers: { type: 'boolean', nullable: true },
     favorite: { type: 'boolean', nullable: true },
     noVotes: { type: 'boolean', nullable: true },
+    status: {
+      type: 'string',
+      enum: ['active', 'draft', 'deleted'],
+      nullable: true,
+    },
     random: { type: 'boolean', nullable: true },
     tags: { type: 'array', items: { type: 'string' }, nullable: true },
     entities: { type: 'array', items: { type: 'string' }, nullable: true },
@@ -276,6 +283,11 @@ export const PostSchema: JSONSchemaType<PostContent> = {
     anonymous: { type: 'boolean', nullable: true },
     headerImage: { type: 'string', nullable: true },
     type: { type: 'string', enum: ['question', 'article'] },
+    status: {
+      type: 'string',
+      enum: ['active', 'draft', 'deleted'],
+      nullable: true,
+    },
   },
   required: ['title', 'content'],
   additionalProperties: false,

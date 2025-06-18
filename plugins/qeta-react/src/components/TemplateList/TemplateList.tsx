@@ -72,6 +72,7 @@ export const TemplateList = () => {
     return (
       <TemplateForm
         onPost={() => {
+          retry();
           navigate('#template:list');
         }}
         id={id}

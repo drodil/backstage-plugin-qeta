@@ -11,15 +11,18 @@ import {
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { LinkButton } from '../Buttons/LinkButton';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { editArticleRouteRef } from '../../routes';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteModal } from '../DeleteModal';
 import EditIcon from '@material-ui/icons/Edit';
+import RestoreIcon from '@material-ui/icons/Restore';
 import { useVoting } from '../../hooks/useVoting';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useNavigate } from 'react-router-dom';
+import { useIsModerator } from '../../hooks';
+import { qetaApiRef } from '../../api.ts';
 
 export type QetaArticleButtonsClassKey = 'container' | 'scoreText';
 
@@ -50,23 +53,49 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const navigate = useNavigate();
   const editArticleRoute = useRouteRef(editArticleRouteRef);
+  const { isModerator } = useIsModerator();
+  const qetaApi = useApi(qetaApiRef);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   const own = props.post.own ?? false;
 
+  const isDisabled = () => {
+    return own || post.status !== 'active';
+  };
+
+  const getVoteUpTooltip = () => {
+    if (isDisabled()) {
+      return '';
+    }
+    return voteUpTooltip;
+  };
+
+  const getVoteDownTooltip = () => {
+    if (isDisabled()) {
+      return '';
+    }
+    return voteDownTooltip;
+  };
+
+  const restoreArticle = async () => {
+    qetaApi.restorePost(post.id).then(() => {
+      window.location.reload();
+    });
+  };
+
   return (
     <div className={styles.container}>
       <Grid container justifyContent="space-between">
         <Grid item>
-          <Tooltip title={voteUpTooltip}>
+          <Tooltip title={getVoteUpTooltip()}>
             <span>
               <IconButton
                 aria-label="vote up"
                 color={ownVote > 0 ? 'primary' : 'default'}
                 className={ownVote > 0 ? 'qetaVoteUpSelected' : 'qetaVoteUp'}
-                disabled={own}
+                disabled={isDisabled()}
                 size="small"
                 onClick={voteUp}
               >
@@ -74,7 +103,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
               </IconButton>
             </span>
           </Tooltip>
-          <Tooltip title={voteDownTooltip}>
+          <Tooltip title={getVoteDownTooltip()}>
             <span>
               <IconButton
                 aria-label="vote down"
@@ -82,7 +111,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
                 className={
                   ownVote < 0 ? 'qetaVoteDownSelected' : 'qetaVoteDown'
                 }
-                disabled={own}
+                disabled={isDisabled()}
                 size="small"
                 onClick={voteDown}
               >
@@ -135,6 +164,17 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
                     entity={post}
                   />
                 </>
+              )}
+              {isModerator && post.status === 'deleted' && (
+                <Tooltip title={t('articlePage.restoreButton')}>
+                  <IconButton
+                    size="small"
+                    onClick={() => restoreArticle()}
+                    color="primary"
+                  >
+                    <RestoreIcon />
+                  </IconButton>
+                </Tooltip>
               )}
             </>
           )}

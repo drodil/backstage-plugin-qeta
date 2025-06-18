@@ -3,6 +3,7 @@ import { RouteOptions, SuggestionsQuerySchema } from '../types';
 import { QetaFilters } from '../util';
 import {
   Article,
+  DraftPostSuggestion,
   NewArticleSuggestion,
   NewQuestionSuggestion,
   NoCorrectAnswerSuggestion,
@@ -192,6 +193,29 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
     }));
   };
 
+  const getUsersDraftPosts = async (
+    username: string,
+    filter?: PermissionCriteria<QetaFilters>,
+  ): Promise<DraftPostSuggestion[]> => {
+    const draftPosts = await database.getPosts(
+      username,
+      {
+        status: 'draft',
+        author: username,
+      },
+      filter,
+      includeNothingOptions,
+    );
+    console.log(
+      `Found ${draftPosts.posts.length} draft posts for user ${username}`,
+    );
+    return draftPosts.posts.map(post => ({
+      id: `p_${post.id}`,
+      type: 'draftPost',
+      post,
+    }));
+  };
+
   const getNewUserArticles = async (
     username: string,
     filter?: PermissionCriteria<QetaFilters>,
@@ -245,6 +269,7 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       getNewEntityArticles(username, filter),
       getNewUserQuestions(username, filter),
       getNewUserArticles(username, filter),
+      getUsersDraftPosts(username, filter),
     ]);
     const suggestions = raw
       .flat()

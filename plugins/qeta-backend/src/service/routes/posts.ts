@@ -73,6 +73,68 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     ]);
   };
 
+  const getPostAndCheckStatus = async (
+    request: Request,
+    response: Response,
+    recordView: boolean = false,
+    allowServiceToken: boolean = false,
+  ) => {
+    const username = await permissionMgr.getUsername(
+      request,
+      allowServiceToken,
+    );
+    const postId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(postId)) {
+      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
+      return null;
+    }
+
+    const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: allowServiceToken,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
+        allowServicePrincipal: allowServiceToken,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
+        allowServicePrincipal: allowServiceToken,
+      }),
+    ]);
+
+    const post = await database.getPost(username, postId, recordView, {
+      tagsFilter,
+      commentsFilter,
+      answersFilter,
+    });
+
+    if (!post) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return null;
+    }
+
+    if (
+      post.status === 'deleted' &&
+      !(await permissionMgr.isModerator(request))
+    ) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return null;
+    }
+
+    if (post.status === 'draft' && post.author !== username) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return null;
+    }
+
+    return {
+      post,
+      username,
+      postId,
+      tagsFilter,
+      commentsFilter,
+      answersFilter,
+    };
+  };
+
   // GET /posts
   router.get(`/posts`, async (request, response) => {
     // Validation
@@ -98,6 +160,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     const [filter, tagsFilter, commentsFilter, answersFilter] =
       await getPostFilters(request, opts);
+
+    if (
+      opts.status === 'deleted' &&
+      !(await permissionMgr.isModerator(request))
+    ) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return;
+    }
 
     // Act
     const posts = await database.getPosts(username, opts, filter, {
@@ -140,6 +210,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     const opts = request.body;
 
+    if (
+      opts.status === 'deleted' &&
+      !(await permissionMgr.isModerator(request))
+    ) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return;
+    }
+
     const [filter, tagsFilter, commentsFilter, answersFilter] =
       await getPostFilters(request, opts);
 
@@ -176,7 +254,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const optionOverride: PostsQuery = {};
+    const optionOverride: PostsQuery = { status: 'active' };
     const type = request.params.type;
     if (type === 'unanswered') {
       optionOverride.random = true;
@@ -223,38 +301,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
   // GET /posts/:id
   router.get(`/posts/:id`, async (request, response) => {
-    // Validation
-    // Act
-    const username = await permissionMgr.getUsername(request);
-    const questionId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(questionId)) {
-      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
-      return;
-    }
-
-    const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
-        allowServicePrincipal: true,
-      }),
-    ]);
-
-    const post = await database.getPost(
-      username,
-      Number.parseInt(request.params.id, 10),
-      true,
-      { tagsFilter, commentsFilter, answersFilter },
-    );
-
-    if (post === null) {
-      response.sendStatus(404);
-      return;
-    }
+    const ret = await getPostAndCheckStatus(request, response, true, true);
+    if (!ret) return;
+    const { post, username } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
       resource: post,
@@ -270,23 +319,17 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       meta: { post: entityToJsonObject(post) },
     });
 
-    // Response
     response.json(post);
   });
 
   // POST /posts/:id/comments
   router.post(`/posts/:id/comments`, async (request, response) => {
-    // Validation
-    // Act
-    const username = await permissionMgr.getUsername(request);
+    const ret = await getPostAndCheckStatus(request, response, false, true);
+    if (!ret) return;
+    const { post, username, answersFilter, tagsFilter, commentsFilter } = ret;
+
     const created = await getCreated(request, options);
     const validateRequestBody = ajv.compile(CommentSchema);
-    const questionId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(questionId)) {
-      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
-      return;
-    }
-
     if (!validateRequestBody(request.body)) {
       response
         .status(400)
@@ -294,73 +337,61 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    let post = await database.getPost(
-      username,
-      Number.parseInt(request.params.id, 10),
-      false,
-    );
-
     await permissionMgr.authorize(request, qetaReadPostPermission, {
       resource: post,
     });
     await permissionMgr.authorize(request, qetaCreateCommentPermission);
 
-    const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
-        allowServicePrincipal: true,
-      }),
-    ]);
-
-    post = await database.commentPost(
-      questionId,
+    const updatedPost = await database.commentPost(
+      post.id,
       username,
       request.body.content,
       created,
       { tagsFilter, commentsFilter, answersFilter },
     );
 
-    if (post === null) {
+    if (updatedPost === null) {
       response
         .status(400)
         .send({ errors: 'Failed to comment post', type: 'body' });
       return;
     }
 
-    await mapAdditionalFields(request, post, options, { username });
+    await mapAdditionalFields(request, updatedPost, options, { username });
 
     wrapAsync(async () => {
-      if (!post) {
+      if (!updatedPost) {
         return;
       }
       const followingUsers = await Promise.all([
-        database.getUsersForTags(post.tags),
-        database.getUsersForEntities(post.entities),
+        database.getUsersForTags(updatedPost.tags),
+        database.getUsersForEntities(updatedPost.entities),
         database.getFollowingUsers(username),
-        database.getUsersWhoFavoritedPost(post.id),
+        database.getUsersWhoFavoritedPost(updatedPost.id),
       ]);
 
       const sent = await notificationMgr.onNewPostComment(
         username,
-        post,
+        updatedPost,
         request.body.content,
         followingUsers.flat(),
       );
       const mentions = findUserMentions(request.body.content);
       if (mentions.length > 0) {
-        await notificationMgr.onMention(username, post, mentions, sent, true);
+        await notificationMgr.onMention(
+          username,
+          updatedPost,
+          mentions,
+          sent,
+          true,
+        );
       }
     });
 
     events?.publish({
       topic: 'qeta',
       eventPayload: {
-        question: post,
+        question: updatedPost,
         comment: request.body.content,
         author: username,
       },
@@ -371,11 +402,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'comment-post',
       severityLevel: 'medium',
       request,
-      meta: { post: entityToJsonObject(post), comment: request.body.content },
+      meta: {
+        post: entityToJsonObject(updatedPost),
+        comment: request.body.content,
+      },
     });
 
-    // Response
-    response.status(201).json(post);
+    response.status(201).json(updatedPost);
   });
 
   // POST /posts/:id/comments/:commentId
@@ -389,7 +422,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const username = await permissionMgr.getUsername(request);
+    const ret = await getPostAndCheckStatus(request, response, false, true);
+    if (!ret) return;
+    const { post, username, answersFilter, commentsFilter, tagsFilter } = ret;
+
     const comment = await database.getComment(commentId, { postId });
 
     if (!comment) {
@@ -401,19 +437,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       resource: comment,
     });
 
-    const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
-        allowServicePrincipal: true,
-      }),
-    ]);
-
-    const post = await database.updatePostComment(
+    const updatedPost = await database.updatePostComment(
       postId,
       commentId,
       username,
@@ -425,7 +449,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     );
 
-    if (post === null) {
+    if (updatedPost === null) {
       response
         .status(400)
         .send({ errors: 'Failed to update post comment', type: 'body' });
@@ -437,7 +461,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       severityLevel: 'medium',
       request,
       meta: {
-        post: entityToJsonObject(post),
+        post: entityToJsonObject(updatedPost),
         from: entityToJsonObject(comment),
         to: request.body.content,
       },
@@ -460,7 +484,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const username = await permissionMgr.getUsername(request);
+    const ret = await getPostAndCheckStatus(request, response, false, true);
+    if (!ret) return;
+    const { username, answersFilter, tagsFilter, commentsFilter } = ret;
+
     const comment = await database.getComment(commentId, { postId });
 
     if (!comment) {
@@ -472,25 +499,40 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       resource: comment,
     });
 
-    const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
-        allowServicePrincipal: true,
-      }),
-    ]);
+    let updatedPost = null;
+    if (comment.status === 'deleted') {
+      if (!(await permissionMgr.isModerator(request))) {
+        response
+          .status(404)
+          .send({ errors: 'Comment not found', type: 'query' });
+        return;
+      }
+      updatedPost = await database.deletePostComment(
+        postId,
+        commentId,
+        username,
+        true,
+        {
+          tagsFilter,
+          commentsFilter,
+          answersFilter,
+        },
+      );
+    } else {
+      updatedPost = await database.deletePostComment(
+        postId,
+        commentId,
+        username,
+        false,
+        {
+          tagsFilter,
+          commentsFilter,
+          answersFilter,
+        },
+      );
+    }
 
-    const post = await database.deletePostComment(postId, commentId, username, {
-      tagsFilter,
-      commentsFilter,
-      answersFilter,
-    });
-
-    if (post === null) {
+    if (updatedPost === null) {
       response
         .status(400)
         .send({ errors: 'Failed to delete post comment', type: 'body' });
@@ -502,15 +544,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       severityLevel: 'medium',
       request,
       meta: {
-        post: entityToJsonObject(post),
+        post: entityToJsonObject(updatedPost),
         comment: entityToJsonObject(comment),
       },
     });
 
-    await mapAdditionalFields(request, post, options, { username });
+    await mapAdditionalFields(request, updatedPost, options, { username });
 
     // Response
-    response.json(post);
+    response.json(updatedPost);
   });
 
   // POST /posts
@@ -545,6 +587,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       anonymous: request.body.anonymous || username === 'user:default/guest',
       type: request.body.type,
       headerImage: request.body.headerImage,
+      status: request.body.status || 'active',
       opts: {
         includeComments: false,
         includeVotes: false,
@@ -608,40 +651,36 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         .json({ errors: validateRequestBody.errors, type: 'body' });
       return;
     }
-    const postId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(postId)) {
-      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
-      return;
-    }
 
-    const username = await permissionMgr.getUsername(request);
-    const originalPost = await database.getPost(
+    const ret = await getPostAndCheckStatus(request, response, false, true);
+    if (!ret) return;
+    const {
+      post: originalPost,
+      postId,
       username,
-      Number.parseInt(request.params.id, 10),
-      false,
-    );
-
-    if (!originalPost) {
-      response.status(404).send({ errors: 'Post not found', type: 'body' });
-      return;
-    }
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
 
     await permissionMgr.authorize(request, qetaEditPostPermission, {
       resource: originalPost,
     });
 
+    if (request.body.status !== 'active' && originalPost.status === 'active') {
+      if (!(await permissionMgr.isModerator(request))) {
+        response
+          .status(400)
+          .json({ errors: validateRequestBody.errors, type: 'body' });
+      }
+      return;
+    }
+
     const existingTags = await database.getTags();
-    const [tags, entities, tagsFilter, commentsFilter, answersFilter] =
-      await Promise.all([
-        getTags(request, options, existingTags),
-        getEntities(request, config),
-        permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission),
-        permissionMgr.getAuthorizeConditions(
-          request,
-          qetaReadCommentPermission,
-        ),
-        permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission),
-      ]);
+    const [tags, entities] = await Promise.all([
+      getTags(request, options, existingTags),
+      getEntities(request, config),
+    ]);
 
     // Act
     const post = await database.updatePost({
@@ -653,6 +692,8 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       entities,
       images: request.body.images,
       headerImage: request.body.headerImage,
+      status: request.body.status || 'active',
+      setUpdatedBy: originalPost.status !== 'draft',
       opts: { tagsFilter, commentsFilter, answersFilter },
     });
 
@@ -686,39 +727,33 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     response.json(post);
   });
 
-  // DELETE /questions/:id
+  // DELETE /posts/:id
   router.delete('/posts/:id', async (request, response) => {
-    // Validation
-    const postId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(postId)) {
-      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
-      return;
-    }
-    const username = await permissionMgr.getUsername(request);
-    const post = await database.getPost(
-      username,
-      Number.parseInt(request.params.id, 10),
-      false,
-    );
-
-    if (!post) {
-      response.status(404).send({ errors: 'Post not found', type: 'body' });
-      return;
-    }
+    const ret = await getPostAndCheckStatus(request, response, false, true);
+    if (!ret) return;
+    const { post } = ret;
 
     await permissionMgr.authorize(request, qetaDeletePostPermission, {
       resource: post,
     });
 
-    // Act
-    const deleted = await database.deletePost(postId);
+    let deleted = false;
+    if (post.status === 'deleted') {
+      if (!(await permissionMgr.isModerator(request))) {
+        response.status(404).send({ errors: 'Post not found', type: 'query' });
+        return;
+      }
+      deleted = await database.deletePost(post.id, true);
+    } else {
+      deleted = await database.deletePost(post.id);
+    }
 
     if (deleted) {
       events?.publish({
         topic: 'qeta',
         eventPayload: {
           post,
-          author: username,
+          author: post.author,
         },
         metadata: { action: 'delete_post' },
       });
@@ -731,7 +766,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       });
     }
 
-    // Response
     response.sendStatus(deleted ? 204 : 404);
   });
 
@@ -740,21 +774,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     response: Response,
     score: number,
   ) => {
-    // Validation
-    const postId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(postId)) {
-      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
-      return;
-    }
-
-    // Act
-    const username = await permissionMgr.getUsername(request);
-    const post = await database.getPost(username, postId, false);
-
-    if (post === null) {
-      response.status(404).send({ errors: 'Post not found', type: 'body' });
-      return;
-    }
+    const ret = await getPostAndCheckStatus(request, response);
+    if (!ret) return;
+    const {
+      post,
+      postId,
+      username,
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
       resource: post,
@@ -774,6 +803,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const resp = await database.getPost(username, postId, false, {
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
       includeComments: false,
       includeAnswers: false,
       includeAttachments: false,
@@ -811,6 +843,63 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     response.json(resp);
   };
 
+  // POST /posts/:id/restore
+  router.post('/posts/:id/restore', async (request, response) => {
+    const ret = await getPostAndCheckStatus(request, response, false, true);
+    if (!ret) return;
+
+    if (!(await permissionMgr.isModerator(request))) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return;
+    }
+    const {
+      post: originalPost,
+      postId,
+      username,
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
+
+    // Act
+    const post = await database.updatePost({
+      id: postId,
+      status: 'active',
+      user_ref: username,
+      setUpdatedBy: false,
+      opts: { tagsFilter, commentsFilter, answersFilter },
+    });
+
+    if (!post) {
+      response.sendStatus(401);
+      return;
+    }
+
+    events?.publish({
+      topic: 'qeta',
+      eventPayload: {
+        post,
+        author: username,
+      },
+      metadata: { action: 'restore_post' },
+    });
+
+    await mapAdditionalFields(request, post, options, { username });
+
+    auditor?.createEvent({
+      eventId: 'restore-post',
+      severityLevel: 'medium',
+      request,
+      meta: {
+        from: entityToJsonObject(originalPost),
+        to: entityToJsonObject(post),
+      },
+    });
+
+    // Response
+    response.json(post);
+  });
+
   // GET /posts/:id/upvote
   router.get(`/posts/:id/upvote`, async (request, response) => {
     return await votePost(request, response, 1);
@@ -823,20 +912,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
   router.delete('/posts/:id/vote', async (request, response) => {
     // Validation
-    const postId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(postId)) {
-      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
-      return;
-    }
-
-    // Act
-    const username = await permissionMgr.getUsername(request);
-    const post = await database.getPost(username, postId, false);
-
-    if (post === null) {
-      response.sendStatus(404);
-      return;
-    }
+    const ret = await getPostAndCheckStatus(request, response);
+    if (!ret) return;
+    const {
+      post,
+      postId,
+      username,
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
       resource: post,
@@ -849,6 +934,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const resp = await database.getPost(username, postId, false, {
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
       includeComments: false,
       includeAnswers: false,
       includeAttachments: false,
@@ -883,18 +971,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
   // GET /posts/:id/favorite
   router.get(`/posts/:id/favorite`, async (request, response) => {
-    const postId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(postId)) {
-      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
-      return;
-    }
-
-    const username = await permissionMgr.getUsername(request);
-    let post = await database.getPost(
+    const ret = await getPostAndCheckStatus(request, response);
+    if (!ret) return;
+    const {
+      post,
+      postId,
       username,
-      Number.parseInt(request.params.id, 10),
-      false,
-    );
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
       resource: post,
@@ -907,11 +993,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    post = await database.getPost(
+    const updatedPost = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
       {
+        answersFilter,
+        tagsFilter,
+        commentsFilter,
         includeComments: false,
         includeAnswers: false,
         includeEntities: false,
@@ -921,7 +1010,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     );
 
-    if (!post) {
+    if (!updatedPost) {
       response.sendStatus(404);
       return;
     }
@@ -930,29 +1019,27 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'favorite-post',
       severityLevel: 'low',
       request,
-      meta: { post: entityToJsonObject(post) },
+      meta: { post: entityToJsonObject(updatedPost) },
     });
 
-    await mapAdditionalFields(request, post, options, { username });
+    await mapAdditionalFields(request, updatedPost, options, { username });
 
     // Response
-    response.json(post);
+    response.json(updatedPost);
   });
 
   // GET /posts/:id/unfavorite
   router.get(`/posts/:id/unfavorite`, async (request, response) => {
-    const postId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(postId)) {
-      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
-      return;
-    }
-
-    const username = await permissionMgr.getUsername(request);
-    let post = await database.getPost(
+    const ret = await getPostAndCheckStatus(request, response);
+    if (!ret) return;
+    const {
+      post,
+      postId,
       username,
-      Number.parseInt(request.params.id, 10),
-      false,
-    );
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
       resource: post,
@@ -965,11 +1052,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    post = await database.getPost(
+    const updatedPost = await database.getPost(
       username,
       Number.parseInt(request.params.id, 10),
       false,
       {
+        answersFilter,
+        tagsFilter,
+        commentsFilter,
         includeComments: false,
         includeAnswers: false,
         includeEntities: false,
@@ -979,7 +1069,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     );
 
-    if (!post) {
+    if (!updatedPost) {
       response.sendStatus(404);
       return;
     }
@@ -988,12 +1078,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'unfavorite-post',
       severityLevel: 'low',
       request,
-      meta: { post: entityToJsonObject(post) },
+      meta: { post: entityToJsonObject(updatedPost) },
     });
 
-    await mapAdditionalFields(request, post, options, { username });
+    await mapAdditionalFields(request, updatedPost, options, { username });
 
     // Response
-    response.json(post);
+    response.json(updatedPost);
   });
 };

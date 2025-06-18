@@ -80,6 +80,10 @@ export interface CollectionEntity extends QetaIdEntity {
 
 export type PostType = 'question' | 'article';
 
+export type PostStatus = 'draft' | 'active' | 'deleted';
+
+export type AnswerCommentStatus = 'active' | 'deleted';
+
 export interface Post extends PostAnswerEntity {
   title: string;
   views: number;
@@ -93,6 +97,7 @@ export interface Post extends PostAnswerEntity {
   type: PostType;
   headerImage?: string;
   images?: number[];
+  status: PostStatus;
 }
 
 export interface Template {
@@ -160,6 +165,7 @@ export interface Answer extends PostAnswerEntity {
   post?: Post;
   images: number[];
   expert?: boolean;
+  status: AnswerCommentStatus;
 }
 
 export interface Collection extends CollectionEntity {
@@ -181,6 +187,7 @@ export interface Vote {
 
 export interface Comment extends QetaEntity {
   expert?: boolean;
+  status: AnswerCommentStatus;
 }
 
 export interface Attachment {
@@ -267,6 +274,7 @@ export interface PostRequest {
   images?: number[];
   headerImage?: string;
   type: PostType;
+  status?: PostStatus;
 }
 
 export interface TemplateRequest {
@@ -403,7 +411,11 @@ export interface StatisticsResponse<T extends Stat> {
   summary: T;
 }
 
-export type SuggestionType = 'noCorrectAnswer' | 'newQuestion' | 'newArticle';
+export type SuggestionType =
+  | 'noCorrectAnswer'
+  | 'newQuestion'
+  | 'newArticle'
+  | 'draftPost';
 
 export interface Suggestion {
   type: SuggestionType;
@@ -418,6 +430,11 @@ export interface NoCorrectAnswerSuggestion extends Suggestion {
 export interface NewQuestionSuggestion extends Suggestion {
   type: 'newQuestion';
   question: Question;
+}
+
+export interface DraftPostSuggestion extends Suggestion {
+  type: 'draftPost';
+  post: Post;
 }
 
 export interface NewArticleSuggestion extends Suggestion {

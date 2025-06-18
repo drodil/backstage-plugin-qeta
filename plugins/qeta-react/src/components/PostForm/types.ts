@@ -1,5 +1,5 @@
 import { Entity } from '@backstage/catalog-model';
-import { PostType } from '@drodil/backstage-plugin-qeta-common';
+import { PostStatus, PostType } from '@drodil/backstage-plugin-qeta-common';
 
 export interface TagAndEntitiesFormValues {
   tags?: string[];
@@ -20,4 +20,5 @@ export interface QuestionFormValues extends TagAndEntitiesFormValues {
   type: PostType;
   images: number[];
   headerImage?: string;
+  status?: PostStatus;
 }

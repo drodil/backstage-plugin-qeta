@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { DateRangeFilter } from './DateRangeFilter';
-import { PostType } from '@drodil/backstage-plugin-qeta-common';
+import { PostStatus, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
@@ -52,6 +52,7 @@ export const filterKeys = [
   'tagsRelation',
   'entities',
   'entitiesRelation',
+  'status',
 ] as const;
 export type FilterKey = (typeof filterKeys)[number];
 
@@ -65,6 +66,7 @@ export type Filters = {
   tags?: string[];
   tagsRelation?: 'and' | 'or';
   dateRange?: string;
+  status?: PostStatus;
 };
 
 export type PostFilters = Filters & {
@@ -86,6 +88,7 @@ export type PostFilters = Filters & {
   tags?: string[];
   tagsRelation?: 'and' | 'or';
   entitiesRelation?: 'and' | 'or';
+  status?: PostStatus;
 };
 
 export type AnswerFilters = Filters & {
@@ -115,7 +118,7 @@ function isCollectionFilters(filters: Filters): filters is CollectionFilters {
 
 export type Change<T extends Filters> = {
   key: keyof T;
-  value: string | string[];
+  value?: string | string[];
 };
 
 export interface CommonFilterPanelProps {
@@ -172,6 +175,9 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
 
     const changes: Change<T>[] = [];
     searchParams.forEach((value, key) => {
+      if (!value) {
+        return;
+      }
       if (filterKeys.includes(key as FilterKey)) {
         if (key === 'tags' || key === 'entities') {
           changes.push({ key: key as keyof T, value: value.split(',') });
@@ -204,7 +210,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
 
   const handleChange = (event: {
     target: {
-      value: string | string[];
+      value?: string | string[];
       type?: string;
       name: string;
       checked?: boolean;
@@ -312,6 +318,26 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                     />
                   }
                   label={t('filterPanel.noAnswers.label')}
+                />
+              )}
+              {postFilters && (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      name="status"
+                      onChange={e => {
+                        const newStatus = e.target.checked
+                          ? 'draft'
+                          : undefined;
+                        handleChange({
+                          target: { name: 'status', value: newStatus },
+                        });
+                      }}
+                      checked={filters.status === 'draft'}
+                    />
+                  }
+                  label={t('filterPanel.drafts.label')}
                 />
               )}
               {(postFilters || answerFilters) && type !== 'article' && (

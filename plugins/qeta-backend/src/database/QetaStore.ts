@@ -10,6 +10,7 @@ import {
   GlobalStat,
   Post,
   PostsQuery,
+  PostStatus,
   PostType,
   QetaIdEntity,
   Statistic,
@@ -126,6 +127,7 @@ export type PostOptions = {
   tagsFilter?: PermissionCriteria<QetaFilters>;
   commentsFilter?: PermissionCriteria<QetaFilters>;
   answersFilter?: PermissionCriteria<QetaFilters>;
+  includeDraftFilter?: boolean;
   includeTags?: boolean;
   includeAnswers?: boolean;
   includeVotes?: boolean;
@@ -146,11 +148,16 @@ export type CollectionOptions = {
 
 export type AnswerOptions = {
   filter?: PermissionCriteria<QetaFilters>;
+  includeStatusFilter?: boolean;
   includeVotes?: boolean;
   includeComments?: boolean;
   includePost?: boolean;
   includeExperts?: boolean;
   commentsFilter?: PermissionCriteria<QetaFilters>;
+};
+
+export type CommentOptions = {
+  includeStatusFilter?: boolean;
 };
 
 /**
@@ -203,6 +210,7 @@ export interface QetaStore {
     anonymous?: boolean;
     type?: PostType;
     headerImage?: string;
+    status?: PostStatus;
     opts?: PostOptions;
   }): Promise<Post>;
 
@@ -232,6 +240,7 @@ export interface QetaStore {
     question_id: number,
     id: number,
     user_ref: string,
+    permanently?: boolean,
     options?: PostOptions,
   ): Promise<MaybePost>;
 
@@ -241,12 +250,14 @@ export interface QetaStore {
   updatePost(options: {
     id: number;
     user_ref: string;
-    title: string;
-    content: string;
+    title?: string;
+    content?: string;
     tags?: string[];
     entities?: string[];
     images?: number[];
     headerImage?: string;
+    setUpdatedBy?: boolean;
+    status?: PostStatus;
     opts?: PostOptions;
   }): Promise<MaybePost>;
 
@@ -254,7 +265,7 @@ export interface QetaStore {
    * Delete question. Only the user who created the question can delete it.
    * @param id question id
    */
-  deletePost(id: number): Promise<boolean>;
+  deletePost(id: number, permanently?: boolean): Promise<boolean>;
 
   /**
    * Answer question
@@ -295,6 +306,7 @@ export interface QetaStore {
     answer_id: number,
     id: number,
     user_ref: string,
+    permanently?: boolean,
     options?: AnswerOptions,
   ): Promise<MaybeAnswer>;
 
@@ -328,17 +340,20 @@ export interface QetaStore {
     options?: AnswerOptions,
   ): Promise<MaybeAnswer>;
 
-  getComments(options?: { ids?: number[] }): Promise<Comment[]>;
+  getComments(
+    options?: { ids?: number[] },
+    opts?: CommentOptions,
+  ): Promise<Comment[]>;
   getComment(
     commentId: number,
-    opts?: { postId?: number; answerId?: number },
+    opts?: CommentOptions & { postId?: number; answerId?: number },
   ): Promise<MaybeComment>;
 
   /**
    * Delete answer. Only the user who created the answer can delete it.
    * @param id answer id
    */
-  deleteAnswer(id: number): Promise<boolean>;
+  deleteAnswer(id: number, permanently?: boolean): Promise<boolean>;
 
   /**
    * Vote question with given score

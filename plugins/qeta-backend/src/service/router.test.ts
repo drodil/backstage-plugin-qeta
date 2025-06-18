@@ -83,6 +83,7 @@ const question: Post = {
   correctAnswer: false,
   type: 'question',
   images: [],
+  status: 'active',
 };
 
 const answer: Answer = {
@@ -94,6 +95,7 @@ const answer: Answer = {
   correct: false,
   created: new Date('2022-01-01T00:00:00Z'),
   images: [],
+  status: 'active',
 };
 
 const comment: Comment = {
@@ -101,6 +103,7 @@ const comment: Comment = {
   author: 'user',
   content: 'content',
   created: new Date('2022-01-01T00:00:00Z'),
+  status: 'active',
 };
 
 const answerWithComment: Answer = {
@@ -335,6 +338,7 @@ describe('createRouter', () => {
           tags: ['java'],
           entities: ['component:default/comp1'],
           type: 'question',
+          status: 'active',
         });
       expect(response.body).toEqual({
         ...question,
@@ -350,6 +354,7 @@ describe('createRouter', () => {
         tags: ['java'],
         entities: ['component:default/comp1'],
         anonymous: false,
+        status: 'active',
         type: 'question',
         opts: {
           includeAnswers: false,
@@ -385,6 +390,7 @@ describe('createRouter', () => {
         entities: ['component:default/comp1'],
         anonymous: false,
         type: 'question',
+        status: 'active',
         opts: {
           includeAnswers: false,
           includeComments: false,

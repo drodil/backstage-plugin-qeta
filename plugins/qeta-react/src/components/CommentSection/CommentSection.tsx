@@ -103,6 +103,10 @@ export const CommentSection = (props: {
 
   useConfirmNavigationIfEdited(edited);
 
+  if (post.status !== 'active') {
+    return null;
+  }
+
   return (
     <Box
       className={`${styles.root} ${styles.commentSection} ${props.className} qetaCommentSection`}

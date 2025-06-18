@@ -26,6 +26,7 @@ import { AuthorBox } from '../AuthorBox/AuthorBox';
 import numeral from 'numeral';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import { StatusChip } from '../Utility/StatusChip';
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -171,6 +172,10 @@ function formatShortNumber(num: number): string {
   return num >= 1000 ? numeral(num).format('0.0 a') : num.toString();
 }
 
+function capitalizeFirstLetter(val: string) {
+  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}
+
 export const PostListItem = (props: PostListItemProps) => {
   const { post, entity, showTypeLabel } = props;
   const [correctAnswer, setCorrectAnswer] = useState(post.correctAnswer);
@@ -267,6 +272,7 @@ export const PostListItem = (props: PostListItemProps) => {
               </Link>
             </Typography>
           </Box>
+          <StatusChip status={post.status} />
           {showTypeLabel && post.type && (
             <Chip
               size="small"
@@ -277,7 +283,7 @@ export const PostListItem = (props: PostListItemProps) => {
                   <CollectionsBookmarkIcon />
                 )
               }
-              label={t(`common.${post.type}`)}
+              label={capitalizeFirstLetter(t(`common.${post.type}`))}
               className={styles.typeLabel}
             />
           )}

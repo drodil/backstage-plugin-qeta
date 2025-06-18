@@ -43,6 +43,7 @@ describe('useVoting', () => {
     score: 10,
     ownVote: 0,
     own: true,
+    status: 'active',
   };
 
   const testAnswer: AnswerResponse = {
@@ -56,6 +57,7 @@ describe('useVoting', () => {
     score: 5,
     ownVote: 0,
     own: false,
+    status: 'active',
   };
 
   beforeEach(() => {

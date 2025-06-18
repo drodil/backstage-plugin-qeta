@@ -13,6 +13,8 @@ import { WarningPanel } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
+import { DraftBanner } from '../Utility/DraftBanner';
+import { DeletedBanner } from '../Utility/DeletedBanner.tsx';
 
 export type QetaArticleContentClassKey =
   | 'content'
@@ -70,6 +72,8 @@ export const ArticleContent = (props: {
   return (
     <>
       <Typography variant="h2">{postEntity.title}</Typography>
+      {postEntity.status === 'draft' && <DraftBanner />}
+      {postEntity.status === 'deleted' && <DeletedBanner />}
       <Grid container alignItems="center">
         <Grid item>
           <Avatar
@@ -107,12 +111,16 @@ export const ArticleContent = (props: {
         className={styles.content}
         showToc
       />
-      <Typography variant="h6">{t('common.comments')}</Typography>
-      <CommentSection
-        className={styles.commentSection}
-        post={postEntity}
-        onCommentAction={onCommentAction}
-      />
+      {post.status === 'active' && (
+        <>
+          <Typography variant="h6">{t('common.comments')}</Typography>
+          <CommentSection
+            className={styles.commentSection}
+            post={postEntity}
+            onCommentAction={onCommentAction}
+          />
+        </>
+      )}
       <Grid container>
         <Grid item xs={12}>
           <TagsAndEntities entity={postEntity} />
