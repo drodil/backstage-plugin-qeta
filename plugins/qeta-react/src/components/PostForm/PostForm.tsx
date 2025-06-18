@@ -204,6 +204,12 @@ export const PostForm = (props: PostFormProps) => {
                   severity: 'success',
                   display: 'transient',
                 });
+              } else {
+                alertApi.post({
+                  message: t('postForm.draftSaved'),
+                  severity: 'success',
+                  display: 'transient',
+                });
               }
               return;
             }
@@ -242,6 +248,12 @@ export const PostForm = (props: PostFormProps) => {
             if (autoSave) {
               alertApi.post({
                 message: t('postForm.autoSaveSuccess'),
+                severity: 'success',
+                display: 'transient',
+              });
+            } else {
+              alertApi.post({
+                message: t('postForm.draftSaved'),
                 severity: 'success',
                 display: 'transient',
               });

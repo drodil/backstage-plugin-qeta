@@ -144,6 +144,7 @@ export const qetaTranslationRef = createTranslationRef({
       savingDraft: 'Saving draft...',
       saveDraft: 'Save as draft',
       updateDraft: 'Save draft',
+      draftSaved: 'Draft saved',
       tips_question_1: 'Describe your problem in detail.',
       tips_question_2:
         'Include what you have tried and what you expected to happen.',
