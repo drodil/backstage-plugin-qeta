@@ -546,7 +546,6 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       await mapAdditionalFields(request, answer, options);
 
       // Response
-      response.status(201);
       response.json(answer);
     },
   );

@@ -206,9 +206,7 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       filter,
       includeNothingOptions,
     );
-    console.log(
-      `Found ${draftPosts.posts.length} draft posts for user ${username}`,
-    );
+
     return draftPosts.posts.map(post => ({
       id: `p_${post.id}`,
       type: 'draftPost',
