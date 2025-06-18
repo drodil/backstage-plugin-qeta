@@ -89,7 +89,23 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return null;
     }
 
-    const post = await database.getPost(username, postId, recordView);
+    const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
+      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+        allowServicePrincipal: allowServiceToken,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
+        allowServicePrincipal: allowServiceToken,
+      }),
+      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
+        allowServicePrincipal: allowServiceToken,
+      }),
+    ]);
+
+    const post = await database.getPost(username, postId, recordView, {
+      tagsFilter,
+      commentsFilter,
+      answersFilter,
+    });
 
     if (!post) {
       response.status(404).send({ errors: 'Post not found', type: 'query' });
@@ -109,7 +125,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return null;
     }
 
-    return { post, username, postId };
+    return {
+      post,
+      username,
+      postId,
+      tagsFilter,
+      commentsFilter,
+      answersFilter,
+    };
   };
 
   // GET /posts
@@ -278,7 +301,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
   // GET /posts/:id
   router.get(`/posts/:id`, async (request, response) => {
-    const ret = await getPostAndCheckStatus(request, response, true);
+    const ret = await getPostAndCheckStatus(request, response, true, true);
     if (!ret) return;
     const { post, username } = ret;
 
@@ -301,9 +324,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
   // POST /posts/:id/comments
   router.post(`/posts/:id/comments`, async (request, response) => {
-    const ret = await getPostAndCheckStatus(request, response);
+    const ret = await getPostAndCheckStatus(request, response, false, true);
     if (!ret) return;
-    const { post, username } = ret;
+    const { post, username, answersFilter, tagsFilter, commentsFilter } = ret;
 
     const created = await getCreated(request, options);
     const validateRequestBody = ajv.compile(CommentSchema);
@@ -318,18 +341,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       resource: post,
     });
     await permissionMgr.authorize(request, qetaCreateCommentPermission);
-
-    const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
-        allowServicePrincipal: true,
-      }),
-    ]);
 
     const updatedPost = await database.commentPost(
       post.id,
@@ -411,9 +422,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const ret = await getPostAndCheckStatus(request, response);
+    const ret = await getPostAndCheckStatus(request, response, false, true);
     if (!ret) return;
-    const { post, username } = ret;
+    const { post, username, answersFilter, commentsFilter, tagsFilter } = ret;
 
     const comment = await database.getComment(commentId, { postId });
 
@@ -425,18 +436,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     await permissionMgr.authorize(request, qetaEditCommentPermission, {
       resource: comment,
     });
-
-    const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
-        allowServicePrincipal: true,
-      }),
-    ]);
 
     const updatedPost = await database.updatePostComment(
       postId,
@@ -485,9 +484,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const ret = await getPostAndCheckStatus(request, response);
+    const ret = await getPostAndCheckStatus(request, response, false, true);
     if (!ret) return;
-    const { username } = ret;
+    const { username, answersFilter, tagsFilter, commentsFilter } = ret;
 
     const comment = await database.getComment(commentId, { postId });
 
@@ -499,18 +498,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     await permissionMgr.authorize(request, qetaDeleteCommentPermission, {
       resource: comment,
     });
-
-    const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
-        allowServicePrincipal: true,
-      }),
-    ]);
 
     const updatedPost = await database.deletePostComment(
       postId,
@@ -643,9 +630,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const ret = await getPostAndCheckStatus(request, response);
+    const ret = await getPostAndCheckStatus(request, response, false, true);
     if (!ret) return;
-    const { post: originalPost, postId, username } = ret;
+    const {
+      post: originalPost,
+      postId,
+      username,
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
 
     await permissionMgr.authorize(request, qetaEditPostPermission, {
       resource: originalPost,
@@ -659,17 +653,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const existingTags = await database.getTags();
-    const [tags, entities, tagsFilter, commentsFilter, answersFilter] =
-      await Promise.all([
-        getTags(request, options, existingTags),
-        getEntities(request, config),
-        permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission),
-        permissionMgr.getAuthorizeConditions(
-          request,
-          qetaReadCommentPermission,
-        ),
-        permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission),
-      ]);
+    const [tags, entities] = await Promise.all([
+      getTags(request, options, existingTags),
+      getEntities(request, config),
+    ]);
 
     // Act
     const post = await database.updatePost({
@@ -717,7 +704,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
   // DELETE /posts/:id
   router.delete('/posts/:id', async (request, response) => {
-    const ret = await getPostAndCheckStatus(request, response);
+    const ret = await getPostAndCheckStatus(request, response, false, true);
     if (!ret) return;
     const { post } = ret;
 
@@ -755,7 +742,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   ) => {
     const ret = await getPostAndCheckStatus(request, response);
     if (!ret) return;
-    const { post, postId, username } = ret;
+    const {
+      post,
+      postId,
+      username,
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
       resource: post,
@@ -775,6 +769,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const resp = await database.getPost(username, postId, false, {
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
       includeComments: false,
       includeAnswers: false,
       includeAttachments: false,
@@ -826,7 +823,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     // Validation
     const ret = await getPostAndCheckStatus(request, response);
     if (!ret) return;
-    const { post, postId, username } = ret;
+    const {
+      post,
+      postId,
+      username,
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
       resource: post,
@@ -839,6 +843,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const resp = await database.getPost(username, postId, false, {
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
       includeComments: false,
       includeAnswers: false,
       includeAttachments: false,
@@ -875,7 +882,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   router.get(`/posts/:id/favorite`, async (request, response) => {
     const ret = await getPostAndCheckStatus(request, response);
     if (!ret) return;
-    const { post, postId, username } = ret;
+    const {
+      post,
+      postId,
+      username,
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
       resource: post,
@@ -893,6 +907,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
       false,
       {
+        answersFilter,
+        tagsFilter,
+        commentsFilter,
         includeComments: false,
         includeAnswers: false,
         includeEntities: false,
@@ -924,7 +941,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   router.get(`/posts/:id/unfavorite`, async (request, response) => {
     const ret = await getPostAndCheckStatus(request, response);
     if (!ret) return;
-    const { post, postId, username } = ret;
+    const {
+      post,
+      postId,
+      username,
+      answersFilter,
+      tagsFilter,
+      commentsFilter,
+    } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
       resource: post,
@@ -942,6 +966,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
       false,
       {
+        answersFilter,
+        tagsFilter,
+        commentsFilter,
         includeComments: false,
         includeAnswers: false,
         includeEntities: false,
