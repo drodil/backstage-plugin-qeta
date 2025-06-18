@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.31.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.30.2...v3.31.0) (2025-06-18)
+
+
+### Features
+
+* add auto save feature to post form ([46d4f85](https://github.com/drodil/backstage-plugin-qeta/commit/46d4f85d7c852a9de46eceee1ee4b3d1814e45c3))
+* add suggestion to finish draft posts ([ad3e7a7](https://github.com/drodil/backstage-plugin-qeta/commit/ad3e7a783aa5338c07da082866afc40415ba9a63))
+* allow filtering drafts from filter panel ([c5d6bf2](https://github.com/drodil/backstage-plugin-qeta/commit/c5d6bf2a17a3e1d5d6834e5870a8ecb450a9143b))
+* allow only moderators to delete answers and comments permanently ([321e7a0](https://github.com/drodil/backstage-plugin-qeta/commit/321e7a0339da520b9e3d89423d4a574db953d52a)), closes [#87](https://github.com/drodil/backstage-plugin-qeta/issues/87)
+* allow only moderators to delete posts permanently ([8feec29](https://github.com/drodil/backstage-plugin-qeta/commit/8feec294b46ffd12c8c98ac6b89c9abc683ae40d)), closes [#87](https://github.com/drodil/backstage-plugin-qeta/issues/87)
+* allow posting drafts ([a2fa363](https://github.com/drodil/backstage-plugin-qeta/commit/a2fa36345b85a74285bdc13bbfef4e4dbc63ba7f)), closes [#204](https://github.com/drodil/backstage-plugin-qeta/issues/204)
+* allow restoring deleted posts ([2bf7a60](https://github.com/drodil/backstage-plugin-qeta/commit/2bf7a6058f4b6f1f050b35c3a7f4643552122e65))
+* show deleted posts in the moderator page ([c446193](https://github.com/drodil/backstage-plugin-qeta/commit/c44619344ae8f104f9fa2ee5624ce8ce13d2fc85))
+
+
+### Bug Fixes
+
+* add status to url parameters of filters ([8f62128](https://github.com/drodil/backstage-plugin-qeta/commit/8f62128a15cea2e7bf2107ed18827c0a137499f6))
+* allow undefined in filter panel changes ([ce431b7](https://github.com/drodil/backstage-plugin-qeta/commit/ce431b755014aea6ed734194e450b25ec8b34c00))
+* answer card updated expert tag ([170eccd](https://github.com/drodil/backstage-plugin-qeta/commit/170eccd8d6a87574b11400639662e7d5360f8f8c))
+* router tests ([bd53a8b](https://github.com/drodil/backstage-plugin-qeta/commit/bd53a8b6b00210ca46f1d88fcec6044cb3fc0777))
+* router to use permission filtering ([8d811b4](https://github.com/drodil/backstage-plugin-qeta/commit/8d811b43c1496707674f11c2e451a2d6b4a2a825))
+
 ### [3.30.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.30.1...v3.30.2) (2025-06-17)
 
 
