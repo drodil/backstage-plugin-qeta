@@ -52,6 +52,7 @@ export const filterKeys = [
   'tagsRelation',
   'entities',
   'entitiesRelation',
+  'status',
 ] as const;
 export type FilterKey = (typeof filterKeys)[number];
 
@@ -174,6 +175,9 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
 
     const changes: Change<T>[] = [];
     searchParams.forEach((value, key) => {
+      if (!value) {
+        return;
+      }
       if (filterKeys.includes(key as FilterKey)) {
         if (key === 'tags' || key === 'entities') {
           changes.push({ key: key as keyof T, value: value.split(',') });
@@ -326,7 +330,9 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                         const newStatus = e.target.checked
                           ? 'draft'
                           : undefined;
-                        onChange({ key: 'status', value: newStatus });
+                        handleChange({
+                          target: { name: 'status', value: newStatus },
+                        });
                       }}
                       checked={filters.status === 'draft'}
                     />

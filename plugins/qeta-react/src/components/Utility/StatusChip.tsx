@@ -5,6 +5,9 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 
 const useStyles = makeStyles(theme => ({
+  icon: {
+    color: theme.palette.warning.contrastText,
+  },
   statusChip: {
     marginLeft: theme.spacing(1),
     padding: '0.5rem 0.5rem',
@@ -31,7 +34,7 @@ export const StatusChip = ({ status, className }: StatusChipProps) => {
     return (
       <Chip
         size="small"
-        icon={<DraftsIcon />}
+        icon={<DraftsIcon className={styles.icon} />}
         label={t('common.draft')}
         className={`${styles.statusChip} ${className || ''}`}
       />
@@ -41,7 +44,7 @@ export const StatusChip = ({ status, className }: StatusChipProps) => {
     return (
       <Chip
         size="small"
-        icon={<DeleteIcon />}
+        icon={<DeleteIcon className={styles.icon} />}
         label={t('common.deleted')}
         className={`${styles.statusChip} deleted ${className || ''}`}
       />
