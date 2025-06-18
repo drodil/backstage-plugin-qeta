@@ -712,7 +712,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       resource: post,
     });
 
-    const deleted = await database.deletePost(post.id);
+    let deleted = false;
+    if (post.status === 'deleted') {
+      if (!(await permissionMgr.isModerator(request))) {
+        response.status(404).send({ errors: 'Post not found', type: 'query' });
+        return;
+      }
+      deleted = await database.deletePost(post.id, true);
+    } else {
+      deleted = await database.deletePost(post.id);
+    }
 
     if (deleted) {
       events?.publish({

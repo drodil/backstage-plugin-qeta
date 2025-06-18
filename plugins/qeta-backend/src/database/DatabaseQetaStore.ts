@@ -768,7 +768,11 @@ export class DatabaseQetaStore implements QetaStore {
     return await this.getPost(user_ref, id, false, opts);
   }
 
-  async deletePost(id: number): Promise<boolean> {
+  async deletePost(id: number, permanently?: boolean): Promise<boolean> {
+    if (permanently) {
+      const rows = await this.db('posts').where('id', '=', id).delete();
+      return rows > 0;
+    }
     const rows = await this.db('posts').where('id', '=', id).update({
       status: 'deleted',
     });

@@ -258,7 +258,7 @@ export interface QetaStore {
    * Delete question. Only the user who created the question can delete it.
    * @param id question id
    */
-  deletePost(id: number): Promise<boolean>;
+  deletePost(id: number, permanently?: boolean): Promise<boolean>;
 
   /**
    * Answer question
