@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.31.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.31.1...v3.31.2) (2025-06-18)
+
+
+### Bug Fixes
+
+* add missing tests for router ([f336140](https://github.com/drodil/backstage-plugin-qeta/commit/f336140bf37d2d65124a731dd9064bf8ad99a686))
+* git add forgot ([cbab67c](https://github.com/drodil/backstage-plugin-qeta/commit/cbab67c46d836a85d1377f4c334257d05757395e))
+* navigation after deleting items ([985df3b](https://github.com/drodil/backstage-plugin-qeta/commit/985df3bf9f676aeded95687d5559bc509185d38b))
+* show alert when draft is saved ([d9eaf86](https://github.com/drodil/backstage-plugin-qeta/commit/d9eaf860baf3ee93c6097f60b7eea1550cd6544e))
+
 ### [3.31.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.31.0...v3.31.1) (2025-06-18)
 
 
