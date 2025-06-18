@@ -417,7 +417,8 @@ export const qetaTranslationRef = createTranslationRef({
       errorLoading: 'Could not load question',
       editButton: 'Edit',
       notFound: 'Could not find the question',
-      draftStatus: 'This is a draft post',
+      draftStatus:
+        'This is a draft post. Please edit and publish it to make it visible to others.',
       sortAnswers: {
         label: 'Sort answers',
         menuLabel: 'Sort answers menu',
