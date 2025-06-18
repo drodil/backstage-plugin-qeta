@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.31.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.31.0...v3.31.1) (2025-06-18)
+
+
+### Bug Fixes
+
+* allow using relative urls for uploaded images ([3e5a119](https://github.com/drodil/backstage-plugin-qeta/commit/3e5a119c0eade578f23932635362699358b8684b)), closes [#310](https://github.com/drodil/backstage-plugin-qeta/issues/310)
+* small improvement on comment add button ([ceefe9d](https://github.com/drodil/backstage-plugin-qeta/commit/ceefe9d5dd19663ad8ee0e01d77d3821ef38161e))
+
 ## [3.31.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.30.2...v3.31.0) (2025-06-18)
 
 
