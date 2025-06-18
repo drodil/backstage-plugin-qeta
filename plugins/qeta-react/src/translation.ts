@@ -137,13 +137,13 @@ export const qetaTranslationRef = createTranslationRef({
       },
       submit: {
         existingPost: 'Save',
-        newPost: 'Post',
+        publish: 'Publish',
       },
       successPosting: 'Your {{type}} was posted successfully!',
       submitting: 'Posting...',
       savingDraft: 'Saving draft...',
       saveDraft: 'Save as draft',
-      updateDraft: 'Update draft',
+      updateDraft: 'Save draft',
       tips_question_1: 'Describe your problem in detail.',
       tips_question_2:
         'Include what you have tried and what you expected to happen.',
@@ -303,6 +303,7 @@ export const qetaTranslationRef = createTranslationRef({
         'Your question "{{title}}" does not have a correct answer',
       newQuestion: 'Do you have an answer for "{{title}}"?',
       newArticle: 'You might like to read "{{title}}"',
+      draftPost: 'Ready to finalize draft post "{{title}}"?',
     },
     homePage: {
       title: 'Home',

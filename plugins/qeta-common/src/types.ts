@@ -407,7 +407,11 @@ export interface StatisticsResponse<T extends Stat> {
   summary: T;
 }
 
-export type SuggestionType = 'noCorrectAnswer' | 'newQuestion' | 'newArticle';
+export type SuggestionType =
+  | 'noCorrectAnswer'
+  | 'newQuestion'
+  | 'newArticle'
+  | 'draftPost';
 
 export interface Suggestion {
   type: SuggestionType;
@@ -422,6 +426,11 @@ export interface NoCorrectAnswerSuggestion extends Suggestion {
 export interface NewQuestionSuggestion extends Suggestion {
   type: 'newQuestion';
   question: Question;
+}
+
+export interface DraftPostSuggestion extends Suggestion {
+  type: 'draftPost';
+  post: Post;
 }
 
 export interface NewArticleSuggestion extends Suggestion {

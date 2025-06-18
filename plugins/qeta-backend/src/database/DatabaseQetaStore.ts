@@ -337,6 +337,9 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.status) {
+      if (options.status === 'draft') {
+        query.where('posts.author', '=', user_ref);
+      }
       query.where('posts.status', '=', options.status);
     } else if (includeDraftFilter) {
       query.where(q => {

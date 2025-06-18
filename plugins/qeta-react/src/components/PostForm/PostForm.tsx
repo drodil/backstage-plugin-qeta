@@ -9,12 +9,12 @@ import {
   Box,
   Button,
   Collapse,
+  FormControlLabel,
   IconButton,
+  Switch,
   TextField,
   Tooltip,
   Typography,
-  Switch,
-  FormControlLabel,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useCallback, useEffect, useState } from 'react';
@@ -355,9 +355,9 @@ export const PostForm = (props: PostFormProps) => {
   const autoSavePost = useCallback(() => {
     if (autoSaveEnabled && edited && isValid) {
       const formData = getFormValues();
-      postQuestion(formData, true);
+      postQuestion({ ...formData, status }, true);
     }
-  }, [autoSaveEnabled, edited, getFormValues, postQuestion, isValid]);
+  }, [autoSaveEnabled, edited, getFormValues, status, postQuestion, isValid]);
 
   useDebounce(autoSavePost, 3000, [edited, autoSaveEnabled, isValid]);
 
@@ -370,10 +370,10 @@ export const PostForm = (props: PostFormProps) => {
         </span>
       );
     }
-    if (id) {
-      return t('postForm.submit.existingPost');
+    if (status === 'draft') {
+      return t('postForm.submit.publish');
     }
-    return t('postForm.submit.newPost');
+    return t('postForm.submit.existingPost');
   };
 
   const getDraftButtonText = () => {
