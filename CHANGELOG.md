@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.31.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.31.2...v3.31.3) (2025-06-19)
+
+
+### Bug Fixes
+
+* do not log binary image in attachments ([fd8e4c7](https://github.com/drodil/backstage-plugin-qeta/commit/fd8e4c7f3b315bc05a7e2a5e250873841d36ca64))
+
 ### [3.31.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.31.1...v3.31.2) (2025-06-18)
 
 
