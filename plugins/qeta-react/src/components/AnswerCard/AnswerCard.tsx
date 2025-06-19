@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { AnswerForm } from '../AnswerForm';
-import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { CommentSection } from '../CommentSection/CommentSection';
 import { LinkButton } from '../Buttons/LinkButton';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -23,6 +22,7 @@ import {
 } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { AuthorBoxes } from '../AuthorBox/AuthorBoxes.tsx';
 
 export type AnswerCardClassKeys =
   | 'root'
@@ -181,29 +181,7 @@ export const AnswerCard = (props: {
                         </Box>
                       )}
                     </Box>
-                    <Box
-                      display="flex"
-                      minWidth={220}
-                      style={{ gap: '8px' }}
-                      ml={1}
-                    >
-                      {answerEntity.updated && answerEntity.updatedBy && (
-                        <AuthorBox
-                          userEntityRef={answerEntity.updatedBy}
-                          time={answerEntity.updated}
-                          label={t('authorBox.updatedAtTime')}
-                          expert={false}
-                          anonymous={answerEntity.anonymous}
-                        />
-                      )}
-                      <AuthorBox
-                        userEntityRef={answerEntity.author}
-                        time={answerEntity.created}
-                        label={t('authorBox.answeredAtTime')}
-                        expert={answerEntity.expert}
-                        anonymous={answerEntity.anonymous}
-                      />
-                    </Box>
+                    <AuthorBoxes entity={answerEntity} />
                   </Box>
                 </>
               )}

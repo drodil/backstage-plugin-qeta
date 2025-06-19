@@ -9,7 +9,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import RestoreIcon from '@material-ui/icons/Restore';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
-import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
@@ -30,6 +29,7 @@ import {
 } from '@material-ui/core';
 import { useIsModerator } from '../../hooks';
 import { qetaApiRef } from '../../api.ts';
+import { AuthorBoxes } from '../AuthorBox/AuthorBoxes.tsx';
 
 export type QuestionCardClassKeys =
   | 'root'
@@ -185,27 +185,7 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                     )}
                   </Box>
                 </Box>
-                <Box
-                  display="flex"
-                  minWidth={230}
-                  style={{ gap: '8px' }}
-                  ml={1}
-                >
-                  {questionEntity.updated && questionEntity.updatedBy && (
-                    <AuthorBox
-                      userEntityRef={questionEntity.updatedBy}
-                      time={questionEntity.updated}
-                      label={t('authorBox.updatedAtTime')}
-                      anonymous={questionEntity.anonymous}
-                    />
-                  )}
-                  <AuthorBox
-                    userEntityRef={questionEntity.author}
-                    time={questionEntity.created}
-                    label={t('authorBox.postedAtTime')}
-                    anonymous={questionEntity.anonymous}
-                  />
-                </Box>
+                <AuthorBoxes entity={questionEntity} />
               </Box>
             </Grid>
           </Grid>
