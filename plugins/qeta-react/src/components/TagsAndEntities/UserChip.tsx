@@ -43,7 +43,7 @@ export const UserTooltip = (props: {
               src={user?.spec?.profile?.picture}
               alt={name}
               variant="rounded"
-              style={{ width: '0.9em', height: '0.9em' }}
+              style={{ width: '20px', height: '20px' }}
             >
               {initials}
             </Avatar>
