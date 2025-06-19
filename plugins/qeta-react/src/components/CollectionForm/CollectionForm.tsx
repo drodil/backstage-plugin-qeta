@@ -4,6 +4,7 @@ import {
   Button,
   Collapse,
   IconButton,
+  Link,
   TextField,
   Tooltip,
   Typography,
@@ -229,18 +230,18 @@ export const CollectionForm = (props: CollectionFormProps) => {
           </Tooltip>
         </Typography>
         <Box>
-          <a
+          <Link
             href="https://www.markdownguide.org/cheat-sheet/"
             target="_blank"
             rel="noopener noreferrer"
+            color="inherit"
             style={{ fontSize: 12 }}
           >
             {t('collectionForm.descriptionInput.markdownHelp')}
-          </a>
-          <HelpIcon
-            fontSize="small"
-            style={{ marginLeft: 4, verticalAlign: 'middle' }}
-          />
+            <HelpIcon
+              style={{ fontSize: 12, marginLeft: 4, verticalAlign: 'middle' }}
+            />
+          </Link>
         </Box>
       </Box>
       <Collapse in={showTips}>

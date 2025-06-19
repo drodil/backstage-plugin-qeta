@@ -11,6 +11,7 @@ import {
   Collapse,
   FormControlLabel,
   IconButton,
+  Link,
   Switch,
   TextField,
   Tooltip,
@@ -498,18 +499,18 @@ export const PostForm = (props: PostFormProps) => {
           </Tooltip>
         </Typography>
         <Box>
-          <a
+          <Link
             href="https://www.markdownguide.org/cheat-sheet/"
             target="_blank"
+            color="inherit"
             rel="noopener noreferrer"
             style={{ fontSize: 12 }}
           >
             {t('postForm.contentInput.markdownHelp')}
-          </a>
-          <HelpIcon
-            fontSize="small"
-            style={{ marginLeft: 4, verticalAlign: 'middle' }}
-          />
+            <HelpIcon
+              style={{ fontSize: 12, marginLeft: 4, verticalAlign: 'middle' }}
+            />
+          </Link>
         </Box>
       </Box>
       <Collapse in={showTips}>
