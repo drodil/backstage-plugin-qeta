@@ -451,13 +451,15 @@ export class DatabaseQetaStore implements QetaStore {
       query.select(
         this.db.raw(
           `(
-            (SELECT COALESCE(SUM(score), 0) FROM post_votes WHERE "postId" = posts.id) * 40 + 
-            (SELECT COALESCE(COUNT(*), 0) FROM answers WHERE "postId" = posts.id) * 20 +
-            (SELECT COALESCE(COUNT(*), 0) FROM post_views WHERE "postId" = posts.id) * 8
+            (SELECT COALESCE(SUM(score), 0) FROM post_votes WHERE "postId" = posts.id) * 200 + 
+            (SELECT COALESCE(COUNT(*), 0) FROM answers WHERE "postId" = posts.id) * 100 +
+            (SELECT COALESCE(COUNT(*), 0) FROM user_favorite WHERE "postId" = posts.id) * 50 +
+            (SELECT COALESCE(COUNT(*), 0) FROM post_views WHERE "postId" = posts.id) * 10 +
+            (SELECT COALESCE(COUNT(*), 0) FROM comments WHERE "postId" = posts.id) * 30
           ) / 
           POWER(
-            EXTRACT(EPOCH FROM (now() - posts.created)) / 21600 + 1,
-            1.8
+            EXTRACT(EPOCH FROM (now() - posts.created)) / 172800 + 1,
+            1.5
           ) as trend`,
         ),
       );
@@ -2416,11 +2418,6 @@ export class DatabaseQetaStore implements QetaStore {
       .where('collectionId', collectionId)
       .where('postId', postId)
       .update({ rank });
-  }
-
-  // Add a method to manually update trends if needed
-  async updatePostTrends(): Promise<void> {
-    await this.db.raw('SELECT update_all_post_trends();');
   }
 
   private async getTagExpertsById(id: number) {
