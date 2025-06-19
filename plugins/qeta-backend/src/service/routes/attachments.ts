@@ -39,6 +39,13 @@ const getStorageEngine = (
   }
 };
 
+const getLoggedAttachment = (attachment: Attachment) => {
+  const loggedAttachment = entityToJsonObject(attachment);
+  // Remove the binary image data for logging
+  loggedAttachment.binaryImage = undefined;
+  return loggedAttachment;
+};
+
 export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
   const { database, config, auditor, permissionMgr } = options;
 
@@ -122,7 +129,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
         severityLevel: 'medium',
         request,
         meta: {
-          attachment: entityToJsonObject(attachment),
+          attachment: getLoggedAttachment(attachment),
         },
       });
       response.status(201).json(attachment);
@@ -151,7 +158,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'read-attachment',
       severityLevel: 'low',
       request,
-      meta: { attachment: entityToJsonObject(attachment) },
+      meta: { attachment: getLoggedAttachment(attachment) },
     });
 
     response.writeHead(200, {
@@ -196,7 +203,7 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'delete-attachment',
       severityLevel: 'medium',
       request,
-      meta: { attachment: entityToJsonObject(attachment) },
+      meta: { attachment: getLoggedAttachment(attachment) },
     });
 
     response.sendStatus(204);
