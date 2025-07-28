@@ -2000,13 +2000,15 @@ export class DatabaseQetaStore implements QetaStore {
     if (options.tags) {
       const tags = filterTags(options.tags);
       if (options.tagsRelation === 'or') {
-        query.innerJoin(
+        query.leftJoin(
           'post_tags',
           'collection_posts.postId',
           'post_tags.postId',
         );
-        query.innerJoin('tags', 'post_tags.tagId', 'tags.id');
-        query.whereIn('tags.tag', tags);
+        query.leftJoin('tags', 'post_tags.tagId', 'tags.id');
+        query.where(function(qb) {
+          qb.whereIn('tags.tag', tags).orWhereNull('collection_posts.postId');
+        });
       } else {
         tags.forEach((t, i) => {
           query.innerJoin(
@@ -2022,13 +2024,16 @@ export class DatabaseQetaStore implements QetaStore {
 
     if (options.entities) {
       if (options.entitiesRelation === 'or') {
-        query.innerJoin(
+        query.leftJoin(
           'post_entities',
           'collection_posts.postId',
           'post_entities.postId',
         );
-        query.innerJoin('entities', 'post_entities.entityId', 'entities.id');
-        query.whereIn('entities.entity_ref', options.entities);
+        query.leftJoin('entities', 'post_entities.entityId', 'entities.id');
+        const entityValues = (Array.isArray(options.entities) ? options.entities : [options.entities]).filter((e): e is string => typeof e === 'string');
+        query.where(qb => {
+          qb.whereIn('entities.entity_ref', entityValues).orWhereNull('collection_posts.postId');
+        });
       } else {
         options.entities.forEach((t, i) => {
           query.innerJoin(
@@ -2985,27 +2990,24 @@ export class DatabaseQetaStore implements QetaStore {
       .groupBy('posts.id');
   }
 
-  private getCollectionsBaseQuery(opts?: PostOptions) {
-    const { includeDraftFilter = true } = opts ?? {};
-    const collectionRef = this.db.ref('collections.id');
+  private getCollectionsBaseQuery() {
+    const collectionId = this.db.ref('collections.id');
     const postsCount = this.db('collection_posts')
-      .where('collection_posts.collectionId', collectionRef)
+      .where('collection_posts.collectionId', collectionId)
       .count('*')
       .as('postsCount');
 
-    const query = this.db<RawCollectionEntity>('collections')
-      .select('collections.*', postsCount)
-      .leftJoin(
-        'collection_posts',
-        'collections.id',
-        'collection_posts.collectionId',
+    const postsJoinRaw =
+      'LEFT JOIN collection_posts ON collections.id = collection_posts.collectionId ' +
+      'LEFT JOIN posts ON collection_posts.postId = posts.id AND (posts.status IS NULL OR posts.status = \'active\')';
+
+    return this.db('collections')
+      .select(
+        'collections.*',
+        postsCount
       )
-      .leftJoin('posts', 'collection_posts.postId', 'posts.id')
+      .joinRaw(postsJoinRaw)
       .groupBy('collections.id');
-    if (includeDraftFilter) {
-      query.where('posts.status', '=', 'active');
-    }
-    return query;
   }
 
   private async addTags(
