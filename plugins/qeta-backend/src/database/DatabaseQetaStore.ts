@@ -2997,7 +2997,6 @@ export class DatabaseQetaStore implements QetaStore {
       .count('*')
       .as('postsCount');
 
-    // Use joinRaw with a string, not a Knex.Raw object
     const postsJoinRaw =
       'LEFT JOIN collection_posts ON collections.id = collection_posts.collectionId ' +
       'LEFT JOIN posts ON collection_posts.postId = posts.id AND (posts.status IS NULL OR posts.status = \'active\')';
