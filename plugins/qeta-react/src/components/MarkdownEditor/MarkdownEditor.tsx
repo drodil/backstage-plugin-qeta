@@ -10,7 +10,11 @@ import { MarkdownRenderer } from '../MarkdownRenderer';
 import { imageUpload } from '../../utils';
 import { makeStyles } from '@material-ui/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { GroupEntity, stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
+import {
+  GroupEntity,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { findTagMentions } from '@drodil/backstage-plugin-qeta-common';
 
 export type QetaMarkdownEditorClassKey =
@@ -152,7 +156,9 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
 
   // Get the enabled mention types from the configuration,
   // defaulting to 'user' if not specified, to keep the current behavior.
-  const enabledMentionTypes = config.getOptionalStringArray("qeta.mentions.supportedKinds") || ['user']
+  const enabledMentionTypes = config.getOptionalStringArray(
+    'qeta.mentions.supportedKinds',
+  ) || ['user'];
 
   const loadEntitySuggestions = async (text: string) => {
     const supportedKinds = ['user', 'group'] as const;
@@ -165,18 +171,18 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
       return NO_SUGGESTIONS;
     }
     const entities = await catalogApi.queryEntities({
-        filter: { kind: enabledKinds },
-        limit: 5,
-        fullTextFilter: {
-          term: text,
-          fields: [
-            'metadata.name',
-            'metadata.title',
-            'spec.profile.displayName',
-            'spec.profile.email',
-          ],
-        },
-      })
+      filter: { kind: enabledKinds },
+      limit: 5,
+      fullTextFilter: {
+        term: text,
+        fields: [
+          'metadata.name',
+          'metadata.title',
+          'spec.profile.displayName',
+          'spec.profile.email',
+        ],
+      },
+    });
 
     if (entities.items.length === 0) {
       return NO_SUGGESTIONS;
@@ -203,13 +209,11 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
 
     const groupSuggestions = groups.map(entity => {
       const group = entity as GroupEntity;
-      const preview =
-        group.spec?.profile?.displayName ??
-        group.metadata.name;
+      const preview = group.spec?.profile?.displayName ?? group.metadata.name;
       return {
         preview: preview,
         value: `@${stringifyEntityRef(entity)}`,
-      }
+      };
     });
 
     return [...userSuggestions, ...groupSuggestions];

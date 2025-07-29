@@ -290,7 +290,7 @@ export class NotificationManager {
 
     const notificationReceivers = mentions
       .map(m => m.replaceAll('@', ''))
-      .filter(m => !alreadySent.includes(m))
+      .filter(m => !alreadySent.includes(m));
 
     if (notificationReceivers.length === 0) {
       return [];

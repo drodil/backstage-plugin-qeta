@@ -49,9 +49,9 @@ export const findEntityMentions = (text: string): string[] => {
       } catch {
         return undefined;
       }
-    })
-  )
-}
+    }),
+  );
+};
 
 export const findTagMentions = (text: string): string[] => {
   const mentions = text.match(/#(\S+)/g);

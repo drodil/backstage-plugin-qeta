@@ -1,4 +1,8 @@
-import { findEntityMentions, removeMarkdownFormatting, truncate } from './utils';
+import {
+  findEntityMentions,
+  removeMarkdownFormatting,
+  truncate,
+} from './utils';
 
 describe('truncate', () => {
   it('should truncate a long string and add three dots at the end', () => {
@@ -220,7 +224,11 @@ describe('findEntityMentions', () => {
     const result = findEntityMentions(
       '@group:default/group1 @user:default/username1 @group:default/group2',
     );
-    expect(result).toEqual(['@group:default/group1', '@user:default/username1', '@group:default/group2']);
+    expect(result).toEqual([
+      '@group:default/group1',
+      '@user:default/username1',
+      '@group:default/group2',
+    ]);
   });
 
   it('should handle combined group, users and illegal mentions', () => {
@@ -233,5 +241,5 @@ describe('findEntityMentions', () => {
       '@user:default/username2',
       '@group:default/group2',
     ]);
-  })
+  });
 });
