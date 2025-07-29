@@ -154,9 +154,8 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     if (!text) {
       return NO_SUGGESTIONS;
     }
-    const [users, groups] = await Promise.all([
-        catalogApi.queryEntities({
-        filter: { kind: 'User' },
+    const entities = await catalogApi.queryEntities({
+        filter: { kind: ['user', 'group'] },
         limit: 5,
         fullTextFilter: {
           term: text,
@@ -167,25 +166,20 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
             'spec.profile.email',
           ],
         },
-      }),
-      catalogApi.queryEntities({
-        filter: { kind: 'Group' },
-        limit: 5,
-        fullTextFilter: {
-          term: text,
-          fields: [
-            'metadata.name',
-            'spec.profile.displayName'
-          ]
-        }
       })
-    ]);
 
-    if (users.items.length === 0) {
+    if (entities.items.length === 0) {
       return NO_SUGGESTIONS;
     }
 
-    const userSuggestions = users.items.map(entity => {
+    const users = entities.items.filter(
+      entity => entity.kind === 'User',
+    ) as UserEntity[];
+    const groups = entities.items.filter(
+      entity => entity.kind === 'Group',
+    ) as GroupEntity[];
+
+    const userSuggestions = users.map(entity => {
       const user = entity as UserEntity;
       const preview =
         user.metadata.title ??
@@ -197,7 +191,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
       };
     });
 
-    const groupSuggestions = groups.items.map(entity => {
+    const groupSuggestions = groups.map(entity => {
       const group = entity as GroupEntity;
       const preview =
         group.spec?.profile?.displayName ??
