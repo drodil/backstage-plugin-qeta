@@ -7,10 +7,10 @@ import 'react-mde/lib/styles/css/react-mde-toolbar.css';
 import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { MarkdownRenderer } from '../MarkdownRenderer';
-import { imageUpload } from '../../utils/utils';
+import { imageUpload } from '../../utils';
 import { makeStyles } from '@material-ui/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
+import { GroupEntity, stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
 import { findTagMentions } from '@drodil/backstage-plugin-qeta-common';
 
 export type QetaMarkdownEditorClassKey =
@@ -150,29 +150,42 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
   const catalogApi = useApi(catalogApiRef);
   const config = useApi(configApiRef);
 
-  const loadUserSuggestions = async (text: string) => {
+  const loadEntitySuggestions = async (text: string) => {
     if (!text) {
       return NO_SUGGESTIONS;
     }
-    const users = await catalogApi.queryEntities({
-      filter: { kind: 'User' },
-      limit: 5,
-      fullTextFilter: {
-        term: text,
-        fields: [
-          'metadata.name',
-          'metadata.title',
-          'spec.profile.displayName',
-          'spec.profile.email',
-        ],
-      },
-    });
+    const [users, groups] = await Promise.all([
+        catalogApi.queryEntities({
+        filter: { kind: 'User' },
+        limit: 5,
+        fullTextFilter: {
+          term: text,
+          fields: [
+            'metadata.name',
+            'metadata.title',
+            'spec.profile.displayName',
+            'spec.profile.email',
+          ],
+        },
+      }),
+      catalogApi.queryEntities({
+        filter: { kind: 'Group' },
+        limit: 5,
+        fullTextFilter: {
+          term: text,
+          fields: [
+            'metadata.name',
+            'spec.profile.displayName'
+          ]
+        }
+      })
+    ]);
 
     if (users.items.length === 0) {
       return NO_SUGGESTIONS;
     }
 
-    return users.items.map(entity => {
+    const userSuggestions = users.items.map(entity => {
       const user = entity as UserEntity;
       const preview =
         user.metadata.title ??
@@ -183,6 +196,19 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
         value: `@${stringifyEntityRef(user)}`,
       };
     });
+
+    const groupSuggestions = groups.items.map(entity => {
+      const group = entity as GroupEntity;
+      const preview =
+        group.spec?.profile?.displayName ??
+        group.metadata.name;
+      return {
+        preview: preview,
+        value: `@${stringifyEntityRef(entity)}`,
+      }
+    });
+
+    return [...userSuggestions, ...groupSuggestions];
   };
 
   const loadTagSuggestions = async (text: string) => {
@@ -206,7 +232,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
       return NO_SUGGESTIONS;
     }
     if (triggeredBy === '@') {
-      return loadUserSuggestions(text);
+      return loadEntitySuggestions(text);
     }
     if (triggeredBy === '#') {
       return loadTagSuggestions(text);

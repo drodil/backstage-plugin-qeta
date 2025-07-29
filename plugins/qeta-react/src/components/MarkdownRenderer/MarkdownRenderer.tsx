@@ -8,7 +8,7 @@ import {
 import { IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import {
   findTagMentions,
-  findUserMentions,
+  findEntityMentions,
 } from '@drodil/backstage-plugin-qeta-common';
 import gfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
@@ -346,7 +346,7 @@ export const MarkdownRenderer = (props: {
             if (typeof child !== 'string') {
               return child;
             }
-            const userMentions = findUserMentions(child);
+            const userMentions = findEntityMentions(child);
             const tagMentions = findTagMentions(child);
             if (userMentions.length === 0 && tagMentions.length === 0) {
               return child;

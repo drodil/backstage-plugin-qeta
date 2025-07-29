@@ -288,9 +288,54 @@ export class NotificationManager {
       return [];
     }
 
-    const notificationReceivers = mentions
+    const rawRefs = mentions
       .map(m => m.replaceAll('@', ''))
       .filter(m => !alreadySent.includes(m));
+
+    const userRefs: string[] = [];
+    const groupRefs: string[] = [];
+
+    for (const ref of rawRefs) {
+      if (ref.toLowerCase().startsWith('user:')) {
+        userRefs.push(ref);
+      }
+      else if (ref.toLowerCase().startsWith('group:')) {
+        groupRefs.push(ref);
+      }
+    }
+
+    // Resolve group members to user entity refs
+    const memberRefs: string[] = [];
+
+    for (const groupRef of groupRefs) {
+      const cacheKey = `qeta:groupMembers:${groupRef}`;
+      let members: string[] | undefined;
+
+      try {
+        members = await this.cache?.get<string[]>(cacheKey);
+        if (!members) {
+          const groupEntity = await this.catalog.getEntityByRef(groupRef);
+          if (groupEntity?.relations) {
+            members = groupEntity.relations
+              .filter(r => r.type === 'hasMember')
+              .map(r => r.targetRef);
+
+            // Cache the members for 24 hours
+            await this.cache?.set(cacheKey, members, {
+              ttl: 1000 * 60 * 60 * 24,
+            });
+          }
+        }
+      } catch (e) {
+        this.logger.warn(`Failed to get group members for ${groupRef}: ${e}`);
+      }
+
+      if (members?.length) {
+        memberRefs.push(...members);
+      }
+    }
+
+    const notificationReceivers = [...new Set([...userRefs, ...memberRefs])];
 
     if (notificationReceivers.length === 0) {
       return [];
