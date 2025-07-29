@@ -150,12 +150,22 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
   const catalogApi = useApi(catalogApiRef);
   const config = useApi(configApiRef);
 
+  // Get the enabled mention types from the configuration,
+  // defaulting to 'user' if not specified, to keep the current behavior.
+  const enabledMentionTypes = config.getOptionalStringArray("qeta.mentions.supportedKinds") || ['user']
+
   const loadEntitySuggestions = async (text: string) => {
+    const supportedKinds = ['user', 'group'] as const;
+    // Filter the supported kinds based on the enabled mention types
+    // to ensure we only query for the kinds that are enabled.
+    const enabledKinds = supportedKinds.filter(kind =>
+      enabledMentionTypes.includes(kind.toLowerCase()),
+    );
     if (!text) {
       return NO_SUGGESTIONS;
     }
     const entities = await catalogApi.queryEntities({
-        filter: { kind: ['user', 'group'] },
+        filter: { kind: enabledKinds },
         limit: 5,
         fullTextFilter: {
           term: text,

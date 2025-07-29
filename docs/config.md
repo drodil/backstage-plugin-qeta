@@ -17,6 +17,10 @@ qeta:
       - test
       - tag2
     max: 5
+  mentions:
+    supportedKinds:
+      - User
+      - Group
   storage:
     disabled: true
     type: database

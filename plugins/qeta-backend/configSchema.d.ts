@@ -70,6 +70,21 @@ export interface Config {
       max?: number;
     };
     /**
+     * Posts mentions specific configuration
+     *
+     * @visibility frontend
+     */
+    mentions?: {
+      /**
+       * List of types of mentions that can be used in posts.
+       *
+       * Currently supported types are:
+       * - `user`: Mention a user
+       * - `group`: Mention a group
+       */
+      supportedKinds?: string[];
+    };
+    /**
      * List of users/groups that can moderate questions and answers in case permission framework is not in use.
      * In case permission framework is in use, this list is used to determine if user
      * can access the moderator panel
