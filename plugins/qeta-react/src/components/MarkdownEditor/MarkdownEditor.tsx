@@ -7,10 +7,15 @@ import 'react-mde/lib/styles/css/react-mde-toolbar.css';
 import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { MarkdownRenderer } from '../MarkdownRenderer';
-import { imageUpload } from '../../utils/utils';
+import { imageUpload } from '../../utils';
 import { makeStyles } from '@material-ui/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
+import {
+  Entity,
+  GroupEntity,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { findTagMentions } from '@drodil/backstage-plugin-qeta-common';
 
 export type QetaMarkdownEditorClassKey =
@@ -150,12 +155,24 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
   const catalogApi = useApi(catalogApiRef);
   const config = useApi(configApiRef);
 
-  const loadUserSuggestions = async (text: string) => {
+  // Get the enabled mention types from the configuration,
+  // defaulting to 'user' if not specified, to keep the current behavior.
+  const enabledMentionTypes = config.getOptionalStringArray(
+    'qeta.mentions.supportedKinds',
+  ) || ['user'];
+
+  const loadEntitySuggestions = async (text: string) => {
+    const supportedKinds = ['user', 'group'] as const;
+    // Filter the supported kinds based on the enabled mention types
+    // to ensure we only query for the kinds that are enabled.
+    const enabledKinds = supportedKinds.filter(kind =>
+      enabledMentionTypes.includes(kind.toLowerCase()),
+    );
     if (!text) {
       return NO_SUGGESTIONS;
     }
-    const users = await catalogApi.queryEntities({
-      filter: { kind: 'User' },
+    const entities = await catalogApi.queryEntities({
+      filter: { kind: enabledKinds },
       limit: 5,
       fullTextFilter: {
         term: text,
@@ -168,19 +185,18 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
       },
     });
 
-    if (users.items.length === 0) {
+    if (entities.items.length === 0) {
       return NO_SUGGESTIONS;
     }
 
-    return users.items.map(entity => {
-      const user = entity as UserEntity;
-      const preview =
-        user.metadata.title ??
-        user.spec?.profile?.displayName ??
-        user.metadata.name;
+    return entities.items.map(entity => {
+      const mentionEntity = entity as Entity & (UserEntity | GroupEntity);
       return {
-        preview,
-        value: `@${stringifyEntityRef(user)}`,
+        preview:
+          mentionEntity.spec?.profile?.displayName ??
+          mentionEntity.metadata.title ??
+          mentionEntity.metadata.name,
+        value: `@${stringifyEntityRef(entity)}`,
       };
     });
   };
@@ -206,7 +222,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
       return NO_SUGGESTIONS;
     }
     if (triggeredBy === '@') {
-      return loadUserSuggestions(text);
+      return loadEntitySuggestions(text);
     }
     if (triggeredBy === '#') {
       return loadTagSuggestions(text);

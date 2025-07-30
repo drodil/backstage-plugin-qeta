@@ -2,7 +2,7 @@ import { getCreated, mapAdditionalFields } from '../util';
 import Ajv from 'ajv';
 import { Request, Router } from 'express';
 import {
-  findUserMentions,
+  findEntityMentions,
   PostsQuery,
   qetaCreateCommentPermission,
   qetaCreatePostPermission,
@@ -376,7 +376,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         request.body.content,
         followingUsers.flat(),
       );
-      const mentions = findUserMentions(request.body.content);
+      const mentions = findEntityMentions(request.body.content);
       if (mentions.length > 0) {
         await notificationMgr.onMention(
           username,
@@ -612,7 +612,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         post,
         followingUsers.flat(),
       );
-      const mentions = findUserMentions(request.body.content);
+      const mentions = findEntityMentions(request.body.content);
       if (mentions.length > 0) {
         await notificationMgr.onMention(username, post, mentions, sent);
       }

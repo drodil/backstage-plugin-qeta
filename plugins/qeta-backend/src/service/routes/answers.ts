@@ -10,7 +10,7 @@ import {
 import { Request, Router } from 'express';
 import {
   AnswersQuery,
-  findUserMentions,
+  findEntityMentions,
   qetaCreateAnswerPermission,
   qetaCreateCommentPermission,
   qetaDeleteAnswerPermission,
@@ -188,7 +188,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         answer,
         followingUsers.flat(),
       );
-      const mentions = findUserMentions(answer.content);
+      const mentions = findEntityMentions(answer.content);
       if (mentions.length > 0) {
         await notificationMgr.onMention(username, answer, mentions, sent);
       }
@@ -354,7 +354,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
           request.body.content,
           followingUsers.flat(),
         );
-        const mentions = findUserMentions(request.body.content);
+        const mentions = findEntityMentions(request.body.content);
         if (mentions.length > 0) {
           await notificationMgr.onMention(
             username,

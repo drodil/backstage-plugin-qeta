@@ -1,4 +1,8 @@
-import { findUserMentions, removeMarkdownFormatting, truncate } from './utils';
+import {
+  findEntityMentions,
+  removeMarkdownFormatting,
+  truncate,
+} from './utils';
 
 describe('truncate', () => {
   it('should truncate a long string and add three dots at the end', () => {
@@ -170,14 +174,14 @@ describe('removeMarkdownFormatting', () => {
   });
 });
 
-describe('findUserMentions', () => {
+describe('findEntityMentions', () => {
   it('should return an empty array if no mentions are found', () => {
-    const result = findUserMentions('No mentions here');
+    const result = findEntityMentions('No mentions here');
     expect(result).toEqual([]);
   });
 
   it('should return an array of unique mentions', () => {
-    const result = findUserMentions(
+    const result = findEntityMentions(
       '@user:default/username1 @user:default/username2 @user:default/username1',
     );
     expect(result).toEqual([
@@ -187,7 +191,7 @@ describe('findUserMentions', () => {
   });
 
   it('should ignore invalid mentions', () => {
-    const result = findUserMentions(
+    const result = findEntityMentions(
       '@user:default/username1 @invalid @user:default/username2',
     );
     expect(result).toEqual([
@@ -197,7 +201,7 @@ describe('findUserMentions', () => {
   });
 
   it('should ignore mentions that are not users', () => {
-    const result = findUserMentions(
+    const result = findEntityMentions(
       '@user:default/username1 @component:default/service1 @user:default/username2',
     );
     expect(result).toEqual([
@@ -207,12 +211,35 @@ describe('findUserMentions', () => {
   });
 
   it('should handle mentions with multiple @ symbols', () => {
-    const result = findUserMentions(
+    const result = findEntityMentions(
       '@@user:default/username1 @@@user:default/username2',
     );
     expect(result).toEqual([
       '@user:default/username1',
       '@user:default/username2',
+    ]);
+  });
+
+  it('should handle mentions that are groups', () => {
+    const result = findEntityMentions(
+      '@group:default/group1 @user:default/username1 @group:default/group2',
+    );
+    expect(result).toEqual([
+      '@group:default/group1',
+      '@user:default/username1',
+      '@group:default/group2',
+    ]);
+  });
+
+  it('should handle combined group, users and illegal mentions', () => {
+    const result = findEntityMentions(
+      '@group:default/group1 @user:default/username1 @invalid @user:default/username2 @group:default/group2',
+    );
+    expect(result).toEqual([
+      '@group:default/group1',
+      '@user:default/username1',
+      '@user:default/username2',
+      '@group:default/group2',
     ]);
   });
 });

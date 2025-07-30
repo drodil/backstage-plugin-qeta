@@ -6,6 +6,9 @@ export const truncate = (str: string, n: number): string => {
   return str.length > n ? `${str.slice(0, n - 1)}...` : str;
 };
 
+/**
+ * @deprecated use `findEntityMentions` instead
+ */
 export const findUserMentions = (text: string): string[] => {
   const mentions = text.match(/@(\S+)/g);
   const ret = mentions ? Array.from(new Set(mentions)) : [];
@@ -18,6 +21,32 @@ export const findUserMentions = (text: string): string[] => {
         }
         return `@${stringifyEntityRef(parsed)}`;
       } catch (e) {
+        return undefined;
+      }
+    }),
+  );
+};
+
+/**
+ * Finds entity mentions in the text.
+ * @param text The text to search for entity mentions.
+ * @returns An array of unique entity mentions in the format `@kind:name`.
+ * @remarks currently supports `user` and `group` kinds.
+ */
+export const findEntityMentions = (text: string): string[] => {
+  const mentions = text.match(/@(\S+)/g);
+  const ret = mentions ? Array.from(new Set(mentions)) : [];
+
+  return compact(
+    ret.map(mention => {
+      try {
+        const parsed = parseEntityRef(mention.replace(/^@+/, ''));
+        const kind = parsed.kind.toLocaleLowerCase('en-US');
+        if (kind !== 'user' && kind !== 'group') {
+          return undefined;
+        }
+        return `@${stringifyEntityRef(parsed)}`;
+      } catch {
         return undefined;
       }
     }),
