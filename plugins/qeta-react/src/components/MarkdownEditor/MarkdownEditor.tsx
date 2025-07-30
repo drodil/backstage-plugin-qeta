@@ -1,21 +1,17 @@
 /* eslint-disable no-console */
-import { useState } from 'react';
+import {useState} from 'react';
 import ReactMde from 'react-mde';
 import 'react-mde/lib/styles/css/react-mde.css';
 import 'react-mde/lib/styles/css/react-mde-editor.css';
 import 'react-mde/lib/styles/css/react-mde-toolbar.css';
-import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { qetaApiRef } from '../../api';
-import { MarkdownRenderer } from '../MarkdownRenderer';
-import { imageUpload } from '../../utils';
-import { makeStyles } from '@material-ui/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import {
-  GroupEntity,
-  stringifyEntityRef,
-  UserEntity,
-} from '@backstage/catalog-model';
-import { findTagMentions } from '@drodil/backstage-plugin-qeta-common';
+import {configApiRef, errorApiRef, useApi} from '@backstage/core-plugin-api';
+import {qetaApiRef} from '../../api';
+import {MarkdownRenderer} from '../MarkdownRenderer';
+import {imageUpload} from '../../utils';
+import {makeStyles} from '@material-ui/core';
+import {catalogApiRef} from '@backstage/plugin-catalog-react';
+import {Entity, GroupEntity, stringifyEntityRef, UserEntity,} from '@backstage/catalog-model';
+import {findTagMentions} from '@drodil/backstage-plugin-qeta-common';
 
 export type QetaMarkdownEditorClassKey =
   | 'markdownEditor'
@@ -165,13 +161,13 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     // Filter the supported kinds based on the enabled mention types
     // to ensure we only query for the kinds that are enabled.
     const enabledKinds = supportedKinds.filter(kind =>
-      enabledMentionTypes.includes(kind.toLowerCase()),
+        enabledMentionTypes.includes(kind.toLowerCase()),
     );
     if (!text) {
       return NO_SUGGESTIONS;
     }
     const entities = await catalogApi.queryEntities({
-      filter: { kind: enabledKinds },
+      filter: {kind: enabledKinds},
       limit: 5,
       fullTextFilter: {
         term: text,
@@ -188,36 +184,17 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
       return NO_SUGGESTIONS;
     }
 
-    const users = entities.items.filter(
-      entity => entity.kind === 'User',
-    ) as UserEntity[];
-    const groups = entities.items.filter(
-      entity => entity.kind === 'Group',
-    ) as GroupEntity[];
-
-    const userSuggestions = users.map(entity => {
-      const user = entity as UserEntity;
-      const preview =
-        user.metadata.title ??
-        user.spec?.profile?.displayName ??
-        user.metadata.name;
+    return entities.items.map(entity => {
+      const mentionEntity = entity as Entity & (UserEntity | GroupEntity);
       return {
-        preview,
-        value: `@${stringifyEntityRef(user)}`,
-      };
-    });
-
-    const groupSuggestions = groups.map(entity => {
-      const group = entity as GroupEntity;
-      const preview = group.spec?.profile?.displayName ?? group.metadata.name;
-      return {
-        preview: preview,
+        preview:
+            mentionEntity.spec?.profile?.displayName ??
+            mentionEntity.metadata.title ??
+            mentionEntity.metadata.name,
         value: `@${stringifyEntityRef(entity)}`,
-      };
+      }
     });
-
-    return [...userSuggestions, ...groupSuggestions];
-  };
+  }
 
   const loadTagSuggestions = async (text: string) => {
     if (!text) {
