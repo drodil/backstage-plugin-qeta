@@ -1,17 +1,22 @@
 /* eslint-disable no-console */
-import {useState} from 'react';
+import { useState } from 'react';
 import ReactMde from 'react-mde';
 import 'react-mde/lib/styles/css/react-mde.css';
 import 'react-mde/lib/styles/css/react-mde-editor.css';
 import 'react-mde/lib/styles/css/react-mde-toolbar.css';
-import {configApiRef, errorApiRef, useApi} from '@backstage/core-plugin-api';
-import {qetaApiRef} from '../../api';
-import {MarkdownRenderer} from '../MarkdownRenderer';
-import {imageUpload} from '../../utils';
-import {makeStyles} from '@material-ui/core';
-import {catalogApiRef} from '@backstage/plugin-catalog-react';
-import {Entity, GroupEntity, stringifyEntityRef, UserEntity,} from '@backstage/catalog-model';
-import {findTagMentions} from '@drodil/backstage-plugin-qeta-common';
+import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { qetaApiRef } from '../../api';
+import { MarkdownRenderer } from '../MarkdownRenderer';
+import { imageUpload } from '../../utils';
+import { makeStyles } from '@material-ui/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  Entity,
+  GroupEntity,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
+import { findTagMentions } from '@drodil/backstage-plugin-qeta-common';
 
 export type QetaMarkdownEditorClassKey =
   | 'markdownEditor'
@@ -161,13 +166,13 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     // Filter the supported kinds based on the enabled mention types
     // to ensure we only query for the kinds that are enabled.
     const enabledKinds = supportedKinds.filter(kind =>
-        enabledMentionTypes.includes(kind.toLowerCase()),
+      enabledMentionTypes.includes(kind.toLowerCase()),
     );
     if (!text) {
       return NO_SUGGESTIONS;
     }
     const entities = await catalogApi.queryEntities({
-      filter: {kind: enabledKinds},
+      filter: { kind: enabledKinds },
       limit: 5,
       fullTextFilter: {
         term: text,
@@ -188,13 +193,13 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
       const mentionEntity = entity as Entity & (UserEntity | GroupEntity);
       return {
         preview:
-            mentionEntity.spec?.profile?.displayName ??
-            mentionEntity.metadata.title ??
-            mentionEntity.metadata.name,
+          mentionEntity.spec?.profile?.displayName ??
+          mentionEntity.metadata.title ??
+          mentionEntity.metadata.name,
         value: `@${stringifyEntityRef(entity)}`,
-      }
+      };
     });
-  }
+  };
 
   const loadTagSuggestions = async (text: string) => {
     if (!text) {
