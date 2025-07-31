@@ -81,6 +81,8 @@ export interface Config {
        * Currently supported types are:
        * - `user`: Mention a user
        * - `group`: Mention a group
+       *
+       * @visibility frontend
        */
       supportedKinds?: string[];
     };

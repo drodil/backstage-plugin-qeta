@@ -97,6 +97,10 @@ qeta:
     max: 6
   moderators:
     - 'user:development/guest'
+  mentions:
+    supportedKinds:
+      - User
+      - Group
   entityKinds:
     - Component
     - Resource
