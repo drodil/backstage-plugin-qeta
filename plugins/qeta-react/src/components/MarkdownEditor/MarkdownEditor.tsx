@@ -162,13 +162,16 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
   ) || ['user'];
 
   const loadEntitySuggestions = async (text: string) => {
-    const supportedKinds = ['user', 'group'] as const;
+    const supportedKinds: readonly string[] = ['user', 'group'] as const;
     // Filter the supported kinds based on the enabled mention types
     // to ensure we only query for the kinds that are enabled.
-    const enabledKinds = supportedKinds.filter(kind =>
-      enabledMentionTypes.includes(kind.toLowerCase()),
+    const enabledKinds = enabledMentionTypes.filter(kind =>
+      supportedKinds.includes(kind.toLowerCase()),
     );
-    if (!text) {
+
+    // If no text is provided or no kinds are enabled,
+    // return an empty suggestions array.
+    if (!text || enabledKinds.length === 0) {
       return NO_SUGGESTIONS;
     }
     const entities = await catalogApi.queryEntities({
