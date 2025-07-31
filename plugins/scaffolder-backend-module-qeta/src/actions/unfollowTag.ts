@@ -6,22 +6,12 @@ export const createUnfollowTagAction = (options: {
   auth: AuthService;
   discovery: DiscoveryService;
 }) => {
-  return createTemplateAction<{
-    tag: string;
-  }>({
+  return createTemplateAction({
     id: 'qeta:tag:unfollow',
     description: 'Removes current user from following a tag in Q&A',
     schema: {
       input: {
-        required: ['tag'],
-        type: 'object',
-        properties: {
-          tag: {
-            type: 'string',
-            title: 'Tag',
-            description: 'Tag to unfollow',
-          },
-        },
+        tag: z => z.string().describe('Tag to unfollow'),
       },
     },
     supportsDryRun: true,

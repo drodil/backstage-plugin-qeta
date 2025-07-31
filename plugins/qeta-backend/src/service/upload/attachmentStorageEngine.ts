@@ -1,6 +1,6 @@
 import { Attachment } from '@drodil/backstage-plugin-qeta-common';
 import { File } from '../types';
-import { Config } from '@backstage/config/index';
+import { Config } from '@backstage/config';
 import { QetaStore } from '../../database/QetaStore';
 
 export type AttachmentStorageEngineOptions = {

@@ -6,22 +6,12 @@ export const createFollowTagAction = (options: {
   auth: AuthService;
   discovery: DiscoveryService;
 }) => {
-  return createTemplateAction<{
-    tag: string;
-  }>({
+  return createTemplateAction({
     id: 'qeta:tag:follow',
     description: 'Sets current user to follow a tag in Q&A',
     schema: {
       input: {
-        required: ['tag'],
-        type: 'object',
-        properties: {
-          tag: {
-            type: 'string',
-            title: 'Tag',
-            description: 'Tag to follow',
-          },
-        },
+        tag: z => z.string().describe('Tag to follow'),
       },
     },
     supportsDryRun: true,
