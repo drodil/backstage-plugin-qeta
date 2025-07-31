@@ -2997,15 +2997,16 @@ export class DatabaseQetaStore implements QetaStore {
       .groupBy('posts.id');
   }
 
-  private getCollectionsBaseQuery(opts?: CollectionOptions) {
-    const { includeDraftFilter = true } = opts ?? {};
+  private getCollectionsBaseQuery() {
     const collectionRef = this.db.ref('collections.id');
     const postsCount = this.db('collection_posts')
+      .leftJoin('posts', 'collection_posts.postId', 'posts.id')
       .where('collection_posts.collectionId', collectionRef)
+      .where('posts.status', '=', 'active')
       .count('*')
       .as('postsCount');
 
-    const query = this.db<RawCollectionEntity>('collections')
+    return this.db<RawCollectionEntity>('collections')
       .select('collections.*', postsCount)
       .leftJoin(
         'collection_posts',
@@ -3014,10 +3015,6 @@ export class DatabaseQetaStore implements QetaStore {
       )
       .leftJoin('posts', 'collection_posts.postId', 'posts.id')
       .groupBy('collections.id');
-    if (includeDraftFilter) {
-      query.where('posts.status', '=', 'active').orWhereNull('posts.id');
-    }
-    return query;
   }
 
   private async addTags(

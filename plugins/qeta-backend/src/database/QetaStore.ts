@@ -144,7 +144,6 @@ export type CollectionOptions = {
   tagFilters?: PermissionCriteria<QetaFilters>;
   includePosts?: boolean;
   includeExperts?: boolean;
-  includeDraftFilter?: boolean;
 };
 
 export type AnswerOptions = {

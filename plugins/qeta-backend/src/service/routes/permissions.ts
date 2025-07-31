@@ -161,7 +161,7 @@ export const permissionsRoute = (_router: Router, options: RouteOptions) => {
         {
           ids: collectionIds,
         },
-        { includePosts: false, includeDraftFilter: false },
+        { includePosts: false },
       );
       return collections.collections;
     },
