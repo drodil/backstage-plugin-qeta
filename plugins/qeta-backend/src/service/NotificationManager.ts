@@ -131,6 +131,51 @@ export class NotificationManager {
     return notificationReceivers;
   }
 
+  async onPostEdit(
+    username: string,
+    post: Post,
+    followingUsers: string[],
+  ): Promise<string[]> {
+    if (!this.notifications || !this.enabled) {
+      return [];
+    }
+
+    const notificationReceivers = [
+      ...new Set<string>([post.author, ...followingUsers]),
+    ];
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
+
+    try {
+      const user = await this.getUserDisplayName(username);
+
+      await this.notifications.send({
+        recipients: {
+          type: 'entity',
+          entityRef: notificationReceivers,
+          excludeEntityRef: username,
+        },
+        payload: {
+          title: `Edit for ${post.type}`,
+          description: this.formatDescription(
+            `${user} edited ${post.type}: ${post.title}`,
+          ),
+          link:
+            post.type === 'question'
+              ? `/qeta/questions/${post.id}`
+              : `/qeta/articles/${post.id}`,
+          topic: `${post.type} edited`,
+          scope: `${post.type}:edit:${post.id}`,
+        },
+      });
+    } catch (e) {
+      this.logger.error(`Failed to send notification for post edit: ${e}`);
+    }
+    return notificationReceivers;
+  }
+
   async onNewAnswer(
     username: string,
     question: Post,

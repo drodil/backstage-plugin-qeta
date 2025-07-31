@@ -36,7 +36,7 @@ export const getTags = async (
   return tags.slice(0, maxTags);
 };
 
-export const getEntities = (request: Request, config: Config) => {
+export const getEntities = (request: Request, config: Config): string[] => {
   const maxEntities = config.getOptionalNumber('qeta.entities.max') ?? 3;
   let entities = request.body.entities;
   if (Array.isArray(entities)) {

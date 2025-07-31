@@ -702,6 +702,32 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    wrapAsync(async () => {
+      const newTags = tags.filter(t => !originalPost.tags?.includes(t));
+      const newEntities = entities.filter(
+        e => !originalPost.entities?.includes(e),
+      );
+
+      console.log(newTags, newEntities);
+      const followingUsers = await Promise.all([
+        database.getUsersForTags(newTags),
+        database.getUsersForEntities(newEntities),
+      ]);
+
+      const sent = await notificationMgr.onPostEdit(
+        username,
+        post,
+        followingUsers.flat(),
+      );
+      const originalMentions = findEntityMentions(originalPost.content);
+      const mentions = findEntityMentions(request.body.content);
+      const newMentions = mentions.filter(m => !originalMentions.includes(m));
+
+      if (newMentions.length > 0) {
+        await notificationMgr.onMention(username, post, newMentions, sent);
+      }
+    });
+
     events?.publish({
       topic: 'qeta',
       eventPayload: {
