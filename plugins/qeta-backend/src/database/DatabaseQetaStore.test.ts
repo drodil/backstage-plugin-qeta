@@ -474,6 +474,23 @@ describe.each(databases.eachSupportedId())(
         const tags2 = await storage.getUserEntities('user');
         expect(tags2).toEqual({ entityRefs: [], count: 0 });
       });
+
+      it('should return empty collections in getCollections', async () => {
+        const collection = await storage.createCollection({
+          user_ref: 'user1',
+          title: 'Empty Collection',
+          description: 'A collection with no posts',
+          created: new Date(),
+        });
+
+        const result = await storage.getCollections('user1', {});
+        const found = result.collections.find(
+          c => c.id === collection.id && c.title === 'Empty Collection',
+        );
+        expect(found).toBeDefined();
+        expect(found?.postsCount).toBe(0);
+        expect(found?.posts).toEqual([]);
+      });
     });
   },
 );

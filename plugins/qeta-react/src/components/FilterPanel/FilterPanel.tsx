@@ -477,7 +477,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                   hideHelpText
                 />
               </Grid>
-              {filters.entities && filters.entities?.length > 1 && (
+              {entities && entities?.length > 1 && (
                 <Grid item>
                   <Tooltip
                     title={

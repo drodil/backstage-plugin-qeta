@@ -385,13 +385,16 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.entities) {
+      const entityValues = Array.isArray(options.entities)
+        ? options.entities
+        : [options.entities];
       if (options.entitiesRelation === 'or') {
         query
           .innerJoin('post_entities', 'posts.id', 'post_entities.postId')
           .innerJoin('entities', 'post_entities.entityId', 'entities.id')
-          .whereIn('entities.entity_ref', options.entities);
+          .whereIn('entities.entity_ref', entityValues);
       } else {
-        options.entities.forEach((t, i) => {
+        entityValues.forEach((t, i) => {
           query.innerJoin(
             `post_entities AS pe${i}`,
             'posts.id',
@@ -2000,13 +2003,15 @@ export class DatabaseQetaStore implements QetaStore {
     if (options.tags) {
       const tags = filterTags(options.tags);
       if (options.tagsRelation === 'or') {
-        query.innerJoin(
+        query.leftJoin(
           'post_tags',
           'collection_posts.postId',
           'post_tags.postId',
         );
-        query.innerJoin('tags', 'post_tags.tagId', 'tags.id');
-        query.whereIn('tags.tag', tags);
+        query.leftJoin('tags', 'post_tags.tagId', 'tags.id');
+        query.where(qb => {
+          qb.whereIn('tags.tag', tags).orWhereNull('collection_posts.postId');
+        });
       } else {
         tags.forEach((t, i) => {
           query.innerJoin(
@@ -2021,16 +2026,23 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     if (options.entities) {
+      const entityValues = Array.isArray(options.entities)
+        ? options.entities
+        : [options.entities];
       if (options.entitiesRelation === 'or') {
-        query.innerJoin(
+        query.leftJoin(
           'post_entities',
           'collection_posts.postId',
           'post_entities.postId',
         );
-        query.innerJoin('entities', 'post_entities.entityId', 'entities.id');
-        query.whereIn('entities.entity_ref', options.entities);
+        query.leftJoin('entities', 'post_entities.entityId', 'entities.id');
+        query.where(qb => {
+          qb.whereIn('entities.entity_ref', entityValues).orWhereNull(
+            'collection_posts.postId',
+          );
+        });
       } else {
-        options.entities.forEach((t, i) => {
+        entityValues.forEach((t, i) => {
           query.innerJoin(
             `post_entities AS pe${i}`,
             'collection_posts.postId',
@@ -2985,7 +2997,7 @@ export class DatabaseQetaStore implements QetaStore {
       .groupBy('posts.id');
   }
 
-  private getCollectionsBaseQuery(opts?: PostOptions) {
+  private getCollectionsBaseQuery(opts?: CollectionOptions) {
     const { includeDraftFilter = true } = opts ?? {};
     const collectionRef = this.db.ref('collections.id');
     const postsCount = this.db('collection_posts')
@@ -3003,7 +3015,7 @@ export class DatabaseQetaStore implements QetaStore {
       .leftJoin('posts', 'collection_posts.postId', 'posts.id')
       .groupBy('collections.id');
     if (includeDraftFilter) {
-      query.where('posts.status', '=', 'active');
+      query.where('posts.status', '=', 'active').orWhereNull('posts.id');
     }
     return query;
   }

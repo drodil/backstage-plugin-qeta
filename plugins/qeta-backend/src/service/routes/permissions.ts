@@ -150,18 +150,18 @@ export const permissionsRoute = (_router: Router, options: RouteOptions) => {
   permissionsRegistry.addResourceType({
     resourceRef: collectionPermissionResourceRef,
     getResources: async (resourceRefs: string[]) => {
-      const tagIds = parseIdArray(
+      const collectionIds = parseIdArray(
         resourceRefs.filter(ref => ref.startsWith('qeta:collection:')),
       );
-      if (tagIds.length === 0) {
+      if (collectionIds.length === 0) {
         return [];
       }
       const collections = await options.database.getCollections(
         '',
         {
-          ids: tagIds,
+          ids: collectionIds,
         },
-        { includePosts: false },
+        { includePosts: false, includeDraftFilter: false },
       );
       return collections.collections;
     },
