@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.32.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.31.4...v3.32.0) (2025-07-31)
+
+
+### Features
+
+* add support for group mentions ([9729d50](https://github.com/drodil/backstage-plugin-qeta/commit/9729d50936c0c188a10babbe3a8f1b0467f618ef))
+* allow for configuring mention types ([20fd29c](https://github.com/drodil/backstage-plugin-qeta/commit/20fd29c67f8681cb3a796f548ff5705e39f24cde))
+* clean up imports and streamline mention suggestion logic ([f2f9e00](https://github.com/drodil/backstage-plugin-qeta/commit/f2f9e003a5e1e0b8aeaa6cfeb9de28fc12839de4))
+* optimize api calls ([bf483eb](https://github.com/drodil/backstage-plugin-qeta/commit/bf483ebf6bb8f1fdd02a3b53ac6e611d0f400472))
+* remove unnecessary complex logic for notification sending ([430e29f](https://github.com/drodil/backstage-plugin-qeta/commit/430e29f640d0fb278a9a8d12e856c9db3d2eec96))
+* run prettier ([e335dd6](https://github.com/drodil/backstage-plugin-qeta/commit/e335dd6f4ad136d1a1297a7fcf666bd6dcf386be))
+* send notifications on post edit ([05d64e5](https://github.com/drodil/backstage-plugin-qeta/commit/05d64e5e5795a82c407b26752a21180366f532c2)), closes [#313](https://github.com/drodil/backstage-plugin-qeta/issues/313)
+
+
+### Bug Fixes
+
+* empty collections not visible in the ui ([6bb9564](https://github.com/drodil/backstage-plugin-qeta/commit/6bb956487cccd93eae704532646a2d5ac6a610e7)), closes [#317](https://github.com/drodil/backstage-plugin-qeta/issues/317)
+* failing linting/prettier checks ([c7857ab](https://github.com/drodil/backstage-plugin-qeta/commit/c7857ab837b6c30dfa26a36f146f348342040aab))
+* mention config visiblity ([235efcf](https://github.com/drodil/backstage-plugin-qeta/commit/235efcfa8f2b68d81dca704806056b3127440d68))
+* tsc errors due to backstage update ([5cddf35](https://github.com/drodil/backstage-plugin-qeta/commit/5cddf35909787855146879f4c3b98abc84edc3ac))
+
 ### [3.31.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.31.3...v3.31.4) (2025-06-19)
 
 
