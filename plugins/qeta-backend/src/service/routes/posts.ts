@@ -359,34 +359,36 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     await mapAdditionalFields(request, updatedPost, options, { username });
 
-    wrapAsync(async () => {
-      if (!updatedPost) {
-        return;
-      }
-      const followingUsers = await Promise.all([
-        database.getUsersForTags(updatedPost.tags),
-        database.getUsersForEntities(updatedPost.entities),
-        database.getFollowingUsers(username),
-        database.getUsersWhoFavoritedPost(updatedPost.id),
-      ]);
+    if (updatedPost.status === 'active') {
+      wrapAsync(async () => {
+        if (!updatedPost) {
+          return;
+        }
+        const followingUsers = await Promise.all([
+          database.getUsersForTags(updatedPost.tags),
+          database.getUsersForEntities(updatedPost.entities),
+          database.getFollowingUsers(username),
+          database.getUsersWhoFavoritedPost(updatedPost.id),
+        ]);
 
-      const sent = await notificationMgr.onNewPostComment(
-        username,
-        updatedPost,
-        request.body.content,
-        followingUsers.flat(),
-      );
-      const mentions = findEntityMentions(request.body.content);
-      if (mentions.length > 0) {
-        await notificationMgr.onMention(
+        const sent = await notificationMgr.onNewPostComment(
           username,
           updatedPost,
-          mentions,
-          sent,
-          true,
+          request.body.content,
+          followingUsers.flat(),
         );
-      }
-    });
+        const mentions = findEntityMentions(request.body.content);
+        if (mentions.length > 0) {
+          await notificationMgr.onMention(
+            username,
+            updatedPost,
+            mentions,
+            sent,
+            true,
+          );
+        }
+      });
+    }
 
     events?.publish({
       topic: 'qeta',
@@ -600,23 +602,26 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    wrapAsync(async () => {
-      const followingUsers = await Promise.all([
-        database.getUsersForTags(tags),
-        database.getUsersForEntities(entities),
-        database.getFollowingUsers(username),
-        database.getUsersWhoFavoritedPost(post.id),
-      ]);
-      const sent = await notificationMgr.onNewPost(
-        username,
-        post,
-        followingUsers.flat(),
-      );
-      const mentions = findEntityMentions(request.body.content);
-      if (mentions.length > 0) {
-        await notificationMgr.onMention(username, post, mentions, sent);
-      }
-    });
+    // Notify followers and mentions, when the post is active
+    if (post.status === 'active') {
+      wrapAsync(async () => {
+        const followingUsers = await Promise.all([
+          database.getUsersForTags(tags),
+          database.getUsersForEntities(entities),
+          database.getFollowingUsers(username),
+          database.getUsersWhoFavoritedPost(post.id),
+        ]);
+        const sent = await notificationMgr.onNewPost(
+          username,
+          post,
+          followingUsers.flat(),
+        );
+        const mentions = findEntityMentions(request.body.content);
+        if (mentions.length > 0) {
+          await notificationMgr.onMention(username, post, mentions, sent);
+        }
+      });
+    }
 
     events?.publish({
       topic: 'qeta',
@@ -702,31 +707,33 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    wrapAsync(async () => {
-      const newTags = tags.filter(t => !originalPost.tags?.includes(t));
-      const newEntities = entities.filter(
-        e => !originalPost.entities?.includes(e),
-      );
+    if (post.status === 'active') {
+      wrapAsync(async () => {
+        const newTags = tags.filter(t => !originalPost.tags?.includes(t));
+        const newEntities = entities.filter(
+          e => !originalPost.entities?.includes(e),
+        );
 
-      console.log(newTags, newEntities);
-      const followingUsers = await Promise.all([
-        database.getUsersForTags(newTags),
-        database.getUsersForEntities(newEntities),
-      ]);
+        console.log(newTags, newEntities);
+        const followingUsers = await Promise.all([
+          database.getUsersForTags(newTags),
+          database.getUsersForEntities(newEntities),
+        ]);
 
-      const sent = await notificationMgr.onPostEdit(
-        username,
-        post,
-        followingUsers.flat(),
-      );
-      const originalMentions = findEntityMentions(originalPost.content);
-      const mentions = findEntityMentions(request.body.content);
-      const newMentions = mentions.filter(m => !originalMentions.includes(m));
+        const sent = await notificationMgr.onPostEdit(
+          username,
+          post,
+          followingUsers.flat(),
+        );
+        const originalMentions = findEntityMentions(originalPost.content);
+        const mentions = findEntityMentions(request.body.content);
+        const newMentions = mentions.filter(m => !originalMentions.includes(m));
 
-      if (newMentions.length > 0) {
-        await notificationMgr.onMention(username, post, newMentions, sent);
-      }
-    });
+        if (newMentions.length > 0) {
+          await notificationMgr.onMention(username, post, newMentions, sent);
+        }
+      });
+    }
 
     events?.publish({
       topic: 'qeta',
