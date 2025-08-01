@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.33.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.32.1...v3.33.0) (2025-08-01)
+
+
+### Features
+
+* add translations for markdown editor ([7cf5add](https://github.com/drodil/backstage-plugin-qeta/commit/7cf5add94da601ebd51bfd75450cfd22f7faf701))
+* notify author on deletion ([b834fd5](https://github.com/drodil/backstage-plugin-qeta/commit/b834fd5c714285d50b87b4676d74cea92c433cbd)), closes [#312](https://github.com/drodil/backstage-plugin-qeta/issues/312)
+
+
+### Bug Fixes
+
+* avoid querying when no kinds are enabled ([1dde8b9](https://github.com/drodil/backstage-plugin-qeta/commit/1dde8b935f39b6204c2eb256ff93261221726f5d))
+* do not send notifications for draft posts ([6b687a5](https://github.com/drodil/backstage-plugin-qeta/commit/6b687a5a018c6c3eb63358b4ef821bc8676496c4)), closes [#322](https://github.com/drodil/backstage-plugin-qeta/issues/322)
+
 ### [3.32.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.32.0...v3.32.1) (2025-07-31)
 
 
