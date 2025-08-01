@@ -60,6 +60,12 @@ export const qetaTranslationRef = createTranslationRef({
       draft: 'Draft',
       deleted: 'Deleted',
     },
+    markdownEditor: {
+      write: 'Write',
+      preview: 'Preview',
+      uploadingImage: 'Uploading image...',
+      pasteDropSelect: 'Paste, drop or select an image',
+    },
     answer: {
       questionTitle: 'Q: {{question}}',
       answeredTime: 'answered',

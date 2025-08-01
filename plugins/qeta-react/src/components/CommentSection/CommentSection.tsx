@@ -1,5 +1,4 @@
 /* eslint-disable jsx-a11y/no-autofocus */
-import * as React from 'react';
 import { useState } from 'react';
 import { Box, Button, Grid, makeStyles } from '@material-ui/core';
 import {
@@ -71,9 +70,9 @@ export const CommentSection = (props: {
   const { answer, post, onCommentAction } = props;
   const analytics = useAnalytics();
   const qetaApi = useApi(qetaApiRef);
-  const [posting, setPosting] = React.useState(false);
+  const [posting, setPosting] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
-  const [edited, setEdited] = React.useState(false);
+  const [edited, setEdited] = useState(false);
   const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
 

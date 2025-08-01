@@ -1,5 +1,4 @@
-import React from 'react';
-import { Grid, Typography, Box } from '@material-ui/core';
+import { Box, Grid, Typography } from '@material-ui/core';
 import { SearchBar } from '../SearchBar/SearchBar';
 
 export type QetaGridHeaderProps = {

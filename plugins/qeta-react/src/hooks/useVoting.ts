@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../api';
@@ -18,10 +17,8 @@ function isPostResponse(
 }
 
 export function useVoting(resp: PostResponse | AnswerResponse) {
-  const [entity, setEntity] = React.useState<PostResponse | AnswerResponse>(
-    resp,
-  );
-  const [ownVote, setOwnVote] = React.useState(entity.ownVote ?? 0);
+  const [entity, setEntity] = useState<PostResponse | AnswerResponse>(resp);
+  const [ownVote, setOwnVote] = useState(entity.ownVote ?? 0);
   const [correctAnswer, setCorrectAnswer] = useState(
     'postId' in entity ? entity.correct : false,
   );

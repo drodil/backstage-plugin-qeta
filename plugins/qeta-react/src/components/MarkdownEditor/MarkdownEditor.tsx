@@ -17,6 +17,8 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { findTagMentions } from '@drodil/backstage-plugin-qeta-common';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation.ts';
 
 export type QetaMarkdownEditorClassKey =
   | 'markdownEditor'
@@ -154,6 +156,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
   const config = useApi(configApiRef);
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   const supportedMentionKinds = config.getOptionalStringArray(
     'qeta.mentions.supportedKinds',
@@ -258,6 +261,12 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
       selectedTab={selectedTab}
       onTabChange={setSelectedTab}
       minEditorHeight={height}
+      l18n={{
+        write: t('markdownEditor.write'),
+        preview: t('markdownEditor.preview'),
+        uploadingImage: t('markdownEditor.uploadingImage'),
+        pasteDropSelect: t('markdownEditor.pasteDropSelect'),
+      }}
       minPreviewHeight={height - 10}
       childProps={{
         textArea: {
@@ -268,7 +277,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
           name,
           onBlur: () => {
             if (onTagsChange) {
-              onTagsChange(findTagMentions(value).map(t => t.slice(1)));
+              onTagsChange(findTagMentions(value).map(tag => tag.slice(1)));
             }
           },
         },
