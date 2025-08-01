@@ -18,6 +18,7 @@ import {
 import addFormats from 'ajv-formats';
 import {
   CommentSchema,
+  DeleteMetadataSchema,
   PostSchema,
   PostsQuerySchema,
   RouteOptions,
@@ -763,7 +764,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   router.delete('/posts/:id', async (request, response) => {
     const ret = await getPostAndCheckStatus(request, response, false, true);
     if (!ret) return;
-    const { post } = ret;
+    const validateRequestBody = ajv.compile(DeleteMetadataSchema);
+    if (!validateRequestBody(request.body)) {
+      response.status(400).send({ errors: 'Invalid data', type: 'body' });
+      return;
+    }
+
+    const { post, username } = ret;
 
     await permissionMgr.authorize(request, qetaDeletePostPermission, {
       resource: post,
@@ -778,6 +785,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       deleted = await database.deletePost(post.id, true);
     } else {
       deleted = await database.deletePost(post.id);
+      if (deleted) {
+        notificationMgr.onPostDelete(username, post, request.body.reason);
+      }
     }
 
     if (deleted) {
@@ -786,6 +796,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         eventPayload: {
           post,
           author: post.author,
+          reason: request.body.reason,
         },
         metadata: { action: 'delete_post' },
       });
@@ -794,7 +805,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         eventId: 'delete-post',
         severityLevel: 'medium',
         request,
-        meta: { post: entityToJsonObject(post) },
+        meta: { post: entityToJsonObject(post), reason: request.body.reason },
       });
     }
 

@@ -131,6 +131,117 @@ export class NotificationManager {
     return notificationReceivers;
   }
 
+  async onPostDelete(
+    username: string,
+    post: Post,
+    reason?: string,
+  ): Promise<string[]> {
+    if (!this.notifications || !this.enabled || post.author === username) {
+      return [];
+    }
+
+    try {
+      const user = await this.getUserDisplayName(username);
+
+      await this.notifications.send({
+        recipients: {
+          type: 'entity',
+          entityRef: post.author,
+        },
+        payload: {
+          title: `Deleted ${post.type}`,
+          description: this.formatDescription(
+            `${user} deleted your ${post.type} "${post.title}" with reason: ${
+              reason || 'No reason provided'
+            }`,
+          ),
+          link:
+            post.type === 'question'
+              ? `/qeta/questions/${post.id}`
+              : `/qeta/articles/${post.id}`,
+          topic: `${post.type} deleted`,
+          scope: `${post.type}:delete:${post.id}`,
+        },
+      });
+    } catch (e) {
+      this.logger.error(`Failed to send notification for post delete: ${e}`);
+    }
+    return [post.author];
+  }
+
+  async onCollectionDelete(
+    username: string,
+    collection: Collection,
+    reason?: string,
+  ): Promise<string[]> {
+    if (!this.notifications || !this.enabled || collection.owner === username) {
+      return [];
+    }
+
+    try {
+      const user = await this.getUserDisplayName(username);
+
+      await this.notifications.send({
+        recipients: {
+          type: 'entity',
+          entityRef: collection.owner,
+        },
+        payload: {
+          title: `Deleted collection`,
+          description: this.formatDescription(
+            `${user} deleted your collection "${
+              collection.title
+            }" with reason: ${reason || 'No reason provided'}`,
+          ),
+          link: `/qeta/collections/${collection.id}`,
+          topic: `Collection deleted`,
+          scope: `collection:delete:${collection.id}`,
+        },
+      });
+    } catch (e) {
+      this.logger.error(
+        `Failed to send notification for collection delete: ${e}`,
+      );
+    }
+    return [collection.owner];
+  }
+
+  async onAnswerDelete(
+    username: string,
+    post: Post,
+    answer: Answer,
+    reason?: string,
+  ): Promise<string[]> {
+    if (!this.notifications || !this.enabled || answer.author === username) {
+      return [];
+    }
+
+    try {
+      const user = await this.getUserDisplayName(username);
+
+      await this.notifications.send({
+        recipients: {
+          type: 'entity',
+          entityRef: answer.author,
+        },
+        payload: {
+          title: `Deleted answer`,
+          description: this.formatDescription(
+            `${user} deleted your answer from question "${
+              post.title
+            }" with reason: ${reason || 'No reason provided'}`,
+          ),
+          link: `/qeta/questions/${post.id}`,
+          topic: `Answer deleted`,
+          scope: `answer:delete:${answer.id}`,
+        },
+      });
+    } catch (e) {
+      this.logger.error(`Failed to send notification for answer delete: ${e}`);
+    }
+    return [answer.author];
+  }
+
   async onPostEdit(
     username: string,
     post: Post,

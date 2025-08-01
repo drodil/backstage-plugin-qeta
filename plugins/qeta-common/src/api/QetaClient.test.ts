@@ -193,6 +193,21 @@ describe('QetaClient', () => {
       expect(result).toBe(true);
       expect(mockFetch).toHaveBeenCalledWith('http://example.com/posts/1', {
         method: 'DELETE',
+        body: JSON.stringify({}),
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
+
+    it('should delete a post with a reason', async () => {
+      const mockResponse = { ok: true };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.deletePost(1, 'Reason for deletion');
+      expect(result).toBe(true);
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/posts/1', {
+        method: 'DELETE',
+        body: JSON.stringify({ reason: 'Reason for deletion' }),
+        headers: { 'Content-Type': 'application/json' },
       });
     });
 
@@ -288,7 +303,27 @@ describe('QetaClient', () => {
       expect(result).toBe(true);
       expect(mockFetch).toHaveBeenCalledWith(
         'http://example.com/posts/1/answers/1',
-        { method: 'DELETE' },
+        {
+          method: 'DELETE',
+          body: JSON.stringify({}),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+    });
+
+    it('should delete an answer with a reason', async () => {
+      const mockResponse = { ok: true };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.deleteAnswer(1, 1, 'Reason for deletion');
+      expect(result).toBe(true);
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://example.com/posts/1/answers/1',
+        {
+          method: 'DELETE',
+          body: JSON.stringify({ reason: 'Reason for deletion' }),
+          headers: { 'Content-Type': 'application/json' },
+        },
       );
     });
 
@@ -298,6 +333,223 @@ describe('QetaClient', () => {
 
       const result = await client.deleteAnswer(1, 1);
       expect(result).toBe(false);
+    });
+  });
+
+  describe('getUsers', () => {
+    it('should fetch users', async () => {
+      const mockResponse = {
+        status: 200,
+        json: jest.fn().mockResolvedValue({ users: [], total: 0 }),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getUsers();
+      expect(result).toEqual({ users: [], total: 0 });
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/users', {
+        method: 'GET',
+      });
+    });
+
+    it('should handle 403', async () => {
+      const mockResponse = {
+        status: 403,
+        json: jest.fn(),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getUsers();
+      expect(result).toEqual({ users: [], total: 0 });
+    });
+  });
+
+  describe('getEntities', () => {
+    it('should fetch entities', async () => {
+      const mockResponse = {
+        status: 200,
+        json: jest.fn().mockResolvedValue({ entities: [], total: 0 }),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getEntities();
+      expect(result).toEqual({ entities: [], total: 0 });
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/entities', {
+        method: 'GET',
+      });
+    });
+
+    it('should handle 403', async () => {
+      const mockResponse = {
+        status: 403,
+        json: jest.fn(),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getEntities();
+      expect(result).toEqual({ entities: [], total: 0 });
+    });
+  });
+
+  describe('getTag', () => {
+    it('should fetch a tag', async () => {
+      const mockResponse = {
+        ok: true,
+        json: jest.fn().mockResolvedValue({ tag: 'test' }),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getTag('test');
+      expect(result).toEqual({ tag: 'test' });
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/tags/test', {
+        method: 'GET',
+      });
+    });
+
+    it('should return null if not ok', async () => {
+      const mockResponse = { ok: false, json: jest.fn() };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getTag('test');
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('followTag', () => {
+    it('should follow a tag', async () => {
+      const mockResponse = { ok: true };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.followTag('tag1');
+      expect(result).toBe(true);
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://example.com/tags/follow/tag1',
+        { method: 'PUT' },
+      );
+    });
+  });
+
+  describe('unfollowTag', () => {
+    it('should unfollow a tag', async () => {
+      const mockResponse = { ok: true };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.unfollowTag('tag1');
+      expect(result).toBe(true);
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://example.com/tags/follow/tag1',
+        { method: 'DELETE' },
+      );
+    });
+  });
+
+  describe('getFollowedTags', () => {
+    it('should fetch followed tags', async () => {
+      const mockResponse = {
+        status: 200,
+        json: jest.fn().mockResolvedValue({ tags: ['tag1'], count: 1 }),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getFollowedTags();
+      expect(result).toEqual({ tags: ['tag1'], count: 1 });
+    });
+
+    it('should handle 403', async () => {
+      const mockResponse = { status: 403, json: jest.fn() };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getFollowedTags();
+      expect(result).toEqual({ tags: [], count: 0 });
+    });
+  });
+
+  describe('getFollowedUsers', () => {
+    it('should fetch followed users', async () => {
+      const mockResponse = {
+        status: 200,
+        json: jest
+          .fn()
+          .mockResolvedValue({ followedUserRefs: ['user1'], count: 1 }),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getFollowedUsers();
+      expect(result).toEqual({ followedUserRefs: ['user1'], count: 1 });
+    });
+
+    it('should handle 403', async () => {
+      const mockResponse = { status: 403, json: jest.fn() };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getFollowedUsers();
+      expect(result).toEqual({ followedUserRefs: [], count: 0 });
+    });
+  });
+
+  describe('followUser', () => {
+    it('should follow a user', async () => {
+      const mockResponse = { ok: true };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.followUser('user1');
+      expect(result).toBe(true);
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://example.com/users/follow/user1',
+        { method: 'PUT' },
+      );
+    });
+  });
+
+  describe('unfollowUser', () => {
+    it('should unfollow a user', async () => {
+      const mockResponse = { ok: true };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.unfollowUser('user1');
+      expect(result).toBe(true);
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://example.com/users/follow/user1',
+        { method: 'DELETE' },
+      );
+    });
+  });
+
+  describe('getSuggestions', () => {
+    it('should fetch suggestions', async () => {
+      const mockResponse = {
+        json: jest.fn().mockResolvedValue({ suggestions: ['foo'] }),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getSuggestions();
+      expect(result).toEqual({ suggestions: ['foo'] });
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/suggestions', {
+        method: 'GET',
+      });
+    });
+  });
+
+  describe('getTemplates', () => {
+    it('should fetch templates', async () => {
+      const mockResponse = {
+        status: 200,
+        json: jest.fn().mockResolvedValue({ templates: [], total: 0 }),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getTemplates();
+      expect(result).toEqual({ templates: [], total: 0 });
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/templates', {
+        method: 'GET',
+      });
+    });
+
+    it('should handle 403', async () => {
+      const mockResponse = { status: 403, json: jest.fn() };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getTemplates();
+      expect(result).toEqual({ templates: [], total: 0 });
     });
   });
 });

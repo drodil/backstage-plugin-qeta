@@ -4,7 +4,13 @@ import {
   PostResponse,
   TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Backdrop, Button, Modal, Typography } from '@material-ui/core';
+import {
+  Backdrop,
+  Button,
+  Modal,
+  TextField,
+  Typography,
+} from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Delete from '@material-ui/icons/Delete';
 import { useState } from 'react';
@@ -39,6 +45,7 @@ export const DeleteModal = (props: {
   const articlesRoute = useRouteRef(articlesRouteRef);
   const { entity, open, question, onClose, onDelete } = props;
   const [error, setError] = useState(false);
+  const [reason, setReason] = useState<undefined | string>(undefined);
   const { t } = useTranslationRef(qetaTranslationRef);
   const isQuestion = 'title' in entity;
   const isCollection = 'owner' in entity;
@@ -63,7 +70,7 @@ export const DeleteModal = (props: {
   const handleDelete = () => {
     if (isCollection) {
       qetaApi
-        .deleteCollection(entity.id)
+        .deleteCollection(entity.id, reason)
         .catch(_ => setError(true))
         .then(ret => {
           if (ret) {
@@ -81,7 +88,7 @@ export const DeleteModal = (props: {
         });
     } else if (isTag) {
       qetaApi
-        .deleteTag(entity.id)
+        .deleteTag(entity.id, reason)
         .catch(_ => setError(true))
         .then(ret => {
           if (ret) {
@@ -99,7 +106,7 @@ export const DeleteModal = (props: {
         });
     } else if (isQuestion) {
       qetaApi
-        .deletePost(entity.id)
+        .deletePost(entity.id, reason)
         .catch(_ => setError(true))
         .then(ret => {
           if (ret) {
@@ -122,7 +129,7 @@ export const DeleteModal = (props: {
         });
     } else if (question) {
       qetaApi
-        .deleteAnswer(question.id, entity.id)
+        .deleteAnswer(question.id, entity.id, reason)
         .catch(_ => setError(true))
         .then(ret => {
           if (ret) {
@@ -165,6 +172,20 @@ export const DeleteModal = (props: {
         >
           {title}
         </Typography>
+        <TextField
+          variant="outlined"
+          multiline
+          style={{ marginTop: 16 }}
+          minRows={4}
+          label={t('deleteModal.reason')}
+          id="reason"
+          fullWidth
+          value={reason}
+          InputLabelProps={{ shrink: true }}
+          onChange={e => {
+            setReason(e.target.value);
+          }}
+        />
         <Button
           onClick={handleDelete}
           className="qetaDeleteModalDeleteBtn"

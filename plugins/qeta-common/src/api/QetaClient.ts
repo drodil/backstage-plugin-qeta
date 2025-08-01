@@ -361,6 +361,7 @@ export class QetaClient implements QetaApi {
 
   async deleteTag(
     id?: number,
+    reason?: string,
     requestOptions?: RequestOptions,
   ): Promise<boolean> {
     if (!id) {
@@ -369,6 +370,8 @@ export class QetaClient implements QetaApi {
     const response = await this.fetch(`/tags/${id}`, {
       reqInit: {
         method: 'DELETE',
+        body: JSON.stringify({ reason }),
+        headers: { 'Content-Type': 'application/json' },
       },
       requestOptions,
     });
@@ -711,6 +714,7 @@ export class QetaClient implements QetaApi {
 
   async deletePost(
     questionId: number,
+    reason?: string,
     requestOptions?: RequestOptions,
   ): Promise<boolean> {
     if (!questionId) {
@@ -719,6 +723,8 @@ export class QetaClient implements QetaApi {
     const response = await this.fetch(`/posts/${questionId}`, {
       reqInit: {
         method: 'DELETE',
+        body: JSON.stringify({ reason }),
+        headers: { 'Content-Type': 'application/json' },
       },
       requestOptions,
     });
@@ -729,6 +735,7 @@ export class QetaClient implements QetaApi {
   async deleteAnswer(
     questionId: number,
     id: number,
+    reason?: string,
     requestOptions?: RequestOptions,
   ): Promise<boolean> {
     if (!questionId || !id) {
@@ -737,6 +744,8 @@ export class QetaClient implements QetaApi {
     const response = await this.fetch(`/posts/${questionId}/answers/${id}`, {
       reqInit: {
         method: 'DELETE',
+        body: JSON.stringify({ reason }),
+        headers: { 'Content-Type': 'application/json' },
       },
       requestOptions,
     });
@@ -1258,6 +1267,7 @@ export class QetaClient implements QetaApi {
 
   async deleteCollection(
     id?: number,
+    reason?: string,
     requestOptions?: RequestOptions,
   ): Promise<boolean> {
     if (!id) {
@@ -1266,6 +1276,8 @@ export class QetaClient implements QetaApi {
     const response = await this.fetch(`/collections/${id}`, {
       reqInit: {
         method: 'DELETE',
+        body: JSON.stringify({ reason }),
+        headers: { 'Content-Type': 'application/json' },
       },
       requestOptions,
     });

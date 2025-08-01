@@ -16,6 +16,7 @@ import {
   CollectionRankPostSchema,
   CollectionSchema,
   CollectionsQuerySchema,
+  DeleteMetadataSchema,
   RouteOptions,
 } from '../types';
 import { entityToJsonObject, validateDateRange, wrapAsync } from './util';
@@ -293,12 +294,12 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     response.json(collection);
   });
 
-  // DELETE /questions/:id
+  // DELETE /collections/:id
   router.delete('/collections/:id', async (request, response) => {
     // Validation
-
     const collectionId = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(collectionId)) {
+    const validateRequestBody = ajv.compile(DeleteMetadataSchema);
+    if (Number.isNaN(collectionId) || !validateRequestBody(request.body)) {
       response
         .status(400)
         .send({ errors: 'Invalid collection id', type: 'body' });
@@ -328,17 +329,26 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
         eventPayload: {
           collection,
           author: username,
+          reason: request.body.reason,
         },
         metadata: { action: 'delete_collection' },
       });
     }
 
     if (deleted) {
+      notificationMgr.onCollectionDelete(
+        username,
+        collection,
+        request.body.reason,
+      );
       auditor?.createEvent({
         eventId: 'delete-collection',
         severityLevel: 'medium',
         request,
-        meta: { collection: entityToJsonObject(collection) },
+        meta: {
+          collection: entityToJsonObject(collection),
+          reason: request.body.reason,
+        },
       });
     }
 

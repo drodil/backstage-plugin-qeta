@@ -4,6 +4,7 @@ import { getCreated, mapAdditionalFields } from '../util';
 import {
   AnswersQuerySchema,
   CommentSchema,
+  DeleteMetadataSchema,
   PostAnswerSchema,
   RouteOptions,
 } from '../types';
@@ -600,7 +601,12 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     const username = await permissionMgr.getUsername(request);
     const postId = Number.parseInt(request.params.id, 10);
     const answerId = Number.parseInt(request.params.answerId, 10);
-    if (Number.isNaN(postId) || Number.isNaN(answerId)) {
+    const validateRequestBody = ajv.compile(DeleteMetadataSchema);
+    if (
+      Number.isNaN(postId) ||
+      Number.isNaN(answerId) ||
+      !validateRequestBody(request.body)
+    ) {
       response.status(400).send({ errors: 'Invalid id', type: 'body' });
       return;
     }
@@ -634,6 +640,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       deleted = await database.deleteAnswer(answerId, true);
     } else {
       deleted = await database.deleteAnswer(answerId);
+      if (deleted) {
+        notificationMgr.onAnswerDelete(
+          username,
+          post,
+          answer,
+          request.body.reason,
+        );
+      }
     }
 
     if (deleted) {
@@ -644,6 +658,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
           question: post,
           answer,
           author: username,
+          reason: request.body.reason,
         },
         metadata: { action: 'delete_answer' },
       });
@@ -654,6 +669,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         meta: {
           answer: entityToJsonObject(answer),
           post: entityToJsonObject(post),
+          reason: request.body.reason,
         },
       });
     }

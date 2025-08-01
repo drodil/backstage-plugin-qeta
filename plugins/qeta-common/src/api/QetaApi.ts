@@ -352,11 +352,16 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<AnswerResponse>;
 
-  deletePost(postId: number, requestOptions?: RequestOptions): Promise<boolean>;
+  deletePost(
+    postId: number,
+    reason?: string,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
 
   deleteAnswer(
     postId: number | string,
     id: number,
+    reason?: string,
     requestOptions?: RequestOptions,
   ): Promise<boolean>;
 
@@ -403,7 +408,11 @@ export interface QetaApi {
   getFollowedTags(requestOptions?: RequestOptions): Promise<UserTagsResponse>;
   followTag(tag: string, requestOptions?: RequestOptions): Promise<boolean>;
   unfollowTag(tag: string, requestOptions?: RequestOptions): Promise<boolean>;
-  deleteTag(id: number, requestOptions?: RequestOptions): Promise<boolean>;
+  deleteTag(
+    id: number,
+    reason?: string,
+    requestOptions?: RequestOptions,
+  ): Promise<boolean>;
 
   getFollowedEntities(
     requestOptions?: RequestOptions,
@@ -455,6 +464,7 @@ export interface QetaApi {
   ): Promise<CollectionResponse>;
   deleteCollection(
     id?: number,
+    reason?: string,
     requestOptions?: RequestOptions,
   ): Promise<boolean>;
   addPostToCollection(

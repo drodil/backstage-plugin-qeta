@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  DeleteMetadataSchema,
   DraftQuestionSchema,
   EntitiesQuerySchema,
   RouteOptions,
@@ -380,7 +381,8 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
   router.delete('/tags/:tag', async (request, response) => {
     const tagId = Number.parseInt(request.params.tag, 10);
-    if (Number.isNaN(tagId)) {
+    const validateRequestBody = ajv.compile(DeleteMetadataSchema);
+    if (Number.isNaN(tagId) || !validateRequestBody(request.body)) {
       response.status(400).send({ errors: 'Invalid tag id', type: 'body' });
       return;
     }
@@ -398,6 +400,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         request,
         meta: {
           tagId,
+          reason: request.body.reason,
         },
       });
     }

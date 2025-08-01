@@ -360,6 +360,18 @@ export const PostAnswerSchema: JSONSchemaType<AnswerQuestion> = {
   additionalProperties: false,
 };
 
+export interface DeleteMetadata {
+  reason?: string;
+}
+
+export const DeleteMetadataSchema: JSONSchemaType<DeleteMetadata> = {
+  type: 'object',
+  properties: {
+    reason: { type: 'string', minLength: 1, nullable: true },
+  },
+  additionalProperties: false,
+};
+
 export interface Comment {
   content: string;
   user?: string;

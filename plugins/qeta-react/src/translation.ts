@@ -274,6 +274,7 @@ export const qetaTranslationRef = createTranslationRef({
         tag: 'Are you sure you want to delete this tag?',
       },
       errorDeleting: 'Failed to delete',
+      reason: 'Reason for deletion',
       deleteButton: 'Delete',
       cancelButton: 'Cancel',
       tagDeleted: 'Tag deleted',
