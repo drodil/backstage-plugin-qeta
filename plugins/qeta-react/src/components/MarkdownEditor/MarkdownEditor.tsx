@@ -155,27 +155,28 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
   const catalogApi = useApi(catalogApiRef);
   const config = useApi(configApiRef);
 
-  // Get the enabled mention types from the configuration,
-  // defaulting to 'user' if not specified, to keep the current behavior.
-  const enabledMentionTypes = config.getOptionalStringArray(
+  const supportedMentionKinds = config.getOptionalStringArray(
     'qeta.mentions.supportedKinds',
   ) || ['user'];
+  const enabledMentionKinds = supportedMentionKinds.filter(kind =>
+    ['user', 'group'].includes(kind.toLowerCase()),
+  );
+  const maxTags = config.getOptionalNumber('qeta.tags.max') ?? 5;
+
+  const suggestionChars: string[] = [];
+  if (enabledMentionKinds.length > 0) {
+    suggestionChars.push('@');
+  }
+  if (maxTags > 0) {
+    suggestionChars.push('#');
+  }
 
   const loadEntitySuggestions = async (text: string) => {
-    const supportedKinds: readonly string[] = ['user', 'group'] as const;
-    // Filter the supported kinds based on the enabled mention types
-    // to ensure we only query for the kinds that are enabled.
-    const enabledKinds = enabledMentionTypes.filter(kind =>
-      supportedKinds.includes(kind.toLowerCase()),
-    );
-
-    // If no text is provided or no kinds are enabled,
-    // return an empty suggestions array.
-    if (!text || enabledKinds.length === 0) {
+    if (!text) {
       return NO_SUGGESTIONS;
     }
     const entities = await catalogApi.queryEntities({
-      filter: { kind: enabledKinds },
+      filter: { kind: enabledMentionKinds },
       limit: 5,
       fullTextFilter: {
         term: text,
@@ -272,7 +273,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
           },
         },
       }}
-      suggestionTriggerCharacters={['@', '#']}
+      suggestionTriggerCharacters={suggestionChars}
       loadSuggestions={loadSuggestions}
       suggestionsAutoplace
       generateMarkdownPreview={content =>

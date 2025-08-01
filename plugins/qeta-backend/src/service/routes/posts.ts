@@ -360,7 +360,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     await mapAdditionalFields(request, updatedPost, options, { username });
 
     wrapAsync(async () => {
-      if (!updatedPost) {
+      if (!updatedPost || updatedPost.status !== 'active') {
         return;
       }
       const followingUsers = await Promise.all([
@@ -601,6 +601,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     wrapAsync(async () => {
+      if (!post || post.status !== 'active') {
+        return;
+      }
       const followingUsers = await Promise.all([
         database.getUsersForTags(tags),
         database.getUsersForEntities(entities),
@@ -703,6 +706,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     wrapAsync(async () => {
+      if (!post || post.status !== 'active') {
+        return;
+      }
       const newTags = tags.filter(t => !originalPost.tags?.includes(t));
       const newEntities = entities.filter(
         e => !originalPost.entities?.includes(e),
