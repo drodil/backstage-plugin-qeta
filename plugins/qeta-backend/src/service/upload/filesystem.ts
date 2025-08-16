@@ -48,6 +48,10 @@ class FilesystemStoreEngine implements AttachmentStorageEngine {
       if (err) throw err;
       console.debug(`Successfully rename ${file.path} to ${newPath}`);
     });
+    // Replace fs.rename with fs.copyFile + fs.unlink using promises to avoid EXDEV errors
+    await fs.promises.copyFile(file.path, newPath);
+    await fs.promises.unlink(file.path);
+    console.debug(`Successfully moved ${file.path} to ${newPath}`);
 
     return await this.database.postAttachment({
       uuid: imageUuid,
