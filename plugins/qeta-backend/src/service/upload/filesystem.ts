@@ -44,11 +44,6 @@ class FilesystemStoreEngine implements AttachmentStorageEngine {
 
     const newPath = `${this.folder}/${filename}`;
 
-    fs.rename(file.path, newPath, err => {
-      if (err) throw err;
-      console.debug(`Successfully rename ${file.path} to ${newPath}`);
-    });
-    // Replace fs.rename with fs.copyFile + fs.unlink using promises to avoid EXDEV errors
     await fs.promises.copyFile(file.path, newPath);
     await fs.promises.unlink(file.path);
     console.debug(`Successfully moved ${file.path} to ${newPath}`);
