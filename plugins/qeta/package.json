@@ -36,9 +36,7 @@
     "url": "https://github.com/drodil/backstage-plugin-qeta.git"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "backstage": {
     "role": "frontend-plugin",

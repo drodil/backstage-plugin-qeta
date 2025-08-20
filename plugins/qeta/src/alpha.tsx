@@ -63,6 +63,7 @@ const EntityPostsContainerCard = EntityCardBlueprint.make({
  */
 export default createFrontendPlugin({
   pluginId: 'qeta',
+  info: { packageJson: () => import('../package.json') },
   routes: convertLegacyRouteRefs({
     root: qetaRouteRef,
   }),
@@ -73,3 +74,5 @@ export default createFrontendPlugin({
     EntityPostsContainerCard,
   ],
 });
+
+export { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
