@@ -1,6 +1,7 @@
 import {
   ApiBlueprint,
   createFrontendPlugin,
+  NavItemBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -11,6 +12,7 @@ import {
 import { qetaApiRef, qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
+import LiveHelpIcon from '@material-ui/icons/LiveHelp';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 const qetaApi = ApiBlueprint.make({
@@ -56,6 +58,15 @@ const EntityPostsContainerCard = EntityCardBlueprint.make({
   },
 });
 
+/** @alpha */
+export const qetaNavItem = NavItemBlueprint.make({
+  params: {
+    title: 'Q&A',
+    routeRef: convertLegacyRouteRef(qetaRouteRef),
+    icon: LiveHelpIcon,
+  },
+});
+
 /**
  * Backstage frontend plugin.
  *
@@ -72,6 +83,7 @@ export default createFrontendPlugin({
     qetaPage,
     EntityPostsGridCard,
     EntityPostsContainerCard,
+    qetaNavItem,
   ],
 });
 
