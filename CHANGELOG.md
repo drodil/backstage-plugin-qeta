@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.33.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.33.0...v3.33.1) (2025-08-20)
+
+
+### Bug Fixes
+
+* replace fs.rename with fs.copyFile and fs.unlink to avoid EXDEV errors ([7ddab83](https://github.com/drodil/backstage-plugin-qeta/commit/7ddab8356a5e6af0a0eee1ec3809bdf63d11ce3b))
+* replace fs.rename with fs.copyFile and fs.unlink to avoid EXDEV errors ([ebeb85b](https://github.com/drodil/backstage-plugin-qeta/commit/ebeb85b9810d76c8d9dda6ed246756fd525f9542))
+* repo fix ([7a6f0f4](https://github.com/drodil/backstage-plugin-qeta/commit/7a6f0f4d832fc8628164161dba7b2bbb0555efd4))
+
 ## [3.33.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.32.1...v3.33.0) (2025-08-01)
 
 
