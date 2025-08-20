@@ -1,1 +1,1 @@
-export { PostsGrid } from './PostsGrid';
+export { PostsGrid, type PostGridProps } from './PostsGrid';

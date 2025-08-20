@@ -21,15 +21,15 @@ import { SearchBar } from '../SearchBar/SearchBar';
 import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
 import FilterList from '@material-ui/icons/FilterList';
 
-export const PostsContainer = (
-  props: PaginatedPostsProps & {
-    entity?: string;
-    filterPanelProps?: CommonFilterPanelProps;
-    showTypeLabel?: boolean;
-    view?: ViewType;
-    onViewChange?: (view: ViewType) => void;
-  },
-) => {
+export type PostsContainerProps = PaginatedPostsProps & {
+  entity?: string;
+  filterPanelProps?: CommonFilterPanelProps;
+  showTypeLabel?: boolean;
+  view?: ViewType;
+  onViewChange?: (view: ViewType) => void;
+};
+
+export const PostsContainer = (props: PostsContainerProps) => {
   const {
     type,
     tags,
