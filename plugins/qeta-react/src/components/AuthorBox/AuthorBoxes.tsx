@@ -35,7 +35,11 @@ export const AuthorBoxes = (props: { entity: PostAnswerEntity }) => {
       <AuthorBox
         userEntityRef={entity.author}
         time={entity.created}
-        label={t('authorBox.answeredAtTime')}
+        label={
+          isAnswer(entity)
+            ? t('authorBox.answeredAtTime')
+            : t('authorBox.postedAtTime')
+        }
         expert={isAnswer(entity) ? entity.expert : false}
         anonymous={entity.anonymous}
       />
