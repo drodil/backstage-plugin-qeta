@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.33.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.33.2...v3.33.3) (2025-08-22)
+
+
+### Bug Fixes
+
+* invalid translation for question author boxes ([f6ab1a0](https://github.com/drodil/backstage-plugin-qeta/commit/f6ab1a013062f07f0255d30475e9ae9fa0289611))
+
 ### [3.33.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.33.1...v3.33.2) (2025-08-20)
 
 ### [3.33.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.33.0...v3.33.1) (2025-08-20)
