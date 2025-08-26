@@ -3,7 +3,13 @@ import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import { Box, ListItem, ListItemText, makeStyles } from '@material-ui/core';
+import {
+  Box,
+  ListItem,
+  ListItemText,
+  makeStyles,
+  Tooltip,
+} from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -144,10 +150,12 @@ export const PostHighlightList = (props: {
                   aria-label={q.title}
                 >
                   <Box className={voteBoxClass}>{vote}</Box>
-                  <ListItemText
-                    primary={q.title}
-                    classes={{ primary: classes.listItemText }}
-                  />
+                  <Tooltip title={q.title} arrow>
+                    <ListItemText
+                      primary={q.title}
+                      classes={{ primary: classes.listItemText }}
+                    />
+                  </Tooltip>
                 </ListItem>
               </Fragment>
             );
