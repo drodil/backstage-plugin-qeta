@@ -13,7 +13,7 @@ import { qetaApiRef, qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
 import LiveHelpIcon from '@material-ui/icons/LiveHelp';
-import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 const qetaApi = ApiBlueprint.make({
   params: defineParams =>
@@ -38,22 +38,14 @@ const qetaPage = PageBlueprint.make({
   },
 });
 
-const EntityPostsGridCard = EntityCardBlueprint.make({
-  name: 'entity-posts-grid',
+const EntityPostsContent = EntityContentBlueprint.make({
+  name: 'entity-posts-content',
   params: {
+    path: '/qeta',
+    title: 'Q&A',
     loader: async () =>
-      import('./components/EntityCards/EntityPostsGridCard').then(m =>
-        compatWrapper(<m.EntityPostsGridCard />),
-      ),
-  },
-});
-
-const EntityPostsContainerCard = EntityCardBlueprint.make({
-  name: 'entity-posts-container',
-  params: {
-    loader: async () =>
-      import('./components/EntityCards/EntityPostsContainerCard').then(m =>
-        compatWrapper(<m.EntityPostsContainerCard />),
+      import('./components/EntityPostsContent/EntityPostsContent.tsx').then(m =>
+        compatWrapper(<m.EntityPostsContent />),
       ),
   },
 });
@@ -78,13 +70,7 @@ export default createFrontendPlugin({
   routes: convertLegacyRouteRefs({
     root: qetaRouteRef,
   }),
-  extensions: [
-    qetaApi,
-    qetaPage,
-    EntityPostsGridCard,
-    EntityPostsContainerCard,
-    qetaNavItem,
-  ],
+  extensions: [qetaApi, qetaPage, EntityPostsContent, qetaNavItem],
 });
 
 export { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';

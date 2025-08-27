@@ -1,20 +1,16 @@
-import { Content, Page } from '@backstage/core-components';
-import { PostsContainer } from '@drodil/backstage-plugin-qeta-react';
-import { Container } from '@material-ui/core';
+import { EntityPostsContent } from '../src';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 
 export const ComponentPage = () => {
   return (
-    <Page themeId="home">
-      <Content>
-        <Container>
-          <PostsContainer
-            entity="component:default/test-component"
-            showTitle
-            showAskButton
-            type="question"
-          />
-        </Container>
-      </Content>
-    </Page>
+    <EntityProvider
+      entity={{
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'component',
+        metadata: { name: 'test-component' },
+      }}
+    >
+      <EntityPostsContent />
+    </EntityProvider>
   );
 };

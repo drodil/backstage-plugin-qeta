@@ -1,11 +1,7 @@
 import { createDevApp } from '@backstage/dev-utils';
 import { QetaPage } from '../src/plugin';
-import {
-  createPlugin,
-  createRoutableExtension,
-} from '@backstage/core-plugin-api';
+import { createPlugin } from '@backstage/core-plugin-api';
 import { qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { TablePage } from './TablePage';
 import { HomePage } from './HomePage';
 import { TagPage } from './TagPage';
@@ -20,6 +16,7 @@ import { Box } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { searchPage } from './SearchPage';
 import { searchPlugin } from '@backstage/plugin-search';
+import { ComponentPage } from './ComponentPage.tsx';
 
 const IntroElement = () => (
   <Box marginBottom={4}>
@@ -29,14 +26,6 @@ const IntroElement = () => (
       Alert, but can contain any ReactNode component.
     </Alert>
   </Box>
-);
-
-export const CatalogEntityPage: () => JSX.Element = catalogPlugin.provide(
-  createRoutableExtension({
-    name: 'CatalogEntityPage',
-    component: () => import('./ComponentPage').then(m => m.ComponentPage),
-    mountPoint: entityRouteRef,
-  }),
 );
 
 const qetaDevPlugin = createPlugin({
@@ -68,8 +57,8 @@ createDevApp()
     path: '/qeta',
   })
   .addPage({
-    element: <CatalogEntityPage />,
-    title: 'Component',
+    element: <ComponentPage />,
+    title: 'Catalog Page',
     path: '/catalog/default/component/test-component',
   })
   .addPage({
