@@ -518,7 +518,7 @@ export class QetaClient implements QetaApi {
   async postAnswer(
     answer: AnswerRequest,
     requestOptions?: RequestOptions,
-  ): Promise<AnswerResponseBody> {
+  ): Promise<Answer> {
     const response = await this.fetch(`/posts/${answer.postId}/answers`, {
       reqInit: {
         method: 'POST',

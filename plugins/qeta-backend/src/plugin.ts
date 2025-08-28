@@ -19,6 +19,8 @@ import {
   QetaTagDatabaseExtensionPoint,
   TagDatabase,
 } from '@drodil/backstage-plugin-qeta-node';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { registerActions } from './service/actions';
 
 class QetaAIExtensionPointImpl implements QetaAIExtensionPoint {
   #aiHandler?: AIHandler;
@@ -78,6 +80,7 @@ export const qetaPlugin = createBackendPlugin({
         cache: coreServices.cache,
         permissionsRegistry: coreServices.permissionsRegistry,
         auditor: coreServices.auditor,
+        actionsRegistry: actionsRegistryServiceRef,
       },
       async init({
         logger,
@@ -96,6 +99,7 @@ export const qetaPlugin = createBackendPlugin({
         cache,
         permissionsRegistry,
         auditor,
+        actionsRegistry,
       }) {
         const qetaStore = await DatabaseQetaStore.create({
           database,
@@ -132,6 +136,8 @@ export const qetaPlugin = createBackendPlugin({
           allow: 'unauthenticated',
           path: '/attachments',
         });
+
+        registerActions({ auth, actionsRegistry, discovery });
 
         await StatsCollector.initStatsCollector(
           config,
