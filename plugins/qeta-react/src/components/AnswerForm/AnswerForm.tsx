@@ -99,7 +99,8 @@ export const AnswerForm = (props: {
         reset();
         onPost(a);
       })
-      .catch(_e => setError(true)).finally(() => setPosting(false));
+      .catch(_e => setError(true))
+      .finally(() => setPosting(false));
   };
 
   useEffect(() => {
