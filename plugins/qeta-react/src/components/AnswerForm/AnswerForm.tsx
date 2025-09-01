@@ -12,7 +12,7 @@ import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
-import { Button, Typography } from '@material-ui/core';
+import { Button, Typography, useTheme } from '@material-ui/core';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -37,7 +37,9 @@ export const AnswerForm = (props: {
     getDefaultValues(post.id),
   );
   const analytics = useAnalytics();
+  const theme = useTheme();
   const [error, setError] = useState(false);
+  const [posting, setPosting] = useState(false);
   const [images, setImages] = useState<number[]>([]);
   const [edited, setEdited] = useState(false);
   const qetaApi = useApi(qetaApiRef);
@@ -48,7 +50,7 @@ export const AnswerForm = (props: {
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<AnswerRequest>({
     values,
@@ -56,6 +58,8 @@ export const AnswerForm = (props: {
   });
 
   const postAnswer = (data: AnswerRequest) => {
+    setPosting(true);
+
     if (id) {
       qetaApi
         .updateAnswer(id, {
@@ -73,7 +77,7 @@ export const AnswerForm = (props: {
           reset();
           onPost(a);
         })
-        .catch(_e => setError(true));
+        .catch(_e => setError(true)).finally(() => setPosting(false));
       return;
     }
     // http://localhost:7007/api/qeta/attachments/36e551b1-3be7-479a-8942-b7018434e710
@@ -123,6 +127,8 @@ export const AnswerForm = (props: {
     [setImages],
   );
 
+  console.log('allowAnonymous:', allowAnonymouns);
+
   return (
     <OptionalRequirePermission
       permission={qetaCreateAnswerPermission}
@@ -163,10 +169,17 @@ export const AnswerForm = (props: {
             label={t('anonymousCheckbox.answerAnonymously')}
           />
         )}
-        <Button variant="outlined" type="submit" color="primary">
-          {id
-            ? t('answerForm.submit.existingAnswer')
-            : t('answerForm.submit.newAnswer')}
+        <Button variant="outlined" type="submit" color="primary" disabled={posting || isSubmitting} style={{ marginTop: id ? theme.spacing(1) : '0'}}>
+          {posting ? (
+            <span>
+              {t('answerForm.submitting')}{' '}
+              <span className="spinner-border spinner-border-sm" />
+            </span>
+          ) : (
+            id
+              ? t('answerForm.submit.existingAnswer')
+              : t('answerForm.submit.newAnswer')
+          )}
         </Button>
       </form>
     </OptionalRequirePermission>
