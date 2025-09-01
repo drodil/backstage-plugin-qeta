@@ -12,7 +12,7 @@ import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
-import { Button, Typography } from '@material-ui/core';
+import { Button, Typography, useTheme } from '@material-ui/core';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -37,6 +37,7 @@ export const AnswerForm = (props: {
     getDefaultValues(post.id),
   );
   const analytics = useAnalytics();
+  const theme = useTheme();
   const [error, setError] = useState(false);
   const [posting, setPosting] = useState(false);
   const [images, setImages] = useState<number[]>([]);
@@ -126,6 +127,8 @@ export const AnswerForm = (props: {
     [setImages],
   );
 
+  console.log('allowAnonymous:', allowAnonymouns);
+
   return (
     <OptionalRequirePermission
       permission={qetaCreateAnswerPermission}
@@ -166,7 +169,7 @@ export const AnswerForm = (props: {
             label={t('anonymousCheckbox.answerAnonymously')}
           />
         )}
-        <Button variant="outlined" type="submit" color="primary" disabled={posting || isSubmitting}>
+        <Button variant="outlined" type="submit" color="primary" disabled={posting || isSubmitting} style={{ marginTop: id ? theme.spacing(1) : '0'}}>
           {posting ? (
             <span>
               {t('answerForm.submitting')}{' '}
