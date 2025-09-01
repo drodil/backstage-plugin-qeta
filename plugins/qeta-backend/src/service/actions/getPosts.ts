@@ -24,6 +24,8 @@ Post trend determines the popularity of a post based on views, votes, answers, a
 `,
     attributes: {
       readOnly: true,
+      idempotent: false,
+      destructive: false,
     },
     schema: {
       input: z =>

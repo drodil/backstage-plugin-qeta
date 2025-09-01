@@ -15,6 +15,8 @@ export const registerPostActions = (options: {
     description: 'This allows you to ask a new question in the Q&A system.',
     attributes: {
       idempotent: true,
+      destructive: false,
+      readOnly: false,
     },
     schema: {
       input: z =>

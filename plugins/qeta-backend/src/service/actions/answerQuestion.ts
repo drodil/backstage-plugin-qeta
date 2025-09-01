@@ -16,6 +16,8 @@ export const registerAnswerQuestionAction = (options: {
       'This allows you to provide an answer to an existing question.',
     attributes: {
       idempotent: true,
+      destructive: false,
+      readOnly: false,
     },
     schema: {
       input: z =>
