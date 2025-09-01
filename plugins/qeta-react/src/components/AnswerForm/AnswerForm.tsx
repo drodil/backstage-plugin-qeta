@@ -46,7 +46,7 @@ export const AnswerForm = (props: {
   const configApi = useApi(configApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const { t } = useTranslationRef(qetaTranslationRef);
-  
+
   const {
     handleSubmit,
     control,
@@ -77,7 +77,8 @@ export const AnswerForm = (props: {
           reset();
           onPost(a);
         })
-        .catch(_e => setError(true)).finally(() => setPosting(false));
+        .catch(_e => setError(true))
+        .finally(() => setPosting(false));
       return;
     }
     // http://localhost:7007/api/qeta/attachments/36e551b1-3be7-479a-8942-b7018434e710
@@ -98,7 +99,7 @@ export const AnswerForm = (props: {
         reset();
         onPost(a);
       })
-      .catch(_e => setError(true));
+      .catch(_e => setError(true)).finally(() => setPosting(false));
   };
 
   useEffect(() => {
@@ -167,16 +168,24 @@ export const AnswerForm = (props: {
             label={t('anonymousCheckbox.answerAnonymously')}
           />
         )}
-        <Button variant="outlined" type="submit" color="primary" disabled={posting || isSubmitting} style={{ marginTop: id ? theme.spacing(1) : '0'}}>
-          {posting ? (
+        <Button
+          variant="outlined"
+          type="submit"
+          color="primary"
+          disabled={posting || isSubmitting}
+          style={{ marginTop: id ? theme.spacing(1) : '0' }}
+        >
+          {posting || isSubmitting ? (
             <span>
               {t('answerForm.submitting')}{' '}
               <span className="spinner-border spinner-border-sm" />
             </span>
           ) : (
-            id
-              ? t('answerForm.submit.existingAnswer')
-              : t('answerForm.submit.newAnswer')
+            t(
+              id
+                ? 'answerForm.submit.existingAnswer'
+                : 'answerForm.submit.newAnswer',
+            )
           )}
         </Button>
       </form>
