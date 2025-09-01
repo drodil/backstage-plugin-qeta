@@ -172,6 +172,7 @@ export const qetaTranslationRef = createTranslationRef({
       contentInput: {
         placeholder: 'Your answer',
       },
+      submitting: 'Submitting...',
       submit: {
         existingAnswer: 'Save',
         newAnswer: 'Post',
