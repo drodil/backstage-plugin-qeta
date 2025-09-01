@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.34.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.33.4...v3.34.0) (2025-09-01)
+
+
+### Features
+
+* add loading spinner to answer form submit ([8577c25](https://github.com/drodil/backstage-plugin-qeta/commit/8577c25d1c665f240a307b0516c1ee34c6a3fcf4))
+* add spacing to save button ([66dd3cd](https://github.com/drodil/backstage-plugin-qeta/commit/66dd3cdb37530041dcf6b4f71ca40b4ecdc6e281))
+* initial actions registry support ([5cd6bea](https://github.com/drodil/backstage-plugin-qeta/commit/5cd6bea8ac21818738e0e5d1436cd3bb424dff3e)), closes [#314](https://github.com/drodil/backstage-plugin-qeta/issues/314)
+
+
+### Bug Fixes
+
+* actions attributes ([ccf1b88](https://github.com/drodil/backstage-plugin-qeta/commit/ccf1b88ba6fbc44750195b217b03b6d421c2abb4))
+
 ### [3.33.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.33.3...v3.33.4) (2025-08-27)
 
 ### [3.33.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.33.2...v3.33.3) (2025-08-22)
