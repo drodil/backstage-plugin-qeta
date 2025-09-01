@@ -44,8 +44,6 @@ export const AnswerForm = (props: {
   const [edited, setEdited] = useState(false);
   const qetaApi = useApi(qetaApiRef);
   const configApi = useApi(configApiRef);
-  const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
-  const { t } = useTranslationRef(qetaTranslationRef);
 
   const {
     handleSubmit,
@@ -126,8 +124,6 @@ export const AnswerForm = (props: {
     },
     [setImages],
   );
-
-  console.log('allowAnonymous:', allowAnonymouns);
 
   return (
     <OptionalRequirePermission
