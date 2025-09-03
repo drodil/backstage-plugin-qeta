@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.35.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.34.0...v3.35.0) (2025-09-03)
+
+
+### Features
+
+* notification receivers extension point ([74c2f6e](https://github.com/drodil/backstage-plugin-qeta/commit/74c2f6efb32e00deeeea4c7e8913615a9d3aa24b))
+
 ## [3.34.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.33.4...v3.34.0) (2025-09-01)
 
 
