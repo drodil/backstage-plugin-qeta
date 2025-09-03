@@ -4,12 +4,14 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { Answer, Post } from '@drodil/backstage-plugin-qeta-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { mockServices } from '@backstage/backend-test-utils';
+import { NotificationReceiversHandler } from '@drodil/backstage-plugin-qeta-node';
 
 describe('NotificationManager', () => {
   let notificationManager: NotificationManager;
   let mockLogger: LoggerService;
   let mockNotificationService: NotificationService;
   let mockCatalog: CatalogApi;
+  let notificationReceivers: NotificationReceiversHandler;
 
   beforeEach(() => {
     mockLogger = { error: jest.fn() } as unknown as LoggerService;
@@ -21,6 +23,15 @@ describe('NotificationManager', () => {
         .fn()
         .mockResolvedValue({ metadata: { title: 'John Doe' } }),
     } as unknown as CatalogApi;
+    notificationReceivers = {
+      onNewPost: jest.fn().mockResolvedValue(['user3']),
+      onNewPostComment: jest.fn().mockResolvedValue(['user3']),
+      onNewAnswer: jest.fn().mockResolvedValue(['user3']),
+      onAnswerComment: jest.fn().mockResolvedValue(['user3']),
+      onCorrectAnswer: jest.fn().mockResolvedValue(['user3']),
+      onMention: jest.fn().mockResolvedValue(['user3']),
+    };
+
     notificationManager = new NotificationManager(
       mockLogger,
       mockCatalog,
@@ -31,6 +42,8 @@ describe('NotificationManager', () => {
       }),
       mockServices.rootConfig.mock(),
       mockNotificationService,
+      mockServices.cache.mock(),
+      notificationReceivers,
     );
   });
 
@@ -64,7 +77,7 @@ describe('NotificationManager', () => {
           topic: 'New question about entity',
         },
         recipients: {
-          entityRef: ['entity1', 'user1', 'user2'],
+          entityRef: ['entity1', 'user1', 'user2', 'user3'],
           excludeEntityRef: 'author',
           type: 'entity',
         },
@@ -118,7 +131,7 @@ describe('NotificationManager', () => {
           topic: 'New question comment',
         },
         recipients: {
-          entityRef: ['author', 'entity1', 'user1', 'user2'],
+          entityRef: ['author', 'entity1', 'user1', 'user2', 'user3'],
           excludeEntityRef: 'author',
           type: 'entity',
         },
@@ -182,7 +195,7 @@ describe('NotificationManager', () => {
           topic: 'New answer on question',
         },
         recipients: {
-          entityRef: ['author', 'entity1', 'user1', 'user2'],
+          entityRef: ['author', 'entity1', 'user1', 'user2', 'user3'],
           excludeEntityRef: 'author',
           type: 'entity',
         },
@@ -245,7 +258,7 @@ describe('NotificationManager', () => {
           topic: 'New answer comment',
         },
         recipients: {
-          entityRef: ['answerer', 'entity1', 'user1', 'user2'],
+          entityRef: ['answerer', 'entity1', 'user1', 'user2', 'user3'],
           excludeEntityRef: 'author',
           type: 'entity',
         },
@@ -307,7 +320,7 @@ describe('NotificationManager', () => {
           topic: 'Correct answer on question',
         },
         recipients: {
-          entityRef: ['answerer', 'author', 'entity1'],
+          entityRef: ['answerer', 'author', 'entity1', 'user3'],
           excludeEntityRef: 'author',
           type: 'entity',
         },
@@ -363,7 +376,7 @@ describe('NotificationManager', () => {
           topic: 'New mention',
         },
         recipients: {
-          entityRef: ['user2'],
+          entityRef: ['user2', 'user3'],
           excludeEntityRef: 'author',
           type: 'entity',
         },

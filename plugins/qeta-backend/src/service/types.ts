@@ -29,7 +29,10 @@ import {
   UsersQuery,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { AIHandler } from '@drodil/backstage-plugin-qeta-node';
+import {
+  AIHandler,
+  NotificationReceiversHandler,
+} from '@drodil/backstage-plugin-qeta-node';
 import { PermissionManager } from './PermissionManager.ts';
 
 export interface RouterOptions {
@@ -49,6 +52,7 @@ export interface RouterOptions {
   aiHandler?: AIHandler;
   permissionsRegistry?: PermissionsRegistryService;
   auditor?: AuditorService;
+  notificationReceivers?: NotificationReceiversHandler;
 }
 
 export interface RouteOptions extends RouterOptions {

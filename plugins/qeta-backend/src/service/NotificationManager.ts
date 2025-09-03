@@ -14,6 +14,7 @@ import {
 import { CatalogApi } from '@backstage/catalog-client';
 import { UserEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { NotificationReceiversHandler } from '@drodil/backstage-plugin-qeta-node';
 
 export class NotificationManager {
   private readonly enabled: boolean;
@@ -24,6 +25,7 @@ export class NotificationManager {
     config: Config,
     private readonly notifications?: NotificationService,
     private readonly cache?: CacheService,
+    private readonly notificationReceivers?: NotificationReceiversHandler,
   ) {
     this.enabled = config.getOptionalBoolean('qeta.notifications') ?? true;
   }
@@ -38,7 +40,11 @@ export class NotificationManager {
     }
 
     const notificationReceivers = [
-      ...new Set<string>([...(post?.entities ?? []), ...followingUsers]),
+      ...new Set<string>([
+        ...(post?.entities ?? []),
+        ...followingUsers,
+        ...((await this.notificationReceivers?.onNewPost?.(post)) ?? []),
+      ]),
     ];
 
     if (notificationReceivers.length === 0) {
@@ -94,6 +100,7 @@ export class NotificationManager {
         ...(post?.entities ?? []),
         ...commenters,
         ...followingUsers,
+        ...((await this.notificationReceivers?.onNewPostComment?.(post)) ?? []),
       ]),
     ];
 
@@ -140,13 +147,24 @@ export class NotificationManager {
       return [];
     }
 
+    const notificationReceivers = [
+      ...new Set<string>([
+        post.author,
+        ...((await this.notificationReceivers?.onPostDelete?.(post)) ?? []),
+      ]),
+    ];
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
+
     try {
       const user = await this.getUserDisplayName(username);
 
       await this.notifications.send({
         recipients: {
           type: 'entity',
-          entityRef: post.author,
+          entityRef: notificationReceivers,
         },
         payload: {
           title: `Deleted ${post.type}`,
@@ -178,13 +196,26 @@ export class NotificationManager {
       return [];
     }
 
+    const notificationReceivers = [
+      ...new Set<string>([
+        collection.owner,
+        ...((await this.notificationReceivers?.onCollectionDelete?.(
+          collection,
+        )) ?? []),
+      ]),
+    ];
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
+
     try {
       const user = await this.getUserDisplayName(username);
 
       await this.notifications.send({
         recipients: {
           type: 'entity',
-          entityRef: collection.owner,
+          entityRef: notificationReceivers,
         },
         payload: {
           title: `Deleted collection`,
@@ -216,13 +247,27 @@ export class NotificationManager {
       return [];
     }
 
+    const notificationReceivers = [
+      ...new Set<string>([
+        answer.author,
+        ...((await this.notificationReceivers?.onAnswerDelete?.(
+          post,
+          answer,
+        )) ?? []),
+      ]),
+    ];
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
+
     try {
       const user = await this.getUserDisplayName(username);
 
       await this.notifications.send({
         recipients: {
           type: 'entity',
-          entityRef: answer.author,
+          entityRef: notificationReceivers,
         },
         payload: {
           title: `Deleted answer`,
@@ -253,6 +298,7 @@ export class NotificationManager {
 
     const notificationReceivers = [
       ...new Set<string>([post.author, ...followingUsers]),
+      ...((await this.notificationReceivers?.onPostEdit?.(post)) ?? []),
     ];
 
     if (notificationReceivers.length === 0) {
@@ -302,6 +348,10 @@ export class NotificationManager {
         question.author,
         ...(question?.entities ?? []),
         ...followingUsers,
+        ...((await this.notificationReceivers?.onNewAnswer?.(
+          question,
+          answer,
+        )) ?? []),
       ]),
     ];
 
@@ -353,6 +403,10 @@ export class NotificationManager {
         ...commenters,
         ...(question?.entities ?? []),
         ...followingUsers,
+        ...((await this.notificationReceivers?.onAnswerComment?.(
+          question,
+          answer,
+        )) ?? []),
       ]),
     ];
 
@@ -401,6 +455,10 @@ export class NotificationManager {
         answer.author,
         question.author,
         ...(question?.entities ?? []),
+        ...((await this.notificationReceivers?.onCorrectAnswer?.(
+          question,
+          answer,
+        )) ?? []),
       ]),
     ];
 
@@ -444,9 +502,12 @@ export class NotificationManager {
       return [];
     }
 
-    const notificationReceivers = mentions
-      .map(m => m.replaceAll('@', ''))
-      .filter(m => !alreadySent.includes(m));
+    const notificationReceivers = [
+      ...new Set<string>([
+        ...mentions.map(m => m.replaceAll('@', '')),
+        ...((await this.notificationReceivers?.onMention?.(post)) ?? []),
+      ]),
+    ].filter(m => !alreadySent.includes(m));
 
     if (notificationReceivers.length === 0) {
       return [];
@@ -503,6 +564,18 @@ export class NotificationManager {
       return [];
     }
 
+    const notificationReceivers = [
+      ...new Set<string>([
+        ...followingUsers,
+        ...((await this.notificationReceivers?.onNewCollection?.(collection)) ??
+          []),
+      ]),
+    ];
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
+
     try {
       const user = await this.getUserDisplayName(username);
 
@@ -514,7 +587,7 @@ export class NotificationManager {
       await this.notifications.send({
         recipients: {
           type: 'entity',
-          entityRef: followingUsers,
+          entityRef: notificationReceivers,
           excludeEntityRef: username,
         },
         payload: {
@@ -540,6 +613,18 @@ export class NotificationManager {
       return [];
     }
 
+    const notificationReceivers = [
+      ...new Set<string>([
+        ...followingUsers,
+        ...((await this.notificationReceivers?.onNewCollection?.(collection)) ??
+          []),
+      ]),
+    ];
+
+    if (notificationReceivers.length === 0) {
+      return [];
+    }
+
     try {
       const user = await this.getUserDisplayName(username);
 
@@ -551,7 +636,7 @@ export class NotificationManager {
       await this.notifications.send({
         recipients: {
           type: 'entity',
-          entityRef: followingUsers,
+          entityRef: notificationReceivers,
           excludeEntityRef: username,
         },
         payload: {

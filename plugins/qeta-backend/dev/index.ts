@@ -5,7 +5,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 import { PermissionPolicy } from './PermissionPolicy';
-import { qetaTagDatabaseExtensionPoint } from '@drodil/backstage-plugin-qeta-node';
+import {
+  qetaNotificationReceiversExtensionPoint,
+  qetaTagDatabaseExtensionPoint,
+} from '@drodil/backstage-plugin-qeta-node';
 
 const backend = createBackend();
 backend.add(import('@backstage/plugin-catalog-backend'));
@@ -57,6 +60,32 @@ backend.add(
             },
           };
           database.setTagDatabase(tagDatabase);
+        },
+      });
+    },
+  }),
+);
+
+// Example how to add custom notification receivers
+backend.add(
+  createBackendModule({
+    pluginId: 'qeta',
+    moduleId: 'notification-receivers',
+    register(reg) {
+      reg.registerInit({
+        deps: {
+          notificationReceivers: qetaNotificationReceiversExtensionPoint,
+        },
+        async init({ notificationReceivers }) {
+          notificationReceivers.setHandler({
+            onNewPost: async post => {
+              if (post.content.includes('@support')) {
+                return ['group:default/support'];
+              }
+
+              return [];
+            },
+          });
         },
       });
     },
