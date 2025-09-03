@@ -30,6 +30,7 @@ export async function createRouter(
     config,
     options.notifications,
     options.cache,
+    options.notificationReceivers,
   );
 
   const permissionMgr = new PermissionManager(

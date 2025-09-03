@@ -13,8 +13,11 @@ import { AttachmentCleaner } from './service/AttachmentCleaner';
 import { CatalogClient } from '@backstage/catalog-client';
 import {
   AIHandler,
+  NotificationReceiversHandler,
   qetaAIExtensionPoint,
   QetaAIExtensionPoint,
+  qetaNotificationReceiversExtensionPoint,
+  QetaNotificationReceiversExtensionPoint,
   qetaTagDatabaseExtensionPoint,
   QetaTagDatabaseExtensionPoint,
   TagDatabase,
@@ -48,6 +51,20 @@ class QetaTagsDatabaseExtensionPointImpl
   }
 }
 
+class QetaNotificationReceiversExtensionPointImpl
+  implements QetaNotificationReceiversExtensionPoint
+{
+  #notificationReceivers?: NotificationReceiversHandler;
+
+  get handler() {
+    return this.#notificationReceivers;
+  }
+
+  setHandler(handler: NotificationReceiversHandler) {
+    this.#notificationReceivers = handler;
+  }
+}
+
 /**
  * Qeta backend plugin
  *
@@ -61,6 +78,13 @@ export const qetaPlugin = createBackendPlugin({
 
     const tagsExtension = new QetaTagsDatabaseExtensionPointImpl();
     env.registerExtensionPoint(qetaTagDatabaseExtensionPoint, tagsExtension);
+
+    const notificationReceiversExtension =
+      new QetaNotificationReceiversExtensionPointImpl();
+    env.registerExtensionPoint(
+      qetaNotificationReceiversExtensionPoint,
+      notificationReceiversExtension,
+    );
 
     env.registerInit({
       deps: {
@@ -129,6 +153,7 @@ export const qetaPlugin = createBackendPlugin({
             aiHandler: aiExtension.aiHandler,
             permissionsRegistry,
             auditor,
+            notificationReceivers: notificationReceiversExtension.handler,
           }),
         );
         // Allowing attachments download

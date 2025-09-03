@@ -5,7 +5,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import {
   AIResponse,
+  Answer,
   Article,
+  Collection,
+  Post,
   Question,
 } from '@drodil/backstage-plugin-qeta-common';
 
@@ -92,4 +95,28 @@ export const qetaAIExtensionPoint = createExtensionPoint<QetaAIExtensionPoint>({
 export const qetaTagDatabaseExtensionPoint =
   createExtensionPoint<QetaTagDatabaseExtensionPoint>({
     id: 'qeta.tags',
+  });
+
+export interface NotificationReceiversHandler {
+  onNewPost?(post: Post): Promise<string[]>;
+  onNewPostComment?(post: Post): Promise<string[]>;
+  onPostDelete?(post: Post): Promise<string[]>;
+  onCollectionDelete?(collection: Collection): Promise<string[]>;
+  onAnswerDelete?(post: Post, answer: Answer): Promise<string[]>;
+  onPostEdit?(post: Post): Promise<string[]>;
+  onNewAnswer?(post: Post, answer: Answer): Promise<string[]>;
+  onAnswerComment?(post: Post, answer: Answer): Promise<string[]>;
+  onCorrectAnswer?(post: Post, answer: Answer): Promise<string[]>;
+  onMention?(post: Post | Answer): Promise<string[]>;
+  onNewCollection?(collection: Collection): Promise<string[]>;
+  onNewPostToCollection?(collection: Collection): Promise<string[]>;
+}
+
+export interface QetaNotificationReceiversExtensionPoint {
+  setHandler(handler: NotificationReceiversHandler): void;
+}
+
+export const qetaNotificationReceiversExtensionPoint =
+  createExtensionPoint<QetaNotificationReceiversExtensionPoint>({
+    id: 'qeta.notifications',
   });
