@@ -23,6 +23,7 @@ import { ModalContent } from '../Utility/ModalContent';
 import {
   articlesRouteRef,
   collectionsRouteRef,
+  linksRouteRef,
   questionsRouteRef,
   tagsRouteRef,
 } from '../../routes.ts';
@@ -43,6 +44,7 @@ export const DeleteModal = (props: {
   const tagsRoute = useRouteRef(tagsRouteRef);
   const questionsRoute = useRouteRef(questionsRouteRef);
   const articlesRoute = useRouteRef(articlesRouteRef);
+  const linksRoute = useRouteRef(linksRouteRef);
   const { entity, open, question, onClose, onDelete } = props;
   const [error, setError] = useState(false);
   const [reason, setReason] = useState<undefined | string>(undefined);
@@ -114,14 +116,32 @@ export const DeleteModal = (props: {
             onDelete?.(entity);
             alertApi.post({
               message:
-                entity.type === 'question'
-                  ? t('deleteModal.questionDeleted')
-                  : t('deleteModal.articleDeleted'),
+                (() => {
+                  switch (entity.type) {
+                    case 'question':
+                      return t('deleteModal.questionDeleted');
+                    case 'article':
+                      return t('deleteModal.articleDeleted');
+                    case 'link' :
+                    default:
+                      return t('deleteModal.linkDeleted');
+                  }
+                })(),
               severity: 'success',
               display: 'transient',
             });
             navigate(
-              entity.type === 'question' ? questionsRoute() : articlesRoute(),
+              (() => {
+                switch (entity.type) {
+                  case 'question':
+                    return questionsRoute();
+                  case 'article':
+                    return articlesRoute();
+                  case 'link' :
+                  default:
+                    return linksRoute();
+                }
+              })()
             );
           } else {
             setError(true);

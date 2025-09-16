@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
   ButtonContainer,
+  CreateLinkButton,
   EntitiesGrid,
   EntityFollowButton,
   FollowedEntitiesList,
@@ -70,6 +71,7 @@ export const EntityPage = () => {
           <ButtonContainer>
             <AskQuestionButton entity={entityRef} />
             <WriteArticleButton entity={entityRef} />
+            <CreateLinkButton entity={entityRef} />
           </ButtonContainer>
         </ContentHeader>
         {resp && (

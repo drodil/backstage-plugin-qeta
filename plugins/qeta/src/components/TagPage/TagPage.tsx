@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
   ButtonContainer,
+  CreateLinkButton,
   FollowedTagsList,
   MarkdownRenderer,
   PostHighlightList,
@@ -66,6 +67,7 @@ export const TagPage = () => {
             <ButtonContainer>
               <AskQuestionButton tags={[tag]} />
               <WriteArticleButton tags={[tag]} />
+              <CreateLinkButton tags={[tag]} />
             </ButtonContainer>
           </ContentHeader>
         ) : (
@@ -73,6 +75,7 @@ export const TagPage = () => {
             <ButtonContainer>
               <AskQuestionButton />
               <WriteArticleButton />
+              <CreateLinkButton />
             </ButtonContainer>
           </ContentHeader>
         )}

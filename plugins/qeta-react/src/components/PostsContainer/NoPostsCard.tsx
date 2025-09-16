@@ -1,13 +1,18 @@
 import { LinkButton } from '@backstage/core-components';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { askRouteRef, writeRouteRef } from '../../routes';
+import {
+  askRouteRef,
+  createLinkRouteRef,
+  writeRouteRef
+} from '../../routes';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
 import CreateIcon from '@material-ui/icons/Create';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityQueryParameter } from '../../hooks/useEntityQueryParameter';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
+import LinkIcon from "@material-ui/icons/Link";
 
 export const NoPostsCard = (props: {
   showNoPostsBtn?: boolean;
@@ -19,6 +24,7 @@ export const NoPostsCard = (props: {
   const { showNoPostsBtn, entity, entityPage, tags, type } = props;
   const askRoute = useRouteRef(askRouteRef);
   const writeRoute = useRouteRef(writeRouteRef);
+  const linkRoute = useRouteRef(createLinkRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const entityRef = useEntityQueryParameter(entity) ?? entity;
 
@@ -33,7 +39,17 @@ export const NoPostsCard = (props: {
     queryParams.set('tags', tags.join(','));
   }
 
-  const route = type === 'article' ? writeRoute : askRoute;
+  const route = (() => {
+    switch (type) {
+        case 'article':
+            return writeRoute;
+        case 'link':
+            return linkRoute;
+        case 'question':
+        default:
+            return askRoute;
+    }
+  })()
 
   const itemType = t(`common.${type ?? 'post'}`, {});
   return (
@@ -61,7 +77,17 @@ export const NoPostsCard = (props: {
                     : `${route()}`
                 }
                 startIcon={
-                  type === 'article' ? <CreateIcon /> : <HelpOutline />
+                  (() => {
+                    switch (type) {
+                      case 'article':
+                        return <CreateIcon />;
+                      case 'link':
+                        return <LinkIcon />;
+                      case 'question':
+                      default:
+                        return <HelpOutline />;
+                    }
+                  })()
                 }
                 color="primary"
                 variant="outlined"

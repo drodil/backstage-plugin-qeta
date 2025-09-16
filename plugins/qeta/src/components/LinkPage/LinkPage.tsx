@@ -1,26 +1,38 @@
+import * as React from "react";
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
-import { QetaSignal } from '@drodil/backstage-plugin-qeta-common';
+import { PostResponse, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import {
+  AddToCollectionButton,
   ButtonContainer,
   CreateLinkButton,
   LinkCard,
   qetaTranslationRef,
+  RelativeTimeWithTooltip,
+  UpdatedByLink,
   useQetaApi,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { Box, makeStyles } from "@material-ui/core";
+
+const useDescriptionStyles = makeStyles(
+  () => ({
+    root: {},
+    box: {
+      display: 'inline',
+    },
+  }),
+  { name: 'QetaDescription' },
+);
 
 export const LinkPage = () => {
   const { id } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
-
+  const dStyles = useDescriptionStyles();
   const [views, setViews] = useState(0);
-
-  console.log(views);
-
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${id}`);
 
   const {
@@ -59,11 +71,70 @@ export const LinkPage = () => {
     );
   }
 
+  const getDescription = (q: PostResponse) => {
+    return (
+      <span className={dStyles.root}>
+        <Box fontWeight="fontWeightMedium" className={dStyles.box}>
+          {t('authorBox.postedAtTime')}{' '}
+          <RelativeTimeWithTooltip value={q.created} />
+          {' · '}
+        </Box>
+        {q.updated && (
+          <React.Fragment>
+            <Box fontWeight="fontWeightMedium" className={dStyles.box}>
+              {t('authorBox.updatedAtTime')}{' '}
+              <RelativeTimeWithTooltip value={q.updated} />{' '}
+              {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
+              {' · '}
+            </Box>
+          </React.Fragment>
+        )}
+        <Box fontWeight="fontWeightMedium" className={dStyles.box}>
+          {t('common.viewsCount', { count: views })}
+        </Box>
+      </span>
+    );
+  };
+
   return (
     <>
-      <ContentHeader title={post.title}>
+      <ContentHeader
+        // @ts-ignore
+        title={post.url ? (
+          <Box display="flex" alignItems="center">
+            <a
+              href={post.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'inherit', textDecoration: 'none' }}
+              data-testid="link-title"
+            >
+              {post.title}
+            </a>
+            <a
+              href={post.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                marginLeft: 12,
+                color: '#888',
+                fontSize: 14,
+                textDecoration: 'underline',
+                wordBreak: 'break-all',
+                opacity: 0.8,
+              }}
+              data-testid="link-url"
+            >
+              {post.url}
+            </a>
+          </Box>
+        ) : post.title}
+        // @ts-ignore
+        description={getDescription(post)}
+      >
         <ButtonContainer>
           <CreateLinkButton />
+          <AddToCollectionButton post={post} />
         </ButtonContainer>
       </ContentHeader>
       <LinkCard link={post} />

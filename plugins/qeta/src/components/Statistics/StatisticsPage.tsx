@@ -2,6 +2,7 @@ import { ContentHeader } from '@backstage/core-components';
 import {
   AskQuestionButton,
   ButtonContainer,
+  CreateLinkButton,
   TopRankingUsers,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
@@ -15,6 +16,7 @@ export const StatisticsPage = () => {
         <ButtonContainer>
           <AskQuestionButton />
           <WriteArticleButton />
+          <CreateLinkButton />
         </ButtonContainer>
       </ContentHeader>
       <Grid container>

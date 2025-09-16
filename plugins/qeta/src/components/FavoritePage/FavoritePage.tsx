@@ -2,6 +2,7 @@ import { ContentHeader } from '@backstage/core-components';
 import {
   AskQuestionButton,
   ButtonContainer,
+  CreateLinkButton,
   PostHighlightList,
   PostsContainer,
   PostsGrid,
@@ -24,6 +25,7 @@ export const FavoritePage = () => {
           <ButtonContainer>
             <AskQuestionButton />
             <WriteArticleButton />
+            <CreateLinkButton />
           </ButtonContainer>
         </ContentHeader>
         {view === 'grid' ? (

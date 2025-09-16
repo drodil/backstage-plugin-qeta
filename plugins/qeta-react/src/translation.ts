@@ -303,6 +303,7 @@ export const qetaTranslationRef = createTranslationRef({
       collectionDeleted: 'Collection deleted',
       questionDeleted: 'Question deleted',
       articleDeleted: 'Article deleted',
+      linkDeleted: 'Link deleted',
       answerDeleted: 'Answer deleted',
     },
     favoritePage: {
@@ -712,6 +713,7 @@ export const qetaTranslationRef = createTranslationRef({
       answers: 'Answers',
       collections: 'Collections',
       articles: 'Articles',
+      links: 'Links',
       followUser: 'Follow {{name}}',
       profilePicture: 'Profile picture of {{name}}',
       profileHeader: 'User profile',

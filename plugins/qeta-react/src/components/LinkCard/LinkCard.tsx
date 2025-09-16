@@ -155,7 +155,7 @@ export const LinkCard = (props: { link: PostResponse }) => {
                         variant="contained"
                         size="small"
                         startIcon={<RestoreIcon />}
-                        onClick={() => {}/*restoreQuestion()*/}
+                        onClick={() => {}}
                         className="qetaQuestionCardRestoreBtn"
                       >
                         {t('questionPage.restoreButton')}

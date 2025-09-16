@@ -307,7 +307,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
               <FormLabel id="qeta-filter-quick">
                 {t('filterPanel.quickFilters.label')}
               </FormLabel>
-              {postFilters && type !== 'article' && (
+              {postFilters && type === 'question' && (
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -340,7 +340,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                   label={t('filterPanel.drafts.label')}
                 />
               )}
-              {(postFilters || answerFilters) && type !== 'article' && (
+              {(postFilters || answerFilters) && type === 'question' && (
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -353,7 +353,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                   label={t('filterPanel.noCorrectAnswers.label')}
                 />
               )}
-              {(postFilters || answerFilters) && (
+              {(postFilters || answerFilters) && type !== 'link' && (
                 <FormControlLabel
                   control={
                     <Checkbox
