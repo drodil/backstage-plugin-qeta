@@ -78,7 +78,7 @@ export interface CollectionEntity extends QetaIdEntity {
   experts?: string[];
 }
 
-export type PostType = 'question' | 'article';
+export type PostType = 'question' | 'article' | 'link';
 
 export type PostStatus = 'draft' | 'active' | 'deleted';
 
@@ -96,6 +96,7 @@ export interface Post extends PostAnswerEntity {
   trend?: number;
   type: PostType;
   headerImage?: string;
+  url?: string;
   images?: number[];
   status: PostStatus;
 }
@@ -273,6 +274,7 @@ export interface PostRequest {
   entities?: string[];
   images?: number[];
   headerImage?: string;
+  url?: string;
   type: PostType;
   status?: PostStatus;
 }
@@ -337,6 +339,7 @@ export interface UserResponse {
   totalComments: number;
   totalVotes: number;
   totalArticles: number;
+  totalLinks: number;
 }
 
 export interface UsersResponse {

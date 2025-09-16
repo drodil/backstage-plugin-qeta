@@ -19,6 +19,7 @@ export const qetaTranslationRef = createTranslationRef({
       tagExpert: 'This user is an expert in this area',
       question: 'question',
       article: 'article',
+      link: 'link',
       collection: 'collection',
       score: '{{score}} score',
       comments: 'Comments',

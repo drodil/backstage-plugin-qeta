@@ -588,6 +588,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       anonymous: request.body.anonymous || username === 'user:default/guest',
       type: request.body.type,
       headerImage: request.body.headerImage,
+      url: request.body.url,
       status: request.body.status || 'active',
       opts: {
         includeComments: false,
@@ -696,6 +697,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       entities,
       images: request.body.images,
       headerImage: request.body.headerImage,
+      url: request.body.url,
       status: request.body.status || 'active',
       setUpdatedBy: originalPost.status !== 'draft',
       opts: { tagsFilter, commentsFilter, answersFilter },

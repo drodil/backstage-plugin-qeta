@@ -56,7 +56,7 @@ export const PostsTableCard = qetaPlugin.provide(
           postType: {
             title: 'Post type',
             type: 'string',
-            enum: ['question', 'article'],
+            enum: ['question', 'article', 'link'],
             default: undefined,
           },
           rowsPerPage: {

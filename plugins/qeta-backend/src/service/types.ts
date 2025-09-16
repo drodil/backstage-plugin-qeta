@@ -69,6 +69,7 @@ export interface PostContent {
   user?: string;
   created?: string;
   headerImage?: string;
+  url?: string;
   anonymous?: boolean;
   type: PostType;
   status?: PostStatus;
@@ -181,7 +182,7 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     searchQuery: { type: 'string', nullable: true },
     fromDate: { type: 'string', nullable: true, format: 'date' },
     toDate: { type: 'string', nullable: true, format: 'date' },
-    type: { type: 'string', enum: ['question', 'article'], nullable: true },
+    type: { type: 'string', enum: ['question', 'article', 'link'], nullable: true },
     ids: { type: 'array', items: { type: 'integer' }, nullable: true },
     checkAccess: { type: 'boolean', nullable: true },
   },
@@ -286,7 +287,8 @@ export const PostSchema: JSONSchemaType<PostContent> = {
     created: { type: 'string', minLength: 1, nullable: true },
     anonymous: { type: 'boolean', nullable: true },
     headerImage: { type: 'string', nullable: true },
-    type: { type: 'string', enum: ['question', 'article'] },
+    url: { type: 'string', nullable: true },
+    type: { type: 'string', enum: ['question', 'article', 'link'] },
     status: {
       type: 'string',
       enum: ['active', 'draft', 'deleted'],

@@ -122,6 +122,7 @@ export const user = {
   totalComments: 2,
   totalVotes: 20,
   totalArticles: 1,
+  totalLinks: 2,
   totalFollowers: 3,
 };
 
