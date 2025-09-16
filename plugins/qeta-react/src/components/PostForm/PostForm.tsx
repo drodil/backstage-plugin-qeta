@@ -162,6 +162,8 @@ export const PostForm = (props: PostFormProps) => {
   const minEntities = configApi.getOptionalNumber('qeta.entities.min') ?? 0;
   const minTags = configApi.getOptionalNumber('qeta.tags.min') ?? 0;
 
+  const isNotLink = type !== 'link';
+
   const {
     handleSubmit,
     control,
@@ -602,13 +604,14 @@ export const PostForm = (props: PostFormProps) => {
       <Controller
         control={control}
         rules={{
-          required: true,
+          required: isNotLink,
         }}
         render={({ field: { onChange, value } }) => (
           <MarkdownEditor
+            required={isNotLink}
             value={value}
             onChange={onChange}
-            height={type !== "link" ? 400 : 150}
+            height={isNotLink ? 400 : 150}
             error={'content' in errors}
             placeholder={
               (() => {

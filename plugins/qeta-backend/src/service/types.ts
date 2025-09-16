@@ -279,7 +279,7 @@ export const PostSchema: JSONSchemaType<PostContent> = {
   type: 'object',
   properties: {
     title: { type: 'string', minLength: 1 },
-    content: { type: 'string', minLength: 1 },
+    content: { type: 'string', minLength: 0 },
     tags: { type: 'array', items: { type: 'string' }, nullable: true },
     entities: { type: 'array', items: { type: 'string' }, nullable: true },
     images: { type: 'array', items: { type: 'integer' }, nullable: true },
