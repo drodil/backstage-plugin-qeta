@@ -3,6 +3,7 @@ export { EntityFollowButton } from './EntityFollowButton';
 export { TagFollowButton } from './TagFollowButton';
 export { WriteArticleButton } from './WriteArticleButton';
 export { CreateLinkButton } from './CreateLinkButton';
+export { OpenLinkButton } from './OpenLinkButton';
 export { CreateCollectionButton } from './CreateCollectionButton';
 export { AddToCollectionButton } from './AddToCollectionButton';
 export { UserFollowButton } from './UserFollowButton';

@@ -15,10 +15,13 @@ import {
   RelativeTimeWithTooltip,
   UpdatedByLink,
   useQetaApi,
+  FaviconItem,
+  qetaApiRef
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Box, makeStyles } from "@material-ui/core";
+import { useApi } from "@backstage/core-plugin-api";
 
 const useDescriptionStyles = makeStyles(
   () => ({
@@ -32,6 +35,7 @@ const useDescriptionStyles = makeStyles(
 
 export const LinkPage = () => {
   const { id } = useParams();
+  const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const dStyles = useDescriptionStyles();
   const [score, setScore] = useState(0);
@@ -110,9 +114,14 @@ export const LinkPage = () => {
               rel="noopener noreferrer"
               style={{ color: 'inherit', textDecoration: 'none' }}
               data-testid="link-title"
+              onClick={event => {
+                event.stopPropagation();
+                qetaApi.clickLink(post.id);
+              }}
             >
               {post.title}
             </a>
+            <FaviconItem entity={post} />
           </Box>
         ) : post.title}
         // @ts-ignore

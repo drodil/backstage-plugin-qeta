@@ -26,6 +26,7 @@ import {
   PostType,
   SuggestionsQuery,
   TagsQuery,
+  UrlQuery,
   UsersQuery,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -436,3 +437,15 @@ export interface File {
   ext: string;
   size: number;
 }
+
+export const UrlSchema: JSONSchemaType<UrlQuery> = {
+  type: 'object',
+  properties: {
+    url: { type: 'string', minLength: 7 },
+    title: { type: 'string', nullable: true },
+    content: { type: 'string', nullable: true },
+  },
+  required: ['url'],
+  additionalProperties: false,
+};
+

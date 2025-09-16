@@ -153,7 +153,7 @@ export const qetaTranslationRef = createTranslationRef({
         label: 'URL',
         helperText: 'Paste the link you want to share',
         placeholder: 'https://',
-        invalid: 'Please enter a valid URL (starting with https://)',
+        invalid: 'Please enter a valid URL (starting with http:// or https://)',
       },
       submit: {
         existingPost: 'Save',
@@ -308,8 +308,8 @@ export const qetaTranslationRef = createTranslationRef({
       collectionDeleted: 'Collection deleted',
       questionDeleted: 'Question deleted',
       articleDeleted: 'Article deleted',
-      linkDeleted: 'Link deleted',
       answerDeleted: 'Answer deleted',
+      linkDeleted: 'Link deleted',
     },
     favoritePage: {
       title: 'Favorited posts',

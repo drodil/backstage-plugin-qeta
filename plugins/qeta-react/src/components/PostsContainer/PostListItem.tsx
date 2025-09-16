@@ -34,6 +34,7 @@ import LinkIcon from "@material-ui/icons/Link";
 import { StatusChip } from '../Utility/StatusChip';
 import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
 import { selectByPostType } from "../../utils";
+import { FaviconItem } from "../FaviconItem";
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -290,6 +291,7 @@ export const PostListItem = (props: PostListItemProps) => {
               >
                 {post.title}
               </Link>
+              {post.type === 'link' && <FaviconItem entity={post}/>}
             </Typography>
           </Box>
           <StatusChip status={post.status} />

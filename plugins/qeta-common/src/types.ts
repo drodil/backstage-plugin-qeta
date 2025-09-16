@@ -453,3 +453,9 @@ export interface SuggestionsResponse {
 export interface TagSuggestionsResponse {
   tags: string[];
 }
+
+export interface UrlRequest {
+  url: string;
+  title?: string;
+  content?: string;
+}

@@ -152,6 +152,9 @@ export const PostForm = (props: PostFormProps) => {
   const [images, setImages] = useState<number[]>([]);
   const [status, setStatus] = useState<PostStatus>('draft');
   const [searchParams, _setSearchParams] = useSearchParams();
+  const [urlToCheck, setUrlToCheck] = useState("");
+  const validUrl = /^https?:\/\/\S+$/;
+  const [favicon, setFavicon] = useState<boolean>(false);
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const qetaApi = useApi(qetaApiRef);
@@ -382,9 +385,14 @@ export const PostForm = (props: PostFormProps) => {
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
-    const validUrlRegex = /^https?:\/\/\S+$/;
 
-    if (input === "" || validUrlRegex.test(input)) {
+    setValue('url', input, { shouldValidate: true });
+    setFavicon(false);
+    setUrlToCheck(input);
+
+    if (input === '') {
+      clearErrors('url');
+    } else if (validUrl.test(input)) {
       clearErrors('url');
     } else {
       setFormError('url', {
@@ -392,9 +400,30 @@ export const PostForm = (props: PostFormProps) => {
         message: t('postForm.urlInput.invalid')
       });
     }
-
-    setValue('url', input);
   };
+
+  useDebounce(() => {
+    if (!urlToCheck.length || !validUrl.test(urlToCheck)) {
+      return;
+    }
+
+    setFavicon(true);
+
+    // some valid urls are not reachable => no error checking
+    qetaApi.fetchUrlMetadata({ url: urlToCheck })
+      .then(response => {
+        if (control._formValues.title === '') {
+          setValue('title', response.title ?? '', { shouldValidate: true });
+        }
+
+        if (control._formValues.content === '') {
+          setValue('content', response.content ?? '', { shouldValidate: true });
+        }
+      })
+    },
+    1500,
+    [urlToCheck]
+  );
 
   const autoSavePost = useCallback(() => {
     if (autoSaveEnabled && edited && isValid && !posting) {
@@ -485,7 +514,7 @@ export const PostForm = (props: PostFormProps) => {
         />
       )}
       {type === 'link' && (
-        <Box mb={2}>
+        <Box mb={2} display="flex" alignItems="center" style={{ gap: 8 }}>
           <TextField
             label={t('postForm.urlInput.label')}
             className="qetaAskFormTitle"
@@ -509,6 +538,14 @@ export const PostForm = (props: PostFormProps) => {
             value={control._formValues.url ?? ''}
             onChange={handleUrlChange}
           />
+          {favicon && (
+            <img
+              src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(urlToCheck)}&sz=16`}
+              alt="Favicon"
+              style={{ width: 16, height: 16, marginLeft: 6, marginBottom: 15, borderRadius: 4, boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
+              onError={e => (e.currentTarget.style.display = 'none')}
+            />
+          )}
         </Box>
       )}
       <Box mb={2}>

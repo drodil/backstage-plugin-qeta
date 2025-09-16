@@ -10,7 +10,7 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { LinkButton } from '../Buttons/LinkButton';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { editLinkRouteRef } from '../../routes';
@@ -28,6 +28,7 @@ import {
 import { useIsModerator } from '../../hooks';
 import { AuthorBoxes } from '../AuthorBox/AuthorBoxes.tsx';
 import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
+import { qetaApiRef } from "../../api.ts";
 
 export type LinkCardClassKeys =
   | 'root'
@@ -63,6 +64,7 @@ const useStyles = makeStyles(
 export const LinkCard = (props: { link: PostResponse }) => {
   const { link } = props;
   const navigate = useNavigate();
+  const qetaApi = useApi(qetaApiRef);
   const editLinkRoute = useRouteRef(editLinkRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [linkEntity, setLinkEntity] = useState(link);
@@ -74,6 +76,7 @@ export const LinkCard = (props: { link: PostResponse }) => {
     setLinkEntity(q);
   };
   const styles = useStyles();
+
 
   return (
     <>
@@ -92,6 +95,10 @@ export const LinkCard = (props: { link: PostResponse }) => {
                   wordBreak: 'break-all',
                   textDecoration: 'underline',
                   cursor: 'pointer',
+                }}
+                onClick={event => {
+                  event.stopPropagation();
+                  qetaApi.clickLink(linkEntity.id);
                 }}
               >
                 {linkEntity.url}

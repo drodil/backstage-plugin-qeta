@@ -28,6 +28,7 @@ import {
   TemplateRequest,
   TemplateResponse,
   TemplatesResponse,
+  UrlRequest,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UsersResponse,
@@ -123,6 +124,12 @@ export interface EntitiesQuery extends PaginatedQuery {
 
 export interface AIQuery {
   regenerate?: boolean;
+}
+
+export interface UrlQuery {
+  url: string;
+  title?: string;
+  content?: string;
 }
 
 export type RequestOptions = {
@@ -516,4 +523,8 @@ export interface QetaApi {
     options: TagSuggestionsQuery,
     requestOptions?: RequestOptions,
   ): Promise<TagSuggestionsResponse>;
+
+  fetchUrlMetadata(
+    request: UrlRequest,
+  ): Promise<UrlRequest>;
 }

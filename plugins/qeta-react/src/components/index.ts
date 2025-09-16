@@ -30,4 +30,5 @@ export * from './SelectTemplateList';
 export * from './AIAnswerCard';
 export * from './SuggestionsCard';
 export * from './LinkCard';
+export * from './FaviconItem';
 export { DeletedBanner, DraftBanner, StatusChip } from './Utility';

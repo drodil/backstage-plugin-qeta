@@ -43,6 +43,7 @@ import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
 import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
 import { selectByPostType } from "../../utils";
+import { FaviconItem } from "../FaviconItem";
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -216,6 +217,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               className={classes.title}
             >
               {post.title}
+              {post.type === 'link' && <FaviconItem entity={post}/>}
             </Typography>
             <Box display="flex" alignItems="center">
               <StatusChip status={post.status} />
