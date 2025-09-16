@@ -8,7 +8,7 @@ import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { TagFollowButton } from '../Buttons/TagFollowButton';
 import { EntityFollowButton } from '../Buttons/EntityFollowButton';
-import { WriteArticleButton } from '../Buttons';
+import { CreateLinkButton, WriteArticleButton } from '../Buttons';
 import { ViewToggle, ViewType } from '../ViewToggle/ViewToggle';
 import { capitalize } from 'lodash';
 import {
@@ -41,6 +41,7 @@ export const PostsContainer = (props: PostsContainerProps) => {
     favorite,
     showAskButton,
     showWriteButton,
+    showLinkButton,
     showNoQuestionsBtn,
     showTypeLabel,
     view,
@@ -109,6 +110,13 @@ export const PostsContainer = (props: PostsContainerProps) => {
               )}
               {showWriteButton && (
                 <WriteArticleButton
+                  entity={entity ?? filters.entity}
+                  entityPage={entity !== undefined}
+                  tags={tags}
+                />
+              )}
+              {showLinkButton && (
+                <CreateLinkButton
                   entity={entity ?? filters.entity}
                   entityPage={entity !== undefined}
                   tags={tags}

@@ -1,6 +1,7 @@
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import {
   AskQuestionButton,
+  CreateLinkButton,
   EntityFollowButton,
   TagFollowButton,
   WriteArticleButton,
@@ -42,6 +43,7 @@ export const PostsGrid = (props: PostGridProps) => {
     favorite,
     showAskButton,
     showWriteButton,
+    showLinkButton,
     showNoQuestionsBtn,
     allowRanking,
     view,
@@ -118,6 +120,15 @@ export const PostsGrid = (props: PostGridProps) => {
         {showWriteButton && (
           <Grid item>
             <WriteArticleButton
+              entity={entity ?? filters.entity}
+              entityPage={entity !== undefined}
+              tags={tags}
+            />
+          </Grid>
+        )}
+        {showLinkButton && (
+          <Grid item>
+            <CreateLinkButton
               entity={entity ?? filters.entity}
               entityPage={entity !== undefined}
               tags={tags}

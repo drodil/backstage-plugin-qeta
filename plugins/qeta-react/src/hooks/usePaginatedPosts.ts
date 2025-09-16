@@ -19,6 +19,7 @@ export type PaginatedPostsProps = PostFilters & {
   favorite?: boolean;
   showAskButton?: boolean;
   showWriteButton?: boolean;
+  showLinkButton?: boolean;
   showNoQuestionsBtn?: boolean;
   initialPageSize?: number;
   collectionId?: number;
