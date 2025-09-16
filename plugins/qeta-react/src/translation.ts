@@ -148,7 +148,8 @@ export const qetaTranslationRef = createTranslationRef({
       urlInput: {
         label: 'URL',
         helperText: 'Paste the link you want to share',
-        placeholder: 'https://example.com',
+        placeholder: 'https://',
+        invalid: 'Please enter a valid URL (starting with https://)',
       },
       submit: {
         existingPost: 'Save',

@@ -170,6 +170,8 @@ export const PostForm = (props: PostFormProps) => {
     reset,
     getValues: getFormValues,
     setValue,
+    setError: setFormError,
+    clearErrors,
     formState: { errors, isSubmitting, isValid },
   } = useForm<QuestionFormValues>({
     values,
@@ -387,8 +389,19 @@ export const PostForm = (props: PostFormProps) => {
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitleCharCount(e.target.value.length);
-    setValue('url', e.target.value, { shouldValidate: true });
+    const input = e.target.value;
+    const validUrlRegex = /^https?:\/\/\S+$/;
+
+    if (input === "" || validUrlRegex.test(input)) {
+      clearErrors('url');
+    } else {
+      setFormError('url', {
+        type: 'manual',
+        message: t('postForm.urlInput.invalid')
+      });
+    }
+
+    setValue('url', input);
   };
 
   const autoSavePost = useCallback(() => {
@@ -486,15 +499,16 @@ export const PostForm = (props: PostFormProps) => {
             className="qetaAskFormTitle"
             required
             fullWidth
-            error={'url' in errors} // make use of this when url is invalid
+            error={!!errors.url}
             margin="normal"
             variant="outlined"
             name="url"
             helperText={
-              <span>
-                {t('postForm.urlInput.helperText')}
-                <span style={{ float: 'right' }}>{titleCharCount}/255</span>
-              </span>
+              errors.url?.message || (
+                <span>
+                  {t('postForm.urlInput.helperText')}
+                </span>
+              )
             }
             placeholder={t('postForm.urlInput.placeholder')}
             FormHelperTextProps={{
@@ -502,7 +516,6 @@ export const PostForm = (props: PostFormProps) => {
             }}
             value={control._formValues.url ?? ''}
             onChange={handleUrlChange}
-            inputProps={{ maxLength: 255 }}
           />
         </Box>
       )}
