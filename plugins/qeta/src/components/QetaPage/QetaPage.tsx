@@ -17,6 +17,7 @@ import {
   collectionsRouteRef,
   createLinkRouteRef,
   editArticleRouteRef,
+  editLinkRouteRef,
   editQuestionRouteRef,
   entitiesRouteRef,
   entityRouteRef,
@@ -129,6 +130,7 @@ export const QetaPage = (props?: Props) => {
                   path={editArticleRouteRef.path}
                   element={<WritePage />}
                 />
+                <Route path={editLinkRouteRef.path} element={<CreateLinkPage />} />
                 <Route
                   path={questionRouteRef.path}
                   element={<QuestionPage />}

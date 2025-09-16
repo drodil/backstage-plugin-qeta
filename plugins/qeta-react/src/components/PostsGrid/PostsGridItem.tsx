@@ -222,8 +222,10 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             >
               {post.title}
             </Typography>
-            <StatusChip status={post.status} />
-            {post.type === 'link' && <OpenLinkButton entity={post} />}
+            <Box display="flex" alignItems="center">
+              <StatusChip status={post.status} />
+              {post.type === 'link' && <OpenLinkButton entity={post} />}
+            </Box>
           </Box>
           <Typography
             variant="body2"

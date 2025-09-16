@@ -8,6 +8,8 @@ import {
   AddToCollectionButton,
   ButtonContainer,
   CreateLinkButton,
+  DeletedBanner,
+  DraftBanner,
   LinkCard,
   qetaTranslationRef,
   RelativeTimeWithTooltip,
@@ -121,6 +123,8 @@ export const LinkPage = () => {
           <AddToCollectionButton post={post} />
         </ButtonContainer>
       </ContentHeader>
+      {post.status === 'draft' && <DraftBanner />}
+      {post.status === 'deleted' && <DeletedBanner />}
       <LinkCard link={post} />
     </>
   );

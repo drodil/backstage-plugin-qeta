@@ -169,7 +169,7 @@ export const LinkCard = (props: { link: PostResponse }) => {
                         variant="contained"
                         size="small"
                         startIcon={<RestoreIcon />}
-                        onClick={() => {}}
+                        onClick={() => {}} // TODO:
                         className="qetaQuestionCardRestoreBtn"
                       >
                         {t('questionPage.restoreButton')}
@@ -183,7 +183,9 @@ export const LinkCard = (props: { link: PostResponse }) => {
           </Grid>
         </CardContent>
       </Card>
-      <CommentSection post={linkEntity} onCommentAction={onCommentAction} />
+      {link.status === 'active' && (
+        <CommentSection post={linkEntity} onCommentAction={onCommentAction} />
+      )}
     </>
   );
 };

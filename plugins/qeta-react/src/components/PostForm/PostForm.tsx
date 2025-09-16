@@ -498,7 +498,7 @@ export const PostForm = (props: PostFormProps) => {
             FormHelperTextProps={{
               style: { marginLeft: '0.2em' },
             }}
-            value={control._formValues.url}
+            value={control._formValues.url ?? ''}
             onChange={handleUrlChange}
             inputProps={{ maxLength: 255 }}
           />
@@ -608,7 +608,7 @@ export const PostForm = (props: PostFormProps) => {
           <MarkdownEditor
             value={value}
             onChange={onChange}
-            height={400}
+            height={type !== "link" ? 400 : 150}
             error={'content' in errors}
             placeholder={
               (() => {
