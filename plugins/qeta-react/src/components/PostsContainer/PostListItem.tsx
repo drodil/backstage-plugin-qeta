@@ -33,6 +33,7 @@ import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import LinkIcon from "@material-ui/icons/Link";
 import { StatusChip } from '../Utility/StatusChip';
 import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
+import { selectByPostType } from "../../utils";
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -206,17 +207,9 @@ export const PostListItem = (props: PostListItemProps) => {
   const articleRoute = useRouteRef(articleRouteRef);
   const linkRoute = useRouteRef(linkRouteRef);
 
-  const route = (() => {
-    switch (post.type) {
-      case 'article':
-        return articleRoute;
-      case 'link':
-        return linkRoute;
-      case 'question':
-      default:
-        return questionRoute;
-    }
-  })();
+  const route = selectByPostType(
+    post.type, questionRoute, articleRoute, linkRoute
+  )
 
   const href = entity
     ? `${route({ id: post.id.toString(10) })}?entity=${entity}`
@@ -305,17 +298,12 @@ export const PostListItem = (props: PostListItemProps) => {
             <Chip
               size="small"
               icon={
-                (() => {
-                  switch (post.type) {
-                    case 'link':
-                      return <LinkIcon />;
-                    case 'question':
-                      return <QuestionAnswer />;
-                    case 'article':
-                    default:
-                      return <CollectionsBookmarkIcon />;
-                  }
-                })()
+                selectByPostType(
+                  post.type,
+                  <QuestionAnswer />,
+                  <CollectionsBookmarkIcon />,
+                  <LinkIcon />,
+                )
               }
               label={capitalizeFirstLetter(t(`common.${post.type}`))}
               className={styles.typeLabel}

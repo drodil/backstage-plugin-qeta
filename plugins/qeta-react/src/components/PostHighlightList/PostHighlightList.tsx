@@ -20,6 +20,7 @@ import {
 } from '../../routes.ts';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import numeral from 'numeral';
+import { selectByPostType } from "../../utils";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -137,17 +138,12 @@ export const PostHighlightList = (props: {
         )}
         {!error &&
           posts.map(q => {
-            const route = (() => {
-              switch (q.type) {
-                case 'article':
-                  return articleRoute;
-                case 'link':
-                  return linkRoute;
-                case 'question':
-                default:
-                  return questionRoute;
-              }
-            })();
+            const route = selectByPostType(
+              q.type,
+              questionRoute,
+              articleRoute,
+              linkRoute,
+            );
             const vote = formatShortNumber(q.score);
             let voteBoxClass = classes.voteBox;
             if (q.correctAnswer) {

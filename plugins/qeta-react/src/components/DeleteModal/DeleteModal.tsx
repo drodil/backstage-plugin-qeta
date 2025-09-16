@@ -27,6 +27,7 @@ import {
   questionsRouteRef,
   tagsRouteRef,
 } from '../../routes.ts';
+import { selectByPostType } from "../../utils";
 
 export const DeleteModal = (props: {
   entity: PostResponse | AnswerResponse | CollectionResponse | TagResponse;
@@ -116,32 +117,22 @@ export const DeleteModal = (props: {
             onDelete?.(entity);
             alertApi.post({
               message:
-                (() => {
-                  switch (entity.type) {
-                    case 'question':
-                      return t('deleteModal.questionDeleted');
-                    case 'article':
-                      return t('deleteModal.articleDeleted');
-                    case 'link' :
-                    default:
-                      return t('deleteModal.linkDeleted');
-                  }
-                })(),
+                selectByPostType(
+                  entity.type,
+                  t('deleteModal.questionDeleted'),
+                  t('deleteModal.articleDeleted'),
+                  t('deleteModal.linkDeleted'),
+                ),
               severity: 'success',
               display: 'transient',
             });
             navigate(
-              (() => {
-                switch (entity.type) {
-                  case 'question':
-                    return questionsRoute();
-                  case 'article':
-                    return articlesRoute();
-                  case 'link' :
-                  default:
-                    return linksRoute();
-                }
-              })()
+              selectByPostType(
+                entity.type,
+                questionsRoute(),
+                articlesRoute(),
+                linksRoute(),
+              )
             );
           } else {
             setError(true);

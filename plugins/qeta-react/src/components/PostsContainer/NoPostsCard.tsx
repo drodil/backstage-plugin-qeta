@@ -13,6 +13,7 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityQueryParameter } from '../../hooks/useEntityQueryParameter';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 import LinkIcon from "@material-ui/icons/Link";
+import { selectByPostType } from "../../utils";
 
 export const NoPostsCard = (props: {
   showNoPostsBtn?: boolean;
@@ -39,17 +40,9 @@ export const NoPostsCard = (props: {
     queryParams.set('tags', tags.join(','));
   }
 
-  const route = (() => {
-    switch (type) {
-        case 'article':
-            return writeRoute;
-        case 'link':
-            return linkRoute;
-        case 'question':
-        default:
-            return askRoute;
-    }
-  })()
+  const route = selectByPostType(
+    type ?? 'question', askRoute, writeRoute, linkRoute
+  )
 
   const itemType = t(`common.${type ?? 'post'}`, {});
   return (
@@ -77,17 +70,12 @@ export const NoPostsCard = (props: {
                     : `${route()}`
                 }
                 startIcon={
-                  (() => {
-                    switch (type) {
-                      case 'article':
-                        return <CreateIcon />;
-                      case 'link':
-                        return <LinkIcon />;
-                      case 'question':
-                      default:
-                        return <HelpOutline />;
-                    }
-                  })()
+                  selectByPostType(
+                    type ?? 'question',
+                    <HelpOutline />,
+                    <CreateIcon />,
+                    <LinkIcon />
+                  )
                 }
                 color="primary"
                 variant="outlined"

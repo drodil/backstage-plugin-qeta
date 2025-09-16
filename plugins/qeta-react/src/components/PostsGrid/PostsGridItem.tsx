@@ -42,6 +42,7 @@ import { SmallAvatar } from '../Utility/SmallAvatar';
 import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
 import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
+import { selectByPostType } from "../../utils";
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -163,17 +164,9 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
   const { name, initials, user } = useEntityAuthor(post);
   const navigate = useNavigate();
 
-  const route = (() => {
-    switch (post.type) {
-      case 'article':
-        return articleRoute;
-      case 'link':
-        return linkRoute;
-      case 'question':
-      default:
-        return questionRoute;
-    }
-  })();
+  const route = selectByPostType(
+    post.type, questionRoute, articleRoute, linkRoute
+  )
 
   const href = entity
     ? `${route({

@@ -39,7 +39,7 @@ import { QuestionFormValues } from './types';
 import { EntitiesInput } from './EntitiesInput';
 import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
-import { useConfirmNavigationIfEdited } from '../../utils/utils';
+import { selectByPostType, useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -181,17 +181,9 @@ export const PostForm = (props: PostFormProps) => {
   const postQuestion = useCallback(
     (data: QuestionFormValues, autoSave: boolean = false) => {
       setPosting(true);
-      const route = (() => {
-        switch (type) {
-          case 'link':
-            return linkRoute;
-          case 'article':
-            return articleRoute;
-          case 'question':
-          default:
-            return questionRoute;
-        }
-      })();
+      const route = selectByPostType(
+        type, questionRoute, articleRoute, linkRoute
+      );
 
       const queryParams = new URLSearchParams();
       if (entity) {
@@ -580,36 +572,25 @@ export const PostForm = (props: PostFormProps) => {
         <Box mb={2} p={2}>
           <Typography variant="body2">
             <ul style={{ margin: 0, paddingLeft: 20 }}>
-              {(() => {
-                switch (type) {
-                  case 'article':
-                    return (
-                      <>
-                        <li>{t('postForm.tips_article_1')}</li>
-                        <li>{t('postForm.tips_article_2')}</li>
-                        <li>{t('postForm.tips_article_3')}</li>
-                        <li>{t('postForm.tips_article_4')}</li>
-                      </>
-                    )
-                  case 'link':
-                    return (
-                      <>
-                        <li>{t('postForm.tips_link_1')}</li>
-                        <li>{t('postForm.tips_link_2')}</li>
-                      </>
-                    )
-                  case 'question':
-                  default:
-                    return (
-                      <>
-                        <li>{t('postForm.tips_question_1')}</li>
-                        <li>{t('postForm.tips_question_2')}</li>
-                        <li>{t('postForm.tips_question_3')}</li>
-                        <li>{t('postForm.tips_question_4')}</li>
-                      </>
-                    )
-                }
-              })()}
+              {selectByPostType(
+                type,
+                <>
+                  <li>{t('postForm.tips_question_1')}</li>
+                  <li>{t('postForm.tips_question_2')}</li>
+                  <li>{t('postForm.tips_question_3')}</li>
+                  <li>{t('postForm.tips_question_4')}</li>
+                </>,
+                <>
+                  <li>{t('postForm.tips_article_1')}</li>
+                  <li>{t('postForm.tips_article_2')}</li>
+                  <li>{t('postForm.tips_article_3')}</li>
+                  <li>{t('postForm.tips_article_4')}</li>
+                </>,
+                <>
+                  <li>{t('postForm.tips_link_1')}</li>
+                  <li>{t('postForm.tips_link_2')}</li>
+                </>,
+              )}
             </ul>
           </Typography>
         </Box>
@@ -627,17 +608,12 @@ export const PostForm = (props: PostFormProps) => {
             height={isNotLink ? 400 : 150}
             error={'content' in errors}
             placeholder={
-              (() => {
-                switch (type) {
-                  case "article":
-                    return t('postForm.contentInput.placeholder_article');
-                  case "link":
-                    return t('postForm.contentInput.placeholder_link');
-                  case "question":
-                  default:
-                    return t('postForm.contentInput.placeholder_question')
-                }
-              })()
+              selectByPostType(
+                type,
+                t('postForm.contentInput.placeholder_question'),
+                t('postForm.contentInput.placeholder_article'),
+                t('postForm.contentInput.placeholder_link'),
+              )
             }
             onImageUpload={onImageUpload}
             postId={id ? Number(id) : undefined}
