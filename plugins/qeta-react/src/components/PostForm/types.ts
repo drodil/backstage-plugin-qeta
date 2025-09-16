@@ -20,5 +20,6 @@ export interface QuestionFormValues extends TagAndEntitiesFormValues {
   type: PostType;
   images: number[];
   headerImage?: string;
+  url?: string;
   status?: PostStatus;
 }

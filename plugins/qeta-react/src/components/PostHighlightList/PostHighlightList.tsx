@@ -13,7 +13,11 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { articleRouteRef, questionRouteRef } from '../../routes.ts';
+import {
+  articleRouteRef,
+  linkRouteRef,
+  questionRouteRef
+} from '../../routes.ts';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import numeral from 'numeral';
 
@@ -100,6 +104,7 @@ export const PostHighlightList = (props: {
   const navigate = useNavigate();
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
+  const linkRoute = useRouteRef(linkRouteRef);
 
   const classes = useStyles();
 
@@ -132,7 +137,17 @@ export const PostHighlightList = (props: {
         )}
         {!error &&
           posts.map(q => {
-            const route = q.type === 'question' ? questionRoute : articleRoute;
+            const route = (() => {
+              switch (q.type) {
+                case 'article':
+                  return articleRoute;
+                case 'link':
+                  return linkRoute;
+                case 'question':
+                default:
+                  return questionRoute;
+              }
+            })();
             const vote = formatShortNumber(q.score);
             let voteBoxClass = classes.voteBox;
             if (q.correctAnswer) {

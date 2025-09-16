@@ -29,4 +29,5 @@ export * from './TemplateList';
 export * from './SelectTemplateList';
 export * from './AIAnswerCard';
 export * from './SuggestionsCard';
+export * from './LinkCard';
 export { DeletedBanner, DraftBanner, StatusChip } from './Utility';

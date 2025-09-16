@@ -26,6 +26,7 @@ import {
   collectionsRouteRef,
   entitiesRouteRef,
   favoriteQuestionsRouteRef,
+  linksRouteRef,
   moderatorRouteRef,
   qetaRouteRef,
   questionsRouteRef,
@@ -38,6 +39,7 @@ import { TrophyIcon } from '../TopRankingUsersCard';
 import { useIdentityApi, useIsModerator } from '../../hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import LinkIcon from "@material-ui/icons/Link";
 
 export type QetaLeftMenuClassKey =
   | 'leftMenu'
@@ -128,6 +130,7 @@ export const LeftMenu = (props: {
   const userRoute = useRouteRef(userRouteRef);
   const questionsRoute = useRouteRef(questionsRouteRef);
   const articlesRoute = useRouteRef(articlesRouteRef);
+  const linksRoute = useRouteRef(linksRouteRef);
   const collectionsRoute = useRouteRef(collectionsRouteRef);
   const entitiesRoute = useRouteRef(entitiesRouteRef);
   const usersRoute = useRouteRef(usersRouteRef);
@@ -221,6 +224,13 @@ export const LeftMenu = (props: {
             <CollectionsBookmarkIcon fontSize="small" />
           </ListItemIcon>
           {t('leftMenu.articles')}
+        </CustomMenuItem>
+
+        <CustomMenuItem route={linksRoute()} hasSubRoutes>
+          <ListItemIcon className={styles.menuIcon}>
+            <LinkIcon fontSize="small" />
+          </ListItemIcon>
+          {t('leftMenu.links')}
         </CustomMenuItem>
 
         <CustomMenuItem route={favoritesRoute()}>

@@ -11,6 +11,7 @@ import {
   SuggestionsCard,
   useIdentityApi,
   WriteArticleButton,
+  CreateLinkButton
 } from '@drodil/backstage-plugin-qeta-react';
 import { Grid } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -30,6 +31,7 @@ export const HomePage = () => {
           <ButtonContainer>
             <AskQuestionButton />
             <WriteArticleButton />
+            <CreateLinkButton />
           </ButtonContainer>
         </ContentHeader>
         <Grid container>

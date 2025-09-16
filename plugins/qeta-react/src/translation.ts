@@ -132,8 +132,9 @@ export const qetaTranslationRef = createTranslationRef({
       titleInput: {
         label: 'Title',
         helperText:
-          'Write good title for your {{type}} that people can understand',
+          'Write a good title for your {{type}} that people can understand',
         placeholder: 'e.g. How do I deploy a Backstage plugin?',
+        placeholder_link: 'e.g. Backstage documentation',
       },
       contentInput: {
         label: 'Your {{type}}',
@@ -141,7 +142,13 @@ export const qetaTranslationRef = createTranslationRef({
           'Describe your problem in detail. What have you tried? What did you expect to happen?',
         placeholder_article:
           'Write your article content here. Use headings, lists, and images to organize your information.',
+        placeholder_link: 'Why is this link useful? Who will benefit from it?',
         markdownHelp: 'Markdown help',
+      },
+      urlInput: {
+        label: 'URL',
+        helperText: 'Paste the link you want to share',
+        placeholder: 'https://example.com',
       },
       submit: {
         existingPost: 'Save',
@@ -163,6 +170,8 @@ export const qetaTranslationRef = createTranslationRef({
       tips_article_2: 'Organize your content with headings and lists.',
       tips_article_3: 'Add images or diagrams to illustrate your points.',
       tips_article_4: 'Cite sources or link to relevant documentation.',
+      tips_link_1: 'Explain why this link is useful.',
+      tips_link_2: 'Describe who will benefit from this link.',
       autoSaveDraft: 'Auto-save',
       autoSaveDraftTooltip:
         'Automatically save your post every 3 seconds when changes are made',
@@ -211,6 +220,14 @@ export const qetaTranslationRef = createTranslationRef({
         newArticle: 'New article',
       },
     },
+    createLinkPage: {
+      title: {
+        existingLink: 'Edit link',
+        entityLink: 'Create a link about {{entity}}',
+        newLink: 'New link',
+      },
+      editButton: 'Edit this link',
+    },
     collectionCreatePage: {
       title: {
         existingCollection: 'Edit collection',
@@ -229,6 +246,9 @@ export const qetaTranslationRef = createTranslationRef({
     },
     writeArticleButton: {
       title: 'Write an article',
+    },
+    createLinkButton: {
+      title: 'Link',
     },
     createCollectionButton: {
       title: 'Create a collection',
@@ -293,6 +313,7 @@ export const qetaTranslationRef = createTranslationRef({
       home: 'Home',
       questions: 'Questions',
       articles: 'Articles',
+      links: 'Links',
       profile: 'Profile',
       tags: 'Tags',
       entities: 'Entities',
@@ -351,6 +372,10 @@ export const qetaTranslationRef = createTranslationRef({
         title: 'Hot articles',
         noArticlesLabel: 'No articles',
       },
+      hotLinks: {
+        title: 'Hot links',
+        noLinksLabel: 'No links',
+      },
       unanswered: {
         title: 'Unanswered questions',
         noQuestionsLabel: 'No unanswered questions',
@@ -366,6 +391,9 @@ export const qetaTranslationRef = createTranslationRef({
     articlesPage: {
       title: 'All articles',
     },
+    linksPage: {
+      title: 'All links',
+    },
     userLink: {
       anonymous: 'Anonymous',
       you: 'You',
@@ -376,6 +404,13 @@ export const qetaTranslationRef = createTranslationRef({
       editButton: 'Edit this article',
       restoreButton: 'Restore this article',
       deleteButton: 'Delete this article',
+    },
+    linkPage: {
+      notFound: 'Could not find the link',
+      errorLoading: 'Could not load link',
+      editButton: 'Edit this link',
+      restoreButton: 'Restore this link',
+      deleteButton: 'Delete this link',
     },
     templateList: {
       errorLoading: 'Could not load templates',

@@ -37,7 +37,7 @@ import { compact } from 'lodash';
 import { TagInput } from './TagInput';
 import { QuestionFormValues } from './types';
 import { EntitiesInput } from './EntitiesInput';
-import { articleRouteRef, questionRouteRef } from '../../routes';
+import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
@@ -124,6 +124,7 @@ const getValues = async (
     entities: 'items' in entities ? compact(entities.items) : [],
     type,
     headerImage: post.headerImage,
+    url: post.url,
     images: post.images ?? [],
     status: post.status,
   };
@@ -134,6 +135,7 @@ export const PostForm = (props: PostFormProps) => {
     props;
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
+  const linkRoute = useRouteRef(linkRouteRef);
   const navigate = useNavigate();
   const analytics = useAnalytics();
   const [entityRef, setEntityRef] = useState(entity);
@@ -175,7 +177,17 @@ export const PostForm = (props: PostFormProps) => {
   const postQuestion = useCallback(
     (data: QuestionFormValues, autoSave: boolean = false) => {
       setPosting(true);
-      const route = type === 'question' ? questionRoute : articleRoute;
+      const route = (() => {
+        switch (type) {
+          case 'link':
+            return linkRoute;
+          case 'article':
+            return articleRoute;
+          case 'question':
+          default:
+            return questionRoute;
+        }
+      })();
 
       const queryParams = new URLSearchParams();
       if (entity) {
@@ -283,6 +295,7 @@ export const PostForm = (props: PostFormProps) => {
       type,
       questionRoute,
       articleRoute,
+      linkRoute,
       entity,
       entityPage,
       draftId,
@@ -369,6 +382,11 @@ export const PostForm = (props: PostFormProps) => {
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitleCharCount(e.target.value.length);
     setValue('title', e.target.value, { shouldValidate: true });
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitleCharCount(e.target.value.length);
+    setValue('url', e.target.value, { shouldValidate: true });
   };
 
   const autoSavePost = useCallback(() => {
@@ -459,6 +477,33 @@ export const PostForm = (props: PostFormProps) => {
           name="headerImage"
         />
       )}
+      {type === 'link' && (
+        <Box mb={2}>
+          <TextField
+            label={t('postForm.urlInput.label')}
+            className="qetaAskFormTitle"
+            required
+            fullWidth
+            error={'url' in errors} // make use of this when url is invalid
+            margin="normal"
+            variant="outlined"
+            name="url"
+            helperText={
+              <span>
+                {t('postForm.urlInput.helperText')}
+                <span style={{ float: 'right' }}>{titleCharCount}/255</span>
+              </span>
+            }
+            placeholder={t('postForm.urlInput.placeholder')}
+            FormHelperTextProps={{
+              style: { marginLeft: '0.2em' },
+            }}
+            value={control._formValues.url}
+            onChange={handleUrlChange}
+            inputProps={{ maxLength: 255 }}
+          />
+        </Box>
+      )}
       <Box mb={2}>
         <TextField
           label={t('postForm.titleInput.label')}
@@ -475,7 +520,10 @@ export const PostForm = (props: PostFormProps) => {
               <span style={{ float: 'right' }}>{titleCharCount}/255</span>
             </span>
           }
-          placeholder={t('postForm.titleInput.placeholder')}
+          placeholder={t(type === 'link' ?
+            'postForm.titleInput.placeholder_link' :
+            'postForm.titleInput.placeholder')
+          }
           FormHelperTextProps={{
             style: { marginLeft: '0.2em' },
           }}
@@ -517,21 +565,36 @@ export const PostForm = (props: PostFormProps) => {
         <Box mb={2} p={2}>
           <Typography variant="body2">
             <ul style={{ margin: 0, paddingLeft: 20 }}>
-              {type === 'article' ? (
-                <>
-                  <li>{t('postForm.tips_article_1')}</li>
-                  <li>{t('postForm.tips_article_2')}</li>
-                  <li>{t('postForm.tips_article_3')}</li>
-                  <li>{t('postForm.tips_article_4')}</li>
-                </>
-              ) : (
-                <>
-                  <li>{t('postForm.tips_question_1')}</li>
-                  <li>{t('postForm.tips_question_2')}</li>
-                  <li>{t('postForm.tips_question_3')}</li>
-                  <li>{t('postForm.tips_question_4')}</li>
-                </>
-              )}
+              {(() => {
+                switch (type) {
+                  case 'article':
+                    return (
+                      <>
+                        <li>{t('postForm.tips_article_1')}</li>
+                        <li>{t('postForm.tips_article_2')}</li>
+                        <li>{t('postForm.tips_article_3')}</li>
+                        <li>{t('postForm.tips_article_4')}</li>
+                      </>
+                    )
+                  case 'link':
+                    return (
+                      <>
+                        <li>{t('postForm.tips_link_1')}</li>
+                        <li>{t('postForm.tips_link_2')}</li>
+                      </>
+                    )
+                  case 'question':
+                  default:
+                    return (
+                      <>
+                        <li>{t('postForm.tips_question_1')}</li>
+                        <li>{t('postForm.tips_question_2')}</li>
+                        <li>{t('postForm.tips_question_3')}</li>
+                        <li>{t('postForm.tips_question_4')}</li>
+                      </>
+                    )
+                }
+              })()}
             </ul>
           </Typography>
         </Box>
@@ -548,9 +611,17 @@ export const PostForm = (props: PostFormProps) => {
             height={400}
             error={'content' in errors}
             placeholder={
-              type === 'article'
-                ? t('postForm.contentInput.placeholder_article')
-                : t('postForm.contentInput.placeholder_question')
+              (() => {
+                switch (type) {
+                  case "article":
+                    return t('postForm.contentInput.placeholder_article');
+                  case "link":
+                    return t('postForm.contentInput.placeholder_link');
+                  case "question":
+                  default:
+                    return t('postForm.contentInput.placeholder_question')
+                }
+              })()
             }
             onImageUpload={onImageUpload}
             postId={id ? Number(id) : undefined}

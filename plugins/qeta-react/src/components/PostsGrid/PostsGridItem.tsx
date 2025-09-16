@@ -8,7 +8,11 @@ import {
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { articleRouteRef, questionRouteRef } from '../../routes';
+import {
+  articleRouteRef,
+  linkRouteRef,
+  questionRouteRef
+} from '../../routes';
 import {
   Box,
   Card,
@@ -152,10 +156,22 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
 
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
+  const linkRoute = useRouteRef(linkRouteRef);
   const { name, initials, user } = useEntityAuthor(post);
   const navigate = useNavigate();
 
-  const route = post.type === 'question' ? questionRoute : articleRoute;
+  const route = (() => {
+    switch (post.type) {
+      case 'article':
+        return articleRoute;
+      case 'link':
+        return linkRoute;
+      case 'question':
+      default:
+        return questionRoute;
+    }
+  })();
+
   const href = entity
     ? `${route({
         id: post.id.toString(10),
@@ -224,16 +240,18 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
         <Box className={classes.footer}>
           <Box className={classes.statsContainer}>
             <Box className={classes.statsGroup}>
-              <Tooltip title={post.score >= 1000 ? post.score : ''} arrow>
-                <Box className={classes.statBox}>
-                  <Typography className={classes.statValue}>
-                    {formatShortNumber(post.score)}
-                  </Typography>
-                  <Typography className={classes.statLabel}>
-                    {t('common.votes')}
-                  </Typography>
-                </Box>
-              </Tooltip>
+              {post.type !== 'link' && (
+                <Tooltip title={post.score >= 1000 ? post.score : ''} arrow>
+                  <Box className={classes.statBox}>
+                    <Typography className={classes.statValue}>
+                      {formatShortNumber(post.score)}
+                    </Typography>
+                    <Typography className={classes.statLabel}>
+                      {t('common.votes')}
+                    </Typography>
+                  </Box>
+                </Tooltip>
+              )}
               {post.type === 'question' && (
                 <Tooltip title={answersCount >= 1000 ? answersCount : ''} arrow>
                   <Box
