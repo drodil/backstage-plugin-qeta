@@ -30,8 +30,9 @@ import { AuthorBox } from '../AuthorBox/AuthorBox';
 import numeral from 'numeral';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
-import LinkIcon from "@material-ui/icons/Link";
 import { StatusChip } from '../Utility/StatusChip';
+import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
+import LinkIcon from "@material-ui/icons/Link";
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -292,6 +293,7 @@ export const PostListItem = (props: PostListItemProps) => {
             </Typography>
           </Box>
           <StatusChip status={post.status} />
+          {post.type === 'link' && <OpenLinkButton entity={post} />}
           {showTypeLabel && post.type && (
             <Chip
               size="small"

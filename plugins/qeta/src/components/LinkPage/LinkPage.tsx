@@ -111,22 +111,6 @@ export const LinkPage = () => {
             >
               {post.title}
             </a>
-            <a
-              href={post.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                marginLeft: 12,
-                color: '#888',
-                fontSize: 14,
-                textDecoration: 'underline',
-                wordBreak: 'break-all',
-                opacity: 0.8,
-              }}
-              data-testid="link-url"
-            >
-              {post.url}
-            </a>
           </Box>
         ) : post.title}
         // @ts-ignore

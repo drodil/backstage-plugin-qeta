@@ -41,6 +41,7 @@ import { UserLink } from '../Links';
 import { SmallAvatar } from '../Utility/SmallAvatar';
 import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
+import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -222,6 +223,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               {post.title}
             </Typography>
             <StatusChip status={post.status} />
+            {post.type === 'link' && <OpenLinkButton entity={post} />}
           </Box>
           <Typography
             variant="body2"

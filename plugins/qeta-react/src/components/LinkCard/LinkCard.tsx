@@ -17,7 +17,6 @@ import { editLinkRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
 import {
   Box,
   Button,
@@ -28,6 +27,7 @@ import {
 } from '@material-ui/core';
 import { useIsModerator } from '../../hooks';
 import { AuthorBoxes } from '../AuthorBox/AuthorBoxes.tsx';
+import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
 
 export type LinkCardClassKeys =
   | 'root'
@@ -44,7 +44,7 @@ const useStyles = makeStyles(
       width: 'calc(100% - 70px)',
     },
     markdownContainer: {
-      minHeight: '6em',
+      minHeight: '2em',
       paddingBottom: '0.5em',
     },
     buttons: {
@@ -75,24 +75,38 @@ export const LinkCard = (props: { link: PostResponse }) => {
   };
   const styles = useStyles();
 
-  // TODO: add viewcount
-
   return (
     <>
       <Card variant="outlined" className={styles.root}>
         <CardContent>
+          <Box display="flex" justifyContent="flex-end" alignItems="flex-start" mb={1}>
+            <Box display="flex" alignItems="center" flexGrow={1}>
+              <a
+                href={linkEntity.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontWeight: 400,
+                  fontSize: '1.2rem',
+                  marginRight: 16,
+                  wordBreak: 'break-all',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                }}
+              >
+                {linkEntity.url}
+              </a>
+            </Box>
+            <LinkButton entity={linkEntity} />
+            <FavoriteButton entity={linkEntity} />
+            <OpenLinkButton entity={linkEntity} />
+          </Box>
           <Grid
             container
             spacing={2}
             justifyContent="flex-start"
             style={{ flexWrap: 'nowrap' }}
           >
-            <Grid item>
-              <VoteButtonContainer>
-                <FavoriteButton entity={linkEntity} />
-                <LinkButton entity={linkEntity} />
-              </VoteButtonContainer>
-            </Grid>
             <Grid
               item
               className={styles.contentContainer}
