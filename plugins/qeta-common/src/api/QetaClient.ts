@@ -424,6 +424,13 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as EntityResponse;
   }
 
+  async clickLink(id: number): Promise<void> {
+    if (!id) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    await this.fetch(`/posts/${id}/click`, { reqInit: { method: 'PUT' } });
+  }
+
   async votePostUp(id: number, requestOptions?: RequestOptions): Promise<Post> {
     if (!id) {
       throw new QetaError('Invalid id provided', undefined);

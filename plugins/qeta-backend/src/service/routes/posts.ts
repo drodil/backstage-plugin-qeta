@@ -945,6 +945,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     response.json(post);
   });
 
+  // PUT /posts/:id/click
+  router.put('/posts/:id/click', async (request, response) => {
+    const ret = await getPostAndCheckStatus(request, response);
+    if (!ret) return;
+    const { postId, username } = ret;
+    await database.clickPost(username, postId);
+    response.status(200).send({});
+  });
+
   // GET /posts/:id/upvote
   router.get(`/posts/:id/upvote`, async (request, response) => {
     return await votePost(request, response, 1);

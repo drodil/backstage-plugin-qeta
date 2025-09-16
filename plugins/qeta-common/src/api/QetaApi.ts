@@ -264,6 +264,10 @@ export interface QetaApi {
     options,
   }: StatisticsRequestParameters): Promise<StatisticResponse[]>;
 
+  clickLink(
+    id: number
+  ): Promise<void>;
+
   votePostUp(
     id: number,
     requestOptions?: RequestOptions,

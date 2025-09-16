@@ -3,10 +3,18 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { IconButton, Tooltip } from '@material-ui/core';
 import OpenLinkIcon from '@material-ui/icons/OpenInNew';
+import { qetaApiRef } from "../../api.ts";
+import { useApi } from "@backstage/core-plugin-api";
 
 export const OpenLinkButton = (props: { entity: PostResponse; }) => {
   const { entity } = props;
+  const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
+
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    event.stopPropagation();
+    qetaApi.clickLink(entity.id);
+  }
 
   return (
     <Tooltip title={t("link.open")}>
@@ -17,6 +25,7 @@ export const OpenLinkButton = (props: { entity: PostResponse; }) => {
         rel="noopener noreferrer"
         aria-label={t("link.open")}
         size="small"
+        onClick={handleClick}
       >
         <OpenLinkIcon />
       </IconButton>

@@ -187,6 +187,7 @@ export const PostListItem = (props: PostListItemProps) => {
   const [correctAnswer, setCorrectAnswer] = useState(post.correctAnswer);
   const [answersCount, setAnswersCount] = useState(post.answersCount);
   const [views, setViews] = useState(post.views);
+  const [score, setScore] = useState(post.score);
   const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
   const theme = useTheme();
@@ -197,6 +198,7 @@ export const PostListItem = (props: PostListItemProps) => {
       setCorrectAnswer(lastSignal.correctAnswer);
       setAnswersCount(lastSignal.answersCount);
       setViews(lastSignal.views);
+      setScore(lastSignal.score);
     }
   }, [lastSignal]);
 
@@ -223,25 +225,28 @@ export const PostListItem = (props: PostListItemProps) => {
   return (
     <Box className={styles.root}>
       <Box className={styles.metaCol} aria-label={t('common.postStats')}>
-        {post.type !== 'link' && (
-          <Tooltip title={post.score >= 1000 ? post.score : ''} arrow>
-            <Box
-              className={styles.metaBox}
-              aria-label={t('common.votesCount', { count: post.score })}
+        <Tooltip title={score >= 1000 ? score : ''} arrow>
+          <Box
+            className={styles.metaBox}
+            aria-label={
+              t(post.type !== 'link'
+                ? 'common.votesCount'
+                : 'common.clicksCount',
+                { count: score })
+            }
+          >
+            {formatShortNumber(score)}
+            <div
+              style={{
+                fontWeight: 400,
+                fontSize: '13px',
+                color: theme.palette.text.secondary,
+              }}
             >
-              {formatShortNumber(post.score)}
-              <div
-                style={{
-                  fontWeight: 400,
-                  fontSize: '13px',
-                  color: theme.palette.text.secondary,
-                }}
-              >
-                {t('common.votes')}
-              </div>
-            </Box>
-          </Tooltip>
-        )}
+              {post.type !== 'link' ? t('common.votes') : t('common.clicks')}
+            </div>
+          </Box>
+        </Tooltip>
         {post.type === 'question' && (
           <Box
             className={
@@ -259,23 +264,25 @@ export const PostListItem = (props: PostListItemProps) => {
             </div>
           </Box>
         )}
-        <Tooltip title={views >= 1000 ? views : ''} arrow>
-          <Box
-            className={styles.metaBox}
-            aria-label={t('common.viewsCount', { count: views })}
-          >
-            {formatShortNumber(views)}
-            <div
-              style={{
-                fontWeight: 400,
-                fontSize: '13px',
-                color: theme.palette.text.secondary,
-              }}
+        {post.type !== 'link' && (
+          <Tooltip title={views >= 1000 ? views : ''} arrow>
+            <Box
+              className={styles.metaBox}
+              aria-label={t('common.viewsCount', { count: views })}
             >
-              {t('common.views')}
-            </div>
-          </Box>
-        </Tooltip>
+              {formatShortNumber(views)}
+              <div
+                style={{
+                  fontWeight: 400,
+                  fontSize: '13px',
+                  color: theme.palette.text.secondary,
+                }}
+              >
+                {t('common.views')}
+              </div>
+            </Box>
+          </Tooltip>
+        )}
       </Box>
       <Box className={styles.contentContainer}>
         <Box className={styles.titleContainer}>

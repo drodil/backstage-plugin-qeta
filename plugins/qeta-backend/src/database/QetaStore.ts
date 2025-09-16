@@ -359,6 +359,13 @@ export interface QetaStore {
   deleteAnswer(id: number, permanently?: boolean): Promise<boolean>;
 
   /**
+   * Record a click of a link
+   * @param postId link id
+   * @param author author of the link
+   */
+  clickPost(author: string, postId: number): Promise<void>;
+
+  /**
    * Vote question with given score
    * @param user_ref user name of the user voting question
    * @param postId question id

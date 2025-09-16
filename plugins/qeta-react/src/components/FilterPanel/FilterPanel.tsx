@@ -416,13 +416,20 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
               {(postFilters || collectionFilters) &&
                 radioSelect('title', t('filterPanel.orderBy.title'))}
               {postFilters &&
+                type !== 'link' &&
                 radioSelect('views', t('filterPanel.orderBy.views'))}
               {(postFilters || answerFilters) &&
-                radioSelect('score', t('filterPanel.orderBy.score'))}
+                radioSelect(
+                  'score',
+                  type !== 'link'
+                    ? t('filterPanel.orderBy.score')
+                    : t('filterPanel.orderBy.clicks')
+                )
+              }
               {postFilters &&
                 radioSelect('trend', t('filterPanel.orderBy.trend'))}
               {postFilters &&
-                type !== 'article' &&
+                type === 'question' &&
                 radioSelect('answersCount', t('filterPanel.orderBy.answers'))}
               {(postFilters || answerFilters) &&
                 radioSelect('updated', t('filterPanel.orderBy.updated'))}

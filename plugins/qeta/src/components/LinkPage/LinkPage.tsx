@@ -34,7 +34,7 @@ export const LinkPage = () => {
   const { id } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
   const dStyles = useDescriptionStyles();
-  const [views, setViews] = useState(0);
+  const [score, setScore] = useState(0);
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${id}`);
 
   const {
@@ -45,13 +45,13 @@ export const LinkPage = () => {
 
   useEffect(() => {
     if (post) {
-      setViews(post.views);
+      setScore(post.score);
     }
   }, [post]);
 
   useEffect(() => {
     if (lastSignal?.type === 'post_stats') {
-      setViews(lastSignal.views);
+      setScore(lastSignal.score);
     }
   }, [lastSignal]);
 
@@ -92,7 +92,7 @@ export const LinkPage = () => {
           </React.Fragment>
         )}
         <Box fontWeight="fontWeightMedium" className={dStyles.box}>
-          {t('common.viewsCount', { count: views })}
+          {t('common.clicksCount', { count: score})}
         </Box>
       </span>
     );

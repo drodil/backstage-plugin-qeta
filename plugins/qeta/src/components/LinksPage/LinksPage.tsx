@@ -19,7 +19,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const LinksPage = () => {
   const [searchParams] = useSearchParams();
-  const [view, setView] = useState<ViewType>('list');
+  const [view, setView] = useState<ViewType>('grid');
 
   const [entityRef, setEntityRef] = useState<string | undefined>(undefined);
   const [tags, setTags] = useState<string[] | undefined>(undefined);

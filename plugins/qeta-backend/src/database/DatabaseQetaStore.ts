@@ -1046,6 +1046,32 @@ export class DatabaseQetaStore implements QetaStore {
     return rows > 0;
   }
 
+  async clickPost(user_ref: string, postId: number): Promise<void> {
+    const existingRows = await this.db('post_votes')
+      .where('author', '=', user_ref)
+      .where('postId', '=', postId);
+
+    if (existingRows.length) {
+      await this.db('post_votes')
+        .where('author', '=', user_ref)
+        .where('postId', '=', postId)
+        .increment('score', 1);
+    } else {
+      await this.db
+        .insert(
+          {
+            author: user_ref,
+            postId,
+            score: 1,
+            timestamp: new Date(),
+          }
+        )
+        .onConflict()
+        .ignore()
+        .into('post_votes');
+    }
+  }
+
   async deletePostVote(user_ref: string, postId: number): Promise<boolean> {
     return !!(await this.db('post_votes')
       .where('author', '=', user_ref)

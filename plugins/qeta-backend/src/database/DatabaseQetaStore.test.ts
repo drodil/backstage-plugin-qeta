@@ -493,7 +493,7 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
-    describe('link feature', () => {
+    describe('links', () => {
       it('should store url for link posts', async () => {
         const url = 'https://example.com';
         const linkPost = await storage.createPost({
@@ -614,6 +614,44 @@ describe.each(databases.eachSupportedId())(
         await storage.updatePost({ id: linkPost.id, user_ref: 'user', entities: ['component:default/ent1'] });
         fetched = await storage.getPost('user', linkPost.id);
         expect(fetched?.entities).toEqual(['component:default/ent1']);
+      });
+    });
+
+    describe('Clicking posts', () => {
+      const getVotes = async (user_ref: string, postId: number) =>
+        knex('post_votes')
+          .where('author', '=', user_ref)
+          .where('postId', '=', postId);
+      const user_ref = 'user';
+
+      it('should insert a new post_votes row if none exists', async () => {
+        const postId = await insertPost(post);
+        await storage.clickPost(user_ref, postId);
+        const votes = await getVotes(user_ref, postId);
+        expect(votes.length).toBe(1);
+        expect(votes[0].score).toBe(1);
+      });
+
+      it('should increment score if row exists', async () => {
+        const postId = await insertPost(post);
+        await storage.clickPost(user_ref, postId);
+        await storage.clickPost(user_ref, postId);
+        const votes = await getVotes(user_ref, postId);
+        expect(votes.length).toBe(1);
+        expect(votes[0].score).toBe(2);
+      });
+
+      it('should create a new row for a different post', async () => {
+        const postId1 = await insertPost({ ...post, title: 'post1' });
+        const postId2 = await insertPost({ ...post, title: 'post2' });
+        await storage.clickPost(user_ref, postId1);
+        await storage.clickPost(user_ref, postId2);
+        const votes1 = await getVotes(user_ref, postId1);
+        expect(votes1.length).toBe(1);
+        expect(votes1[0].score).toBe(1);
+        const votes2 = await getVotes(user_ref, postId2);
+        expect(votes2.length).toBe(1);
+        expect(votes2[0].score).toBe(1);
       });
     });
   },
