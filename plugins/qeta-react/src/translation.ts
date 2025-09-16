@@ -506,6 +506,7 @@ export const qetaTranslationRef = createTranslationRef({
       answer: 'Copy link to this answer to clipboard',
       aria: 'Copy link to clipboard',
       copied: 'Link copied to clipboard',
+      open: 'Open link in new tab',
     },
     code: {
       aria: 'Copy code to clipboard',
@@ -726,6 +727,7 @@ export const qetaTranslationRef = createTranslationRef({
       votes: 'Votes',
       views: 'Views',
       articles: 'Articles',
+      links: 'Links',
       followers: 'Followers',
       users: 'Users',
       tags: 'Tags',
@@ -743,6 +745,7 @@ export const qetaTranslationRef = createTranslationRef({
       totalUsers: 'Total users',
       totalTags: 'Total tags',
       totalArticles: 'Total articles',
+      totalLinks: 'Total links',
       totalFollowers: 'Total followers',
     },
     collectionButton: {

@@ -89,6 +89,11 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
               })}
               {' · '}
               {t('common.posts', {
+                count: user.totalLinks,
+                itemType: 'link',
+              })}
+              {' · '}
+              {t('common.posts', {
                 count: user.totalComments,
                 itemType: 'comment',
               })}

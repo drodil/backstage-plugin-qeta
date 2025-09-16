@@ -1140,6 +1140,7 @@ export class QetaClient implements QetaApi {
         summary: {
           totalAnswers: 0,
           totalArticles: 0,
+          totalLinks: 0,
           totalComments: 0,
           totalQuestions: 0,
           totalTags: 0,
@@ -1167,6 +1168,7 @@ export class QetaClient implements QetaApi {
         summary: {
           totalAnswers: 0,
           totalArticles: 0,
+          totalLinks: 0,
           totalComments: 0,
           totalQuestions: 0,
           totalViews: 0,

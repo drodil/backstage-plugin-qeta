@@ -21,6 +21,7 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import PeopleIcon from '@material-ui/icons/People';
 import TagIcon from '@material-ui/icons/LocalOffer';
 import PersonIcon from '@material-ui/icons/Person';
+import LinkIcon from "@material-ui/icons/Link";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -117,6 +118,13 @@ export const SummaryStatsGrid = (props: {
             title={t('stats.articles')}
             value={stats.summary.totalArticles}
             icon={<DescriptionIcon />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4} className={classes.gridItem}>
+          <SummaryCard
+            title={t('stats.links')}
+            value={stats.summary.totalLinks}
+            icon={<LinkIcon />}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4} className={classes.gridItem}>

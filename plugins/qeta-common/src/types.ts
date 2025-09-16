@@ -21,6 +21,7 @@ export interface Stat {
   totalComments: number;
   totalVotes: number;
   totalArticles: number;
+  totalLinks: number;
 }
 
 export interface GlobalStat extends Stat {
