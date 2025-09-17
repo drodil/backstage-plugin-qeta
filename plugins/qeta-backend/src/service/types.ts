@@ -183,7 +183,11 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     searchQuery: { type: 'string', nullable: true },
     fromDate: { type: 'string', nullable: true, format: 'date' },
     toDate: { type: 'string', nullable: true, format: 'date' },
-    type: { type: 'string', enum: ['question', 'article', 'link'], nullable: true },
+    type: {
+      type: 'string',
+      enum: ['question', 'article', 'link'],
+      nullable: true,
+    },
     ids: { type: 'array', items: { type: 'integer' }, nullable: true },
     checkAccess: { type: 'boolean', nullable: true },
   },
@@ -448,4 +452,3 @@ export const UrlSchema: JSONSchemaType<UrlQuery> = {
   required: ['url'],
   additionalProperties: false,
 };
-

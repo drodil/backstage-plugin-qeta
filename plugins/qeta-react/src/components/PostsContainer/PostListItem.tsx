@@ -11,11 +11,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import {
-  articleRouteRef,
-  linkRouteRef,
-  questionRouteRef
-} from '../../routes';
+import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -31,10 +27,10 @@ import { AuthorBox } from '../AuthorBox/AuthorBox';
 import numeral from 'numeral';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
-import LinkIcon from "@material-ui/icons/Link";
+import LinkIcon from '@material-ui/icons/Link';
 import { StatusChip } from '../Utility/StatusChip';
-import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
-import { FaviconItem } from "../FaviconItem";
+import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
+import { FaviconItem } from '../FaviconItem';
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -209,8 +205,11 @@ export const PostListItem = (props: PostListItemProps) => {
   const linkRoute = useRouteRef(linkRouteRef);
 
   const route = selectByPostType(
-    post.type, questionRoute, articleRoute, linkRoute
-  )
+    post.type,
+    questionRoute,
+    articleRoute,
+    linkRoute,
+  );
 
   const href = entity
     ? `${route({ id: post.id.toString(10) })}?entity=${entity}`
@@ -222,12 +221,10 @@ export const PostListItem = (props: PostListItemProps) => {
         <Tooltip title={score >= 1000 ? score : ''} arrow>
           <Box
             className={styles.metaBox}
-            aria-label={
-              t(post.type !== 'link'
-                ? 'common.votesCount'
-                : 'common.clicksCount',
-                { count: score })
-            }
+            aria-label={t(
+              post.type !== 'link' ? 'common.votesCount' : 'common.clicksCount',
+              { count: score },
+            )}
           >
             {formatShortNumber(score)}
             <div
@@ -282,7 +279,7 @@ export const PostListItem = (props: PostListItemProps) => {
         <Box className={styles.titleContainer}>
           <Box className={styles.titleWrapper}>
             <Typography component="div" className={styles.title}>
-              {post.type === 'link' && <FaviconItem entity={post}/>}
+              {post.type === 'link' && <FaviconItem entity={post} />}
               <Link
                 to={href}
                 className="qetaPostListItemQuestionBtn"
@@ -298,14 +295,12 @@ export const PostListItem = (props: PostListItemProps) => {
           {showTypeLabel && post.type && (
             <Chip
               size="small"
-              icon={
-                selectByPostType(
-                  post.type,
-                  <QuestionAnswer />,
-                  <CollectionsBookmarkIcon />,
-                  <LinkIcon />,
-                )
-              }
+              icon={selectByPostType(
+                post.type,
+                <QuestionAnswer />,
+                <CollectionsBookmarkIcon />,
+                <LinkIcon />,
+              )}
               label={capitalizeFirstLetter(t(`common.${post.type}`))}
               className={styles.typeLabel}
             />

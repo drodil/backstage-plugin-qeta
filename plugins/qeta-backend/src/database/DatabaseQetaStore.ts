@@ -1058,14 +1058,12 @@ export class DatabaseQetaStore implements QetaStore {
         .increment('score', 1);
     } else {
       await this.db
-        .insert(
-          {
-            author: user_ref,
-            postId,
-            score: 1,
-            timestamp: new Date(),
-          }
-        )
+        .insert({
+          author: user_ref,
+          postId,
+          score: 1,
+          timestamp: new Date(),
+        })
         .onConflict()
         .ignore()
         .into('post_votes');

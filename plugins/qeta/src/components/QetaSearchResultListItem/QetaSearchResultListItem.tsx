@@ -28,7 +28,7 @@ import DOMPurify from 'dompurify';
 import { capitalize } from 'lodash';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
-import LinkIcon from "@material-ui/icons/Link";
+import LinkIcon from '@material-ui/icons/Link';
 
 const useStyles = makeStyles({
   excerptText: {
@@ -157,8 +157,8 @@ const ResultIcon = (props: { document: QetaSearchDocument }) => {
       document.postType,
       <HelpOutlined />,
       <CollectionsBookmarkIcon />,
-      <LinkIcon />
-    )
+      <LinkIcon />,
+    );
   }
 
   return <PlaylistPlay />;

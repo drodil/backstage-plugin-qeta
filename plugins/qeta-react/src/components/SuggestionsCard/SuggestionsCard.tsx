@@ -13,7 +13,7 @@ import AssistantIcon from '@material-ui/icons/Assistant';
 import HelpOutlinedIcon from '@material-ui/icons/HelpOutlined';
 import CheckIcon from '@material-ui/icons/Check';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
-import LinkIcon from "@material-ui/icons/Link";
+import LinkIcon from '@material-ui/icons/Link';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -184,9 +184,7 @@ const NewArticleSuggestionItem = (props: {
   );
 };
 
-const NewLinkSuggestionItem = (props: {
-  suggestion: NewLinkSuggestion;
-}) => {
+const NewLinkSuggestionItem = (props: { suggestion: NewLinkSuggestion }) => {
   const { suggestion } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const linkRoute = useRouteRef(linkRouteRef);

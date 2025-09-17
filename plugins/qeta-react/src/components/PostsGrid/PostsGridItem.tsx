@@ -9,11 +9,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import {
-  articleRouteRef,
-  linkRouteRef,
-  questionRouteRef
-} from '../../routes';
+import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import {
   Box,
   Card,
@@ -42,8 +38,8 @@ import { UserLink } from '../Links';
 import { SmallAvatar } from '../Utility/SmallAvatar';
 import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
-import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
-import { FaviconItem } from "../FaviconItem";
+import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
+import { FaviconItem } from '../FaviconItem';
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -166,8 +162,11 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
   const navigate = useNavigate();
 
   const route = selectByPostType(
-    post.type, questionRoute, articleRoute, linkRoute
-  )
+    post.type,
+    questionRoute,
+    articleRoute,
+    linkRoute,
+  );
 
   const href = entity
     ? `${route({
@@ -216,7 +215,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               component="div"
               className={classes.title}
             >
-              {post.type === 'link' && <FaviconItem entity={post}/>}
+              {post.type === 'link' && <FaviconItem entity={post} />}
               {post.title}
             </Typography>
             <Box display="flex" alignItems="center">
@@ -247,7 +246,9 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
                     {formatShortNumber(score)}
                   </Typography>
                   <Typography className={classes.statLabel}>
-                    {post.type !== 'link' ? t('common.votes') : t('common.clicks')}
+                    {post.type !== 'link'
+                      ? t('common.votes')
+                      : t('common.clicks')}
                   </Typography>
                 </Box>
               </Tooltip>

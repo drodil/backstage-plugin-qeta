@@ -39,7 +39,7 @@ import { TrophyIcon } from '../TopRankingUsersCard';
 import { useIdentityApi, useIsModerator } from '../../hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import LinkIcon from "@material-ui/icons/Link";
+import LinkIcon from '@material-ui/icons/Link';
 
 export type QetaLeftMenuClassKey =
   | 'leftMenu'

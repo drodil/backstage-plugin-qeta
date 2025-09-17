@@ -571,12 +571,18 @@ describe.each(databases.eachSupportedId())(
         });
         const favorited = await storage.favoritePost('user', linkPost.id);
         expect(favorited).toBeTruthy();
-        let posts = await storage.getPosts('user', { favorite: true, type: 'link' });
+        let posts = await storage.getPosts('user', {
+          favorite: true,
+          type: 'link',
+        });
         expect(posts.posts.length).toBe(1);
         expect(posts.posts[0].id).toBe(linkPost.id);
         const unfavorited = await storage.unfavoritePost('user', linkPost.id);
         expect(unfavorited).toBeTruthy();
-        posts = await storage.getPosts('user', { favorite: true, type: 'link' });
+        posts = await storage.getPosts('user', {
+          favorite: true,
+          type: 'link',
+        });
         expect(posts.posts.length).toBe(0);
       });
 
@@ -593,7 +599,11 @@ describe.each(databases.eachSupportedId())(
         });
         let fetched = await storage.getPost('user', linkPost.id);
         expect(fetched?.tags?.sort()).toEqual(['tag-a', 'tag-b']);
-        await storage.updatePost({ id: linkPost.id, user_ref: 'user', tags: ['tag-b'] });
+        await storage.updatePost({
+          id: linkPost.id,
+          user_ref: 'user',
+          tags: ['tag-b'],
+        });
         fetched = await storage.getPost('user', linkPost.id);
         expect(fetched?.tags).toEqual(['tag-b']);
       });
@@ -610,8 +620,15 @@ describe.each(databases.eachSupportedId())(
           entities: ['component:default/ent1', 'component:default/ent2'],
         });
         let fetched = await storage.getPost('user', linkPost.id);
-        expect(fetched?.entities?.sort()).toEqual(['component:default/ent1', 'component:default/ent2']);
-        await storage.updatePost({ id: linkPost.id, user_ref: 'user', entities: ['component:default/ent1'] });
+        expect(fetched?.entities?.sort()).toEqual([
+          'component:default/ent1',
+          'component:default/ent2',
+        ]);
+        await storage.updatePost({
+          id: linkPost.id,
+          user_ref: 'user',
+          entities: ['component:default/ent1'],
+        });
         fetched = await storage.getPost('user', linkPost.id);
         expect(fetched?.entities).toEqual(['component:default/ent1']);
       });

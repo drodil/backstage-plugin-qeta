@@ -11,7 +11,7 @@ import {
   SuggestionsCard,
   useIdentityApi,
   WriteArticleButton,
-  CreateLinkButton
+  CreateLinkButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Grid } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';

@@ -34,7 +34,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       totalArticles: results[6],
       totalUsers: results[7],
       totalTags: results[8],
-      totalLinks: results[9]
+      totalLinks: results[9],
     };
   };
 

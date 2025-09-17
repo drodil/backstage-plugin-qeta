@@ -1443,16 +1443,14 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as TagSuggestionsResponse;
   }
 
-  async fetchUrlMetadata(
-    request: UrlRequest
-  ): Promise<UrlRequest> {
+  async fetchUrlMetadata(request: UrlRequest): Promise<UrlRequest> {
     const response = await this.fetch('/url', {
       reqInit: {
         method: 'POST',
         body: JSON.stringify(request),
         headers: { 'Content-Type': 'application/json' },
       },
-    })
+    });
 
     return (await response.json()) as UrlRequest;
   }

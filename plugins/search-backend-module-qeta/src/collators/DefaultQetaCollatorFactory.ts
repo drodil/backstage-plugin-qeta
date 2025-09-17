@@ -85,9 +85,14 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
       indexedPosts += posts.length;
 
       for (const post of posts) {
-        const postContent = `# ${
-          selectByPostType(post.type, 'Question', 'Article', 'Link')
-        }: ${(post.type === 'link' ? `${post.url}\n\n` : '') + post.title}\n\n${post.content}`;
+        const postContent = `# ${selectByPostType(
+          post.type,
+          'Question',
+          'Article',
+          'Link',
+        )}: ${
+          (post.type === 'link' ? `${post.url}\n\n` : '') + post.title
+        }\n\n${post.content}`;
         const answersContent = (post.answers ?? []).map(a => {
           return `## ${a.correct ? 'Correct answer' : 'Answer'} by ${
             a.author

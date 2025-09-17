@@ -423,9 +423,8 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                   'score',
                   type !== 'link'
                     ? t('filterPanel.orderBy.score')
-                    : t('filterPanel.orderBy.clicks')
-                )
-              }
+                    : t('filterPanel.orderBy.clicks'),
+                )}
               {postFilters &&
                 radioSelect('trend', t('filterPanel.orderBy.trend'))}
               {postFilters &&

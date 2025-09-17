@@ -271,9 +271,7 @@ export interface QetaApi {
     options,
   }: StatisticsRequestParameters): Promise<StatisticResponse[]>;
 
-  clickLink(
-    id: number
-  ): Promise<void>;
+  clickLink(id: number): Promise<void>;
 
   votePostUp(
     id: number,
@@ -524,7 +522,5 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<TagSuggestionsResponse>;
 
-  fetchUrlMetadata(
-    request: UrlRequest,
-  ): Promise<UrlRequest>;
+  fetchUrlMetadata(request: UrlRequest): Promise<UrlRequest>;
 }

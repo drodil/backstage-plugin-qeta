@@ -5,7 +5,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { createLinkRouteRef } from '../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { Box} from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 
 export const CreateLinkButton = (props: {
@@ -38,9 +38,7 @@ export const CreateLinkButton = (props: {
           size="small"
           variant="contained"
           to={
-            entity || tags
-              ? `${linkRoute()}?${params.toString()}`
-              : linkRoute()
+            entity || tags ? `${linkRoute()}?${params.toString()}` : linkRoute()
           }
           color="primary"
           startIcon={<LinkIcon />}

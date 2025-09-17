@@ -21,7 +21,7 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import PeopleIcon from '@material-ui/icons/People';
 import TagIcon from '@material-ui/icons/LocalOffer';
 import PersonIcon from '@material-ui/icons/Person';
-import LinkIcon from "@material-ui/icons/Link";
+import LinkIcon from '@material-ui/icons/Link';
 
 const useStyles = makeStyles(theme => ({
   root: {

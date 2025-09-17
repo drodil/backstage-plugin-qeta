@@ -1,18 +1,17 @@
 import { LinkButton } from '@backstage/core-components';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { askRouteRef, createLinkRouteRef, writeRouteRef } from '../../routes';
 import {
-  askRouteRef,
-  createLinkRouteRef,
-  writeRouteRef
-} from '../../routes';
-import { PostType, selectByPostType } from '@drodil/backstage-plugin-qeta-common';
+  PostType,
+  selectByPostType,
+} from '@drodil/backstage-plugin-qeta-common';
 import CreateIcon from '@material-ui/icons/Create';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityQueryParameter } from '../../hooks/useEntityQueryParameter';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
-import LinkIcon from "@material-ui/icons/Link";
+import LinkIcon from '@material-ui/icons/Link';
 
 export const NoPostsCard = (props: {
   showNoPostsBtn?: boolean;
@@ -40,8 +39,11 @@ export const NoPostsCard = (props: {
   }
 
   const route = selectByPostType(
-    type ?? 'question', askRoute, writeRoute, linkRoute
-  )
+    type ?? 'question',
+    askRoute,
+    writeRoute,
+    linkRoute,
+  );
 
   const itemType = t(`common.${type ?? 'post'}`, {});
   return (
@@ -68,14 +70,12 @@ export const NoPostsCard = (props: {
                     ? `${route()}?${queryParams.toString()}`
                     : `${route()}`
                 }
-                startIcon={
-                  selectByPostType(
-                    type ?? 'question',
-                    <HelpOutline />,
-                    <CreateIcon />,
-                    <LinkIcon />
-                  )
-                }
+                startIcon={selectByPostType(
+                  type ?? 'question',
+                  <HelpOutline />,
+                  <CreateIcon />,
+                  <LinkIcon />,
+                )}
                 color="primary"
                 variant="outlined"
               >

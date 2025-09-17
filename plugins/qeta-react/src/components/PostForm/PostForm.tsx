@@ -153,7 +153,7 @@ export const PostForm = (props: PostFormProps) => {
   const [images, setImages] = useState<number[]>([]);
   const [status, setStatus] = useState<PostStatus>('draft');
   const [searchParams, _setSearchParams] = useSearchParams();
-  const [urlToCheck, setUrlToCheck] = useState("");
+  const [urlToCheck, setUrlToCheck] = useState('');
   const validUrl = /^https?:\/\/\S+$/;
   const [favicon, setFavicon] = useState<boolean>(false);
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -184,7 +184,10 @@ export const PostForm = (props: PostFormProps) => {
     (data: QuestionFormValues, autoSave: boolean = false) => {
       setPosting(true);
       const route = selectByPostType(
-        type, questionRoute, articleRoute, linkRoute
+        type,
+        questionRoute,
+        articleRoute,
+        linkRoute,
       );
 
       const queryParams = new URLSearchParams();
@@ -400,14 +403,14 @@ export const PostForm = (props: PostFormProps) => {
     return true;
   };
 
-  useDebounce(() => {
-    if (!urlToCheck.length || !validUrl.test(urlToCheck)) {
-      return;
-    }
+  useDebounce(
+    () => {
+      if (!urlToCheck.length || !validUrl.test(urlToCheck)) {
+        return;
+      }
 
-    // some valid urls are not reachable => no error checking
-    qetaApi.fetchUrlMetadata({ url: urlToCheck })
-      .then(response => {
+      // some valid urls are not reachable => no error checking
+      qetaApi.fetchUrlMetadata({ url: urlToCheck }).then(response => {
         setFavicon(true);
 
         if (control._formValues.title === '') {
@@ -417,10 +420,10 @@ export const PostForm = (props: PostFormProps) => {
         if (control._formValues.content === '') {
           setValue('content', response.content ?? '', { shouldValidate: true });
         }
-      })
+      });
     },
     400,
-    [urlToCheck]
+    [urlToCheck],
   );
 
   const autoSavePost = useCallback(() => {
@@ -515,9 +518,16 @@ export const PostForm = (props: PostFormProps) => {
         <Box mb={2} display="flex" alignItems="center" style={{ gap: 8 }}>
           {favicon && (
             <img
-              src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(urlToCheck)}&sz=16`}
+              src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(
+                urlToCheck,
+              )}&sz=16`}
               alt="Favicon"
-              style={{ width: 16, height: 16, marginRight: 4, marginBottom: 16 }}
+              style={{
+                width: 16,
+                height: 16,
+                marginRight: 4,
+                marginBottom: 16,
+              }}
               onError={e => (e.currentTarget.style.display = 'none')}
             />
           )}
@@ -540,9 +550,7 @@ export const PostForm = (props: PostFormProps) => {
                 name="url"
                 helperText={
                   errors.url?.message || (
-                    <span>
-                    {t('postForm.urlInput.helperText')}
-                  </span>
+                    <span>{t('postForm.urlInput.helperText')}</span>
                   )
                 }
                 placeholder={t('postForm.urlInput.placeholder')}
@@ -572,10 +580,11 @@ export const PostForm = (props: PostFormProps) => {
               <span style={{ float: 'right' }}>{titleCharCount}/255</span>
             </span>
           }
-          placeholder={t(type === 'link' ?
-            'postForm.titleInput.placeholder_link' :
-            'postForm.titleInput.placeholder')
-          }
+          placeholder={t(
+            type === 'link'
+              ? 'postForm.titleInput.placeholder_link'
+              : 'postForm.titleInput.placeholder',
+          )}
           FormHelperTextProps={{
             style: { marginLeft: '0.2em' },
           }}
@@ -652,14 +661,12 @@ export const PostForm = (props: PostFormProps) => {
             onChange={onChange}
             height={isNotLink ? 400 : 150}
             error={'content' in errors}
-            placeholder={
-              selectByPostType(
-                type,
-                t('postForm.contentInput.placeholder_question'),
-                t('postForm.contentInput.placeholder_article'),
-                t('postForm.contentInput.placeholder_link'),
-              )
-            }
+            placeholder={selectByPostType(
+              type,
+              t('postForm.contentInput.placeholder_question'),
+              t('postForm.contentInput.placeholder_article'),
+              t('postForm.contentInput.placeholder_link'),
+            )}
             onImageUpload={onImageUpload}
             postId={id ? Number(id) : undefined}
             onTagsChange={tags => {

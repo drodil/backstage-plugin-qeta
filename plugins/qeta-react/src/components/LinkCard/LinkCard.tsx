@@ -27,8 +27,8 @@ import {
 } from '@material-ui/core';
 import { useIsModerator } from '../../hooks';
 import { AuthorBoxes } from '../AuthorBox/AuthorBoxes.tsx';
-import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
-import { qetaApiRef } from "../../api.ts";
+import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
+import { qetaApiRef } from '../../api.ts';
 
 export type LinkCardClassKeys =
   | 'root'
@@ -78,7 +78,7 @@ export const LinkCard = (props: { link: PostResponse }) => {
 
   const restoreLink = async () => {
     qetaApi.restorePost(link.id).then(l => {
-      setLinkEntity(l)
+      setLinkEntity(l);
     });
   };
 
@@ -86,7 +86,12 @@ export const LinkCard = (props: { link: PostResponse }) => {
     <>
       <Card variant="outlined" className={styles.root}>
         <CardContent>
-          <Box display="flex" justifyContent="flex-end" alignItems="flex-start" mb={1}>
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            alignItems="flex-start"
+            mb={1}
+          >
             <Box display="flex" alignItems="center" flexGrow={1}>
               <a
                 href={linkEntity.url}

@@ -242,7 +242,7 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
     }));
   };
 
-  const getNewTagLinks= async (
+  const getNewTagLinks = async (
     username: string,
     filter?: PermissionCriteria<QetaFilters>,
   ): Promise<NewLinkSuggestion[]> => {
@@ -315,7 +315,7 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       filter,
       includeNothingOptions,
     );
-    return links.posts.map(link=> ({
+    return links.posts.map(link => ({
       id: `a_${link.id}`,
       type: 'newLink',
       link: link as Link,

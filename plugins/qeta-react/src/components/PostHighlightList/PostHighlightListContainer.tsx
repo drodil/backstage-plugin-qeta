@@ -4,7 +4,11 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { PostHighlightList } from './PostHighlightList';
 import { PostsQuery } from '@drodil/backstage-plugin-qeta-common';
 
-export const PostHighlightListContainer = ({ options }: { options?: PostsQuery }) => {
+export const PostHighlightListContainer = ({
+  options,
+}: {
+  options?: PostsQuery;
+}) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const icon = <Whatshot fontSize="small" />;
   return (

@@ -116,13 +116,12 @@ export const DeleteModal = (props: {
             onClose();
             onDelete?.(entity);
             alertApi.post({
-              message:
-                selectByPostType(
-                  entity.type,
-                  t('deleteModal.questionDeleted'),
-                  t('deleteModal.articleDeleted'),
-                  t('deleteModal.linkDeleted'),
-                ),
+              message: selectByPostType(
+                entity.type,
+                t('deleteModal.questionDeleted'),
+                t('deleteModal.articleDeleted'),
+                t('deleteModal.linkDeleted'),
+              ),
               severity: 'success',
               display: 'transient',
             });
@@ -132,7 +131,7 @@ export const DeleteModal = (props: {
                 questionsRoute(),
                 articlesRoute(),
                 linksRoute(),
-              )
+              ),
             );
           } else {
             setError(true);

@@ -31,7 +31,7 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import CollectionsIcon from '@material-ui/icons/Collections';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import LinkIcon from "@material-ui/icons/Link";
+import LinkIcon from '@material-ui/icons/Link';
 
 const useStyles = makeStyles(theme => ({
   tabIcon: {

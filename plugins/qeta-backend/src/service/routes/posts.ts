@@ -1146,29 +1146,32 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   router.post(`/url`, async (request, response) => {
     const validateQuery = ajv.compile(UrlSchema);
     if (!validateQuery(request.body)) {
-      response
-        .status(400)
-        .send({ errors: validateQuery.errors, type: 'body' });
+      response.status(400).send({ errors: validateQuery.errors, type: 'body' });
       return;
     }
 
     const url = new URL(request.body.url);
 
     try {
-      const html = await fetch(url)
-        .then(resp => resp.text());
+      const html = await fetch(url).then(resp => resp.text());
 
       const match = html.match(/<title>([^<]*)<\/title>/i);
       const title = match ? match[1] : '';
-      const contentMatch = html.match(/<meta name="description" content="([^"]*)"/i);
+      const contentMatch = html.match(
+        /<meta name="description" content="([^"]*)"/i,
+      );
       const content = contentMatch ? contentMatch[1] : '';
 
       response.json({
-        url, title, content
+        url,
+        title,
+        content,
       });
     } catch (error: any) {
       console.error('Failed to fetch URL:', error);
-      response.status(500).send({ error: error.message || 'Failed to fetch URL' });
+      response
+        .status(500)
+        .send({ error: error.message || 'Failed to fetch URL' });
     }
   });
 };

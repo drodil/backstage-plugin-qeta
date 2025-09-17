@@ -1,8 +1,8 @@
-import { PostResponse} from '@drodil/backstage-plugin-qeta-common';
-import { qetaApiRef } from "../../api.ts";
-import { useApi } from "@backstage/core-plugin-api";
+import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
+import { qetaApiRef } from '../../api.ts';
+import { useApi } from '@backstage/core-plugin-api';
 
-export const FaviconItem = (props: { entity: PostResponse; }) => {
+export const FaviconItem = (props: { entity: PostResponse }) => {
   const { entity } = props;
   const { url } = entity;
   const qetaApi = useApi(qetaApiRef);
@@ -19,7 +19,9 @@ export const FaviconItem = (props: { entity: PostResponse; }) => {
       }}
     >
       <img
-        src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(url ?? '')}&sz=16`}
+        src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(
+          url ?? '',
+        )}&sz=16`}
         alt="favicon"
         width={16}
         height={16}
@@ -27,9 +29,9 @@ export const FaviconItem = (props: { entity: PostResponse; }) => {
           display: 'inline-block',
           verticalAlign: 'middle',
           objectFit: 'contain',
-          marginBottom: 5
+          marginBottom: 5,
         }}
       />
     </a>
-  )
+  );
 };

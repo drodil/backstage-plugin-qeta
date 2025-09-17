@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
@@ -16,12 +16,12 @@ import {
   UpdatedByLink,
   useQetaApi,
   FaviconItem,
-  qetaApiRef
+  qetaApiRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { Box, makeStyles } from "@material-ui/core";
-import { useApi } from "@backstage/core-plugin-api";
+import { Box, makeStyles } from '@material-ui/core';
+import { useApi } from '@backstage/core-plugin-api';
 
 const useDescriptionStyles = makeStyles(
   () => ({
@@ -72,9 +72,7 @@ export const LinkPage = () => {
   }
 
   if (post.type !== 'link') {
-    return (
-      <WarningPanel title="Not found" message={t('linkPage.notFound')} />
-    );
+    return <WarningPanel title="Not found" message={t('linkPage.notFound')} />;
   }
 
   const getDescription = (q: PostResponse) => {
@@ -96,7 +94,7 @@ export const LinkPage = () => {
           </React.Fragment>
         )}
         <Box fontWeight="fontWeightMedium" className={dStyles.box}>
-          {t('common.clicksCount', { count: score})}
+          {t('common.clicksCount', { count: score })}
         </Box>
       </span>
     );
@@ -106,24 +104,28 @@ export const LinkPage = () => {
     <>
       <ContentHeader
         // @ts-ignore
-        title={post.url ? (
-          <Box display="flex" alignItems="center">
-            <FaviconItem entity={post} />
-            <a
-              href={post.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'inherit', textDecoration: 'none' }}
-              data-testid="link-title"
-              onClick={event => {
-                event.stopPropagation();
-                qetaApi.clickLink(post.id);
-              }}
-            >
-              {post.title}
-            </a>
-          </Box>
-        ) : post.title}
+        title={
+          post.url ? (
+            <Box display="flex" alignItems="center">
+              <FaviconItem entity={post} />
+              <a
+                href={post.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'inherit', textDecoration: 'none' }}
+                data-testid="link-title"
+                onClick={event => {
+                  event.stopPropagation();
+                  qetaApi.clickLink(post.id);
+                }}
+              >
+                {post.title}
+              </a>
+            </Box>
+          ) : (
+            post.title
+          )
+        }
         // @ts-ignore
         description={getDescription(post)}
       >
