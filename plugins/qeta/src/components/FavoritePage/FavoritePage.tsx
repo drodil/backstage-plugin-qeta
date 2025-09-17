@@ -62,6 +62,14 @@ export const FavoritePage = () => {
           options={{ favorite: true }}
           postType="article"
         />
+        <PostHighlightList
+          type="hot"
+          title={t('highlights.hotLinks.title')}
+          noQuestionsLabel={t('highlights.hotLinks.noLinksLabel')}
+          icon={<Whatshot fontSize="small" />}
+          options={{ favorite: true }}
+          postType="link"
+        />
       </Grid>
     </Grid>
   );

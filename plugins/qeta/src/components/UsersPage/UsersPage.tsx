@@ -34,6 +34,13 @@ export const UsersPage = () => {
           icon={<Whatshot fontSize="small" />}
           postType="article"
         />
+        <PostHighlightList
+          type="hot"
+          title={t('highlights.hotLinks.title')}
+          noQuestionsLabel={t('highlights.hotLinks.noLinksLabel')}
+          icon={<Whatshot fontSize="small" />}
+          postType="link"
+        />
       </Grid>
     </Grid>
   );
