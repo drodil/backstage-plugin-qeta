@@ -103,7 +103,7 @@ export const LinkPage = () => {
   return (
     <>
       <ContentHeader
-        // @ts-ignore
+        // @ts-ignore, it can accept a react node, like description.
         title={
           post.url ? (
             <Box display="flex" alignItems="center">
@@ -126,7 +126,7 @@ export const LinkPage = () => {
             post.title
           )
         }
-        // @ts-ignore
+        // @ts-ignore, it can accept a react node. See QuestionPage.
         description={getDescription(post)}
       >
         <ButtonContainer>
