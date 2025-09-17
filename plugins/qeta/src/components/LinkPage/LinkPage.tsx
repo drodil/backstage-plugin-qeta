@@ -108,6 +108,7 @@ export const LinkPage = () => {
         // @ts-ignore
         title={post.url ? (
           <Box display="flex" alignItems="center">
+            <FaviconItem entity={post} />
             <a
               href={post.url}
               target="_blank"
@@ -121,7 +122,6 @@ export const LinkPage = () => {
             >
               {post.title}
             </a>
-            <FaviconItem entity={post} />
           </Box>
         ) : post.title}
         // @ts-ignore

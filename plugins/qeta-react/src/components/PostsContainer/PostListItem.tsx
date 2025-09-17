@@ -282,6 +282,7 @@ export const PostListItem = (props: PostListItemProps) => {
         <Box className={styles.titleContainer}>
           <Box className={styles.titleWrapper}>
             <Typography component="div" className={styles.title}>
+              {post.type === 'link' && <FaviconItem entity={post}/>}
               <Link
                 to={href}
                 className="qetaPostListItemQuestionBtn"
@@ -291,11 +292,9 @@ export const PostListItem = (props: PostListItemProps) => {
               >
                 {post.title}
               </Link>
-              {post.type === 'link' && <FaviconItem entity={post}/>}
             </Typography>
           </Box>
           <StatusChip status={post.status} />
-          {post.type === 'link' && <OpenLinkButton entity={post} />}
           {showTypeLabel && post.type && (
             <Chip
               size="small"
@@ -311,6 +310,7 @@ export const PostListItem = (props: PostListItemProps) => {
               className={styles.typeLabel}
             />
           )}
+          {post.type === 'link' && <OpenLinkButton entity={post} />}
         </Box>
         <Typography variant="body2" component="div" className={styles.content}>
           <Link

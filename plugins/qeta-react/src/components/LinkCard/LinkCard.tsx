@@ -45,7 +45,6 @@ const useStyles = makeStyles(
       width: 'calc(100% - 70px)',
     },
     markdownContainer: {
-      minHeight: '2em',
       paddingBottom: '0.5em',
     },
     buttons: {

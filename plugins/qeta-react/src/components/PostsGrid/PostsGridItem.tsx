@@ -216,8 +216,8 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               component="div"
               className={classes.title}
             >
-              {post.title}
               {post.type === 'link' && <FaviconItem entity={post}/>}
+              {post.title}
             </Typography>
             <Box display="flex" alignItems="center">
               <StatusChip status={post.status} />

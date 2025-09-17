@@ -421,7 +421,7 @@ export const PostForm = (props: PostFormProps) => {
         }
       })
     },
-    1500,
+    1000,
     [urlToCheck]
   );
 
@@ -515,6 +515,14 @@ export const PostForm = (props: PostFormProps) => {
       )}
       {type === 'link' && (
         <Box mb={2} display="flex" alignItems="center" style={{ gap: 8 }}>
+          {favicon && (
+            <img
+              src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(urlToCheck)}&sz=16`}
+              alt="Favicon"
+              style={{ width: 16, height: 16, marginRight: 4, marginBottom: 16 }}
+              onError={e => (e.currentTarget.style.display = 'none')}
+            />
+          )}
           <TextField
             label={t('postForm.urlInput.label')}
             className="qetaAskFormTitle"
@@ -538,14 +546,6 @@ export const PostForm = (props: PostFormProps) => {
             value={control._formValues.url ?? ''}
             onChange={handleUrlChange}
           />
-          {favicon && (
-            <img
-              src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(urlToCheck)}&sz=16`}
-              alt="Favicon"
-              style={{ width: 16, height: 16, marginLeft: 6, marginBottom: 15, borderRadius: 4, boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
-              onError={e => (e.currentTarget.style.display = 'none')}
-            />
-          )}
         </Box>
       )}
       <Box mb={2}>
