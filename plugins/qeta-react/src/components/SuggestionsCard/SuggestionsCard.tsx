@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import {
   DraftPostSuggestion,
   NewArticleSuggestion,
+  NewLinkSuggestion,
   NewQuestionSuggestion,
   NoCorrectAnswerSuggestion,
   SuggestionsResponse,
@@ -12,10 +13,11 @@ import AssistantIcon from '@material-ui/icons/Assistant';
 import HelpOutlinedIcon from '@material-ui/icons/HelpOutlined';
 import CheckIcon from '@material-ui/icons/Check';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import LinkIcon from "@material-ui/icons/Link";
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { articleRouteRef, questionRouteRef } from '../../routes';
+import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import {
   Card,
   CardHeader,
@@ -182,10 +184,30 @@ const NewArticleSuggestionItem = (props: {
   );
 };
 
+const NewLinkSuggestionItem = (props: {
+  suggestion: NewLinkSuggestion;
+}) => {
+  const { suggestion } = props;
+  const { t } = useTranslationRef(qetaTranslationRef);
+  const linkRoute = useRouteRef(linkRouteRef);
+  return (
+    <SuggestionListItem
+      href={linkRoute({ id: suggestion.link.id.toString(10) })}
+      icon={<LinkIcon />}
+      timestamp={<RelativeTimeWithTooltip value={suggestion.link.created} />}
+    >
+      {t('suggestionsCard.newLink', {
+        title: suggestion.link.title,
+      })}
+    </SuggestionListItem>
+  );
+};
+
 const suggestionTypeMap: Record<SuggestionType, any> = {
   noCorrectAnswer: NoCorrectAnswerSuggestionItem,
   newQuestion: NewQuestionSuggestionItem,
   newArticle: NewArticleSuggestionItem,
+  newLink: NewLinkSuggestionItem,
   draftPost: DraftPostSuggestionItem,
 };
 

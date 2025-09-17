@@ -347,6 +347,7 @@ export const qetaTranslationRef = createTranslationRef({
         'Your question "{{title}}" does not have a correct answer',
       newQuestion: 'Do you have an answer for "{{title}}"?',
       newArticle: 'You might like to read "{{title}}"',
+      newLink: 'You might like to check this link "{{title}}"',
       draftPost: 'Ready to finalize draft post "{{title}}"?',
     },
     homePage: {

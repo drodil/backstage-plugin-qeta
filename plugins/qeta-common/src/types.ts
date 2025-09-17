@@ -120,6 +120,10 @@ export interface Article extends Post {
   type: 'article';
 }
 
+export interface Link extends Post {
+  type: 'link';
+}
+
 export type AnswerFilter = {
   property:
     | 'answers.author'
@@ -419,6 +423,7 @@ export type SuggestionType =
   | 'noCorrectAnswer'
   | 'newQuestion'
   | 'newArticle'
+  | 'newLink'
   | 'draftPost';
 
 export interface Suggestion {
@@ -444,6 +449,11 @@ export interface DraftPostSuggestion extends Suggestion {
 export interface NewArticleSuggestion extends Suggestion {
   type: 'newArticle';
   article: Article;
+}
+
+export interface NewLinkSuggestion extends Suggestion {
+  type: 'newLink';
+  link: Link;
 }
 
 export interface SuggestionsResponse {

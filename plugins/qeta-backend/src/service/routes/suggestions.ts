@@ -4,7 +4,9 @@ import { QetaFilters } from '../util';
 import {
   Article,
   DraftPostSuggestion,
+  Link,
   NewArticleSuggestion,
+  NewLinkSuggestion,
   NewQuestionSuggestion,
   NoCorrectAnswerSuggestion,
   qetaReadPostPermission,
@@ -240,6 +242,86 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
     }));
   };
 
+  const getNewTagLinks= async (
+    username: string,
+    filter?: PermissionCriteria<QetaFilters>,
+  ): Promise<NewLinkSuggestion[]> => {
+    const userTags = await database.getUserTags(username);
+    if (userTags.tags.length === 0) {
+      return [];
+    }
+    const links = await database.getPosts(
+      username,
+      {
+        tags: userTags.tags,
+        tagsRelation: 'or',
+        type: 'link',
+        fromDate: getFromDate(),
+        excludeAuthors: [username],
+      },
+      filter,
+      includeNothingOptions,
+    );
+    return links.posts.map(link => ({
+      id: `q_${link.id}`,
+      type: 'newLink',
+      link: link as Link,
+    }));
+  };
+
+  const getNewEntityLinks = async (
+    username: string,
+    filter?: PermissionCriteria<QetaFilters>,
+  ): Promise<NewLinkSuggestion[]> => {
+    const userEntities = await database.getUserEntities(username);
+    if (userEntities.entityRefs.length === 0) {
+      return [];
+    }
+    const links = await database.getPosts(
+      username,
+      {
+        entities: userEntities.entityRefs,
+        entitiesRelation: 'or',
+        type: 'link',
+        fromDate: getFromDate(),
+        excludeAuthors: [username],
+      },
+      filter,
+      includeNothingOptions,
+    );
+    return links.posts.map(link => ({
+      id: `a_${link.id}`,
+      type: 'newLink',
+      link: link as Link,
+    }));
+  };
+
+  const getNewUserLinks = async (
+    username: string,
+    filter?: PermissionCriteria<QetaFilters>,
+  ): Promise<NewLinkSuggestion[]> => {
+    const followedUsers = await database.getFollowedUsers(username);
+    if (followedUsers.followedUserRefs.length === 0) {
+      return [];
+    }
+    const links = await database.getPosts(
+      username,
+      {
+        author: followedUsers.followedUserRefs,
+        type: 'link',
+        fromDate: getFromDate(),
+        excludeAuthors: [username],
+      },
+      filter,
+      includeNothingOptions,
+    );
+    return links.posts.map(link=> ({
+      id: `a_${link.id}`,
+      type: 'newLink',
+      link: link as Link,
+    }));
+  };
+
   router.get('/suggestions', async (request, response) => {
     const validateQuery = ajv.compile(SuggestionsQuerySchema);
     if (!validateQuery(request.query)) {
@@ -263,10 +345,13 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       getNotCorrectQuestions(username, filter),
       getNewTagQuestions(username, filter),
       getNewTagArticles(username, filter),
+      getNewTagLinks(username, filter),
       getNewEntityQuestions(username, filter),
       getNewEntityArticles(username, filter),
+      getNewEntityLinks(username, filter),
       getNewUserQuestions(username, filter),
       getNewUserArticles(username, filter),
+      getNewUserLinks(username, filter),
       getUsersDraftPosts(username, filter),
     ]);
     const suggestions = raw
