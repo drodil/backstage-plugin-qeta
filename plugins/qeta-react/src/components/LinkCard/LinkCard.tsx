@@ -71,11 +71,16 @@ export const LinkCard = (props: { link: PostResponse }) => {
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const onCommentAction = (q: PostResponse, _?: AnswerResponse) => {
-    setLinkEntity(q);
+  const onCommentAction = (l: PostResponse, _?: AnswerResponse) => {
+    setLinkEntity(l);
   };
   const styles = useStyles();
 
+  const restoreLink = async () => {
+    qetaApi.restorePost(link.id).then(l => {
+      setLinkEntity(l)
+    });
+  };
 
   return (
     <>
@@ -175,10 +180,10 @@ export const LinkCard = (props: { link: PostResponse }) => {
                         variant="contained"
                         size="small"
                         startIcon={<RestoreIcon />}
-                        onClick={() => {}} // TODO:
-                        className="qetaQuestionCardRestoreBtn"
+                        onClick={() => restoreLink()}
+                        className="qetaLinkCardRestoreBtn"
                       >
-                        {t('questionPage.restoreButton')}
+                        {t('linkPage.restoreButton')}
                       </Button>
                     )}
                   </Box>
