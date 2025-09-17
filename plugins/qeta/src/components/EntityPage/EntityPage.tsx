@@ -9,6 +9,7 @@ import {
   EntityFollowButton,
   FollowedEntitiesList,
   PostHighlightList,
+  PostHighlightListContainer,
   PostsContainer,
   PostsGrid,
   qetaApiRef,
@@ -137,27 +138,7 @@ export const EntityPage = () => {
         )}
         {!resp && (
           <>
-            <PostHighlightList
-              type="hot"
-              title={t('highlights.hotQuestions.title')}
-              noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
-              icon={<Whatshot fontSize="small" />}
-              postType="question"
-            />
-            <PostHighlightList
-              type="hot"
-              title={t('highlights.hotArticles.title')}
-              noQuestionsLabel={t('highlights.hotArticles.noArticlesLabel')}
-              icon={<Whatshot fontSize="small" />}
-              postType="article"
-            />
-            <PostHighlightList
-              type="hot"
-              title={t('highlights.hotLinks.title')}
-              noQuestionsLabel={t('highlights.hotLinks.noLinksLabel')}
-              icon={<Whatshot fontSize="small" />}
-              postType="link"
-            />
+            <PostHighlightListContainer />
           </>
         )}
       </Grid>

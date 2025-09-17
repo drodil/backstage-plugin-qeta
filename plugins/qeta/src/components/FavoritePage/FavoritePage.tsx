@@ -3,14 +3,13 @@ import {
   AskQuestionButton,
   ButtonContainer,
   CreateLinkButton,
-  PostHighlightList,
+  PostHighlightListContainer,
   PostsContainer,
   PostsGrid,
   qetaTranslationRef,
   ViewType,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import Whatshot from '@material-ui/icons/Whatshot';
 import { Grid } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useState } from 'react';
@@ -46,30 +45,7 @@ export const FavoritePage = () => {
         )}
       </Grid>
       <Grid item lg={3} xl={2}>
-        <PostHighlightList
-          type="hot"
-          title={t('highlights.hotQuestions.title')}
-          noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
-          icon={<Whatshot fontSize="small" />}
-          options={{ favorite: true }}
-          postType="question"
-        />
-        <PostHighlightList
-          type="hot"
-          title={t('highlights.hotArticles.title')}
-          noQuestionsLabel={t('highlights.hotArticles.noArticlesLabel')}
-          icon={<Whatshot fontSize="small" />}
-          options={{ favorite: true }}
-          postType="article"
-        />
-        <PostHighlightList
-          type="hot"
-          title={t('highlights.hotLinks.title')}
-          noQuestionsLabel={t('highlights.hotLinks.noLinksLabel')}
-          icon={<Whatshot fontSize="small" />}
-          options={{ favorite: true }}
-          postType="link"
-        />
+        <PostHighlightListContainer options={{ favorite: true }} />
       </Grid>
     </Grid>
   );
