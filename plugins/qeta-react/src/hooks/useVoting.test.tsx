@@ -6,11 +6,10 @@ import {
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { ReactNode } from 'react';
-import { MockErrorApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, MockErrorApi, TestApiProvider } from '@backstage/test-utils';
 import { qetaApiRef } from '../api';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
-import { MockTranslationApi } from '@backstage/test-utils/alpha';
 
 jest.mock('@backstage/plugin-signals-react', () => ({
   useSignal: jest.fn(),
@@ -75,7 +74,7 @@ describe('useVoting', () => {
       apis={[
         [qetaApiRef, mockQetaApi],
         [errorApiRef, new MockErrorApi()],
-        [translationApiRef, MockTranslationApi.create()],
+        [translationApiRef, mockApis.translation()],
       ]}
     >
       {children}
