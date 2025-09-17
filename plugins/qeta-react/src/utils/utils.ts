@@ -2,7 +2,7 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Filters } from '../components/FilterPanel/FilterPanel';
 import FileType from 'file-type';
 import { ErrorApi } from '@backstage/core-plugin-api';
-import { PostType, QetaApi } from '@drodil/backstage-plugin-qeta-common';
+import { QetaApi } from '@drodil/backstage-plugin-qeta-common';
 import { useEffect } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../translation.ts';
@@ -180,15 +180,3 @@ export const useConfirmNavigationIfEdited = (edited: boolean) => {
     };
   }, [edited, msg]);
 };
-
-export function selectByPostType<T>(type: PostType, questionValue: T, articleValue: T, linkValue: T): T {
-  switch (type) {
-    case 'article':
-      return articleValue;
-    case 'link':
-      return linkValue;
-    case 'question':
-    default:
-      return questionValue;
-  }
-}

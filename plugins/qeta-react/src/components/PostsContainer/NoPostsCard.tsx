@@ -6,14 +6,13 @@ import {
   createLinkRouteRef,
   writeRouteRef
 } from '../../routes';
-import { PostType } from '@drodil/backstage-plugin-qeta-common';
+import { PostType, selectByPostType } from '@drodil/backstage-plugin-qeta-common';
 import CreateIcon from '@material-ui/icons/Create';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityQueryParameter } from '../../hooks/useEntityQueryParameter';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 import LinkIcon from "@material-ui/icons/Link";
-import { selectByPostType } from "../../utils";
 
 export const NoPostsCard = (props: {
   showNoPostsBtn?: boolean;

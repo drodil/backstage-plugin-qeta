@@ -27,6 +27,7 @@ import {
   PostStatus,
   PostType,
   QetaApi,
+  selectByPostType,
   Template,
 } from '@drodil/backstage-plugin-qeta-common';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
@@ -39,7 +40,7 @@ import { QuestionFormValues } from './types';
 import { EntitiesInput } from './EntitiesInput';
 import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
-import { selectByPostType, useConfirmNavigationIfEdited } from '../../utils/utils';
+import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';

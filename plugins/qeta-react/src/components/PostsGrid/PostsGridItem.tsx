@@ -3,6 +3,7 @@ import {
   PostType,
   QetaSignal,
   removeMarkdownFormatting,
+  selectByPostType,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useEffect, useState } from 'react';
@@ -42,7 +43,6 @@ import { SmallAvatar } from '../Utility/SmallAvatar';
 import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
 import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
-import { selectByPostType } from "../../utils";
 import { FaviconItem } from "../FaviconItem";
 
 export interface PostsGridItemProps {

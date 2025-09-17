@@ -1,5 +1,5 @@
 import { Fragment, ReactNode } from 'react';
-import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
+import { PostsQuery, PostType, selectByPostType } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { RightList, RightListContainer } from '../Utility/RightList';
@@ -20,7 +20,6 @@ import {
 } from '../../routes.ts';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import numeral from 'numeral';
-import { selectByPostType } from "../../utils";
 
 const useStyles = makeStyles(theme => ({
   listItem: {

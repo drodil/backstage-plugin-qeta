@@ -6,7 +6,6 @@ import {
   getEntityTitle,
   getFiltersWithDateRange,
   imageUpload,
-  selectByPostType,
 } from './utils';
 import { Entity } from '@backstage/catalog-model';
 import { QetaApi } from '@drodil/backstage-plugin-qeta-common';
@@ -172,19 +171,5 @@ describe('getEntityTitle', () => {
       metadata: { name: 'test' },
     };
     expect(getEntityTitle(entity)).toBe('Test');
-  });
-});
-
-describe('selectByPostType', () => {
-  it('should return question value for post type question', () => {
-    expect(selectByPostType('question', 'q', 'a', 'l')).toBe('q');
-  });
-
-  it('should return article value for post type article', () => {
-    expect(selectByPostType('article', 'q', 'a', 'l')).toBe('a');
-  });
-
-  it('should return link value for post type link', () => {
-    expect(selectByPostType('link', 'q', 'a', 'l')).toBe('l');
   });
 });

@@ -1,6 +1,7 @@
 import {
   findEntityMentions,
   removeMarkdownFormatting,
+  selectByPostType,
   truncate,
 } from './utils';
 
@@ -241,5 +242,19 @@ describe('findEntityMentions', () => {
       '@user:default/username2',
       '@group:default/group2',
     ]);
+  });
+});
+
+describe('selectByPostType', () => {
+  it('should return question value for post type question', () => {
+    expect(selectByPostType('question', 'q', 'a', 'l')).toBe('q');
+  });
+
+  it('should return article value for post type article', () => {
+    expect(selectByPostType('article', 'q', 'a', 'l')).toBe('a');
+  });
+
+  it('should return link value for post type link', () => {
+    expect(selectByPostType('link', 'q', 'a', 'l')).toBe('l');
   });
 });

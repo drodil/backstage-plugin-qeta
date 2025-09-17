@@ -6,6 +6,7 @@ import {
   PostType,
   QetaSignal,
   removeMarkdownFormatting,
+  selectByPostType,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
@@ -33,7 +34,6 @@ import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import LinkIcon from "@material-ui/icons/Link";
 import { StatusChip } from '../Utility/StatusChip';
 import { OpenLinkButton } from "../Buttons/OpenLinkButton.tsx";
-import { selectByPostType } from "../../utils";
 import { FaviconItem } from "../FaviconItem";
 
 export interface PostListItemProps {

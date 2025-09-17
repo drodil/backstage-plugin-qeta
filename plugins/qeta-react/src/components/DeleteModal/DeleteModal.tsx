@@ -2,6 +2,7 @@ import {
   AnswerResponse,
   CollectionResponse,
   PostResponse,
+  selectByPostType,
   TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
@@ -27,7 +28,6 @@ import {
   questionsRouteRef,
   tagsRouteRef,
 } from '../../routes.ts';
-import { selectByPostType } from "../../utils";
 
 export const DeleteModal = (props: {
   entity: PostResponse | AnswerResponse | CollectionResponse | TagResponse;
