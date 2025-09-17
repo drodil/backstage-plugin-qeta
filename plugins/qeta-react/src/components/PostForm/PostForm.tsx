@@ -173,8 +173,6 @@ export const PostForm = (props: PostFormProps) => {
     reset,
     getValues: getFormValues,
     setValue,
-    setError: setFormError,
-    clearErrors,
     formState: { errors, isSubmitting, isValid },
   } = useForm<QuestionFormValues>({
     values,
@@ -384,22 +382,21 @@ export const PostForm = (props: PostFormProps) => {
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-
-    setValue('url', input, { shouldValidate: true });
     setFavicon(false);
-    setUrlToCheck(input);
+    setValue('url', e.target.value, { shouldValidate: true });
+  };
 
-    if (input === '') {
-      clearErrors('url');
-    } else if (validUrl.test(input)) {
-      clearErrors('url');
-    } else {
-      setFormError('url', {
-        type: 'manual',
-        message: t('postForm.urlInput.invalid')
-      });
+  const validateUrl = (value: string | undefined) => {
+    if (value === '') {
+      setFavicon(false);
+      return false;
+    } else if (!value || !validUrl.test(value)) {
+      setFavicon(false);
+      return t('postForm.urlInput.invalid');
     }
+
+    setUrlToCheck(value);
+    return true;
   };
 
   useDebounce(() => {
@@ -407,11 +404,11 @@ export const PostForm = (props: PostFormProps) => {
       return;
     }
 
-    setFavicon(true);
-
     // some valid urls are not reachable => no error checking
     qetaApi.fetchUrlMetadata({ url: urlToCheck })
       .then(response => {
+        setFavicon(true);
+
         if (control._formValues.title === '') {
           setValue('title', response.title ?? '', { shouldValidate: true });
         }
@@ -421,7 +418,7 @@ export const PostForm = (props: PostFormProps) => {
         }
       })
     },
-    1000,
+    400,
     [urlToCheck]
   );
 
@@ -523,28 +520,38 @@ export const PostForm = (props: PostFormProps) => {
               onError={e => (e.currentTarget.style.display = 'none')}
             />
           )}
-          <TextField
-            label={t('postForm.urlInput.label')}
-            className="qetaAskFormTitle"
-            required
-            fullWidth
-            error={!!errors.url}
-            margin="normal"
-            variant="outlined"
+          <Controller
             name="url"
-            helperText={
-              errors.url?.message || (
-                <span>
-                  {t('postForm.urlInput.helperText')}
-                </span>
-              )
-            }
-            placeholder={t('postForm.urlInput.placeholder')}
-            FormHelperTextProps={{
-              style: { marginLeft: '0.2em' },
+            control={control}
+            rules={{
+              required: true,
+              validate: validateUrl,
             }}
-            value={control._formValues.url ?? ''}
-            onChange={handleUrlChange}
+            render={() => (
+              <TextField
+                label={t('postForm.urlInput.label')}
+                className="qetaAskFormTitle"
+                required
+                fullWidth
+                error={!!errors.url}
+                margin="normal"
+                variant="outlined"
+                name="url"
+                helperText={
+                  errors.url?.message || (
+                    <span>
+                    {t('postForm.urlInput.helperText')}
+                  </span>
+                  )
+                }
+                placeholder={t('postForm.urlInput.placeholder')}
+                FormHelperTextProps={{
+                  style: { marginLeft: '0.2em' },
+                }}
+                value={control._formValues.url ?? ''}
+                onChange={handleUrlChange}
+              />
+            )}
           />
         </Box>
       )}
