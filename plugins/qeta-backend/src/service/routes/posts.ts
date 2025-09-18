@@ -22,7 +22,7 @@ import {
   PostSchema,
   PostsQuerySchema,
   RouteOptions,
-  UrlSchema,
+  URLMetadataSchema,
 } from '../types';
 import { Response } from 'express-serve-static-core';
 import {
@@ -1146,7 +1146,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
   // POST /url
   router.post(`/url`, async (request, response) => {
-    const validateQuery = ajv.compile(UrlSchema);
+    const validateQuery = ajv.compile(URLMetadataSchema);
     if (!validateQuery(request.body)) {
       response.status(400).send({ errors: validateQuery.errors, type: 'body' });
       return;

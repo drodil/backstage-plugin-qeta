@@ -127,10 +127,8 @@ export interface AIQuery {
   regenerate?: boolean;
 }
 
-export interface UrlQuery {
+export interface URLMetadataQuery {
   url: string;
-  title?: string;
-  content?: string;
 }
 
 export type RequestOptions = {
