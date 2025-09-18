@@ -3,7 +3,9 @@ import {
   Answer,
   Collection,
   Post,
+  PostType,
   removeMarkdownFormatting,
+  selectByPostType,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
@@ -63,14 +65,14 @@ export class NotificationManager {
         payload: {
           title: `New ${post.type}`,
           description: this.formatDescription(
-            post.type === 'question'
-              ? `${user} asked a question: ${post.title}`
-              : `${user} wrote an article: ${post.title}`,
+            selectByPostType(
+              post.type,
+              `${user} asked a question: ${post.title}`,
+              `${user} wrote an article: ${post.title}`,
+              `${user} created a link: ${post.title}`,
+            ),
           ),
-          link:
-            post.type === 'question'
-              ? `/qeta/questions/${post.id}`
-              : `/qeta/articles/${post.id}`,
+          link: this.selectPostRoute(post.type, post.id),
           topic: `New ${post.type} about entity`,
         },
       });
@@ -122,10 +124,7 @@ export class NotificationManager {
           description: this.formatDescription(
             `${user} commented on ${post.type}: ${comment}`,
           ),
-          link:
-            post.type === 'question'
-              ? `/qeta/questions/${post.id}`
-              : `/qeta/articles/${post.id}`,
+          link: this.selectPostRoute(post.type, post.id),
           topic: `New ${post.type} comment`,
           scope: `${post.type}:comment:${post.id}`,
         },
@@ -173,10 +172,7 @@ export class NotificationManager {
               reason || 'No reason provided'
             }`,
           ),
-          link:
-            post.type === 'question'
-              ? `/qeta/questions/${post.id}`
-              : `/qeta/articles/${post.id}`,
+          link: this.selectPostRoute(post.type, post.id),
           topic: `${post.type} deleted`,
           scope: `${post.type}:delete:${post.id}`,
         },
@@ -319,10 +315,7 @@ export class NotificationManager {
           description: this.formatDescription(
             `${user} edited ${post.type}: ${post.title}`,
           ),
-          link:
-            post.type === 'question'
-              ? `/qeta/questions/${post.id}`
-              : `/qeta/articles/${post.id}`,
+          link: this.selectPostRoute(post.type, post.id),
           topic: `${post.type} edited`,
           scope: `${post.type}:edit:${post.id}`,
         },
@@ -517,7 +510,6 @@ export class NotificationManager {
       const user = await this.getUserDisplayName(username);
 
       const isPost = 'title' in post;
-      const isQuestion = isPost && post.type === 'question';
       const description = isPost
         ? `${user} mentioned you in a post${isComment ? ' comment' : ''}: ${
             post.title
@@ -525,12 +517,9 @@ export class NotificationManager {
         : `${user} mentioned you in an answer${isComment ? ' comment' : ''}: ${
             post.content
           }`;
-      // eslint-disable-next-line no-nested-ternary
       const link = !isPost
         ? `/qeta/questions/${post.postId}#answer_${post.id}`
-        : isQuestion
-        ? `/qeta/questions/${post.id}`
-        : `/qeta/articles/${post.id}`;
+        : this.selectPostRoute(post.type, post.id);
       const scope = isPost
         ? `post:mention:${post.id}`
         : `answer:mention:${post.id}`;
@@ -685,5 +674,12 @@ export class NotificationManager {
 
   private formatDescription(description: string) {
     return truncate(removeMarkdownFormatting(description), 150);
+  }
+
+  private selectPostRoute(type: PostType, id: number) {
+    const questionRoute = `/qeta/questions/${id}`;
+    const articleRoute = `/qeta/articles/${id}`;
+    const linkRoute = `/qeta/links/${id}`;
+    return selectByPostType(type, questionRoute, articleRoute, linkRoute);
   }
 }
