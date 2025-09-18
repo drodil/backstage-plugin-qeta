@@ -47,7 +47,8 @@ import {
   TemplateRequest,
   TemplateResponse,
   TemplatesResponse,
-  UrlRequest,
+  URLMetadataRequest,
+  URLMetadataResponse,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UsersResponse,
@@ -1443,7 +1444,9 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as TagSuggestionsResponse;
   }
 
-  async fetchUrlMetadata(request: UrlRequest): Promise<UrlRequest> {
+  async fetchURLMetadata(
+    request: URLMetadataRequest,
+  ): Promise<URLMetadataResponse> {
     const response = await this.fetch('/url', {
       reqInit: {
         method: 'POST',
@@ -1452,7 +1455,7 @@ export class QetaClient implements QetaApi {
       },
     });
 
-    return (await response.json()) as UrlRequest;
+    return (await response.json()) as URLMetadataResponse;
   }
 
   private async getBaseUrl(): Promise<string> {

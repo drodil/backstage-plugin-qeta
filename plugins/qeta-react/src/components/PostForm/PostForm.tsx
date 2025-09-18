@@ -166,7 +166,7 @@ export const PostForm = (props: PostFormProps) => {
   const minEntities = configApi.getOptionalNumber('qeta.entities.min') ?? 0;
   const minTags = configApi.getOptionalNumber('qeta.tags.min') ?? 0;
 
-  const isNotLink = type !== 'link';
+  const isLink = type === 'link';
 
   const {
     handleSubmit,
@@ -390,7 +390,7 @@ export const PostForm = (props: PostFormProps) => {
     setValue('url', e.target.value, { shouldValidate: true });
   };
 
-  const validateUrl = (value: string | undefined) => {
+  const validateUrl = (value?: string) => {
     if (value === '') {
       setFavicon(false);
       return false;
@@ -410,7 +410,7 @@ export const PostForm = (props: PostFormProps) => {
       }
 
       // some valid urls are not reachable => no error checking
-      qetaApi.fetchUrlMetadata({ url: urlToCheck }).then(response => {
+      qetaApi.fetchURLMetadata({ url: urlToCheck }).then(response => {
         setFavicon(true);
 
         if (control._formValues.title === '') {
@@ -514,7 +514,7 @@ export const PostForm = (props: PostFormProps) => {
           name="headerImage"
         />
       )}
-      {type === 'link' && (
+      {isLink && (
         <Box mb={2} display="flex" alignItems="center" style={{ gap: 8 }}>
           {favicon && (
             <img
@@ -581,7 +581,7 @@ export const PostForm = (props: PostFormProps) => {
             </span>
           }
           placeholder={t(
-            type === 'link'
+            isLink
               ? 'postForm.titleInput.placeholder_link'
               : 'postForm.titleInput.placeholder',
           )}
@@ -652,14 +652,14 @@ export const PostForm = (props: PostFormProps) => {
       <Controller
         control={control}
         rules={{
-          required: isNotLink,
+          required: !isLink,
         }}
         render={({ field: { onChange, value } }) => (
           <MarkdownEditor
-            required={isNotLink}
+            required={!isLink}
             value={value}
             onChange={onChange}
-            height={isNotLink ? 400 : 150}
+            height={!isLink ? 400 : 150}
             error={'content' in errors}
             placeholder={selectByPostType(
               type,

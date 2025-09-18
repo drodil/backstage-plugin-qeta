@@ -28,7 +28,8 @@ import {
   TemplateRequest,
   TemplateResponse,
   TemplatesResponse,
-  UrlRequest,
+  URLMetadataRequest,
+  URLMetadataResponse,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UsersResponse,
@@ -522,5 +523,5 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<TagSuggestionsResponse>;
 
-  fetchUrlMetadata(request: UrlRequest): Promise<UrlRequest>;
+  fetchURLMetadata(request: URLMetadataRequest): Promise<URLMetadataResponse>;
 }

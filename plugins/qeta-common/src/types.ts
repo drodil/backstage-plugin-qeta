@@ -464,8 +464,11 @@ export interface TagSuggestionsResponse {
   tags: string[];
 }
 
-export interface UrlRequest {
+export interface URLMetadataRequest {
   url: string;
+}
+
+export interface URLMetadataResponse {
   title?: string;
   content?: string;
 }

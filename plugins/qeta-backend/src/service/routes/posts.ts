@@ -1181,7 +1181,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       const content = $('meta[name="description"]').attr('content') || '';
 
       response.json({
-        url,
         title,
         content,
       });
