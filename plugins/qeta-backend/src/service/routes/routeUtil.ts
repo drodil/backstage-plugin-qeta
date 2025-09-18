@@ -11,6 +11,10 @@ export const getTags = async (
   options: RouteOptions,
   existingTags: TagsResponse,
 ) => {
+  if (!request.body.tags) {
+    return [];
+  }
+
   const maxTags = options.config.getOptionalNumber('qeta.tags.max') ?? 5;
   const allowedTags =
     options.config.getOptionalStringArray('qeta.tags.allowedTags') ?? [];
@@ -37,6 +41,9 @@ export const getTags = async (
 };
 
 export const getEntities = (request: Request, config: Config): string[] => {
+  if (!request.body.entities) {
+    return [];
+  }
   const maxEntities = config.getOptionalNumber('qeta.entities.max') ?? 3;
   let entities = request.body.entities;
   if (Array.isArray(entities)) {
