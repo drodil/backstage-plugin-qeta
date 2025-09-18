@@ -33,6 +33,8 @@ import {
 } from './util';
 import { getEntities, getTags } from './routeUtil';
 import { PostOptions } from '../../database/QetaStore';
+import * as cheerio from 'cheerio';
+import sanitizeHtml from 'sanitize-html';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -1151,27 +1153,41 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const url = new URL(request.body.url);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      response
+        .status(400)
+        .send({ errors: 'Invalid URL protocol', type: 'url' });
+      return;
+    }
+    if (url.hostname === 'localhost') {
+      response
+        .status(400)
+        .send({ errors: 'localhost not allowed', type: 'url' });
+      return;
+    }
 
     try {
-      const html = await fetch(url).then(resp => resp.text());
+      const html = await fetch(url, { signal: AbortSignal.timeout(3000) })
+        .then(resp => resp.text())
+        .then(dirty =>
+          sanitizeHtml(dirty, {
+            allowedTags: ['title', 'meta'],
+            allowedAttributes: { meta: ['name', 'content'] },
+          }),
+        );
 
-      const match = html.match(/<title>([^<]*)<\/title>/i);
-      const title = match ? match[1] : '';
-      const contentMatch = html.match(
-        /<meta name="description" content="([^"]*)"/i,
-      );
-      const content = contentMatch ? contentMatch[1] : '';
+      const $ = cheerio.load(html);
+      const title = $('title').text() || '';
+      const content = $('meta[name="description"]').attr('content') || '';
 
       response.json({
         url,
         title,
         content,
       });
-    } catch (error: any) {
-      console.error('Failed to fetch URL:', error);
-      response
-        .status(500)
-        .send({ error: error.message || 'Failed to fetch URL' });
+    } catch (e) {
+      console.error('Failed to fetch URL:', e);
+      response.status(500).send({ error: 'Failed to fetch URL' });
     }
   });
 };
