@@ -6,6 +6,7 @@ import {
   NewLinkSuggestion,
   NewQuestionSuggestion,
   NoCorrectAnswerSuggestion,
+  selectByPostType,
   SuggestionsResponse,
   SuggestionType,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -150,8 +151,13 @@ const DraftPostSuggestionItem = (props: {
   const { t } = useTranslationRef(qetaTranslationRef);
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
-  const route =
-    suggestion.post.type === 'question' ? questionRoute : articleRoute;
+  const linkRoute = useRouteRef(linkRouteRef);
+  const route = selectByPostType(
+    suggestion.post.type,
+    questionRoute,
+    articleRoute,
+    linkRoute,
+  );
   return (
     <SuggestionListItem
       href={route({ id: suggestion.post.id.toString(10) })}

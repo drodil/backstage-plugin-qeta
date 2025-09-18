@@ -113,10 +113,12 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
               ? `Comments:\n\n${commentsContent.join('\n\n')}`
               : ''
           }`,
-          location:
-            post.type === 'question'
-              ? `/qeta/questions/${post.id}`
-              : `/qeta/articles/${post.id}`,
+          location: selectByPostType(
+            post.type,
+            `/qeta/questions/${post.id}`,
+            `/qeta/articles/${post.id}`,
+            `/qeta/links/${post.id}`,
+          ),
           docType: 'qeta_post',
           author: post.author,
           created: post.created,
