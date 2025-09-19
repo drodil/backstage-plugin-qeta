@@ -11,6 +11,7 @@ within Backstage. This plugin allows users to:
 
 - Ask and answer questions
 - Write articles
+- Add links and attach them to entities
 - Vote questions, articles and answers
 - Create custom collections containing questions and articles
 - Favorite questions and articles

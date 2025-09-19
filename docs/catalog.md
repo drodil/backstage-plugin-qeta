@@ -58,3 +58,11 @@ export const QetaContent = () => {
   );
 };
 ```
+
+## Catalog module
+
+Catalog module allows enriching entities with Q&A information.
+
+To add the Q&A processor(s), you need to add the `@drodil/plugin-catalog-backend-module-qeta`
+module to your backend as described in the
+[README](../plugins/catalog-backend-module-qeta/README.md).
