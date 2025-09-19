@@ -2,6 +2,7 @@ import {
   AnswerResponse,
   CollectionResponse,
   PostResponse,
+  selectByPostType,
   TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
@@ -23,6 +24,7 @@ import { ModalContent } from '../Utility/ModalContent';
 import {
   articlesRouteRef,
   collectionsRouteRef,
+  linksRouteRef,
   questionsRouteRef,
   tagsRouteRef,
 } from '../../routes.ts';
@@ -43,6 +45,7 @@ export const DeleteModal = (props: {
   const tagsRoute = useRouteRef(tagsRouteRef);
   const questionsRoute = useRouteRef(questionsRouteRef);
   const articlesRoute = useRouteRef(articlesRouteRef);
+  const linksRoute = useRouteRef(linksRouteRef);
   const { entity, open, question, onClose, onDelete } = props;
   const [error, setError] = useState(false);
   const [reason, setReason] = useState<undefined | string>(undefined);
@@ -113,15 +116,22 @@ export const DeleteModal = (props: {
             onClose();
             onDelete?.(entity);
             alertApi.post({
-              message:
-                entity.type === 'question'
-                  ? t('deleteModal.questionDeleted')
-                  : t('deleteModal.articleDeleted'),
+              message: selectByPostType(
+                entity.type,
+                t('deleteModal.questionDeleted'),
+                t('deleteModal.articleDeleted'),
+                t('deleteModal.linkDeleted'),
+              ),
               severity: 'success',
               display: 'transient',
             });
             navigate(
-              entity.type === 'question' ? questionsRoute() : articlesRoute(),
+              selectByPostType(
+                entity.type,
+                questionsRoute(),
+                articlesRoute(),
+                linksRoute(),
+              ),
             );
           } else {
             setError(true);

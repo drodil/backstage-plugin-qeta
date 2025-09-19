@@ -6,11 +6,12 @@ import {
   PostType,
   QetaSignal,
   removeMarkdownFormatting,
+  selectByPostType,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { articleRouteRef, questionRouteRef } from '../../routes';
+import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -26,7 +27,10 @@ import { AuthorBox } from '../AuthorBox/AuthorBox';
 import numeral from 'numeral';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import LinkIcon from '@material-ui/icons/Link';
 import { StatusChip } from '../Utility/StatusChip';
+import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
+import { FaviconItem } from '../FaviconItem';
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -181,6 +185,7 @@ export const PostListItem = (props: PostListItemProps) => {
   const [correctAnswer, setCorrectAnswer] = useState(post.correctAnswer);
   const [answersCount, setAnswersCount] = useState(post.answersCount);
   const [views, setViews] = useState(post.views);
+  const [score, setScore] = useState(post.score);
   const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
   const theme = useTheme();
@@ -191,13 +196,21 @@ export const PostListItem = (props: PostListItemProps) => {
       setCorrectAnswer(lastSignal.correctAnswer);
       setAnswersCount(lastSignal.answersCount);
       setViews(lastSignal.views);
+      setScore(lastSignal.score);
     }
   }, [lastSignal]);
 
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
+  const linkRoute = useRouteRef(linkRouteRef);
 
-  const route = post.type === 'question' ? questionRoute : articleRoute;
+  const route = selectByPostType(
+    post.type,
+    questionRoute,
+    articleRoute,
+    linkRoute,
+  );
+
   const href = entity
     ? `${route({ id: post.id.toString(10) })}?entity=${entity}`
     : route({ id: post.id.toString(10) });
@@ -205,12 +218,15 @@ export const PostListItem = (props: PostListItemProps) => {
   return (
     <Box className={styles.root}>
       <Box className={styles.metaCol} aria-label={t('common.postStats')}>
-        <Tooltip title={post.score >= 1000 ? post.score : ''} arrow>
+        <Tooltip title={score >= 1000 ? score : ''} arrow>
           <Box
             className={styles.metaBox}
-            aria-label={t('common.votesCount', { count: post.score })}
+            aria-label={t(
+              post.type !== 'link' ? 'common.votesCount' : 'common.clicksCount',
+              { count: score },
+            )}
           >
-            {formatShortNumber(post.score)}
+            {formatShortNumber(score)}
             <div
               style={{
                 fontWeight: 400,
@@ -218,7 +234,7 @@ export const PostListItem = (props: PostListItemProps) => {
                 color: theme.palette.text.secondary,
               }}
             >
-              {t('common.votes')}
+              {post.type !== 'link' ? t('common.votes') : t('common.clicks')}
             </div>
           </Box>
         </Tooltip>
@@ -239,28 +255,31 @@ export const PostListItem = (props: PostListItemProps) => {
             </div>
           </Box>
         )}
-        <Tooltip title={views >= 1000 ? views : ''} arrow>
-          <Box
-            className={styles.metaBox}
-            aria-label={t('common.viewsCount', { count: views })}
-          >
-            {formatShortNumber(views)}
-            <div
-              style={{
-                fontWeight: 400,
-                fontSize: '13px',
-                color: theme.palette.text.secondary,
-              }}
+        {post.type !== 'link' && (
+          <Tooltip title={views >= 1000 ? views : ''} arrow>
+            <Box
+              className={styles.metaBox}
+              aria-label={t('common.viewsCount', { count: views })}
             >
-              {t('common.views')}
-            </div>
-          </Box>
-        </Tooltip>
+              {formatShortNumber(views)}
+              <div
+                style={{
+                  fontWeight: 400,
+                  fontSize: '13px',
+                  color: theme.palette.text.secondary,
+                }}
+              >
+                {t('common.views')}
+              </div>
+            </Box>
+          </Tooltip>
+        )}
       </Box>
       <Box className={styles.contentContainer}>
         <Box className={styles.titleContainer}>
           <Box className={styles.titleWrapper}>
             <Typography component="div" className={styles.title}>
+              {post.type === 'link' && <FaviconItem entity={post} />}
               <Link
                 to={href}
                 className="qetaPostListItemQuestionBtn"
@@ -276,17 +295,17 @@ export const PostListItem = (props: PostListItemProps) => {
           {showTypeLabel && post.type && (
             <Chip
               size="small"
-              icon={
-                post.type === 'question' ? (
-                  <QuestionAnswer />
-                ) : (
-                  <CollectionsBookmarkIcon />
-                )
-              }
+              icon={selectByPostType(
+                post.type,
+                <QuestionAnswer />,
+                <CollectionsBookmarkIcon />,
+                <LinkIcon />,
+              )}
               label={capitalizeFirstLetter(t(`common.${post.type}`))}
               className={styles.typeLabel}
             />
           )}
+          {post.type === 'link' && <OpenLinkButton entity={post} />}
         </Box>
         <Typography variant="body2" component="div" className={styles.content}>
           <Link

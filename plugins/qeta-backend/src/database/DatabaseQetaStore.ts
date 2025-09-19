@@ -90,6 +90,7 @@ export type RawPostEntity = {
   anonymous: boolean;
   type: 'question';
   headerImage: string;
+  url: string;
 };
 
 export type RawCollectionEntity = {
@@ -573,6 +574,7 @@ export class DatabaseQetaStore implements QetaStore {
     anonymous?: boolean;
     type?: PostType;
     headerImage?: string;
+    url?: string;
     status?: PostStatus;
     opts?: PostOptions;
   }): Promise<Post> {
@@ -587,6 +589,7 @@ export class DatabaseQetaStore implements QetaStore {
       anonymous,
       type = 'question',
       headerImage,
+      url,
       opts,
       status = 'active',
     } = options;
@@ -600,6 +603,7 @@ export class DatabaseQetaStore implements QetaStore {
           anonymous: anonymous ?? false,
           type: type ?? 'question',
           headerImage,
+          url,
           status,
         },
         ['id'],
@@ -614,6 +618,7 @@ export class DatabaseQetaStore implements QetaStore {
         'anonymous',
         'type',
         'status',
+        'url',
       ]);
 
     await Promise.all([
@@ -743,6 +748,7 @@ export class DatabaseQetaStore implements QetaStore {
     entities?: string[];
     images?: number[];
     headerImage?: string;
+    url?: string;
     setUpdatedBy?: boolean;
     status?: PostStatus;
     opts?: PostOptions;
@@ -756,6 +762,7 @@ export class DatabaseQetaStore implements QetaStore {
       entities,
       images,
       headerImage,
+      url,
       setUpdatedBy = true,
       opts,
       status = 'active',
@@ -765,6 +772,7 @@ export class DatabaseQetaStore implements QetaStore {
       title,
       content,
       headerImage,
+      url,
       updatedBy: setUpdatedBy ? user_ref : undefined,
       updated: setUpdatedBy ? new Date() : undefined,
       status,
@@ -1036,6 +1044,30 @@ export class DatabaseQetaStore implements QetaStore {
     }
     const rows = await query.update({ status: 'deleted' });
     return rows > 0;
+  }
+
+  async clickPost(user_ref: string, postId: number): Promise<void> {
+    const existingRows = await this.db('post_votes')
+      .where('author', '=', user_ref)
+      .where('postId', '=', postId);
+
+    if (existingRows.length) {
+      await this.db('post_votes')
+        .where('author', '=', user_ref)
+        .where('postId', '=', postId)
+        .increment('score', 1);
+    } else {
+      await this.db
+        .insert({
+          author: user_ref,
+          postId,
+          score: 1,
+          timestamp: new Date(),
+        })
+        .onConflict()
+        .ignore()
+        .into('post_votes');
+    }
   }
 
   async deletePostVote(user_ref: string, postId: number): Promise<boolean> {
@@ -1342,6 +1374,7 @@ export class DatabaseQetaStore implements QetaStore {
           this.mapToInteger(r.postVotes) + this.mapToInteger(r.answerVotes),
         totalArticles: this.mapToInteger(r.totalArticles),
         totalFollowers: this.mapToInteger(r.totalFollowers),
+        totalLinks: this.mapToInteger(r.totalLinks),
       })),
     };
   }
@@ -1365,6 +1398,7 @@ export class DatabaseQetaStore implements QetaStore {
         this.mapToInteger(rows[0].answerVotes),
       totalArticles: this.mapToInteger(rows[0].totalArticles),
       totalFollowers: this.mapToInteger(rows[0].totalFollowers),
+      totalLinks: this.mapToInteger(rows[0].totalLinks),
     };
   }
 
@@ -1935,6 +1969,7 @@ export class DatabaseQetaStore implements QetaStore {
           (await this.getCount('post_votes')) +
           (await this.getCount('answer_votes')),
         totalArticles: await this.getCount('posts', { type: 'article' }),
+        totalLinks: await this.getCount('posts', { type: 'link' }),
         date,
       })
       .onConflict(['date'])
@@ -2496,6 +2531,7 @@ export class DatabaseQetaStore implements QetaStore {
           this.db.raw('0 as totalViews'),
           this.db.raw('0 as totalQuestions'),
           this.db.raw('0 as totalArticles'),
+          this.db.raw('0 as totalLinks'),
           this.db.raw('0 as totalAnswers'),
           this.db.raw('0 as answerComments'),
           this.db.raw('0 as postComments'),
@@ -2524,6 +2560,12 @@ export class DatabaseQetaStore implements QetaStore {
       .where('posts.type', 'article')
       .count('*')
       .as('totalArticles');
+
+    const links = this.db('posts')
+      .where('posts.author', authorRef)
+      .where('posts.type', 'link')
+      .count('*')
+      .as('totalLinks');
 
     const answers = this.db('answers')
       .where('answers.author', authorRef)
@@ -2555,6 +2597,7 @@ export class DatabaseQetaStore implements QetaStore {
       questions,
       answers,
       articles,
+      links,
       comments,
       pVotes,
       aVotes,
@@ -2722,6 +2765,7 @@ export class DatabaseQetaStore implements QetaStore {
       anonymous: val.anonymous,
       type: val.type,
       headerImage: val.headerImage,
+      url: val.url,
       images: additionalInfo[5]?.map(r => r.id),
       experts: additionalInfo[6],
     };

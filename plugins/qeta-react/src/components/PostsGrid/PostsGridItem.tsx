@@ -3,12 +3,13 @@ import {
   PostType,
   QetaSignal,
   removeMarkdownFormatting,
+  selectByPostType,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { articleRouteRef, questionRouteRef } from '../../routes';
+import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import {
   Box,
   Card,
@@ -37,6 +38,8 @@ import { UserLink } from '../Links';
 import { SmallAvatar } from '../Utility/SmallAvatar';
 import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
+import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
+import { FaviconItem } from '../FaviconItem';
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -134,6 +137,7 @@ function formatShortNumber(num: number): string {
 export const PostsGridItem = (props: PostsGridItemProps) => {
   const { post, entity, allowRanking, onRankUpdate, collectionId } = props;
   const [views, setViews] = useState(post.views);
+  const [score, setScore] = useState(post.score);
   const [correctAnswer, setCorrectAnswer] = useState(post.correctAnswer);
   const [answersCount, setAnswersCount] = useState(post.answersCount);
   const qetaApi = useApi(qetaApiRef);
@@ -145,6 +149,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
   useEffect(() => {
     if (lastSignal?.type === 'post_stats') {
       setViews(lastSignal.views);
+      setScore(lastSignal.score);
       setCorrectAnswer(lastSignal.correctAnswer);
       setAnswersCount(lastSignal.answersCount);
     }
@@ -152,10 +157,17 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
 
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
+  const linkRoute = useRouteRef(linkRouteRef);
   const { name, initials, user } = useEntityAuthor(post);
   const navigate = useNavigate();
 
-  const route = post.type === 'question' ? questionRoute : articleRoute;
+  const route = selectByPostType(
+    post.type,
+    questionRoute,
+    articleRoute,
+    linkRoute,
+  );
+
   const href = entity
     ? `${route({
         id: post.id.toString(10),
@@ -203,9 +215,13 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               component="div"
               className={classes.title}
             >
+              {post.type === 'link' && <FaviconItem entity={post} />}
               {post.title}
             </Typography>
-            <StatusChip status={post.status} />
+            <Box display="flex" alignItems="center">
+              <StatusChip status={post.status} />
+              {post.type === 'link' && <OpenLinkButton entity={post} />}
+            </Box>
           </Box>
           <Typography
             variant="body2"
@@ -224,13 +240,15 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
         <Box className={classes.footer}>
           <Box className={classes.statsContainer}>
             <Box className={classes.statsGroup}>
-              <Tooltip title={post.score >= 1000 ? post.score : ''} arrow>
+              <Tooltip title={score >= 1000 ? score : ''} arrow>
                 <Box className={classes.statBox}>
                   <Typography className={classes.statValue}>
-                    {formatShortNumber(post.score)}
+                    {formatShortNumber(score)}
                   </Typography>
                   <Typography className={classes.statLabel}>
-                    {t('common.votes')}
+                    {post.type !== 'link'
+                      ? t('common.votes')
+                      : t('common.clicks')}
                   </Typography>
                 </Box>
               </Tooltip>
@@ -252,16 +270,18 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
                   </Box>
                 </Tooltip>
               )}
-              <Tooltip title={views >= 1000 ? views : ''} arrow>
-                <Box className={classes.statBox}>
-                  <Typography className={classes.statValue}>
-                    {formatShortNumber(views)}
-                  </Typography>
-                  <Typography className={classes.statLabel}>
-                    {t('common.views')}
-                  </Typography>
-                </Box>
-              </Tooltip>
+              {post.type !== 'link' && (
+                <Tooltip title={views >= 1000 ? views : ''} arrow>
+                  <Box className={classes.statBox}>
+                    <Typography className={classes.statValue}>
+                      {formatShortNumber(views)}
+                    </Typography>
+                    <Typography className={classes.statLabel}>
+                      {t('common.views')}
+                    </Typography>
+                  </Box>
+                </Tooltip>
+              )}
             </Box>
             <Box className={classes.statsGroup}>
               <SmallAvatar

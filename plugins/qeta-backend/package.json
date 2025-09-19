@@ -71,6 +71,7 @@
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
     "body-parser": "^1.20.3",
+    "cheerio": "^1.0.0-rc.12",
     "dataloader": "^2.2.3",
     "date-fns": "^2.30.0",
     "express": "^4.20.0",
@@ -80,6 +81,7 @@
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
     "multiparty": "^4.2.3",
+    "sanitize-html": "^2.13.0",
     "stopword": "^3.1.5",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
@@ -99,6 +101,7 @@
     "@backstage/plugin-signals-backend": "backstage:^",
     "@drodil/backstage-plugin-qeta-backend-module-openai": "workspace:^",
     "@drodil/backstage-plugin-search-backend-module-qeta": "workspace:^",
+    "@types/sanitize-html": "^2.9.5",
     "@types/stopword": "^2.0.3",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^9.0.4",

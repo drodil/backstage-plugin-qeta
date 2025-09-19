@@ -26,6 +26,7 @@ import {
   PostType,
   SuggestionsQuery,
   TagsQuery,
+  URLMetadataQuery,
   UsersQuery,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -69,6 +70,7 @@ export interface PostContent {
   user?: string;
   created?: string;
   headerImage?: string;
+  url?: string;
   anonymous?: boolean;
   type: PostType;
   status?: PostStatus;
@@ -181,7 +183,11 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     searchQuery: { type: 'string', nullable: true },
     fromDate: { type: 'string', nullable: true, format: 'date' },
     toDate: { type: 'string', nullable: true, format: 'date' },
-    type: { type: 'string', enum: ['question', 'article'], nullable: true },
+    type: {
+      type: 'string',
+      enum: ['question', 'article', 'link'],
+      nullable: true,
+    },
     ids: { type: 'array', items: { type: 'integer' }, nullable: true },
     checkAccess: { type: 'boolean', nullable: true },
   },
@@ -278,7 +284,7 @@ export const PostSchema: JSONSchemaType<PostContent> = {
   type: 'object',
   properties: {
     title: { type: 'string', minLength: 1 },
-    content: { type: 'string', minLength: 1 },
+    content: { type: 'string', minLength: 0 },
     tags: { type: 'array', items: { type: 'string' }, nullable: true },
     entities: { type: 'array', items: { type: 'string' }, nullable: true },
     images: { type: 'array', items: { type: 'integer' }, nullable: true },
@@ -286,7 +292,8 @@ export const PostSchema: JSONSchemaType<PostContent> = {
     created: { type: 'string', minLength: 1, nullable: true },
     anonymous: { type: 'boolean', nullable: true },
     headerImage: { type: 'string', nullable: true },
-    type: { type: 'string', enum: ['question', 'article'] },
+    url: { type: 'string', nullable: true },
+    type: { type: 'string', enum: ['question', 'article', 'link'] },
     status: {
       type: 'string',
       enum: ['active', 'draft', 'deleted'],
@@ -434,3 +441,12 @@ export interface File {
   ext: string;
   size: number;
 }
+
+export const URLMetadataSchema: JSONSchemaType<URLMetadataQuery> = {
+  type: 'object',
+  properties: {
+    url: { type: 'string', minLength: 7 }, // http://
+  },
+  required: ['url'],
+  additionalProperties: false,
+};

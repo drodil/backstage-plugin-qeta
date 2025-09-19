@@ -1,6 +1,7 @@
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { compact } from 'lodash';
 import { isValidTag } from './tags';
+import { PostType } from './types.ts';
 
 export const truncate = (str: string, n: number): string => {
   return str.length > n ? `${str.slice(0, n - 1)}...` : str;
@@ -96,3 +97,20 @@ export const removeMarkdownFormatting = (text: string): string => {
 
   return fixed;
 };
+
+export function selectByPostType<T>(
+  type: PostType,
+  questionValue: T,
+  articleValue: T,
+  linkValue: T,
+): T {
+  switch (type) {
+    case 'article':
+      return articleValue;
+    case 'link':
+      return linkValue;
+    case 'question':
+    default:
+      return questionValue;
+  }
+}

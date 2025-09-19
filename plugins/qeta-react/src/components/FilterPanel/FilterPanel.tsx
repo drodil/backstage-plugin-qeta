@@ -307,7 +307,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
               <FormLabel id="qeta-filter-quick">
                 {t('filterPanel.quickFilters.label')}
               </FormLabel>
-              {postFilters && type !== 'article' && (
+              {postFilters && type === 'question' && (
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -340,7 +340,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                   label={t('filterPanel.drafts.label')}
                 />
               )}
-              {(postFilters || answerFilters) && type !== 'article' && (
+              {(postFilters || answerFilters) && type === 'question' && (
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -353,7 +353,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                   label={t('filterPanel.noCorrectAnswers.label')}
                 />
               )}
-              {(postFilters || answerFilters) && (
+              {(postFilters || answerFilters) && type !== 'link' && (
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -416,13 +416,19 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
               {(postFilters || collectionFilters) &&
                 radioSelect('title', t('filterPanel.orderBy.title'))}
               {postFilters &&
+                type !== 'link' &&
                 radioSelect('views', t('filterPanel.orderBy.views'))}
               {(postFilters || answerFilters) &&
-                radioSelect('score', t('filterPanel.orderBy.score'))}
+                radioSelect(
+                  'score',
+                  type !== 'link'
+                    ? t('filterPanel.orderBy.score')
+                    : t('filterPanel.orderBy.clicks'),
+                )}
               {postFilters &&
                 radioSelect('trend', t('filterPanel.orderBy.trend'))}
               {postFilters &&
-                type !== 'article' &&
+                type === 'question' &&
                 radioSelect('answersCount', t('filterPanel.orderBy.answers'))}
               {(postFilters || answerFilters) &&
                 radioSelect('updated', t('filterPanel.orderBy.updated'))}

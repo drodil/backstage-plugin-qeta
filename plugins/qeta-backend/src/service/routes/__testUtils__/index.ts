@@ -122,6 +122,7 @@ export const user = {
   totalComments: 2,
   totalVotes: 20,
   totalArticles: 1,
+  totalLinks: 2,
   totalFollowers: 3,
 };
 
@@ -134,6 +135,7 @@ export const globalStats = [
     totalComments: 25,
     totalVotes: 200,
     totalArticles: 10,
+    totalLinks: 15,
     totalTags: 20,
     totalUsers: 30,
   },
@@ -149,6 +151,7 @@ export const userStats = [
     totalVotes: 20,
     totalArticles: 1,
     totalFollowers: 3,
+    totalLinks: 2,
   },
 ];
 

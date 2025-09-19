@@ -19,11 +19,13 @@ export const qetaTranslationRef = createTranslationRef({
       tagExpert: 'This user is an expert in this area',
       question: 'question',
       article: 'article',
+      link: 'link',
       collection: 'collection',
       score: '{{score}} score',
       comments: 'Comments',
       answers: 'answers',
       votes: 'votes',
+      clicks: 'clicks',
       views: 'views',
       postStats: 'Post stats',
       anonymousAuthor: 'Anonymous',
@@ -42,6 +44,9 @@ export const qetaTranslationRef = createTranslationRef({
       votesCount_zero: '0 votes',
       votesCount_one: '{{count}} vote',
       votesCount_other: '{{count}} votes',
+      clicksCount_zero: '0 clicks',
+      clicksCount_one: '{{count}} click',
+      clicksCount_other: '{{count}} clicks',
       posts_zero: 'No {{itemType}}s',
       posts_one: '{{count}} {{itemType}}',
       posts_other: '{{count}} {{itemType}}s',
@@ -131,8 +136,9 @@ export const qetaTranslationRef = createTranslationRef({
       titleInput: {
         label: 'Title',
         helperText:
-          'Write good title for your {{type}} that people can understand',
+          'Write a good title for your {{type}} that people can understand',
         placeholder: 'e.g. How do I deploy a Backstage plugin?',
+        placeholder_link: 'e.g. Backstage documentation',
       },
       contentInput: {
         label: 'Your {{type}}',
@@ -140,7 +146,14 @@ export const qetaTranslationRef = createTranslationRef({
           'Describe your problem in detail. What have you tried? What did you expect to happen?',
         placeholder_article:
           'Write your article content here. Use headings, lists, and images to organize your information.',
+        placeholder_link: 'Why is this link useful? Who will benefit from it?',
         markdownHelp: 'Markdown help',
+      },
+      urlInput: {
+        label: 'URL',
+        helperText: 'Paste the link you want to share',
+        placeholder: 'https://',
+        invalid: 'Please enter a valid URL (starting with http:// or https://)',
       },
       submit: {
         existingPost: 'Save',
@@ -162,6 +175,8 @@ export const qetaTranslationRef = createTranslationRef({
       tips_article_2: 'Organize your content with headings and lists.',
       tips_article_3: 'Add images or diagrams to illustrate your points.',
       tips_article_4: 'Cite sources or link to relevant documentation.',
+      tips_link_1: 'Explain why this link is useful.',
+      tips_link_2: 'Describe who will benefit from this link.',
       autoSaveDraft: 'Auto-save',
       autoSaveDraftTooltip:
         'Automatically save your post every 3 seconds when changes are made',
@@ -210,6 +225,14 @@ export const qetaTranslationRef = createTranslationRef({
         newArticle: 'New article',
       },
     },
+    createLinkPage: {
+      title: {
+        existingLink: 'Edit link',
+        entityLink: 'Create a link about {{entity}}',
+        newLink: 'New link',
+      },
+      editButton: 'Edit this link',
+    },
     collectionCreatePage: {
       title: {
         existingCollection: 'Edit collection',
@@ -228,6 +251,9 @@ export const qetaTranslationRef = createTranslationRef({
     },
     writeArticleButton: {
       title: 'Write an article',
+    },
+    createLinkButton: {
+      title: 'Link',
     },
     createCollectionButton: {
       title: 'Create a collection',
@@ -283,6 +309,7 @@ export const qetaTranslationRef = createTranslationRef({
       questionDeleted: 'Question deleted',
       articleDeleted: 'Article deleted',
       answerDeleted: 'Answer deleted',
+      linkDeleted: 'Link deleted',
     },
     favoritePage: {
       title: 'Favorited posts',
@@ -292,6 +319,7 @@ export const qetaTranslationRef = createTranslationRef({
       home: 'Home',
       questions: 'Questions',
       articles: 'Articles',
+      links: 'Links',
       profile: 'Profile',
       tags: 'Tags',
       entities: 'Entities',
@@ -319,6 +347,7 @@ export const qetaTranslationRef = createTranslationRef({
         'Your question "{{title}}" does not have a correct answer',
       newQuestion: 'Do you have an answer for "{{title}}"?',
       newArticle: 'You might like to read "{{title}}"',
+      newLink: 'You might like to check this link "{{title}}"',
       draftPost: 'Ready to finalize draft post "{{title}}"?',
     },
     homePage: {
@@ -350,6 +379,10 @@ export const qetaTranslationRef = createTranslationRef({
         title: 'Hot articles',
         noArticlesLabel: 'No articles',
       },
+      hotLinks: {
+        title: 'Hot links',
+        noLinksLabel: 'No links',
+      },
       unanswered: {
         title: 'Unanswered questions',
         noQuestionsLabel: 'No unanswered questions',
@@ -365,6 +398,9 @@ export const qetaTranslationRef = createTranslationRef({
     articlesPage: {
       title: 'All articles',
     },
+    linksPage: {
+      title: 'All links',
+    },
     userLink: {
       anonymous: 'Anonymous',
       you: 'You',
@@ -375,6 +411,13 @@ export const qetaTranslationRef = createTranslationRef({
       editButton: 'Edit this article',
       restoreButton: 'Restore this article',
       deleteButton: 'Delete this article',
+    },
+    linkPage: {
+      notFound: 'Could not find the link',
+      errorLoading: 'Could not load link',
+      editButton: 'Edit this link',
+      restoreButton: 'Restore this link',
+      deleteButton: 'Delete this link',
     },
     templateList: {
       errorLoading: 'Could not load templates',
@@ -469,6 +512,7 @@ export const qetaTranslationRef = createTranslationRef({
       answer: 'Copy link to this answer to clipboard',
       aria: 'Copy link to clipboard',
       copied: 'Link copied to clipboard',
+      open: 'Open link in new tab',
     },
     code: {
       aria: 'Copy code to clipboard',
@@ -549,6 +593,7 @@ export const qetaTranslationRef = createTranslationRef({
         created: 'Created',
         views: 'Views',
         score: 'Score',
+        clicks: 'Clicks',
         trend: 'Trend',
         answers: 'Answers',
         updated: 'Updated',
@@ -676,6 +721,7 @@ export const qetaTranslationRef = createTranslationRef({
       answers: 'Answers',
       collections: 'Collections',
       articles: 'Articles',
+      links: 'Links',
       followUser: 'Follow {{name}}',
       profilePicture: 'Profile picture of {{name}}',
       profileHeader: 'User profile',
@@ -688,6 +734,7 @@ export const qetaTranslationRef = createTranslationRef({
       votes: 'Votes',
       views: 'Views',
       articles: 'Articles',
+      links: 'Links',
       followers: 'Followers',
       users: 'Users',
       tags: 'Tags',
@@ -705,6 +752,7 @@ export const qetaTranslationRef = createTranslationRef({
       totalUsers: 'Total users',
       totalTags: 'Total tags',
       totalArticles: 'Total articles',
+      totalLinks: 'Total links',
       totalFollowers: 'Total followers',
     },
     collectionButton: {

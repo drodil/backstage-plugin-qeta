@@ -97,6 +97,7 @@ export interface UserResponse {
   totalVotes: number;
   totalArticles: number;
   totalFollowers: number;
+  totalLinks: number;
 }
 
 export interface UsersResponse {
@@ -210,6 +211,7 @@ export interface QetaStore {
     anonymous?: boolean;
     type?: PostType;
     headerImage?: string;
+    url?: string;
     status?: PostStatus;
     opts?: PostOptions;
   }): Promise<Post>;
@@ -256,6 +258,7 @@ export interface QetaStore {
     entities?: string[];
     images?: number[];
     headerImage?: string;
+    url?: string;
     setUpdatedBy?: boolean;
     status?: PostStatus;
     opts?: PostOptions;
@@ -354,6 +357,13 @@ export interface QetaStore {
    * @param id answer id
    */
   deleteAnswer(id: number, permanently?: boolean): Promise<boolean>;
+
+  /**
+   * Record a click of a link
+   * @param postId link id
+   * @param author author of the link
+   */
+  clickPost(author: string, postId: number): Promise<void>;
 
   /**
    * Vote question with given score

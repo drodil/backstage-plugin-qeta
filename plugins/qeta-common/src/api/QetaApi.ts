@@ -28,6 +28,8 @@ import {
   TemplateRequest,
   TemplateResponse,
   TemplatesResponse,
+  URLMetadataRequest,
+  URLMetadataResponse,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UsersResponse,
@@ -123,6 +125,10 @@ export interface EntitiesQuery extends PaginatedQuery {
 
 export interface AIQuery {
   regenerate?: boolean;
+}
+
+export interface URLMetadataQuery {
+  url: string;
 }
 
 export type RequestOptions = {
@@ -263,6 +269,8 @@ export interface QetaApi {
     author,
     options,
   }: StatisticsRequestParameters): Promise<StatisticResponse[]>;
+
+  clickLink(id: number): Promise<void>;
 
   votePostUp(
     id: number,
@@ -512,4 +520,6 @@ export interface QetaApi {
     options: TagSuggestionsQuery,
     requestOptions?: RequestOptions,
   ): Promise<TagSuggestionsResponse>;
+
+  fetchURLMetadata(request: URLMetadataRequest): Promise<URLMetadataResponse>;
 }

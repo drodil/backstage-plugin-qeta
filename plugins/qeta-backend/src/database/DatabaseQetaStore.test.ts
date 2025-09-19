@@ -492,5 +492,184 @@ describe.each(databases.eachSupportedId())(
         expect(found?.posts).toEqual([]);
       });
     });
+
+    describe('links', () => {
+      it('should store url for link posts', async () => {
+        const url = 'https://example.com';
+        const linkPost = await storage.createPost({
+          user_ref: 'user',
+          title: 'A link post',
+          content: 'This is a link post',
+          created: new Date(),
+          type: 'link',
+          url,
+        });
+        expect(linkPost.type).toBe('link');
+        expect(linkPost.url).toBe(url);
+        expect(linkPost.content).not.toContain(url);
+      });
+
+      it('should update url for link posts', async () => {
+        const url1 = 'https://first.com';
+        const url2 = 'https://second.com';
+        const linkPost = await storage.createPost({
+          user_ref: 'user',
+          title: 'A link post',
+          content: 'Initial content',
+          created: new Date(),
+          type: 'link',
+          url: url1,
+        });
+        const updated = await storage.updatePost({
+          id: linkPost.id,
+          user_ref: 'user',
+          url: url2,
+        });
+        expect(updated).toBeDefined();
+        expect(updated?.type).toBe('link');
+        expect(updated?.url).toBe(url2);
+        expect(updated?.content).toBe('Initial content');
+      });
+
+      it('should not set url for non-link posts unless provided', async () => {
+        const nonLinkPost = await storage.createPost({
+          user_ref: 'user',
+          title: 'Normal post',
+          content: 'Some content',
+          created: new Date(),
+          type: 'question',
+        });
+        expect(nonLinkPost.type).toBe('question');
+        expect(nonLinkPost.url).toBeNull();
+      });
+
+      it('should delete link posts properly', async () => {
+        const url = 'https://delete-me.com';
+        const linkPost = await storage.createPost({
+          user_ref: 'user',
+          title: 'Delete link',
+          content: 'Delete this link',
+          created: new Date(),
+          type: 'link',
+          url,
+        });
+        const deleted = await storage.deletePost(linkPost.id, true);
+        expect(deleted).toBeTruthy();
+        const fetched = await storage.getPost('user', linkPost.id);
+        expect(fetched).toBeNull();
+      });
+
+      it('should allow favoriting and unfavoriting link posts', async () => {
+        const url = 'https://favorite-link.com';
+        const linkPost = await storage.createPost({
+          user_ref: 'user',
+          title: 'Favorite link',
+          content: 'Favorite this link',
+          created: new Date(),
+          type: 'link',
+          url,
+        });
+        const favorited = await storage.favoritePost('user', linkPost.id);
+        expect(favorited).toBeTruthy();
+        let posts = await storage.getPosts('user', {
+          favorite: true,
+          type: 'link',
+        });
+        expect(posts.posts.length).toBe(1);
+        expect(posts.posts[0].id).toBe(linkPost.id);
+        const unfavorited = await storage.unfavoritePost('user', linkPost.id);
+        expect(unfavorited).toBeTruthy();
+        posts = await storage.getPosts('user', {
+          favorite: true,
+          type: 'link',
+        });
+        expect(posts.posts.length).toBe(0);
+      });
+
+      it('should allow tagging and untagging link posts', async () => {
+        const url = 'https://tag-link.com';
+        const linkPost = await storage.createPost({
+          user_ref: 'user',
+          title: 'Tag link',
+          content: 'Tag this link',
+          created: new Date(),
+          type: 'link',
+          url,
+          tags: ['tag-a', 'tag-b'],
+        });
+        let fetched = await storage.getPost('user', linkPost.id);
+        expect(fetched?.tags?.sort()).toEqual(['tag-a', 'tag-b']);
+        await storage.updatePost({
+          id: linkPost.id,
+          user_ref: 'user',
+          tags: ['tag-b'],
+        });
+        fetched = await storage.getPost('user', linkPost.id);
+        expect(fetched?.tags).toEqual(['tag-b']);
+      });
+
+      it('should allow connecting and disconnecting entities for link posts', async () => {
+        const url = 'https://entity-link.com';
+        const linkPost = await storage.createPost({
+          user_ref: 'user',
+          title: 'Entity link',
+          content: 'Entity this link',
+          created: new Date(),
+          type: 'link',
+          url,
+          entities: ['component:default/ent1', 'component:default/ent2'],
+        });
+        let fetched = await storage.getPost('user', linkPost.id);
+        expect(fetched?.entities?.sort()).toEqual([
+          'component:default/ent1',
+          'component:default/ent2',
+        ]);
+        await storage.updatePost({
+          id: linkPost.id,
+          user_ref: 'user',
+          entities: ['component:default/ent1'],
+        });
+        fetched = await storage.getPost('user', linkPost.id);
+        expect(fetched?.entities).toEqual(['component:default/ent1']);
+      });
+    });
+
+    describe('Clicking posts', () => {
+      const getVotes = async (user_ref: string, postId: number) =>
+        knex('post_votes')
+          .where('author', '=', user_ref)
+          .where('postId', '=', postId);
+      const user_ref = 'user';
+
+      it('should insert a new post_votes row if none exists', async () => {
+        const postId = await insertPost(post);
+        await storage.clickPost(user_ref, postId);
+        const votes = await getVotes(user_ref, postId);
+        expect(votes.length).toBe(1);
+        expect(votes[0].score).toBe(1);
+      });
+
+      it('should increment score if row exists', async () => {
+        const postId = await insertPost(post);
+        await storage.clickPost(user_ref, postId);
+        await storage.clickPost(user_ref, postId);
+        const votes = await getVotes(user_ref, postId);
+        expect(votes.length).toBe(1);
+        expect(votes[0].score).toBe(2);
+      });
+
+      it('should create a new row for a different post', async () => {
+        const postId1 = await insertPost({ ...post, title: 'post1' });
+        const postId2 = await insertPost({ ...post, title: 'post2' });
+        await storage.clickPost(user_ref, postId1);
+        await storage.clickPost(user_ref, postId2);
+        const votes1 = await getVotes(user_ref, postId1);
+        expect(votes1.length).toBe(1);
+        expect(votes1[0].score).toBe(1);
+        const votes2 = await getVotes(user_ref, postId2);
+        expect(votes2.length).toBe(1);
+        expect(votes2[0].score).toBe(1);
+      });
+    });
   },
 );

@@ -18,6 +18,7 @@ import {
   QetaPostDocument,
   QetaSearchDocument,
   removeMarkdownFormatting,
+  selectByPostType,
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
@@ -27,6 +28,7 @@ import DOMPurify from 'dompurify';
 import { capitalize } from 'lodash';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
+import LinkIcon from '@material-ui/icons/Link';
 
 const useStyles = makeStyles({
   excerptText: {
@@ -151,10 +153,12 @@ const Excerpt = (props: {
 const ResultIcon = (props: { document: QetaSearchDocument }) => {
   const { document } = props;
   if (isQetaPostDocument(document)) {
-    if (document.postType === 'article') {
-      return <CollectionsBookmarkIcon />;
-    }
-    return <HelpOutlined />;
+    return selectByPostType(
+      document.postType,
+      <HelpOutlined />,
+      <CollectionsBookmarkIcon />,
+      <LinkIcon />,
+    );
   }
 
   return <PlaylistPlay />;

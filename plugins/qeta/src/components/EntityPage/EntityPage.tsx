@@ -4,10 +4,12 @@ import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
   ButtonContainer,
+  CreateLinkButton,
   EntitiesGrid,
   EntityFollowButton,
   FollowedEntitiesList,
   PostHighlightList,
+  PostHighlightListContainer,
   PostsContainer,
   PostsGrid,
   qetaApiRef,
@@ -70,6 +72,7 @@ export const EntityPage = () => {
           <ButtonContainer>
             <AskQuestionButton entity={entityRef} />
             <WriteArticleButton entity={entityRef} />
+            <CreateLinkButton entity={entityRef} />
           </ButtonContainer>
         </ContentHeader>
         {resp && (
@@ -135,20 +138,7 @@ export const EntityPage = () => {
         )}
         {!resp && (
           <>
-            <PostHighlightList
-              type="hot"
-              title={t('highlights.hotQuestions.title')}
-              noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
-              icon={<Whatshot fontSize="small" />}
-              postType="question"
-            />
-            <PostHighlightList
-              type="hot"
-              title={t('highlights.hotArticles.title')}
-              noQuestionsLabel={t('highlights.hotArticles.noArticlesLabel')}
-              icon={<Whatshot fontSize="small" />}
-              postType="article"
-            />
+            <PostHighlightListContainer />
           </>
         )}
       </Grid>

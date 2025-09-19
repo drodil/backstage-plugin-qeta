@@ -3,8 +3,10 @@ import { ReactNode } from 'react';
 import {
   DraftPostSuggestion,
   NewArticleSuggestion,
+  NewLinkSuggestion,
   NewQuestionSuggestion,
   NoCorrectAnswerSuggestion,
+  selectByPostType,
   SuggestionsResponse,
   SuggestionType,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -12,10 +14,11 @@ import AssistantIcon from '@material-ui/icons/Assistant';
 import HelpOutlinedIcon from '@material-ui/icons/HelpOutlined';
 import CheckIcon from '@material-ui/icons/Check';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import LinkIcon from '@material-ui/icons/Link';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { articleRouteRef, questionRouteRef } from '../../routes';
+import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import {
   Card,
   CardHeader,
@@ -148,8 +151,13 @@ const DraftPostSuggestionItem = (props: {
   const { t } = useTranslationRef(qetaTranslationRef);
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
-  const route =
-    suggestion.post.type === 'question' ? questionRoute : articleRoute;
+  const linkRoute = useRouteRef(linkRouteRef);
+  const route = selectByPostType(
+    suggestion.post.type,
+    questionRoute,
+    articleRoute,
+    linkRoute,
+  );
   return (
     <SuggestionListItem
       href={route({ id: suggestion.post.id.toString(10) })}
@@ -182,10 +190,28 @@ const NewArticleSuggestionItem = (props: {
   );
 };
 
+const NewLinkSuggestionItem = (props: { suggestion: NewLinkSuggestion }) => {
+  const { suggestion } = props;
+  const { t } = useTranslationRef(qetaTranslationRef);
+  const linkRoute = useRouteRef(linkRouteRef);
+  return (
+    <SuggestionListItem
+      href={linkRoute({ id: suggestion.link.id.toString(10) })}
+      icon={<LinkIcon />}
+      timestamp={<RelativeTimeWithTooltip value={suggestion.link.created} />}
+    >
+      {t('suggestionsCard.newLink', {
+        title: suggestion.link.title,
+      })}
+    </SuggestionListItem>
+  );
+};
+
 const suggestionTypeMap: Record<SuggestionType, any> = {
   noCorrectAnswer: NoCorrectAnswerSuggestionItem,
   newQuestion: NewQuestionSuggestionItem,
   newArticle: NewArticleSuggestionItem,
+  newLink: NewLinkSuggestionItem,
   draftPost: DraftPostSuggestionItem,
 };
 

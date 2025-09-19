@@ -126,4 +126,60 @@ export const registerPostActions = (options: {
       return { output: article };
     },
   });
+
+  actionsRegistry.register({
+    name: 'post-link',
+    title: 'Post a Q&A knowledge link',
+    description: 'This allows you to post a new link in the Q&A system.',
+    attributes: {
+      idempotent: true,
+      destructive: false,
+      readOnly: false,
+    },
+    schema: {
+      input: z =>
+        z.object({
+          title: z.string().describe('The title of the link'),
+          content: z.string().url().describe('The URL'),
+          tags: z
+            .array(z.string())
+            .optional()
+            .describe('Optional tags to categorize the link'),
+          entities: z
+            .array(z.string())
+            .optional()
+            .describe(
+              'Optional catalog entity references to attach to the link',
+            ),
+        }),
+      output: z =>
+        z.object({
+          id: z.number().describe('The unique identifier of the created link'),
+          title: z.string().describe('The title of the link'),
+          content: z.string().url().describe('The URL'),
+          tags: z
+            .array(z.string())
+            .optional()
+            .describe('Tags associated with the link'),
+          entities: z
+            .array(z.string())
+            .optional()
+            .describe('Catalog entity references attached to the link'),
+        }),
+    },
+    action: async ({ input, credentials }) => {
+      const { token } = await auth.getPluginRequestToken({
+        onBehalfOf: credentials,
+        targetPluginId: 'qeta',
+      });
+      const link = await api.createPost(
+        {
+          ...input,
+          type: 'link',
+        },
+        { token },
+      );
+      return { output: link };
+    },
+  });
 };

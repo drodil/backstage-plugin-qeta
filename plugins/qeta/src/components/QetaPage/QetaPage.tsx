@@ -15,13 +15,17 @@ import {
   collectionEditRouteRef,
   collectionRouteRef,
   collectionsRouteRef,
+  createLinkRouteRef,
   editArticleRouteRef,
+  editLinkRouteRef,
   editQuestionRouteRef,
   entitiesRouteRef,
   entityRouteRef,
   favoriteQuestionsRouteRef,
   LeftMenu,
   LeftMenuButton,
+  linkRouteRef,
+  linksRouteRef,
   moderatorRouteRef,
   questionRouteRef,
   questionsRouteRef,
@@ -37,6 +41,9 @@ import { HomePage } from '../HomePage/HomePage';
 import { ArticlesPage } from '../ArticlesPage/ArticlesPage';
 import { WritePage } from '../WritePage/WritePage';
 import { ArticlePage } from '../ArticlePage/ArticlePage';
+import { LinksPage } from '../LinksPage/LinksPage.tsx';
+import { LinkPage } from '../LinkPage/LinkPage.tsx';
+import { CreateLinkPage } from '../CreateLinkPage/CreateLinkPage.tsx';
 import { CollectionsPage } from '../CollectionsPage/CollectionsPage';
 import { CollectionPage } from '../CollectionPage/CollectionPage';
 import { CollectionCreatePage } from '../CollectionCreatePage/CollectionCreatePage';
@@ -109,6 +116,11 @@ export const QetaPage = (props?: Props) => {
                   element={<ArticlesPage />}
                 />
                 <Route path={writeRouteRef.path} element={<WritePage />} />
+                <Route path={linksRouteRef.path} element={<LinksPage />} />
+                <Route
+                  path={createLinkRouteRef.path}
+                  element={<CreateLinkPage />}
+                />
                 <Route
                   path={favoriteQuestionsRouteRef.path}
                   element={<FavoritePage />}
@@ -119,9 +131,14 @@ export const QetaPage = (props?: Props) => {
                   element={<WritePage />}
                 />
                 <Route
+                  path={editLinkRouteRef.path}
+                  element={<CreateLinkPage />}
+                />
+                <Route
                   path={questionRouteRef.path}
                   element={<QuestionPage />}
                 />
+                <Route path={linkRouteRef.path} element={<LinkPage />} />
                 <Route path={articleRouteRef.path} element={<ArticlePage />} />
                 <Route path={tagsRouteRef.path} element={<TagPage />} />
                 <Route path={tagRouteRef.path} element={<TagPage />} />

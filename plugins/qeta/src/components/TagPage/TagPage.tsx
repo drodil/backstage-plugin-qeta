@@ -4,9 +4,11 @@ import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
   ButtonContainer,
+  CreateLinkButton,
   FollowedTagsList,
   MarkdownRenderer,
   PostHighlightList,
+  PostHighlightListContainer,
   PostsContainer,
   PostsGrid,
   qetaApiRef,
@@ -66,6 +68,7 @@ export const TagPage = () => {
             <ButtonContainer>
               <AskQuestionButton tags={[tag]} />
               <WriteArticleButton tags={[tag]} />
+              <CreateLinkButton tags={[tag]} />
             </ButtonContainer>
           </ContentHeader>
         ) : (
@@ -73,6 +76,7 @@ export const TagPage = () => {
             <ButtonContainer>
               <AskQuestionButton />
               <WriteArticleButton />
+              <CreateLinkButton />
             </ButtonContainer>
           </ContentHeader>
         )}
@@ -156,20 +160,7 @@ export const TagPage = () => {
         )}
         {!resp && (
           <>
-            <PostHighlightList
-              type="hot"
-              title={t('highlights.hotQuestions.title')}
-              noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
-              icon={<Whatshot fontSize="small" />}
-              postType="question"
-            />
-            <PostHighlightList
-              type="hot"
-              title={t('highlights.hotArticles.title')}
-              noQuestionsLabel={t('highlights.hotArticles.noArticlesLabel')}
-              icon={<Whatshot fontSize="small" />}
-              postType="article"
-            />
+            <PostHighlightListContainer />
           </>
         )}
       </Grid>

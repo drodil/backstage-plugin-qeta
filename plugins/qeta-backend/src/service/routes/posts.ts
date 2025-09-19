@@ -22,6 +22,7 @@ import {
   PostSchema,
   PostsQuerySchema,
   RouteOptions,
+  URLMetadataSchema,
 } from '../types';
 import { Response } from 'express-serve-static-core';
 import {
@@ -32,6 +33,8 @@ import {
 } from './util';
 import { getEntities, getTags } from './routeUtil';
 import { PostOptions } from '../../database/QetaStore';
+import * as cheerio from 'cheerio';
+import sanitizeHtml from 'sanitize-html';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -588,6 +591,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       anonymous: request.body.anonymous || username === 'user:default/guest',
       type: request.body.type,
       headerImage: request.body.headerImage,
+      url: request.body.url,
       status: request.body.status || 'active',
       opts: {
         includeComments: false,
@@ -696,6 +700,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       entities,
       images: request.body.images,
       headerImage: request.body.headerImage,
+      url: request.body.url,
       status: request.body.status || 'active',
       setUpdatedBy: originalPost.status !== 'draft',
       opts: { tagsFilter, commentsFilter, answersFilter },
@@ -943,6 +948,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     response.json(post);
   });
 
+  // PUT /posts/:id/click
+  router.put('/posts/:id/click', async (request, response) => {
+    const ret = await getPostAndCheckStatus(request, response);
+    if (!ret) return;
+    const { postId, username } = ret;
+    await database.clickPost(username, postId);
+    response.status(200).send({});
+  });
+
   // GET /posts/:id/upvote
   router.get(`/posts/:id/upvote`, async (request, response) => {
     return await votePost(request, response, 1);
@@ -1128,5 +1142,51 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     // Response
     response.json(updatedPost);
+  });
+
+  // POST /url
+  router.post(`/url`, async (request, response) => {
+    const validateQuery = ajv.compile(URLMetadataSchema);
+    if (!validateQuery(request.body)) {
+      response.status(400).send({ errors: validateQuery.errors, type: 'body' });
+      return;
+    }
+
+    const url = new URL(request.body.url);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      response
+        .status(400)
+        .send({ errors: 'Invalid URL protocol', type: 'url' });
+      return;
+    }
+    if (url.hostname === 'localhost') {
+      response
+        .status(400)
+        .send({ errors: 'localhost not allowed', type: 'url' });
+      return;
+    }
+
+    try {
+      const html = await fetch(url, { signal: AbortSignal.timeout(3000) })
+        .then(resp => resp.text())
+        .then(dirty =>
+          sanitizeHtml(dirty, {
+            allowedTags: ['title', 'meta'],
+            allowedAttributes: { meta: ['name', 'content'] },
+          }),
+        );
+
+      const $ = cheerio.load(html);
+      const title = $('title').text() || '';
+      const content = $('meta[name="description"]').attr('content') || '';
+
+      response.json({
+        title,
+        content,
+      });
+    } catch (e) {
+      console.error('Failed to fetch URL:', e);
+      response.status(500).send({ error: 'Failed to fetch URL' });
+    }
   });
 };

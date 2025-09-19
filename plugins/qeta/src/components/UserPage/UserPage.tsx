@@ -6,6 +6,7 @@ import {
   AskQuestionButton,
   ButtonContainer,
   CollectionsGrid,
+  CreateLinkButton,
   PostsContainer,
   PostsGrid,
   qetaTranslationRef,
@@ -30,6 +31,7 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import CollectionsIcon from '@material-ui/icons/Collections';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+import LinkIcon from '@material-ui/icons/Link';
 
 const useStyles = makeStyles(theme => ({
   tabIcon: {
@@ -128,6 +130,7 @@ export const UserPage = () => {
         <ButtonContainer>
           <AskQuestionButton />
           <WriteArticleButton />
+          <CreateLinkButton />
         </ButtonContainer>
       </ContentHeader>
       <TabContext value={tab}>
@@ -167,6 +170,15 @@ export const UserPage = () => {
               }
             />
             <Tab
+              value="links"
+              label={
+                <TabLabel
+                  icon={<LinkIcon className={classes.tabIcon} />}
+                  label={t('userPage.links')}
+                />
+              }
+            />
+            <Tab
               value="collections"
               label={
                 <TabLabel
@@ -200,6 +212,13 @@ export const UserPage = () => {
           <PostsGrid
             author={identity ?? ''}
             type="article"
+            showNoQuestionsBtn={false}
+          />
+        </TabPanel>
+        <TabPanel value="links" className={classes.tabPanel}>
+          <PostsGrid
+            author={identity ?? ''}
+            type="link"
             showNoQuestionsBtn={false}
           />
         </TabPanel>

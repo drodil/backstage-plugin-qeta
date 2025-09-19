@@ -14,8 +14,8 @@ export const registerGetPostsAction = (options: {
     title: 'Get Q&A posts',
     description: `
 This allows you to get Q&A posts from the database with optional filtering. 
-Posts are either questions or articles, both are returned if no type filter exists in the request.
-Each questions can have multiple answers, and each post or answer can have multiple comments.
+Posts are either questions, articles or links, which are all returned if no type filter exists in the request.
+Each question can have multiple answers, and each post or answer can have multiple comments.
 If question has answers, only one answer can be marked as correct.
 Each post can be attached to multiple catalog entities which are referenced by their entity reference.
 Each post can have multiple tags to help with categorization and search.
@@ -40,7 +40,7 @@ Post trend determines the popularity of a post based on views, votes, answers, a
             .optional()
             .describe('Filter posts by author user entity reference'),
           type: z
-            .enum(['question', 'article'])
+            .enum(['question', 'article', 'link'])
             .optional()
             .describe('Filter posts by type'),
           limit: z
@@ -70,7 +70,7 @@ Post trend determines the popularity of a post based on views, votes, answers, a
                 .optional()
                 .describe('Catalog entity references attached to the post'),
               type: z
-                .enum(['question', 'article'])
+                .enum(['question', 'article', 'link'])
                 .describe('The type of the post'),
               title: z.string().describe('The title of the post'),
               content: z

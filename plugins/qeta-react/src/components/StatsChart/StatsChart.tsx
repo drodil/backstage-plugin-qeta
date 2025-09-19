@@ -103,6 +103,7 @@ type StatType = {
     | 'totalUsers'
     | 'totalTags'
     | 'totalArticles'
+    | 'totalLinks'
     | 'totalFollowers';
   name: string;
   color: string;
@@ -182,6 +183,14 @@ const getDefaultStats = (isDark: boolean, t: any): StatType[] => [
     color: isDark ? '#f472b6' : '#be185d', // pink-400 / pink-800
     enabled: true,
     globalStat: false,
+    userStat: true,
+  },
+  {
+    dataKey: 'totalLinks',
+    name: t('stats.totalLinks'),
+    color: isDark ? '#26c6da' : '#00838f', // teal-400 / teal-900
+    enabled: true,
+    globalStat: true,
     userStat: true,
   },
 ];

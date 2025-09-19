@@ -1,5 +1,9 @@
 import { Fragment, ReactNode } from 'react';
-import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
+import {
+  PostsQuery,
+  PostType,
+  selectByPostType,
+} from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { RightList, RightListContainer } from '../Utility/RightList';
@@ -13,7 +17,11 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { articleRouteRef, questionRouteRef } from '../../routes.ts';
+import {
+  articleRouteRef,
+  linkRouteRef,
+  questionRouteRef,
+} from '../../routes.ts';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import numeral from 'numeral';
 
@@ -100,6 +108,7 @@ export const PostHighlightList = (props: {
   const navigate = useNavigate();
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
+  const linkRoute = useRouteRef(linkRouteRef);
 
   const classes = useStyles();
 
@@ -132,7 +141,12 @@ export const PostHighlightList = (props: {
         )}
         {!error &&
           posts.map(q => {
-            const route = q.type === 'question' ? questionRoute : articleRoute;
+            const route = selectByPostType(
+              q.type,
+              questionRoute,
+              articleRoute,
+              linkRoute,
+            );
             const vote = formatShortNumber(q.score);
             let voteBoxClass = classes.voteBox;
             if (q.correctAnswer) {

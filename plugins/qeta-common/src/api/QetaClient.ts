@@ -47,6 +47,8 @@ import {
   TemplateRequest,
   TemplateResponse,
   TemplatesResponse,
+  URLMetadataRequest,
+  URLMetadataResponse,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UsersResponse,
@@ -422,6 +424,13 @@ export class QetaClient implements QetaApi {
     }
 
     return (await response.json()) as EntityResponse;
+  }
+
+  async clickLink(id: number): Promise<void> {
+    if (!id) {
+      throw new QetaError('Invalid id provided', undefined);
+    }
+    await this.fetch(`/posts/${id}/click`, { reqInit: { method: 'PUT' } });
   }
 
   async votePostUp(id: number, requestOptions?: RequestOptions): Promise<Post> {
@@ -1140,6 +1149,7 @@ export class QetaClient implements QetaApi {
         summary: {
           totalAnswers: 0,
           totalArticles: 0,
+          totalLinks: 0,
           totalComments: 0,
           totalQuestions: 0,
           totalTags: 0,
@@ -1167,6 +1177,7 @@ export class QetaClient implements QetaApi {
         summary: {
           totalAnswers: 0,
           totalArticles: 0,
+          totalLinks: 0,
           totalComments: 0,
           totalQuestions: 0,
           totalViews: 0,
@@ -1431,6 +1442,20 @@ export class QetaClient implements QetaApi {
       requestOptions,
     });
     return (await response.json()) as TagSuggestionsResponse;
+  }
+
+  async fetchURLMetadata(
+    request: URLMetadataRequest,
+  ): Promise<URLMetadataResponse> {
+    const response = await this.fetch('/url', {
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify(request),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    });
+
+    return (await response.json()) as URLMetadataResponse;
   }
 
   private async getBaseUrl(): Promise<string> {

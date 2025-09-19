@@ -21,6 +21,7 @@ export interface Stat {
   totalComments: number;
   totalVotes: number;
   totalArticles: number;
+  totalLinks: number;
 }
 
 export interface GlobalStat extends Stat {
@@ -78,7 +79,7 @@ export interface CollectionEntity extends QetaIdEntity {
   experts?: string[];
 }
 
-export type PostType = 'question' | 'article';
+export type PostType = 'question' | 'article' | 'link';
 
 export type PostStatus = 'draft' | 'active' | 'deleted';
 
@@ -96,6 +97,7 @@ export interface Post extends PostAnswerEntity {
   trend?: number;
   type: PostType;
   headerImage?: string;
+  url?: string;
   images?: number[];
   status: PostStatus;
 }
@@ -116,6 +118,10 @@ export interface Question extends Post {
 
 export interface Article extends Post {
   type: 'article';
+}
+
+export interface Link extends Post {
+  type: 'link';
 }
 
 export type AnswerFilter = {
@@ -273,6 +279,7 @@ export interface PostRequest {
   entities?: string[];
   images?: number[];
   headerImage?: string;
+  url?: string;
   type: PostType;
   status?: PostStatus;
 }
@@ -337,6 +344,7 @@ export interface UserResponse {
   totalComments: number;
   totalVotes: number;
   totalArticles: number;
+  totalLinks: number;
 }
 
 export interface UsersResponse {
@@ -415,6 +423,7 @@ export type SuggestionType =
   | 'noCorrectAnswer'
   | 'newQuestion'
   | 'newArticle'
+  | 'newLink'
   | 'draftPost';
 
 export interface Suggestion {
@@ -442,10 +451,24 @@ export interface NewArticleSuggestion extends Suggestion {
   article: Article;
 }
 
+export interface NewLinkSuggestion extends Suggestion {
+  type: 'newLink';
+  link: Link;
+}
+
 export interface SuggestionsResponse {
   suggestions: Suggestion[];
 }
 
 export interface TagSuggestionsResponse {
   tags: string[];
+}
+
+export interface URLMetadataRequest {
+  url: string;
+}
+
+export interface URLMetadataResponse {
+  title?: string;
+  content?: string;
 }

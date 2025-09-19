@@ -7,6 +7,7 @@ import {
   QetaCollectionDocument,
   QetaPostDocument,
   qetaReadPostPermission,
+  selectByPostType,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   AuthService,
@@ -84,9 +85,14 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
       indexedPosts += posts.length;
 
       for (const post of posts) {
-        const postContent = `# ${
-          post.type === 'question' ? 'Question' : 'Article'
-        }: ${post.title}\n\n${post.content}`;
+        const postContent = `# ${selectByPostType(
+          post.type,
+          'Question',
+          'Article',
+          'Link',
+        )}: ${
+          (post.type === 'link' ? `${post.url}\n\n` : '') + post.title
+        }\n\n${post.content}`;
         const answersContent = (post.answers ?? []).map(a => {
           return `## ${a.correct ? 'Correct answer' : 'Answer'} by ${
             a.author
@@ -107,10 +113,12 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
               ? `Comments:\n\n${commentsContent.join('\n\n')}`
               : ''
           }`,
-          location:
-            post.type === 'question'
-              ? `/qeta/questions/${post.id}`
-              : `/qeta/articles/${post.id}`,
+          location: selectByPostType(
+            post.type,
+            `/qeta/questions/${post.id}`,
+            `/qeta/articles/${post.id}`,
+            `/qeta/links/${post.id}`,
+          ),
           docType: 'qeta_post',
           author: post.author,
           created: post.created,

@@ -27,6 +27,7 @@ import {
   PostStatus,
   PostType,
   QetaApi,
+  selectByPostType,
   Template,
 } from '@drodil/backstage-plugin-qeta-common';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
@@ -37,7 +38,7 @@ import { compact } from 'lodash';
 import { TagInput } from './TagInput';
 import { QuestionFormValues } from './types';
 import { EntitiesInput } from './EntitiesInput';
-import { articleRouteRef, questionRouteRef } from '../../routes';
+import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
@@ -124,6 +125,7 @@ const getValues = async (
     entities: 'items' in entities ? compact(entities.items) : [],
     type,
     headerImage: post.headerImage,
+    url: post.url,
     images: post.images ?? [],
     status: post.status,
   };
@@ -134,6 +136,7 @@ export const PostForm = (props: PostFormProps) => {
     props;
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
+  const linkRoute = useRouteRef(linkRouteRef);
   const navigate = useNavigate();
   const analytics = useAnalytics();
   const [entityRef, setEntityRef] = useState(entity);
@@ -150,6 +153,9 @@ export const PostForm = (props: PostFormProps) => {
   const [images, setImages] = useState<number[]>([]);
   const [status, setStatus] = useState<PostStatus>('draft');
   const [searchParams, _setSearchParams] = useSearchParams();
+  const [urlToCheck, setUrlToCheck] = useState('');
+  const validUrl = /^https?:\/\/\S+$/;
+  const [favicon, setFavicon] = useState<boolean>(false);
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const qetaApi = useApi(qetaApiRef);
@@ -159,6 +165,8 @@ export const PostForm = (props: PostFormProps) => {
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const minEntities = configApi.getOptionalNumber('qeta.entities.min') ?? 0;
   const minTags = configApi.getOptionalNumber('qeta.tags.min') ?? 0;
+
+  const isLink = type === 'link';
 
   const {
     handleSubmit,
@@ -175,7 +183,12 @@ export const PostForm = (props: PostFormProps) => {
   const postQuestion = useCallback(
     (data: QuestionFormValues, autoSave: boolean = false) => {
       setPosting(true);
-      const route = type === 'question' ? questionRoute : articleRoute;
+      const route = selectByPostType(
+        type,
+        questionRoute,
+        articleRoute,
+        linkRoute,
+      );
 
       const queryParams = new URLSearchParams();
       if (entity) {
@@ -283,6 +296,7 @@ export const PostForm = (props: PostFormProps) => {
       type,
       questionRoute,
       articleRoute,
+      linkRoute,
       entity,
       entityPage,
       draftId,
@@ -370,6 +384,47 @@ export const PostForm = (props: PostFormProps) => {
     setTitleCharCount(e.target.value.length);
     setValue('title', e.target.value, { shouldValidate: true });
   };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFavicon(false);
+    setValue('url', e.target.value, { shouldValidate: true });
+  };
+
+  const validateUrl = (value?: string) => {
+    if (value === '') {
+      setFavicon(false);
+      return false;
+    } else if (!value || !validUrl.test(value)) {
+      setFavicon(false);
+      return t('postForm.urlInput.invalid');
+    }
+
+    setUrlToCheck(value);
+    return true;
+  };
+
+  useDebounce(
+    () => {
+      if (!urlToCheck.length || !validUrl.test(urlToCheck)) {
+        return;
+      }
+
+      // some valid urls are not reachable => no error checking
+      qetaApi.fetchURLMetadata({ url: urlToCheck }).then(response => {
+        setFavicon(true);
+
+        if (control._formValues.title === '') {
+          setValue('title', response.title ?? '', { shouldValidate: true });
+        }
+
+        if (control._formValues.content === '') {
+          setValue('content', response.content ?? '', { shouldValidate: true });
+        }
+      });
+    },
+    400,
+    [urlToCheck],
+  );
 
   const autoSavePost = useCallback(() => {
     if (autoSaveEnabled && edited && isValid && !posting) {
@@ -459,6 +514,56 @@ export const PostForm = (props: PostFormProps) => {
           name="headerImage"
         />
       )}
+      {isLink && (
+        <Box mb={2} display="flex" alignItems="center" style={{ gap: 8 }}>
+          {favicon && (
+            <img
+              src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(
+                urlToCheck,
+              )}&sz=16`}
+              alt="Favicon"
+              style={{
+                width: 16,
+                height: 16,
+                marginRight: 4,
+                marginBottom: 16,
+              }}
+              onError={e => (e.currentTarget.style.display = 'none')}
+            />
+          )}
+          <Controller
+            name="url"
+            control={control}
+            rules={{
+              required: true,
+              validate: validateUrl,
+            }}
+            render={() => (
+              <TextField
+                label={t('postForm.urlInput.label')}
+                className="qetaAskFormTitle"
+                required
+                fullWidth
+                error={!!errors.url}
+                margin="normal"
+                variant="outlined"
+                name="url"
+                helperText={
+                  errors.url?.message || (
+                    <span>{t('postForm.urlInput.helperText')}</span>
+                  )
+                }
+                placeholder={t('postForm.urlInput.placeholder')}
+                FormHelperTextProps={{
+                  style: { marginLeft: '0.2em' },
+                }}
+                value={control._formValues.url ?? ''}
+                onChange={handleUrlChange}
+              />
+            )}
+          />
+        </Box>
+      )}
       <Box mb={2}>
         <TextField
           label={t('postForm.titleInput.label')}
@@ -475,7 +580,11 @@ export const PostForm = (props: PostFormProps) => {
               <span style={{ float: 'right' }}>{titleCharCount}/255</span>
             </span>
           }
-          placeholder={t('postForm.titleInput.placeholder')}
+          placeholder={t(
+            isLink
+              ? 'postForm.titleInput.placeholder_link'
+              : 'postForm.titleInput.placeholder',
+          )}
           FormHelperTextProps={{
             style: { marginLeft: '0.2em' },
           }}
@@ -517,20 +626,24 @@ export const PostForm = (props: PostFormProps) => {
         <Box mb={2} p={2}>
           <Typography variant="body2">
             <ul style={{ margin: 0, paddingLeft: 20 }}>
-              {type === 'article' ? (
-                <>
-                  <li>{t('postForm.tips_article_1')}</li>
-                  <li>{t('postForm.tips_article_2')}</li>
-                  <li>{t('postForm.tips_article_3')}</li>
-                  <li>{t('postForm.tips_article_4')}</li>
-                </>
-              ) : (
+              {selectByPostType(
+                type,
                 <>
                   <li>{t('postForm.tips_question_1')}</li>
                   <li>{t('postForm.tips_question_2')}</li>
                   <li>{t('postForm.tips_question_3')}</li>
                   <li>{t('postForm.tips_question_4')}</li>
-                </>
+                </>,
+                <>
+                  <li>{t('postForm.tips_article_1')}</li>
+                  <li>{t('postForm.tips_article_2')}</li>
+                  <li>{t('postForm.tips_article_3')}</li>
+                  <li>{t('postForm.tips_article_4')}</li>
+                </>,
+                <>
+                  <li>{t('postForm.tips_link_1')}</li>
+                  <li>{t('postForm.tips_link_2')}</li>
+                </>,
               )}
             </ul>
           </Typography>
@@ -539,19 +652,21 @@ export const PostForm = (props: PostFormProps) => {
       <Controller
         control={control}
         rules={{
-          required: true,
+          required: !isLink,
         }}
         render={({ field: { onChange, value } }) => (
           <MarkdownEditor
+            required={!isLink}
             value={value}
             onChange={onChange}
-            height={400}
+            height={!isLink ? 400 : 150}
             error={'content' in errors}
-            placeholder={
-              type === 'article'
-                ? t('postForm.contentInput.placeholder_article')
-                : t('postForm.contentInput.placeholder_question')
-            }
+            placeholder={selectByPostType(
+              type,
+              t('postForm.contentInput.placeholder_question'),
+              t('postForm.contentInput.placeholder_article'),
+              t('postForm.contentInput.placeholder_link'),
+            )}
             onImageUpload={onImageUpload}
             postId={id ? Number(id) : undefined}
             onTagsChange={tags => {
