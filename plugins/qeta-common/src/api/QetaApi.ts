@@ -10,6 +10,7 @@ import {
   CollectionResponse,
   CollectionsResponse,
   EntitiesResponse,
+  EntityLinks,
   EntityResponse,
   GlobalStat,
   ImpactResponse,
@@ -522,4 +523,6 @@ export interface QetaApi {
   ): Promise<TagSuggestionsResponse>;
 
   fetchURLMetadata(request: URLMetadataRequest): Promise<URLMetadataResponse>;
+
+  getEntityLinks(options?: RequestOptions): Promise<EntityLinks[]>;
 }

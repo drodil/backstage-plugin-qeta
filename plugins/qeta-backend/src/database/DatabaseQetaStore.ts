@@ -36,6 +36,7 @@ import {
   CollectionsQuery,
   Comment,
   EntitiesQuery,
+  EntityLinks,
   filterTags,
   GlobalStat,
   Post,
@@ -66,6 +67,7 @@ import {
 import { compact } from 'lodash';
 import { TAGS } from '../tagDb';
 import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
+import { EntityLink } from '@backstage/catalog-model';
 
 const migrationsDir = resolvePackagePath(
   '@drodil/backstage-plugin-qeta-backend',
@@ -88,9 +90,9 @@ export type RawPostEntity = {
   favorite: number | string;
   trend: number | string;
   anonymous: boolean;
-  type: 'question';
+  type: 'question' | 'article' | 'link';
   headerImage: string;
-  url: string;
+  url: string | null;
 };
 
 export type RawCollectionEntity = {
@@ -2465,6 +2467,38 @@ export class DatabaseQetaStore implements QetaStore {
       .where('collectionId', collectionId)
       .where('postId', postId)
       .update({ rank });
+  }
+
+  async getEntityLinks(): Promise<EntityLinks[]> {
+    const rows = await this.db('post_entities')
+      .leftJoin('entities', 'post_entities.entityId', 'entities.id')
+      .leftJoin('posts', 'post_entities.postId', 'posts.id')
+      .whereNotNull('posts.url')
+      .where('posts.status', 'active')
+      .where('posts.type', 'link')
+      .whereNotNull('entities.entity_ref')
+      .select('entities.entity_ref as entityRef', 'posts.title', 'posts.url');
+
+    const entityLinksMap = new Map<string, EntityLink[]>();
+
+    for (const row of rows) {
+      const entityRef = row.entityRef;
+      const link: EntityLink = {
+        title: row.title,
+        url: row.url,
+      };
+
+      if (!entityLinksMap.has(entityRef)) {
+        entityLinksMap.set(entityRef, []);
+      }
+      entityLinksMap.get(entityRef)!.push(link);
+    }
+
+    // Convert map to array format
+    return Array.from(entityLinksMap.entries()).map(([entityRef, links]) => ({
+      entityRef,
+      links,
+    }));
   }
 
   private async getTagExpertsById(id: number) {

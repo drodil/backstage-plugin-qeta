@@ -552,4 +552,149 @@ describe('QetaClient', () => {
       expect(result).toEqual({ templates: [], total: 0 });
     });
   });
+
+  describe('getEntityLinks', () => {
+    it('should fetch entity links successfully', async () => {
+      const mockEntityLinks = [
+        {
+          entityRef: 'component:default/my-service',
+          links: [
+            {
+              url: 'https://example.com/docs',
+              title: 'Documentation',
+              icon: 'docs',
+              type: 'docs',
+            },
+            {
+              url: 'https://github.com/example/repo',
+              title: 'Source',
+              icon: 'github',
+              type: 'repo',
+            },
+          ],
+        },
+        {
+          entityRef: 'api:default/my-api',
+          links: [
+            {
+              url: 'https://api.example.com',
+              title: 'API Endpoint',
+              icon: 'api',
+              type: 'api',
+            },
+          ],
+        },
+      ];
+
+      const mockResponse = {
+        status: 200,
+        json: jest.fn().mockResolvedValue(mockEntityLinks),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getEntityLinks();
+
+      expect(result).toEqual(mockEntityLinks);
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://example.com/entities/links',
+        {
+          method: 'GET',
+        },
+      );
+    });
+
+    it('should fetch entity links with custom token', async () => {
+      const mockEntityLinks = [
+        {
+          entityRef: 'component:default/my-service',
+          links: [
+            {
+              url: 'https://example.com/docs',
+              title: 'Documentation',
+              icon: 'docs',
+              type: 'docs',
+            },
+          ],
+        },
+      ];
+
+      const mockResponse = {
+        status: 200,
+        json: jest.fn().mockResolvedValue(mockEntityLinks),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getEntityLinks({ token: 'custom-token' });
+
+      expect(result).toEqual(mockEntityLinks);
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://example.com/entities/links',
+        {
+          method: 'GET',
+          headers: {
+            Authorization: 'Bearer custom-token',
+          },
+        },
+      );
+    });
+
+    it('should return empty array when response status is 403 (forbidden)', async () => {
+      const mockResponse = {
+        status: 403,
+        json: jest.fn(),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getEntityLinks();
+
+      expect(result).toEqual([]);
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://example.com/entities/links',
+        {
+          method: 'GET',
+        },
+      );
+      expect(mockResponse.json).not.toHaveBeenCalled();
+    });
+
+    it('should return empty array for empty response', async () => {
+      const mockResponse = {
+        status: 200,
+        json: jest.fn().mockResolvedValue([]),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      const result = await client.getEntityLinks();
+
+      expect(result).toEqual([]);
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://example.com/entities/links',
+        {
+          method: 'GET',
+        },
+      );
+    });
+
+    it('should handle network errors', async () => {
+      mockFetch.mockRejectedValue(new Error('Network error'));
+
+      await expect(client.getEntityLinks()).rejects.toThrow('Network error');
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://example.com/entities/links',
+        {
+          method: 'GET',
+        },
+      );
+    });
+
+    it('should handle invalid JSON response', async () => {
+      const mockResponse = {
+        status: 200,
+        json: jest.fn().mockRejectedValue(new Error('Invalid JSON')),
+      };
+      mockFetch.mockResolvedValue(mockResponse);
+
+      await expect(client.getEntityLinks()).rejects.toThrow('Invalid JSON');
+    });
+  });
 });

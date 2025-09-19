@@ -448,6 +448,19 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     response.json(tags);
   });
 
+  router.get('/entities/links', async (request, response) => {
+    const credentials = await httpAuth.credentials(request, {
+      allow: ['service'],
+    });
+    if (!credentials) {
+      response.sendStatus(401);
+      return;
+    }
+
+    const links = await database.getEntityLinks();
+    response.json(links);
+  });
+
   router.put('/entities/follow/:entityRef(*)', async (request, response) => {
     const { entityRef } = request.params;
     validateEntityRef(entityRef);

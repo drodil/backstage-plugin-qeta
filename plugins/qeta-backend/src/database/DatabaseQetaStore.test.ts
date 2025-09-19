@@ -99,6 +99,8 @@ describe.each(databases.eachSupportedId())(
       await knex('tags').del();
       await knex('comments').del();
       await knex('user_tags').del();
+      await knex('post_entities').del();
+      await knex('entities').del();
     });
 
     describe('posts and answers database', () => {
@@ -669,6 +671,295 @@ describe.each(databases.eachSupportedId())(
         const votes2 = await getVotes(user_ref, postId2);
         expect(votes2.length).toBe(1);
         expect(votes2[0].score).toBe(1);
+      });
+    });
+
+    describe('getEntityLinks', () => {
+      const insertEntity = async (entityRef: string) => {
+        const result = await knex('entities')
+          .insert({ entity_ref: entityRef })
+          .returning('id');
+        return result[0].id;
+      };
+
+      const insertPostEntity = async (postId: number, entityId: number) => {
+        await knex('post_entities').insert({ postId, entityId });
+      };
+
+      it('should return empty array when no entity links exist', async () => {
+        const result = await storage.getEntityLinks();
+        expect(result).toEqual([]);
+      });
+
+      it('should return entity links for link posts', async () => {
+        // Insert entities with unique references
+        const entity1Id = await insertEntity(
+          'component:default/links-service1',
+        );
+        const entity2Id = await insertEntity(
+          'component:default/links-service2',
+        );
+
+        // Insert link posts
+        const linkPost1 = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'Documentation Link',
+          url: 'https://example.com/docs',
+          status: 'active',
+        });
+
+        const linkPost2 = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'GitHub Repository',
+          url: 'https://github.com/example/repo',
+          status: 'active',
+        });
+
+        const linkPost3 = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'API Endpoint',
+          url: 'https://api.example.com',
+          status: 'active',
+        });
+
+        // Connect posts to entities
+        await insertPostEntity(linkPost1, entity1Id);
+        await insertPostEntity(linkPost2, entity1Id);
+        await insertPostEntity(linkPost3, entity2Id);
+
+        const result = await storage.getEntityLinks();
+
+        expect(result).toHaveLength(2);
+
+        const service1Links = result.find(
+          r => r.entityRef === 'component:default/links-service1',
+        );
+        expect(service1Links).toBeDefined();
+        expect(service1Links?.links).toHaveLength(2);
+        expect(service1Links?.links).toEqual(
+          expect.arrayContaining([
+            { title: 'Documentation Link', url: 'https://example.com/docs' },
+            {
+              title: 'GitHub Repository',
+              url: 'https://github.com/example/repo',
+            },
+          ]),
+        );
+
+        const service2Links = result.find(
+          r => r.entityRef === 'component:default/links-service2',
+        );
+        expect(service2Links).toBeDefined();
+        expect(service2Links?.links).toHaveLength(1);
+        expect(service2Links?.links).toEqual([
+          { title: 'API Endpoint', url: 'https://api.example.com' },
+        ]);
+      });
+
+      it('should exclude inactive posts', async () => {
+        const entityId = await insertEntity('component:default/inactive-test');
+
+        // Insert active link post
+        const activeLinkPost = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'Active Link',
+          url: 'https://example.com/active',
+          status: 'active',
+        });
+
+        // Insert inactive link post
+        const inactiveLinkPost = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'Inactive Link',
+          url: 'https://example.com/inactive',
+          status: 'inactive',
+        });
+
+        await insertPostEntity(activeLinkPost, entityId);
+        await insertPostEntity(inactiveLinkPost, entityId);
+
+        const result = await storage.getEntityLinks();
+
+        expect(result).toHaveLength(1);
+        expect(result[0].entityRef).toBe('component:default/inactive-test');
+        expect(result[0].links).toHaveLength(1);
+        expect(result[0].links[0]).toEqual({
+          title: 'Active Link',
+          url: 'https://example.com/active',
+        });
+      });
+
+      it('should exclude non-link posts', async () => {
+        const entityId = await insertEntity('component:default/non-link-test');
+
+        // Insert question post
+        const questionPost = await insertPost({
+          ...post,
+          type: 'question' as const,
+          title: 'Question Post',
+          url: 'https://example.com/question',
+          status: 'active',
+        });
+
+        // Insert link post
+        const linkPost = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'Link Post',
+          url: 'https://example.com/link',
+          status: 'active',
+        });
+
+        await insertPostEntity(questionPost, entityId);
+        await insertPostEntity(linkPost, entityId);
+
+        const result = await storage.getEntityLinks();
+
+        expect(result).toHaveLength(1);
+        expect(result[0].entityRef).toBe('component:default/non-link-test');
+        expect(result[0].links).toHaveLength(1);
+        expect(result[0].links[0]).toEqual({
+          title: 'Link Post',
+          url: 'https://example.com/link',
+        });
+      });
+
+      it('should exclude posts without URLs', async () => {
+        const entityId = await insertEntity('component:default/no-url-test');
+
+        // Insert link post without URL
+        const linkPostNoUrl = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'Link Without URL',
+          url: null,
+          status: 'active',
+        });
+
+        // Insert link post with URL
+        const linkPostWithUrl = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'Link With URL',
+          url: 'https://example.com/link',
+          status: 'active',
+        });
+
+        await insertPostEntity(linkPostNoUrl, entityId);
+        await insertPostEntity(linkPostWithUrl, entityId);
+
+        const result = await storage.getEntityLinks();
+
+        expect(result).toHaveLength(1);
+        expect(result[0].entityRef).toBe('component:default/no-url-test');
+        expect(result[0].links).toHaveLength(1);
+        expect(result[0].links[0]).toEqual({
+          title: 'Link With URL',
+          url: 'https://example.com/link',
+        });
+      });
+
+      it('should handle multiple links for the same entity', async () => {
+        const entityId = await insertEntity(
+          'component:default/multi-links-service',
+        );
+
+        // Insert multiple link posts for the same entity
+        const linkPost1 = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'Documentation',
+          url: 'https://example.com/docs',
+          status: 'active',
+        });
+
+        const linkPost2 = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'Source Code',
+          url: 'https://github.com/example/repo',
+          status: 'active',
+        });
+
+        const linkPost3 = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'API Reference',
+          url: 'https://api.example.com/reference',
+          status: 'active',
+        });
+
+        await insertPostEntity(linkPost1, entityId);
+        await insertPostEntity(linkPost2, entityId);
+        await insertPostEntity(linkPost3, entityId);
+
+        const result = await storage.getEntityLinks();
+
+        expect(result).toHaveLength(1);
+        expect(result[0].entityRef).toBe(
+          'component:default/multi-links-service',
+        );
+        expect(result[0].links).toHaveLength(3);
+        expect(result[0].links).toEqual(
+          expect.arrayContaining([
+            { title: 'Documentation', url: 'https://example.com/docs' },
+            { title: 'Source Code', url: 'https://github.com/example/repo' },
+            {
+              title: 'API Reference',
+              url: 'https://api.example.com/reference',
+            },
+          ]),
+        );
+      });
+
+      it('should return results in database query order', async () => {
+        // Insert entities in reverse alphabetical order
+        const entity1Id = await insertEntity('system:default/z-system');
+        const entity2Id = await insertEntity('component:default/a-component');
+        const entity3Id = await insertEntity('component:default/m-component');
+
+        // Insert link posts
+        const linkPost1 = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'Z System Link',
+          url: 'https://example.com/z',
+          status: 'active',
+        });
+
+        const linkPost2 = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'A Component Link',
+          url: 'https://example.com/a',
+          status: 'active',
+        });
+
+        const linkPost3 = await insertPost({
+          ...post,
+          type: 'link' as const,
+          title: 'M Component Link',
+          url: 'https://example.com/m',
+          status: 'active',
+        });
+
+        await insertPostEntity(linkPost1, entity1Id);
+        await insertPostEntity(linkPost2, entity2Id);
+        await insertPostEntity(linkPost3, entity3Id);
+
+        const result = await storage.getEntityLinks();
+
+        expect(result).toHaveLength(3);
+        // Results should be in the order they appear in the database query
+        const entityRefs = result.map(r => r.entityRef);
+        expect(entityRefs).toContain('system:default/z-system');
+        expect(entityRefs).toContain('component:default/a-component');
+        expect(entityRefs).toContain('component:default/m-component');
       });
     });
   },

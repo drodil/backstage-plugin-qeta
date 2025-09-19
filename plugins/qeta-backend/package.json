@@ -99,6 +99,7 @@
     "@backstage/plugin-search-backend": "backstage:^",
     "@backstage/plugin-search-backend-module-pg": "backstage:^",
     "@backstage/plugin-signals-backend": "backstage:^",
+    "@drodil/backstage-plugin-catalog-backend-module-qeta": "workspace:^",
     "@drodil/backstage-plugin-qeta-backend-module-openai": "workspace:^",
     "@drodil/backstage-plugin-search-backend-module-qeta": "workspace:^",
     "@types/sanitize-html": "^2.9.5",

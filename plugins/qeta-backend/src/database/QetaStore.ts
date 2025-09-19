@@ -7,6 +7,7 @@ import {
   CollectionsQuery,
   Comment,
   EntitiesQuery,
+  EntityLinks,
   GlobalStat,
   Post,
   PostsQuery,
@@ -621,4 +622,5 @@ export interface QetaStore {
     postId: number,
     rank: number,
   ): Promise<void>;
+  getEntityLinks(): Promise<EntityLinks[]>;
 }

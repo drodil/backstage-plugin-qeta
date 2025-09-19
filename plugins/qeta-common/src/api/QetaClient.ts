@@ -27,6 +27,7 @@ import {
   CollectionsResponse,
   CollectionsResponseBody,
   EntitiesResponse,
+  EntityLinks,
   EntityResponse,
   GlobalStat,
   ImpactResponse,
@@ -1456,6 +1457,16 @@ export class QetaClient implements QetaApi {
     });
 
     return (await response.json()) as URLMetadataResponse;
+  }
+
+  async getEntityLinks(options?: RequestOptions): Promise<EntityLinks[]> {
+    const response = await this.fetch('/entities/links', {
+      requestOptions: options,
+    });
+    if (response.status === 403) {
+      return [];
+    }
+    return (await response.json()) as EntityLinks[];
   }
 
   private async getBaseUrl(): Promise<string> {

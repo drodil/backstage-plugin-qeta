@@ -64,10 +64,9 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { qetaPlugin } from '@drodil/backstage-plugin-qeta-backend';
   const backend = createBackend();
   // ... other feature additions
-+ backend.add(qetaPlugin());
++ backend.add(import('@drodil/backstage-plugin-qeta-backend'));
   backend.start();
 ```
 

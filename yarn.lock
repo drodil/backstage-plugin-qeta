@@ -3419,6 +3419,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@drodil/backstage-plugin-catalog-backend-module-qeta@workspace:^, @drodil/backstage-plugin-catalog-backend-module-qeta@workspace:plugins/catalog-backend-module-qeta":
+  version: 0.0.0-use.local
+  resolution: "@drodil/backstage-plugin-catalog-backend-module-qeta@workspace:plugins/catalog-backend-module-qeta"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.4.3"
+    "@backstage/backend-test-utils": "npm:^1.9.0"
+    "@backstage/catalog-model": "backstage:^"
+    "@backstage/cli": "npm:^0.34.2"
+    "@backstage/plugin-catalog-node": "backstage:^"
+    "@drodil/backstage-plugin-qeta-common": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@drodil/backstage-plugin-qeta-backend-module-openai@workspace:^, @drodil/backstage-plugin-qeta-backend-module-openai@workspace:plugins/qeta-backend-module-openai":
   version: 0.0.0-use.local
   resolution: "@drodil/backstage-plugin-qeta-backend-module-openai@workspace:plugins/qeta-backend-module-openai"
@@ -3466,6 +3479,7 @@ __metadata:
     "@backstage/plugin-signals-backend": "backstage:^"
     "@backstage/plugin-signals-node": "backstage:^"
     "@backstage/types": "backstage:^"
+    "@drodil/backstage-plugin-catalog-backend-module-qeta": "workspace:^"
     "@drodil/backstage-plugin-qeta-backend-module-openai": "workspace:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@drodil/backstage-plugin-qeta-node": "workspace:^"
