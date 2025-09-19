@@ -2799,7 +2799,7 @@ export class DatabaseQetaStore implements QetaStore {
       anonymous: val.anonymous,
       type: val.type,
       headerImage: val.headerImage,
-      url: val.url,
+      url: val.url ?? undefined,
       images: additionalInfo[5]?.map(r => r.id),
       experts: additionalInfo[6],
     };
