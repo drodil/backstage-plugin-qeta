@@ -542,7 +542,7 @@ describe.each(databases.eachSupportedId())(
           type: 'question',
         });
         expect(nonLinkPost.type).toBe('question');
-        expect(nonLinkPost.url).toBeNull();
+        expect(nonLinkPost.url).toBeUndefined();
       });
 
       it('should delete link posts properly', async () => {
