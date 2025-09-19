@@ -1536,7 +1536,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/backend-defaults@backstage:^::backstage=1.43.0&npm=0.12.1, @backstage/backend-defaults@npm:^0.12.1":
+"@backstage/backend-defaults@backstage:^::backstage=1.43.1&npm=0.12.1, @backstage/backend-defaults@npm:^0.12.1":
   version: 0.12.1
   resolution: "@backstage/backend-defaults@npm:0.12.1"
   dependencies:
@@ -1651,7 +1651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/backend-plugin-api@backstage:^::backstage=1.43.0&npm=1.4.3, @backstage/backend-plugin-api@npm:^1.4.3":
+"@backstage/backend-plugin-api@backstage:^::backstage=1.43.1&npm=1.4.3, @backstage/backend-plugin-api@npm:^1.4.3":
   version: 1.4.3
   resolution: "@backstage/backend-plugin-api@npm:1.4.3"
   dependencies:
@@ -1673,7 +1673,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/backend-test-utils@backstage:^::backstage=1.43.0&npm=1.9.0, @backstage/backend-test-utils@npm:^1.9.0":
+"@backstage/backend-test-utils@backstage:^::backstage=1.43.1&npm=1.9.0, @backstage/backend-test-utils@npm:^1.9.0":
   version: 1.9.0
   resolution: "@backstage/backend-test-utils@npm:1.9.0"
   dependencies:
@@ -1713,7 +1713,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/catalog-client@backstage:^::backstage=1.43.0&npm=1.12.0, @backstage/catalog-client@npm:^1.12.0":
+"@backstage/catalog-client@backstage:^::backstage=1.43.1&npm=1.12.0, @backstage/catalog-client@npm:^1.12.0":
   version: 1.12.0
   resolution: "@backstage/catalog-client@npm:1.12.0"
   dependencies:
@@ -1725,7 +1725,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/catalog-model@backstage:^::backstage=1.43.0&npm=1.7.5, @backstage/catalog-model@npm:^1.7.5":
+"@backstage/catalog-model@backstage:^::backstage=1.43.1&npm=1.7.5, @backstage/catalog-model@npm:^1.7.5":
   version: 1.7.5
   resolution: "@backstage/catalog-model@npm:1.7.5"
   dependencies:
@@ -1760,9 +1760,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/cli@backstage:^::backstage=1.43.0&npm=0.34.2, @backstage/cli@npm:^0.34.2":
-  version: 0.34.2
-  resolution: "@backstage/cli@npm:0.34.2"
+"@backstage/cli@backstage:^::backstage=1.43.1&npm=0.34.3, @backstage/cli@npm:^0.34.3":
+  version: 0.34.3
+  resolution: "@backstage/cli@npm:0.34.3"
   dependencies:
     "@backstage/catalog-model": "npm:^1.7.5"
     "@backstage/cli-common": "npm:^0.1.15"
@@ -1900,7 +1900,7 @@ __metadata:
       optional: true
   bin:
     backstage-cli: bin/backstage-cli
-  checksum: 10c0/18d1954065c4812e99bd3c7b667dfdaca15cbd7562b48b0dcd96da05b6f3b4bc9aa1ceb4f15d6795d9f0c3b5cbea6ec12cdd30e43b6839dc338b46330316b69f
+  checksum: 10c0/6fb0441f9c49003b3816b6b4c4e3c010711c63c3ccea87d249cc8e3943c4ff6e2fd58d936a2b8e2236d965b080b75017eb575f512dda217f6952b7775e066e99
   languageName: node
   linkType: hard
 
@@ -1927,7 +1927,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/config@backstage:^::backstage=1.43.0&npm=1.3.3, @backstage/config@npm:^1.3.3":
+"@backstage/config@backstage:^::backstage=1.43.1&npm=1.3.3, @backstage/config@npm:^1.3.3":
   version: 1.3.3
   resolution: "@backstage/config@npm:1.3.3"
   dependencies:
@@ -1966,7 +1966,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-compat-api@backstage:^::backstage=1.43.0&npm=0.5.2, @backstage/core-compat-api@npm:^0.5.2":
+"@backstage/core-compat-api@backstage:^::backstage=1.43.1&npm=0.5.2, @backstage/core-compat-api@npm:^0.5.2":
   version: 0.5.2
   resolution: "@backstage/core-compat-api@npm:0.5.2"
   dependencies:
@@ -1987,7 +1987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-components@backstage:^::backstage=1.43.0&npm=0.18.0, @backstage/core-components@npm:^0.18.0":
+"@backstage/core-components@backstage:^::backstage=1.43.1&npm=0.18.0, @backstage/core-components@npm:^0.18.0":
   version: 0.18.0
   resolution: "@backstage/core-components@npm:0.18.0"
   dependencies:
@@ -2042,7 +2042,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-plugin-api@backstage:^::backstage=1.43.0&npm=1.11.0, @backstage/core-plugin-api@npm:^1.10.9, @backstage/core-plugin-api@npm:^1.11.0":
+"@backstage/core-plugin-api@backstage:^::backstage=1.43.1&npm=1.11.0, @backstage/core-plugin-api@npm:^1.10.9, @backstage/core-plugin-api@npm:^1.11.0":
   version: 1.11.0
   resolution: "@backstage/core-plugin-api@npm:1.11.0"
   dependencies:
@@ -2063,7 +2063,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/dev-utils@backstage:^::backstage=1.43.0&npm=1.1.14, @backstage/dev-utils@npm:^1.1.14":
+"@backstage/dev-utils@backstage:^::backstage=1.43.1&npm=1.1.14, @backstage/dev-utils@npm:^1.1.14":
   version: 1.1.14
   resolution: "@backstage/dev-utils@npm:1.1.14"
   dependencies:
@@ -2090,7 +2090,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/errors@backstage:^::backstage=1.43.0&npm=1.2.7, @backstage/errors@npm:^1.2.7":
+"@backstage/errors@backstage:^::backstage=1.43.1&npm=1.2.7, @backstage/errors@npm:^1.2.7":
   version: 1.2.7
   resolution: "@backstage/errors@npm:1.2.7"
   dependencies:
@@ -2159,7 +2159,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/frontend-plugin-api@backstage:^::backstage=1.43.0&npm=0.12.0, @backstage/frontend-plugin-api@npm:^0.12.0":
+"@backstage/frontend-plugin-api@backstage:^::backstage=1.43.1&npm=0.12.0, @backstage/frontend-plugin-api@npm:^0.12.0":
   version: 0.12.0
   resolution: "@backstage/frontend-plugin-api@npm:0.12.0"
   dependencies:
@@ -2292,7 +2292,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-auth-backend-module-guest-provider@backstage:^::backstage=1.43.0&npm=0.2.12, @backstage/plugin-auth-backend-module-guest-provider@npm:^0.2.12":
+"@backstage/plugin-auth-backend-module-guest-provider@backstage:^::backstage=1.43.1&npm=0.2.12, @backstage/plugin-auth-backend-module-guest-provider@npm:^0.2.12":
   version: 0.2.12
   resolution: "@backstage/plugin-auth-backend-module-guest-provider@npm:0.2.12"
   dependencies:
@@ -2305,7 +2305,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-auth-backend@backstage:^::backstage=1.43.0&npm=0.25.4, @backstage/plugin-auth-backend@npm:^0.25.4":
+"@backstage/plugin-auth-backend@backstage:^::backstage=1.43.1&npm=0.25.4, @backstage/plugin-auth-backend@npm:^0.25.4":
   version: 0.25.4
   resolution: "@backstage/plugin-auth-backend@npm:0.25.4"
   dependencies:
@@ -2334,7 +2334,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-auth-node@backstage:^::backstage=1.43.0&npm=0.6.7, @backstage/plugin-auth-node@npm:^0.6.7":
+"@backstage/plugin-auth-node@backstage:^::backstage=1.43.1&npm=0.6.7, @backstage/plugin-auth-node@npm:^0.6.7":
   version: 0.6.7
   resolution: "@backstage/plugin-auth-node@npm:0.6.7"
   dependencies:
@@ -2357,7 +2357,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-catalog-backend@backstage:^::backstage=1.43.0&npm=3.1.0, @backstage/plugin-catalog-backend@npm:^3.1.0":
+"@backstage/plugin-catalog-backend@backstage:^::backstage=1.43.1&npm=3.1.0, @backstage/plugin-catalog-backend@npm:^3.1.0":
   version: 3.1.0
   resolution: "@backstage/plugin-catalog-backend@npm:3.1.0"
   dependencies:
@@ -2407,7 +2407,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-catalog-node@backstage:^::backstage=1.43.0&npm=1.19.0, @backstage/plugin-catalog-node@npm:^1.19.0":
+"@backstage/plugin-catalog-node@backstage:^::backstage=1.43.1&npm=1.19.0, @backstage/plugin-catalog-node@npm:^1.19.0":
   version: 1.19.0
   resolution: "@backstage/plugin-catalog-node@npm:1.19.0"
   dependencies:
@@ -2425,7 +2425,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-catalog-react@backstage:^::backstage=1.43.0&npm=1.21.0, @backstage/plugin-catalog-react@npm:^1.21.0":
+"@backstage/plugin-catalog-react@backstage:^::backstage=1.43.1&npm=1.21.0, @backstage/plugin-catalog-react@npm:^1.21.0":
   version: 1.21.0
   resolution: "@backstage/plugin-catalog-react@npm:1.21.0"
   dependencies:
@@ -2466,7 +2466,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-catalog@backstage:^::backstage=1.43.0&npm=1.31.3, @backstage/plugin-catalog@npm:^1.31.3":
+"@backstage/plugin-catalog@backstage:^::backstage=1.43.1&npm=1.31.3, @backstage/plugin-catalog@npm:^1.31.3":
   version: 1.31.3
   resolution: "@backstage/plugin-catalog@npm:1.31.3"
   dependencies:
@@ -2512,7 +2512,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-events-backend@backstage:^::backstage=1.43.0&npm=0.5.6, @backstage/plugin-events-backend@npm:^0.5.6":
+"@backstage/plugin-events-backend@backstage:^::backstage=1.43.1&npm=0.5.6, @backstage/plugin-events-backend@npm:^0.5.6":
   version: 0.5.6
   resolution: "@backstage/plugin-events-backend@npm:0.5.6"
   dependencies:
@@ -2531,7 +2531,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-events-node@backstage:^::backstage=1.43.0&npm=0.4.15, @backstage/plugin-events-node@npm:^0.4.15":
+"@backstage/plugin-events-node@backstage:^::backstage=1.43.1&npm=0.4.15, @backstage/plugin-events-node@npm:^0.4.15":
   version: 0.4.15
   resolution: "@backstage/plugin-events-node@npm:0.4.15"
   dependencies:
@@ -2548,7 +2548,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-home-react@backstage:^::backstage=1.43.0&npm=0.1.30, @backstage/plugin-home-react@npm:^0.1.30":
+"@backstage/plugin-home-react@backstage:^::backstage=1.43.1&npm=0.1.30, @backstage/plugin-home-react@npm:^0.1.30":
   version: 0.1.30
   resolution: "@backstage/plugin-home-react@npm:0.1.30"
   dependencies:
@@ -2570,7 +2570,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-home@backstage:^::backstage=1.43.0&npm=0.8.12, @backstage/plugin-home@npm:^0.8.12":
+"@backstage/plugin-home@backstage:^::backstage=1.43.1&npm=0.8.12, @backstage/plugin-home@npm:^0.8.12":
   version: 0.8.12
   resolution: "@backstage/plugin-home@npm:0.8.12"
   dependencies:
@@ -2610,7 +2610,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-notifications-backend@backstage:^::backstage=1.43.0&npm=0.5.10, @backstage/plugin-notifications-backend@npm:^0.5.10":
+"@backstage/plugin-notifications-backend@backstage:^::backstage=1.43.1&npm=0.5.10, @backstage/plugin-notifications-backend@npm:^0.5.10":
   version: 0.5.10
   resolution: "@backstage/plugin-notifications-backend@npm:0.5.10"
   dependencies:
@@ -2647,7 +2647,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-notifications-node@backstage:^::backstage=1.43.0&npm=0.2.19, @backstage/plugin-notifications-node@npm:^0.2.19":
+"@backstage/plugin-notifications-node@backstage:^::backstage=1.43.1&npm=0.2.19, @backstage/plugin-notifications-node@npm:^0.2.19":
   version: 0.2.19
   resolution: "@backstage/plugin-notifications-node@npm:0.2.19"
   dependencies:
@@ -2662,7 +2662,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-notifications@backstage:^::backstage=1.43.0&npm=0.5.9, @backstage/plugin-notifications@npm:^0.5.9":
+"@backstage/plugin-notifications@backstage:^::backstage=1.43.1&npm=0.5.9, @backstage/plugin-notifications@npm:^0.5.9":
   version: 0.5.9
   resolution: "@backstage/plugin-notifications@npm:0.5.9"
   dependencies:
@@ -2695,7 +2695,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-permission-backend@backstage:^::backstage=1.43.0&npm=0.7.4, @backstage/plugin-permission-backend@npm:^0.7.4":
+"@backstage/plugin-permission-backend@backstage:^::backstage=1.43.1&npm=0.7.4, @backstage/plugin-permission-backend@npm:^0.7.4":
   version: 0.7.4
   resolution: "@backstage/plugin-permission-backend@npm:0.7.4"
   dependencies:
@@ -2715,7 +2715,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-permission-common@backstage:^::backstage=1.43.0&npm=0.9.1, @backstage/plugin-permission-common@npm:^0.9.1":
+"@backstage/plugin-permission-common@backstage:^::backstage=1.43.1&npm=0.9.1, @backstage/plugin-permission-common@npm:^0.9.1":
   version: 0.9.1
   resolution: "@backstage/plugin-permission-common@npm:0.9.1"
   dependencies:
@@ -2730,7 +2730,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-permission-node@backstage:^::backstage=1.43.0&npm=0.10.4, @backstage/plugin-permission-node@npm:^0.10.4":
+"@backstage/plugin-permission-node@backstage:^::backstage=1.43.1&npm=0.10.4, @backstage/plugin-permission-node@npm:^0.10.4":
   version: 0.10.4
   resolution: "@backstage/plugin-permission-node@npm:0.10.4"
   dependencies:
@@ -2748,7 +2748,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-permission-react@backstage:^::backstage=1.43.0&npm=0.4.36, @backstage/plugin-permission-react@npm:^0.4.36":
+"@backstage/plugin-permission-react@backstage:^::backstage=1.43.1&npm=0.4.36, @backstage/plugin-permission-react@npm:^0.4.36":
   version: 0.4.36
   resolution: "@backstage/plugin-permission-react@npm:0.4.36"
   dependencies:
@@ -2787,7 +2787,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-scaffolder-node@backstage:^::backstage=1.43.0&npm=0.11.1, @backstage/plugin-scaffolder-node@npm:^0.11.1":
+"@backstage/plugin-scaffolder-node@backstage:^::backstage=1.43.1&npm=0.11.1, @backstage/plugin-scaffolder-node@npm:^0.11.1":
   version: 0.11.1
   resolution: "@backstage/plugin-scaffolder-node@npm:0.11.1"
   dependencies:
@@ -2815,7 +2815,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-search-backend-module-pg@backstage:^::backstage=1.43.0&npm=0.5.48, @backstage/plugin-search-backend-module-pg@npm:^0.5.48":
+"@backstage/plugin-search-backend-module-pg@backstage:^::backstage=1.43.1&npm=0.5.48, @backstage/plugin-search-backend-module-pg@npm:^0.5.48":
   version: 0.5.48
   resolution: "@backstage/plugin-search-backend-module-pg@npm:0.5.48"
   dependencies:
@@ -2830,7 +2830,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-search-backend-node@backstage:^::backstage=1.43.0&npm=1.3.15, @backstage/plugin-search-backend-node@npm:^1.3.15":
+"@backstage/plugin-search-backend-node@backstage:^::backstage=1.43.1&npm=1.3.15, @backstage/plugin-search-backend-node@npm:^1.3.15":
   version: 1.3.15
   resolution: "@backstage/plugin-search-backend-node@npm:1.3.15"
   dependencies:
@@ -2848,7 +2848,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-search-backend@backstage:^::backstage=1.43.0&npm=2.0.6, @backstage/plugin-search-backend@npm:^2.0.6":
+"@backstage/plugin-search-backend@backstage:^::backstage=1.43.1&npm=2.0.6, @backstage/plugin-search-backend@npm:^2.0.6":
   version: 2.0.6
   resolution: "@backstage/plugin-search-backend@npm:2.0.6"
   dependencies:
@@ -2872,7 +2872,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-search-common@backstage:^::backstage=1.43.0&npm=1.2.19, @backstage/plugin-search-common@npm:^1.2.19":
+"@backstage/plugin-search-common@backstage:^::backstage=1.43.1&npm=1.2.19, @backstage/plugin-search-common@npm:^1.2.19":
   version: 1.2.19
   resolution: "@backstage/plugin-search-common@npm:1.2.19"
   dependencies:
@@ -2882,7 +2882,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-search-react@backstage:^::backstage=1.43.0&npm=1.9.4, @backstage/plugin-search-react@npm:^1.9.4":
+"@backstage/plugin-search-react@backstage:^::backstage=1.43.1&npm=1.9.4, @backstage/plugin-search-react@npm:^1.9.4":
   version: 1.9.4
   resolution: "@backstage/plugin-search-react@npm:1.9.4"
   dependencies:
@@ -2912,7 +2912,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-search@backstage:^::backstage=1.43.0&npm=1.4.30, @backstage/plugin-search@npm:^1.4.30":
+"@backstage/plugin-search@backstage:^::backstage=1.43.1&npm=1.4.30, @backstage/plugin-search@npm:^1.4.30":
   version: 1.4.30
   resolution: "@backstage/plugin-search@npm:1.4.30"
   dependencies:
@@ -2942,7 +2942,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-signals-backend@backstage:^::backstage=1.43.0&npm=0.3.8, @backstage/plugin-signals-backend@npm:^0.3.8":
+"@backstage/plugin-signals-backend@backstage:^::backstage=1.43.1&npm=0.3.8, @backstage/plugin-signals-backend@npm:^0.3.8":
   version: 0.3.8
   resolution: "@backstage/plugin-signals-backend@npm:0.3.8"
   dependencies:
@@ -2963,7 +2963,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-signals-node@backstage:^::backstage=1.43.0&npm=0.1.24, @backstage/plugin-signals-node@npm:^0.1.24":
+"@backstage/plugin-signals-node@backstage:^::backstage=1.43.1&npm=0.1.24, @backstage/plugin-signals-node@npm:^0.1.24":
   version: 0.1.24
   resolution: "@backstage/plugin-signals-node@npm:0.1.24"
   dependencies:
@@ -2979,7 +2979,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-signals-react@backstage:^::backstage=1.43.0&npm=0.0.15, @backstage/plugin-signals-react@npm:^0.0.15":
+"@backstage/plugin-signals-react@backstage:^::backstage=1.43.1&npm=0.0.15, @backstage/plugin-signals-react@npm:^0.0.15":
   version: 0.0.15
   resolution: "@backstage/plugin-signals-react@npm:0.0.15"
   dependencies:
@@ -2998,7 +2998,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-signals@backstage:^::backstage=1.43.0&npm=0.0.23, @backstage/plugin-signals@npm:^0.0.23":
+"@backstage/plugin-signals@backstage:^::backstage=1.43.1&npm=0.0.23, @backstage/plugin-signals@npm:^0.0.23":
   version: 0.0.23
   resolution: "@backstage/plugin-signals@npm:0.0.23"
   dependencies:
@@ -3069,7 +3069,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/test-utils@backstage:^::backstage=1.43.0&npm=1.7.11, @backstage/test-utils@npm:^1.7.11":
+"@backstage/test-utils@backstage:^::backstage=1.43.1&npm=1.7.11, @backstage/test-utils@npm:^1.7.11":
   version: 1.7.11
   resolution: "@backstage/test-utils@npm:1.7.11"
   dependencies:
@@ -3118,7 +3118,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/types@backstage:^::backstage=1.43.0&npm=1.2.2, @backstage/types@npm:^1.2.1, @backstage/types@npm:^1.2.2":
+"@backstage/types@backstage:^::backstage=1.43.1&npm=1.2.2, @backstage/types@npm:^1.2.1, @backstage/types@npm:^1.2.2":
   version: 1.2.2
   resolution: "@backstage/types@npm:1.2.2"
   checksum: 10c0/3c947cf83c058a56b0cfd90d91483e9a5c1c913f7978a0d5a3c0fd9b502d08e9bdf279afba626826eee84159e698ee4cdaa70040789ac47fc8a25df9f1925612
@@ -3423,10 +3423,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@drodil/backstage-plugin-catalog-backend-module-qeta@workspace:plugins/catalog-backend-module-qeta"
   dependencies:
-    "@backstage/backend-plugin-api": "npm:^1.4.3"
-    "@backstage/backend-test-utils": "npm:^1.9.0"
+    "@backstage/backend-plugin-api": "backstage:^"
+    "@backstage/backend-test-utils": "backstage:^"
     "@backstage/catalog-model": "backstage:^"
-    "@backstage/cli": "npm:^0.34.2"
+    "@backstage/cli": "backstage:^"
     "@backstage/plugin-catalog-node": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
   languageName: unknown
