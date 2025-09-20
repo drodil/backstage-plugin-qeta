@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.36.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.35.2...v3.36.0) (2025-09-20)
+
+
+### Features
+
+* add missing links to HighLightPosts ([6d8e114](https://github.com/drodil/backstage-plugin-qeta/commit/6d8e1146043b99b98e3c5761dc14a08693383fc9))
+* auto-fetch of metadata ([46021ee](https://github.com/drodil/backstage-plugin-qeta/commit/46021ee7f80931bc6dc52eff970f4ae85a05e859))
+* catalog link processor added ([9f40cb8](https://github.com/drodil/backstage-plugin-qeta/commit/9f40cb811c70824dfc5515dd2f105d3397ba3351))
+* click counting of links ([6c9a527](https://github.com/drodil/backstage-plugin-qeta/commit/6c9a527ca25b105ae5e9315910d82c457bcdf655))
+* drafts/edits of links is possible ([b7b57be](https://github.com/drodil/backstage-plugin-qeta/commit/b7b57be0e889677c9df2782b39961160b8030ec8))
+* extend backend for new post type link ([647cf03](https://github.com/drodil/backstage-plugin-qeta/commit/647cf03c554c60a92f58ad5ffc668092f15d6d4c))
+* improve security when auto-fetching metadata ([77483ce](https://github.com/drodil/backstage-plugin-qeta/commit/77483ce8cd4eb46ca316b69a6e296fc8680f9bdd))
+* link post statistics ([41990bb](https://github.com/drodil/backstage-plugin-qeta/commit/41990bbcfedcc3f244c85a62a7a4b9ab157a0c54))
+* link UI is consistent and fits in with rest ([835e518](https://github.com/drodil/backstage-plugin-qeta/commit/835e518dab9dc941ada6da0609d0f5a6c13f1d3d))
+* more options to click links for better UX ([ac881a0](https://github.com/drodil/backstage-plugin-qeta/commit/ac881a0da331b87ba16c38d2d1f51fbf4610bd56))
+* restore link functionality ([50ef544](https://github.com/drodil/backstage-plugin-qeta/commit/50ef544e91411ae61a900dca5ff6585c49398e18))
+* show og:image for links if available ([2e1316b](https://github.com/drodil/backstage-plugin-qeta/commit/2e1316bcb9bc3abd02eb9127456dc4ef897035d2))
+* showLinkButton functionality like showAskButton ([48df1ae](https://github.com/drodil/backstage-plugin-qeta/commit/48df1ae13aa8db2997380257ecc4b4e18d28d53a))
+* simple UI to create/view links ([ebc5831](https://github.com/drodil/backstage-plugin-qeta/commit/ebc58315677884ff167fe6a79f943e13e76d29f7))
+* suggestion functionality for links ([1d1bb6d](https://github.com/drodil/backstage-plugin-qeta/commit/1d1bb6df26d8f359166b92f4d1a74f92afd47130))
+* support notifications for links ([1cce399](https://github.com/drodil/backstage-plugin-qeta/commit/1cce399e8ab72dacb29c4c476b3475401e6ffb15))
+* tweak placement of clickable elements of links ([f2b0efa](https://github.com/drodil/backstage-plugin-qeta/commit/f2b0efac3e02bb57661646526ac6acdc6ca258d3))
+* visible error if new link is invalid ([1777fcd](https://github.com/drodil/backstage-plugin-qeta/commit/1777fcd9657f14b9efd61ac11ead09542e139bf0))
+
+
+### Bug Fixes
+
+* add link route to missed case distinctions ([2e36c35](https://github.com/drodil/backstage-plugin-qeta/commit/2e36c355f253e960dbfee90ebd047d97233139f1))
+* autosave does not save empty url for link ([b69ec69](https://github.com/drodil/backstage-plugin-qeta/commit/b69ec6998660d077b0a056a9b97926c0c85ea726))
+* catalog module package.json lint issue ([726e783](https://github.com/drodil/backstage-plugin-qeta/commit/726e7831dfc98be2b38b8621e8e5af36ece5bf2e))
+* content of link post can be empty ([f727e98](https://github.com/drodil/backstage-plugin-qeta/commit/f727e985872e2e23f823a6906dcccc65709cd847))
+* database null handling ([d4757d9](https://github.com/drodil/backstage-plugin-qeta/commit/d4757d9e6438a7f422d3a6994d91c66185acf546))
+* database tests for undefined url ([b1b50b0](https://github.com/drodil/backstage-plugin-qeta/commit/b1b50b0877834b5f4d24f5c64e154e87b90261cc))
+* filter out old qeta links in processor ([381a87d](https://github.com/drodil/backstage-plugin-qeta/commit/381a87d027a4cc2ad9b044b48079aaae2b3d542b))
+
 ### [3.35.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.35.1...v3.35.2) (2025-09-18)
 
 
