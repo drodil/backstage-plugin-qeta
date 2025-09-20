@@ -741,9 +741,14 @@ describe.each(databases.eachSupportedId())(
         expect(service1Links?.links).toHaveLength(2);
         expect(service1Links?.links).toEqual(
           expect.arrayContaining([
-            { title: 'Documentation Link', url: 'https://example.com/docs' },
+            {
+              title: 'Documentation Link',
+              type: 'qeta',
+              url: 'https://example.com/docs',
+            },
             {
               title: 'GitHub Repository',
+              type: 'qeta',
               url: 'https://github.com/example/repo',
             },
           ]),
@@ -755,7 +760,11 @@ describe.each(databases.eachSupportedId())(
         expect(service2Links).toBeDefined();
         expect(service2Links?.links).toHaveLength(1);
         expect(service2Links?.links).toEqual([
-          { title: 'API Endpoint', url: 'https://api.example.com' },
+          {
+            title: 'API Endpoint',
+            url: 'https://api.example.com',
+            type: 'qeta',
+          },
         ]);
       });
 
@@ -791,6 +800,7 @@ describe.each(databases.eachSupportedId())(
         expect(result[0].links[0]).toEqual({
           title: 'Active Link',
           url: 'https://example.com/active',
+          type: 'qeta',
         });
       });
 
@@ -826,6 +836,7 @@ describe.each(databases.eachSupportedId())(
         expect(result[0].links[0]).toEqual({
           title: 'Link Post',
           url: 'https://example.com/link',
+          type: 'qeta',
         });
       });
 
@@ -861,6 +872,7 @@ describe.each(databases.eachSupportedId())(
         expect(result[0].links[0]).toEqual({
           title: 'Link With URL',
           url: 'https://example.com/link',
+          type: 'qeta',
         });
       });
 
@@ -907,11 +919,20 @@ describe.each(databases.eachSupportedId())(
         expect(result[0].links).toHaveLength(3);
         expect(result[0].links).toEqual(
           expect.arrayContaining([
-            { title: 'Documentation', url: 'https://example.com/docs' },
-            { title: 'Source Code', url: 'https://github.com/example/repo' },
+            {
+              title: 'Documentation',
+              url: 'https://example.com/docs',
+              type: 'qeta',
+            },
+            {
+              title: 'Source Code',
+              url: 'https://github.com/example/repo',
+              type: 'qeta',
+            },
             {
               title: 'API Reference',
               url: 'https://api.example.com/reference',
+              type: 'qeta',
             },
           ]),
         );

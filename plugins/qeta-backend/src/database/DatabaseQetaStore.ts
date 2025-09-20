@@ -2486,6 +2486,7 @@ export class DatabaseQetaStore implements QetaStore {
       const link: EntityLink = {
         title: row.title,
         url: row.url,
+        type: 'qeta',
       };
 
       if (!entityLinksMap.has(entityRef)) {

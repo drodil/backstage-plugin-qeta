@@ -40,7 +40,7 @@ export class CatalogEntityLinkProcessor implements CatalogProcessor {
     }
 
     const existingLinks = entity.metadata.links ?? [];
-    const uniqueLinks = [...existingLinks];
+    const uniqueLinks = [...existingLinks].filter(link => link.type !== 'qeta');
     for (const link of links) {
       if (!existingLinks.find(l => l.url === link.url)) {
         uniqueLinks.push(link);
