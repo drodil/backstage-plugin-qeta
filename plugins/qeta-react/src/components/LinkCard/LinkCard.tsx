@@ -128,6 +128,23 @@ export const LinkCard = (props: { link: PostResponse }) => {
               className={styles.contentContainer}
               style={{ flexGrow: '1' }}
             >
+              {linkEntity.headerImage && (
+                <Grid
+                  item
+                  justifyContent="center"
+                  style={{ textAlign: 'center' }}
+                >
+                  <img
+                    src={linkEntity.headerImage}
+                    alt={linkEntity.title}
+                    style={{
+                      maxWidth: '90%',
+                      maxHeight: '300px',
+                      margin: '1rem',
+                    }}
+                  />
+                </Grid>
+              )}
               <Grid item className={styles.markdownContainer}>
                 <MarkdownRenderer content={linkEntity.content} />
               </Grid>

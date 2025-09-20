@@ -413,12 +413,16 @@ export const PostForm = (props: PostFormProps) => {
       qetaApi.fetchURLMetadata({ url: urlToCheck }).then(response => {
         setFavicon(true);
 
-        if (control._formValues.title === '') {
-          setValue('title', response.title ?? '', { shouldValidate: true });
+        if (response.title) {
+          setValue('title', response.title, { shouldValidate: true });
         }
 
-        if (control._formValues.content === '') {
-          setValue('content', response.content ?? '', { shouldValidate: true });
+        if (response.content) {
+          setValue('content', response.content, { shouldValidate: true });
+        }
+
+        if (response.image) {
+          setValue('headerImage', response.image, { shouldValidate: true });
         }
       });
     },
@@ -562,6 +566,13 @@ export const PostForm = (props: PostFormProps) => {
               />
             )}
           />
+          {control._formValues.headerImage && (
+            <img
+              src={control._formValues.headerImage}
+              alt="Preview"
+              style={{ maxHeight: 54, marginBottom: 14 }}
+            />
+          )}
         </Box>
       )}
       <Box mb={2}>
