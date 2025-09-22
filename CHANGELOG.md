@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.36.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.36.2...v3.36.3) (2025-09-22)
+
+
+### Bug Fixes
+
+* hide images where they cannot load ([e47d2ac](https://github.com/drodil/backstage-plugin-qeta/commit/e47d2ac19cd9ce969eeccba232990e357a10f7d6))
+* use link icon if favicon fails to load ([3557fa7](https://github.com/drodil/backstage-plugin-qeta/commit/3557fa750f5af280b85311810b3171407d3baeac))
+
 ### [3.36.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.36.1...v3.36.2) (2025-09-22)
 
 
