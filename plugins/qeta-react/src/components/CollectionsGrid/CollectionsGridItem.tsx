@@ -44,6 +44,7 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
           <CardMedia
             component="img"
             height="140"
+            onError={e => (e.currentTarget.style.display = 'none')}
             image={collection.headerImage}
             alt={collection.title}
           />

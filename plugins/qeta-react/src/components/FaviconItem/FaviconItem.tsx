@@ -22,7 +22,7 @@ export const FaviconItem = (props: { entity: PostResponse }) => {
         src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(
           url ?? '',
         )}&sz=16`}
-        alt="favicon"
+        alt={url}
         width={16}
         height={16}
         style={{

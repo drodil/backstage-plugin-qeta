@@ -197,6 +197,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
         {post.headerImage && (
           <CardMedia
             component="img"
+            onError={e => (e.currentTarget.style.display = 'none')}
             height="140"
             image={post.headerImage}
             alt={post.title}

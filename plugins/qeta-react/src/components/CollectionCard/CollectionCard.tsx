@@ -27,6 +27,7 @@ export const CollectionCard = (props: { collection: Collection }) => {
         <CardMedia
           component="img"
           height="200"
+          onError={e => (e.currentTarget.style.display = 'none')}
           src={collection.headerImage}
           alt={collection.title}
         />

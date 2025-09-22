@@ -103,6 +103,7 @@ export const ArticleContent = (props: {
         <img
           src={post.headerImage}
           alt={post.title}
+          onError={e => (e.currentTarget.style.display = 'none')}
           className={styles.headerImage}
         />
       )}

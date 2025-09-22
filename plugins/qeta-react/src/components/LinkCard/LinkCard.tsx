@@ -137,6 +137,7 @@ export const LinkCard = (props: { link: PostResponse }) => {
                   <img
                     src={linkEntity.headerImage}
                     alt={linkEntity.title}
+                    onError={e => (e.currentTarget.style.display = 'none')}
                     style={{
                       maxWidth: '90%',
                       maxHeight: '300px',

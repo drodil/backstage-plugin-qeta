@@ -570,6 +570,7 @@ export const PostForm = (props: PostFormProps) => {
             <img
               src={control._formValues.headerImage}
               alt="Preview"
+              onError={e => (e.currentTarget.style.display = 'none')}
               style={{ maxHeight: 54, marginBottom: 14 }}
             />
           )}
