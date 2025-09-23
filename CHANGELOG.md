@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.37.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.36.3...v3.37.0) (2025-09-23)
+
+
+### Features
+
+* **nfs:** add support for configuring extensions ([c739053](https://github.com/drodil/backstage-plugin-qeta/commit/c73905385c629ea48931ae853405b68c8370678a))
+
 ### [3.36.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.36.2...v3.36.3) (2025-09-22)
 
 
