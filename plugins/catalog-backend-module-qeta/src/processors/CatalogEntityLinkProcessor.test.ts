@@ -13,6 +13,7 @@ describe('CatalogEntityLinkProcessor', () => {
   const mockAuth = mockServices.auth();
   const mockLogger = mockServices.logger.mock();
   const mockDiscovery = mockServices.discovery();
+  const mockLifecycle = mockServices.rootLifecycle.mock();
 
   let processor: CatalogEntityLinkProcessor;
   let mockQetaClient: jest.Mocked<any>;
@@ -31,6 +32,7 @@ describe('CatalogEntityLinkProcessor', () => {
       mockCache,
       mockLogger,
       mockDiscovery,
+      mockLifecycle,
     );
   });
 

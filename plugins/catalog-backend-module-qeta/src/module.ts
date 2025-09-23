@@ -16,10 +16,17 @@ export const catalogModuleQeta = createBackendModule({
         auth: coreServices.auth,
         logger: coreServices.logger,
         discovery: coreServices.discovery,
+        lifecycle: coreServices.rootLifecycle,
       },
-      async init({ builder, cache, auth, logger, discovery }) {
+      async init({ builder, cache, auth, logger, discovery, lifecycle }) {
         builder.addProcessor(
-          new CatalogEntityLinkProcessor(auth, cache, logger, discovery),
+          new CatalogEntityLinkProcessor(
+            auth,
+            cache,
+            logger,
+            discovery,
+            lifecycle,
+          ),
         );
       },
     });

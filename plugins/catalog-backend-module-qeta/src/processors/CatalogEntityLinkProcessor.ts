@@ -4,6 +4,7 @@ import {
   AuthService,
   CacheService,
   DiscoveryService,
+  LifecycleService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import {
@@ -20,8 +21,12 @@ export class CatalogEntityLinkProcessor implements CatalogProcessor {
     private readonly cache: CacheService,
     private readonly logger: LoggerService,
     discovery: DiscoveryService,
+    lifecycle: LifecycleService,
   ) {
     this.client = new QetaClient({ discoveryApi: discovery });
+    lifecycle.addStartupHook(() => {
+      void this.getEntityLinks(); // warm up the cache on startup
+    });
   }
 
   getProcessorName(): string {
