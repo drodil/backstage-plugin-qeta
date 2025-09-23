@@ -72,7 +72,7 @@ export class CatalogEntityLinkProcessor implements CatalogProcessor {
       }
     }
 
-    this.logger.info(`Fetching entity links from Qeta`);
+    this.logger.debug(`Fetching entity links from Qeta`);
     const credentials = await this.auth.getOwnServiceCredentials();
     const { token } = await this.auth.getPluginRequestToken({
       onBehalfOf: credentials,
