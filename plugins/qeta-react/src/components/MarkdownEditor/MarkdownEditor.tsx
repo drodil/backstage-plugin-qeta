@@ -181,6 +181,13 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     const entities = await catalogApi.queryEntities({
       filter: { kind: enabledMentionKinds },
       limit: 5,
+      fields: [
+        'metadata.name',
+        'metadata.namespace',
+        'kind',
+        'metadata.title',
+        'spec.profile.displayName',
+      ],
       fullTextFilter: {
         term: text,
         fields: [
