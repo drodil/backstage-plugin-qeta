@@ -1,5 +1,7 @@
 import {
   ApiBlueprint,
+  coreExtensionData,
+  createExtensionInput,
   createFrontendPlugin,
   NavItemBlueprint,
   PageBlueprint,
@@ -29,24 +31,74 @@ const qetaApi = ApiBlueprint.make({
     }),
 });
 
-const qetaPage = PageBlueprint.make({
-  params: {
-    path: '/qeta',
-    routeRef: convertLegacyRouteRef(qetaRouteRef),
-    loader: () =>
-      import('./components/QetaPage').then(m => compatWrapper(<m.QetaPage />)),
+const qetaPage = PageBlueprint.makeWithOverrides({
+  config: {
+    schema: {
+      subtitle: z => z.string().optional(),
+      themeId: z => z.string().optional(),
+      headerTooltip: z => z.string().optional(),
+      headerType: z => z.string().optional(),
+      headerTypeLink: z => z.string().optional(),
+    },
+  },
+  inputs: {
+    introElement: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+      optional: true,
+    }),
+    headerElements: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: false,
+      optional: true,
+    }),
+  },
+  factory: (originalFactory, { config, inputs }) => {
+    const introElement = inputs.introElement?.get(
+      coreExtensionData.reactElement,
+    );
+    const headerElements = inputs.headerElements.map(e =>
+      e.get(coreExtensionData.reactElement),
+    );
+    return originalFactory({
+      path: config.path ?? '/qeta',
+      routeRef: convertLegacyRouteRef(qetaRouteRef),
+      loader: () =>
+        import('./components/QetaPage').then(m =>
+          compatWrapper(
+            <m.QetaPage
+              {...config}
+              introElement={introElement}
+              headerElements={headerElements}
+            />,
+          ),
+        ),
+    });
   },
 });
 
-const EntityPostsContent = EntityContentBlueprint.make({
+const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
   name: 'entity-posts-content',
-  params: {
-    path: '/qeta',
-    title: 'Q&A',
-    loader: async () =>
-      import('./components/EntityPostsContent/EntityPostsContent.tsx').then(m =>
-        compatWrapper(<m.EntityPostsContent />),
-      ),
+  config: {
+    schema: {
+      showFilters: z => z.boolean().optional(),
+      showTitle: z => z.boolean().optional(),
+      showAskButton: z => z.boolean().optional(),
+      showWriteButton: z => z.boolean().optional(),
+      showLinkButton: z => z.boolean().optional(),
+      showNoQuestionsBtn: z => z.boolean().optional(),
+      initialPageSize: z => z.number().optional(),
+      type: z => z.enum(['question', 'article', 'link']).optional(),
+      view: z => z.enum(['list', 'grid']).optional(),
+    },
+  },
+  factory: (originalFactory, { config }) => {
+    return originalFactory({
+      path: config.path ?? '/qeta',
+      title: config.title ?? 'Q&A',
+      loader: async () =>
+        import('./components/EntityPostsContent/EntityPostsContent.tsx').then(
+          m => compatWrapper(<m.EntityPostsContent {...config} />),
+        ),
+    });
   },
 });
 
