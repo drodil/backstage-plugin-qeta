@@ -1,4 +1,4 @@
-import { createDevApp } from '@backstage/dev-utils';
+/** import { createDevApp } from '@backstage/dev-utils';
 import { QetaPage } from '../src/plugin';
 import { createPlugin } from '@backstage/core-plugin-api';
 import { qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
@@ -84,3 +84,20 @@ createDevApp()
   .addPage({ element: <NotificationsPage />, path: '/notifications' })
   .addSidebarItem(<NotificationsSidebarItem />)
   .render();
+ */
+
+// NEW FRONTEND SYSTEM
+import { createApp } from '@backstage/frontend-defaults';
+import { createRoot } from 'react-dom/client';
+import notificationPlugin from '@backstage/plugin-notifications/alpha';
+import catalogPlugin from '@backstage/plugin-catalog/alpha';
+
+import plugin from '../src/alpha';
+
+const app = createApp({
+  features: [plugin, notificationPlugin, catalogPlugin],
+});
+
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(app.createRoot());

@@ -12,10 +12,15 @@ import {
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
 import { qetaApiRef, qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
-import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
 import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
 import LiveHelpIcon from '@material-ui/icons/LiveHelp';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { Entity } from '@backstage/catalog-model';
 
 const qetaApi = ApiBlueprint.make({
   params: defineParams =>
@@ -90,10 +95,21 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
       view: z => z.enum(['list', 'grid']).optional(),
     },
   },
-  factory: (originalFactory, { config }) => {
+  factory: (originalFactory, { config, apis }) => {
     return originalFactory({
       path: config.path ?? '/qeta',
       title: config.title ?? 'Q&A',
+      filter: (entity: Entity) => {
+        const configApi = apis.get(configApiRef);
+        const supportedKinds = (
+          configApi?.getOptionalStringArray('qeta.entityKinds') ?? [
+            'system',
+            'component',
+          ]
+        )?.map(k => k.toLowerCase());
+        const entityKind = entity.kind.toLowerCase();
+        return supportedKinds?.includes(entityKind);
+      },
       loader: async () =>
         import('./components/EntityPostsContent/EntityPostsContent.tsx').then(
           m => compatWrapper(<m.EntityPostsContent {...config} />),

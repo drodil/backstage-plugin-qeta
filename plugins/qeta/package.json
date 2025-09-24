@@ -93,6 +93,7 @@
   "devDependencies": {
     "@backstage/cli": "backstage:^",
     "@backstage/dev-utils": "backstage:^",
+    "@backstage/frontend-defaults": "backstage:^",
     "@backstage/plugin-catalog": "backstage:^",
     "@backstage/plugin-home": "backstage:^",
     "@backstage/plugin-notifications": "backstage:^",
