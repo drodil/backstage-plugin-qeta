@@ -5,6 +5,10 @@ import {
   QetaSignal,
 } from '@drodil/backstage-plugin-qeta-common';
 import { SignalsService } from '@backstage/plugin-signals-node';
+import { lookup } from 'mime-types';
+import sanitizeHtml from 'sanitize-html';
+import * as cheerio from 'cheerio';
+import { CheerioAPI } from 'cheerio';
 
 export const wrapAsync = async (fn: Function) => {
   fn();
@@ -81,5 +85,107 @@ export const entityToJsonObject = (entity: QetaIdEntity) => {
     return JSON.parse(JSON.stringify(entity));
   } catch {
     return { id: entity.id };
+  }
+};
+
+const urlToDataURl = async (
+  url: string,
+  response: Response,
+): Promise<string> => {
+  const buffer = await response.arrayBuffer();
+  const contentType =
+    response.headers.get('content-type') ||
+    lookup(url) ||
+    'application/octet-stream';
+
+  const encoded = btoa(
+    Array.from(new Uint8Array(buffer))
+      .map(b => String.fromCharCode(b))
+      .join(''),
+  );
+  return `data:${contentType};base64,${encoded}`;
+};
+
+const unrelativeURL = (path: string, url: URL): string => {
+  const isRelativePath = !path.startsWith('http');
+  if (isRelativePath) {
+    return `${url.origin}${path.startsWith('/') ? '' : '/'}${path}`;
+  }
+  return path;
+};
+
+const extractFavicon = async (
+  $: CheerioAPI,
+  url: URL,
+): Promise<string | undefined> => {
+  const favicon =
+    $('link[rel="icon"]').attr('href') ||
+    $('link[rel="shortcut icon"]').attr('href') ||
+    $('link[rel="apple-touch-icon"]').attr('href') ||
+    $('link[rel="apple-touch-icon-precomposed"]').attr('href') ||
+    $('link[rel="mask-icon"]').attr('href');
+
+  const faviconURLs = [
+    unrelativeURL(favicon ?? 'PLACEHOLDER', url),
+    `${url.origin}/favicon.ico`, // common location, used as fallback
+    `https://www.google.com/s2/favicons?domain=${url.hostname}&sz=16`, // google service as fallback
+  ];
+
+  for (const faviconURL of faviconURLs) {
+    try {
+      const response = await fetch(faviconURL, {
+        signal: AbortSignal.timeout(3000),
+      });
+      if (response.ok) {
+        return urlToDataURl(url.toString(), response);
+      }
+    } catch (e) {
+      console.error('Failed to fetch favicon from url', faviconURL, e);
+    }
+  }
+
+  return undefined;
+};
+
+export const extractMetadata = async (
+  url: URL,
+): Promise<{
+  title?: string;
+  content?: string;
+  image?: string;
+  favicon?: string;
+}> => {
+  try {
+    const html = await fetch(url, { signal: AbortSignal.timeout(3000) })
+      .then(response => response.text())
+      .then(dirty =>
+        sanitizeHtml(dirty, {
+          allowedTags: ['title', 'meta', 'link'],
+          allowedAttributes: {
+            meta: ['name', 'content', 'property'],
+            link: ['rel', 'href'],
+          },
+        }),
+      );
+
+    const $ = cheerio.load(html);
+    const title =
+      $('meta[property="og:title"]').attr('content') || $('title').text();
+    const content =
+      $('meta[property="og:description"]').attr('content') ||
+      $('meta[name="description"]').attr('content');
+    const image =
+      $('meta[property="og:image"]').attr('content') ||
+      $('meta[name="twitter:image"]').attr('content');
+    const favicon = await extractFavicon($, url);
+
+    return {
+      title,
+      content,
+      image,
+      favicon,
+    };
+  } catch (e) {
+    return {};
   }
 };

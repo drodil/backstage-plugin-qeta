@@ -473,6 +473,7 @@ export interface URLMetadataResponse {
   title?: string;
   content?: string;
   image?: string;
+  favicon?: string;
 }
 
 export interface EntityLinks {

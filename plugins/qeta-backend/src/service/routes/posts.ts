@@ -27,14 +27,13 @@ import {
 import { Response } from 'express-serve-static-core';
 import {
   entityToJsonObject,
+  extractMetadata,
   signalPostStats,
   validateDateRange,
   wrapAsync,
 } from './util';
 import { getEntities, getTags } from './routeUtil';
 import { PostOptions } from '../../database/QetaStore';
-import * as cheerio from 'cheerio';
-import sanitizeHtml from 'sanitize-html';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -1166,32 +1165,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    try {
-      const html = await fetch(url, { signal: AbortSignal.timeout(3000) })
-        .then(resp => resp.text())
-        .then(dirty =>
-          sanitizeHtml(dirty, {
-            allowedTags: ['title', 'meta'],
-            allowedAttributes: { meta: ['name', 'content', 'property'] },
-          }),
-        );
-
-      const $ = cheerio.load(html);
-      const title =
-        $('meta[property="og:title"]').attr('content') || $('title').text();
-      const content =
-        $('meta[property="og:description"]').attr('content') ||
-        $('meta[name="description"]').attr('content');
-      const image = $('meta[property="og:image"]').attr('content');
-
-      response.json({
-        title,
-        content,
-        image,
-      });
-    } catch (e) {
-      console.error('Failed to fetch URL:', e);
-      response.status(500).send({ error: 'Failed to fetch URL' });
-    }
+    response.json(await extractMetadata(url));
   });
 };
