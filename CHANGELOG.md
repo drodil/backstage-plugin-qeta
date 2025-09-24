@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.37.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.37.0...v3.37.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* **nfs:** only show entity content for configured kinds ([b4fea35](https://github.com/drodil/backstage-plugin-qeta/commit/b4fea352c191f216eecfccf46418b421a70c5135))
+* show users posts instead related to user in entity post content ([6dee735](https://github.com/drodil/backstage-plugin-qeta/commit/6dee73591c0b949ebfcdcc99adc6fff059fdd8e1))
+
 ## [3.37.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.36.3...v3.37.0) (2025-09-23)
 
 
