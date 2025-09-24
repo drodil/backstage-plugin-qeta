@@ -18,7 +18,7 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
-import LiveHelpIcon from '@material-ui/icons/LiveHelp';
+import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 
@@ -123,7 +123,7 @@ export const qetaNavItem = NavItemBlueprint.make({
   params: {
     title: 'Q&A',
     routeRef: convertLegacyRouteRef(qetaRouteRef),
-    icon: LiveHelpIcon,
+    icon: ContactSupportIcon,
   },
 });
 
