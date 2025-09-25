@@ -155,7 +155,7 @@ export const PostForm = (props: PostFormProps) => {
   const [searchParams, _setSearchParams] = useSearchParams();
   const [urlToCheck, setUrlToCheck] = useState('');
   const validUrl = /^https?:\/\/\S+$/;
-  const [favicon, setFavicon] = useState<boolean>(false);
+  const [favicon, setFavicon] = useState<string | undefined>(undefined);
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const qetaApi = useApi(qetaApiRef);
@@ -386,16 +386,16 @@ export const PostForm = (props: PostFormProps) => {
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFavicon(false);
+    setFavicon(undefined);
     setValue('url', e.target.value, { shouldValidate: true });
   };
 
   const validateUrl = (value?: string) => {
     if (value === '') {
-      setFavicon(false);
+      setFavicon(undefined);
       return false;
     } else if (!value || !validUrl.test(value)) {
-      setFavicon(false);
+      setFavicon(undefined);
       return t('postForm.urlInput.invalid');
     }
 
@@ -411,7 +411,7 @@ export const PostForm = (props: PostFormProps) => {
 
       // some valid urls are not reachable => no error checking
       qetaApi.fetchURLMetadata({ url: urlToCheck }).then(response => {
-        setFavicon(true);
+        setFavicon(undefined);
 
         if (response.title) {
           setValue('title', response.title, { shouldValidate: true });
@@ -423,6 +423,10 @@ export const PostForm = (props: PostFormProps) => {
 
         if (response.image) {
           setValue('headerImage', response.image, { shouldValidate: true });
+        }
+
+        if (response.favicon) {
+          setFavicon(response.favicon);
         }
       });
     },
@@ -522,9 +526,7 @@ export const PostForm = (props: PostFormProps) => {
         <Box mb={2} display="flex" alignItems="center" style={{ gap: 8 }}>
           {favicon && (
             <img
-              src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(
-                urlToCheck,
-              )}&sz=16`}
+              src={favicon}
               alt="Favicon"
               style={{
                 width: 16,
