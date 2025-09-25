@@ -43,6 +43,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     database,
     events,
     config,
+    cache,
     signals,
     notificationMgr,
     auditor,
@@ -1165,6 +1166,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    response.json(await extractMetadata(url));
+    const cacheKey = `url:metadata:${url.toString()}`;
+    const cached = await cache?.get(cacheKey);
+    if (cached) {
+      response.json(cached);
+      return;
+    }
+
+    const metadata = await extractMetadata(url);
+    await cache?.set(cacheKey, metadata, { ttl: { weeks: 2 } });
+    response.json(metadata);
   });
 };
