@@ -126,8 +126,8 @@ const extractFavicon = async (
     $('link[rel="mask-icon"]').attr('href');
 
   const faviconURLs = [
+    `${url.origin}/favicon.ico`, // most common location
     favicon ? unrelativeURL(favicon, url) : undefined,
-    `${url.origin}/favicon.ico`, // common location, used as fallback
     `https://www.google.com/s2/favicons?domain=${url.hostname}&sz=16`, // google service as fallback
   ];
 
