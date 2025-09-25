@@ -2,13 +2,27 @@ import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import { qetaApiRef } from '../../api.ts';
 import { useApi } from '@backstage/core-plugin-api';
 import LinkIcon from '@material-ui/icons/Link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const FaviconItem = (props: { entity: PostResponse }) => {
   const { entity } = props;
   const { url } = entity;
   const qetaApi = useApi(qetaApiRef);
   const [error, setError] = useState(false);
+  const [favicon, setFavicon] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (!url) return;
+
+    qetaApi.fetchURLMetadata({ url }).then(response => {
+      if (response.favicon) {
+        setError(false);
+        setFavicon(response.favicon);
+      } else {
+        setError(true);
+      }
+    });
+  });
 
   return (
     <a
@@ -21,11 +35,9 @@ export const FaviconItem = (props: { entity: PostResponse }) => {
         qetaApi.clickLink(entity.id);
       }}
     >
-      {!error && (
+      {!error && favicon && (
         <img
-          src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(
-            url ?? '',
-          )}&sz=16`}
+          src={favicon}
           alt={url}
           width={16}
           height={16}
