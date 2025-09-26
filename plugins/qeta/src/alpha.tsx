@@ -1,6 +1,7 @@
 import {
   ApiBlueprint,
   coreExtensionData,
+  createExtensionBlueprint,
   createExtensionInput,
   createFrontendPlugin,
   NavItemBlueprint,
@@ -34,6 +35,24 @@ const qetaApi = ApiBlueprint.make({
         return new QetaClient({ discoveryApi, fetchApi });
       },
     }),
+});
+
+export const QetaPageIntroElementBlueprint = createExtensionBlueprint({
+  kind: 'intro-element',
+  attachTo: { id: 'page:qeta', input: 'introElement' },
+  output: [coreExtensionData.reactElement],
+  factory(params: { element: JSX.Element }) {
+    return [coreExtensionData.reactElement(params.element)];
+  },
+});
+
+export const QetaPageHeaderElementBlueprint = createExtensionBlueprint({
+  kind: 'header-element',
+  attachTo: { id: 'page:qeta', input: 'headerElements' },
+  output: [coreExtensionData.reactElement],
+  factory(params: { element: JSX.Element }) {
+    return [coreExtensionData.reactElement(params.element)];
+  },
 });
 
 const qetaPage = PageBlueprint.makeWithOverrides({
@@ -118,8 +137,7 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
   },
 });
 
-/** @alpha */
-export const qetaNavItem = NavItemBlueprint.make({
+const qetaNavItem = NavItemBlueprint.make({
   params: {
     title: 'Q&A',
     routeRef: convertLegacyRouteRef(qetaRouteRef),
