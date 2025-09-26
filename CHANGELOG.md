@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.38.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.37.1...v3.38.0) (2025-09-26)
+
+
+### Features
+
+* cache url metadata ([cc1724c](https://github.com/drodil/backstage-plugin-qeta/commit/cc1724ceb68b850ceed1ff470d9c02e94a1b5c9e))
+* fetch favicon from backend ([9ec6102](https://github.com/drodil/backstage-plugin-qeta/commit/9ec6102b5c8eb1b8e0ae4c1b9b00325ec47767a9))
+* make frontend fetch favicon from backend ([ed085fa](https://github.com/drodil/backstage-plugin-qeta/commit/ed085fa192d9ef16e7d4c3bd8872623d66930b71))
+
+
+### Bug Fixes
+
+* add blueprints for easier override of extra page elements ([2ad9998](https://github.com/drodil/backstage-plugin-qeta/commit/2ad999858b6d81921ab988ce58db5d27d053d607))
+* prioritise common favicon location over html link tags ([d3f7b5a](https://github.com/drodil/backstage-plugin-qeta/commit/d3f7b5a731d282e6258a89973beab18822fa595c))
+
 ### [3.37.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.37.0...v3.37.1) (2025-09-24)
 
 
