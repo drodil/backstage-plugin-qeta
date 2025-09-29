@@ -22,6 +22,7 @@ import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
+import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
 
 const qetaApi = ApiBlueprint.make({
   params: defineParams =>
@@ -145,6 +146,15 @@ const qetaNavItem = NavItemBlueprint.make({
   },
 });
 
+const qetaSearchResultItem = SearchResultListItemBlueprint.make({
+  params: {
+    component: () =>
+      import('./components/QetaSearchResultListItem').then(
+        m => m.QetaSearchResultListItem,
+      ),
+  },
+});
+
 /**
  * Backstage frontend plugin.
  *
@@ -156,7 +166,13 @@ export default createFrontendPlugin({
   routes: convertLegacyRouteRefs({
     root: qetaRouteRef,
   }),
-  extensions: [qetaApi, qetaPage, EntityPostsContent, qetaNavItem],
+  extensions: [
+    qetaApi,
+    qetaPage,
+    EntityPostsContent,
+    qetaNavItem,
+    qetaSearchResultItem,
+  ],
 });
 
 export { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
