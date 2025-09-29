@@ -9,6 +9,7 @@ import { lookup } from 'mime-types';
 import sanitizeHtml from 'sanitize-html';
 import * as cheerio from 'cheerio';
 import { CheerioAPI } from 'cheerio';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export const wrapAsync = async (fn: Function) => {
   fn();
@@ -117,6 +118,7 @@ const unrelativeURL = (path: string, url: URL): string => {
 const extractFavicon = async (
   $: CheerioAPI,
   url: URL,
+  logger: LoggerService,
 ): Promise<string | undefined> => {
   const favicon =
     $('link[rel="icon"]').attr('href') ||
@@ -143,15 +145,41 @@ const extractFavicon = async (
         return await imageURLToDataURL(faviconURL, response);
       }
     } catch (e) {
-      console.error('Failed to fetch favicon from url', faviconURL, e);
+      logger.warn(`Failed to fetch favicon from url ${faviconURL}`, e);
     }
   }
 
   return undefined;
 };
 
+// Helper to log detailed extractMetadata errors in a single place
+const logExtractMetadataError = (
+  logger: LoggerService,
+  url: URL,
+  e: unknown,
+): void => {
+  const err = e as any;
+  const name = err?.name ? `${err.name}: ` : '';
+  const message = err?.message ?? String(err);
+  const detail = err?.status ? ` (status: ${err.status})` : '';
+  const formatCause = (c: any): string => {
+    if (!c) return '';
+    const cn = c?.name ? `${c.name}: ` : '';
+    const cm = c?.message ?? String(c);
+    const cs = c?.status ? ` (status: ${c.status})` : '';
+    const nested =
+      c?.cause && c.cause !== c ? `; cause: ${formatCause(c.cause)}` : '';
+    return `${cn}${cm}${cs}${nested}`;
+  };
+  const causeInfo = err?.cause ? `; cause: ${formatCause(err.cause)}` : '';
+  logger.warn(
+    `${name}Failed to extract metadata from ${url.toString()}: ${message}${detail}${causeInfo}`,
+  );
+};
+
 export const extractMetadata = async (
   url: URL,
+  logger: LoggerService,
 ): Promise<{
   title?: string;
   content?: string;
@@ -159,17 +187,29 @@ export const extractMetadata = async (
   favicon?: string;
 }> => {
   try {
-    const html = await fetch(url, { signal: AbortSignal.timeout(3000) })
-      .then(response => response.text())
-      .then(dirty =>
-        sanitizeHtml(dirty, {
-          allowedTags: ['title', 'meta', 'link'],
-          allowedAttributes: {
-            meta: ['name', 'content', 'property'],
-            link: ['rel', 'href'],
-          },
-        }),
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'text/html',
+      },
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch metadata from ${url.toString()}: ${response.status} ${
+          response.statusText
+        }`,
       );
+    }
+
+    const html = await response.text().then(dirty =>
+      sanitizeHtml(dirty, {
+        allowedTags: ['title', 'meta', 'link'],
+        allowedAttributes: {
+          meta: ['name', 'content', 'property'],
+          link: ['rel', 'href'],
+        },
+      }),
+    );
 
     const $ = cheerio.load(html);
     const title =
@@ -180,7 +220,7 @@ export const extractMetadata = async (
     const image =
       $('meta[property="og:image"]').attr('content') ||
       $('meta[name="twitter:image"]').attr('content');
-    const favicon = await extractFavicon($, url);
+    const favicon = await extractFavicon($, url, logger);
 
     return {
       title,
@@ -189,6 +229,7 @@ export const extractMetadata = async (
       favicon,
     };
   } catch (e) {
+    logExtractMetadataError(logger, url, e);
     return {};
   }
 };

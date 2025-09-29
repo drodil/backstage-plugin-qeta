@@ -1173,7 +1173,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const metadata = await extractMetadata(url);
+    const metadata = await extractMetadata(url, options.logger);
     await cache?.set(cacheKey, metadata, { ttl: { weeks: 2 } });
     response.json(metadata);
   });
