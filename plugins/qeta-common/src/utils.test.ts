@@ -148,6 +148,12 @@ describe('removeMarkdownFormatting', () => {
     });
   });
 
+  it('should work for search texts', () => {
+    const text = '# Link: https://www.google.com\n\nGoogle\n\n\n\n\n\n';
+    const expectedOutput = 'Link: https://www.google.com  Google';
+    expect(removeMarkdownFormatting(text)).toBe(expectedOutput);
+  });
+
   it('should remove footnotes', () => {
     const input = ['Note[^1]', '[^1]: Reference'];
 

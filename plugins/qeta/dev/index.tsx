@@ -11,6 +11,7 @@ import plugin, {
 } from '../src/alpha';
 import { Box } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
+import searchPlugin from '@backstage/plugin-search/alpha';
 
 const IntroElement = () => (
   <Box marginBottom={4}>
@@ -117,7 +118,7 @@ const module = createFrontendModule({
 });
 
 const app = createApp({
-  features: [plugin, notificationPlugin, catalogPlugin, module],
+  features: [plugin, notificationPlugin, catalogPlugin, searchPlugin, module],
 });
 
 const container = document.getElementById('root');

@@ -20,7 +20,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
-import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -152,6 +151,7 @@ const qetaNavItem = NavItemBlueprint.make({
 
 const qetaSearchResultItem = SearchResultListItemBlueprint.make({
   params: {
+    predicate: result => result.type === 'qeta',
     component: () =>
       import('./components/QetaSearchResultListItem').then(
         m => m.QetaSearchResultListItem,
@@ -160,18 +160,11 @@ const qetaSearchResultItem = SearchResultListItemBlueprint.make({
 });
 
 const qetaPostSearchFilterType = SearchFilterResultTypeBlueprint.make({
+  name: 'qeta',
   params: {
-    value: 'qeta_post',
-    name: 'Q&A post',
+    value: 'qeta',
+    name: 'Q&A',
     icon: <ContactSupportIcon />,
-  },
-});
-
-const qetaCollectionSearchFilterType = SearchFilterResultTypeBlueprint.make({
-  params: {
-    value: 'qeta_collection',
-    name: 'Q&A collection',
-    icon: <PlaylistPlayIcon />,
   },
 });
 
@@ -193,7 +186,6 @@ export default createFrontendPlugin({
     qetaNavItem,
     qetaSearchResultItem,
     qetaPostSearchFilterType,
-    qetaCollectionSearchFilterType,
   ],
 });
 

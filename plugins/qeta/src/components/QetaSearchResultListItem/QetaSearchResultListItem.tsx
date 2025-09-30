@@ -96,12 +96,23 @@ const Excerpt = (props: {
           {DateTime.fromISO(document.created.toString() as string).toRelative()}
           {' · '}
           <EntityRefLink entityRef={document.author} hideIcon />
+          {document.postType !== 'link' && (
+            <>
+              {' · '}
+              {t('common.score', { score: document.score.toString(10) })}
+            </>
+          )}
           {' · '}
-          {t('common.score', { score: document.score.toString(10) })}
-          {' · '}
-          {t('common.viewsShort', { count: document.views })}
-          {' · '}
-          {t('common.answersCount', { count: document.answerCount })}
+          {document.postType === 'link' &&
+            t('common.clicksCount', { count: document.views })}
+          {document.postType !== 'link' &&
+            t('common.viewsShort', { count: document.views })}
+          {document.postType !== 'link' && (
+            <>
+              {' · '}
+              {t('common.answersCount', { count: document.answerCount })}
+            </>
+          )}
         </span>
         <>
           {highlight?.fields.text ? (
