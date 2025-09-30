@@ -125,6 +125,7 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
       filter: (entity: Entity) => {
         const configApi = apis.get(configApiRef);
         const supportedKinds = (
+          configApi?.getOptionalStringArray('qeta.entities.kinds') ??
           configApi?.getOptionalStringArray('qeta.entityKinds') ?? [
             'system',
             'component',
