@@ -20,9 +20,13 @@ import {
 } from '@backstage/core-plugin-api';
 import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
+import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
-import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
+import {
+  SearchFilterResultTypeBlueprint,
+  SearchResultListItemBlueprint,
+} from '@backstage/plugin-search-react/alpha';
 
 const qetaApi = ApiBlueprint.make({
   params: defineParams =>
@@ -155,6 +159,22 @@ const qetaSearchResultItem = SearchResultListItemBlueprint.make({
   },
 });
 
+const qetaPostSearchFilterType = SearchFilterResultTypeBlueprint.make({
+  params: {
+    value: 'qeta_post',
+    name: 'Q&A post',
+    icon: <ContactSupportIcon />,
+  },
+});
+
+const qetaCollectionSearchFilterType = SearchFilterResultTypeBlueprint.make({
+  params: {
+    value: 'qeta_collection',
+    name: 'Q&A collection',
+    icon: <PlaylistPlayIcon />,
+  },
+});
+
 /**
  * Backstage frontend plugin.
  *
@@ -172,6 +192,8 @@ export default createFrontendPlugin({
     EntityPostsContent,
     qetaNavItem,
     qetaSearchResultItem,
+    qetaPostSearchFilterType,
+    qetaCollectionSearchFilterType,
   ],
 });
 
