@@ -3,6 +3,10 @@ import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { registerGetPostsAction } from './getPosts.ts';
 import { registerPostActions } from './createPost.ts';
 import { registerAnswerQuestionAction } from './answerQuestion.ts';
+import {
+  registerCommentAnswerAction,
+  registerCommentPostAction,
+} from './comment';
 
 export const registerActions = (options: {
   actionsRegistry: ActionsRegistryService;
@@ -12,4 +16,6 @@ export const registerActions = (options: {
   registerGetPostsAction(options);
   registerPostActions(options);
   registerAnswerQuestionAction(options);
+  registerCommentPostAction(options);
+  registerCommentAnswerAction(options);
 };

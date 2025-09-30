@@ -98,7 +98,7 @@ export const registerPostActions = (options: {
         z.object({
           id: z
             .number()
-            .describe('The unique identifier of the created articlet'),
+            .describe('The unique identifier of the created article'),
           title: z.string().describe('The title of the article'),
           content: z.string().describe('The content/body of the article'),
           tags: z

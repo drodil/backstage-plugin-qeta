@@ -12,8 +12,10 @@ export const registerAnswerQuestionAction = (options: {
   actionsRegistry.register({
     name: 'answer-question',
     title: 'Answer a Q&A question',
-    description:
-      'This allows you to provide an answer to an existing question.',
+    description: `
+      This allows you to provide an answer to an existing question.
+      Answers can only be posted to questions, not to articles or links.
+      `,
     attributes: {
       idempotent: true,
       destructive: false,
