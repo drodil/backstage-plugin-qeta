@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.39.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.38.2...v3.39.0) (2025-09-30)
+
+
+### Features
+
+* add comment actions to actions registry ([5baeb3a](https://github.com/drodil/backstage-plugin-qeta/commit/5baeb3ae172d5f613b88c08eb2e54a11f84bb3f8))
+
+
+### Bug Fixes
+
+* entity kind filter to work with right config ([b9cff08](https://github.com/drodil/backstage-plugin-qeta/commit/b9cff08aa4b34bec46c75ff17827554d4d822557))
+
 ### [3.38.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.38.1...v3.38.2) (2025-09-30)
 
 
