@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.38.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.38.1...v3.38.2) (2025-09-30)
+
+
+### Bug Fixes
+
+* **nfs:** add missing search filter types ([ff29b5d](https://github.com/drodil/backstage-plugin-qeta/commit/ff29b5d85d659b1da6e8e238bd0f173cacc8aca9))
+* search result item to show up properly ([cd7b986](https://github.com/drodil/backstage-plugin-qeta/commit/cd7b986588c5f5bcc78b836d1751644f54685389))
+
 ### [3.38.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.38.0...v3.38.1) (2025-09-30)
 
 
