@@ -20,7 +20,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box, makeStyles, Typography } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
 
 const useDescriptionStyles = makeStyles(
@@ -103,24 +103,26 @@ export const LinkPage = () => {
   return (
     <>
       <ContentHeader
-        // @ts-ignore, it can accept a react node, like description.
-        title={
+        title={post.title}
+        titleComponent={
           post.url ? (
             <Box display="flex" alignItems="center">
               <FaviconItem entity={post} />
-              <a
-                href={post.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: 'inherit', textDecoration: 'none' }}
-                data-testid="link-title"
-                onClick={event => {
-                  event.stopPropagation();
-                  qetaApi.clickLink(post.id);
-                }}
-              >
-                {post.title}
-              </a>
+              <Typography variant="h3">
+                <a
+                  href={post.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'inherit', textDecoration: 'none' }}
+                  data-testid="link-title"
+                  onClick={event => {
+                    event.stopPropagation();
+                    qetaApi.clickLink(post.id);
+                  }}
+                >
+                  {post.title}
+                </a>
+              </Typography>
             </Box>
           ) : (
             post.title
