@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
@@ -84,14 +83,12 @@ export const LinkPage = () => {
           {' · '}
         </Box>
         {q.updated && (
-          <React.Fragment>
-            <Box fontWeight="fontWeightMedium" className={dStyles.box}>
-              {t('authorBox.updatedAtTime')}{' '}
-              <RelativeTimeWithTooltip value={q.updated} />{' '}
-              {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
-              {' · '}
-            </Box>
-          </React.Fragment>
+          <Box fontWeight="fontWeightMedium" className={dStyles.box}>
+            {t('authorBox.updatedAtTime')}{' '}
+            <RelativeTimeWithTooltip value={q.updated} />{' '}
+            {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
+            {' · '}
+          </Box>
         )}
         <Box fontWeight="fontWeightMedium" className={dStyles.box}>
           {t('common.clicksCount', { count: score })}
