@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.39.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.39.0...v3.39.1) (2025-10-07)
+
+
+### Bug Fixes
+
+* update 'url' column in 'posts' table to use text type ([1665d60](https://github.com/drodil/backstage-plugin-qeta/commit/1665d60b19cdfdc44c3685326fd9aaa2efdc2148)), closes [#341](https://github.com/drodil/backstage-plugin-qeta/issues/341)
+* update LinkPage title structure with Typography ([dfff83d](https://github.com/drodil/backstage-plugin-qeta/commit/dfff83d1546c23562d07e3625b6402d545313622))
+
 ## [3.39.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.38.2...v3.39.0) (2025-09-30)
 
 
