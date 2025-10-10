@@ -9,6 +9,16 @@ body:
       value: |
         Please fill in each section completely, and [search in GitHub](https://github.com/drodil/backstage-plugin-qeta/search?type=Issues)
         before reporting a new bug to avoid duplicates. Thank you!
+
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version
+      description: Which version of the plugin are you using?
+      placeholder: v3.39.0
+    validations:
+      required: true
+
   - type: textarea
     id: description
     validations:
