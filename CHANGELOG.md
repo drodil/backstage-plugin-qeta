@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.40.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.40.0...v3.40.1) (2025-10-10)
+
+
+### Bug Fixes
+
+* change to rehype plugin instead remark ([c02a1b3](https://github.com/drodil/backstage-plugin-qeta/commit/c02a1b3e7ff839dfe4654d84db6afa8da718640b))
+
 ## [3.40.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.39.1...v3.40.0) (2025-10-10)
 
 
