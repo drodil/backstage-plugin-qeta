@@ -1,4 +1,9 @@
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  isGroupEntity,
+  isUserEntity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Filters } from '../components/FilterPanel/FilterPanel';
 import FileType from 'file-type';
 import { ErrorApi } from '@backstage/core-plugin-api';
@@ -55,12 +60,16 @@ export const getEntityTitle = (
   opts?: { withType: boolean },
 ): string => {
   const { withType } = opts || { withType: true };
+  if (
+    (isUserEntity(entity) || isGroupEntity(entity)) &&
+    entity.spec?.profile?.displayName
+  ) {
+    return entity.spec.profile.displayName;
+  }
+
   const stringified = stringifyEntityRef(entity);
   return `${
-    entity.metadata.title ??
-    spec.profile.displayName ??
-    formatEntityName(stringified) ??
-    stringified
+    entity.metadata.title ?? formatEntityName(stringified) ?? stringified
   }${withType && entity.spec?.type ? ` (${entity.spec.type})` : ''}`;
 };
 
