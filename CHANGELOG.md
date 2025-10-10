@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.40.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.39.1...v3.40.0) (2025-10-10)
+
+
+### Features
+
+* support mermaid in markdown content ([d47f669](https://github.com/drodil/backstage-plugin-qeta/commit/d47f669bd176300b35afec602b04ef7d4ed5619a)), closes [#347](https://github.com/drodil/backstage-plugin-qeta/issues/347)
+
+
+### Bug Fixes
+
+* user group to use display name if available ([b539641](https://github.com/drodil/backstage-plugin-qeta/commit/b539641281605a01ba32c7dbd325a344c3d841b0))
+
 ### [3.39.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.39.0...v3.39.1) (2025-10-07)
 
 
