@@ -3585,6 +3585,7 @@ __metadata:
   resolution: "@drodil/backstage-plugin-qeta-common@workspace:plugins/qeta-common"
   dependencies:
     "@backstage/cli": "backstage:^"
+    "@backstage/config": "backstage:^"
     "@backstage/errors": "backstage:^"
     "@backstage/plugin-permission-common": "backstage:^"
     "@backstage/plugin-search-common": "backstage:^"

@@ -2,6 +2,7 @@ import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { compact } from 'lodash';
 import { isValidTag } from './tags';
 import { PostType } from './types.ts';
+import { Config } from '@backstage/config';
 
 export const truncate = (str: string, n: number): string => {
   return str.length > n ? `${str.slice(0, n - 1)}...` : str;
@@ -113,4 +114,14 @@ export function selectByPostType<T>(
     default:
       return questionValue;
   }
+}
+
+export function getSupportedEntityKinds(config?: Config): string[] {
+  return (
+    config?.getOptionalStringArray('qeta.entities.kinds') ??
+    config?.getOptionalStringArray('qeta.entityKinds') ?? [
+      'system',
+      'component',
+    ]
+  ).map(k => k.toLowerCase());
 }

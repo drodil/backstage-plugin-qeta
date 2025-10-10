@@ -115,6 +115,9 @@ const getValues = async (
             'metadata.name',
             'metadata.namespace',
             'metadata.title',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
           ],
         })
       : [];

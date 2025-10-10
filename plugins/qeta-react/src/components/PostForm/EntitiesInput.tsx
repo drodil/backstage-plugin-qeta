@@ -27,6 +27,7 @@ import {
 } from './AutocompleteListComponent';
 import { AutocompleteProps } from '@material-ui/lab/Autocomplete/Autocomplete';
 import { FieldError } from 'react-hook-form';
+import { getSupportedEntityKinds } from '@drodil/backstage-plugin-qeta-common';
 
 export const EntitiesInput = (props: {
   value?: Entity[];
@@ -74,11 +75,7 @@ export const EntitiesInput = (props: {
     if (kind) {
       return kind;
     }
-    let kinds = configApi.getOptionalStringArray('qeta.entityKinds');
-    if (!kinds) {
-      kinds = configApi.getOptionalStringArray('qeta.entities.kinds');
-    }
-    return kinds || ['Component', 'System'];
+    return getSupportedEntityKinds(configApi);
   }, [configApi, kind]);
   const max = useMemo(() => {
     if (maximum) {
@@ -131,6 +128,7 @@ export const EntitiesInput = (props: {
             'metadata.title',
             'metadata.description',
             'spec.type',
+            'spec.profile.displayName',
           ],
         })
         .catch(_ => setAvailableEntities(null))

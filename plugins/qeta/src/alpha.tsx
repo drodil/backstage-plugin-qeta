@@ -18,7 +18,10 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
+import {
+  getSupportedEntityKinds,
+  QetaClient,
+} from '@drodil/backstage-plugin-qeta-common';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
@@ -124,13 +127,7 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
       title: config.title ?? 'Q&A',
       filter: (entity: Entity) => {
         const configApi = apis.get(configApiRef);
-        const supportedKinds = (
-          configApi?.getOptionalStringArray('qeta.entities.kinds') ??
-          configApi?.getOptionalStringArray('qeta.entityKinds') ?? [
-            'system',
-            'component',
-          ]
-        )?.map(k => k.toLowerCase());
+        const supportedKinds = getSupportedEntityKinds(configApi);
         const entityKind = entity.kind.toLowerCase();
         return supportedKinds?.includes(entityKind);
       },

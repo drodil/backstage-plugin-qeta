@@ -57,7 +57,10 @@ export const getEntityTitle = (
   const { withType } = opts || { withType: true };
   const stringified = stringifyEntityRef(entity);
   return `${
-    entity.metadata.title ?? formatEntityName(stringified) ?? stringified
+    entity.metadata.title ??
+    spec.profile.displayName ??
+    formatEntityName(stringified) ??
+    stringified
   }${withType && entity.spec?.type ? ` (${entity.spec.type})` : ''}`;
 };
 

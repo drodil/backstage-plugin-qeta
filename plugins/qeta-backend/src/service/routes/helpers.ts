@@ -11,6 +11,7 @@ import { mapAdditionalFields } from '../util';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   filterTags,
+  getSupportedEntityKinds,
   isValidTag,
   qetaCreateTagPermission,
   qetaDeleteTagPermission,
@@ -30,12 +31,15 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     database,
     catalog,
     auth,
+    config,
     httpAuth,
     auditor,
     logger,
     permissionMgr,
     aiHandler,
   } = options;
+
+  const supportedKinds = getSupportedEntityKinds(config);
 
   const validateEntityRef = (entityRef: string, kind?: string) => {
     try {
@@ -425,9 +429,17 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       });
       const entities = await catalog.queryEntities(
         {
+          filter: {
+            kind: supportedKinds,
+          },
           fullTextFilter: {
             term: String(request.query.searchQuery),
-            fields: ['metadata.name', 'metadata.title', 'metadata.description'],
+            fields: [
+              'metadata.name',
+              'metadata.title',
+              'metadata.description',
+              'spec.profile.displayName',
+            ],
           },
         },
         { token },

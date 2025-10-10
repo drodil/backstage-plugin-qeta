@@ -48,6 +48,7 @@
     "tsc": "tsc"
   },
   "dependencies": {
+    "@backstage/config": "backstage:^",
     "@backstage/errors": "backstage:^",
     "@backstage/plugin-permission-common": "backstage:^",
     "@backstage/plugin-search-common": "backstage:^",
