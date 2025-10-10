@@ -26,7 +26,7 @@ import GithubSlugger from 'github-slugger';
 import { HtmlElementNode } from '@jsdevtools/rehype-toc/lib/types';
 import { find } from 'unist-util-find';
 import { TagChip } from '../TagsAndEntities/TagChip';
-import mermaid from 'remark-mermaidjs';
+import rehypeMermaid from 'rehype-mermaid';
 
 const slugger = new GithubSlugger();
 
@@ -297,7 +297,15 @@ export const MarkdownRenderer = (props: {
     }
   }, []);
 
-  const rehypePlugins: import('unified').PluggableList = [[rehypeSlug]];
+  const rehypePlugins: import('unified').PluggableList = [
+    [rehypeSlug],
+    [
+      rehypeMermaid,
+      {
+        colorScheme: darkTheme ? 'dark' : 'light',
+      },
+    ],
+  ];
   if (showToc) {
     rehypePlugins.push([
       rehypeToc,
@@ -334,7 +342,7 @@ export const MarkdownRenderer = (props: {
   return (
     <div className={`${classes.markdown} ${mainClassName ?? ''}`.trim()}>
       <MarkdownHooks
-        remarkPlugins={[gfm, mermaid]}
+        remarkPlugins={[gfm]}
         rehypePlugins={rehypePlugins}
         components={{
           h1: (p: any) => headingRenderer(p),
