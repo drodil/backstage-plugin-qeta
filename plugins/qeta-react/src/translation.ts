@@ -155,6 +155,10 @@ export const qetaTranslationRef = createTranslationRef({
         placeholder: 'https://',
         invalid: 'Please enter a valid URL (starting with http:// or https://)',
       },
+      authorInput: {
+        label: 'Author',
+        placeholder: 'Select author',
+      },
       submit: {
         existingPost: 'Save',
         publish: 'Publish',

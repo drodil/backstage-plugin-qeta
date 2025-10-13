@@ -52,7 +52,7 @@ export interface PostsQuery extends PaginatedQuery {
   tagsRelation?: 'and' | 'or';
   entities?: string[];
   entitiesRelation?: 'and' | 'or';
-  author?: string | string[];
+  author?: string;
   excludeAuthors?: string[];
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;

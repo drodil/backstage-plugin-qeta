@@ -276,6 +276,7 @@ export interface CollectionRequest {
 export interface PostRequest {
   title: string;
   content: string;
+  author?: string;
   tags?: string[];
   entities?: string[];
   images?: number[];

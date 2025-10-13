@@ -18,7 +18,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -50,6 +50,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import HelpIcon from '@material-ui/icons/Help';
 import { useDebounce } from 'react-use';
+import { useIdentityApi, useIsModerator } from '../../hooks';
 
 const formToRequest = (
   form: QuestionFormValues,
@@ -58,6 +59,7 @@ const formToRequest = (
   return {
     ...form,
     entities: form.entities?.map(stringifyEntityRef),
+    author: form.author ? stringifyEntityRef(form.author) : undefined,
     images: images,
   };
 };
@@ -106,6 +108,8 @@ const getValues = async (
   }
 
   const post = await api.getPost(id);
+  const authorEntity = await catalogApi.getEntityByRef(post.author);
+
   const entities =
     post.entities && post.entities.length > 0
       ? await catalogApi.getEntitiesByRefs({
@@ -124,6 +128,7 @@ const getValues = async (
   return {
     title: post.title,
     content: post.content,
+    author: authorEntity,
     tags: post.tags ?? [],
     entities: 'items' in entities ? compact(entities.items) : [],
     type,
@@ -141,9 +146,16 @@ export const PostForm = (props: PostFormProps) => {
   const articleRoute = useRouteRef(articleRouteRef);
   const linkRoute = useRouteRef(linkRouteRef);
   const navigate = useNavigate();
+  const { value: identity } = useIdentityApi(
+    api => api.getBackstageIdentity(),
+    [],
+  );
+
+  const isModerator = useIsModerator();
   const analytics = useAnalytics();
   const [entityRef, setEntityRef] = useState(entity);
   const [posting, setPosting] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [values, setValues] = useState(getDefaultValues(props));
   const [error, setError] = useState(false);
   const [loadError, setLoadError] = useState(false);
@@ -151,7 +163,12 @@ export const PostForm = (props: PostFormProps) => {
   const [draftId, setDraftId] = useState<string | undefined>(id);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(() => {
     const saved = localStorage.getItem('qeta-auto-save-enabled');
-    return saved ? JSON.parse(saved) : false;
+    try {
+      return saved ? JSON.parse(saved) : false;
+    } catch (_) {
+      localStorage.removeItem('qeta-auto-save-enabled');
+      return false;
+    }
   });
   const [images, setImages] = useState<number[]>([]);
   const [status, setStatus] = useState<PostStatus>('draft');
@@ -177,6 +194,7 @@ export const PostForm = (props: PostFormProps) => {
     reset,
     getValues: getFormValues,
     setValue,
+    watch,
     formState: { errors, isSubmitting, isValid },
   } = useForm<QuestionFormValues>({
     values,
@@ -334,11 +352,14 @@ export const PostForm = (props: PostFormProps) => {
           setValues(data);
           setImages(data.images);
           setStatus(data.status ?? 'draft');
+          setLoading(false);
         })
         .catch(() => {
           setDraftId(undefined);
           setLoadError(true);
         });
+    } else {
+      setLoading(false);
     }
   }, [qetaApi, catalogApi, type, id]);
 
@@ -368,6 +389,29 @@ export const PostForm = (props: PostFormProps) => {
         });
     }
   }, [catalogApi, template]);
+
+  useEffect(() => {
+    if (!id && identity?.userEntityRef) {
+      catalogApi.getEntityByRef(identity.userEntityRef).then(data => {
+        if (data) {
+          setValues(v => {
+            return { ...v, author: data };
+          });
+        }
+      });
+    }
+  }, [catalogApi, id, identity]);
+
+  const authorValue = watch('author');
+  const customAuthor = useMemo(() => {
+    const authorRef = authorValue ? stringifyEntityRef(authorValue) : undefined;
+    return (
+      (authorRef &&
+        identity?.userEntityRef &&
+        authorRef !== identity.userEntityRef) ||
+      false
+    );
+  }, [authorValue, identity]);
 
   useEffect(() => {
     reset(values);
@@ -465,7 +509,7 @@ export const PostForm = (props: PostFormProps) => {
         </span>
       );
     }
-    if (status === 'draft') {
+    if (!loading && status === 'draft') {
       return t('postForm.submit.publish');
     }
     return t('postForm.submit.existingPost');
@@ -744,6 +788,28 @@ export const PostForm = (props: PostFormProps) => {
           name="tags"
         />
       </Box>
+      {isModerator && (
+        <Box mt={1} mb={1}>
+          <Controller
+            control={control}
+            render={({ field, fieldState: { error: authorError } }) => {
+              return (
+                <EntitiesInput
+                  label={t('postForm.authorInput.label')}
+                  placeholder={t('postForm.authorInput.placeholder')}
+                  hideHelpText
+                  multiple={false}
+                  kind={['User']}
+                  required
+                  {...field}
+                  error={authorError}
+                />
+              );
+            }}
+            name="author"
+          />
+        </Box>
+      )}
       {allowAnonymouns && !id && (
         <Box mt={2} mb={2} display="flex" alignItems="center">
           <PostAnonymouslyCheckbox
@@ -771,7 +837,7 @@ export const PostForm = (props: PostFormProps) => {
           >
             {getSubmitButtonText()}
           </Button>
-          {status === 'draft' && (
+          {status === 'draft' && !loading && !customAuthor && (
             <Button
               color="secondary"
               variant="outlined"

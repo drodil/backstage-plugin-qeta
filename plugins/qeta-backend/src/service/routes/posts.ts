@@ -579,6 +579,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       getCreated(request, options),
     ]);
 
+    if (request.body.author && request.body.author !== username) {
+      if (!(await permissionMgr.isModerator(request))) {
+        response
+          .status(400)
+          .json({ errors: validateRequestBody.errors, type: 'body' });
+        return;
+      }
+    }
+
     // Act
     const post = await database.createPost({
       user_ref: username,
@@ -684,6 +693,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    if (request.body.author && request.body.author !== username) {
+      if (!(await permissionMgr.isModerator(request))) {
+        response
+          .status(400)
+          .json({ errors: validateRequestBody.errors, type: 'body' });
+        return;
+      }
+    }
+
     const existingTags = await database.getTags();
     const [tags, entities] = await Promise.all([
       getTags(request, options, existingTags),
@@ -694,6 +712,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const post = await database.updatePost({
       id: postId,
       user_ref: username,
+      author: request.body.author,
       title: request.body.title,
       content: request.body.content,
       tags,
@@ -720,7 +739,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         e => !originalPost.entities?.includes(e),
       );
 
-      console.log(newTags, newEntities);
       const followingUsers = await Promise.all([
         database.getUsersForTags(newTags),
         database.getUsersForEntities(newEntities),

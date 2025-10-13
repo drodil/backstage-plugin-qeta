@@ -30,9 +30,11 @@ import { FieldError } from 'react-hook-form';
 import { getSupportedEntityKinds } from '@drodil/backstage-plugin-qeta-common';
 
 export const EntitiesInput = (props: {
-  value?: Entity[];
+  value?: Entity[] | Entity;
   singleValue?: string;
-  onChange: (value: Entity[]) => void;
+  multiple?: boolean;
+  required?: boolean;
+  onChange: (value: Entity[] | Entity) => void;
   useOnlyUsedEntities?: boolean;
   hideHelpText?: boolean;
   style?: CSSProperties;
@@ -49,6 +51,8 @@ export const EntitiesInput = (props: {
     value,
     singleValue,
     onChange,
+    multiple = true,
+    required = false,
     useOnlyUsedEntities = false,
     hideHelpText = false,
     style,
@@ -146,23 +150,29 @@ export const EntitiesInput = (props: {
     qetaApi,
   ]);
 
+  const usedValue = useMemo(() => {
+    if (!value) {
+      return multiple ? [] : null;
+    }
+    return value;
+  }, [value, multiple]);
+
   if (!availableEntities) {
     return null;
   }
 
   return (
     <Autocomplete
-      multiple
+      multiple={multiple}
       autoHighlight
       autoComplete
       className="qetaEntitiesInput"
-      value={value}
+      value={usedValue}
       disabled={disabled}
       loading={loading}
       loadingText={t('common.loading')}
       groupBy={entityKinds.length > 1 ? option => option.kind : undefined}
       renderGroup={renderGroup}
-      id="entities-select"
       handleHomeEndKeys
       options={availableEntities}
       getOptionLabel={getEntityTitle}
@@ -177,6 +187,13 @@ export const EntitiesInput = (props: {
         stringifyEntityRef(o) === stringifyEntityRef(v)
       }
       onChange={(_e, newValue) => {
+        if (!multiple) {
+          if (!newValue) {
+            return;
+          }
+          onChange(newValue as Entity);
+          return;
+        }
         if (!newValue) {
           onChange([]);
           return;
@@ -224,6 +241,7 @@ export const EntitiesInput = (props: {
             {...params}
             variant="outlined"
             margin="normal"
+            required={required}
             label={label || t('entitiesInput.label')}
             placeholder={placeholder || t('entitiesInput.placeholder')}
             helperText={helperText}

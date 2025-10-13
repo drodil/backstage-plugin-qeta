@@ -570,6 +570,7 @@ export class DatabaseQetaStore implements QetaStore {
     title: string;
     content: string;
     created: Date;
+    author?: string;
     tags?: string[];
     entities?: string[];
     images?: number[];
@@ -584,6 +585,7 @@ export class DatabaseQetaStore implements QetaStore {
       user_ref,
       title,
       content,
+      author,
       created,
       tags,
       entities,
@@ -598,7 +600,7 @@ export class DatabaseQetaStore implements QetaStore {
     const posts = await this.db
       .insert(
         {
-          author: user_ref,
+          author: author ?? user_ref,
           title,
           content,
           created,
@@ -746,6 +748,7 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string;
     title?: string;
     content?: string;
+    author?: string;
     tags?: string[];
     entities?: string[];
     images?: number[];
@@ -760,6 +763,7 @@ export class DatabaseQetaStore implements QetaStore {
       user_ref,
       title,
       content,
+      author,
       tags,
       entities,
       images,
@@ -774,6 +778,7 @@ export class DatabaseQetaStore implements QetaStore {
       title,
       content,
       headerImage,
+      author,
       url,
       updatedBy: setUpdatedBy ? user_ref : undefined,
       updated: setUpdatedBy ? new Date() : undefined,

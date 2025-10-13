@@ -64,6 +64,7 @@ export interface RouteOptions extends RouterOptions {
 export interface PostContent {
   title: string;
   content: string;
+  author?: string;
   tags?: string[];
   entities?: string[];
   images?: number[];
@@ -285,6 +286,7 @@ export const PostSchema: JSONSchemaType<PostContent> = {
   properties: {
     title: { type: 'string', minLength: 1 },
     content: { type: 'string', minLength: 0 },
+    author: { type: 'string', nullable: true },
     tags: { type: 'array', items: { type: 'string' }, nullable: true },
     entities: { type: 'array', items: { type: 'string' }, nullable: true },
     images: { type: 'array', items: { type: 'integer' }, nullable: true },

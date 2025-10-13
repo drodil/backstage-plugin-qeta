@@ -206,6 +206,7 @@ export interface QetaStore {
     title: string;
     content: string;
     created: Date;
+    author?: string;
     tags?: string[];
     entities?: string[];
     images?: number[];
@@ -255,6 +256,7 @@ export interface QetaStore {
     user_ref: string;
     title?: string;
     content?: string;
+    author?: string;
     tags?: string[];
     entities?: string[];
     images?: number[];

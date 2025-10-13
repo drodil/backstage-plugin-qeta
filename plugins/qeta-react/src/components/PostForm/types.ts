@@ -16,6 +16,7 @@ export interface TemplateFormValues extends TagAndEntitiesFormValues {
 export interface QuestionFormValues extends TagAndEntitiesFormValues {
   title: string;
   content: string;
+  author?: Entity;
   anonymous?: boolean;
   type: PostType;
   images: number[];
