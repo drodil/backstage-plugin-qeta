@@ -324,6 +324,7 @@ export interface QetaStore {
     questionId: number,
     answerId: number,
     answer: string,
+    author?: string,
     images?: number[],
     options?: AnswerOptions,
   ): Promise<MaybeAnswer>;

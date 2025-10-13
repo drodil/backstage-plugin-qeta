@@ -255,12 +255,22 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       resource: originalAnswer,
     });
 
+    if (request.body.author && request.body.author !== username) {
+      if (!(await permissionMgr.isModerator(request))) {
+        response
+          .status(400)
+          .json({ errors: validateRequestBody.errors, type: 'body' });
+        return;
+      }
+    }
+
     // Act
     const answer = await database.updateAnswer(
       username,
       postId,
       answerId,
       request.body.answer,
+      request.body.author,
       request.body.images,
     );
 

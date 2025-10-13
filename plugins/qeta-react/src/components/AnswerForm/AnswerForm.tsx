@@ -2,7 +2,6 @@ import { WarningPanel } from '@backstage/core-components';
 import { useCallback, useEffect, useState } from 'react';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
-  AnswerRequest,
   AnswerResponse,
   PostResponse,
   qetaCreateAnswerPermission,
@@ -12,15 +11,21 @@ import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
-import { Button, Typography, useTheme } from '@material-ui/core';
+import { Box, Button, Typography, useTheme } from '@material-ui/core';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { useIdentityApi, useIsModerator } from '../../hooks';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { EntitiesInput } from '../PostForm/EntitiesInput';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
 type AnswerFormData = {
   postId: number;
   answer: string;
   images: number[];
+  author?: Entity;
+  anonymous?: boolean;
 };
 
 const getDefaultValues = (postId: number): AnswerFormData => {
@@ -37,9 +42,15 @@ export const AnswerForm = (props: {
     getDefaultValues(post.id),
   );
   const analytics = useAnalytics();
+  const isModerator = useIsModerator();
+  const { value: identity } = useIdentityApi(
+    api => api.getBackstageIdentity(),
+    [],
+  );
   const theme = useTheme();
   const [error, setError] = useState(false);
   const [posting, setPosting] = useState(false);
+  const catalogApi = useApi(catalogApiRef);
   const [images, setImages] = useState<number[]>([]);
   const [edited, setEdited] = useState(false);
   const qetaApi = useApi(qetaApiRef);
@@ -52,12 +63,12 @@ export const AnswerForm = (props: {
     control,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<AnswerRequest>({
+  } = useForm<AnswerFormData>({
     values,
     defaultValues: getDefaultValues(post.id),
   });
 
-  const postAnswer = (data: AnswerRequest) => {
+  const postAnswer = (data: AnswerFormData) => {
     setPosting(true);
 
     if (id) {
@@ -65,6 +76,7 @@ export const AnswerForm = (props: {
         .updateAnswer(id, {
           postId: post.id,
           answer: data.answer,
+          author: data.author ? stringifyEntityRef(data.author) : undefined,
           images,
         })
         .then(a => {
@@ -109,12 +121,31 @@ export const AnswerForm = (props: {
         if ('content' in a) {
           setValues({ postId: post.id, answer: a.content, images: a.images });
           setImages(a.images);
+          catalogApi.getEntityByRef(a.author).then(data => {
+            if (data) {
+              setValues(v => {
+                return { ...v, author: data };
+              });
+            }
+          });
         } else {
           setError(true);
         }
       });
     }
-  }, [id, post, qetaApi]);
+  }, [catalogApi, id, post, qetaApi]);
+
+  useEffect(() => {
+    if (!id && identity?.userEntityRef) {
+      catalogApi.getEntityByRef(identity.userEntityRef).then(data => {
+        if (data) {
+          setValues(v => {
+            return { ...v, author: data };
+          });
+        }
+      });
+    }
+  }, [catalogApi, id, identity]);
 
   useEffect(() => {
     reset(values);
@@ -163,6 +194,28 @@ export const AnswerForm = (props: {
           )}
           name="answer"
         />
+        {isModerator && id && (
+          <Box mt={1} mb={1}>
+            <Controller
+              control={control}
+              render={({ field, fieldState: { error: authorError } }) => {
+                return (
+                  <EntitiesInput
+                    label={t('postForm.authorInput.label')}
+                    placeholder={t('postForm.authorInput.placeholder')}
+                    hideHelpText
+                    multiple={false}
+                    kind={['User']}
+                    required
+                    {...field}
+                    error={authorError}
+                  />
+                );
+              }}
+              name="author"
+            />
+          </Box>
+        )}
         {allowAnonymouns && !id && (
           <PostAnonymouslyCheckbox
             control={control}

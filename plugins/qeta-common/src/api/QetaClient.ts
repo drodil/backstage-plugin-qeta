@@ -813,7 +813,11 @@ export class QetaClient implements QetaApi {
     const response = await this.fetch(`/posts/${answer.postId}/answers/${id}`, {
       reqInit: {
         method: 'POST',
-        body: JSON.stringify({ answer: answer.answer, images: answer.images }),
+        body: JSON.stringify({
+          answer: answer.answer,
+          images: answer.images,
+          author: answer.author,
+        }),
         headers: { 'Content-Type': 'application/json' },
       },
       requestOptions,

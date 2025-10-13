@@ -298,6 +298,7 @@ export interface TemplateRequest {
 export interface AnswerRequest {
   postId: number;
   answer: string;
+  author?: string;
   images?: number[];
   anonymous?: boolean;
 }

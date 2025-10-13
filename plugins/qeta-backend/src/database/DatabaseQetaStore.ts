@@ -852,6 +852,7 @@ export class DatabaseQetaStore implements QetaStore {
     postId: number,
     answerId: number,
     answer: string,
+    author?: string,
     images?: number[],
     options?: AnswerOptions,
   ): Promise<MaybeAnswer> {
@@ -861,6 +862,7 @@ export class DatabaseQetaStore implements QetaStore {
 
     const rows = await query.update({
       content: answer,
+      author: author,
       updatedBy: user_ref,
       updated: new Date(),
     });
