@@ -88,17 +88,19 @@ export const PostsContainer = (props: PostsContainerProps) => {
 
   return (
     <Box className="qetaPostsContainer">
-      {showTitle && (
+      {(showTitle || showAskButton || showWriteButton || showLinkButton) && (
         <Box mb={3}>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item>
-              <Typography
-                variant="h5"
-                className="qetaPostsContainerTitle"
-                style={{ fontWeight: 500, paddingBottom: 2 }}
-              >
-                {shownTitle} {link} {btn}
-              </Typography>
+              {showTitle && (
+                <Typography
+                  variant="h5"
+                  className="qetaPostsContainerTitle"
+                  style={{ fontWeight: 500, paddingBottom: 2 }}
+                >
+                  {shownTitle} {link} {btn}
+                </Typography>
+              )}
             </Grid>
             <Grid item>
               {showAskButton && (
