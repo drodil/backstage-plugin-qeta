@@ -355,6 +355,7 @@ export const CollectionRankPostSchema: JSONSchemaType<CollectionRankContent> = {
 export interface AnswerQuestion {
   answer: string;
   images?: number[];
+  user?: string;
   author?: string;
   created?: string;
   anonymous?: boolean;
@@ -365,6 +366,7 @@ export const PostAnswerSchema: JSONSchemaType<AnswerQuestion> = {
   properties: {
     answer: { type: 'string', minLength: 1 },
     images: { type: 'array', items: { type: 'integer' }, nullable: true },
+    user: { type: 'string', minLength: 1, nullable: true },
     author: { type: 'string', minLength: 1, nullable: true },
     created: { type: 'string', minLength: 1, nullable: true },
     anonymous: { type: 'boolean', nullable: true },
