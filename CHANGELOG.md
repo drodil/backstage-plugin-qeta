@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.41.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.40.1...v3.41.0) (2025-10-13)
+
+
+### Features
+
+* allow moderators to modify answer author ([15eb38f](https://github.com/drodil/backstage-plugin-qeta/commit/15eb38f027f5f9056b9fbba9c821f7604508062e)), closes [#328](https://github.com/drodil/backstage-plugin-qeta/issues/328)
+* allow moderators to modify post authors ([ef0d58a](https://github.com/drodil/backstage-plugin-qeta/commit/ef0d58a6dd6983f3544b61bce0bc472f124de38e)), closes [#328](https://github.com/drodil/backstage-plugin-qeta/issues/328)
+* allow passing markdown plugins via props ([766012c](https://github.com/drodil/backstage-plugin-qeta/commit/766012ce29900c82d66fc6a10b8b7d912657b2da))
+
+
+### Bug Fixes
+
+* restore user field for metadatainput ([adfd7fa](https://github.com/drodil/backstage-plugin-qeta/commit/adfd7fa14dffd5f6cbd8fda7aaf99403220a0488))
+* tsc errors with entities input ([5899045](https://github.com/drodil/backstage-plugin-qeta/commit/5899045885a68c6f72d6c70eb5237ba518025536))
+
 ### [3.40.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.40.0...v3.40.1) (2025-10-10)
 
 
