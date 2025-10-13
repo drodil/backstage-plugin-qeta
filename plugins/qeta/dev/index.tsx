@@ -6,12 +6,14 @@ import notificationPlugin from '@backstage/plugin-notifications/alpha';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 
 import plugin, {
+  QetaMarkdownRehypePluginBlueprint,
   QetaPageHeaderElementBlueprint,
   QetaPageIntroElementBlueprint,
 } from '../src/alpha';
 import { Box } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import searchPlugin from '@backstage/plugin-search/alpha';
+import rehypeMermaid from 'rehype-mermaid';
 
 const IntroElement = () => (
   <Box marginBottom={4}>
@@ -112,6 +114,11 @@ const module = createFrontendModule({
     QetaPageHeaderElementBlueprint.make({
       params: {
         element: <div>Extra header element</div>,
+      },
+    }),
+    QetaMarkdownRehypePluginBlueprint.make({
+      params: {
+        plugin: rehypeMermaid,
       },
     }),
   ],

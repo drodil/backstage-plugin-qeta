@@ -2,14 +2,21 @@ import { useState } from 'react';
 import {
   PostsContainer,
   PostsContainerProps,
+  QetaExtensionProvider,
   ViewType,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Content } from '@backstage/core-components';
 import { isUserEntity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Container } from '@material-ui/core';
+import { PluggableList } from 'unified';
 
-export const EntityPostsContent = (props: PostsContainerProps) => {
+export type EntityPostsContentProps = PostsContainerProps & {
+  remarkPlugins?: PluggableList;
+  rehypePlugins?: PluggableList;
+};
+
+export const EntityPostsContent = (props: EntityPostsContentProps) => {
   const [view, setView] = useState<ViewType>('list');
   const { entity } = useEntity();
   const additionalProps: PostsContainerProps = {};
@@ -20,15 +27,20 @@ export const EntityPostsContent = (props: PostsContainerProps) => {
   }
 
   return (
-    <Content>
-      <Container>
-        <PostsContainer
-          {...props}
-          {...additionalProps}
-          view={view}
-          onViewChange={setView}
-        />
-      </Container>
-    </Content>
+    <QetaExtensionProvider
+      remarkPlugins={props.remarkPlugins}
+      rehypePlugins={props.rehypePlugins}
+    >
+      <Content>
+        <Container>
+          <PostsContainer
+            {...props}
+            {...additionalProps}
+            view={view}
+            onViewChange={setView}
+          />
+        </Container>
+      </Content>
+    </QetaExtensionProvider>
   );
 };

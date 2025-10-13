@@ -2,6 +2,7 @@ import {
   ApiBlueprint,
   coreExtensionData,
   createExtensionBlueprint,
+  createExtensionDataRef,
   createExtensionInput,
   createFrontendPlugin,
   NavItemBlueprint,
@@ -29,6 +30,7 @@ import {
   SearchFilterResultTypeBlueprint,
   SearchResultListItemBlueprint,
 } from '@backstage/plugin-search-react/alpha';
+import { Pluggable } from 'unified/lib';
 
 const qetaApi = ApiBlueprint.make({
   params: defineParams =>
@@ -62,6 +64,34 @@ export const QetaPageHeaderElementBlueprint = createExtensionBlueprint({
   },
 });
 
+export const markdownPlugin = createExtensionDataRef<Pluggable>().with({
+  id: 'qeta.markdown-plugin',
+});
+
+export const QetaMarkdownRehypePluginBlueprint = createExtensionBlueprint({
+  kind: 'markdown-plugin',
+  attachTo: [
+    { id: 'page:qeta', input: 'rehypePlugins' },
+    { id: 'entity-posts-content', input: 'rehypePlugins' },
+  ],
+  output: [markdownPlugin],
+  factory(params: { plugin: Pluggable }) {
+    return [markdownPlugin(params.plugin)];
+  },
+});
+
+export const QetaMarkdownRemarkPluginBlueprint = createExtensionBlueprint({
+  kind: 'markdown-plugin',
+  attachTo: [
+    { id: 'page:qeta', input: 'remarkPlugins' },
+    { id: 'entity-posts-content', input: 'remarkPlugins' },
+  ],
+  output: [markdownPlugin],
+  factory(params: { plugin: Pluggable }) {
+    return [markdownPlugin(params.plugin)];
+  },
+});
+
 const qetaPage = PageBlueprint.makeWithOverrides({
   config: {
     schema: {
@@ -81,6 +111,14 @@ const qetaPage = PageBlueprint.makeWithOverrides({
       singleton: false,
       optional: true,
     }),
+    rehypePlugins: createExtensionInput([markdownPlugin], {
+      singleton: false,
+      optional: true,
+    }),
+    remarkPlugins: createExtensionInput([markdownPlugin], {
+      singleton: false,
+      optional: true,
+    }),
   },
   factory: (originalFactory, { config, inputs }) => {
     const introElement = inputs.introElement?.get(
@@ -89,6 +127,8 @@ const qetaPage = PageBlueprint.makeWithOverrides({
     const headerElements = inputs.headerElements.map(e =>
       e.get(coreExtensionData.reactElement),
     );
+    const remarkPlugins = inputs.remarkPlugins.map(e => e.get(markdownPlugin));
+    const rehypePlugins = inputs.rehypePlugins.map(e => e.get(markdownPlugin));
     return originalFactory({
       path: config.path ?? '/qeta',
       routeRef: convertLegacyRouteRef(qetaRouteRef),
@@ -99,6 +139,8 @@ const qetaPage = PageBlueprint.makeWithOverrides({
               {...config}
               introElement={introElement}
               headerElements={headerElements}
+              remarkPlugins={remarkPlugins}
+              rehypePlugins={rehypePlugins}
             />,
           ),
         ),
@@ -121,7 +163,17 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
       view: z => z.enum(['list', 'grid']).optional(),
     },
   },
-  factory: (originalFactory, { config, apis }) => {
+  inputs: {
+    rehypePlugins: createExtensionInput([markdownPlugin], {
+      singleton: false,
+      optional: true,
+    }),
+    remarkPlugins: createExtensionInput([markdownPlugin], {
+      singleton: false,
+      optional: true,
+    }),
+  },
+  factory: (originalFactory, { config, apis, inputs }) => {
     return originalFactory({
       path: config.path ?? '/qeta',
       title: config.title ?? 'Q&A',
@@ -131,10 +183,25 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
         const entityKind = entity.kind.toLowerCase();
         return supportedKinds?.includes(entityKind);
       },
-      loader: async () =>
-        import('./components/EntityPostsContent/EntityPostsContent.tsx').then(
-          m => compatWrapper(<m.EntityPostsContent {...config} />),
-        ),
+      loader: async () => {
+        const remarkPlugins = inputs.remarkPlugins.map(e =>
+          e.get(markdownPlugin),
+        );
+        const rehypePlugins = inputs.rehypePlugins.map(e =>
+          e.get(markdownPlugin),
+        );
+        return import(
+          './components/EntityPostsContent/EntityPostsContent.tsx'
+        ).then(m =>
+          compatWrapper(
+            <m.EntityPostsContent
+              {...config}
+              remarkPlugins={remarkPlugins}
+              rehypePlugins={rehypePlugins}
+            />,
+          ),
+        );
+      },
     });
   },
 });

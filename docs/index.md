@@ -8,6 +8,7 @@ configuration options, and usage examples.
 - [Plugin setup](setup.md)
 - [Configuration](config.md)
 - [Migration guide](migration.md)
+- [Extensions](extensions.md)
 
 ## Usage
 

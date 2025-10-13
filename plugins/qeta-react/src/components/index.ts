@@ -31,4 +31,5 @@ export * from './AIAnswerCard';
 export * from './SuggestionsCard';
 export * from './LinkCard';
 export * from './FaviconItem';
+export * from './ExtensionContext';
 export { DeletedBanner, DraftBanner, StatusChip } from './Utility';
