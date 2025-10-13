@@ -593,6 +593,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       user_ref: username,
       title: request.body.title,
       content: request.body.content,
+      author: request.body.author,
       created,
       tags,
       entities,

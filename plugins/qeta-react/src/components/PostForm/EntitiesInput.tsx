@@ -29,12 +29,9 @@ import { AutocompleteProps } from '@material-ui/lab/Autocomplete/Autocomplete';
 import { FieldError } from 'react-hook-form';
 import { getSupportedEntityKinds } from '@drodil/backstage-plugin-qeta-common';
 
-export const EntitiesInput = (props: {
-  value?: Entity[] | Entity;
+type CommonEntitiesInputProps = {
   singleValue?: string;
-  multiple?: boolean;
   required?: boolean;
-  onChange: (value: Entity[] | Entity) => void;
   useOnlyUsedEntities?: boolean;
   hideHelpText?: boolean;
   style?: CSSProperties;
@@ -46,7 +43,25 @@ export const EntitiesInput = (props: {
   name?: string;
   placeholder?: string;
   autocompleteProps?: AutocompleteProps<any, any, any, any>;
-}) => {
+  onChange: (value: any) => void;
+};
+type SingleEntitiesInputValue = CommonEntitiesInputProps & {
+  multiple: false;
+  value?: Entity | null;
+  onChange: (value: Entity) => void;
+};
+
+type MultipleEntitiesInputValue = CommonEntitiesInputProps & {
+  multiple?: true;
+  value?: Entity[];
+  onChange: (value: Entity[]) => void;
+};
+
+export type EntitiesInputProps =
+  | SingleEntitiesInputValue
+  | MultipleEntitiesInputValue;
+
+export const EntitiesInput = (props: EntitiesInputProps) => {
   const {
     value,
     singleValue,
@@ -187,23 +202,23 @@ export const EntitiesInput = (props: {
         stringifyEntityRef(o) === stringifyEntityRef(v)
       }
       onChange={(_e, newValue) => {
-        if (!multiple) {
+        if (multiple) {
+          if (!newValue) {
+            onChange([]);
+            return;
+          }
+          const val = Array.isArray(newValue) ? newValue : [newValue];
+          if (max === null || val.length <= max) {
+            onChange(val.filter(v => typeof v !== 'string'));
+          }
+        } else {
           if (!newValue) {
             return;
           }
           onChange(newValue as Entity);
-          return;
-        }
-        if (!newValue) {
-          onChange([]);
-          return;
-        }
-        const val = Array.isArray(newValue) ? newValue : [newValue];
-        if (max === null || val.length <= max) {
-          onChange(val as Entity[]);
         }
       }}
-      renderOption={option => {
+      renderOption={(option: Entity) => {
         return (
           <>
             <Tooltip
