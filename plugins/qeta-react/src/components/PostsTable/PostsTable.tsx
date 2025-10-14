@@ -19,6 +19,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 
 type QuickFilterType = 'latest' | 'favorites' | 'most_viewed';
 
@@ -95,6 +96,10 @@ export const PostsTable = (props: {
     setQuestionsPerPage(parseInt(event.target.value, 10));
     setPage(1);
   };
+
+  if (loading) {
+    return <LoadingGrid />;
+  }
 
   if (error || response === undefined) {
     return (
