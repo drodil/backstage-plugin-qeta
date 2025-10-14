@@ -74,6 +74,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       const users = await catalog.queryEntities(
         {
           filter: { kind: 'User' },
+          fields: ['kind', 'metadata.name', 'metadata.namespace'],
           fullTextFilter: {
             term: String(request.query.searchQuery),
             fields: [
@@ -85,7 +86,15 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         },
         { token },
       );
-      entityRefs = users.items.map(user => stringifyEntityRef(user));
+      entityRefs = users.items
+        .map(user => {
+          try {
+            return stringifyEntityRef(user);
+          } catch (_e) {
+            return null;
+          }
+        })
+        .filter((e): e is string => e !== null);
     }
 
     const users = await database.getUsers({ entityRefs, ...request.query });
@@ -427,11 +436,13 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         onBehalfOf: await httpAuth.credentials(request),
         targetPluginId: 'catalog',
       });
+      console.log(String(request.query.searchQuery));
       const entities = await catalog.queryEntities(
         {
           filter: {
             kind: supportedKinds,
           },
+          fields: ['kind', 'metadata.name', 'metadata.namespace'],
           fullTextFilter: {
             term: String(request.query.searchQuery),
             fields: [
@@ -444,7 +455,15 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         },
         { token },
       );
-      entityRefs = entities.items.map(user => stringifyEntityRef(user));
+      entityRefs = entities.items
+        .map(entity => {
+          try {
+            return stringifyEntityRef(entity);
+          } catch (_e) {
+            return null;
+          }
+        })
+        .filter((e): e is string => e !== null);
     }
 
     const entities = await database.getEntities({
