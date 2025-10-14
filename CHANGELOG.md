@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.41.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.41.0...v3.41.1) (2025-10-14)
+
+
+### Bug Fixes
+
+* posts container properties ([929d43b](https://github.com/drodil/backstage-plugin-qeta/commit/929d43b4751e7a884980f48a85e4db28636016d4)), closes [#333](https://github.com/drodil/backstage-plugin-qeta/issues/333)
+* show loading state correctly in posts table ([60b14c8](https://github.com/drodil/backstage-plugin-qeta/commit/60b14c8bcc9b233931deb0ea35fd5500aceb95b5))
+
 ## [3.41.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.40.1...v3.41.0) (2025-10-13)
 
 
