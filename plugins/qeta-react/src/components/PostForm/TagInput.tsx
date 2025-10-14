@@ -132,7 +132,7 @@ export const TagInput = (props: {
 
         const uniqueTags = [
           ...new Set([...allowedTags, ...data.tags.map(tag => tag.tag)]),
-        ];
+        ].sort((a, b) => a.localeCompare(b));
         setAvailableTags(uniqueTags);
         setTagDescriptions(
           data.tags.reduce((acc, tag) => {

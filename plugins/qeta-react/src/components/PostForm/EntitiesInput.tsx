@@ -1,5 +1,5 @@
 import { Autocomplete } from '@material-ui/lab';
-import { getEntityTitle } from '../../utils/utils';
+import { getEntityDescription, getEntityTitle } from '../../utils/utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   CircularProgress,
@@ -128,7 +128,11 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
           .then(catalogData => {
             setLoading(false);
             setAvailableEntities(
-              catalogData ? compact(catalogData.items) : null,
+              catalogData
+                ? compact(catalogData.items).sort((a, b) =>
+                    getEntityTitle(a).localeCompare(getEntityTitle(b)),
+                  )
+                : null,
             );
           });
       });
@@ -138,7 +142,6 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
     if (entityKinds && entityKinds.length > 0) {
       catalogApi
         .getEntities({
-          order: { field: 'kind', order: 'asc' },
           filter: { kind: entityKinds },
           fields: [
             'kind',
@@ -148,12 +151,19 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
             'metadata.description',
             'spec.type',
             'spec.profile.displayName',
+            'spec.profile.email',
           ],
         })
         .catch(_ => setAvailableEntities(null))
         .then(data => {
           setLoading(false);
-          setAvailableEntities(data ? data.items : null);
+          setAvailableEntities(
+            data
+              ? data.items.sort((a, b) =>
+                  getEntityTitle(a).localeCompare(getEntityTitle(b)),
+                )
+              : null,
+          );
         });
     }
   }, [
@@ -228,9 +238,8 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
               title={
                 <>
                   <Typography>{getEntityTitle(option)}</Typography>
-                  <Typography variant="caption">{stringified}</Typography>
                   <Typography variant="caption">
-                    {option.metadata.description}
+                    {getEntityDescription(option)}
                   </Typography>
                 </>
               }

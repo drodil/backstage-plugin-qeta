@@ -73,6 +73,20 @@ export const getEntityTitle = (
   }${withType && entity.spec?.type ? ` (${entity.spec.type})` : ''}`;
 };
 
+export const getEntityDescription = (entity: Entity): string => {
+  const parts = [stringifyEntityRef(entity)];
+  if (entity.metadata.description) {
+    parts.push(entity.metadata.description.split('\n')[0]);
+  }
+  if (
+    (isUserEntity(entity) || isGroupEntity(entity)) &&
+    entity.spec?.profile?.email
+  ) {
+    parts.push(entity.spec.profile.email);
+  }
+  return parts.join(', ');
+};
+
 export const formatDate = (localDate: Date) => {
   let date: any = localDate.getDate();
   let month: any = localDate.getMonth() + 1;
