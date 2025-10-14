@@ -195,13 +195,15 @@ export const TagInput = (props: {
         renderOption={option => {
           if (tagDescriptions[option]) {
             return (
-              <Tooltip
-                arrow
-                placement="right"
-                title={<Typography>{tagDescriptions[option]}</Typography>}
-              >
-                <span>{option}</span>
-              </Tooltip>
+              <span key={option}>
+                <Tooltip
+                  arrow
+                  placement="right"
+                  title={<Typography>{tagDescriptions[option]}</Typography>}
+                >
+                  <span>{option}</span>
+                </Tooltip>
+              </span>
             );
           }
           return option;

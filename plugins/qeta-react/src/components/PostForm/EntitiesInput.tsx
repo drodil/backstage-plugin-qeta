@@ -219,17 +219,16 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
         }
       }}
       renderOption={(option: Entity) => {
+        const stringified = stringifyEntityRef(option);
         return (
-          <>
+          <span key={stringified}>
             <Tooltip
               arrow
               placement="right"
               title={
                 <>
                   <Typography>{getEntityTitle(option)}</Typography>
-                  <Typography variant="caption">
-                    {stringifyEntityRef(option)}
-                  </Typography>
+                  <Typography variant="caption">{stringified}</Typography>
                   <Typography variant="caption">
                     {option.metadata.description}
                   </Typography>
@@ -238,7 +237,7 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
             >
               <span>{getEntityTitle(option, { withType: false })}</span>
             </Tooltip>
-          </>
+          </span>
         );
       }}
       renderInput={params => {
