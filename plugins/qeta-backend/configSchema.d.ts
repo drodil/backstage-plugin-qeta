@@ -105,11 +105,20 @@ export interface Config {
       maxSizeImage?: number;
       allowedMimeTypes?: string[];
       bucket?: string;
+      /**
+       * @visibility secret
+       */
       accessKeyId?: string;
+      /**
+       * @visibility secret
+       */
       secretAccessKey?: string;
       region?: string;
       sessionToken?: string;
       blobStorageAccountName?: string;
+      /**
+       * @visibility secret
+       */
       blobStorageConnectionString?: string;
       blobStorageContainer?: string;
       /**
