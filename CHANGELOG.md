@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.41.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.41.3...v3.41.4) (2025-10-24)
+
+
+### Bug Fixes
+
+* add missing secret visibility in config ([ee766b9](https://github.com/drodil/backstage-plugin-qeta/commit/ee766b960d3f45adcfdd064074d4c629d3947fce))
+
 ### [3.41.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.41.2...v3.41.3) (2025-10-15)
 
 
