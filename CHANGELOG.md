@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.41.7](https://github.com/drodil/backstage-plugin-qeta/compare/v3.41.6...v3.41.7) (2025-10-28)
+
+
+### Bug Fixes
+
+* rollback to getEntities ([d42451f](https://github.com/drodil/backstage-plugin-qeta/commit/d42451f2805e683e81b22f79ee850386ecafef6a))
+
 ### [3.41.6](https://github.com/drodil/backstage-plugin-qeta/compare/v3.41.5...v3.41.6) (2025-10-28)
 
 
