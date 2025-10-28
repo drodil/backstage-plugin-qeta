@@ -132,7 +132,6 @@ export const qetaTranslationRef = createTranslationRef({
     postForm: {
       errorPosting: 'Could not post {{type}}',
       errorLoading: 'Could not load {{type}}',
-      editAuthorButton: 'Edit author',
       uploadHeaderImage: 'Upload header image',
       titleInput: {
         label: 'Title',
