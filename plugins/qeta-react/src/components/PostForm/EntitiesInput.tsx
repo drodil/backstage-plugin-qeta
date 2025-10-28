@@ -11,7 +11,7 @@ import {
   ComponentType,
   CSSProperties,
   HTMLAttributes,
-  useEffect,
+  useCallback,
   useMemo,
   useState,
 } from 'react';
@@ -87,7 +87,8 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
   const [availableEntities, setAvailableEntities] = useState<Entity[] | null>(
     [],
   );
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const entityKinds: string[] = useMemo(() => {
@@ -103,45 +104,38 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
     return configApi.getOptionalNumber('qeta.entities.max') ?? 3;
   }, [configApi, maximum]);
 
-  useEffect(() => {
-    if (singleValue) {
-      catalogApi.getEntityByRef(singleValue).then(data => {
+  const handleOpen = useCallback(() => {
+    setOpen(true);
+    (async () => {
+      setLoading(true);
+      if (singleValue) {
+        const entity = await catalogApi.getEntityByRef(singleValue);
         setLoading(false);
-        if (data) {
-          setAvailableEntities([data]);
+        if (entity) {
+          setAvailableEntities([entity]);
         }
-      });
-    }
-  }, [catalogApi, singleValue]);
+        return;
+      }
 
-  useEffect(() => {
-    if (singleValue) {
-      return;
-    }
+      if (useOnlyUsedEntities) {
+        const qetaEntities = await qetaApi.getEntities();
+        const refs = qetaEntities.entities.map(r => r.entityRef);
+        const catalogData = await catalogApi.getEntitiesByRefs({
+          entityRefs: refs,
+        });
+        setLoading(false);
+        setAvailableEntities(
+          catalogData
+            ? compact(catalogData.items).sort((a, b) =>
+                getEntityTitle(a).localeCompare(getEntityTitle(b)),
+              )
+            : null,
+        );
+        return;
+      }
 
-    if (useOnlyUsedEntities) {
-      qetaApi.getEntities().then(data => {
-        const refs = data.entities.map(r => r.entityRef);
-        catalogApi
-          .getEntitiesByRefs({ entityRefs: refs })
-          .catch(_ => setAvailableEntities(null))
-          .then(catalogData => {
-            setLoading(false);
-            setAvailableEntities(
-              catalogData
-                ? compact(catalogData.items).sort((a, b) =>
-                    getEntityTitle(a).localeCompare(getEntityTitle(b)),
-                  )
-                : null,
-            );
-          });
-      });
-      return;
-    }
-
-    if (entityKinds && entityKinds.length > 0) {
-      catalogApi
-        .getEntities({
+      if (entityKinds && entityKinds.length > 0) {
+        const entities = await catalogApi.getEntities({
           filter: { kind: entityKinds },
           fields: [
             'kind',
@@ -153,27 +147,21 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
             'spec.profile.displayName',
             'spec.profile.email',
           ],
-        })
-        .catch(_ => setAvailableEntities(null))
-        .then(data => {
-          setLoading(false);
-          setAvailableEntities(
-            data
-              ? data.items.sort((a, b) =>
-                  getEntityTitle(a).localeCompare(getEntityTitle(b)),
-                )
-              : null,
-          );
         });
-    }
-  }, [
-    catalogApi,
-    singleValue,
-    configApi,
-    entityKinds,
-    useOnlyUsedEntities,
-    qetaApi,
-  ]);
+        setLoading(false);
+        setAvailableEntities(
+          entities
+            ? entities.items.sort((a, b) =>
+                getEntityTitle(a).localeCompare(getEntityTitle(b)),
+              )
+            : null,
+        );
+        return;
+      }
+      setLoading(false);
+      setAvailableEntities(null);
+    })();
+  }, [singleValue, useOnlyUsedEntities, entityKinds, catalogApi, qetaApi]);
 
   const usedValue = useMemo(() => {
     if (!value) {
@@ -199,6 +187,9 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
       groupBy={entityKinds.length > 1 ? option => option.kind : undefined}
       renderGroup={renderGroup}
       handleHomeEndKeys
+      open={open}
+      onOpen={handleOpen}
+      onClose={() => setOpen(false)}
       options={availableEntities}
       getOptionLabel={getEntityTitle}
       ListboxComponent={

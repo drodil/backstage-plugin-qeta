@@ -151,7 +151,7 @@ export const PostForm = (props: PostFormProps) => {
     [],
   );
 
-  const isModerator = useIsModerator();
+  const { isModerator } = useIsModerator();
   const analytics = useAnalytics();
   const [entityRef, setEntityRef] = useState(entity);
   const [posting, setPosting] = useState(false);

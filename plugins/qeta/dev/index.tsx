@@ -15,6 +15,8 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import searchPlugin from '@backstage/plugin-search/alpha';
 import rehypeMermaid from 'rehype-mermaid';
 
+import '@backstage/ui/css/styles.css';
+
 const IntroElement = () => (
   <Box marginBottom={4}>
     <Alert severity="info">

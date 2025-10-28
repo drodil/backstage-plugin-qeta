@@ -3134,6 +3134,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/ui@backstage:^::backstage=1.44.2&npm=0.8.2, @backstage/ui@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "@backstage/ui@npm:0.8.2"
+  dependencies:
+    "@base-ui-components/react": "npm:1.0.0-alpha.7"
+    "@remixicon/react": "npm:^4.6.0"
+    "@tanstack/react-table": "npm:^8.21.3"
+    clsx: "npm:^2.1.1"
+    react-aria-components: "npm:^1.13.0"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-router-dom: ^6.3.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10c0/ca922ccd77d83c9f3af20ed86f60d0cf8463f2a6f01e0988d0efe178a8d1eaee558f8b9c506b12014fa03df1af68490657965bd1b199ab9f7fd660d248eb2303
+  languageName: node
+  linkType: hard
+
 "@backstage/ui@npm:^0.8.1":
   version: 0.8.1
   resolution: "@backstage/ui@npm:0.8.1"
@@ -3726,6 +3747,7 @@ __metadata:
     "@backstage/plugin-search-react": "backstage:^"
     "@backstage/plugin-signals": "backstage:^"
     "@backstage/plugin-signals-react": "backstage:^"
+    "@backstage/ui": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@drodil/backstage-plugin-qeta-react": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
