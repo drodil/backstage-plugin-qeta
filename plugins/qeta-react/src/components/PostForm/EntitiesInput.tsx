@@ -61,6 +61,17 @@ export type EntitiesInputProps =
   | SingleEntitiesInputValue
   | MultipleEntitiesInputValue;
 
+const CATALOG_FIELDS = [
+  'kind',
+  'metadata.name',
+  'metadata.namespace',
+  'metadata.title',
+  'metadata.description',
+  'spec.type',
+  'spec.profile.displayName',
+  'spec.profile.email',
+];
+
 export const EntitiesInput = (props: EntitiesInputProps) => {
   const {
     value,
@@ -111,9 +122,7 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
       if (singleValue) {
         const entity = await catalogApi.getEntityByRef(singleValue);
         setLoading(false);
-        if (entity) {
-          setAvailableEntities([entity]);
-        }
+        setAvailableEntities(entity ? [entity] : null);
         return;
       }
 
@@ -122,6 +131,7 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
         const refs = qetaEntities.entities.map(r => r.entityRef);
         const catalogData = await catalogApi.getEntitiesByRefs({
           entityRefs: refs,
+          fields: CATALOG_FIELDS,
         });
         setLoading(false);
         setAvailableEntities(
@@ -135,27 +145,16 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
       }
 
       if (entityKinds && entityKinds.length > 0) {
-        const entities = await catalogApi.getEntities({
+        const entities = await catalogApi.queryEntities({
           filter: { kind: entityKinds },
-          fields: [
-            'kind',
-            'metadata.name',
-            'metadata.namespace',
-            'metadata.title',
-            'metadata.description',
-            'spec.type',
-            'spec.profile.displayName',
-            'spec.profile.email',
+          fields: CATALOG_FIELDS,
+          orderFields: [
+            { field: 'kind', order: 'asc' },
+            { field: 'metadata.title', order: 'asc' },
           ],
         });
         setLoading(false);
-        setAvailableEntities(
-          entities
-            ? entities.items.sort((a, b) =>
-                getEntityTitle(a).localeCompare(getEntityTitle(b)),
-              )
-            : null,
-        );
+        setAvailableEntities(entities ? entities.items : null);
         return;
       }
       setLoading(false);

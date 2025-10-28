@@ -52,6 +52,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Group
 metadata:
   name: test-group
+  title: Test Group
   namespace: default
 spec:
   type: test-group
@@ -66,6 +67,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Group
 metadata:
   name: child-group
+  title: Child Group
   namespace: default
 spec:
   type: child-group
