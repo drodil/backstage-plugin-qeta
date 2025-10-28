@@ -436,7 +436,6 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         onBehalfOf: await httpAuth.credentials(request),
         targetPluginId: 'catalog',
       });
-      console.log(String(request.query.searchQuery));
       const entities = await catalog.queryEntities(
         {
           filter: {

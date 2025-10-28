@@ -145,10 +145,10 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
       }
 
       if (entityKinds && entityKinds.length > 0) {
-        const entities = await catalogApi.queryEntities({
+        const entities = await catalogApi.getEntities({
           filter: { kind: entityKinds },
           fields: CATALOG_FIELDS,
-          orderFields: [
+          order: [
             { field: 'kind', order: 'asc' },
             { field: 'metadata.title', order: 'asc' },
           ],
