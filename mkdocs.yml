@@ -5,9 +5,19 @@ nav:
   - Home: index.md
   - Setup: setup.md
   - Config: config.md
-  - Catalog: catalog.md
-  - 'Integration with @backstage/plugin-search': search.md]
-  - 'Integration with @backstage/plugin-home': home.md
+  - Migration Guide: migration.md
+  - Extensions: extensions.ms
+  - Templates: templates.md
+  - AI: ai.md
+  - Integrations:
+      - Catalog: catalog.md
+      - Search: search.md
+      - Events: events.md
+      - Permissions: permissions.md
+      - Notifications: notifications.md
+      - Signals: signals.md
+      - Home: home.md
+  - Translations: translations.md
 
 plugins:
   - techdocs-core

@@ -48,6 +48,13 @@ backend:
         accessRestrictions:
           - plugin: qeta
 
+techdocs:
+  builder: 'local'
+  publisher:
+    type: 'local'
+  generator:
+    runIn: local
+
 auth:
   environment: development
   providers:
@@ -64,6 +71,8 @@ catalog:
   locations:
     - type: file
       target: ../../local_dev.yaml
+    - type: file
+      target: ../../catalog-info.yaml
 
 events:
   useEventBus: 'never'

@@ -73,6 +73,8 @@ export type PostFormProps = {
   entityPage?: boolean;
   template?: Template | null;
   onFormChange?: (data: QuestionFormValues) => void;
+  title?: string;
+  content?: string;
 };
 
 const getDefaultValues = (props: PostFormProps): QuestionFormValues => {
@@ -88,8 +90,8 @@ const getDefaultValues = (props: PostFormProps): QuestionFormValues => {
   }
 
   return {
-    title: '',
-    content: '',
+    title: props.title ?? '',
+    content: props.content ?? '',
     tags: props.tags ?? [],
     entities: [],
     type: props.type,

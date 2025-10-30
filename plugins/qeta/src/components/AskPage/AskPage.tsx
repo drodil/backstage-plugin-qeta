@@ -11,7 +11,7 @@ import {
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags, Template } from '@drodil/backstage-plugin-qeta-common';
-import { Grid, Box } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const AskPage = () => {
@@ -28,6 +28,8 @@ export const AskPage = () => {
 
   const entity = searchParams.get('entity') ?? undefined;
   const entityPage = searchParams.get('entityPage') === 'true';
+  const questionTitle = searchParams.get('title') ?? undefined;
+  const content = searchParams.get('content') ?? undefined;
   const tags = filterTags(searchParams.get('tags'));
   const { t } = useTranslationRef(qetaTranslationRef);
   let title;
@@ -94,6 +96,8 @@ export const AskPage = () => {
               template={template}
               onFormChange={handleFormChange}
               aria-label={t('askPage.questionForm')}
+              title={questionTitle}
+              content={content}
             />
             <AIAnswerCard draft={draft} />
           </InfoCard>

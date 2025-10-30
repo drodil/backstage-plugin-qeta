@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: 'plugin.qeta'
+  title: 'Q&A plugin'
+  description: 'Ask and answer questions within Backstage'
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - github
+    - qeta
+spec:
+  type: plugin
+  owner: 'user:default/drodil'
+  lifecycle: production

@@ -14,6 +14,7 @@ import { Box } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import searchPlugin from '@backstage/plugin-search/alpha';
 import rehypeMermaid from 'rehype-mermaid';
+import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 
 import '@backstage/ui/css/styles.css';
 
@@ -127,7 +128,14 @@ const module = createFrontendModule({
 });
 
 const app = createApp({
-  features: [plugin, notificationPlugin, catalogPlugin, searchPlugin, module],
+  features: [
+    plugin,
+    notificationPlugin,
+    catalogPlugin,
+    searchPlugin,
+    techdocsPlugin,
+    module,
+  ],
 });
 
 const container = document.getElementById('root');
