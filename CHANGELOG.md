@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.42.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.41.7...v3.42.0) (2025-10-30)
+
+
+### Features
+
+* add techdocs addon for asking questions about content ([cd70b53](https://github.com/drodil/backstage-plugin-qeta/commit/cd70b5353c70e51fc9715357c95c4d1b5b152e07))
+
 ### [3.41.7](https://github.com/drodil/backstage-plugin-qeta/compare/v3.41.6...v3.41.7) (2025-10-28)
 
 
