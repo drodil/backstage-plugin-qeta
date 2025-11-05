@@ -7,8 +7,20 @@ exports.up = async function up(knex) {
     table.text('headerImage').nullable().alter();
   });
 
+  await knex.schema.dropView('unique_authors');
   await knex.schema.alterTable('posts', table => {
     table.text('headerImage').nullable().alter();
+  });
+  await knex.schema.createView('unique_authors', view => {
+    view.columns(['author']);
+    view.as(
+      knex.union([
+        knex('posts').select('author'),
+        knex('answers').select('author'),
+        knex('comments').select('author'),
+        knex('post_views').select('author'),
+      ]),
+    );
   });
 
   await knex.schema.alterTable('attachments', table => {
@@ -25,8 +37,20 @@ exports.down = async function down(knex) {
     table.string('headerImage').nullable().alter();
   });
 
+  await knex.schema.dropView('unique_authors');
   await knex.schema.alterTable('posts', table => {
     table.string('headerImage').nullable().alter();
+  });
+  await knex.schema.createView('unique_authors', view => {
+    view.columns(['author']);
+    view.as(
+      knex.union([
+        knex('posts').select('author'),
+        knex('answers').select('author'),
+        knex('comments').select('author'),
+        knex('post_views').select('author'),
+      ]),
+    );
   });
 
   await knex.schema.alterTable('attachments', table => {
