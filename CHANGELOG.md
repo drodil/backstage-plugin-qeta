@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.42.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.42.0...v3.42.1) (2025-11-05)
+
+
+### Bug Fixes
+
+* make urls and descriptions able to handle more than 255 chars ([cb33d6e](https://github.com/drodil/backstage-plugin-qeta/commit/cb33d6e1399040dc7568026553ee3260bcb8f219))
+* tag page change not updating posts ([cdbca6a](https://github.com/drodil/backstage-plugin-qeta/commit/cdbca6a75e2e12fb7565bd9792b0c789d87a3db9)), closes [#349](https://github.com/drodil/backstage-plugin-qeta/issues/349)
+* unique_authors migration ([39f0ee2](https://github.com/drodil/backstage-plugin-qeta/commit/39f0ee2904959d217b4892b20aed7a355e19c714))
+
 ## [3.42.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.41.7...v3.42.0) (2025-10-30)
 
 
