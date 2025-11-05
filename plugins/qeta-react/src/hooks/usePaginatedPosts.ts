@@ -75,6 +75,18 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     );
   }, [showFilterPanel]);
 
+  useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      tags: tags,
+      entities: entities ?? (entity ? [entity] : undefined),
+      type,
+      status,
+      collectionId: props.collectionId,
+    }));
+    setPage(1);
+  }, [tags, entities, entity, type, status, props.collectionId]);
+
   const onPageChange = (value: number) => {
     setPage(value);
     setSearchParams(prev => {
