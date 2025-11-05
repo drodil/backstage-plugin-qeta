@@ -11,7 +11,7 @@ import {
   Comment,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api.ts';
 import { CommentForm } from './CommentForm.tsx';
 import { ExpertIcon } from '../Icons/ExpertIcon.tsx';
@@ -61,15 +61,40 @@ export const CommentListItem = (props: {
   const [posting, setPosting] = useState(false);
   const styles = useStyles();
   const [editing, setEditing] = useState(false);
+  const alertApi = useApi(alertApiRef);
 
   const deleteComment = (id: number) => {
     if (answer) {
-      qetaApi.deleteAnswerComment(post.id, answer.id, id).then(a => {
-        onCommentAction(post, a);
-      });
+      qetaApi
+        .deleteAnswerComment(post.id, answer.id, id)
+        .catch(e =>
+          alertApi.post({
+            message: e.message,
+            display: 'transient',
+            severity: 'error',
+          }),
+        )
+        .then(a => {
+          if (a) {
+            onCommentAction(post, a);
+          }
+        });
       return;
     }
-    qetaApi.deletePostComment(post.id, id).then(q => onCommentAction(q));
+    qetaApi
+      .deletePostComment(post.id, id)
+      .catch(e =>
+        alertApi.post({
+          message: e.message,
+          display: 'transient',
+          severity: 'error',
+        }),
+      )
+      .then(q => {
+        if (q) {
+          onCommentAction(q);
+        }
+      });
   };
 
   const saveComment = (data: { content: string }) => {
@@ -77,18 +102,42 @@ export const CommentListItem = (props: {
     if (answer) {
       qetaApi
         .updateAnswerComment(post.id, answer.id, comment.id, data.content)
+        .catch(e =>
+          alertApi.post({
+            message: e.message,
+            display: 'transient',
+            severity: 'error',
+          }),
+        )
         .then(a => {
+          if (a) {
+            onCommentAction(post, a);
+          }
+        })
+        .finally(() => {
           setEditing(false);
           setPosting(false);
-          onCommentAction(post, a);
         });
       return;
     }
-    qetaApi.updatePostComment(post.id, comment.id, data.content).then(q => {
-      setEditing(false);
-      setPosting(false);
-      onCommentAction(q);
-    });
+    qetaApi
+      .updatePostComment(post.id, comment.id, data.content)
+      .catch(e =>
+        alertApi.post({
+          message: e.message,
+          display: 'transient',
+          severity: 'error',
+        }),
+      )
+      .then(q => {
+        if (q) {
+          onCommentAction(q);
+        }
+      })
+      .finally(() => {
+        setEditing(false);
+        setPosting(false);
+      });
   };
 
   return (

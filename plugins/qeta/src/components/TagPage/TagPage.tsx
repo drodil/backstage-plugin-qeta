@@ -19,7 +19,7 @@ import {
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import Whatshot from '@material-ui/icons/Whatshot';
-import { useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
@@ -32,6 +32,7 @@ export const TagPage = () => {
   const [view, setView] = useState<ViewType>('list');
 
   const qetaApi = useApi(qetaApiRef);
+  const alertApi = useApi(alertApiRef);
 
   useEffect(() => {
     if (!tag) {
@@ -39,12 +40,21 @@ export const TagPage = () => {
       return;
     }
 
-    qetaApi.getTag(tag).then(res => {
-      if (res) {
-        setResp(res);
-      }
-    });
-  }, [qetaApi, tag]);
+    qetaApi
+      .getTag(tag)
+      .then(res => {
+        if (res) {
+          setResp(res);
+        }
+      })
+      .catch(e => {
+        alertApi.post({
+          message: e.message,
+          severity: 'error',
+          display: 'transient',
+        });
+      });
+  }, [qetaApi, tag, alertApi]);
 
   return (
     <Grid container spacing={4}>

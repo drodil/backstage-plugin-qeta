@@ -296,6 +296,8 @@ export const qetaTranslationRef = createTranslationRef({
       errorPosting: 'Failed to create',
       createButton: 'Create',
       cancelButton: 'Cancel',
+      invalidTagAlert:
+        'Invalid tag given. Tags can only contain lowercase letters, numbers, hyphens, and underscores. Tag must be less than 255 characters.',
     },
     deleteModal: {
       title: {

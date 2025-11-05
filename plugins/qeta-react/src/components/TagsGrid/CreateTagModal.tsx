@@ -8,13 +8,14 @@ import {
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useState } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { ModalContent } from '../Utility/ModalContent';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { EntitiesInput } from '../PostForm/EntitiesInput.tsx';
+import { isValidTag } from '@drodil/backstage-plugin-qeta-common';
 
 export const CreateTagModal = (props: {
   open: boolean;
@@ -26,10 +27,20 @@ export const CreateTagModal = (props: {
   const [description, setDescription] = useState('');
   const [experts, setExperts] = useState<Entity[]>([]);
   const { t } = useTranslationRef(qetaTranslationRef);
+  const alertApi = useApi(alertApiRef);
   const [error, setError] = useState(false);
   const qetaApi = useApi(qetaApiRef);
 
   const handleCreate = () => {
+    if (!isValidTag(tag)) {
+      alertApi.post({
+        message: t('createTagModal.invalidTagAlert'),
+        severity: 'error',
+        display: 'transient',
+      });
+      return;
+    }
+
     qetaApi
       .createTag(
         tag,
@@ -46,7 +57,12 @@ export const CreateTagModal = (props: {
         }
         setError(true);
       })
-      .catch(() => {
+      .catch(e => {
+        alertApi.post({
+          message: e.message,
+          severity: 'error',
+          display: 'transient',
+        });
         setError(true);
       });
   };

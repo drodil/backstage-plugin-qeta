@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useEffect, useState } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -32,15 +32,27 @@ export const EditTagModal = (props: {
   const [error, setError] = useState(false);
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
+  const alertApi = useApi(alertApiRef);
 
   useEffect(() => {
     if (!isModerator || !tag.experts || tag.experts.length === 0) {
       return;
     }
-    catalogApi.getEntitiesByRefs({ entityRefs: tag.experts }).then(resp => {
-      setExperts(compact(resp.items));
-    });
-  }, [catalogApi, isModerator, tag.experts]);
+    catalogApi
+      .getEntitiesByRefs({ entityRefs: tag.experts })
+      .catch(e =>
+        alertApi.post({
+          message: e.message,
+          severity: 'error',
+          display: 'transient',
+        }),
+      )
+      .then(resp => {
+        if (resp) {
+          setExperts(compact(resp.items));
+        }
+      });
+  }, [alertApi, catalogApi, isModerator, tag.experts]);
 
   const handleUpdate = () => {
     qetaApi
@@ -56,8 +68,13 @@ export const EditTagModal = (props: {
         }
         setError(true);
       })
-      .catch(() => {
+      .catch(e => {
         setError(true);
+        alertApi.post({
+          message: e.message,
+          severity: 'error',
+          display: 'transient',
+        });
       });
   };
 

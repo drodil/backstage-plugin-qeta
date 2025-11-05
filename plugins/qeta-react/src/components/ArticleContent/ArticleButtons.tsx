@@ -11,7 +11,7 @@ import {
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { LinkButton } from '../Buttons/LinkButton';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { editArticleRouteRef } from '../../routes';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteModal } from '../DeleteModal';
@@ -58,6 +58,7 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
+  const alertApi = useApi(alertApiRef);
 
   const own = props.post.own ?? false;
 
@@ -80,9 +81,18 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
   };
 
   const restoreArticle = async () => {
-    qetaApi.restorePost(post.id).then(() => {
-      window.location.reload();
-    });
+    qetaApi
+      .restorePost(post.id)
+      .catch(e =>
+        alertApi.post({
+          message: e.message,
+          display: 'transient',
+          severity: 'error',
+        }),
+      )
+      .then(() => {
+        window.location.reload();
+      });
   };
 
   return (

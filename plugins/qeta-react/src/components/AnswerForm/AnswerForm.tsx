@@ -1,6 +1,11 @@
 import { WarningPanel } from '@backstage/core-components';
 import { useCallback, useEffect, useState } from 'react';
-import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  configApiRef,
+  useAnalytics,
+  useApi,
+} from '@backstage/core-plugin-api';
 import {
   AnswerResponse,
   PostResponse,
@@ -57,6 +62,7 @@ export const AnswerForm = (props: {
   const configApi = useApi(configApiRef);
   const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const { t } = useTranslationRef(qetaTranslationRef);
+  const alertApi = useApi(alertApiRef);
 
   const {
     handleSubmit,
@@ -89,7 +95,14 @@ export const AnswerForm = (props: {
           reset();
           onPost(a);
         })
-        .catch(_e => setError(true))
+        .catch(e => {
+          alertApi.post({
+            message: e.message,
+            display: 'transient',
+            severity: 'error',
+          });
+          setError(true);
+        })
         .finally(() => setPosting(false));
       return;
     }
@@ -111,29 +124,46 @@ export const AnswerForm = (props: {
         reset();
         onPost(a);
       })
-      .catch(_e => setError(true))
+      .catch(e => {
+        alertApi.post({
+          message: e.message,
+          display: 'transient',
+          severity: 'error',
+        });
+        setError(true);
+      })
       .finally(() => setPosting(false));
   };
 
   useEffect(() => {
     if (id) {
-      qetaApi.getAnswer(post.id, id).then(a => {
-        if ('content' in a) {
-          setValues({ postId: post.id, answer: a.content, images: a.images });
-          setImages(a.images);
-          catalogApi.getEntityByRef(a.author).then(data => {
-            if (data) {
-              setValues(v => {
-                return { ...v, author: data };
-              });
-            }
+      qetaApi
+        .getAnswer(post.id, id)
+        .then(a => {
+          if ('content' in a) {
+            setValues({ postId: post.id, answer: a.content, images: a.images });
+            setImages(a.images);
+            catalogApi.getEntityByRef(a.author).then(data => {
+              if (data) {
+                setValues(v => {
+                  return { ...v, author: data };
+                });
+              }
+            });
+          } else {
+            setError(true);
+          }
+        })
+        .catch(e => {
+          alertApi.post({
+            message: e.message,
+            display: 'transient',
+            severity: 'error',
           });
-        } else {
           setError(true);
-        }
-      });
+        });
     }
-  }, [catalogApi, id, post, qetaApi]);
+  }, [alertApi, catalogApi, id, post, qetaApi]);
 
   useEffect(() => {
     if (!id && identity?.userEntityRef) {

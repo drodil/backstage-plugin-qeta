@@ -18,7 +18,7 @@ import {
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import Whatshot from '@material-ui/icons/Whatshot';
-import { useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
@@ -31,6 +31,7 @@ export const EntityPage = () => {
   const [view, setView] = useState<ViewType>('list');
 
   const qetaApi = useApi(qetaApiRef);
+  const alertApi = useApi(alertApiRef);
 
   useEffect(() => {
     if (!entityRef) {
@@ -38,12 +39,21 @@ export const EntityPage = () => {
       return;
     }
 
-    qetaApi.getEntity(entityRef).then(res => {
-      if (res) {
-        setResp(res);
-      }
-    });
-  }, [qetaApi, entityRef]);
+    qetaApi
+      .getEntity(entityRef)
+      .then(res => {
+        if (res) {
+          setResp(res);
+        }
+      })
+      .catch(e => {
+        alertApi.post({
+          message: e.message,
+          severity: 'error',
+          display: 'transient',
+        });
+      });
+  }, [qetaApi, entityRef, alertApi]);
 
   let shownTitle: string = t('entitiesPage.defaultTitle');
   let link = undefined;

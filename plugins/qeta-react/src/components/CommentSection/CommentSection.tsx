@@ -6,7 +6,7 @@ import {
   PostResponse,
   qetaCreateCommentPermission,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -80,27 +80,49 @@ export const CommentSection = (props: {
   const entity = answer ?? post;
   const commentsCount = entity.comments?.length || 0;
   const [commentsVisible, setCommentsVisible] = useState(true);
+  const alertApi = useApi(alertApiRef);
 
   const postComment = (data: { content: string }) => {
     setPosting(true);
     if (answer) {
-      qetaApi.commentAnswer(post.id, answer.id, data.content).then(a => {
-        setFormVisible(false);
-        analytics.captureEvent('comment', 'answer');
-        setPosting(false);
-        setEdited(false);
-        onCommentAction(post, a);
-      });
-      return;
+      qetaApi
+        .commentAnswer(post.id, answer.id, data.content)
+        .catch(e =>
+          alertApi.post({
+            message: e.message,
+            severity: 'error',
+            display: 'transient',
+          }),
+        )
+        .then(a => {
+          setFormVisible(false);
+          analytics.captureEvent('comment', 'answer');
+          setEdited(false);
+          if (a) {
+            onCommentAction(post, a);
+          }
+        })
+        .finally(() => setPosting(false));
+    } else {
+      qetaApi
+        .commentPost(post.id, data.content)
+        .catch(e =>
+          alertApi.post({
+            message: e.message,
+            severity: 'error',
+            display: 'transient',
+          }),
+        )
+        .then(q => {
+          setFormVisible(false);
+          analytics.captureEvent('comment', 'question');
+          setEdited(false);
+          if (q) {
+            onCommentAction(q);
+          }
+        })
+        .finally(() => setPosting(false));
     }
-
-    qetaApi.commentPost(post.id, data.content).then(q => {
-      setFormVisible(false);
-      analytics.captureEvent('comment', post.type);
-      setPosting(false);
-      setEdited(false);
-      onCommentAction(q);
-    });
   };
 
   useConfirmNavigationIfEdited(edited);

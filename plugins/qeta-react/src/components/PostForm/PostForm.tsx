@@ -354,16 +354,21 @@ export const PostForm = (props: PostFormProps) => {
           setValues(data);
           setImages(data.images);
           setStatus(data.status ?? 'draft');
-          setLoading(false);
         })
-        .catch(() => {
+        .catch(e => {
+          alertApi.post({
+            message: e.message,
+            severity: 'error',
+            display: 'transient',
+          });
           setDraftId(undefined);
           setLoadError(true);
-        });
+        })
+        .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
-  }, [qetaApi, catalogApi, type, id]);
+  }, [qetaApi, catalogApi, type, id, alertApi]);
 
   useEffect(() => {
     if (entityRef) {

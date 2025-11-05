@@ -72,8 +72,9 @@ export const TagInput = (props: {
         .authorize({
           permission: qetaCreateTagPermission,
         })
+        .catch(_ => setAllowCreation(false))
         .then(res => {
-          if (res.result === AuthorizeResult.ALLOW) {
+          if (res && res.result === AuthorizeResult.ALLOW) {
             setAllowCreation(true);
           } else {
             setAllowCreation(false);

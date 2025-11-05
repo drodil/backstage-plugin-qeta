@@ -1,4 +1,9 @@
-import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  useAnalytics,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import {
   Box,
   Button,
@@ -85,6 +90,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
   const [showTips, setShowTips] = useState(false);
   const [titleCharCount, setTitleCharCount] = useState(values.title.length);
   const { t } = useTranslationRef(qetaTranslationRef);
+  const alertApi = useApi(alertApiRef);
 
   const qetaApi = useApi(qetaApiRef);
   const {
@@ -120,8 +126,13 @@ export const CollectionForm = (props: CollectionFormProps) => {
         })
         .catch(_e => {
           setError(true);
-          setPosting(false);
-        });
+          alertApi.post({
+            message: t('collectionForm.errorPosting'),
+            severity: 'error',
+            display: 'transient',
+          });
+        })
+        .finally(() => setPosting(false));
       return;
     }
     qetaApi
@@ -138,18 +149,33 @@ export const CollectionForm = (props: CollectionFormProps) => {
       })
       .catch(_e => {
         setError(true);
-        setPosting(false);
-      });
+        alertApi.post({
+          message: t('collectionForm.errorPosting'),
+          severity: 'error',
+          display: 'transient',
+        });
+      })
+      .finally(() => setPosting(false));
   };
 
   useEffect(() => {
     if (id) {
-      getValues(qetaApi, id).then(data => {
-        setValues(data.form);
-        setImages(data.form.images);
-      });
+      getValues(qetaApi, id)
+        .catch(e =>
+          alertApi.post({
+            message: e.message,
+            severity: 'error',
+            display: 'transient',
+          }),
+        )
+        .then(data => {
+          if (data) {
+            setValues(data.form);
+            setImages(data.form.images);
+          }
+        });
     }
-  }, [qetaApi, id]);
+  }, [qetaApi, id, alertApi]);
 
   useEffect(() => {
     reset(values);

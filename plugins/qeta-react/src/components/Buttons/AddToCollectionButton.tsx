@@ -41,27 +41,45 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
 
   const handleClick = (collection: Collection) => {
     if (collection.posts?.find(p => p.id === post.id)) {
-      qetaApi.removePostFromCollection(collection.id, post.id).then(() => {
-        alertApi.post({
-          message: t('addToCollectionButton.removed', {
-            collection: collection.title,
-          }),
-          severity: 'success',
-          display: 'transient',
+      qetaApi
+        .removePostFromCollection(collection.id, post.id)
+        .then(() => {
+          alertApi.post({
+            message: t('addToCollectionButton.removed', {
+              collection: collection.title,
+            }),
+            severity: 'success',
+            display: 'transient',
+          });
+          retry();
+        })
+        .catch(e => {
+          alertApi.post({
+            message: e.message,
+            severity: 'error',
+            display: 'transient',
+          });
         });
-        retry();
-      });
     } else {
-      qetaApi.addPostToCollection(collection.id, post.id).then(() => {
-        alertApi.post({
-          message: t('addToCollectionButton.added', {
-            collection: collection.title,
-          }),
-          severity: 'success',
-          display: 'transient',
+      qetaApi
+        .addPostToCollection(collection.id, post.id)
+        .then(() => {
+          alertApi.post({
+            message: t('addToCollectionButton.added', {
+              collection: collection.title,
+            }),
+            severity: 'success',
+            display: 'transient',
+          });
+          retry();
+        })
+        .catch(e => {
+          alertApi.post({
+            message: e.message,
+            severity: 'error',
+            display: 'transient',
+          });
         });
-        retry();
-      });
     }
   };
 

@@ -10,7 +10,7 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { LinkButton } from '../Buttons/LinkButton';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { editLinkRouteRef } from '../../routes';
@@ -74,12 +74,24 @@ export const LinkCard = (props: { link: PostResponse }) => {
   const onCommentAction = (l: PostResponse, _?: AnswerResponse) => {
     setLinkEntity(l);
   };
+  const alertApi = useApi(alertApiRef);
   const styles = useStyles();
 
   const restoreLink = async () => {
-    qetaApi.restorePost(link.id).then(l => {
-      setLinkEntity(l);
-    });
+    qetaApi
+      .restorePost(link.id)
+      .catch(e =>
+        alertApi.post({
+          message: e.message,
+          display: 'transient',
+          severity: 'error',
+        }),
+      )
+      .then(l => {
+        if (l) {
+          setLinkEntity(l);
+        }
+      });
   };
 
   return (

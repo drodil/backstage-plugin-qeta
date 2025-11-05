@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useIsModerator } from '../../hooks';
 import { QetaApi, TemplateRequest } from '@drodil/backstage-plugin-qeta-common';
-import { useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { Controller, useForm } from 'react-hook-form';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -70,6 +70,7 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
   const [posting, setPosting] = useState(false);
   const catalogApi = useApi(catalogApiRef);
   const qetaApi = useApi(qetaApiRef);
+  const alertApi = useApi(alertApiRef);
   const [error, setError] = useState(false);
   const [values, setValues] = useState(getDefaultValues());
   const { isModerator } = useIsModerator();
@@ -89,11 +90,21 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
 
   useEffect(() => {
     if (id) {
-      getValues(qetaApi, catalogApi, id.toString(10)).then(data => {
-        setValues(data);
-      });
+      getValues(qetaApi, catalogApi, id.toString(10))
+        .catch(e =>
+          alertApi.post({
+            message: e.message,
+            severity: 'error',
+            display: 'transient',
+          }),
+        )
+        .then(data => {
+          if (data) {
+            setValues(data);
+          }
+        });
     }
-  }, [qetaApi, catalogApi, id]);
+  }, [qetaApi, catalogApi, id, alertApi]);
 
   const postTemplate = (data: TemplateFormValues) => {
     setPosting(true);
@@ -105,9 +116,15 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
           reset();
           onPost();
         })
-        .catch(_e => {
-          setPosting(false);
-        });
+        .catch(e => {
+          setError(true);
+          alertApi.post({
+            message: e.message,
+            severity: 'error',
+            display: 'transient',
+          });
+        })
+        .finally(() => setPosting(false));
       return;
     }
     qetaApi
@@ -120,10 +137,15 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
         reset();
         onPost();
       })
-      .catch(_e => {
+      .catch(e => {
         setError(true);
-        setPosting(false);
-      });
+        alertApi.post({
+          message: e.message,
+          severity: 'error',
+          display: 'transient',
+        });
+      })
+      .finally(() => setPosting(false));
   };
 
   if (!isModerator) {
