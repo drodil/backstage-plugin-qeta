@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.43.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.42.1...v3.43.0) (2025-11-13)
+
+
+### Features
+
+* add entity suggestions to post form ([ff43a9a](https://github.com/drodil/backstage-plugin-qeta/commit/ff43a9a3ea354ea19168215f6dbe6764610fd24a)), closes [#307](https://github.com/drodil/backstage-plugin-qeta/issues/307)
+* allow defining static notification receivers ([41f275e](https://github.com/drodil/backstage-plugin-qeta/commit/41f275e4f72864d99e7abeba28b167cb07bcfe6f)), closes [#354](https://github.com/drodil/backstage-plugin-qeta/issues/354)
+
+
+### Bug Fixes
+
+* events to use post instead question in payload ([24e46d6](https://github.com/drodil/backstage-plugin-qeta/commit/24e46d62afbcf9d85a3e666efe4cadeb60885aa1))
+
 ### [3.42.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.42.0...v3.42.1) (2025-11-05)
 
 
