@@ -24,7 +24,7 @@ export class NotificationManager {
     private readonly logger: LoggerService,
     private readonly catalog: CatalogApi,
     private readonly auth: AuthService,
-    config: Config,
+    private readonly config: Config,
     private readonly notifications?: NotificationService,
     private readonly cache?: CacheService,
     private readonly notificationReceivers?: NotificationReceiversHandler,
@@ -46,6 +46,9 @@ export class NotificationManager {
         ...(post?.entities ?? []),
         ...followingUsers,
         ...((await this.notificationReceivers?.onNewPost?.(post)) ?? []),
+        ...(this.config.getOptionalStringArray(
+          `qeta.notificationSettings.onCreate.${post.type}`,
+        ) ?? []),
       ]),
     ];
 
@@ -103,6 +106,9 @@ export class NotificationManager {
         ...commenters,
         ...followingUsers,
         ...((await this.notificationReceivers?.onNewPostComment?.(post)) ?? []),
+        ...(this.config.getOptionalStringArray(
+          'qeta.notificationSettings.onCreate.comment',
+        ) ?? []),
       ]),
     ];
 
@@ -150,6 +156,9 @@ export class NotificationManager {
       ...new Set<string>([
         post.author,
         ...((await this.notificationReceivers?.onPostDelete?.(post)) ?? []),
+        ...(this.config.getOptionalStringArray(
+          `qeta.notificationSettings.onDelete.${post.type}`,
+        ) ?? []),
       ]),
     ];
 
@@ -198,6 +207,9 @@ export class NotificationManager {
         ...((await this.notificationReceivers?.onCollectionDelete?.(
           collection,
         )) ?? []),
+        ...(this.config.getOptionalStringArray(
+          `qeta.notificationSettings.onDelete.collection`,
+        ) ?? []),
       ]),
     ];
 
@@ -250,6 +262,9 @@ export class NotificationManager {
           post,
           answer,
         )) ?? []),
+        ...(this.config.getOptionalStringArray(
+          `qeta.notificationSettings.onDelete.answer`,
+        ) ?? []),
       ]),
     ];
 
@@ -295,6 +310,9 @@ export class NotificationManager {
     const notificationReceivers = [
       ...new Set<string>([post.author, ...followingUsers]),
       ...((await this.notificationReceivers?.onPostEdit?.(post)) ?? []),
+      ...(this.config.getOptionalStringArray(
+        `qeta.notificationSettings.onUpdate.${post.type}`,
+      ) ?? []),
     ];
 
     if (notificationReceivers.length === 0) {
@@ -345,6 +363,9 @@ export class NotificationManager {
           question,
           answer,
         )) ?? []),
+        ...(this.config.getOptionalStringArray(
+          `qeta.notificationSettings.onCreate.answer`,
+        ) ?? []),
       ]),
     ];
 
@@ -400,6 +421,9 @@ export class NotificationManager {
           question,
           answer,
         )) ?? []),
+        ...(this.config.getOptionalStringArray(
+          'qeta.notificationSettings.onCreate.comment',
+        ) ?? []),
       ]),
     ];
 
@@ -558,6 +582,9 @@ export class NotificationManager {
         ...followingUsers,
         ...((await this.notificationReceivers?.onNewCollection?.(collection)) ??
           []),
+        ...(this.config.getOptionalStringArray(
+          'qeta.notificationSettings.onCreate.collection',
+        ) ?? []),
       ]),
     ];
 
@@ -607,6 +634,9 @@ export class NotificationManager {
         ...followingUsers,
         ...((await this.notificationReceivers?.onNewCollection?.(collection)) ??
           []),
+        ...(this.config.getOptionalStringArray(
+          'qeta.notificationSettings.onUpdate.collection',
+        ) ?? []),
       ]),
     ];
 

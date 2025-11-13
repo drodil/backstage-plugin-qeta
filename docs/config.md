@@ -8,6 +8,12 @@ qeta:
   allowMetadataInput: false
   permissions: false
   notifications: true
+  notificationSettings:
+    onCreate:
+      question: ['user:default/guest', 'group:default/qeta-moderators']
+      article: ['user:default/guest']
+    onDelete:
+      question: ['group:default/qeta-moderators']
   entities:
     kinds: ['Component']
     max: 3
@@ -39,6 +45,24 @@ The allowed configuration values are:
 - `moderators`, string array, list of moderator groups or users who can edit, delete questions/answers/comments and mark answers correct for any question. Only if permissions framework is not in use.
 - `permissions`, boolean, enable or disable usage of Backstage permission framework, defaults to false
 - `notifications`, boolean, enable or disable usage of Backstage notifications, defaults to true
+
+## Notification settings
+
+- `onCreate.question`, string array, list of users or groups to notify when a question is created
+- `onCreate.article`, string array, list of users or groups to notify when an article is created
+- `onCreate.link`, string array, list of users or groups to notify when a link is created
+- `onCreate.answer`, string array, list of users or groups to notify when an answer is created
+- `onCreate.comment`, string array, list of users or groups to notify when a comment is created
+- `onCreate.collection`, string array, list of users or groups to notify when a collection is created
+- `onDelete.question`, string array, list of users or groups to notify when a question is deleted
+- `onDelete.article`, string array, list of users or groups to notify when an article is deleted
+- `onDelete.link`, string array, list of users or groups to notify when a link is deleted
+- `onDelete.answer`, string array, list of users or groups to notify when an answer is deleted
+- `onDelete.collection`, string array, list of users or groups to notify when a collection is deleted
+- `onUpdate.question`, string array, list of users or groups to notify when a question is updated
+- `onUpdate.article`, string array, list of users or groups to notify when an article is updated
+- `onUpdate.link`, string array, list of users or groups to notify when a link is updated
+- `onUpdate.collection`, string array, list of users or groups to notify when a collection is updated
 
 ## Entities
 

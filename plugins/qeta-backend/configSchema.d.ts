@@ -31,6 +31,41 @@ export interface Config {
      */
     notifications?: boolean;
     /**
+     * Notification settings configuration
+     */
+    notificationSettings?: {
+      /**
+       * Entity references to notify on creation
+       */
+      onCreate?: {
+        question?: string[];
+        article?: string[];
+        link?: string[];
+        answer?: string[];
+        comment?: string[];
+        collection?: string[];
+      };
+      /**
+       * Entity references to notify on update
+       */
+      onUpdate?: {
+        question?: string[];
+        article?: string[];
+        link?: string[];
+        collection?: string[];
+      };
+      /**
+       * Entity references to notify on delete
+       */
+      onDelete?: {
+        question?: string[];
+        article?: string[];
+        link?: string[];
+        answer?: string[];
+        collection?: string[];
+      };
+    };
+    /**
      * Entities configuration for questions.
      *
      * @visibility frontend
