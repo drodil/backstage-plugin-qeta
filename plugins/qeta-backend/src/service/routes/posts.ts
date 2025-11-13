@@ -395,7 +395,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     events?.publish({
       topic: 'qeta',
       eventPayload: {
-        question: updatedPost,
+        post: updatedPost,
         comment: request.body.content,
         author: username,
       },
@@ -639,11 +639,12 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     events?.publish({
       topic: 'qeta',
       eventPayload: {
-        question: post,
+        post,
         author: username,
       },
       metadata: { action: 'new_post' },
     });
+
     auditor?.createEvent({
       eventId: 'create-post',
       severityLevel: 'medium',

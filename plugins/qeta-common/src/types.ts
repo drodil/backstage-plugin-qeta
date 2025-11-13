@@ -103,6 +103,11 @@ export interface Post extends PostAnswerEntity {
   status: PostStatus;
 }
 
+export type NewPostEvent = {
+  post: Post;
+  author: string;
+};
+
 export interface Template {
   id: number;
   title: string;

@@ -55,3 +55,18 @@ Events are published in topic `qeta`. The following events are published:
 - Delete collection
   - payload: collection, author
   - metadata.action = `delete_collection`
+
+Example handling:
+
+```ts
+events.subscribe({
+  id: 'qeta-backend-post-create-subscriber',
+  topics: ['qeta'],
+  onEvent: async event => {
+    if (event.metadata?.action !== 'new_post') {
+      return;
+    }
+    // Handle new post
+  },
+});
+```
