@@ -4,6 +4,7 @@ import {
   AnswersQuery,
   CollectionsQuery,
   EntitiesQuery,
+  EntitySuggestionsQuery,
   PostsQuery,
   QetaApi,
   RequestOptions,
@@ -26,9 +27,11 @@ import {
   CollectionResponseBody,
   CollectionsResponse,
   CollectionsResponseBody,
+  ContentSuggestionsQuery,
   EntitiesResponse,
   EntityLinks,
   EntityResponse,
+  EntitySuggestionsResponse,
   GlobalStat,
   ImpactResponse,
   Post,
@@ -43,7 +46,6 @@ import {
   SuggestionsResponse,
   TagResponse,
   TagsResponse,
-  TagSuggestionsQuery,
   TagSuggestionsResponse,
   TemplateRequest,
   TemplateResponse,
@@ -1435,7 +1437,7 @@ export class QetaClient implements QetaApi {
   }
 
   async getTagSuggestions(
-    options: TagSuggestionsQuery,
+    options: ContentSuggestionsQuery,
     requestOptions?: RequestOptions,
   ): Promise<TagSuggestionsResponse> {
     const response = await this.fetch('/tags/suggest', {
@@ -1447,6 +1449,21 @@ export class QetaClient implements QetaApi {
       requestOptions,
     });
     return (await response.json()) as TagSuggestionsResponse;
+  }
+
+  async getEntitySuggestions(
+    options: EntitySuggestionsQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<EntitySuggestionsResponse> {
+    const response = await this.fetch('/entities/suggest', {
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify(options),
+        headers: { 'Content-Type': 'application/json' },
+      },
+      requestOptions,
+    });
+    return (await response.json()) as EntitySuggestionsResponse;
   }
 
   async fetchURLMetadata(

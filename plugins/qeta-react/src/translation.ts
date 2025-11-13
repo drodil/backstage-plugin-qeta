@@ -202,6 +202,7 @@ export const qetaTranslationRef = createTranslationRef({
       placeholder: 'Type or select entities',
       helperText: 'Add up to {{max}} entities',
       minimumError: 'Please add at least {{min}} entities',
+      suggestedEntities: 'Suggested entities',
     },
     tagsInput: {
       label: 'Tags',

@@ -766,6 +766,9 @@ export const PostForm = (props: PostFormProps) => {
               {...field}
               singleValue={entityRef}
               error={entityError}
+              title={getFormValues('title')}
+              content={getFormValues('content')}
+              tags={getFormValues('tags')}
             />
           )}
           name="entities"

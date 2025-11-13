@@ -407,6 +407,7 @@ export const CommentSchema: JSONSchemaType<Comment> = {
 export interface DraftQuestion {
   title: string;
   content: string;
+  tags?: string[];
 }
 
 export const DraftQuestionSchema: JSONSchemaType<DraftQuestion> = {
@@ -414,6 +415,11 @@ export const DraftQuestionSchema: JSONSchemaType<DraftQuestion> = {
   properties: {
     title: { type: 'string', minLength: 1 },
     content: { type: 'string', minLength: 1 },
+    tags: {
+      type: 'array',
+      items: { type: 'string' },
+      nullable: true,
+    },
   },
   required: ['title', 'content'],
   additionalProperties: false,

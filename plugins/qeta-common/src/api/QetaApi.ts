@@ -12,6 +12,7 @@ import {
   EntitiesResponse,
   EntityLinks,
   EntityResponse,
+  EntitySuggestionsResponse,
   GlobalStat,
   ImpactResponse,
   PostRequest,
@@ -140,9 +141,13 @@ export interface SuggestionsQuery {
   limit?: number;
 }
 
-export interface TagSuggestionsQuery {
+export interface ContentSuggestionsQuery {
   title: string;
   content: string;
+}
+
+export interface EntitySuggestionsQuery extends ContentSuggestionsQuery {
+  tags?: string[];
 }
 
 export interface QetaApi {
@@ -518,9 +523,14 @@ export interface QetaApi {
   ): Promise<SuggestionsResponse>;
 
   getTagSuggestions(
-    options: TagSuggestionsQuery,
+    options: ContentSuggestionsQuery,
     requestOptions?: RequestOptions,
   ): Promise<TagSuggestionsResponse>;
+
+  getEntitySuggestions(
+    options: EntitySuggestionsQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<EntitySuggestionsResponse>;
 
   fetchURLMetadata(request: URLMetadataRequest): Promise<URLMetadataResponse>;
 

@@ -1,7 +1,7 @@
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { ErrorObject } from 'ajv';
 import { RequestOptions } from './api';
-import { EntityLink } from '@backstage/catalog-model';
+import { Entity, EntityLink } from '@backstage/catalog-model';
 
 export interface StatisticResponse {
   ranking: Statistic[];
@@ -470,6 +470,10 @@ export interface SuggestionsResponse {
 
 export interface TagSuggestionsResponse {
   tags: string[];
+}
+
+export interface EntitySuggestionsResponse {
+  entities: Entity[];
 }
 
 export interface URLMetadataRequest {

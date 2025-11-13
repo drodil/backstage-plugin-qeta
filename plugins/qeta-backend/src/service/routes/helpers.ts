@@ -218,26 +218,14 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     response.status(204).send();
   });
 
-  router.post('/tags/suggest', async (request, response) => {
-    const validateRequestBody = ajv.compile(DraftQuestionSchema);
-    if (!validateRequestBody(request.body)) {
-      response.status(400).send({ errors: validateRequestBody.errors });
-      return;
-    }
-
+  const getSuggestedTags = async (title: string, content: string) => {
     try {
       if (aiHandler?.suggestTags) {
-        const { tags } = await aiHandler.suggestTags(
-          request.body.title,
-          request.body.content,
-        );
-        response.json({
-          tags: tags
-            .filter(filterTags)
-            .map(tag => tag.toLocaleLowerCase())
-            .slice(0, 8),
-        });
-        return;
+        const { tags } = await aiHandler.suggestTags(title, content);
+        return tags
+          .filter(filterTags)
+          .map(tag => tag.toLocaleLowerCase())
+          .slice(0, 8);
       }
     } catch (_error) {
       // NOOP: Fallback to database suggestions
@@ -246,39 +234,52 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     const cleanWords = (words: string[]): string[] =>
       removeStopwords(words, [...eng]);
 
+    const { tags: existingTags } = await database.getTags();
+
+    const titleLower = title.toLocaleLowerCase();
+    const titleWords = cleanWords(
+      titleLower.split(/\s+/).map(word => word.toLocaleLowerCase()),
+    );
+    const contentLower = content.toLocaleLowerCase();
+    const contentWords = cleanWords(
+      contentLower.split(/\s+/).map(word => word.toLocaleLowerCase()),
+    );
+
+    const suggestedTags = existingTags
+      .filter(tag => {
+        if (
+          titleLower.includes(tag.tag.toLocaleLowerCase()) ||
+          contentLower.includes(tag.tag.toLocaleLowerCase())
+        ) {
+          return true;
+        }
+
+        const descriptionWords = cleanWords(
+          tag.description?.toLocaleLowerCase().split(/\s+/) || [],
+        );
+
+        return (
+          titleWords.some(word => descriptionWords.includes(word)) ||
+          contentWords.some(word => descriptionWords.includes(word))
+        );
+      })
+      .map(tag => tag.tag);
+    return suggestedTags.filter(filterTags).slice(0, 8);
+  };
+
+  router.post('/tags/suggest', async (request, response) => {
+    const validateRequestBody = ajv.compile(DraftQuestionSchema);
+    if (!validateRequestBody(request.body)) {
+      response.status(400).send({ errors: validateRequestBody.errors });
+      return;
+    }
+
     try {
-      const { tags: existingTags } = await database.getTags();
-
-      const titleLower = request.body.title.toLocaleLowerCase();
-      const titleWords = cleanWords(
-        titleLower.split(/\s+/).map(word => word.toLocaleLowerCase()),
+      const suggestedTags = await getSuggestedTags(
+        request.body.title,
+        request.body.content,
       );
-      const contentLower = request.body.content.toLocaleLowerCase();
-      const contentWords = cleanWords(
-        contentLower.split(/\s+/).map(word => word.toLocaleLowerCase()),
-      );
-
-      const suggestedTags = existingTags
-        .filter(tag => {
-          if (
-            titleLower.includes(tag.tag.toLocaleLowerCase()) ||
-            contentLower.includes(tag.tag.toLocaleLowerCase())
-          ) {
-            return true;
-          }
-
-          const descriptionWords = cleanWords(
-            tag.description?.toLocaleLowerCase().split(/\s+/) || [],
-          );
-
-          return (
-            titleWords.some(word => descriptionWords.includes(word)) ||
-            contentWords.some(word => descriptionWords.includes(word))
-          );
-        })
-        .map(tag => tag.tag);
-
-      response.json({ tags: suggestedTags.filter(filterTags).slice(0, 8) });
+      response.json({ tags: suggestedTags });
     } catch (error) {
       logger.error(`Failed to generate tag suggestions: ${error}`);
       response
@@ -470,6 +471,51 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       ...request.query,
     });
     response.json(entities);
+  });
+
+  router.post('/entities/suggest', async (request, response) => {
+    const validateRequestBody = ajv.compile(DraftQuestionSchema);
+    if (!validateRequestBody(request.body)) {
+      response.status(400).send({ errors: validateRequestBody.errors });
+      return;
+    }
+
+    try {
+      const suggestedTags = await getSuggestedTags(
+        request.body.title,
+        request.body.content,
+      );
+
+      const allTags = request.body.tags
+        ? [...new Set([...request.body.tags, ...suggestedTags])]
+        : suggestedTags;
+
+      if (!allTags.length) {
+        response.json({ entities: [] });
+        return;
+      }
+
+      const { token } = await auth.getPluginRequestToken({
+        onBehalfOf: await httpAuth.credentials(request),
+        targetPluginId: 'catalog',
+      });
+      const entities = await catalog.queryEntities(
+        {
+          filter: {
+            'metadata.tags': allTags,
+            kind: supportedKinds,
+          },
+        },
+        { token },
+      );
+
+      response.json({ entities: entities.items });
+    } catch (error) {
+      logger.error(`Failed to generate entity suggestions: ${error}`);
+      response
+        .status(500)
+        .json({ error: 'Failed to generate entity suggestions' });
+    }
   });
 
   router.get('/entities/followed', async (request, response) => {
