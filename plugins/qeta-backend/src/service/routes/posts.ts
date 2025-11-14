@@ -503,6 +503,53 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       resource: comment,
     });
 
+    const permanent = request.body?.permanent === true;
+
+    if (permanent) {
+      if (!(await permissionMgr.isModerator(request))) {
+        response
+          .status(404)
+          .send({ errors: 'Comment not found', type: 'query' });
+        return;
+      }
+
+      const updatedPostPermanent = await database.deletePostComment(
+        postId,
+        commentId,
+        username,
+        true,
+        {
+          tagsFilter,
+          commentsFilter,
+          answersFilter,
+        },
+      );
+
+      if (updatedPostPermanent === null) {
+        response
+          .status(400)
+          .send({ errors: 'Failed to delete post comment', type: 'body' });
+        return;
+      }
+
+      auditor?.createEvent({
+        eventId: 'delete-comment',
+        severityLevel: 'medium',
+        request,
+        meta: {
+          post: entityToJsonObject(updatedPostPermanent),
+          comment: entityToJsonObject(comment),
+        },
+      });
+
+      await mapAdditionalFields(request, updatedPostPermanent, options, {
+        username,
+      });
+
+      response.json(updatedPostPermanent);
+      return;
+    }
+
     let updatedPost = null;
     if (comment.status === 'deleted') {
       if (!(await permissionMgr.isModerator(request))) {
@@ -800,6 +847,19 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     await permissionMgr.authorize(request, qetaDeletePostPermission, {
       resource: post,
     });
+
+    const permanent = request.body?.permanent === true;
+
+    if (permanent) {
+      if (!(await permissionMgr.isModerator(request))) {
+        response.status(404).send({ errors: 'Post not found', type: 'query' });
+        return;
+      }
+
+      const deletedPermanent = await database.deletePost(post.id, true);
+      response.sendStatus(deletedPermanent ? 204 : 404);
+      return;
+    }
 
     let deleted = false;
     if (post.status === 'deleted') {
