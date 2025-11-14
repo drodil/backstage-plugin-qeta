@@ -249,6 +249,23 @@ describe('Posts Routes', () => {
       const response = await request(app).delete('/posts/1');
       expect(response.status).toEqual(404);
     });
+
+    it('permanently deletes question when permanent flag is set and user is moderator', async () => {
+      const { app: appWithConfig, qetaStore: storeWithConfig } =
+        await setupTestApp({
+          qeta: { moderators: ['user:default/mock'] },
+        });
+
+      storeWithConfig.getPost.mockResolvedValue(question);
+      storeWithConfig.deletePost.mockResolvedValue(true);
+
+      const response = await request(appWithConfig)
+        .delete('/posts/1')
+        .send({ permanent: true });
+
+      expect(response.status).toEqual(204);
+      expect(storeWithConfig.deletePost).toHaveBeenCalledWith(1, true);
+    });
   });
 
   describe('POST /posts/:id/comments', () => {
@@ -405,6 +422,30 @@ describe('Posts Routes', () => {
         ...question,
         created: '2022-01-01T00:00:00.000Z',
       });
+    });
+
+    it('permanently deletes post comment when permanent flag is set and user is moderator', async () => {
+      const { app: appWithConfig, qetaStore: storeWithConfig } =
+        await setupTestApp({
+          qeta: { moderators: ['user:default/mock'] },
+        });
+
+      storeWithConfig.getPost.mockResolvedValue(question);
+      storeWithConfig.getComment.mockResolvedValue(comment);
+      storeWithConfig.deletePostComment.mockResolvedValue(question);
+
+      const response = await request(appWithConfig)
+        .delete('/posts/1/comments/23')
+        .send({ permanent: true });
+
+      expect(response.status).toEqual(200);
+      expect(storeWithConfig.deletePostComment).toHaveBeenCalledWith(
+        1,
+        23,
+        'user:default/mock',
+        true,
+        expect.any(Object),
+      );
     });
   });
 
