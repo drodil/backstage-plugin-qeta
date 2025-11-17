@@ -28,7 +28,7 @@ const useStyles = makeStyles(
     },
     content: {
       display: 'inline',
-      '& *:last-child': {
+      '&>*:last-child:not(ul,ol,blockquote)': {
         display: 'inline',
       },
       lineHeight: 1.5,
