@@ -121,6 +121,27 @@ describe('Answers Routes', () => {
       const response = await request(app).delete('/posts/1/answers/2');
       expect(response.status).toEqual(404);
     });
+
+    it('permanently deletes answer when permanent flag is set and user is moderator', async () => {
+      const { app: appWithConfig, qetaStore: storeWithConfig } =
+        await setupTestApp({
+          qeta: { moderators: ['user:default/mock'] },
+        });
+
+      storeWithConfig.getPost.mockResolvedValue(question);
+      storeWithConfig.getAnswer.mockResolvedValue(answer);
+      storeWithConfig.deleteAnswer.mockResolvedValue(true);
+
+      const response = await request(appWithConfig)
+        .delete(`/posts/${question.id}/answers/${answer.id}`)
+        .send({ permanent: true });
+
+      expect(response.status).toEqual(204);
+      expect(storeWithConfig.deleteAnswer).toHaveBeenCalledWith(
+        answer.id,
+        true,
+      );
+    });
   });
 
   describe('GET /posts/:id/answers/:answerId/upvote', () => {
@@ -276,6 +297,30 @@ describe('Answers Routes', () => {
         ...answer,
         created: '2022-01-01T00:00:00.000Z',
       });
+    });
+
+    it('permanently deletes answer comment when permanent flag is set and user is moderator', async () => {
+      const { app: appWithConfig, qetaStore: storeWithConfig } =
+        await setupTestApp({
+          qeta: { moderators: ['user:default/mock'] },
+        });
+
+      storeWithConfig.getPost.mockResolvedValue(question);
+      storeWithConfig.getAnswer.mockResolvedValue(answer);
+      storeWithConfig.getComment.mockResolvedValue(comment);
+      storeWithConfig.deleteAnswerComment.mockResolvedValue(answer);
+
+      const response = await request(appWithConfig)
+        .delete('/posts/1/answers/1/comments/23')
+        .send({ permanent: true });
+
+      expect(response.status).toEqual(200);
+      expect(storeWithConfig.deleteAnswerComment).toHaveBeenCalledWith(
+        1,
+        23,
+        'user:default/mock',
+        true,
+      );
     });
   });
 

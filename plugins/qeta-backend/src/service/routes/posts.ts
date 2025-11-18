@@ -504,7 +504,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     let updatedPost = null;
-    if (comment.status === 'deleted') {
+    if (comment.status === 'deleted' || request.body?.permanent === true) {
       if (!(await permissionMgr.isModerator(request))) {
         response
           .status(404)
@@ -802,7 +802,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     let deleted = false;
-    if (post.status === 'deleted') {
+    if (post.status === 'deleted' || request.body?.permanent === true) {
       if (!(await permissionMgr.isModerator(request))) {
         response.status(404).send({ errors: 'Post not found', type: 'query' });
         return;

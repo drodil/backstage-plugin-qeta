@@ -377,12 +377,14 @@ export const PostAnswerSchema: JSONSchemaType<AnswerQuestion> = {
 
 export interface DeleteMetadata {
   reason?: string;
+  permanent?: boolean;
 }
 
 export const DeleteMetadataSchema: JSONSchemaType<DeleteMetadata> = {
   type: 'object',
   properties: {
     reason: { type: 'string', minLength: 1, nullable: true },
+    permanent: { type: 'boolean', nullable: true },
   },
   additionalProperties: false,
 };

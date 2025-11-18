@@ -517,7 +517,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       });
 
       // Act
-      if (comment.status === 'deleted') {
+      if (comment.status === 'deleted' || request.body?.permanent === true) {
         if (!permissionMgr.isModerator(request)) {
           response
             .status(404)
@@ -640,7 +640,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
     // Act
     let deleted = false;
-    if (answer.status === 'deleted') {
+    if (answer.status === 'deleted' || request.body?.permanent === true) {
       if (!(await permissionMgr.isModerator(request))) {
         response
           .status(404)
