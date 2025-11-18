@@ -516,47 +516,8 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         resource: comment,
       });
 
-      const permanent = request.body?.permanent === true;
-
-      if (permanent) {
-        if (!permissionMgr.isModerator(request)) {
-          response
-            .status(404)
-            .send({ errors: 'Comment not found', type: 'query' });
-          return;
-        }
-
-        const answerPermanent = await database.deleteAnswerComment(
-          answerId,
-          commentId,
-          username,
-          true,
-        );
-
-        if (!answerPermanent) {
-          response.sendStatus(404);
-          return;
-        }
-
-        auditor?.createEvent({
-          eventId: 'delete-comment',
-          severityLevel: 'medium',
-          request,
-          meta: {
-            post: entityToJsonObject(post),
-            answer: entityToJsonObject(answerPermanent),
-            comment: entityToJsonObject(comment),
-          },
-        });
-
-        await mapAdditionalFields(request, answerPermanent, options);
-
-        response.json(answerPermanent);
-        return;
-      }
-
       // Act
-      if (comment.status === 'deleted') {
+      if (comment.status === 'deleted' || request.body?.permanent === true) {
         if (!permissionMgr.isModerator(request)) {
           response
             .status(404)
@@ -677,24 +638,9 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       resource: answer,
     });
 
-    const permanent = request.body?.permanent === true;
-
-    if (permanent) {
-      if (!(await permissionMgr.isModerator(request))) {
-        response
-          .status(404)
-          .send({ errors: 'Answer not found', type: 'query' });
-        return;
-      }
-
-      const deletedPermanent = await database.deleteAnswer(answerId, true);
-      response.sendStatus(deletedPermanent ? 204 : 404);
-      return;
-    }
-
     // Act
     let deleted = false;
-    if (answer.status === 'deleted') {
+    if (answer.status === 'deleted' || request.body?.permanent === true) {
       if (!(await permissionMgr.isModerator(request))) {
         response
           .status(404)
