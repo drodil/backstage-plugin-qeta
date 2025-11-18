@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.44.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.43.0...v3.44.0) (2025-11-18)
+
+
+### Features
+
+* add permanent deletion flag for posts and answers ([df3367a](https://github.com/drodil/backstage-plugin-qeta/commit/df3367ad7e95a56b90fe7e463f5e310a40c5f906))
+* combine conditionals on routes ([13f9fba](https://github.com/drodil/backstage-plugin-qeta/commit/13f9fba61e702525a42ade18cb5c01183008a037))
+
+
+### Bug Fixes
+
+* **style:** improve inline display handling for comment content ([a326377](https://github.com/drodil/backstage-plugin-qeta/commit/a3263779a084594c5f67da115e1fb1f1ab5c0544))
+
 ## [3.43.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.42.1...v3.43.0) (2025-11-13)
 
 
