@@ -15,6 +15,17 @@ const useStyles = makeStyles(
       marginLeft: theme.spacing(2),
       maxWidth: '200px',
     },
+    authorBoxCompact: {
+      display: 'flex',
+      gap: theme.spacing(0.5),
+      alignItems: 'center',
+      marginBottom: '8px',
+      '& > *': {
+        fontSize: '12px',
+        display: 'inline-flex',
+        lineHeight: '16px',
+      },
+    },
     timeRow: {
       display: 'flex',
       alignItems: 'center',
@@ -22,6 +33,10 @@ const useStyles = makeStyles(
     avatar: {
       width: '20px',
       height: '20px',
+    },
+    avatarCompact: {
+      width: '16px',
+      height: '16px',
     },
     authorInfo: {
       textOverflow: 'ellipsis',
@@ -57,10 +72,31 @@ export const AuthorBox = (props: {
   label: string;
   expert?: boolean;
   anonymous?: boolean;
+  compact?: boolean;
 }) => {
-  const { userEntityRef, time, label, expert, anonymous } = props;
+  const { userEntityRef, time, label, expert, anonymous, compact } = props;
   const { name, initials, user } = useUserInfo(userEntityRef);
   const styles = useStyles();
+
+  if (compact) {
+    return (
+      <Box className={`qetaAuthorBox ${styles.authorBoxCompact}`}>
+        <Avatar
+          src={user?.spec?.profile?.picture}
+          className={`qetaAuthorBoxAvatar ${styles.avatarCompact}`}
+          alt={name}
+          variant="rounded"
+        >
+          {initials}
+        </Avatar>
+        <UserLink entityRef={userEntityRef} anonymous={anonymous} />
+        {expert && <ExpertIcon className={styles.expertIcon} />}
+        <Typography className="qetaAuthorBoxCreated" variant="caption">
+          <RelativeTimeWithTooltip value={time} />
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box className={`qetaAuthorBox ${styles.authorBox}`}>

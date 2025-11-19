@@ -104,13 +104,12 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.text.secondary,
   },
   answersBox: {
-    background: theme.palette.warning.light,
+    background: theme.palette.warning.main,
     color: theme.palette.text.primary,
-    border: `1px solid ${theme.palette.warning.main}`,
+    border: `1px solid ${theme.palette.warning.dark}`,
   },
   answersBoxAnswered: {
     background: theme.palette.success.main,
-    color: theme.palette.getContrastText(theme.palette.success.main),
     border: `1px solid ${theme.palette.success.dark}`,
   },
   avatar: {

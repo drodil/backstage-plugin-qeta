@@ -15,14 +15,7 @@ import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import {
-  Box,
-  Chip,
-  makeStyles,
-  Tooltip,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
+import { Box, Chip, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import numeral from 'numeral';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
@@ -58,35 +51,29 @@ const useStyles = makeStyles(theme => ({
     },
   },
   metaCol: {
-    minWidth: 55,
-    maxWidth: 55,
+    minWidth: 105,
+    maxWidth: 105,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
     justifyContent: 'center',
     marginRight: 16,
-    gap: 8,
+    marginTop: '-2px',
+    gap: 2,
   },
   metaBox: {
-    width: 55,
-    textAlign: 'center',
+    textAlign: 'right',
     borderRadius: 6,
-    padding: '6px 0px',
-    fontWeight: 600,
-    fontSize: '18px',
-    background: theme.palette.background.paper,
+    padding: '4px',
     color: theme.palette.text.primary,
-    border: `1px solid ${theme.palette.divider}`,
     lineHeight: '16px',
+    userSelect: 'none',
   },
   answersBox: {
-    background: theme.palette.warning.light,
     color: theme.palette.text.primary,
     border: `1px solid ${theme.palette.warning.main}`,
   },
   answersBoxAnswered: {
-    background: theme.palette.success.main,
-    color: theme.palette.getContrastText(theme.palette.success.main),
     border: `1px solid ${theme.palette.success.dark}`,
   },
   title: {
@@ -123,7 +110,6 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-end',
   },
   tags: {
-    marginTop: 2,
     display: 'flex',
     flexWrap: 'wrap',
     overflow: 'hidden',
@@ -188,7 +174,6 @@ export const PostListItem = (props: PostListItemProps) => {
   const [score, setScore] = useState(post.score);
   const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
-  const theme = useTheme();
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
 
   useEffect(() => {
@@ -226,34 +211,23 @@ export const PostListItem = (props: PostListItemProps) => {
               { count: score },
             )}
           >
-            {formatShortNumber(score)}
-            <div
-              style={{
-                fontWeight: 400,
-                fontSize: '13px',
-                color: theme.palette.text.secondary,
-              }}
-            >
-              {post.type !== 'link' ? t('common.votes') : t('common.clicks')}
-            </div>
+            {formatShortNumber(score)}{' '}
+            {post.type !== 'link' ? t('common.votes') : t('common.clicks')}
           </Box>
         </Tooltip>
         {post.type === 'question' && (
-          <Box
-            className={
-              correctAnswer
-                ? `${styles.metaBox} ${styles.answersBoxAnswered}`
-                : `${styles.metaBox} ${styles.answersBox}`
-            }
-            aria-label={t('common.answersCount', { count: answersCount })}
-          >
-            <Tooltip title={answersCount >= 1000 ? answersCount : ''} arrow>
-              <span>{formatShortNumber(answersCount)}</span>
-            </Tooltip>
-            <div style={{ fontWeight: 400, fontSize: '13px' }}>
-              {t('common.answers')}
-            </div>
-          </Box>
+          <Tooltip title={answersCount >= 1000 ? answersCount : ''} arrow>
+            <Box
+              className={
+                correctAnswer
+                  ? `${styles.metaBox} ${styles.answersBoxAnswered}`
+                  : `${styles.metaBox} ${styles.answersBox}`
+              }
+              aria-label={t('common.answersCount', { count: answersCount })}
+            >
+              {formatShortNumber(answersCount)} {t('common.answers')}
+            </Box>
+          </Tooltip>
         )}
         {post.type !== 'link' && (
           <Tooltip title={views >= 1000 ? views : ''} arrow>
@@ -261,16 +235,7 @@ export const PostListItem = (props: PostListItemProps) => {
               className={styles.metaBox}
               aria-label={t('common.viewsCount', { count: views })}
             >
-              {formatShortNumber(views)}
-              <div
-                style={{
-                  fontWeight: 400,
-                  fontSize: '13px',
-                  color: theme.palette.text.secondary,
-                }}
-              >
-                {t('common.views')}
-              </div>
+              {formatShortNumber(views)} {t('common.views')}
             </Box>
           </Tooltip>
         )}
@@ -329,6 +294,7 @@ export const PostListItem = (props: PostListItemProps) => {
               label={t('authorBox.postedAtTime')}
               expert={Boolean(post.experts && post.experts.length > 0)}
               anonymous={post.anonymous}
+              compact
             />
           </Box>
         </Box>
