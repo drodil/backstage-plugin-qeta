@@ -68,7 +68,7 @@ export const ArticlePage = () => {
           <AddToCollectionButton post={post} />
         </ButtonContainer>
       </ContentHeader>
-      <Container maxWidth="lg">
+      <Container maxWidth={false}>
         <AIAnswerCard
           article={post as Article}
           style={{ marginBottom: '2em' }}
