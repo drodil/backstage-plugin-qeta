@@ -37,6 +37,7 @@ export const question: Post = {
   created: new Date('2022-01-01T00:00:00Z'),
   answersCount: 0,
   correctAnswer: false,
+  commentsCount: 0,
   type: 'question',
   images: [],
   status: 'active',

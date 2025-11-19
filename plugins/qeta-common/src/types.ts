@@ -90,6 +90,7 @@ export interface Post extends PostAnswerEntity {
   title: string;
   views: number;
   answersCount: number;
+  commentsCount: number;
   correctAnswer: boolean;
   favorite: boolean;
   tags?: string[];
@@ -387,6 +388,7 @@ export type QetaPostsStatsSignal = {
   score: number;
   answersCount: number;
   correctAnswer: boolean;
+  commentsCount: number;
 };
 
 export type QetaAnswerStatsSignal = {

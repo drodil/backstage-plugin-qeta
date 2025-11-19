@@ -30,6 +30,7 @@ export const signalPostStats = (
       views: question.views,
       score: question.score,
       answersCount: question.answersCount,
+      commentsCount: question.commentsCount,
       correctAnswer: question.correctAnswer,
     },
   });

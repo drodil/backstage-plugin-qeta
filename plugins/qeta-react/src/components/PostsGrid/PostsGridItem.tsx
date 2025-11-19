@@ -140,6 +140,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
   const [score, setScore] = useState(post.score);
   const [correctAnswer, setCorrectAnswer] = useState(post.correctAnswer);
   const [answersCount, setAnswersCount] = useState(post.answersCount);
+  const [commentsCount, setCommentsCount] = useState(post.commentsCount);
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useStyles();
@@ -152,6 +153,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
       setScore(lastSignal.score);
       setCorrectAnswer(lastSignal.correctAnswer);
       setAnswersCount(lastSignal.answersCount);
+      setCommentsCount(lastSignal.commentsCount);
     }
   }, [lastSignal]);
 
@@ -283,6 +285,16 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
                   </Box>
                 </Tooltip>
               )}
+              <Tooltip title={commentsCount >= 1000 ? commentsCount : ''} arrow>
+                <Box className={classes.statBox}>
+                  <Typography className={classes.statValue}>
+                    {formatShortNumber(commentsCount)}
+                  </Typography>
+                  <Typography className={classes.statLabel}>
+                    {t('common.comments').toLowerCase()}
+                  </Typography>
+                </Box>
+              </Tooltip>
             </Box>
             <Box className={classes.statsGroup}>
               <SmallAvatar

@@ -87,6 +87,7 @@ export type RawPostEntity = {
   views: number | string;
   answersCount: number | string;
   correctAnswers: number | string;
+  commentsCount: number | string;
   favorite: number | string;
   trend: number | string;
   anonymous: boolean;
@@ -2796,6 +2797,7 @@ export class DatabaseQetaStore implements QetaStore {
       views: this.mapToInteger(val.views),
       answersCount: this.mapToInteger(val.answersCount),
       correctAnswer: this.mapToInteger(val.correctAnswers) > 0,
+      commentsCount: this.mapToInteger(val.commentsCount),
       favorite: this.mapToInteger(val.favorite) > 0,
       tags: additionalInfo[0],
       answers: additionalInfo[1],
@@ -3068,17 +3070,31 @@ export class DatabaseQetaStore implements QetaStore {
       correctAnswers.where('answers.status', '=', 'active');
     }
 
+    const commentsCount = this.db('comments')
+      .where('comments.postId', postRef)
+      .count('*')
+      .as('commentsCount');
+
     const favorite = this.db('user_favorite')
       .where('user_favorite.user', '=', user)
       .where('user_favorite.postId', postRef)
       .count('*')
       .as('favorite');
 
-    return this.db<RawPostEntity>('posts') // nosonar
-      .select('posts.*', score, views, answersCount, correctAnswers, favorite)
+    return this.db<RawPostEntity>('posts')
+      .select(
+        'posts.*',
+        score,
+        views,
+        answersCount,
+        correctAnswers,
+        commentsCount,
+        favorite,
+      )
       .leftJoin('post_votes', 'posts.id', 'post_votes.postId')
       .leftJoin('post_views', 'posts.id', 'post_views.postId')
       .leftJoin('answers', 'posts.id', 'answers.postId')
+      .leftJoin('comments', 'posts.id', 'comments.postId')
       .leftJoin('user_favorite', 'posts.id', 'user_favorite.postId')
       .groupBy('posts.id');
   }

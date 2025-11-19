@@ -29,6 +29,7 @@ const mockQetaApi = {
 describe('useVoting', () => {
   const testPost: PostResponse = {
     answersCount: 0,
+    commentsCount: 0,
     author: '',
     content: '',
     correctAnswer: false,
