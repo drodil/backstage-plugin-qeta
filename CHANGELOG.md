@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.45.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.44.0...v3.45.0) (2025-11-19)
+
+
+### Features
+
+* improve list styling ([b4b9d10](https://github.com/drodil/backstage-plugin-qeta/commit/b4b9d10bed039368fbc9834daa22248ca037b868))
+* show comments count in post grid ([b03fea9](https://github.com/drodil/backstage-plugin-qeta/commit/b03fea961f5b7f61ba7d102613c9b4b1b852742c)), closes [#356](https://github.com/drodil/backstage-plugin-qeta/issues/356)
+
+
+### Bug Fixes
+
+* article layout on big screens ([100ac48](https://github.com/drodil/backstage-plugin-qeta/commit/100ac4895a80e61d3ab0d7da25a3c1b2bc890438)), closes [#355](https://github.com/drodil/backstage-plugin-qeta/issues/355)
+* is moderator destructor in answer form ([35b6923](https://github.com/drodil/backstage-plugin-qeta/commit/35b6923e20311a5b0b7265c507093f7a0ed92f43))
+
 ## [3.44.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.43.0...v3.44.0) (2025-11-18)
 
 
