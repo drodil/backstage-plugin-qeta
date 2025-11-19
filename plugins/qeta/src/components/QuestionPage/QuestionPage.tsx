@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
@@ -51,8 +50,8 @@ export const QuestionPage = () => {
   const { id } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
   const [answers, setAnswers] = useState<AnswerResponse[]>([]);
-  const [newAnswers, setNewAnswers] = React.useState<AnswerResponse[]>([]);
-  const [answerSort, setAnswerSort] = React.useState<string>('default');
+  const [newAnswers, setNewAnswers] = useState<AnswerResponse[]>([]);
+  const [answerSort, setAnswerSort] = useState<string>('default');
   const dStyles = useDescriptionStyles();
 
   const [answersCount, setAnswersCount] = useState(0);
@@ -145,14 +144,14 @@ export const QuestionPage = () => {
           {' · '}
         </Box>
         {q.updated && (
-          <React.Fragment>
+          <Fragment>
             <Box fontWeight="fontWeightMedium" className={dStyles.box}>
               {t('authorBox.updatedAtTime')}{' '}
               <RelativeTimeWithTooltip value={q.updated} />{' '}
               {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
               {' · '}
             </Box>
-          </React.Fragment>
+          </Fragment>
         )}
         <Box fontWeight="fontWeightMedium" className={dStyles.box}>
           {t('common.viewsCount', { count: views })}
@@ -285,7 +284,7 @@ export const QuestionPage = () => {
           <Divider />
           {sortedAnswers.map(a => {
             return (
-              <React.Fragment key={a.id}>
+              <Fragment key={a.id}>
                 <Box key={a.id} sx={{ mb: 1 }}>
                   <AnswerCard
                     answer={a}
@@ -293,7 +292,7 @@ export const QuestionPage = () => {
                     onAnswerDelete={onAnswerDelete}
                   />
                 </Box>
-              </React.Fragment>
+              </Fragment>
             );
           })}
           <Divider />

@@ -16,8 +16,6 @@ import searchPlugin from '@backstage/plugin-search/alpha';
 import rehypeMermaid from 'rehype-mermaid';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 
-import '@backstage/ui/css/styles.css';
-
 const IntroElement = () => (
   <Box marginBottom={4}>
     <Alert severity="info">
