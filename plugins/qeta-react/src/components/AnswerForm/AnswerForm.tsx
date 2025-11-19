@@ -47,7 +47,7 @@ export const AnswerForm = (props: {
     getDefaultValues(post.id),
   );
   const analytics = useAnalytics();
-  const isModerator = useIsModerator();
+  const { isModerator } = useIsModerator();
   const { value: identity } = useIdentityApi(
     api => api.getBackstageIdentity(),
     [],
