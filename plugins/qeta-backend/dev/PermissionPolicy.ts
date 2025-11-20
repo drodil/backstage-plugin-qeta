@@ -22,7 +22,6 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   answerAuthorConditionFactory,
-  answerQuestionEntitiesConditionFactory,
   answerTagExpertConditionFactory,
   collectionOwnerConditionFactory,
   collectionTagExpertConditionFactory,
@@ -307,9 +306,9 @@ export class PermissionPolicy implements PermissionPolicy {
             answerAuthorConditionFactory({
               userRef: user.identity.userEntityRef,
             }),
-            answerQuestionEntitiesConditionFactory({
-              entityRefs: ['component:default/test-component'],
-            }),
+            // answerQuestionEntitiesConditionFactory({
+            //  entityRefs: ['component:default/test-component'],
+            // }),
             // Is expert of tag in question tags
             answerTagExpertConditionFactory({
               userRef: user.identity.userEntityRef,

@@ -1,7 +1,5 @@
 import { Request } from 'express';
 import {
-  AuthorizePermissionRequest,
-  AuthorizePermissionResponse,
   AuthorizeResult,
   DefinitivePolicyDecision,
   isCreatePermission,
@@ -12,8 +10,6 @@ import {
   Permission,
   PermissionCriteria,
   PolicyDecision,
-  QueryPermissionRequest,
-  QueryPermissionResponse,
 } from '@backstage/plugin-permission-common';
 import {
   AuthenticationError,
@@ -42,25 +38,9 @@ import {
   qetaModeratePermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Config } from '@backstage/config';
-import { ExpiryMap, QetaFilters, transformConditions } from './util.ts';
-import DataLoader from 'dataloader';
-import { durationToMilliseconds } from '@backstage/types';
-
-const BATCH_SCHEDULE_TIMEOUT = durationToMilliseconds({ milliseconds: 20 });
-const LOADER_MAP_EXPIRY = durationToMilliseconds({ minutes: 10 });
-const LOADER_CACHE_TIMEOUT = durationToMilliseconds({ seconds: 5 });
-const MAX_BATCH_SIZE = 100;
+import { QetaFilters, transformConditions } from './util.ts';
 
 export class PermissionManager {
-  private readonly authorizeLoaderMap: ExpiryMap<
-    string,
-    DataLoader<AuthorizePermissionRequest, AuthorizePermissionResponse>
-  >;
-  private readonly authorizeConditionalLoaderMap: ExpiryMap<
-    string,
-    DataLoader<QueryPermissionRequest, QueryPermissionResponse>
-  >;
-
   constructor(
     private readonly config: Config,
     private readonly auth: AuthService,
@@ -68,10 +48,7 @@ export class PermissionManager {
     private readonly userInfo: UserInfoService,
     private readonly permissions?: PermissionsService,
     private readonly auditor?: AuditorService,
-  ) {
-    this.authorizeLoaderMap = new ExpiryMap(LOADER_MAP_EXPIRY);
-    this.authorizeConditionalLoaderMap = new ExpiryMap(LOADER_MAP_EXPIRY);
-  }
+  ) {}
 
   public async getCredentials(
     request: Request<unknown>,
@@ -166,11 +143,15 @@ export class PermissionManager {
 
       // Authorize moderator using permission framework
       if (this.permissions) {
-        const loader = this.getAuthorizeLoader(credentials);
-        const result = await loader.load({
-          permission: qetaModeratePermission,
-        });
-        return result.result === AuthorizeResult.ALLOW;
+        const result = await this.permissions.authorize(
+          [
+            {
+              permission: qetaModeratePermission,
+            },
+          ],
+          { credentials },
+        );
+        return result[0].result === AuthorizeResult.ALLOW;
       }
 
       if (!this.auth.isPrincipal(credentials, 'user')) {
@@ -319,7 +300,6 @@ export class PermissionManager {
     }
 
     let decision: DefinitivePolicyDecision = { result: AuthorizeResult.DENY };
-    const loader = this.getAuthorizeLoader(credentials);
     if (isResourcePermission(permission)) {
       if (!options?.resource) {
         if (options?.audit) {
@@ -338,10 +318,16 @@ export class PermissionManager {
       }
 
       const resourceRef = this.getResourceRef(options.resource);
-
-      decision = await loader.load({ permission, resourceRef });
+      const result = await this.permissions.authorize(
+        [{ permission, resourceRef }],
+        { credentials },
+      );
+      decision = result[0];
     } else {
-      decision = await loader.load({ permission });
+      const result = await this.permissions.authorize([{ permission }], {
+        credentials,
+      });
+      decision = result[0];
     }
 
     if (decision.result === AuthorizeResult.DENY) {
@@ -404,8 +390,11 @@ export class PermissionManager {
 
     let decision: PolicyDecision = { result: AuthorizeResult.DENY };
     if (isResourcePermission(permission)) {
-      const loader = this.getAuthorizeConditionalLoader(credentials);
-      decision = await loader.load({ permission });
+      const result = await this.permissions.authorizeConditional(
+        [{ permission }],
+        { credentials },
+      );
+      decision = result[0];
     }
 
     if (decision.result === AuthorizeResult.DENY) {
@@ -463,76 +452,6 @@ export class PermissionManager {
       return transformConditions(decision.conditions);
     }
     return undefined;
-  }
-
-  private getLoaderKey(credentials: BackstageCredentials) {
-    if (this.auth.isPrincipal(credentials, 'user')) {
-      return btoa(`user.${credentials.principal.userEntityRef}`);
-    } else if (this.auth.isPrincipal(credentials, 'service')) {
-      return btoa(`service.${credentials.principal.subject}`);
-    } else if (this.auth.isPrincipal(credentials, 'none')) {
-      return btoa('none');
-    }
-    return btoa('unknown');
-  }
-
-  private getAuthorizeLoader(credentials: BackstageCredentials) {
-    const key = this.getLoaderKey(credentials);
-    const loader = this.authorizeLoaderMap.get(key);
-    if (loader) {
-      return loader;
-    }
-    const newLoader = new DataLoader<
-      AuthorizePermissionRequest,
-      AuthorizePermissionResponse,
-      string
-    >(
-      async requests => {
-        return await this.permissions!.authorize([...requests], {
-          credentials,
-        });
-      },
-      {
-        cacheMap: new ExpiryMap(LOADER_CACHE_TIMEOUT),
-        maxBatchSize: MAX_BATCH_SIZE,
-        batchScheduleFn: cb => setTimeout(cb, BATCH_SCHEDULE_TIMEOUT),
-        cacheKeyFn: req => {
-          return btoa(`${key}-${JSON.stringify(req)}`);
-        },
-      },
-    );
-    this.authorizeLoaderMap.set(key, newLoader);
-    return newLoader;
-  }
-
-  private getAuthorizeConditionalLoader(credentials: BackstageCredentials) {
-    const key = this.getLoaderKey(credentials);
-    const loader = this.authorizeConditionalLoaderMap.get(key);
-    if (loader) {
-      return loader;
-    }
-
-    const newLoader = new DataLoader<
-      QueryPermissionRequest,
-      QueryPermissionResponse,
-      string
-    >(
-      async requests => {
-        return await this.permissions!.authorizeConditional([...requests], {
-          credentials,
-        });
-      },
-      {
-        cacheMap: new ExpiryMap(LOADER_CACHE_TIMEOUT),
-        maxBatchSize: MAX_BATCH_SIZE,
-        batchScheduleFn: cb => setTimeout(cb, BATCH_SCHEDULE_TIMEOUT),
-        cacheKeyFn: req => {
-          return btoa(`${key}-${JSON.stringify(req)}`);
-        },
-      },
-    );
-    this.authorizeConditionalLoaderMap.set(key, newLoader);
-    return newLoader;
   }
 
   private getResourceRef(resource: QetaIdEntity) {

@@ -29,6 +29,7 @@ const useStyles = makeStyles(
     timeRow: {
       display: 'flex',
       alignItems: 'center',
+      justifyContent: 'flex-end',
     },
     avatar: {
       width: '20px',
@@ -45,6 +46,7 @@ const useStyles = makeStyles(
       color: theme.palette.text.primary,
       display: 'flex',
       alignItems: 'center',
+      justifyContent: 'flex-end',
       gap: theme.spacing(0.5),
     },
     authorLink: {
