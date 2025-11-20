@@ -2194,7 +2194,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/frontend-plugin-api@backstage:^::backstage=1.45.1&npm=0.13.1, @backstage/frontend-plugin-api@npm:^0.13.1":
+"@backstage/frontend-plugin-api@backstage:^::backstage=1.45.1&npm=0.13.1, @backstage/frontend-plugin-api@npm:^0.13.0, @backstage/frontend-plugin-api@npm:^0.13.1":
   version: 0.13.1
   resolution: "@backstage/frontend-plugin-api@npm:0.13.1"
   dependencies:
@@ -2215,30 +2215,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/8fae656f2e71b462786519b07b67e2daf52aa149d69da689c6d8f47aff8b7911dbe43191e4d822a978ea61267998574723e46ba08614aecb7e3d5afd7118c5e1
-  languageName: node
-  linkType: hard
-
-"@backstage/frontend-plugin-api@npm:^0.13.0":
-  version: 0.13.0
-  resolution: "@backstage/frontend-plugin-api@npm:0.13.0"
-  dependencies:
-    "@backstage/core-components": "npm:^0.18.3"
-    "@backstage/core-plugin-api": "npm:^1.12.0"
-    "@backstage/types": "npm:^1.2.2"
-    "@backstage/version-bridge": "npm:^1.0.11"
-    "@material-ui/core": "npm:^4.12.4"
-    lodash: "npm:^4.17.21"
-    zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.21.4"
-  peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
-    react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10c0/a11c2baf316994cfe0de377ef283a637d5518e052b08bb3a03fea2496e69cf65baa9194ae45bd604cbc5e8f874e667952a798e8704b2387c3c5bdcd897528d82
   languageName: node
   linkType: hard
 
