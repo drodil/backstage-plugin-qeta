@@ -14,6 +14,7 @@ import { Config } from '@backstage/config';
 import { S3Client } from '@aws-sdk/client-s3';
 import { RouteOptions } from './types';
 import {
+  Answer,
   AnswerResponse,
   CollectionResponse,
   Comment,
@@ -233,6 +234,66 @@ const mapAnswerAdditionalFields = async (
   return resource;
 };
 
+const mapPostAnswers = async (
+  request: Request<unknown>,
+  resource: PostResponse,
+  permissionMgr: PermissionManager,
+  credentials: BackstageCredentials,
+  username: string,
+  checkRights?: boolean,
+) => {
+  const answersArray = resource.answers ?? [];
+  const editPermissions = await Promise.all(
+    answersArray.map(async (a: Answer) => {
+      if (!checkRights) {
+        return undefined;
+      }
+      return permissionMgr.authorizeBoolean(request, qetaEditAnswerPermission, {
+        resource: a,
+        credentials,
+      });
+    }),
+  );
+
+  const deletePermissions = await Promise.all(
+    answersArray.map(async (a: Answer) => {
+      if (!checkRights) {
+        return undefined;
+      }
+      return permissionMgr.authorizeBoolean(
+        request,
+        qetaDeleteAnswerPermission,
+        { resource: a, credentials },
+      );
+    }),
+  );
+
+  const comments = await Promise.all(
+    answersArray.map(async (a: Answer) => {
+      return mapResourceComments(
+        request,
+        a,
+        permissionMgr,
+        credentials,
+        username,
+        checkRights,
+      );
+    }),
+  );
+
+  return answersArray.map((a: Answer, index: number) => {
+    return {
+      ...a,
+      ownVote: a.votes?.find(v => v.author === username)?.score,
+      own: resource.author === username,
+      canEdit: editPermissions[index],
+      canDelete: deletePermissions[index],
+      expert: a.experts?.includes(resource.author),
+      comments: comments[index],
+    };
+  });
+};
+
 const mapPostAdditionalFields = async (
   request: Request<unknown>,
   resource: PostResponse,
@@ -257,17 +318,13 @@ const mapPostAdditionalFields = async (
           credentials,
         })
       : undefined,
-    Promise.all(
-      (resource.answers ?? []).map(async a =>
-        mapAnswerAdditionalFields(
-          request,
-          a,
-          permissionMgr,
-          credentials,
-          username,
-          checkRights,
-        ),
-      ),
+    mapPostAnswers(
+      request,
+      resource,
+      permissionMgr,
+      credentials,
+      username,
+      checkRights,
     ),
     mapResourceComments(
       request,

@@ -497,7 +497,7 @@ export class PermissionManager {
         maxBatchSize: MAX_BATCH_SIZE,
         batchScheduleFn: cb => setTimeout(cb, BATCH_SCHEDULE_TIMEOUT),
         cacheKeyFn: req => {
-          return btoa(JSON.stringify(req));
+          return btoa(`${key}-${JSON.stringify(req)}`);
         },
       },
     );
@@ -527,7 +527,7 @@ export class PermissionManager {
         maxBatchSize: MAX_BATCH_SIZE,
         batchScheduleFn: cb => setTimeout(cb, BATCH_SCHEDULE_TIMEOUT),
         cacheKeyFn: req => {
-          return btoa(JSON.stringify(req));
+          return btoa(`${key}-${JSON.stringify(req)}`);
         },
       },
     );
