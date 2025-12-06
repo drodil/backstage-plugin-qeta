@@ -124,7 +124,7 @@ describe('NotificationManager', () => {
 
       expect(mockNotificationService.send).toHaveBeenCalledWith({
         payload: {
-          description: 'John Doe commented on question: Test comment',
+          description: 'John Doe commented on question "Test Post": Test comment',
           link: '/qeta/questions/1',
           scope: 'question:comment:1',
           title: 'New comment on question',
@@ -188,7 +188,7 @@ describe('NotificationManager', () => {
 
       expect(mockNotificationService.send).toHaveBeenCalledWith({
         payload: {
-          description: 'John Doe answered question: Test Answer',
+          description: 'John Doe answered question "Test Question": Test Answer',
           link: '/qeta/questions/1#answer_1',
           scope: 'question:answer:1:author',
           title: 'New answer on question',
@@ -251,7 +251,7 @@ describe('NotificationManager', () => {
 
       expect(mockNotificationService.send).toHaveBeenCalledWith({
         payload: {
-          description: 'John Doe commented answer: Test comment',
+          description: 'John Doe commented on answer to "Test Question": Test comment',
           link: '/qeta/questions/1#answer_1',
           scope: 'answer:comment:1',
           title: 'New comment on answer',

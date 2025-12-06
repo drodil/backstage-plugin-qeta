@@ -128,7 +128,7 @@ export class NotificationManager {
         payload: {
           title: `New comment on ${post.type}`,
           description: this.formatDescription(
-            `${user} commented on ${post.type}: ${comment}`,
+            `${user} commented on ${post.type} "${post.title}": ${comment}`,
           ),
           link: this.selectPostRoute(post.type, post.id),
           topic: `New ${post.type} comment`,
@@ -385,7 +385,7 @@ export class NotificationManager {
         payload: {
           title: `New answer on question`,
           description: this.formatDescription(
-            `${user} answered question: ${answer.content}`,
+            `${user} answered question "${question.title}": ${answer.content}`,
           ),
           link: `/qeta/questions/${question.id}#answer_${answer.id}`,
           topic: 'New answer on question',
@@ -443,7 +443,7 @@ export class NotificationManager {
         payload: {
           title: `New comment on answer`,
           description: this.formatDescription(
-            `${user} commented answer: ${comment}`,
+            `${user} commented on answer to "${question.title}": ${comment}`,
           ),
           link: `/qeta/questions/${question.id}#answer_${answer.id}`,
           topic: 'New answer comment',
