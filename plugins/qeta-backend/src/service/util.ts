@@ -114,6 +114,45 @@ const mapTagAdditionalFields = async (
   return resource;
 };
 
+/**
+ * Filter entity refs based on catalog permissions.
+ * Uses catalogApi.getEntitiesByRefs which automatically filters out entities
+ * the user doesn't have permission to see.
+ */
+const filterEntitiesByPermissions = async (
+  entityRefs: string[] | undefined,
+  routeOpts: RouteOptions,
+  credentials: BackstageCredentials,
+): Promise<string[] | undefined> => {
+  if (!entityRefs || entityRefs.length === 0) {
+    return entityRefs;
+  }
+
+  try {
+    // Get a plugin token on behalf of the user to call the catalog
+    const { token } = await routeOpts.auth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: 'catalog',
+    });
+    
+    // catalogApi.getEntitiesByRefs handles permission checks automatically
+    // It only returns entities the user has permission to see
+    const entities = await routeOpts.catalog.getEntitiesByRefs(
+      { entityRefs },
+      { token },
+    );
+    
+    // Return only the refs of entities that were successfully retrieved
+    return entities.items
+      .filter(entity => entity !== undefined)
+      .map(entity => stringifyEntityRef(entity!));
+  } catch (error) {
+    // If there's an error, return empty array to be safe
+    routeOpts.logger.warn('Error filtering entities by permissions', error);
+    return [];
+  }
+};
+
 const mapCollectionAdditionalFields = async (
   request: Request<unknown>,
   resource: CollectionResponse,
@@ -322,45 +361,6 @@ const mapPostAnswers = async (
       comments: comments[index],
     };
   });
-};
-
-/**
- * Filter entity refs based on catalog permissions.
- * Uses catalogApi.getEntitiesByRefs which automatically filters out entities
- * the user doesn't have permission to see.
- */
-const filterEntitiesByPermissions = async (
-  entityRefs: string[] | undefined,
-  routeOpts: RouteOptions,
-  credentials: BackstageCredentials,
-): Promise<string[] | undefined> => {
-  if (!entityRefs || entityRefs.length === 0) {
-    return entityRefs;
-  }
-
-  try {
-    // Get a plugin token on behalf of the user to call the catalog
-    const { token } = await routeOpts.auth.getPluginRequestToken({
-      onBehalfOf: credentials,
-      targetPluginId: 'catalog',
-    });
-    
-    // catalogApi.getEntitiesByRefs handles permission checks automatically
-    // It only returns entities the user has permission to see
-    const entities = await routeOpts.catalog.getEntitiesByRefs(
-      { entityRefs },
-      { token },
-    );
-    
-    // Return only the refs of entities that were successfully retrieved
-    return entities.items
-      .filter(entity => entity !== undefined)
-      .map(entity => stringifyEntityRef(entity!));
-  } catch (error) {
-    // If there's an error, return empty array to be safe
-    routeOpts.logger.warn('Error filtering entities by permissions', error);
-    return [];
-  }
 };
 
 const mapPostAdditionalFields = async (
