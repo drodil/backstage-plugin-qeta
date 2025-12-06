@@ -8,7 +8,11 @@ import {
   UsersQuerySchema,
 } from '../types';
 import { mapAdditionalFields } from '../util';
-import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  parseEntityRef,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import {
   filterTags,
   getSupportedEntityKinds,
@@ -93,7 +97,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         .filter(user => {
           const name = user.metadata?.name?.toLowerCase() || '';
           const title = user.metadata?.title?.toLowerCase() || '';
-          const displayName = (user.spec as any)?.profile?.displayName?.toLowerCase() || '';
+          const displayName = (user as UserEntity).spec?.profile?.displayName?.toLowerCase() || '';
           
           return (
             name.includes(searchTerm) ||
@@ -477,7 +481,10 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
           const name = entity.metadata?.name?.toLowerCase() || '';
           const title = entity.metadata?.title?.toLowerCase() || '';
           const description = entity.metadata?.description?.toLowerCase() || '';
-          const displayName = (entity.spec as any)?.profile?.displayName?.toLowerCase() || '';
+          // Only User entities have profile.displayName
+          const displayName = entity.kind === 'User' 
+            ? (entity as UserEntity).spec?.profile?.displayName?.toLowerCase() || ''
+            : '';
           
           return (
             name.includes(searchTerm) ||
