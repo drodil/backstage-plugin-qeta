@@ -43,6 +43,46 @@ import { BlobServiceClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { PermissionManager } from './PermissionManager.ts';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+
+/**
+ * Filter entity refs based on catalog permissions.
+ * Uses catalogApi.getEntitiesByRefs which automatically filters out entities
+ * the user doesn't have permission to see.
+ */
+const filterEntitiesByPermissions = async (
+  entityRefs: string[] | undefined,
+  routeOpts: RouteOptions,
+  credentials: BackstageCredentials,
+): Promise<string[] | undefined> => {
+  if (!entityRefs || entityRefs.length === 0) {
+    return entityRefs;
+  }
+
+  try {
+    // Get a plugin token on behalf of the user to call the catalog
+    const { token } = await routeOpts.auth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: 'catalog',
+    });
+
+    // catalogApi.getEntitiesByRefs handles permission checks automatically
+    // It only returns entities the user has permission to see
+    const entities = await routeOpts.catalog.getEntitiesByRefs(
+      { entityRefs },
+      { token },
+    );
+
+    // Return only the refs of entities that were successfully retrieved
+    return entities.items
+      .filter(entity => entity !== undefined)
+      .map(stringifyEntityRef);
+  } catch (error) {
+    // If there's an error, return empty array to be safe
+    routeOpts.logger.warn('Error filtering entities by permissions', error);
+    return [];
+  }
+};
 
 export const getCreated = async (
   req: Request<unknown>,
@@ -146,7 +186,7 @@ const mapCollectionAdditionalFields = async (
   resource.canEdit = canEdit;
   resource.canDelete = canDelete;
   resource.entities = filteredEntities;
-  
+
   // Also filter entities on posts within the collection
   if (resource.posts && routeOpts) {
     await Promise.all(
@@ -159,7 +199,7 @@ const mapCollectionAdditionalFields = async (
       }),
     );
   }
-  
+
   return resource;
 };
 
@@ -323,47 +363,6 @@ const mapPostAnswers = async (
   });
 };
 
-/**
- * Filter entity refs based on catalog permissions.
- * Uses catalogApi.getEntitiesByRefs which automatically filters out entities
- * the user doesn't have permission to see.
- */
-const filterEntitiesByPermissions = async (
-  entityRefs: string[] | undefined,
-  routeOpts: RouteOptions,
-  credentials: BackstageCredentials,
-): Promise<string[] | undefined> => {
-  if (!entityRefs || entityRefs.length === 0) {
-    return entityRefs;
-  }
-
-  try {
-    // Get a plugin token on behalf of the user to call the catalog
-    const { token } = await routeOpts.auth.getPluginRequestToken({
-      onBehalfOf: credentials,
-      targetPluginId: 'catalog',
-    });
-    
-    // catalogApi.getEntitiesByRefs handles permission checks automatically
-    // It only returns entities the user has permission to see
-    const entities = await routeOpts.catalog.getEntitiesByRefs(
-      { entityRefs },
-      { token },
-    );
-    
-    // Return only the refs of entities that were successfully retrieved
-    return entities.items
-      .filter(entity => entity !== undefined)
-      .map(entity => 
-        `${entity!.kind}:${entity!.metadata.namespace || 'default'}/${entity!.metadata.name}`
-      );
-  } catch (error) {
-    // If there's an error, return empty array to be safe
-    routeOpts.logger.warn('Error filtering entities by permissions', error);
-    return [];
-  }
-};
-
 const mapPostAdditionalFields = async (
   request: Request<unknown>,
   resource: PostResponse,
@@ -376,39 +375,40 @@ const mapPostAdditionalFields = async (
   resource.ownVote = resource.votes?.find(v => v.author === username)?.score;
   resource.own = resource.author === username;
 
-  const [canEdit, canDelete, answers, comments, filteredEntities] = await Promise.all([
-    checkRights
-      ? permissionMgr.authorizeBoolean(request, qetaEditPostPermission, {
-          resource,
-          credentials,
-        })
-      : undefined,
-    checkRights
-      ? permissionMgr.authorizeBoolean(request, qetaDeletePostPermission, {
-          resource,
-          credentials,
-        })
-      : undefined,
-    mapPostAnswers(
-      request,
-      resource,
-      permissionMgr,
-      credentials,
-      username,
-      checkRights,
-    ),
-    mapResourceComments(
-      request,
-      resource,
-      permissionMgr,
-      credentials,
-      username,
-      checkRights,
-    ),
-    routeOpts
-      ? filterEntitiesByPermissions(resource.entities, routeOpts, credentials)
-      : resource.entities,
-  ]);
+  const [canEdit, canDelete, answers, comments, filteredEntities] =
+    await Promise.all([
+      checkRights
+        ? permissionMgr.authorizeBoolean(request, qetaEditPostPermission, {
+            resource,
+            credentials,
+          })
+        : undefined,
+      checkRights
+        ? permissionMgr.authorizeBoolean(request, qetaDeletePostPermission, {
+            resource,
+            credentials,
+          })
+        : undefined,
+      mapPostAnswers(
+        request,
+        resource,
+        permissionMgr,
+        credentials,
+        username,
+        checkRights,
+      ),
+      mapResourceComments(
+        request,
+        resource,
+        permissionMgr,
+        credentials,
+        username,
+        checkRights,
+      ),
+      routeOpts
+        ? filterEntitiesByPermissions(resource.entities, routeOpts, credentials)
+        : resource.entities,
+    ]);
   resource.canEdit = canEdit;
   resource.canDelete = canDelete;
   resource.answers = answers;
