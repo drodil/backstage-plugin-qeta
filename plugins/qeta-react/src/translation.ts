@@ -276,6 +276,7 @@ export const qetaTranslationRef = createTranslationRef({
         placeholder: 'Your comment',
       },
       addComment: 'Add a comment',
+      leaveComment: 'Leave a comment',
       post: 'Post',
     },
     tagChip: {

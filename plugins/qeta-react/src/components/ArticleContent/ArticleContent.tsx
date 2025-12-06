@@ -2,7 +2,7 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Avatar, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Avatar, Box, Grid, makeStyles, Typography } from '@material-ui/core';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useState } from 'react';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
@@ -19,7 +19,9 @@ import { DeletedBanner } from '../Utility/DeletedBanner.tsx';
 export type QetaArticleContentClassKey =
   | 'content'
   | 'headerImage'
-  | 'commentSection';
+  | 'commentSection'
+  | 'commentSectionContainer'
+  | 'leaveCommentButton';
 
 export const useStyles = makeStyles(
   theme => {
@@ -44,6 +46,14 @@ export const useStyles = makeStyles(
         paddingBottom: theme.spacing(2),
         marginBottom: theme.spacing(2),
         marginLeft: 0,
+      },
+      commentSectionContainer: {
+        marginTop: theme.spacing(4),
+      },
+      leaveCommentButton: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(3),
+        textTransform: 'none',
       },
     };
   },
@@ -113,14 +123,15 @@ export const ArticleContent = (props: {
         showToc
       />
       {post.status === 'active' && (
-        <>
+        <Box className={styles.commentSectionContainer}>
           <Typography variant="h6">{t('common.comments')}</Typography>
           <CommentSection
             className={styles.commentSection}
             post={postEntity}
             onCommentAction={onCommentAction}
+            showProminentButton
           />
-        </>
+        </Box>
       )}
       <Grid container>
         <Grid item xs={12}>
