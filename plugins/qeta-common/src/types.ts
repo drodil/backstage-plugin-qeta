@@ -102,6 +102,7 @@ export interface Post extends PostAnswerEntity {
   url?: string;
   images?: number[];
   status: PostStatus;
+  published?: Date;
 }
 
 export type NewPostEvent = {
