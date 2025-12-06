@@ -297,7 +297,9 @@ export const createMockPermissionEvaluator = () => {
   return { permissionEvaluator, mockedAuthorize, mockedPermissionQuery };
 };
 
-export const mockCatalog: CatalogApi = {} as unknown as CatalogApi;
+export const mockCatalog: CatalogApi = {
+  queryEntities: jest.fn().mockResolvedValue({ items: [] }),
+} as unknown as CatalogApi;
 
 export const mockSystemDate = (mockDate: Date) => {
   jest.spyOn(global, 'Date').mockImplementation(() => mockDate);

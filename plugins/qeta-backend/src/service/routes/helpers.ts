@@ -8,7 +8,11 @@ import {
   UsersQuerySchema,
 } from '../types';
 import { mapAdditionalFields } from '../util';
-import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  parseEntityRef,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import {
   filterTags,
   getSupportedEntityKinds,
@@ -71,22 +75,36 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         onBehalfOf: await httpAuth.credentials(request),
         targetPluginId: 'catalog',
       });
+      const searchTerm = String(request.query.searchQuery).toLowerCase();
+      
+      // Fetch all users and filter client-side for accurate substring matching
       const users = await catalog.queryEntities(
         {
           filter: { kind: 'User' },
-          fields: ['kind', 'metadata.name', 'metadata.namespace'],
-          fullTextFilter: {
-            term: String(request.query.searchQuery),
-            fields: [
-              'metadata.name',
-              'metadata.title',
-              'spec.profile.displayName',
-            ],
-          },
+          fields: [
+            'kind',
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+            'spec.profile.displayName',
+          ],
         },
         { token },
       );
+      
+      // Filter users by checking if search term is a substring of any searchable field
       entityRefs = users.items
+        .filter(user => {
+          const name = user.metadata?.name?.toLowerCase() || '';
+          const title = user.metadata?.title?.toLowerCase() || '';
+          const displayName = (user as UserEntity).spec?.profile?.displayName?.toLowerCase() || '';
+          
+          return (
+            name.includes(searchTerm) ||
+            title.includes(searchTerm) ||
+            displayName.includes(searchTerm)
+          );
+        })
         .map(user => {
           try {
             return stringifyEntityRef(user);
@@ -437,25 +455,44 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         onBehalfOf: await httpAuth.credentials(request),
         targetPluginId: 'catalog',
       });
+      const searchTerm = String(request.query.searchQuery).toLowerCase();
+      
+      // Fetch all entities and filter client-side for accurate substring matching
       const entities = await catalog.queryEntities(
         {
           filter: {
             kind: supportedKinds,
           },
-          fields: ['kind', 'metadata.name', 'metadata.namespace'],
-          fullTextFilter: {
-            term: String(request.query.searchQuery),
-            fields: [
-              'metadata.name',
-              'metadata.title',
-              'metadata.description',
-              'spec.profile.displayName',
-            ],
-          },
+          fields: [
+            'kind',
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+            'metadata.description',
+            'spec.profile.displayName',
+          ],
         },
         { token },
       );
+      
+      // Filter entities by checking if search term is a substring of any searchable field
       entityRefs = entities.items
+        .filter(entity => {
+          const name = entity.metadata?.name?.toLowerCase() || '';
+          const title = entity.metadata?.title?.toLowerCase() || '';
+          const description = entity.metadata?.description?.toLowerCase() || '';
+          // Only User entities have profile.displayName
+          const displayName = entity.kind === 'User' 
+            ? (entity as UserEntity).spec?.profile?.displayName?.toLowerCase() || ''
+            : '';
+          
+          return (
+            name.includes(searchTerm) ||
+            title.includes(searchTerm) ||
+            description.includes(searchTerm) ||
+            displayName.includes(searchTerm)
+          );
+        })
         .map(entity => {
           try {
             return stringifyEntityRef(entity);
