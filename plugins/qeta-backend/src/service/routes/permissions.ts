@@ -62,7 +62,7 @@ export const permissionsRoute = (_router: Router, options: RouteOptions) => {
         includeVotes: false,
         includeAttachments: false,
         includeTags: false,
-        includeEntities: false,
+        includeEntities: true,
         includeTotal: false,
       };
 
@@ -91,7 +91,7 @@ export const permissionsRoute = (_router: Router, options: RouteOptions) => {
       const opts: AnswerOptions = {
         includeStatusFilter: false,
         includeVotes: false,
-        includePost: false,
+        includePost: true,
         includeComments: false,
       };
 
