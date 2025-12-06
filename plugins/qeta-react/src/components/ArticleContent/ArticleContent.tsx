@@ -20,8 +20,7 @@ export type QetaArticleContentClassKey =
   | 'content'
   | 'headerImage'
   | 'commentSection'
-  | 'commentSectionContainer'
-  | 'leaveCommentButton';
+  | 'commentSectionContainer';
 
 export const useStyles = makeStyles(
   theme => {
@@ -49,11 +48,6 @@ export const useStyles = makeStyles(
       },
       commentSectionContainer: {
         marginTop: theme.spacing(4),
-      },
-      leaveCommentButton: {
-        marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(3),
-        textTransform: 'none',
       },
     };
   },
