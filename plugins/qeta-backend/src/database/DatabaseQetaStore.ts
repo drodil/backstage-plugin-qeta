@@ -776,19 +776,19 @@ export class DatabaseQetaStore implements QetaStore {
       opts,
       status = 'active',
     } = options;
-    
+
     // Check if this is a transition from draft to active
     const currentPost = await this.db('posts')
       .select('status', 'published')
       .where('id', '=', id)
       .first();
-    
-    const shouldSetPublished = 
-      currentPost && 
-      currentPost.status === 'draft' && 
-      status === 'active' && 
+
+    const shouldSetPublished =
+      currentPost &&
+      currentPost.status === 'draft' &&
+      status === 'active' &&
       !currentPost.published;
-    
+
     const query = this.db('posts').where('posts.id', '=', id);
     const rows = await query.update({
       title,
