@@ -61,7 +61,8 @@ const useStyles = makeStyles(
     prominentButton: {
       marginTop: theme.spacing(3),
       marginBottom: theme.spacing(2),
-      padding: theme.spacing(1.5, 4),
+      marginLeft: theme.spacing(1),
+      padding: theme.spacing(1, 2.5),
       textTransform: 'none',
       fontSize: '1rem',
     },
@@ -182,7 +183,7 @@ export const CommentSection = (props: {
         errorPage={<></>}
       >
         {!formVisible && showProminentButton && (
-          <Grid container justifyContent="center">
+          <Grid container justifyContent="flex-start">
             <Grid item>
               <Button
                 variant="contained"
