@@ -43,6 +43,7 @@ import { BlobServiceClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { PermissionManager } from './PermissionManager.ts';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export const getCreated = async (
   req: Request<unknown>,
@@ -354,9 +355,7 @@ const filterEntitiesByPermissions = async (
     // Return only the refs of entities that were successfully retrieved
     return entities.items
       .filter(entity => entity !== undefined)
-      .map(entity => 
-        `${entity!.kind}:${entity!.metadata.namespace || 'default'}/${entity!.metadata.name}`
-      );
+      .map(entity => stringifyEntityRef(entity!));
   } catch (error) {
     // If there's an error, return empty array to be safe
     routeOpts.logger.warn('Error filtering entities by permissions', error);
