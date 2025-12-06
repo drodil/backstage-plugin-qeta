@@ -94,6 +94,7 @@ export type RawPostEntity = {
   type: 'question' | 'article' | 'link';
   headerImage: string;
   url: string | null;
+  published: Date | string | null;
 };
 
 export type RawCollectionEntity = {
@@ -610,6 +611,7 @@ export class DatabaseQetaStore implements QetaStore {
           headerImage,
           url,
           status,
+          published: status === 'active' ? created : null,
         },
         ['id'],
       )
@@ -774,6 +776,19 @@ export class DatabaseQetaStore implements QetaStore {
       opts,
       status = 'active',
     } = options;
+
+    // Check if this is a transition from draft to active
+    const currentPost = await this.db('posts')
+      .select('status', 'published')
+      .where('id', '=', id)
+      .first();
+
+    const shouldSetPublished =
+      currentPost &&
+      currentPost.status === 'draft' &&
+      status === 'active' &&
+      !currentPost.published;
+
     const query = this.db('posts').where('posts.id', '=', id);
     const rows = await query.update({
       title,
@@ -784,6 +799,7 @@ export class DatabaseQetaStore implements QetaStore {
       updatedBy: setUpdatedBy ? user_ref : undefined,
       updated: setUpdatedBy ? new Date() : undefined,
       status,
+      published: shouldSetPublished ? new Date() : undefined,
     });
 
     if (!rows) {
@@ -2812,6 +2828,7 @@ export class DatabaseQetaStore implements QetaStore {
       url: val.url ?? undefined,
       images: additionalInfo[5]?.map(r => r.id),
       experts: additionalInfo[6],
+      published: val.published ? (val.published as Date) : undefined,
     };
   }
 
