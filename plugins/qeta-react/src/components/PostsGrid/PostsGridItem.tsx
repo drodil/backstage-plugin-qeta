@@ -40,6 +40,7 @@ import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
 import { FaviconItem } from '../FaviconItem';
+import { getPostDisplayDate } from '../../utils/utils';
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -306,7 +307,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               </SmallAvatar>
               <UserLink entityRef={post.author} anonymous={post.anonymous} />
               <Link to={href} className="qetaPostListItemQuestionBtn">
-                <RelativeTimeWithTooltip value={post.created} />
+                <RelativeTimeWithTooltip value={getPostDisplayDate(post)} />
               </Link>
             </Box>
           </Box>

@@ -7,7 +7,7 @@ import {
 import { Filters } from '../components/FilterPanel/FilterPanel';
 import FileType from 'file-type';
 import { ErrorApi } from '@backstage/core-plugin-api';
-import { QetaApi } from '@drodil/backstage-plugin-qeta-common';
+import { Post, QetaApi } from '@drodil/backstage-plugin-qeta-common';
 import { useEffect } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../translation.ts';
@@ -85,6 +85,20 @@ export const getEntityDescription = (entity: Entity): string => {
     parts.push(entity.spec.profile.email);
   }
   return parts.join(', ');
+};
+
+/**
+ * Get the appropriate display date for a post.
+ * For articles and links, returns the published date if available, otherwise returns created date.
+ * For questions, always returns created date.
+ */
+export const getPostDisplayDate = (post: Post): Date => {
+  // For articles and links, prefer published date if available
+  if ((post.type === 'article' || post.type === 'link') && post.published) {
+    return post.published;
+  }
+  // Fall back to created date
+  return post.created;
 };
 
 export const formatDate = (localDate: Date) => {
