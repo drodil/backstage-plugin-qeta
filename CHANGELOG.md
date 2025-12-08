@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.46.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.45.2...v3.46.0) (2025-12-08)
+
+
+### Features
+
+* add entity permission filtering ([#363](https://github.com/drodil/backstage-plugin-qeta/issues/363)) ([0be8cbc](https://github.com/drodil/backstage-plugin-qeta/commit/0be8cbcf8313539f4988fa722d2e0735f0239c4f))
+* add prominent "Leave a comment" button to articles ([8d656e0](https://github.com/drodil/backstage-plugin-qeta/commit/8d656e0d174281c1b89bc6800a44903994d518be))
+* add published date field for articles ([#365](https://github.com/drodil/backstage-plugin-qeta/issues/365)) ([4cf50da](https://github.com/drodil/backstage-plugin-qeta/commit/4cf50da5bfa06d136ae6aad91e315b287f0d8364))
+* add published date field for articles ([#365](https://github.com/drodil/backstage-plugin-qeta/issues/365)) ([be0ebb8](https://github.com/drodil/backstage-plugin-qeta/commit/be0ebb8295db438506106c8441a4fa648373ff70))
+* add question title to notification descriptions for answers and comments ([330a2a2](https://github.com/drodil/backstage-plugin-qeta/commit/330a2a2519a3d2480fd51c0f9a9373edcb5d2424))
+* small ui tuning ([d6c0d3c](https://github.com/drodil/backstage-plugin-qeta/commit/d6c0d3cdecaeac625d80781f075ecd6365f39a44))
+
+
+### Bug Fixes
+
+* enable entity information in permission rules ([5274a5f](https://github.com/drodil/backstage-plugin-qeta/commit/5274a5f22999c49929972efaea259852f28a8097))
+
 ### [3.45.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.45.1...v3.45.2) (2025-11-20)
 
 
