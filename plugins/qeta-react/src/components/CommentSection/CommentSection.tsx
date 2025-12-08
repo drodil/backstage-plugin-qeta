@@ -22,7 +22,8 @@ export type QetaCommentSectionClassKey =
   | 'root'
   | 'addCommentButton'
   | 'commentSection'
-  | 'commentForm';
+  | 'commentForm'
+  | 'prominentButton';
 
 const useStyles = makeStyles(
   theme => ({
@@ -57,6 +58,14 @@ const useStyles = makeStyles(
       marginLeft: theme.spacing(2.5),
       marginTop: theme.spacing(1),
     },
+    prominentButton: {
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(2),
+      marginLeft: theme.spacing(1),
+      padding: theme.spacing(1, 2.5),
+      textTransform: 'none',
+      fontSize: '1rem',
+    },
   }),
   { name: 'QetaCommentSection' },
 );
@@ -66,8 +75,9 @@ export const CommentSection = (props: {
   post: PostResponse;
   answer?: AnswerResponse;
   className?: string;
+  showProminentButton?: boolean;
 }) => {
-  const { answer, post, onCommentAction } = props;
+  const { answer, post, onCommentAction, showProminentButton = false } = props;
   const analytics = useAnalytics();
   const qetaApi = useApi(qetaApiRef);
   const [posting, setPosting] = useState(false);
@@ -172,7 +182,23 @@ export const CommentSection = (props: {
         permission={qetaCreateCommentPermission}
         errorPage={<></>}
       >
-        {!formVisible && (
+        {!formVisible && showProminentButton && (
+          <Grid container justifyContent="flex-start">
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                startIcon={<AddCommentIcon />}
+                onClick={() => setFormVisible(true)}
+                className={styles.prominentButton}
+              >
+                {t('commentSection.leaveComment')}
+              </Button>
+            </Grid>
+          </Grid>
+        )}
+        {!formVisible && !showProminentButton && (
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Button
