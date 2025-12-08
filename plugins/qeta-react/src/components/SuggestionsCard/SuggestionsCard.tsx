@@ -35,6 +35,7 @@ import {
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
+import { getPostDisplayDate } from '../../utils/utils';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -181,7 +182,11 @@ const NewArticleSuggestionItem = (props: {
     <SuggestionListItem
       href={articleRoute({ id: suggestion.article.id.toString(10) })}
       icon={<CollectionsBookmarkIcon />}
-      timestamp={<RelativeTimeWithTooltip value={suggestion.article.created} />}
+      timestamp={
+        <RelativeTimeWithTooltip
+          value={getPostDisplayDate(suggestion.article)}
+        />
+      }
     >
       {t('suggestionsCard.newArticle', {
         title: suggestion.article.title,
@@ -198,7 +203,9 @@ const NewLinkSuggestionItem = (props: { suggestion: NewLinkSuggestion }) => {
     <SuggestionListItem
       href={linkRoute({ id: suggestion.link.id.toString(10) })}
       icon={<LinkIcon />}
-      timestamp={<RelativeTimeWithTooltip value={suggestion.link.created} />}
+      timestamp={
+        <RelativeTimeWithTooltip value={getPostDisplayDate(suggestion.link)} />
+      }
     >
       {t('suggestionsCard.newLink', {
         title: suggestion.link.title,

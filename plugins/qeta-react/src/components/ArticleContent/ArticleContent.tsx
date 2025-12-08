@@ -15,6 +15,7 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { DraftBanner } from '../Utility/DraftBanner';
 import { DeletedBanner } from '../Utility/DeletedBanner.tsx';
+import { getPostDisplayDate } from '../../utils/utils';
 
 export type QetaArticleContentClassKey =
   | 'content'
@@ -90,7 +91,7 @@ export const ArticleContent = (props: {
           <Typography variant="caption">
             {t('common.viewsCount', { count: views })} {' · '}
             {t('authorBox.postedAtTime')}{' '}
-            <RelativeTimeWithTooltip value={postEntity.created} />
+            <RelativeTimeWithTooltip value={getPostDisplayDate(postEntity)} />
           </Typography>
         </Grid>
       </Grid>

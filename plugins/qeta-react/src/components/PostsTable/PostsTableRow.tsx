@@ -9,6 +9,7 @@ import { capitalize } from 'lodash';
 import HelpOutlined from '@material-ui/icons/HelpOutlined';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import LinkIcon from '@material-ui/icons/Link';
+import { getPostDisplayDate } from '../../utils/utils';
 
 export const PostsTableRow = (props: { post: Post; showIcon?: boolean }) => {
   const { post } = props;
@@ -47,11 +48,11 @@ export const PostsTableRow = (props: { post: Post; showIcon?: boolean }) => {
         </TableCell>
       )}
       <TableCell>
-        <RelativeTimeWithTooltip value={post.created} />
+        <RelativeTimeWithTooltip value={getPostDisplayDate(post)} />
       </TableCell>
       <TableCell>
         <RelativeTimeWithTooltip
-          value={post.updated ? post.updated : post.created}
+          value={post.updated ? post.updated : getPostDisplayDate(post)}
         />
       </TableCell>
     </TableRow>

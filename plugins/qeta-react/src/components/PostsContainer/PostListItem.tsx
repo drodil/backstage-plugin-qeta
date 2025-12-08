@@ -24,6 +24,7 @@ import LinkIcon from '@material-ui/icons/Link';
 import { StatusChip } from '../Utility/StatusChip';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
 import { FaviconItem } from '../FaviconItem';
+import { getPostDisplayDate } from '../../utils/utils';
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -290,7 +291,7 @@ export const PostListItem = (props: PostListItemProps) => {
           <Box className={styles.authorBoxContainer}>
             <AuthorBox
               userEntityRef={post.author}
-              time={post.created}
+              time={getPostDisplayDate(post)}
               label={t('authorBox.postedAtTime')}
               expert={Boolean(post.experts && post.experts.length > 0)}
               anonymous={post.anonymous}
