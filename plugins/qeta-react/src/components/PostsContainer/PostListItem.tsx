@@ -65,9 +65,10 @@ const useStyles = makeStyles(theme => ({
   metaBox: {
     textAlign: 'right',
     borderRadius: 6,
-    padding: '4px',
+    padding: '5px',
     color: theme.palette.text.primary,
     lineHeight: '16px',
+    fontSize: '14px',
     userSelect: 'none',
   },
   answersBox: {
@@ -120,6 +121,7 @@ const useStyles = makeStyles(theme => ({
   tagsRow: {
     display: 'flex',
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 8,
     gap: 8,
   },
