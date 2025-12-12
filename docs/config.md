@@ -4,6 +4,7 @@ The following configuration options are available for your app-config.yaml:
 
 ```yaml
 qeta:
+  route: custom-qeta # Optional: set if plugin is mounted at a custom route
   allowAnonymous: true
   allowMetadataInput: false
   permissions: false
@@ -39,6 +40,7 @@ The allowed configuration values are:
 
 ## Global
 
+- `route`, string, (optional) set a custom frontend route for the Q&A plugin. If you mount the Qeta plugin at a custom path in your Backstage app (e.g. `/custom-qeta`), set `route: custom-qeta` to ensure notifications and links use the correct path (no leading or ending forward slash). Default is `qeta`.
 - `allowAnonymous`, boolean, allows anonymous users to post questions and answers anonymously. This enables also guest users to be able to post. Adds checkbox to the forms to post as anonymous. Default is `false`
 - `allowMetadataInput`, boolean, allows `created` and `user` fields to be passed when creating questions, answers, or comments. Useful if migrating information into the system. Default is `false`
 - `allowGlobalEdits`, boolean, allows editing other users' questions and answers by any user. Only if permission framework is not in use. Default is `false`.

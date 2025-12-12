@@ -30,6 +30,19 @@ This plugin integrates with the notifications plugin to send notifications to us
   - The question author
   - The entity owners if the question is related to an entity
 
+## Notification Links and Custom Routes
+
+By default, notification links use `/qeta` as the base route. If you mount the Qeta plugin at a custom path in your Backstage app, set the `qeta.route` config value to match your frontend route. This ensures that notification links direct users to the correct location.
+
+Example:
+
+```yaml
+qeta:
+  route: custom-qeta
+```
+
+All notification links (questions, answers, articles, collections, etc.) will use this custom route as the base path.
+
 ## Setup
 
 To enable notifications, you need to have the notifications plugin installed and configured.
