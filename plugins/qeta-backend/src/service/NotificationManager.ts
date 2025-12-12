@@ -20,6 +20,8 @@ import { NotificationReceiversHandler } from '@drodil/backstage-plugin-qeta-node
 
 export class NotificationManager {
   private readonly enabled: boolean;
+  private readonly basePath: string;
+
   constructor(
     private readonly logger: LoggerService,
     private readonly catalog: CatalogApi,
@@ -30,6 +32,9 @@ export class NotificationManager {
     private readonly notificationReceivers?: NotificationReceiversHandler,
   ) {
     this.enabled = config.getOptionalBoolean('qeta.notifications') ?? true;
+    this.basePath = (
+      this.config.getOptionalString('qeta.route') || 'qeta'
+    ).replace(/^\/+|\/+$/g, '');
   }
 
   async onNewPost(
@@ -232,7 +237,7 @@ export class NotificationManager {
               collection.title
             }" with reason: ${reason || 'No reason provided'}`,
           ),
-          link: `/qeta/collections/${collection.id}`,
+          link: `/${this.basePath}/collections/${collection.id}`,
           topic: `Collection deleted`,
           scope: `collection:delete:${collection.id}`,
         },
@@ -287,7 +292,7 @@ export class NotificationManager {
               post.title
             }" with reason: ${reason || 'No reason provided'}`,
           ),
-          link: `/qeta/questions/${post.id}`,
+          link: `/${this.basePath}/questions/${post.id}`,
           topic: `Answer deleted`,
           scope: `answer:delete:${answer.id}`,
         },
@@ -387,7 +392,7 @@ export class NotificationManager {
           description: this.formatDescription(
             `${user} answered question "${question.title}": ${answer.content}`,
           ),
-          link: `/qeta/questions/${question.id}#answer_${answer.id}`,
+          link: `/${this.basePath}/questions/${question.id}#answer_${answer.id}`,
           topic: 'New answer on question',
           scope: `question:answer:${question.id}:author`,
         },
@@ -445,7 +450,7 @@ export class NotificationManager {
           description: this.formatDescription(
             `${user} commented on answer to "${question.title}": ${comment}`,
           ),
-          link: `/qeta/questions/${question.id}#answer_${answer.id}`,
+          link: `/${this.basePath}/questions/${question.id}#answer_${answer.id}`,
           topic: 'New answer comment',
           scope: `answer:comment:${answer.id}`,
         },
@@ -497,7 +502,7 @@ export class NotificationManager {
           description: this.formatDescription(
             `${user} marked answer as correct: ${answer.content}`,
           ),
-          link: `/qeta/questions/${question.id}#answer_${answer.id}`,
+          link: `/${this.basePath}/questions/${question.id}#answer_${answer.id}`,
           topic: 'Correct answer on question',
           scope: `question:correct:${question.id}:answer`,
         },
@@ -542,7 +547,7 @@ export class NotificationManager {
             post.content
           }`;
       const link = !isPost
-        ? `/qeta/questions/${post.postId}#answer_${post.id}`
+        ? `/${this.basePath}/questions/${post.postId}#answer_${post.id}`
         : this.selectPostRoute(post.type, post.id);
       const scope = isPost
         ? `post:mention:${post.id}`
@@ -597,7 +602,7 @@ export class NotificationManager {
 
       const description = `${user} created a new collection: ${collection.title}`;
       // eslint-disable-next-line no-nested-ternary
-      const link = `/qeta/collections/${collection.id}`;
+      const link = `/${this.basePath}/collections/${collection.id}`;
       const scope = `collection:${collection.id}:created`;
 
       await this.notifications.send({
@@ -649,7 +654,7 @@ export class NotificationManager {
 
       const description = `${user} added a new post to ${collection.title}`;
       // eslint-disable-next-line no-nested-ternary
-      const link = `/qeta/collections/${collection.id}`;
+      const link = `/${this.basePath}/collections/${collection.id}`;
       const scope = `collection:${collection.id}:new_post`;
 
       await this.notifications.send({
@@ -707,9 +712,9 @@ export class NotificationManager {
   }
 
   private selectPostRoute(type: PostType, id: number) {
-    const questionRoute = `/qeta/questions/${id}`;
-    const articleRoute = `/qeta/articles/${id}`;
-    const linkRoute = `/qeta/links/${id}`;
+    const questionRoute = `/${this.basePath}/questions/${id}`;
+    const articleRoute = `/${this.basePath}/articles/${id}`;
+    const linkRoute = `/${this.basePath}/links/${id}`;
     return selectByPostType(type, questionRoute, articleRoute, linkRoute);
   }
 }

@@ -84,6 +84,51 @@ describe('NotificationManager', () => {
       });
     });
 
+    it('should send notifications to the correct recipients with custom route', async () => {
+      // create new instance with custom config
+      notificationManager = new NotificationManager(
+        mockLogger,
+        mockCatalog,
+        mockServices.auth.mock({
+          getPluginRequestToken: jest
+            .fn()
+            .mockResolvedValue({ token: 'test_token' }),
+        }),
+        mockServices.rootConfig({
+          data: {
+            qeta: {
+              route: 'custom-qeta',
+            },
+          },
+        }),
+        mockNotificationService,
+        mockServices.cache.mock(),
+        notificationReceivers,
+      );
+
+      const followingUsers = ['user1', 'user2'];
+
+      await notificationManager.onNewPost(
+        'author',
+        post as Post,
+        followingUsers,
+      );
+
+      expect(mockNotificationService.send).toHaveBeenCalledWith({
+        payload: {
+          description: 'John Doe asked a question: Test Post',
+          link: '/custom-qeta/questions/1',
+          title: 'New question',
+          topic: 'New question about entity',
+        },
+        recipients: {
+          entityRef: ['entity1', 'user1', 'user2', 'user3'],
+          excludeEntityRef: 'author',
+          type: 'entity',
+        },
+      });
+    });
+
     it('should log an error if notification sending fails', async () => {
       const followingUsers = ['user1', 'user2'];
       mockNotificationService.send = jest

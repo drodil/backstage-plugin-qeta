@@ -3272,7 +3272,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/ui@backstage:^::backstage=1.45.3&npm=0.9.1, @backstage/ui@npm:^0.9.1":
+"@backstage/ui@backstage:^::backstage=1.45.3&npm=0.9.1, @backstage/ui@npm:^0.9.0, @backstage/ui@npm:^0.9.1":
   version: 0.9.1
   resolution: "@backstage/ui@npm:0.9.1"
   dependencies:
@@ -3289,26 +3289,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/b0a9e3af46974584da3f84e3955d45744f3e5a0470a00ad9fd0e313142232212ff21dd932d6852ad29630be83d3185f260ca94349e15087be9b2f5ea8b2084e8
-  languageName: node
-  linkType: hard
-
-"@backstage/ui@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "@backstage/ui@npm:0.9.0"
-  dependencies:
-    "@remixicon/react": "npm:^4.6.0"
-    "@tanstack/react-table": "npm:^8.21.3"
-    clsx: "npm:^2.1.1"
-    react-aria-components: "npm:^1.13.0"
-  peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
-    react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10c0/61d4805158f5b707d86dc911d19610fd87c2681c829da84bda45fd3f977f6ac85a5413fae94dc9026bed869b32d9addd44b2d7ee35e7515ea2b6d5e58530314c
   languageName: node
   linkType: hard
 
