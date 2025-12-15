@@ -69,6 +69,7 @@ describe('NotificationManager', () => {
         followingUsers,
       );
 
+      //
       expect(mockNotificationService.send).toHaveBeenCalledWith({
         payload: {
           description: 'John Doe asked a question: Test Post',
@@ -219,6 +220,8 @@ describe('NotificationManager', () => {
       id: 1,
       content: 'Test Answer',
       author: 'answerer',
+      correct: false,
+      postId: 1,
       comments: [],
     };
 
@@ -280,6 +283,8 @@ describe('NotificationManager', () => {
     const answer: Partial<Answer> = {
       id: 1,
       content: 'Test Answer',
+      postId: 1,
+      correct: false,
       author: 'answerer',
       comments: [],
     };
@@ -348,6 +353,8 @@ describe('NotificationManager', () => {
     const answer: Partial<Answer> = {
       id: 1,
       content: 'Test Answer',
+      postId: 1,
+      correct: false,
       author: 'answerer',
       comments: [],
     };

@@ -66,7 +66,7 @@ export const getResourceUrl = (
   } else if (isCollection(resource)) {
     return `${baseUrl}/collection/${resource.id}`;
   } else if (isAnswer(resource)) {
-    return `${baseUrl}/questions/${resource.postId}#answer_${resource.id}\``;
+    return `${baseUrl}/questions/${resource.postId}#answer_${resource.id}`;
   } else if (isPost(resource)) {
     const questionRoute = `${baseUrl}/questions/${resource.id}`;
     const articleRoute = `${baseUrl}/articles/${resource.id}`;
