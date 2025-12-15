@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.47.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.47.1...v3.47.2) (2025-12-15)
+
+
+### Bug Fixes
+
+* remove npm token from publish ([2c85032](https://github.com/drodil/backstage-plugin-qeta/commit/2c85032f97ba29f88e84a5fa13c108aa95442123))
+
 ### [3.47.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.47.0...v3.47.1) (2025-12-15)
 
 ## [3.47.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.46.1...v3.47.0) (2025-12-15)
