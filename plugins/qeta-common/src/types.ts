@@ -436,11 +436,17 @@ export type SuggestionType =
   | 'newQuestion'
   | 'newArticle'
   | 'newLink'
-  | 'draftPost';
+  | 'draftPost'
+  | 'randomPost';
 
 export interface Suggestion {
   type: SuggestionType;
   id: string;
+}
+
+export interface RandomPostSuggestion extends Suggestion {
+  type: 'randomPost';
+  post: Post;
 }
 
 export interface NoCorrectAnswerSuggestion extends Suggestion {

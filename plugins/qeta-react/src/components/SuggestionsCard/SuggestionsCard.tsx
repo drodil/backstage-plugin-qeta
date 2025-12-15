@@ -214,12 +214,40 @@ const NewLinkSuggestionItem = (props: { suggestion: NewLinkSuggestion }) => {
   );
 };
 
+const RandomPostSuggestionItem = (props: {
+  suggestion: DraftPostSuggestion;
+}) => {
+  const { suggestion } = props;
+  const { t } = useTranslationRef(qetaTranslationRef);
+  const questionRoute = useRouteRef(questionRouteRef);
+  const articleRoute = useRouteRef(articleRouteRef);
+  const linkRoute = useRouteRef(linkRouteRef);
+  const route = selectByPostType(
+    suggestion.post.type,
+    questionRoute,
+    articleRoute,
+    linkRoute,
+  );
+  return (
+    <SuggestionListItem
+      href={route({ id: suggestion.post.id.toString(10) })}
+      icon={<HelpOutlinedIcon />}
+      timestamp={<RelativeTimeWithTooltip value={suggestion.post.created} />}
+    >
+      {t('suggestionsCard.randomPost', {
+        title: suggestion.post.title,
+      })}
+    </SuggestionListItem>
+  );
+};
+
 const suggestionTypeMap: Record<SuggestionType, any> = {
   noCorrectAnswer: NoCorrectAnswerSuggestionItem,
   newQuestion: NewQuestionSuggestionItem,
   newArticle: NewArticleSuggestionItem,
   newLink: NewLinkSuggestionItem,
   draftPost: DraftPostSuggestionItem,
+  randomPost: RandomPostSuggestionItem,
 };
 
 export const SuggestionsCard = () => {

@@ -357,6 +357,7 @@ export const qetaTranslationRef = createTranslationRef({
       newArticle: 'You might like to read "{{title}}"',
       newLink: 'You might like to check this link "{{title}}"',
       draftPost: 'Ready to finalize draft post "{{title}}"?',
+      randomPost: 'Share your thoughts on "{{title}}"?',
     },
     homePage: {
       title: 'Home',

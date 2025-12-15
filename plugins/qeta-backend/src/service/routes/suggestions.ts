@@ -11,6 +11,7 @@ import {
   NoCorrectAnswerSuggestion,
   qetaReadPostPermission,
   Question,
+  RandomPostSuggestion,
   Suggestion,
 } from '@drodil/backstage-plugin-qeta-common';
 import Ajv from 'ajv';
@@ -290,7 +291,7 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       includeNothingOptions,
     );
     return links.posts.map(link => ({
-      id: `a_${link.id}`,
+      id: `l_${link.id}`,
       type: 'newLink',
       link: link as Link,
     }));
@@ -316,9 +317,27 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       includeNothingOptions,
     );
     return links.posts.map(link => ({
-      id: `a_${link.id}`,
+      id: `l_${link.id}`,
       type: 'newLink',
       link: link as Link,
+    }));
+  };
+
+  const getRandomPosts = async (
+    username: string,
+    limit: number,
+    filter?: PermissionCriteria<QetaFilters>,
+  ): Promise<RandomPostSuggestion[]> => {
+    const posts = await database.getPosts(
+      username,
+      { random: true, limit },
+      filter,
+      includeNothingOptions,
+    );
+    return posts.posts.map(post => ({
+      id: `p_${post.id}`,
+      type: 'randomPost',
+      post,
     }));
   };
 
@@ -354,14 +373,21 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       getNewUserLinks(username, filter),
       getUsersDraftPosts(username, filter),
     ]);
-    const suggestions = raw
+
+    const suggestionsRaw = raw
       .flat()
       .reduce((acc: Suggestion[], cur: Suggestion) => {
         if (!acc.some(s => s.id === cur.id)) {
           acc.push(cur);
         }
         return acc;
-      }, [])
+      }, []);
+
+    if (suggestionsRaw.length < limit) {
+      suggestionsRaw.push(...(await getRandomPosts(username, limit, filter)));
+    }
+
+    const suggestions = suggestionsRaw
       .sort(() => 0.5 - Math.random())
       .slice(0, limit);
     response.json({ suggestions });
