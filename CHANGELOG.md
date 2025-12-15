@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.47.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.46.1...v3.47.0) (2025-12-15)
+
+
+### Features
+
+* fill suggestions with random posts when not enough real ones ([ead28e0](https://github.com/drodil/backstage-plugin-qeta/commit/ead28e095ded3e51f0836bdcf4a1ea831c90868a))
+
+
+### Bug Fixes
+
+* add self link to resources ([d68371b](https://github.com/drodil/backstage-plugin-qeta/commit/d68371b877b53cc8f083b4525d7ac6d047276808))
+* tests for notification links ([e4b2f72](https://github.com/drodil/backstage-plugin-qeta/commit/e4b2f7235d1a53b8b2ea3961ddcef81bd42fc2dc))
+
 ### [3.46.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.46.0...v3.46.1) (2025-12-12)
 
 
