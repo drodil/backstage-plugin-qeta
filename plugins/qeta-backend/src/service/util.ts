@@ -29,6 +29,7 @@ import {
   qetaEditCommentPermission,
   qetaEditPostPermission,
   qetaEditTagPermission,
+  selectByPostType,
   TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
@@ -44,6 +45,41 @@ import { DefaultAzureCredential } from '@azure/identity';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { PermissionManager } from './PermissionManager.ts';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+
+export const getResourceUrl = (
+  resource: MaybePost | MaybeAnswer | MaybeTag | MaybeCollection,
+  config: Config,
+  absolute?: boolean,
+) => {
+  if (!resource) {
+    return undefined;
+  }
+  const basePath = (
+    config.getOptionalString('qeta.route') ?? 'qeta'
+  ).replaceAll(/(^\/+)|(\/+$)/g, '');
+  const baseUrl = absolute
+    ? `${config.getOptionalString('app.baseUrl') ?? ''}/${basePath}`
+    : `/${basePath}`;
+
+  if (isTag(resource)) {
+    return `${baseUrl}/tags/${resource.tag}`;
+  } else if (isCollection(resource)) {
+    return `${baseUrl}/collection/${resource.id}`;
+  } else if (isAnswer(resource)) {
+    return `${baseUrl}/questions/${resource.postId}#answer_${resource.id}\``;
+  } else if (isPost(resource)) {
+    const questionRoute = `${baseUrl}/questions/${resource.id}`;
+    const articleRoute = `${baseUrl}/articles/${resource.id}`;
+    const linkRoute = `${baseUrl}/links/${resource.id}`;
+    return selectByPostType(
+      resource.type,
+      questionRoute,
+      articleRoute,
+      linkRoute,
+    );
+  }
+  return undefined;
+};
 
 /**
  * Filter entity refs based on catalog permissions.
@@ -435,6 +471,8 @@ export const mapAdditionalFields = async (
   const { permissionMgr } = routeOpts;
   const credentials =
     creds ?? (await permissionMgr.getCredentials(request, true));
+
+  resource.self = getResourceUrl(resource, routeOpts.config, true);
 
   if (isTag(resource)) {
     return mapTagAdditionalFields(

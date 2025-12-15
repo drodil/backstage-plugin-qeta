@@ -42,6 +42,7 @@ export const registerAnswerQuestionAction = (options: {
           content: z
             .string()
             .describe('The content/body of the answer in markdown format'),
+          self: z.string().describe('Link to the answer').optional(),
         }),
     },
     action: async ({ input, credentials }) => {

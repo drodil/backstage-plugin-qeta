@@ -3,7 +3,6 @@ import {
   Answer,
   Collection,
   Post,
-  PostType,
   removeMarkdownFormatting,
   selectByPostType,
   truncate,
@@ -17,10 +16,10 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { UserEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotificationReceiversHandler } from '@drodil/backstage-plugin-qeta-node';
+import { getResourceUrl } from './util';
 
 export class NotificationManager {
   private readonly enabled: boolean;
-  private readonly basePath: string;
 
   constructor(
     private readonly logger: LoggerService,
@@ -32,9 +31,6 @@ export class NotificationManager {
     private readonly notificationReceivers?: NotificationReceiversHandler,
   ) {
     this.enabled = config.getOptionalBoolean('qeta.notifications') ?? true;
-    this.basePath = (
-      this.config.getOptionalString('qeta.route') || 'qeta'
-    ).replace(/^\/+|\/+$/g, '');
   }
 
   async onNewPost(
@@ -80,7 +76,7 @@ export class NotificationManager {
               `${user} created a link: ${post.title}`,
             ),
           ),
-          link: this.selectPostRoute(post.type, post.id),
+          link: getResourceUrl(post, this.config),
           topic: `New ${post.type} about entity`,
         },
       });
@@ -135,7 +131,7 @@ export class NotificationManager {
           description: this.formatDescription(
             `${user} commented on ${post.type} "${post.title}": ${comment}`,
           ),
-          link: this.selectPostRoute(post.type, post.id),
+          link: getResourceUrl(post, this.config),
           topic: `New ${post.type} comment`,
           scope: `${post.type}:comment:${post.id}`,
         },
@@ -186,7 +182,7 @@ export class NotificationManager {
               reason || 'No reason provided'
             }`,
           ),
-          link: this.selectPostRoute(post.type, post.id),
+          link: getResourceUrl(post, this.config),
           topic: `${post.type} deleted`,
           scope: `${post.type}:delete:${post.id}`,
         },
@@ -237,7 +233,7 @@ export class NotificationManager {
               collection.title
             }" with reason: ${reason || 'No reason provided'}`,
           ),
-          link: `/${this.basePath}/collections/${collection.id}`,
+          link: getResourceUrl(collection, this.config),
           topic: `Collection deleted`,
           scope: `collection:delete:${collection.id}`,
         },
@@ -292,7 +288,7 @@ export class NotificationManager {
               post.title
             }" with reason: ${reason || 'No reason provided'}`,
           ),
-          link: `/${this.basePath}/questions/${post.id}`,
+          link: getResourceUrl(post, this.config),
           topic: `Answer deleted`,
           scope: `answer:delete:${answer.id}`,
         },
@@ -338,7 +334,7 @@ export class NotificationManager {
           description: this.formatDescription(
             `${user} edited ${post.type}: ${post.title}`,
           ),
-          link: this.selectPostRoute(post.type, post.id),
+          link: getResourceUrl(post, this.config),
           topic: `${post.type} edited`,
           scope: `${post.type}:edit:${post.id}`,
         },
@@ -392,7 +388,7 @@ export class NotificationManager {
           description: this.formatDescription(
             `${user} answered question "${question.title}": ${answer.content}`,
           ),
-          link: `/${this.basePath}/questions/${question.id}#answer_${answer.id}`,
+          link: getResourceUrl(answer, this.config),
           topic: 'New answer on question',
           scope: `question:answer:${question.id}:author`,
         },
@@ -450,7 +446,7 @@ export class NotificationManager {
           description: this.formatDescription(
             `${user} commented on answer to "${question.title}": ${comment}`,
           ),
-          link: `/${this.basePath}/questions/${question.id}#answer_${answer.id}`,
+          link: getResourceUrl(answer, this.config),
           topic: 'New answer comment',
           scope: `answer:comment:${answer.id}`,
         },
@@ -502,7 +498,7 @@ export class NotificationManager {
           description: this.formatDescription(
             `${user} marked answer as correct: ${answer.content}`,
           ),
-          link: `/${this.basePath}/questions/${question.id}#answer_${answer.id}`,
+          link: getResourceUrl(answer, this.config),
           topic: 'Correct answer on question',
           scope: `question:correct:${question.id}:answer`,
         },
@@ -546,9 +542,7 @@ export class NotificationManager {
         : `${user} mentioned you in an answer${isComment ? ' comment' : ''}: ${
             post.content
           }`;
-      const link = !isPost
-        ? `/${this.basePath}/questions/${post.postId}#answer_${post.id}`
-        : this.selectPostRoute(post.type, post.id);
+      const link = getResourceUrl(post, this.config, false);
       const scope = isPost
         ? `post:mention:${post.id}`
         : `answer:mention:${post.id}`;
@@ -601,8 +595,7 @@ export class NotificationManager {
       const user = await this.getUserDisplayName(username);
 
       const description = `${user} created a new collection: ${collection.title}`;
-      // eslint-disable-next-line no-nested-ternary
-      const link = `/${this.basePath}/collections/${collection.id}`;
+      const link = getResourceUrl(collection, this.config);
       const scope = `collection:${collection.id}:created`;
 
       await this.notifications.send({
@@ -653,8 +646,7 @@ export class NotificationManager {
       const user = await this.getUserDisplayName(username);
 
       const description = `${user} added a new post to ${collection.title}`;
-      // eslint-disable-next-line no-nested-ternary
-      const link = `/${this.basePath}/collections/${collection.id}`;
+      const link = getResourceUrl(collection, this.config);
       const scope = `collection:${collection.id}:new_post`;
 
       await this.notifications.send({
@@ -709,12 +701,5 @@ export class NotificationManager {
 
   private formatDescription(description: string) {
     return truncate(removeMarkdownFormatting(description), 150);
-  }
-
-  private selectPostRoute(type: PostType, id: number) {
-    const questionRoute = `/${this.basePath}/questions/${id}`;
-    const articleRoute = `/${this.basePath}/articles/${id}`;
-    const linkRoute = `/${this.basePath}/links/${id}`;
-    return selectByPostType(type, questionRoute, articleRoute, linkRoute);
   }
 }

@@ -53,6 +53,7 @@ export const registerPostActions = (options: {
             .array(z.string())
             .optional()
             .describe('Catalog entity references attached to the question'),
+          self: z.string().describe('Link to created question').optional(),
         }),
     },
     action: async ({ input, credentials }) => {
@@ -109,6 +110,7 @@ export const registerPostActions = (options: {
             .array(z.string())
             .optional()
             .describe('Catalog entity references attached to the article'),
+          self: z.string().describe('Link to created article').optional(),
         }),
     },
     action: async ({ input, credentials }) => {
@@ -165,6 +167,7 @@ export const registerPostActions = (options: {
             .array(z.string())
             .optional()
             .describe('Catalog entity references attached to the link'),
+          self: z.string().describe('Link to created link').optional(),
         }),
     },
     action: async ({ input, credentials }) => {

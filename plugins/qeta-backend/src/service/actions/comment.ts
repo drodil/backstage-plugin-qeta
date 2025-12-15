@@ -30,6 +30,7 @@ export const registerCommentPostAction = (options: {
       output: z =>
         z.object({
           id: z.number().describe('The post id'),
+          self: z.string().describe('Link to the comment').optional(),
         }),
     },
     action: async ({ input, credentials }) => {

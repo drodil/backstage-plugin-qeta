@@ -58,6 +58,7 @@ Post trend determines the popularity of a post based on views, votes, answers, a
           posts: z.array(
             z.object({
               id: z.number().describe('The unique identifier of the post'),
+              self: z.string().describe('Link to post').optional(),
               views: z
                 .number()
                 .describe('Number of views the post has received'),
@@ -116,6 +117,7 @@ Post trend determines the popularity of a post based on views, votes, answers, a
                     id: z
                       .number()
                       .describe('The unique identifier of the answer'),
+                    self: z.string().describe('Link to answer').optional(),
                     content: z
                       .string()
                       .describe(

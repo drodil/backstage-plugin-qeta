@@ -49,6 +49,7 @@ export interface StatisticsRequestParameters {
 
 export interface QetaIdEntity {
   id: number;
+  self?: string;
 }
 
 export interface QetaEntity extends QetaIdEntity {
