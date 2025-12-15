@@ -88,6 +88,8 @@ jobs:
           fetch-depth: 0
       - name: Create yarnrc.yml
         run: |
+          echo "npmAuthToken: ${{ secrets.NPM_TOKEN }}" >> ~/.yarnrc.yml
+          echo "npmAlwaysAuth: true" >> ~/.yarnrc.yml
           echo "npmPublishRegistry: https://registry.npmjs.org" >> ~/.yarnrc.yml
       - name: Use Node.js 22.x
         uses: actions/setup-node@v4
