@@ -459,10 +459,10 @@ export class DatabaseQetaStore implements QetaStore {
       query.select(
         this.db.raw(
           `(
-            (SELECT COALESCE(SUM(score), 0) FROM post_votes WHERE "postId" = posts.id) * 200 + 
+            (posts.score) * 200 + 
             (SELECT COALESCE(COUNT(*), 0) FROM answers WHERE "postId" = posts.id) * 100 +
             (SELECT COALESCE(COUNT(*), 0) FROM user_favorite WHERE "postId" = posts.id) * 50 +
-            (SELECT COALESCE(COUNT(*), 0) FROM post_views WHERE "postId" = posts.id) * 10 +
+            COALESCE(posts.views, 0) * 10 +
             (SELECT COALESCE(COUNT(*), 0) FROM comments WHERE "postId" = posts.id) * 30
           ) / 
           POWER(
@@ -1094,13 +1094,24 @@ export class DatabaseQetaStore implements QetaStore {
         .ignore()
         .into('post_votes');
     }
+    await this.db('posts').where('id', postId).increment('score', 1);
   }
 
   async deletePostVote(user_ref: string, postId: number): Promise<boolean> {
-    return !!(await this.db('post_votes')
+    const vote = await this.db('post_votes')
       .where('author', '=', user_ref)
       .where('postId', '=', postId)
-      .delete());
+      .first();
+
+    if (vote) {
+      await this.db('posts').where('id', postId).decrement('score', vote.score);
+      await this.db('post_votes')
+        .where('author', '=', user_ref)
+        .where('postId', '=', postId)
+        .delete();
+      return true;
+    }
+    return false;
   }
 
   async votePost(
@@ -1108,10 +1119,23 @@ export class DatabaseQetaStore implements QetaStore {
     postId: number,
     score: number,
   ): Promise<boolean> {
-    await this.db('post_votes')
+    const vote = await this.db('post_votes')
       .where('author', '=', user_ref)
       .where('postId', '=', postId)
-      .delete();
+      .first();
+
+    if (vote) {
+      await this.db('posts')
+        .where('id', postId)
+        .increment('score', score - vote.score);
+      await this.db('post_votes')
+        .where('author', '=', user_ref)
+        .where('postId', '=', postId)
+        .update({ score });
+      return true;
+    }
+
+    await this.db('posts').where('id', postId).increment('score', score);
 
     const id = await this.db
       .insert(
@@ -1158,10 +1182,22 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   async deleteAnswerVote(user_ref: string, answerId: number): Promise<boolean> {
-    return !!(await this.db('answer_votes')
+    const vote = await this.db('answer_votes')
       .where('author', '=', user_ref)
       .where('answerId', '=', answerId)
-      .delete());
+      .first();
+
+    if (vote) {
+      await this.db('answers')
+        .where('id', answerId)
+        .decrement('score', vote.score);
+      await this.db('answer_votes')
+        .where('author', '=', user_ref)
+        .where('answerId', '=', answerId)
+        .delete();
+      return true;
+    }
+    return false;
   }
 
   async voteAnswer(
@@ -1169,10 +1205,23 @@ export class DatabaseQetaStore implements QetaStore {
     answerId: number,
     score: number,
   ): Promise<boolean> {
-    await this.db('answer_votes')
+    const vote = await this.db('answer_votes')
       .where('author', '=', user_ref)
       .where('answerId', '=', answerId)
-      .delete();
+      .first();
+
+    if (vote) {
+      await this.db('answers')
+        .where('id', answerId)
+        .increment('score', score - vote.score);
+      await this.db('answer_votes')
+        .where('author', '=', user_ref)
+        .where('answerId', '=', answerId)
+        .update({ score });
+      return true;
+    }
+
+    await this.db('answers').where('id', answerId).increment('score', score);
 
     const id = await this.db
       .insert(
@@ -1697,12 +1746,13 @@ export class DatabaseQetaStore implements QetaStore {
     options,
   }: StatisticsRequestParameters): Promise<Statistic[]> {
     const query = this.db<Statistic>('posts as q')
-      .sum('qv.score as total')
+      .sum('q.score as total')
       .select('q.author')
-      .join('post_votes as qv', 'q.id', 'qv.postId')
       .groupBy('q.author')
       .orderBy('total', 'desc')
-      .where('anonymous', '!=', true);
+      .where(builder =>
+        builder.where('q.anonymous', '!=', true).orWhereNull('q.anonymous'),
+      );
 
     if (author) {
       query.where('q.author', '=', author);
@@ -1726,6 +1776,7 @@ export class DatabaseQetaStore implements QetaStore {
     // DENSE_RANK() over (total) directly by the  query
     rows.map((row, index) => {
       row.position = index + 1;
+      row.total = Number(row.total);
     });
 
     return rows;
@@ -1740,7 +1791,9 @@ export class DatabaseQetaStore implements QetaStore {
       .select('q.author')
       .groupBy('author')
       .orderBy('total', 'desc')
-      .where('q.anonymous', '!=', true);
+      .where(builder =>
+        builder.where('q.anonymous', '!=', true).orWhereNull('q.anonymous'),
+      );
 
     if (author) {
       query.where('q.author', '=', author);
@@ -1759,11 +1812,12 @@ export class DatabaseQetaStore implements QetaStore {
     }
 
     const rows = (await query) as unknown as Statistic[];
-    if (!author) {
-      rows.map((row, index) => {
+    rows.map((row, index) => {
+      if (!author) {
         row.position = index + 1;
-      });
-    }
+      }
+      row.total = Number(row.total);
+    });
 
     return rows;
   }
@@ -1773,12 +1827,13 @@ export class DatabaseQetaStore implements QetaStore {
     options,
   }: StatisticsRequestParameters): Promise<Statistic[]> {
     const query = this.db<Statistic>('answers as a')
-      .sum('av.score as total')
+      .sum('a.score as total')
       .select('a.author')
-      .join('answer_votes as av', 'a.id', 'av.answerId')
       .groupBy('a.author')
       .orderBy('total', 'desc')
-      .where('a.anonymous', '!=', true);
+      .where(builder =>
+        builder.where('a.anonymous', '!=', true).orWhereNull('a.anonymous'),
+      );
 
     if (author) {
       query.where('a.author', '=', author);
@@ -1796,6 +1851,7 @@ export class DatabaseQetaStore implements QetaStore {
 
     rows.map((row, index) => {
       row.position = index + 1;
+      row.total = Number(row.total);
     });
 
     return rows;
@@ -1806,13 +1862,14 @@ export class DatabaseQetaStore implements QetaStore {
     options,
   }: StatisticsRequestParameters): Promise<Statistic[]> {
     const query = this.db<Statistic>('answers as a')
-      .sum('av.score as total')
+      .sum('a.score as total')
       .select('a.author')
-      .join('answer_votes as av', 'a.id', 'av.answerId')
       .groupBy('a.author')
       .orderBy('total', 'desc')
       .where('a.correct', '=', true)
-      .where('a.anonymous', '!=', true);
+      .where(builder =>
+        builder.where('a.anonymous', '!=', true).orWhereNull('a.anonymous'),
+      );
 
     if (author) {
       query.where('a.author', '=', author);
@@ -1830,6 +1887,7 @@ export class DatabaseQetaStore implements QetaStore {
 
     rows.map((row, index) => {
       row.position = index + 1;
+      row.total = Number(row.total);
     });
 
     return rows;
@@ -1844,7 +1902,9 @@ export class DatabaseQetaStore implements QetaStore {
       .select('a.author')
       .groupBy('author')
       .orderBy('total', 'desc')
-      .where('a.anonymous', '!=', true);
+      .where(builder =>
+        builder.where('a.anonymous', '!=', true).orWhereNull('a.anonymous'),
+      );
 
     if (author) {
       query.where('a.author', '=', author);
@@ -1859,11 +1919,12 @@ export class DatabaseQetaStore implements QetaStore {
 
     const rows = (await query) as unknown as Statistic[];
 
-    if (!author) {
-      rows.map((row, index) => {
+    rows.map((row, index) => {
+      if (!author) {
         row.position = index + 1;
-      });
-    }
+      }
+      row.total = Number(row.total);
+    });
 
     return rows;
   }
@@ -3003,16 +3064,9 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   private getAnswerBaseQuery() {
-    const postRef = this.db.ref('answers.id');
-
-    const score = this.db('answer_votes')
-      .where('answer_votes.answerId', postRef)
-      .sum('score')
-      .as('score');
-
     return this.db<RawAnswerEntity>('answers') // nosonar
       .leftJoin('answer_votes', 'answers.id', 'answer_votes.answerId')
-      .select('answers.*', score)
+      .select('answers.*')
       .groupBy('answers.id');
   }
 
@@ -3054,21 +3108,12 @@ export class DatabaseQetaStore implements QetaStore {
         timestamp: new Date(),
       })
       .into('post_views');
+    await this.db('posts').where('id', postId).increment('views', 1);
   }
 
   private getPostsBaseQuery(user: string, opts?: AnswerOptions) {
     const { includeStatusFilter = true } = opts ?? {};
     const postRef = this.db.ref('posts.id');
-
-    const score = this.db('post_votes')
-      .where('post_votes.postId', postRef)
-      .sum('score')
-      .as('score');
-
-    const views = this.db('post_views')
-      .where('post_views.postId', postRef)
-      .count('*')
-      .as('views');
 
     const answersCount = this.db('answers')
       .where('answers.postId', postRef)
@@ -3099,15 +3144,7 @@ export class DatabaseQetaStore implements QetaStore {
       .as('favorite');
 
     return this.db<RawPostEntity>('posts')
-      .select(
-        'posts.*',
-        score,
-        views,
-        answersCount,
-        correctAnswers,
-        commentsCount,
-        favorite,
-      )
+      .select('posts.*', answersCount, correctAnswers, commentsCount, favorite)
       .leftJoin('post_votes', 'posts.id', 'post_votes.postId')
       .leftJoin('post_views', 'posts.id', 'post_views.postId')
       .leftJoin('answers', 'posts.id', 'answers.postId')

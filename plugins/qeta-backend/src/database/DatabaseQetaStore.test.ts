@@ -68,21 +68,25 @@ describe.each(databases.eachSupportedId())(
     const insertTag = async (tag: string) =>
       (await knex('tags').insert({ tag }).returning('id'))[0].id ?? -1;
 
-    const votePost = (postId: number, user: string) =>
-      knex('post_votes').insert({
+    const votePost = async (postId: number, user: string) => {
+      await knex('post_votes').insert({
         postId,
         author: user,
         score: 1,
         timestamp: new Date(),
       });
+      await knex('posts').where('id', postId).increment('score', 1);
+    };
 
-    const voteAnswer = (answerId: number, user: string) =>
-      knex('answer_votes').insert({
+    const voteAnswer = async (answerId: number, user: string) => {
+      await knex('answer_votes').insert({
         answerId,
         author: user,
         score: 1,
         timestamp: new Date(),
       });
+      await knex('answers').where('id', answerId).increment('score', 1);
+    };
 
     beforeAll(async () => {
       ({ storage, knex } = await createStore(databaseId));
@@ -981,6 +985,48 @@ describe.each(databases.eachSupportedId())(
         expect(entityRefs).toContain('system:default/z-system');
         expect(entityRefs).toContain('component:default/a-component');
         expect(entityRefs).toContain('component:default/m-component');
+      });
+    });
+
+    describe('statistics', () => {
+      it('should get most upvoted posts', async () => {
+        const id1 = await insertPost(post);
+        const id2 = await insertPost({ ...post, author: 'user2' });
+        await votePost(id1, 'user3');
+        await votePost(id1, 'user4');
+        await votePost(id2, 'user3');
+
+        const ret = await storage.getMostUpvotedPosts({
+          options: { limit: 5 },
+        });
+        expect(ret.length).toBe(2);
+        expect(ret[0].author).toBe('user');
+        expect(Number(ret[0].total)).toBe(2);
+        expect(ret[1].author).toBe('user2');
+        expect(Number(ret[1].total)).toBe(1);
+      });
+
+      it('should get most upvoted answers', async () => {
+        const id = await insertPost(post);
+        const a1 = await insertAnswer({ ...answer, postId: id });
+        const a2 = await insertAnswer({
+          ...answer,
+          postId: id,
+          author: 'user2',
+        });
+
+        await voteAnswer(a1, 'user3');
+        await voteAnswer(a1, 'user4');
+        await voteAnswer(a2, 'user3');
+
+        const ret = await storage.getMostUpvotedAnswers({
+          options: { limit: 5 },
+        });
+        expect(ret.length).toBe(2);
+        expect(ret[0].author).toBe('user');
+        expect(Number(ret[0].total)).toBe(2);
+        expect(ret[1].author).toBe('user2');
+        expect(Number(ret[1].total)).toBe(1);
       });
     });
   },
