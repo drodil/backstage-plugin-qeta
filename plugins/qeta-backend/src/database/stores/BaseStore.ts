@@ -95,7 +95,7 @@ export abstract class BaseStore {
           .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
           .where('tags.tag', 'in', values)
           .select('post_tags.postId');
-        query.whereIn(fk, postIds);
+        query[negate ? 'whereNotIn' : 'whereIn'](fk, postIds);
         return query;
       }
       if (filter.property === 'tag.experts') {
@@ -105,7 +105,7 @@ export abstract class BaseStore {
             .leftJoin('tag_experts', 'tag_experts.tagId', 'tags.id')
             .where('tag_experts.entityRef', 'in', values)
             .select('post_tags.postId');
-          query.whereIn(fk, postIds);
+          query[negate ? 'whereNotIn' : 'whereIn'](fk, postIds);
           return query;
         } else if (type === 'answer') {
           const answerIds = db('answers')
@@ -115,14 +115,14 @@ export abstract class BaseStore {
             .leftJoin('tag_experts', 'tag_experts.tagId', 'tags.id')
             .where('tag_experts.entityRef', 'in', values)
             .select('answers.id');
-          query.whereIn(fk, answerIds);
+          query[negate ? 'whereNotIn' : 'whereIn'](fk, answerIds);
           return query;
         } else if (type === 'tags') {
           const tagIds = db('tag_experts')
             .leftJoin('tags', 'tag_experts.tagId', 'tags.id')
             .where('tag_experts.entityRef', 'in', values)
             .select('tag_experts.tagId');
-          query.whereIn(fk, tagIds);
+          query[negate ? 'whereNotIn' : 'whereIn'](fk, tagIds);
           return query;
         } else if (type === 'collection') {
           const collectionIds = db('collection_posts')
@@ -132,7 +132,7 @@ export abstract class BaseStore {
             .leftJoin('tag_experts', 'tag_experts.tagId', 'tags.id')
             .where('tag_experts.entityRef', 'in', values)
             .select('collection_posts.collectionId');
-          query.whereIn(fk, collectionIds);
+          query[negate ? 'whereNotIn' : 'whereIn'](fk, collectionIds);
           return query;
         }
       }
@@ -142,15 +142,17 @@ export abstract class BaseStore {
           .leftJoin('post_entities', 'entities.id', 'post_entities.entityId')
           .where('entities.entity_ref', 'in', values)
           .select('post_entities.postId');
-        query.whereIn(fk, postIds);
+        query[negate ? 'whereNotIn' : 'whereIn'](fk, postIds);
         return query;
       }
 
       if (values.length === 0) {
-        return query.whereNull(filter.property);
+        return negate
+          ? query.whereNotNull(filter.property)
+          : query.whereNull(filter.property);
       }
 
-      return query.whereIn(filter.property, values);
+      return query[negate ? 'whereNotIn' : 'whereIn'](filter.property, values);
     }
 
     return query[negate ? 'andWhereNot' : 'andWhere'](builder => {
