@@ -88,7 +88,8 @@ export type RawPostEntity = {
   answersCount: number | string;
   correctAnswers: number | string;
   commentsCount: number | string;
-  favorite: number | string;
+  favoritesCount: number | string;
+  favorite: number | string; // Helper for user specific favorite
   trend: number | string;
   anonymous: boolean;
   type: 'question' | 'article' | 'link';
@@ -148,6 +149,8 @@ export type RawCommentEntity = {
   updated: Date;
   updatedBy: string;
   status: string;
+  postId?: number;
+  answerId?: number;
 };
 
 export type RawUserImpact = {
@@ -460,10 +463,10 @@ export class DatabaseQetaStore implements QetaStore {
         this.db.raw(
           `(
             (posts.score) * 200 + 
-            (SELECT COALESCE(COUNT(*), 0) FROM answers WHERE "postId" = posts.id) * 100 +
-            (SELECT COALESCE(COUNT(*), 0) FROM user_favorite WHERE "postId" = posts.id) * 50 +
+            (posts."answersCount") * 100 +
+            (posts."favoritesCount") * 50 +
             COALESCE(posts.views, 0) * 10 +
-            (SELECT COALESCE(COUNT(*), 0) FROM comments WHERE "postId" = posts.id) * 30
+            (posts."commentsCount") * 30
           ) / 
           POWER(
             EXTRACT(EPOCH FROM (now() - posts.created)) / 172800 + 1,
@@ -505,19 +508,15 @@ export class DatabaseQetaStore implements QetaStore {
     const total = this.mapToInteger((results[1] as any)?.CNT);
 
     return {
-      posts: await Promise.all(
-        rows.map(async val => {
-          return this.mapPostEntity(val, user_ref, {
-            ...opts,
-            includeAnswers: options.includeAnswers ?? opts?.includeAnswers,
-            includeVotes: options.includeVotes ?? opts?.includeVotes,
-            includeEntities: options.includeEntities ?? opts?.includeEntities,
-            includeAttachments:
-              options.includeAttachments ?? opts?.includeAttachments,
-            includeExperts: options.includeExperts ?? opts?.includeExperts,
-          });
-        }),
-      ),
+      posts: await this.mapPostEntities(rows, user_ref, {
+        ...opts,
+        includeAnswers: options.includeAnswers ?? opts?.includeAnswers,
+        includeVotes: options.includeVotes ?? opts?.includeVotes,
+        includeEntities: options.includeEntities ?? opts?.includeEntities,
+        includeAttachments:
+          options.includeAttachments ?? opts?.includeAttachments,
+        includeExperts: options.includeExperts ?? opts?.includeExperts,
+      }),
       total,
     };
   }
@@ -552,6 +551,7 @@ export class DatabaseQetaStore implements QetaStore {
     options?: PostOptions,
   ): Promise<MaybePost> {
     const rows = await this.getPostsBaseQuery(user_ref)
+      .leftJoin('answers', 'posts.id', 'answers.postId')
       .where('answers.id', '=', answerId)
       .select('posts.*');
     if (!rows || rows.length === 0) {
@@ -659,6 +659,7 @@ export class DatabaseQetaStore implements QetaStore {
         postId: post_id,
       })
       .into('comments');
+    await this.db('posts').where('id', post_id).increment('commentsCount', 1);
 
     return await this.getPost(user_ref, post_id, false, options);
   }
@@ -692,6 +693,7 @@ export class DatabaseQetaStore implements QetaStore {
     } else {
       await query.update({ status: 'deleted' });
     }
+    await this.db('posts').where('id', post_id).decrement('commentsCount', 1);
 
     return this.getPost(user_ref, post_id, false, options);
   }
@@ -861,6 +863,8 @@ export class DatabaseQetaStore implements QetaStore {
       answers[0].id,
     );
 
+    await this.db('posts').where('id', postId).increment('answersCount', 1);
+
     return this.getAnswer(answers[0].id, user_ref, options);
   }
 
@@ -1000,10 +1004,8 @@ export class DatabaseQetaStore implements QetaStore {
     const total = this.mapToInteger((results[1] as any)?.CNT);
 
     return {
-      answers: await Promise.all(
-        rows.map(async val => {
-          return this.mapAnswer(val, user_ref, opts);
-        }),
+      answers: (await this.mapAnswerEntities(rows, user_ref, opts)).map(
+        a => a.answer,
       ),
       total,
     };
@@ -1020,7 +1022,8 @@ export class DatabaseQetaStore implements QetaStore {
       query.where('answers.status', '=', 'active');
     }
     const answers = await query.select();
-    return this.mapAnswer(answers[0], user_ref, options);
+    const mapped = await this.mapAnswerEntities(answers, user_ref, options);
+    return mapped[0]?.answer;
   }
 
   async getComments(
@@ -1064,11 +1067,24 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   async deleteAnswer(id: number, permanently?: boolean): Promise<boolean> {
+    const answer = await this.db('answers')
+      .select('postId')
+      .where('id', id)
+      .first();
+
     const query = this.db('answers').where('id', '=', id);
+    let rows = 0;
     if (permanently) {
-      return !!(await query.delete());
+      rows = await query.delete();
+    } else {
+      rows = await query.update({ status: 'deleted' });
     }
-    const rows = await query.update({ status: 'deleted' });
+
+    if (rows > 0 && answer) {
+      await this.db('posts')
+        .where('id', answer.postId)
+        .decrement('answersCount', 1);
+    }
     return rows > 0;
   }
 
@@ -1165,14 +1181,23 @@ export class DatabaseQetaStore implements QetaStore {
       .onConflict()
       .ignore()
       .into('user_favorite');
+
+    if (id && id.length > 0) {
+      await this.db('posts').where('id', postId).increment('favoritesCount', 1);
+    }
     return id && id.length > 0;
   }
 
   async unfavoritePost(user_ref: string, postId: number): Promise<boolean> {
-    return !!(await this.db('user_favorite')
+    const deleted = await this.db('user_favorite')
       .where('user', '=', user_ref)
       .where('postId', '=', postId)
-      .delete());
+      .delete();
+
+    if (deleted) {
+      await this.db('posts').where('id', postId).decrement('favoritesCount', 1);
+    }
+    return !!deleted;
   }
 
   async getUsersWhoFavoritedPost(postId: number): Promise<string[]> {
@@ -1240,14 +1265,22 @@ export class DatabaseQetaStore implements QetaStore {
   }
 
   async markAnswerCorrect(postId: number, answerId: number): Promise<boolean> {
-    return await this.markAnswer(postId, answerId, true);
+    const marked = await this.markAnswer(postId, answerId, true);
+    if (marked) {
+      await this.db('posts').where('id', postId).increment('correctAnswers', 1);
+    }
+    return marked;
   }
 
   async markAnswerIncorrect(
     postId: number,
     answerId: number,
   ): Promise<boolean> {
-    return await this.markAnswer(postId, answerId, false);
+    const marked = await this.markAnswer(postId, answerId, false);
+    if (marked) {
+      await this.db('posts').where('id', postId).decrement('correctAnswers', 1);
+    }
+    return marked;
   }
 
   async getTags(
@@ -2204,16 +2237,13 @@ export class DatabaseQetaStore implements QetaStore {
     ]);
     const rows = results[0] as RawCollectionEntity[];
     const total = this.mapToInteger((results[1] as any)?.CNT);
+
     return {
-      collections: await Promise.all(
-        rows.map(async val => {
-          return this.mapCollectionEntity(val, user_ref, {
-            ...opts,
-            includePosts: options.includePosts ?? opts?.includePosts,
-            includeExperts: options.includeExperts ?? opts?.includeExperts,
-          });
-        }),
-      ),
+      collections: await this.mapCollectionEntities(rows, user_ref, {
+        ...opts,
+        includePosts: options.includePosts ?? opts?.includePosts,
+        includeExperts: options.includeExperts ?? opts?.includeExperts,
+      }),
       total,
     };
   }
@@ -2739,13 +2769,64 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     options?: CollectionOptions,
   ): Promise<Collection> {
-    const { postFilters, includePosts = true } = options ?? {};
-    const results = await Promise.all([
-      includePosts
-        ? this.getPosts(
+    const result = await this.mapCollectionEntities([val], user_ref, options);
+    return result[0];
+  }
+
+  private async mapCollectionEntities(
+    rows: RawCollectionEntity[],
+    user_ref: string,
+    options?: CollectionOptions,
+  ): Promise<Collection[]> {
+    if (rows.length === 0) {
+      return [];
+    }
+    const { includePosts = true, includeExperts = true } = options ?? {};
+    const collectionIds = rows.map(r => r.id);
+
+    const [attachments, followers, experts] = await Promise.all([
+      this.db('attachments')
+        .select('id', 'collectionId')
+        .whereIn('collectionId', collectionIds),
+      this.db('user_collections')
+        .select('collectionId')
+        .count('* as followers')
+        .whereIn('collectionId', collectionIds)
+        .groupBy('collectionId'),
+      includeExperts
+        ? this.getCollectionExpertsBulk(collectionIds)
+        : Promise.resolve([]),
+    ]);
+
+    const attachmentsMap = new Map<number, number[]>();
+    attachments.forEach((att: any) => {
+      if (!attachmentsMap.has(att.collectionId)) {
+        attachmentsMap.set(att.collectionId, []);
+      }
+      attachmentsMap.get(att.collectionId)?.push(att.id);
+    });
+
+    const followersMap = new Map<number, number>();
+    followers.forEach((f: any) => {
+      followersMap.set(f.collectionId, this.mapToInteger(f.followers));
+    });
+
+    const expertsMap = new Map<number, string[]>();
+    experts.forEach((e: any) => {
+      if (!expertsMap.has(e.collectionId)) {
+        expertsMap.set(e.collectionId, []);
+      }
+      expertsMap.get(e.collectionId)?.push(e.entityRef);
+    });
+
+    const collections = await Promise.all(
+      rows.map(async val => {
+        let posts: { posts: Post[]; total: number } = { posts: [], total: 0 };
+        if (includePosts) {
+          posts = await this.getPosts(
             user_ref,
             { collectionId: val.id, includeEntities: true },
-            postFilters,
+            options?.postFilters,
             {
               tagsFilter: options?.tagFilters,
               includeComments: false,
@@ -2755,44 +2836,41 @@ export class DatabaseQetaStore implements QetaStore {
               includeTotal: false,
               includeExperts: options?.includeExperts ?? false,
             },
-          )
-        : { posts: [] },
-      this.db('attachments').where('collectionId', val.id).select('id'),
-      this.db('user_collections')
-        .count('*')
-        .as('followers')
-        .where('collectionId', val.id)
-        .first(),
-      options?.includeExperts ?? true
-        ? this.getCollectionExperts(val.id)
-        : undefined,
-    ]);
+          );
+        }
 
-    const entities = compact([
-      ...new Set(results[0].posts.map(p => p.entities).flat()),
-    ]);
-    const tags = compact([
-      ...new Set(results[0].posts.map(p => p.tags).flat()),
-    ]);
+        const entities = compact([
+          ...new Set(posts.posts.map(p => p.entities).flat()),
+        ]);
+        const tags = compact([...new Set(posts.posts.map(p => p.tags).flat())]);
 
-    return {
-      id: val.id,
-      title: val.title,
-      owner: val.owner,
-      description: val.description,
-      created: val.created as Date,
-      posts: results[0].posts,
-      headerImage: val.headerImage,
-      postsCount: this.mapToInteger(val.postsCount),
-      entities,
-      tags,
-      images: results[1].map(r => r.id),
-      followers: this.mapToInteger(results[2]!.count),
-      experts: results[3],
-    };
+        return {
+          id: val.id,
+          title: val.title,
+          owner: val.owner,
+          description: val.description,
+          created: val.created as Date,
+          posts: posts.posts,
+          headerImage: val.headerImage,
+          postsCount: this.mapToInteger(val.postsCount),
+          entities,
+          tags,
+          images: attachmentsMap.get(val.id) ?? [],
+          followers: followersMap.get(val.id) ?? 0,
+          experts: expertsMap.get(val.id) ?? [],
+        } as Collection;
+      }),
+    );
+
+    return collections;
   }
 
-  private async getCollectionExperts(collectionId: number): Promise<string[]> {
+  private async getCollectionExpertsBulk(
+    collectionIds: number[],
+  ): Promise<{ collectionId: number; entityRef: string }[]> {
+    if (collectionIds.length === 0) {
+      return [];
+    }
     const rows = await this.db('tag_experts')
       .leftJoin('tags', 'tag_experts.tagId', 'tags.id')
       .leftJoin('post_tags', 'post_tags.tagId', 'tags.id')
@@ -2801,9 +2879,19 @@ export class DatabaseQetaStore implements QetaStore {
         'collection_posts.postId',
         'post_tags.postId',
       )
-      .where('collection_posts.collectionId', collectionId)
-      .select('tag_experts.entityRef');
-    return [...new Set(rows.map(r => r.entityRef))];
+      .whereIn('collection_posts.collectionId', collectionIds)
+      .select('tag_experts.entityRef', 'collection_posts.collectionId');
+
+    const result: { collectionId: number; entityRef: string }[] = [];
+    const seen = new Set<string>();
+    rows.forEach((r: any) => {
+      const key = `${r.collectionId}:${r.entityRef}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push({ collectionId: r.collectionId, entityRef: r.entityRef });
+      }
+    });
+    return result;
   }
 
   private async mapTemplateEntity(val: RawTemplate): Promise<Template> {
@@ -2827,70 +2915,8 @@ export class DatabaseQetaStore implements QetaStore {
     user_ref: string,
     options?: PostOptions,
   ): Promise<Post> {
-    const {
-      includeTags = true,
-      includeAnswers = true,
-      includeVotes = true,
-      includeEntities = true,
-      includeComments = true,
-      includeAttachments = true,
-      includeExperts = true,
-      tagsFilter,
-    } = options ?? {};
-    // TODO: This could maybe done with join
-    const additionalInfo = await Promise.all([
-      includeTags
-        ? this.getRelatedTags(val.id, 'post_tags', 'postId', tagsFilter)
-        : undefined,
-      includeAnswers
-        ? this.getPostAnswers(val.id, user_ref, {
-            ...options,
-            includePost: false,
-            filter: options?.answersFilter,
-          })
-        : undefined,
-      includeVotes ? this.getPostVotes(val.id) : undefined,
-      includeEntities ? this.getRelatedEntities(val.id) : undefined,
-      includeComments
-        ? this.getPostComments(val.id, options?.commentsFilter)
-        : undefined,
-      includeAttachments
-        ? this.db('attachments').select('id').where('postId', val.id)
-        : undefined,
-      includeExperts ? this.getPostExperts(val.id) : undefined,
-    ]);
-    return {
-      id: val.id,
-      author:
-        val.anonymous && val.author !== user_ref ? 'anonymous' : val.author,
-      own: val.author === user_ref,
-      title: val.title,
-      content: val.content,
-      created: val.created as Date,
-      updated: val.updated as Date,
-      updatedBy: val.updatedBy,
-      status: val.status as PostStatus,
-      score: this.mapToInteger(val.score),
-      views: this.mapToInteger(val.views),
-      answersCount: this.mapToInteger(val.answersCount),
-      correctAnswer: this.mapToInteger(val.correctAnswers) > 0,
-      commentsCount: this.mapToInteger(val.commentsCount),
-      favorite: this.mapToInteger(val.favorite) > 0,
-      tags: additionalInfo[0],
-      answers: additionalInfo[1],
-      votes: additionalInfo[2],
-      entities: additionalInfo[3],
-      trend: this.mapToInteger(val.trend),
-      comments: additionalInfo[4],
-      ownVote: additionalInfo[2]?.find(v => v.author === user_ref)?.score,
-      anonymous: val.anonymous,
-      type: val.type,
-      headerImage: val.headerImage,
-      url: val.url ?? undefined,
-      images: additionalInfo[5]?.map(r => r.id),
-      experts: additionalInfo[6],
-      published: val.published ? (val.published as Date) : undefined,
-    };
+    const posts = await this.mapPostEntities([val], user_ref, options);
+    return posts[0];
   }
 
   private mapComment(val: RawCommentEntity): Comment {
@@ -2902,48 +2928,6 @@ export class DatabaseQetaStore implements QetaStore {
       updated: val.updated,
       updatedBy: val.updatedBy,
       status: val.status as AnswerCommentStatus,
-    };
-  }
-
-  private async mapAnswer(
-    val: RawAnswerEntity,
-    user_ref: string,
-    options?: AnswerOptions,
-  ): Promise<Answer> {
-    const {
-      includeVotes = true,
-      includeComments = true,
-      includePost = true,
-      includeExperts = true,
-    } = options ?? {};
-    const additionalInfo = await Promise.all([
-      includeVotes ? this.getAnswerVotes(val.id) : undefined,
-      includeComments
-        ? this.getAnswerComments(val.id, options?.commentsFilter)
-        : undefined,
-      includePost ? this.getPost(user_ref, val.postId, false) : undefined,
-      this.db('attachments').select('id').where('answerId', val.id),
-      includeExperts ? this.getAnswerExperts(val.id) : undefined,
-    ]);
-    return {
-      id: val.id,
-      postId: val.postId,
-      own: val.author === user_ref,
-      author:
-        val.anonymous && val.author !== user_ref ? 'anonymous' : val.author,
-      content: val.content,
-      correct: val.correct,
-      created: val.created,
-      updated: val.updated,
-      updatedBy: val.updatedBy,
-      score: this.mapToInteger(val.score),
-      status: val.status as AnswerCommentStatus,
-      votes: additionalInfo[0],
-      comments: additionalInfo[1],
-      anonymous: val.anonymous,
-      post: additionalInfo[2] ?? undefined,
-      images: additionalInfo[3].map(r => r.id),
-      experts: additionalInfo[4] ?? undefined,
     };
   }
 
@@ -2981,52 +2965,6 @@ export class DatabaseQetaStore implements QetaStore {
     return rows.map(val => val.tag);
   }
 
-  private async getPostComments(
-    postId: number,
-    commentsFilter?: PermissionCriteria<QetaFilters>,
-    opts?: CommentOptions,
-  ): Promise<Comment[]> {
-    const { includeStatusFilter = true } = opts ?? {};
-    const query = this.db<RawCommentEntity>('comments')
-      .where('comments.postId', '=', postId)
-      .orderBy('created');
-    if (includeStatusFilter) {
-      query.where('comments.status', '=', 'active');
-    }
-    if (commentsFilter) {
-      parseFilter(commentsFilter, query, this.db, 'comments');
-    }
-    const rows = await query.select();
-    return rows.map(val => this.mapComment(val));
-  }
-
-  private async getPostExperts(postId: number): Promise<string[]> {
-    const rows = await this.db('tag_experts')
-      .leftJoin('post_tags', 'tag_experts.tagId', 'post_tags.tagId')
-      .where('post_tags.postId', postId)
-      .select('tag_experts.entityRef');
-    return [...new Set(rows.map(r => r.entityRef))];
-  }
-
-  private async getAnswerComments(
-    answerId: number,
-    commentsFilter?: PermissionCriteria<QetaFilters>,
-    opts?: CommentOptions,
-  ): Promise<Comment[]> {
-    const { includeStatusFilter = true } = opts ?? {};
-    const query = this.db<RawCommentEntity>('comments')
-      .where('comments.answerId', '=', answerId)
-      .orderBy('created');
-    if (includeStatusFilter) {
-      query.where('comments.status', '=', 'active');
-    }
-    if (commentsFilter) {
-      parseFilter(commentsFilter, query, this.db, 'comments');
-    }
-    const rows = await query.select();
-    return rows.map(val => this.mapComment(val));
-  }
-
   private async getRelatedEntities(
     id: number,
     tableName: string = 'post_entities',
@@ -3039,28 +2977,133 @@ export class DatabaseQetaStore implements QetaStore {
     return rows.map(val => val.entity_ref);
   }
 
-  private async getPostVotes(postId: number): Promise<Vote[]> {
-    const rows = (await this.db<RawPostVoteEntity>('post_votes')
-      .where('postId', '=', postId)
-      .select()) as RawPostVoteEntity[];
-    return rows.map(val => this.mapVote(val));
+  private async mapPostEntities(
+    rows: RawPostEntity[],
+    user_ref: string,
+    options?: PostOptions,
+  ): Promise<Post[]> {
+    if (rows.length === 0) {
+      return [];
+    }
+
+    const {
+      includeTags = true,
+      includeAnswers = true,
+      includeVotes = true,
+      includeEntities = true,
+      includeComments = true,
+      includeAttachments = true,
+      includeExperts = true,
+      tagsFilter,
+    } = options ?? {};
+
+    const postIds = rows.map(r => r.id);
+
+    // Fetch all related data in parallel
+    const [tags, answers, votes, entities, comments, attachments, experts] =
+      await Promise.all([
+        includeTags
+          ? this.getRelatedTagsBulk(postIds, 'post_tags', 'postId', tagsFilter)
+          : Promise.resolve(new Map<number, string[]>()),
+        includeAnswers
+          ? this.getPostAnswersBulk(postIds, user_ref, {
+              ...options,
+              includePost: false,
+              filter: options?.answersFilter,
+            })
+          : Promise.resolve(new Map<number, Answer[]>()),
+        includeVotes
+          ? this.getPostVotesBulk(postIds)
+          : Promise.resolve(new Map<number, Vote[]>()),
+        includeEntities
+          ? this.getRelatedEntitiesBulk(postIds)
+          : Promise.resolve(new Map<number, string[]>()),
+        includeComments
+          ? this.getPostCommentsBulk(postIds, options?.commentsFilter)
+          : Promise.resolve(new Map<number, Comment[]>()),
+        includeAttachments
+          ? this.db('attachments')
+              .select('id', 'postId')
+              .whereIn('postId', postIds)
+          : Promise.resolve([]),
+        includeExperts
+          ? this.getPostExpertsBulk(postIds)
+          : Promise.resolve(new Map<number, string[]>()),
+      ]);
+
+    // Group attachments by postId
+    const attachmentsMap = new Map<number, number[]>();
+    if (Array.isArray(attachments)) {
+      attachments.forEach((att: any) => {
+        if (!attachmentsMap.has(att.postId)) {
+          attachmentsMap.set(att.postId, []);
+        }
+        attachmentsMap.get(att.postId)?.push(att.id);
+      });
+    }
+
+    // Map rows to posts
+    return rows.map(val => {
+      const postVotes = votes.get(val.id) ?? [];
+      return {
+        id: val.id,
+        author:
+          val.anonymous && val.author !== user_ref ? 'anonymous' : val.author,
+        own: val.author === user_ref,
+        title: val.title,
+        content: val.content,
+        created: val.created as Date,
+        updated: val.updated as Date,
+        updatedBy: val.updatedBy,
+        status: val.status as PostStatus,
+        score: this.mapToInteger(val.score),
+        views: this.mapToInteger(val.views),
+        answersCount: this.mapToInteger(val.answersCount),
+        correctAnswer: this.mapToInteger(val.correctAnswers) > 0,
+        commentsCount: this.mapToInteger(val.commentsCount),
+        favorite: this.mapToInteger(val.favorite) > 0,
+        tags: tags.get(val.id) ?? [],
+        answers: answers.get(val.id) ?? [],
+        votes: postVotes,
+        entities: entities.get(val.id) ?? [],
+        trend: this.mapToInteger(val.trend),
+        comments: comments.get(val.id) ?? [],
+        ownVote: postVotes.find(v => v.author === user_ref)?.score,
+        anonymous: val.anonymous,
+        type: val.type,
+        headerImage: val.headerImage,
+        url: val.url ?? undefined,
+        images: attachmentsMap.get(val.id),
+        experts: experts.get(val.id),
+        published: val.published ? (val.published as Date) : undefined,
+      };
+    });
   }
 
-  private async getAnswerVotes(answerId: number): Promise<Vote[]> {
-    const rows = (await this.db<RawAnswerVoteEntity>('answer_votes')
-      .where('answerId', '=', answerId)
-      .select()) as RawAnswerVoteEntity[];
-    return rows.map(val => this.mapVote(val));
-  }
+  private async getRelatedTagsBulk(
+    ids: number[],
+    tableName: string = 'post_tags',
+    columnName: string = 'postId',
+    tagsFilter?: PermissionCriteria<QetaFilters>,
+  ): Promise<Map<number, string[]>> {
+    const query = this.db<RawTagEntity>('tags')
+      .leftJoin(tableName, 'tags.id', `${tableName}.tagId`)
+      .whereIn(`${tableName}.${columnName}`, ids);
 
-  private async getAnswerExperts(answerId: number): Promise<string[]> {
-    const rows = await this.db('tag_experts')
-      .leftJoin('tags', 'tag_experts.tagId', 'tags.id')
-      .leftJoin('post_tags', 'post_tags.tagId', 'tags.id')
-      .leftJoin('answers', 'answers.postId', 'post_tags.postId')
-      .where('answers.id', answerId)
-      .select('tag_experts.entityRef');
-    return [...new Set(rows.map(r => r.entityRef))];
+    if (tagsFilter) {
+      parseFilter(tagsFilter, query, this.db, 'tags');
+    }
+
+    const rows = await query.select();
+    const result = new Map<number, string[]>();
+    rows.forEach((row: any) => {
+      const id = row[columnName];
+      if (!result.has(id)) {
+        result.set(id, []);
+      }
+      result.get(id)?.push(row.tag);
+    });
+    return result;
   }
 
   private getAnswerBaseQuery() {
@@ -3070,16 +3113,17 @@ export class DatabaseQetaStore implements QetaStore {
       .groupBy('answers.id');
   }
 
-  private async getPostAnswers(
-    postId: number,
+  private async getPostAnswersBulk(
+    postIds: number[],
     user_ref: string,
     options?: AnswerOptions,
-  ): Promise<Answer[]> {
+  ): Promise<Map<number, Answer[]>> {
     const { includeStatusFilter = true } = options ?? {};
     const query = this.getAnswerBaseQuery()
-      .where('postId', '=', postId)
+      .whereIn('postId', postIds)
       .orderBy('answers.correct', 'desc')
       .orderBy('answers.created');
+
     if (includeStatusFilter) {
       query.where('answers.status', '=', 'active');
     }
@@ -3090,11 +3134,248 @@ export class DatabaseQetaStore implements QetaStore {
 
     const rows = await query.select();
 
-    return await Promise.all(
-      rows.map(async val => {
-        return this.mapAnswer(val, user_ref, options);
-      }),
-    );
+    if (rows.length === 0) {
+      return new Map();
+    }
+
+    const mappedAnswers = await this.mapAnswerEntities(rows, user_ref, options);
+
+    const result = new Map<number, Answer[]>();
+    mappedAnswers.forEach(item => {
+      if (!result.has(item.postId)) {
+        result.set(item.postId, []);
+      }
+      result.get(item.postId)?.push(item.answer);
+    });
+    return result;
+  }
+
+  private async mapAnswerEntities(
+    rows: RawAnswerEntity[],
+    user_ref: string,
+    options?: AnswerOptions,
+  ): Promise<{ postId: number; answer: Answer }[]> {
+    if (rows.length === 0) {
+      return [];
+    }
+
+    const answerIds = rows.map(r => r.id);
+    const {
+      includeVotes = true,
+      includeComments = true,
+      includeExperts = true,
+    } = options ?? {};
+
+    const [votes, comments, attachments, experts] = await Promise.all([
+      includeVotes
+        ? this.getAnswerVotesBulk(answerIds)
+        : Promise.resolve(new Map<number, Vote[]>()),
+      includeComments
+        ? this.getAnswerCommentsBulk(answerIds, options?.commentsFilter)
+        : Promise.resolve(new Map<number, Comment[]>()),
+      this.db('attachments')
+        .select('id', 'answerId')
+        .whereIn('answerId', answerIds),
+      includeExperts
+        ? this.getAnswerExpertsBulk(answerIds)
+        : Promise.resolve(new Map<number, string[]>()),
+    ]);
+
+    const attachmentsMap = new Map<number, number[]>();
+    if (Array.isArray(attachments)) {
+      attachments.forEach((att: any) => {
+        if (!attachmentsMap.has(att.answerId)) {
+          attachmentsMap.set(att.answerId, []);
+        }
+        attachmentsMap.get(att.answerId)?.push(att.id);
+      });
+    }
+
+    return rows.map(val => {
+      const ansVotes = votes.get(val.id) ?? undefined;
+      const ansComments = comments.get(val.id) ?? undefined;
+      const ansExperts = experts.get(val.id) ?? undefined;
+      const ansAttachments = attachmentsMap.get(val.id) ?? [];
+
+      const answer: Answer = {
+        id: val.id,
+        postId: val.postId,
+        own: val.author === user_ref,
+        author:
+          val.anonymous && val.author !== user_ref ? 'anonymous' : val.author,
+        content: val.content,
+        correct: val.correct,
+        created: val.created,
+        updated: val.updated,
+        updatedBy: val.updatedBy,
+        score: this.mapToInteger(val.score),
+        status: val.status as any,
+        votes: ansVotes,
+        comments: ansComments,
+        anonymous: val.anonymous,
+        post: undefined,
+        images: ansAttachments,
+        experts: ansExperts,
+      };
+      return { postId: val.postId, answer };
+    });
+  }
+
+  private async getPostVotesBulk(
+    postIds: number[],
+  ): Promise<Map<number, Vote[]>> {
+    const rows = (await this.db<RawPostVoteEntity>('post_votes')
+      .whereIn('postId', postIds)
+      .select()) as RawPostVoteEntity[];
+
+    const result = new Map<number, Vote[]>();
+    rows.forEach(val => {
+      if (!result.has(val.postId)) {
+        result.set(val.postId, []);
+      }
+      result.get(val.postId)?.push(this.mapVote(val));
+    });
+    return result;
+  }
+
+  private async getRelatedEntitiesBulk(
+    ids: number[],
+    tableName: string = 'post_entities',
+    columnName: string = 'postId',
+  ): Promise<Map<number, string[]>> {
+    const rows = await this.db<RawTagEntity>('entities')
+      .leftJoin(tableName, 'entities.id', `${tableName}.entityId`)
+      .whereIn(`${tableName}.${columnName}`, ids)
+      .select();
+
+    const result = new Map<number, string[]>();
+    rows.forEach((val: any) => {
+      const id = val[columnName];
+      if (!result.has(id)) {
+        result.set(id, []);
+      }
+      result.get(id)?.push(val.entity_ref);
+    });
+    return result;
+  }
+
+  private async getPostCommentsBulk(
+    postIds: number[],
+    commentsFilter?: PermissionCriteria<QetaFilters>,
+    opts?: CommentOptions,
+  ): Promise<Map<number, Comment[]>> {
+    const { includeStatusFilter = true } = opts ?? {};
+    const query = this.db<RawCommentEntity>('comments')
+      .whereIn('comments.postId', postIds)
+      .orderBy('created');
+    if (includeStatusFilter) {
+      query.where('comments.status', '=', 'active');
+    }
+    if (commentsFilter) {
+      parseFilter(commentsFilter, query, this.db, 'comments');
+    }
+    const rows = await query.select();
+
+    const result = new Map<number, Comment[]>();
+    rows.forEach(val => {
+      if (!result.has(val.postId as number)) {
+        result.set(val.postId as number, []);
+      }
+      result.get(val.postId as number)?.push(this.mapComment(val));
+    });
+    return result;
+  }
+
+  private async getPostExpertsBulk(
+    postIds: number[],
+  ): Promise<Map<number, string[]>> {
+    const rows = await this.db('tag_experts')
+      .leftJoin('post_tags', 'tag_experts.tagId', 'post_tags.tagId')
+      .whereIn('post_tags.postId', postIds)
+      .select('tag_experts.entityRef', 'post_tags.postId');
+
+    const result = new Map<number, string[]>();
+    rows.forEach(r => {
+      if (!result.has(r.postId)) {
+        result.set(r.postId, []);
+      }
+      // Avoid duplicates
+      const list = result.get(r.postId)!;
+      if (!list.includes(r.entityRef)) {
+        list.push(r.entityRef);
+      }
+    });
+    return result;
+  }
+
+  private async getAnswerVotesBulk(
+    answerIds: number[],
+  ): Promise<Map<number, Vote[]>> {
+    const rows = (await this.db<RawAnswerVoteEntity>('answer_votes')
+      .whereIn('answerId', answerIds)
+      .select()) as RawAnswerVoteEntity[];
+
+    const result = new Map<number, Vote[]>();
+    rows.forEach(val => {
+      if (!result.has(val.answerId)) {
+        result.set(val.answerId, []);
+      }
+      result.get(val.answerId)?.push(this.mapVote(val));
+    });
+    return result;
+  }
+
+  private async getAnswerCommentsBulk(
+    answerIds: number[],
+    commentsFilter?: PermissionCriteria<QetaFilters>,
+    opts?: CommentOptions,
+  ): Promise<Map<number, Comment[]>> {
+    const { includeStatusFilter = true } = opts ?? {};
+    const query = this.db<RawCommentEntity>('comments')
+      .whereIn('comments.answerId', answerIds)
+      .orderBy('created');
+    if (includeStatusFilter) {
+      query.where('comments.status', '=', 'active');
+    }
+    if (commentsFilter) {
+      parseFilter(commentsFilter, query, this.db, 'comments');
+    }
+    const rows = await query.select();
+
+    const result = new Map<number, Comment[]>();
+    rows.forEach(val => {
+      if (!result.has(val.answerId as number)) {
+        result.set(val.answerId as number, []);
+      }
+      result.get(val.answerId as number)?.push(this.mapComment(val));
+    });
+    return result;
+  }
+
+  private async getAnswerExpertsBulk(
+    answerIds: number[],
+  ): Promise<Map<number, string[]>> {
+    if (answerIds.length === 0) {
+      return new Map();
+    }
+    const rows = await this.db('tag_experts')
+      .leftJoin('tags', 'tag_experts.tagId', 'tags.id')
+      .leftJoin('post_tags', 'post_tags.tagId', 'tags.id')
+      .leftJoin('answers', 'answers.postId', 'post_tags.postId')
+      .whereIn('answers.id', answerIds)
+      .select('tag_experts.entityRef', 'answers.id as answerId');
+
+    const result = new Map<number, string[]>();
+    rows.forEach(r => {
+      if (!result.has(r.answerId)) {
+        result.set(r.answerId, []);
+      }
+      const list = result.get(r.answerId)!;
+      if (!list.includes(r.entityRef)) {
+        list.push(r.entityRef);
+      }
+    });
+    return result;
   }
 
   private async recordPostView(
@@ -3111,31 +3392,8 @@ export class DatabaseQetaStore implements QetaStore {
     await this.db('posts').where('id', postId).increment('views', 1);
   }
 
-  private getPostsBaseQuery(user: string, opts?: AnswerOptions) {
-    const { includeStatusFilter = true } = opts ?? {};
+  private getPostsBaseQuery(user: string) {
     const postRef = this.db.ref('posts.id');
-
-    const answersCount = this.db('answers')
-      .where('answers.postId', postRef)
-      .count('*')
-      .as('answersCount');
-    if (includeStatusFilter) {
-      answersCount.where('answers.status', '=', 'active');
-    }
-
-    const correctAnswers = this.db('answers')
-      .where('answers.postId', postRef)
-      .where('answers.correct', '=', true)
-      .count('*')
-      .as('correctAnswers');
-    if (includeStatusFilter) {
-      correctAnswers.where('answers.status', '=', 'active');
-    }
-
-    const commentsCount = this.db('comments')
-      .where('comments.postId', postRef)
-      .count('*')
-      .as('commentsCount');
 
     const favorite = this.db('user_favorite')
       .where('user_favorite.user', '=', user)
@@ -3144,11 +3402,7 @@ export class DatabaseQetaStore implements QetaStore {
       .as('favorite');
 
     return this.db<RawPostEntity>('posts')
-      .select('posts.*', answersCount, correctAnswers, commentsCount, favorite)
-      .leftJoin('post_votes', 'posts.id', 'post_votes.postId')
-      .leftJoin('post_views', 'posts.id', 'post_views.postId')
-      .leftJoin('answers', 'posts.id', 'answers.postId')
-      .leftJoin('comments', 'posts.id', 'comments.postId')
+      .select('posts.*', favorite)
       .leftJoin('user_favorite', 'posts.id', 'user_favorite.postId')
       .groupBy('posts.id');
   }
@@ -3303,7 +3557,21 @@ export class DatabaseQetaStore implements QetaStore {
       .where('postId', '=', postId);
 
     const ret = await query.update({ correct }, ['id']);
-    return ret !== undefined && ret?.length > 0;
+    const updated = ret !== undefined && ret?.length > 0;
+
+    if (updated) {
+      if (correct) {
+        await this.db('posts')
+          .where('id', postId)
+          .increment('correctAnswers', 1);
+      } else {
+        await this.db('posts')
+          .where('id', postId)
+          .decrement('correctAnswers', 1);
+      }
+    }
+
+    return updated;
   }
 
   private async updateAttachments(
