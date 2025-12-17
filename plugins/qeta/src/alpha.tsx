@@ -30,10 +30,10 @@ import {
   SearchFilterResultTypeBlueprint,
   SearchResultListItemBlueprint,
 } from '@backstage/plugin-search-react/alpha';
-import { Pluggable } from 'unified/lib';
 import { TechDocsAddonLocations } from '@backstage/plugin-techdocs-react';
 import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsAskQuestionAddon } from './components/TechDocsAskQuestionAddon';
+import { Pluggable } from 'unified';
 
 const qetaApi = ApiBlueprint.make({
   params: defineParams =>

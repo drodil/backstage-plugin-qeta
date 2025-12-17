@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "20 || 22"
+    "node": "22 || 24"
   },
   "scripts": {
     "prepare": "husky install",
@@ -42,11 +42,15 @@
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
     "@faker-js/faker": "^9.6.0",
+    "@jest/environment-jsdom-abstract": "^30.2.0",
     "@spotify/prettier-config": "^15.0.0",
+    "@types/jsdom": "^27",
     "@types/react-dom": "^19.1.9",
     "commander": "^13.1.0",
     "concurrently": "^7.0.0",
     "husky": "^8.0.1",
+    "jest": "^30.2.0",
+    "jsdom": "^27.3.0",
     "knip": "^5.27.0",
     "lint-staged": "^14.0.1",
     "prettier": "^2.4.1",
