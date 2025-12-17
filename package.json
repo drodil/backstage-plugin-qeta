@@ -32,6 +32,9 @@
     "fix": "backstage-cli repo fix --publish",
     "knip:check:deps": "knip --include dependencies --cache && :"
   },
+  "resolutions": {
+    "@swc/core": "1.15.5"
+  },
   "workspaces": {
     "packages": [
       "plugins/**"
