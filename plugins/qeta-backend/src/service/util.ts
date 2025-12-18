@@ -168,20 +168,27 @@ const mapTagAdditionalFields = async (
   permissionMgr: PermissionManager,
   credentials: BackstageCredentials,
   checkRights?: boolean,
+  precalculatedPermissions?: { canEdit: boolean; canDelete: boolean },
 ) => {
   const [canEdit, canDelete] = await Promise.all([
-    checkRights
-      ? permissionMgr.authorizeBoolean(request, qetaEditTagPermission, {
-          resource,
-          credentials,
-        })
-      : undefined,
-    checkRights
-      ? permissionMgr.authorizeBoolean(request, qetaDeleteTagPermission, {
-          resource,
-          credentials,
-        })
-      : undefined,
+    precalculatedPermissions?.canEdit ??
+      (checkRights
+        ? permissionMgr
+            .authorizeBoolean(request, qetaEditTagPermission, {
+              resources: [resource],
+              credentials,
+            })
+            .then(r => r[0])
+        : undefined),
+    precalculatedPermissions?.canDelete ??
+      (checkRights
+        ? permissionMgr
+            .authorizeBoolean(request, qetaDeleteTagPermission, {
+              resources: [resource],
+              credentials,
+            })
+            .then(r => r[0])
+        : undefined),
   ]);
 
   resource.canEdit = canEdit;
@@ -196,24 +203,27 @@ const mapCollectionAdditionalFields = async (
   credentials: BackstageCredentials,
   checkRights?: boolean,
   routeOpts?: RouteOptions,
+  precalculatedPermissions?: { canEdit: boolean; canDelete: boolean },
 ) => {
   const [canEdit, canDelete, filteredEntities] = await Promise.all([
-    checkRights
-      ? permissionMgr.authorizeBoolean(request, qetaEditCollectionPermission, {
-          resource,
-          credentials,
-        })
-      : undefined,
-    checkRights
-      ? permissionMgr.authorizeBoolean(
-          request,
-          qetaDeleteCollectionPermission,
-          {
-            resource,
-            credentials,
-          },
-        )
-      : undefined,
+    precalculatedPermissions?.canEdit ??
+      (checkRights
+        ? permissionMgr
+            .authorizeBoolean(request, qetaEditCollectionPermission, {
+              resources: [resource],
+              credentials,
+            })
+            .then(r => r[0])
+        : undefined),
+    precalculatedPermissions?.canDelete ??
+      (checkRights
+        ? permissionMgr
+            .authorizeBoolean(request, qetaDeleteCollectionPermission, {
+              resources: [resource],
+              credentials,
+            })
+            .then(r => r[0])
+        : undefined),
     routeOpts
       ? filterEntitiesByPermissions(resource.entities, routeOpts, credentials)
       : resource.entities,
@@ -248,31 +258,20 @@ const mapResourceComments = async (
   checkRights?: boolean,
 ) => {
   const commentArr = resource.comments ?? [];
-  const editPermissions = await Promise.all(
-    commentArr.map(async (c: Comment) => {
-      if (!checkRights) {
-        return undefined;
-      }
-      return permissionMgr.authorizeBoolean(
-        request,
-        qetaEditCommentPermission,
-        { resource: c, credentials },
-      );
-    }),
-  );
+  const editPermissions = checkRights
+    ? await permissionMgr.authorizeBoolean(request, qetaEditCommentPermission, {
+        resources: commentArr,
+        credentials,
+      })
+    : [];
 
-  const deletePermissions = await Promise.all(
-    commentArr.map(async (c: Comment) => {
-      if (!checkRights) {
-        return undefined;
-      }
-      return permissionMgr.authorizeBoolean(
+  const deletePermissions = checkRights
+    ? await permissionMgr.authorizeBoolean(
         request,
         qetaDeleteCommentPermission,
-        { resource: c, credentials },
-      );
-    }),
-  );
+        { resources: commentArr, credentials },
+      )
+    : [];
 
   const comments: (Comment | null)[] = commentArr.map(
     (c: Comment, index): Comment => {
@@ -296,20 +295,27 @@ const mapAnswerAdditionalFields = async (
   username: string,
   checkRights?: boolean,
   routeOpts?: RouteOptions,
+  precalculatedPermissions?: { canEdit: boolean; canDelete: boolean },
 ) => {
   const [canEdit, canDelete, comments] = await Promise.all([
-    checkRights
-      ? permissionMgr.authorizeBoolean(request, qetaEditAnswerPermission, {
-          resource,
-          credentials,
-        })
-      : undefined,
-    checkRights
-      ? permissionMgr.authorizeBoolean(request, qetaDeleteAnswerPermission, {
-          resource,
-          credentials,
-        })
-      : undefined,
+    precalculatedPermissions?.canEdit ??
+      (checkRights
+        ? permissionMgr
+            .authorizeBoolean(request, qetaEditAnswerPermission, {
+              resources: [resource],
+              credentials,
+            })
+            .then(r => r[0])
+        : undefined),
+    precalculatedPermissions?.canDelete ??
+      (checkRights
+        ? permissionMgr
+            .authorizeBoolean(request, qetaDeleteAnswerPermission, {
+              resources: [resource],
+              credentials,
+            })
+            .then(r => r[0])
+        : undefined),
     mapResourceComments(
       request,
       resource,
@@ -348,30 +354,20 @@ const mapPostAnswers = async (
   checkRights?: boolean,
 ) => {
   const answersArray = resource.answers ?? [];
-  const editPermissions = await Promise.all(
-    answersArray.map(async (a: Answer) => {
-      if (!checkRights) {
-        return undefined;
-      }
-      return permissionMgr.authorizeBoolean(request, qetaEditAnswerPermission, {
-        resource: a,
+  const editPermissions = checkRights
+    ? await permissionMgr.authorizeBoolean(request, qetaEditAnswerPermission, {
+        resources: answersArray,
         credentials,
-      });
-    }),
-  );
+      })
+    : [];
 
-  const deletePermissions = await Promise.all(
-    answersArray.map(async (a: Answer) => {
-      if (!checkRights) {
-        return undefined;
-      }
-      return permissionMgr.authorizeBoolean(
+  const deletePermissions = checkRights
+    ? await permissionMgr.authorizeBoolean(
         request,
         qetaDeleteAnswerPermission,
-        { resource: a, credentials },
-      );
-    }),
-  );
+        { resources: answersArray, credentials },
+      )
+    : [];
 
   const comments = await Promise.all(
     answersArray.map(async (a: Answer) => {
@@ -407,24 +403,31 @@ const mapPostAdditionalFields = async (
   username: string,
   checkRights?: boolean,
   routeOpts?: RouteOptions,
+  precalculatedPermissions?: { canEdit: boolean; canDelete: boolean },
 ) => {
   resource.ownVote = resource.votes?.find(v => v.author === username)?.score;
   resource.own = resource.author === username;
 
   const [canEdit, canDelete, answers, comments, filteredEntities] =
     await Promise.all([
-      checkRights
-        ? permissionMgr.authorizeBoolean(request, qetaEditPostPermission, {
-            resource,
-            credentials,
-          })
-        : undefined,
-      checkRights
-        ? permissionMgr.authorizeBoolean(request, qetaDeletePostPermission, {
-            resource,
-            credentials,
-          })
-        : undefined,
+      precalculatedPermissions?.canEdit ??
+        (checkRights
+          ? permissionMgr
+              .authorizeBoolean(request, qetaEditPostPermission, {
+                resources: [resource],
+                credentials,
+              })
+              .then(r => r[0])
+          : undefined),
+      precalculatedPermissions?.canDelete ??
+        (checkRights
+          ? permissionMgr
+              .authorizeBoolean(request, qetaDeletePostPermission, {
+                resources: [resource],
+                credentials,
+              })
+              .then(r => r[0])
+          : undefined),
       mapPostAnswers(
         request,
         resource,
@@ -455,7 +458,7 @@ const mapPostAdditionalFields = async (
 
 export const mapAdditionalFields = async (
   request: Request<unknown>,
-  resource: MaybePost | MaybeAnswer | MaybeTag | MaybeCollection,
+  resources: (MaybePost | MaybeAnswer | MaybeTag | MaybeCollection)[],
   routeOpts: RouteOptions,
   options?: {
     checkRights?: boolean;
@@ -463,65 +466,170 @@ export const mapAdditionalFields = async (
     username?: string;
   },
 ) => {
-  if (!resource) {
-    return resource;
+  if (!resources || resources.length === 0) {
+    return resources;
   }
 
   const { creds, username, checkRights = true } = options ?? {};
   const { permissionMgr } = routeOpts;
   const credentials =
     creds ?? (await permissionMgr.getCredentials(request, true));
-
-  resource.self = getResourceUrl(resource, routeOpts.config, true);
-
-  if (isTag(resource)) {
-    return mapTagAdditionalFields(
-      request,
-      resource,
-      permissionMgr,
-      credentials,
-      checkRights,
-    );
-  } else if (isCollection(resource)) {
-    return mapCollectionAdditionalFields(
-      request,
-      resource,
-      permissionMgr,
-      credentials,
-      checkRights,
-      routeOpts,
-    );
-  }
-
   const user =
     username ??
     (await routeOpts.permissionMgr.getUsername(request, true, credentials));
 
-  if (isPost(resource)) {
-    return mapPostAdditionalFields(
+  const validResources = resources.filter(
+    (
+      r,
+    ): r is PostResponse | AnswerResponse | TagResponse | CollectionResponse =>
+      r !== null && r !== undefined,
+  );
+
+  const posts = validResources.filter(isPost) as PostResponse[];
+  let postEditPerms: boolean[] = [];
+  let postDeletePerms: boolean[] = [];
+  if (checkRights && posts.length > 0) {
+    postEditPerms = await permissionMgr.authorizeBoolean(
       request,
-      resource,
-      permissionMgr,
-      credentials,
-      user,
-      checkRights,
-      routeOpts,
+      qetaEditPostPermission,
+      { resources: posts, credentials },
     );
-  } else if (isAnswer(resource)) {
-    return mapAnswerAdditionalFields(
+    postDeletePerms = await permissionMgr.authorizeBoolean(
       request,
-      resource,
-      permissionMgr,
-      credentials,
-      user,
-      checkRights,
-      routeOpts,
+      qetaDeletePostPermission,
+      { resources: posts, credentials },
     );
   }
 
-  return resource;
-};
+  const collections = validResources.filter(
+    isCollection,
+  ) as CollectionResponse[];
+  let collectionEditPerms: boolean[] = [];
+  let collectionDeletePerms: boolean[] = [];
+  if (checkRights && collections.length > 0) {
+    collectionEditPerms = await permissionMgr.authorizeBoolean(
+      request,
+      qetaEditCollectionPermission,
+      { resources: collections, credentials },
+    );
+    collectionDeletePerms = await permissionMgr.authorizeBoolean(
+      request,
+      qetaDeleteCollectionPermission,
+      { resources: collections, credentials },
+    );
+  }
 
+  const tags = validResources.filter(isTag) as TagResponse[];
+  let tagEditPerms: boolean[] = [];
+  let tagDeletePerms: boolean[] = [];
+  if (checkRights && tags.length > 0) {
+    tagEditPerms = await permissionMgr.authorizeBoolean(
+      request,
+      qetaEditTagPermission,
+      { resources: tags, credentials },
+    );
+    tagDeletePerms = await permissionMgr.authorizeBoolean(
+      request,
+      qetaDeleteTagPermission,
+      { resources: tags, credentials },
+    );
+  }
+
+  const answers = validResources.filter(isAnswer) as AnswerResponse[];
+  let answerEditPerms: boolean[] = [];
+  let answerDeletePerms: boolean[] = [];
+  if (checkRights && answers.length > 0) {
+    answerEditPerms = await permissionMgr.authorizeBoolean(
+      request,
+      qetaEditAnswerPermission,
+      { resources: answers, credentials },
+    );
+    answerDeletePerms = await permissionMgr.authorizeBoolean(
+      request,
+      qetaDeleteAnswerPermission,
+      { resources: answers, credentials },
+    );
+  }
+
+  await Promise.all(
+    resources.map(async resource => {
+      if (!resource) {
+        return resource;
+      }
+      resource.self = getResourceUrl(resource, routeOpts.config, true);
+
+      if (isTag(resource)) {
+        const index = tags.indexOf(resource);
+        return mapTagAdditionalFields(
+          request,
+          resource,
+          permissionMgr,
+          credentials,
+          checkRights,
+          index >= 0 && tagEditPerms.length > 0
+            ? {
+                canEdit: tagEditPerms[index],
+                canDelete: tagDeletePerms[index],
+              }
+            : undefined,
+        );
+      } else if (isCollection(resource)) {
+        const index = collections.indexOf(resource);
+        return mapCollectionAdditionalFields(
+          request,
+          resource,
+          permissionMgr,
+          credentials,
+          checkRights,
+          routeOpts,
+          index >= 0 && collectionEditPerms.length > 0
+            ? {
+                canEdit: collectionEditPerms[index],
+                canDelete: collectionDeletePerms[index],
+              }
+            : undefined,
+        );
+      } else if (isPost(resource)) {
+        const index = posts.indexOf(resource);
+        return mapPostAdditionalFields(
+          request,
+          resource,
+          permissionMgr,
+          credentials,
+          user,
+          checkRights,
+          routeOpts,
+          index >= 0 && postEditPerms.length > 0
+            ? {
+                canEdit: postEditPerms[index],
+                canDelete: postDeletePerms[index],
+              }
+            : undefined,
+        );
+      } else if (isAnswer(resource)) {
+        const index = answers.indexOf(resource);
+        return mapAnswerAdditionalFields(
+          request,
+          resource,
+          permissionMgr,
+          credentials,
+          user,
+          checkRights,
+          routeOpts,
+          index >= 0 && answerEditPerms.length > 0
+            ? {
+                canEdit: answerEditPerms[index],
+                canDelete: answerDeletePerms[index],
+              }
+            : undefined,
+        );
+      }
+      return resource;
+    }),
+  );
+
+  return resources;
+};
 export const stringDateTime = (dayString: string) => {
   const dateTimePeriod = Number(dayString.toString().slice(0, -1));
   return format(subDays(new Date(), dateTimePeriod), 'yyyy-MM-dd');

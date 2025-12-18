@@ -18,10 +18,11 @@ export const getTags = async (
   const maxTags = options.config.getOptionalNumber('qeta.tags.max') ?? 5;
   const allowedTags =
     options.config.getOptionalStringArray('qeta.tags.allowedTags') ?? [];
-  const allowTagCreation = await options.permissionMgr.authorizeBoolean(
+  const allowTagCreationResults = await options.permissionMgr.authorizeBoolean(
     request,
     qetaCreateTagPermission,
   );
+  const allowTagCreation = allowTagCreationResults[0] ?? false;
 
   const rawTags = request.body.tags;
   let tags: string[] = Array.isArray(rawTags) ? rawTags : rawTags.split(',');

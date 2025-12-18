@@ -73,14 +73,10 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       tagFilters,
     });
 
-    await Promise.all(
-      collections.collections.map(async collection => {
-        await mapAdditionalFields(request, collection, options, {
-          checkRights: opts.checkAccess ?? false,
-          username,
-        });
-      }),
-    );
+    await mapAdditionalFields(request, collections.collections, options, {
+      checkRights: opts.checkAccess ?? false,
+      username,
+    });
 
     response.json(collections);
   });
@@ -128,14 +124,10 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       tagFilters,
     });
 
-    await Promise.all(
-      collections.collections.map(async collection => {
-        await mapAdditionalFields(request, collection, options, {
-          checkRights: opts.checkAccess ?? false,
-          username,
-        });
-      }),
-    );
+    await mapAdditionalFields(request, collections.collections, options, {
+      checkRights: opts.checkAccess ?? false,
+      username,
+    });
 
     response.json(collections);
   });
@@ -193,7 +185,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'new_collection' },
     });
 
-    await mapAdditionalFields(request, collection, options, { username });
+    await mapAdditionalFields(request, [collection], options, { username });
 
     auditor?.createEvent({
       eventId: 'create-collection',
@@ -236,7 +228,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaEditCollectionPermission, {
-      resource: originalCollection,
+      resources: [originalCollection],
     });
 
     const [postFilters, filters, tagFilters] = await Promise.all([
@@ -278,7 +270,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'update_collection' },
     });
 
-    await mapAdditionalFields(request, collection, options, { username });
+    await mapAdditionalFields(request, [collection], options, { username });
 
     auditor?.createEvent({
       eventId: 'update-collection',
@@ -317,7 +309,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaDeleteCollectionPermission, {
-      resource: collection,
+      resources: [collection],
     });
 
     // Act
@@ -396,7 +388,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
     await permissionMgr.authorize(request, qetaReadCollectionPermission, {
-      resource: collection,
+      resources: [collection],
     });
 
     await database.followCollection(username, collectionId);
@@ -428,7 +420,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaReadCollectionPermission, {
-      resource: collection,
+      resources: [collection],
     });
     await database.unfollowCollection(username, collectionId);
 
@@ -476,10 +468,10 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaReadCollectionPermission, {
-      resource: collection,
+      resources: [collection],
     });
 
-    await mapAdditionalFields(request, collection, options, { username });
+    await mapAdditionalFields(request, [collection], options, { username });
 
     auditor?.createEvent({
       eventId: 'read-collection',
@@ -517,7 +509,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     );
 
     await permissionMgr.authorize(request, qetaEditCollectionPermission, {
-      resource: collection,
+      resources: [collection!],
     });
 
     const [postFilters, tagFilters] = await Promise.all([
@@ -536,7 +528,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
 
     // Act
@@ -576,7 +568,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'update_collection' },
     });
 
-    await mapAdditionalFields(request, collection, options, { username });
+    await mapAdditionalFields(request, [collection], options, { username });
 
     auditor?.createEvent({
       eventId: 'add-to-collection',
@@ -618,7 +610,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     );
 
     await permissionMgr.authorize(request, qetaEditCollectionPermission, {
-      resource: collection,
+      resources: [collection!],
     });
 
     const [postFilters, tagFilters] = await Promise.all([
@@ -637,7 +629,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
 
     // Act
@@ -664,7 +656,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'update_collection' },
     });
 
-    await mapAdditionalFields(request, collection, options, { username });
+    await mapAdditionalFields(request, [collection], options, { username });
 
     auditor?.createEvent({
       eventId: 'delete-from-collection',
@@ -710,7 +702,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaEditCollectionPermission, {
-      resource: collection,
+      resources: [collection],
     });
 
     const post = await database.getPost(username, request.body.postId, false);
@@ -721,7 +713,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
 
     const currentRank = await database.getPostRank(

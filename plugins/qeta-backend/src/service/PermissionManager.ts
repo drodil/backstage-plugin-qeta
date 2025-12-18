@@ -263,23 +263,34 @@ export class PermissionManager {
     request: Request<unknown>,
     permission: Permission,
     options?: {
-      resource?: QetaIdEntity | null;
+      resource?: QetaIdEntity;
+      resources?: QetaIdEntity[];
       audit?: boolean;
       credentials?: BackstageCredentials;
     },
-  ): Promise<DefinitivePolicyDecision> {
+  ): Promise<DefinitivePolicyDecision[]> {
+    const resources =
+      options?.resources ?? (options?.resource ? [options.resource] : []);
+
     if (!this.permissions) {
-      return await this.authorizeWithoutPermissions(
-        request,
-        permission,
-        options,
+      return await Promise.all(
+        resources.length === 0
+          ? [this.authorizeWithoutPermissions(request, permission, options)]
+          : resources.map(resource =>
+              this.authorizeWithoutPermissions(request, permission, {
+                ...options,
+                resource,
+              }),
+            ),
       );
     }
 
     const moderator = await this.isModerator(request, options);
 
     if (moderator) {
-      return { result: AuthorizeResult.ALLOW };
+      return resources.length === 0
+        ? [{ result: AuthorizeResult.ALLOW }]
+        : resources.map(() => ({ result: AuthorizeResult.ALLOW }));
     }
 
     const credentials =
@@ -299,9 +310,12 @@ export class PermissionManager {
       throw new NotAllowedError('Unauthorized');
     }
 
-    let decision: DefinitivePolicyDecision = { result: AuthorizeResult.DENY };
+    let decisions: DefinitivePolicyDecision[];
     if (isResourcePermission(permission)) {
-      if (!options?.resource) {
+      if (
+        resources.length === 0 ||
+        resources.some(r => r === null || r === undefined)
+      ) {
         if (options?.audit) {
           this.auditor?.createEvent({
             eventId: 'authorize',
@@ -309,7 +323,7 @@ export class PermissionManager {
             request,
             meta: {
               permission,
-              resource: JSON.stringify(options.resource),
+              resource: JSON.stringify(resources),
               failure: 'Resource not found',
             },
           });
@@ -317,34 +331,44 @@ export class PermissionManager {
         throw new NotFoundError('Resource not found');
       }
 
-      const resourceRef = this.getResourceRef(options.resource);
       const result = await this.permissions.authorize(
-        [{ permission, resourceRef }],
+        resources.map(resource => ({
+          permission,
+          resourceRef: this.getResourceRef(resource!),
+        })),
         { credentials },
       );
-      decision = result[0];
+      decisions = result;
     } else {
       const result = await this.permissions.authorize([{ permission }], {
         credentials,
       });
-      decision = result[0];
+      decisions =
+        resources.length === 0 ? result : resources.map(() => result[0]);
     }
 
-    if (decision.result === AuthorizeResult.DENY) {
-      if (options?.audit) {
-        this.auditor?.createEvent({
-          eventId: 'authorize',
-          severityLevel: 'high',
-          request,
-          meta: {
-            permission,
-            failure: 'Unauthorized',
-          },
-        });
-      }
+    if (options?.audit) {
+      decisions.forEach(decision => {
+        if (decision.result === AuthorizeResult.DENY) {
+          this.auditor?.createEvent({
+            eventId: 'authorize',
+            severityLevel: 'high',
+            request,
+            meta: {
+              permission,
+              failure: 'Unauthorized',
+            },
+          });
+        }
+      });
+    }
+
+    const hasDeny = decisions.some(d => d.result === AuthorizeResult.DENY);
+    if (hasDeny) {
       throw new NotAllowedError('Unauthorized');
     }
-    return decision;
+
+    return decisions;
   }
 
   public async authorizeConditional(
@@ -416,18 +440,18 @@ export class PermissionManager {
     request: Request<unknown>,
     permission: Permission,
     options?: {
-      resource?: QetaIdEntity | null;
+      resources?: QetaIdEntity[];
       credentials?: BackstageCredentials;
     },
-  ): Promise<boolean> {
+  ): Promise<boolean[]> {
     try {
-      const res = await this.authorize(request, permission, {
+      const decisions = await this.authorize(request, permission, {
         audit: false,
         ...options,
       });
-      return res.result === AuthorizeResult.ALLOW;
+      return decisions.map(d => d.result === AuthorizeResult.ALLOW);
     } catch (e) {
-      return false;
+      return (options?.resources ?? []).map(() => false);
     }
   }
 

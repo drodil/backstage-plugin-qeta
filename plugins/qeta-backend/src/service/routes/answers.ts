@@ -74,13 +74,9 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       commentsFilter,
     });
 
-    await Promise.all(
-      answers.answers.map(async answer => {
-        await mapAdditionalFields(request, answer, options, {
-          checkRights: opts.checkAccess ?? false,
-        });
-      }),
-    );
+    await mapAdditionalFields(request, answers.answers, options, {
+      checkRights: opts.checkAccess ?? false,
+    });
     response.json(answers);
   });
 
@@ -118,14 +114,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     const answers = await database.getAnswers(username, opts, answersFilter, {
       commentsFilter,
     });
-    await Promise.all(
-      answers.answers.map(async answer => {
-        await mapAdditionalFields(request, answer, options, {
-          checkRights: opts.checkAccess ?? false,
-          username,
-        });
-      }),
-    );
+    await mapAdditionalFields(request, answers.answers, options, {
+      checkRights: opts.checkAccess ?? false,
+      username,
+    });
     response.json(answers);
   });
 
@@ -153,7 +145,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
     await permissionMgr.authorize(request, qetaCreateAnswerPermission);
 
@@ -205,7 +197,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'post_answer' },
     });
 
-    await mapAdditionalFields(request, answer, options, { username });
+    await mapAdditionalFields(request, [answer], options, { username });
 
     signalPostStats(signals, post);
     auditor?.createEvent({
@@ -249,10 +241,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
     await permissionMgr.authorize(request, qetaEditAnswerPermission, {
-      resource: originalAnswer,
+      resources: [originalAnswer],
     });
 
     if (request.body.author && request.body.author !== username) {
@@ -290,7 +282,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, answer, options, { username });
+    await mapAdditionalFields(request, [answer], options, { username });
 
     // Response
     response.json(answer);
@@ -323,13 +315,18 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         response.status(404).send({ errors: 'Post not found', type: 'body' });
         return;
       }
-      let answer = await database.getAnswer(answerId, username);
-
       await permissionMgr.authorize(request, qetaReadPostPermission, {
-        resource: post,
+        resources: [post],
       });
+
+      let answer = await database.getAnswer(answerId, username);
+      if (!answer) {
+        response.sendStatus(404);
+        return;
+      }
+
       await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resource: answer,
+        resources: [answer],
       });
       await permissionMgr.authorize(request, qetaCreateCommentPermission);
 
@@ -388,7 +385,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         metadata: { action: 'comment_answer' },
       });
 
-      await mapAdditionalFields(request, answer, options, { username });
+      await mapAdditionalFields(request, [answer], options, { username });
 
       auditor?.createEvent({
         eventId: 'comment-answer',
@@ -436,13 +433,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
 
       await permissionMgr.authorize(request, qetaReadPostPermission, {
-        resource: post,
+        resources: [post],
       });
       await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resource: answer,
+        resources: [answer],
       });
       await permissionMgr.authorize(request, qetaEditCommentPermission, {
-        resource: comment,
+        resources: [comment],
       });
 
       // Act
@@ -470,7 +467,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         },
       });
 
-      await mapAdditionalFields(request, answer, options, { username });
+      await mapAdditionalFields(request, [answer], options, { username });
 
       // Response
       response.json(answer);
@@ -507,13 +504,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
 
       await permissionMgr.authorize(request, qetaReadPostPermission, {
-        resource: post,
+        resources: [post],
       });
       await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resource: answer,
+        resources: [answer],
       });
       await permissionMgr.authorize(request, qetaDeleteCommentPermission, {
-        resource: comment,
+        resources: [comment],
       });
 
       // Act
@@ -554,7 +551,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         },
       });
 
-      await mapAdditionalFields(request, answer, options);
+      await mapAdditionalFields(request, [answer], options);
 
       // Response
       response.json(answer);
@@ -575,11 +572,16 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     const post = await database.getPost(username, postId, false);
     let answer = await database.getAnswer(answerId, username);
 
+    if (!post || !answer) {
+      response.sendStatus(404);
+      return;
+    }
+
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
     await permissionMgr.authorize(request, qetaEditAnswerPermission, {
-      resource: answer,
+      resources: [answer],
     });
 
     answer = await database.getAnswer(answerId, username);
@@ -589,7 +591,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await mapAdditionalFields(request, answer, options, { username });
+    await mapAdditionalFields(request, [answer], options, { username });
 
     auditor?.createEvent({
       eventId: 'read-answer',
@@ -632,10 +634,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
     await permissionMgr.authorize(request, qetaDeleteAnswerPermission, {
-      resource: answer,
+      resources: [answer],
     });
 
     // Act
@@ -711,10 +713,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
     await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-      resource: answer,
+      resources: [answer],
     });
 
     if (answer.own) {
@@ -749,7 +751,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'vote_answer' },
     });
 
-    await mapAdditionalFields(request, resp, options, { username });
+    await mapAdditionalFields(request, [resp], options, { username });
     resp.ownVote = score;
 
     auditor?.createEvent({
@@ -805,10 +807,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
 
       await permissionMgr.authorize(request, qetaReadPostPermission, {
-        resource: post,
+        resources: [post],
       });
       await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resource: answer,
+        resources: [answer],
       });
 
       const deleted = await database.deleteAnswerVote(username, answerId);
@@ -833,7 +835,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         },
       });
 
-      await mapAdditionalFields(request, resp, options, { username });
+      await mapAdditionalFields(request, [resp], options, { username });
       resp.ownVote = undefined;
 
       signalAnswerStats(signals, resp);
@@ -866,10 +868,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
 
       await permissionMgr.authorize(request, qetaEditPostPermission, {
-        resource: post,
+        resources: [post],
       });
       await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resource: answer,
+        resources: [answer],
       });
 
       const marked = await database.markAnswerCorrect(postId, answerId);
@@ -935,10 +937,10 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       }
 
       await permissionMgr.authorize(request, qetaEditPostPermission, {
-        resource: post,
+        resources: [post],
       });
       await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resource: answer,
+        resources: [answer],
       });
 
       const marked = await database.markAnswerIncorrect(postId, answerId);

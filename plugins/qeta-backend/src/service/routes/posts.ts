@@ -183,14 +183,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       includeAttachments: false,
       includeExperts: false,
     });
-    await Promise.all(
-      posts.posts.map(async post => {
-        await mapAdditionalFields(request, post, options, {
-          checkRights: opts.checkAccess ?? false,
-          username,
-        });
-      }),
-    );
+    await mapAdditionalFields(request, posts.posts, options, {
+      checkRights: opts.checkAccess ?? false,
+      username,
+    });
     response.json(posts);
   });
 
@@ -235,14 +231,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       includeAttachments: false,
       includeExperts: false,
     });
-    await Promise.all(
-      posts.posts.map(async post => {
-        await mapAdditionalFields(request, post, options, {
-          checkRights: opts.checkAccess ?? false,
-          username,
-        });
-      }),
-    );
+    await mapAdditionalFields(request, posts.posts, options, {
+      checkRights: opts.checkAccess ?? false,
+      username,
+    });
     response.json(posts);
   });
 
@@ -292,14 +284,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       answersFilter,
     });
 
-    await Promise.all(
-      posts.posts.map(async post => {
-        await mapAdditionalFields(request, post, options, {
-          checkRights: opts.checkAccess ?? false,
-          username,
-        });
-      }),
-    );
+    await mapAdditionalFields(request, posts.posts, options, {
+      checkRights: opts.checkAccess ?? false,
+      username,
+    });
     response.json(posts);
   });
 
@@ -310,10 +298,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const { post, username } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
 
-    await mapAdditionalFields(request, post, options, { username });
+    await mapAdditionalFields(request, [post], options, { username });
     signalPostStats(signals, post);
 
     auditor?.createEvent({
@@ -342,7 +330,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
     await permissionMgr.authorize(request, qetaCreateCommentPermission);
 
@@ -361,7 +349,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await mapAdditionalFields(request, updatedPost, options, { username });
+    await mapAdditionalFields(request, [updatedPost], options, { username });
 
     wrapAsync(async () => {
       if (!updatedPost || updatedPost.status !== 'active') {
@@ -438,7 +426,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaEditCommentPermission, {
-      resource: comment,
+      resources: [comment],
     });
 
     const updatedPost = await database.updatePostComment(
@@ -471,7 +459,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, post, options, { username });
+    await mapAdditionalFields(request, [post], options, { username });
 
     // Response
     response.json(post);
@@ -500,7 +488,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     await permissionMgr.authorize(request, qetaDeleteCommentPermission, {
-      resource: comment,
+      resources: [comment],
     });
 
     let updatedPost = null;
@@ -553,7 +541,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, updatedPost, options, { username });
+    await mapAdditionalFields(request, [updatedPost], options, { username });
 
     // Response
     response.json(updatedPost);
@@ -654,7 +642,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, post, options, { username });
+    await mapAdditionalFields(request, [post], options, { username });
 
     // Response
     response.status(201).json(post);
@@ -683,7 +671,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     } = ret;
 
     await permissionMgr.authorize(request, qetaEditPostPermission, {
-      resource: originalPost,
+      resources: [originalPost],
     });
 
     if (request.body.status !== 'active' && originalPost.status === 'active') {
@@ -769,7 +757,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'update_post' },
     });
 
-    await mapAdditionalFields(request, post, options, { username });
+    await mapAdditionalFields(request, [post], options, { username });
 
     auditor?.createEvent({
       eventId: 'update-post',
@@ -798,7 +786,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const { post, username } = ret;
 
     await permissionMgr.authorize(request, qetaDeletePostPermission, {
-      resource: post,
+      resources: [post],
     });
 
     let deleted = false;
@@ -854,7 +842,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
     if (post.own) {
       response
@@ -895,7 +883,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'vote_post' },
     });
 
-    await mapAdditionalFields(request, resp, options, { username });
+    await mapAdditionalFields(request, [resp], options, { username });
     resp.ownVote = score;
 
     auditor?.createEvent({
@@ -952,7 +940,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'restore_post' },
     });
 
-    await mapAdditionalFields(request, post, options, { username });
+    await mapAdditionalFields(request, [post], options, { username });
 
     auditor?.createEvent({
       eventId: 'restore-post',
@@ -1001,7 +989,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
 
     const deleted = await database.deletePostVote(username, postId);
@@ -1034,7 +1022,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       metadata: { action: 'delete_vote' },
     });
 
-    await mapAdditionalFields(request, resp, options, { username });
+    await mapAdditionalFields(request, [resp], options, { username });
     resp.ownVote = undefined;
 
     auditor?.createEvent({
@@ -1060,7 +1048,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
 
     const favorited = await database.favoritePost(username, postId);
@@ -1099,7 +1087,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       meta: { post: entityToJsonObject(updatedPost) },
     });
 
-    await mapAdditionalFields(request, updatedPost, options, { username });
+    await mapAdditionalFields(request, [updatedPost], options, { username });
 
     // Response
     response.json(updatedPost);
@@ -1119,7 +1107,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     } = ret;
 
     await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resource: post,
+      resources: [post],
     });
 
     const unfavorited = await database.unfavoritePost(username, postId);
@@ -1158,7 +1146,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       meta: { post: entityToJsonObject(updatedPost) },
     });
 
-    await mapAdditionalFields(request, updatedPost, options, { username });
+    await mapAdditionalFields(request, [updatedPost], options, { username });
 
     // Response
     response.json(updatedPost);

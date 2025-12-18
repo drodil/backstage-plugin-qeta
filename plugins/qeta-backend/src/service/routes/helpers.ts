@@ -162,13 +162,9 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     const opts = request.query as TagsQuery;
     const tags = await database.getTags(opts, filter);
 
-    await Promise.all(
-      tags.tags.map(async tag => {
-        await mapAdditionalFields(request, tag, options, {
-          checkRights: opts.checkAccess ?? false,
-        });
-      }),
-    );
+    await mapAdditionalFields(request, tags.tags, options, {
+      checkRights: opts.checkAccess ?? false,
+    });
 
     response.json(tags);
   });
@@ -295,9 +291,9 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
     await permissionMgr.authorize(request, qetaReadTagPermission, {
-      resource: tag,
+      resources: [tag],
     });
-    await mapAdditionalFields(request, tag, options);
+    await mapAdditionalFields(request, [tag], options);
     auditor?.createEvent({
       eventId: 'read-tag',
       severityLevel: 'low',
@@ -320,7 +316,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
     await permissionMgr.authorize(request, qetaEditTagPermission, {
-      resource: tag,
+      resources: [tag],
     });
 
     const description = request.body.description;
@@ -333,7 +329,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       }
     }
     const resp = await database.updateTag(tagId, description, experts);
-    await mapAdditionalFields(request, resp, options);
+    await mapAdditionalFields(request, resp ? [resp] : [], options);
     auditor?.createEvent({
       eventId: 'update-tag',
       severityLevel: 'medium',
@@ -380,7 +376,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(500);
       return;
     }
-    await mapAdditionalFields(request, tag, options);
+    await mapAdditionalFields(request, [tag], options);
     auditor?.createEvent({
       eventId: 'create-tag',
       severityLevel: 'medium',
@@ -403,7 +399,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
     const tag = await database.getTagById(tagId);
     await permissionMgr.authorize(request, qetaDeleteTagPermission, {
-      resource: tag,
+      resources: [tag!],
     });
     const deleted = await database.deleteTag(tagId);
 
