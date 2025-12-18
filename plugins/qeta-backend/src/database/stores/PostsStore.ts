@@ -785,18 +785,27 @@ export class PostsStore extends BaseStore {
   }
 
   private getPostsBaseQuery(user: string, opts?: PostsQuery) {
-    const postRef = this.db.ref('posts.id');
+    const q = this.db<RawPostEntity>('posts')
+      .leftJoin('user_favorite', function joinUserFavorite() {
+        this.on('posts.id', '=', 'user_favorite.postId').andOnVal(
+          'user_favorite.user',
+          '=',
+          user,
+        );
+      })
+      .select(
+        'posts.*',
+        this.db.raw(
+          `CASE WHEN user_favorite.${
+            this.db.client.config.client === 'pg' ? '"postId"' : 'postId'
+          } IS NOT NULL THEN 1 ELSE 0 END as favorite`,
+        ),
+      );
 
-    const favorite = this.db('user_favorite')
-      .where('user_favorite.user', '=', user)
-      .where('user_favorite.postId', postRef)
-      .count('*')
-      .as('favorite');
-
-    const q = this.db<RawPostEntity>('posts').select('posts.*', favorite);
     if (opts?.favorite) {
-      q.leftJoin('user_favorite', 'user_favorite.postId', 'posts.id');
+      q.whereNotNull('user_favorite.postId');
     }
+
     return q;
   }
 

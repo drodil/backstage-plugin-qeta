@@ -3,8 +3,15 @@ import {
   AnswersQuery,
   AnswerCommentStatus,
   Comment as QetaComment,
+  PostsQuery,
 } from '@drodil/backstage-plugin-qeta-common';
-import { AnswerOptions, Answers, MaybeAnswer, MaybePost } from '../QetaStore';
+import {
+  AnswerOptions,
+  Answers,
+  MaybeAnswer,
+  MaybePost,
+  Posts,
+} from '../QetaStore';
 import { Knex } from 'knex';
 import { CommentsStore } from './CommentsStore';
 import { AttachmentsStore } from './AttachmentsStore';
@@ -43,6 +50,7 @@ export class AnswersStore extends BaseStore {
         id: number,
         recordView?: boolean,
       ): Promise<MaybePost>;
+      getPosts(user_ref: string, options: PostsQuery): Promise<Posts>;
     },
     private readonly attachmentsStore: AttachmentsStore,
   ) {
@@ -367,11 +375,12 @@ export class AnswersStore extends BaseStore {
           ) as unknown as Promise<(QetaComment & { answerId: number })[]>)
         : undefined,
       includePost && this.postsStore
-        ? Promise.all(
-            [...new Set(rows.map((r: RawAnswerEntity) => r.postId))].map(
-              (id: number) => this.postsStore.getPost(user_ref, id, false),
-            ),
-          )
+        ? this.postsStore
+            .getPosts(user_ref, {
+              ids: [...new Set(rows.map((r: RawAnswerEntity) => r.postId))],
+              limit: rows.length,
+            })
+            .then(p => p.posts)
         : undefined,
       this.attachmentsStore.getAttachments(answerIds, 'answerId'),
       includeExperts
