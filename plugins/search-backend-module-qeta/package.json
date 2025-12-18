@@ -7,7 +7,7 @@
     "search",
     "backstage.io"
   ],
-  "version": "3.48.0",
+  "version": "3.48.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "prepublishOnly": "yarn tsc && yarn build",
