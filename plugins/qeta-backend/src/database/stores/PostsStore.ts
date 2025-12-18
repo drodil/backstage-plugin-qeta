@@ -8,7 +8,7 @@ import {
   Answer,
   Comment as QetaComment,
 } from '@drodil/backstage-plugin-qeta-common';
-import { AnswerOptions, MaybePost, PostOptions, Posts } from '../QetaStore';
+import { MaybePost, PostOptions, Posts } from '../QetaStore';
 import { QetaFilters } from '../../service/util';
 import { Knex } from 'knex';
 import { AnswersStore } from './AnswersStore';
@@ -16,10 +16,10 @@ import { CommentsStore } from './CommentsStore';
 import { TagsStore } from './TagsStore';
 import { EntitiesStore } from './EntitiesStore';
 import { AttachmentsStore } from './AttachmentsStore';
-// import { parseFilter, filterTags } from '../service/util'; // Removed
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TAGS } from '../../tagDb';
 import { BaseStore } from './BaseStore';
+import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
 
 export interface RawPostEntity {
   id: number;
@@ -33,7 +33,7 @@ export interface RawPostEntity {
   score: number | string;
   views: number | string;
   answersCount: number | string;
-  correctAnswer: boolean | number;
+  correctAnswers: number | string;
   commentsCount: number | string;
   favorite: number | string;
   trend: number | string;
@@ -66,6 +66,7 @@ export class PostsStore extends BaseStore {
     private readonly tagsStore: TagsStore,
     private readonly entitiesStore: EntitiesStore,
     private readonly attachmentsStore: AttachmentsStore,
+    private readonly tagDatabase?: TagDatabase,
   ) {
     super(db);
   }
@@ -109,7 +110,7 @@ export class PostsStore extends BaseStore {
     opts?: PostOptions,
   ): Promise<Posts> {
     const { includeTotal = true, includeDraftFilter = true } = opts ?? {};
-    const query = this.getPostsBaseQuery(user_ref);
+    const query = this.getPostsBaseQuery(user_ref, options);
     if (options.type) {
       query.where('posts.type', options.type);
     }
@@ -222,24 +223,19 @@ export class PostsStore extends BaseStore {
     }
 
     if (options.noAnswers) {
-      query.whereNull('answers.postId');
+      query.where('answersCount', 0);
     }
 
     if (options.hasAnswers) {
-      query.whereNotNull('answers.postId');
+      query.where('answersCount', '>', 0);
     }
 
     if (options.noCorrectAnswer) {
-      query.leftJoin('answers as correct_answer', builder => {
-        builder
-          .on('posts.id', 'correct_answer.postId')
-          .on('correct_answer.correct', this.db.raw('?', [true]));
-      });
-      query.whereNull('correct_answer.postId');
+      query.where('correctAnswers', 0);
     }
 
     if (options.noVotes) {
-      query.whereNull('post_votes.postId');
+      query.where('votes', 0);
     }
 
     if (options.favorite) {
@@ -251,11 +247,11 @@ export class PostsStore extends BaseStore {
       query.select(
         this.db.raw(
           `(
-            (SELECT COALESCE(SUM(score), 0) FROM post_votes WHERE "postId" = posts.id) * 200 + 
-            (SELECT COALESCE(COUNT(*), 0) FROM answers WHERE "postId" = posts.id) * 100 +
-            (SELECT COALESCE(COUNT(*), 0) FROM user_favorite WHERE "postId" = posts.id) * 50 +
-            (SELECT COALESCE(COUNT(*), 0) FROM post_views WHERE "postId" = posts.id) * 10 +
-            (SELECT COALESCE(COUNT(*), 0) FROM comments WHERE "postId" = posts.id) * 30
+            posts.score * 200 + 
+            posts.answersCount * 100 +
+            posts.favoritesCount * 50 +
+            posts.views * 10 +
+            posts.commentsCount * 30
           ) / 
           POWER(
             EXTRACT(EPOCH FROM (now() - posts.created)) / 172800 + 1,
@@ -345,6 +341,7 @@ export class PostsStore extends BaseStore {
     options?: PostOptions,
   ): Promise<MaybePost> {
     const rows = await this.getPostsBaseQuery(user_ref)
+      .join('answers', 'posts.id', 'answers.postId')
       .where('answers.id', '=', answerId)
       .select('posts.*');
     if (!rows || rows.length === 0) {
@@ -543,6 +540,14 @@ export class PostsStore extends BaseStore {
         timestamp: new Date(),
       })
       .into('post_votes');
+
+    await this.db('posts')
+      .where('id', '=', postId)
+      .update({
+        score: this.db('post_votes')
+          .where('postId', '=', postId)
+          .select(this.db.raw('COALESCE(SUM(score), 0)')),
+      });
     return true;
   }
 
@@ -561,6 +566,16 @@ export class PostsStore extends BaseStore {
       .where('author', '=', user_ref)
       .where('postId', '=', postId)
       .delete();
+
+    if (rows > 0) {
+      await this.db('posts')
+        .where('id', '=', postId)
+        .update({
+          score: this.db('post_votes')
+            .where('postId', '=', postId)
+            .select(this.db.raw('COALESCE(SUM(score), 0)')),
+        });
+    }
     return rows > 0;
   }
 
@@ -571,14 +586,18 @@ export class PostsStore extends BaseStore {
         postId,
       })
       .into('user_favorite');
+    await this.db('posts').where('id', postId).increment('favoritesCount', 1);
     return true;
   }
 
   async unfavoritePost(user_ref: string, postId: number): Promise<boolean> {
-    await this.db('user_favorite')
+    const rows = await this.db('user_favorite')
       .where('user', user_ref)
       .where('postId', postId)
       .delete();
+    if (rows > 0) {
+      await this.db('posts').where('id', postId).decrement('favoritesCount', 1);
+    }
     return true;
   }
 
@@ -704,7 +723,7 @@ export class PostsStore extends BaseStore {
         score: this.mapToInteger(val.score),
         views: this.mapToInteger(val.views),
         answersCount: this.mapToInteger(val.answersCount),
-        correctAnswer: this.mapToBoolean(val.correctAnswer),
+        correctAnswer: this.mapToBoolean(val.correctAnswers),
         commentsCount: this.mapToInteger(val.commentsCount),
         favorite: this.mapToInteger(val.favorite) > 0,
         tags: tagsMap.get(val.id),
@@ -729,41 +748,8 @@ export class PostsStore extends BaseStore {
     });
   }
 
-  private getPostsBaseQuery(user: string, opts?: AnswerOptions) {
-    const { includeStatusFilter = true } = opts ?? {};
+  private getPostsBaseQuery(user: string, opts?: PostsQuery) {
     const postRef = this.db.ref('posts.id');
-
-    const score = this.db('post_votes')
-      .where('post_votes.postId', postRef)
-      .sum('score')
-      .as('score');
-
-    const views = this.db('post_views')
-      .where('post_views.postId', postRef)
-      .count('*')
-      .as('views');
-
-    const answersCount = this.db('answers')
-      .where('answers.postId', postRef)
-      .count('*')
-      .as('answersCount');
-    if (includeStatusFilter) {
-      answersCount.where('answers.status', '=', 'active');
-    }
-
-    const correctAnswers = this.db('answers')
-      .where('answers.postId', postRef)
-      .where('answers.correct', '=', true)
-      .count('*')
-      .as('correctAnswers');
-    if (includeStatusFilter) {
-      correctAnswers.where('answers.status', '=', 'active');
-    }
-
-    const commentsCount = this.db('comments')
-      .where('comments.postId', postRef)
-      .count('*')
-      .as('commentsCount');
 
     const favorite = this.db('user_favorite')
       .where('user_favorite.user', '=', user)
@@ -771,22 +757,11 @@ export class PostsStore extends BaseStore {
       .count('*')
       .as('favorite');
 
-    return this.db<RawPostEntity>('posts')
-      .select(
-        'posts.*',
-        score,
-        views,
-        answersCount,
-        correctAnswers,
-        commentsCount,
-        favorite,
-      )
-      .leftJoin('post_votes', 'posts.id', 'post_votes.postId')
-      .leftJoin('post_views', 'posts.id', 'post_views.postId')
-      .leftJoin('answers', 'posts.id', 'answers.postId')
-      .leftJoin('comments', 'posts.id', 'comments.postId')
-      .leftJoin('user_favorite', 'posts.id', 'user_favorite.postId')
-      .groupBy('posts.id');
+    const q = this.db<RawPostEntity>('posts').select('posts.*', favorite);
+    if (opts?.favorite) {
+      q.leftJoin('user_favorite', 'user_favorite.postId', 'posts.id');
+    }
+    return q;
   }
 
   private async recordPostView(
@@ -800,6 +775,8 @@ export class PostsStore extends BaseStore {
         timestamp: new Date(),
       })
       .into('post_views');
+
+    await this.db('posts').where('id', postId).increment('views', 1);
   }
 
   private async addTags(
@@ -824,7 +801,7 @@ export class PostsStore extends BaseStore {
     const newTags = tags.filter(t => !existingTags.some(e => e.tag === t));
     const allTags: Record<string, string> = {
       ...TAGS,
-      /* ...(await this.tagDatabase?.getTags()), */ // TODO
+      ...(await this.tagDatabase?.getTags()),
     };
 
     const tagIds = (

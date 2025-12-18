@@ -67,22 +67,11 @@ export class TagsStore extends BaseStore {
       query,
       this.db(totalQuery.as('totalQuery')).count('* as CNT').first(),
     ]);
-    const rows = results[0];
+    const rows = results[0] as RawTagEntity[];
     const total = this.mapToInteger((results[1] as any)?.CNT);
 
     return {
-      tags: await Promise.all(
-        rows.map(async (row: any) => {
-          return {
-            id: row.id,
-            tag: row.tag,
-            description: options?.noDescription ? undefined : row.description,
-            postsCount: this.mapToInteger(row.postsCount),
-            followerCount: this.mapToInteger(row.followerCount),
-            experts: await this.getTagExpertsById(row.id),
-          };
-        }),
-      ),
+      tags: await this.mapTagEntities(rows, options),
       total,
     };
   }
@@ -93,15 +82,8 @@ export class TagsStore extends BaseStore {
     if (rows.length === 0) {
       return null;
     }
-    const row = rows[0];
-    return {
-      id: row.id,
-      tag: row.tag,
-      description: row.description,
-      postsCount: this.mapToInteger(row.postsCount),
-      followerCount: this.mapToInteger(row.followerCount),
-      experts: await this.getTagExpertsById(row.id),
-    };
+    const row = rows[0] as RawTagEntity;
+    return (await this.mapTagEntities([row]))[0];
   }
 
   async getTag(tag: string): Promise<TagResponse | null> {
@@ -110,15 +92,8 @@ export class TagsStore extends BaseStore {
     if (rows.length === 0) {
       return null;
     }
-    const row = rows[0];
-    return {
-      id: row.id,
-      tag: row.tag,
-      description: row.description,
-      postsCount: this.mapToInteger(row.postsCount),
-      followerCount: this.mapToInteger(row.followerCount),
-      experts: await this.getTagExpertsById(row.id),
-    };
+    const row = rows[0] as RawTagEntity;
+    return (await this.mapTagEntities([row]))[0];
   }
 
   async createTag(
@@ -248,8 +223,8 @@ export class TagsStore extends BaseStore {
       this.parseFilter(tagsFilter, query, this.db, 'tags');
     }
 
-    const rows = await query.select();
     const result = new Map<number, string[]>();
+    const rows = await query.select();
     rows.forEach((row: any) => {
       const ps = result.get(row.entityId) || [];
       ps.push(row.tag);
@@ -332,11 +307,38 @@ export class TagsStore extends BaseStore {
       .groupBy('tags.id');
   }
 
-  private async getTagExpertsById(id: number) {
-    const rows = await this.db('tag_experts')
-      .where('tagId', id)
-      .select('entityRef');
-    return rows.map(r => r.entityRef);
+  async getTagExpertsForTags(tagIds: number[]): Promise<Map<number, string[]>> {
+    if (tagIds.length === 0) {
+      return new Map();
+    }
+    const rows = await this.db<RawTagExpert>('tag_experts')
+      .whereIn('tagId', tagIds)
+      .select();
+    const result = new Map<number, string[]>();
+    rows.forEach(row => {
+      const ps = result.get(row.tagId) || [];
+      ps.push(row.entityRef);
+      result.set(row.tagId, ps);
+    });
+    return result;
+  }
+
+  private async mapTagEntities(
+    rows: RawTagEntity[],
+    options?: { noDescription?: boolean },
+  ): Promise<TagResponse[]> {
+    const tagIds = rows.map(r => r.id);
+    const expertsMap = await this.getTagExpertsForTags(tagIds);
+    return rows.map(row => {
+      return {
+        id: row.id,
+        tag: row.tag,
+        description: options?.noDescription ? undefined : row.description,
+        postsCount: this.mapToInteger((row as any).postsCount),
+        followerCount: this.mapToInteger((row as any).followerCount),
+        experts: expertsMap.get(row.id) ?? [],
+      };
+    });
   }
 
   private async updateTagExperts(id: number, experts: string[]) {

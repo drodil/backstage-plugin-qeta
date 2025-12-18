@@ -260,6 +260,14 @@ export class AnswersStore extends BaseStore {
         timestamp: new Date(),
       })
       .into('answer_votes');
+
+    await this.db('answers')
+      .where('id', '=', answerId)
+      .update({
+        score: this.db('answer_votes')
+          .where('answerId', '=', answerId)
+          .select(this.db.raw('COALESCE(SUM(score), 0)')),
+      });
     return true;
   }
 
@@ -268,6 +276,16 @@ export class AnswersStore extends BaseStore {
       .where('author', '=', user_ref)
       .where('answerId', '=', answerId)
       .delete();
+
+    if (rows > 0) {
+      await this.db('answers')
+        .where('id', '=', answerId)
+        .update({
+          score: this.db('answer_votes')
+            .where('answerId', '=', answerId)
+            .select(this.db.raw('COALESCE(SUM(score), 0)')),
+        });
+    }
     return rows > 0;
   }
 
@@ -282,14 +300,11 @@ export class AnswersStore extends BaseStore {
     return this.markAnswer(postId, answerId, false);
   }
 
-  // --- Helpers ---
-
   private async markAnswer(
     postId: number,
     answerId: number,
     correct: boolean,
   ): Promise<boolean> {
-    // There can be only one correct answer
     if (correct) {
       const exists = await this.db('answers')
         .select('id')
@@ -300,28 +315,28 @@ export class AnswersStore extends BaseStore {
       }
     }
 
-    const query = this.db('answers')
-      .onConflict()
-      .ignore()
+    const ret = await this.db('answers')
       .where('answers.id', '=', answerId)
-      .where('postId', '=', postId);
+      .where('postId', '=', postId)
+      .update({ correct }, ['id']);
 
-    const ret = await query.update({ correct }, ['id']);
+    if (ret !== undefined && ret?.length > 0) {
+      if (correct) {
+        await this.db('posts')
+          .where('id', '=', postId)
+          .increment('correctAnswers', 1);
+      } else {
+        await this.db('posts')
+          .where('id', '=', postId)
+          .decrement('correctAnswers', 1);
+      }
+    }
+
     return ret !== undefined && ret?.length > 0;
   }
 
   private getAnswerBaseQuery() {
-    const postRef = this.db.ref('answers.id');
-
-    const score = this.db('answer_votes')
-      .where('answer_votes.answerId', postRef)
-      .sum('score')
-      .as('score');
-
-    return this.db<RawAnswerEntity>('answers')
-      .leftJoin('answer_votes', 'answers.id', 'answer_votes.answerId')
-      .select('answers.*', score)
-      .groupBy('answers.id');
+    return this.db<RawAnswerEntity>('answers').select('*');
   }
 
   private async mapAnswerEntities(
@@ -377,7 +392,7 @@ export class AnswersStore extends BaseStore {
     });
 
     const commentsMap = new Map<number, QetaComment[]>();
-    (comments as (QetaComment & { answerId: number })[])?.forEach(c => {
+    comments?.forEach(c => {
       const ps = commentsMap.get(c.answerId) || [];
       ps.push(c);
       commentsMap.set(c.answerId, ps);

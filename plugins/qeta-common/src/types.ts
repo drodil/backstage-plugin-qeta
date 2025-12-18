@@ -203,6 +203,8 @@ export interface Vote {
 export interface Comment extends QetaEntity {
   expert?: boolean;
   status: AnswerCommentStatus;
+  postId?: number;
+  answerId?: number;
 }
 
 export interface Attachment {

@@ -104,6 +104,6 @@ export class AttachmentsStore extends BaseStore {
       creator: val.creator || '',
       created:
         val.created instanceof Date ? val.created : new Date(val.created),
-    } as Attachment;
+    };
   }
 }

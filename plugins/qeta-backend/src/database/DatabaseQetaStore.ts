@@ -113,6 +113,7 @@ export class DatabaseQetaStore implements QetaStore {
       tagsStore,
       entitiesStore,
       attachmentsStore,
+      tagDatabase,
     );
     const answersStore = new AnswersStore(
       client,

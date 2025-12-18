@@ -118,16 +118,8 @@ export class CollectionsStore extends BaseStore {
     headerImage?: string;
     opts?: CollectionOptions;
   }): Promise<Collection> {
-    const {
-      user_ref,
-      title,
-      description,
-      // headers, // Removed unused
-      created,
-      images,
-      headerImage,
-      opts,
-    } = options as any;
+    const { user_ref, title, description, created, images, headerImage, opts } =
+      options as any;
 
     const collections = await this.db
       .insert(
