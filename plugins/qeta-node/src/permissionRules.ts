@@ -22,6 +22,7 @@ import {
   postPermissionResourceRef,
   tagPermissionResourceRef,
 } from './permissionResources';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 export const isPostAuthor = createPermissionRule({
   name: 'IS_AUTHOR',
@@ -58,14 +59,39 @@ export const postHasTags = createPermissionRule({
     return tags.every(t => resource?.tags?.includes(t));
   },
   toQuery: ({ tags }) => {
-    return {
+    const filters: PermissionCriteria<PostFilter>[] = tags.map(e => ({
       property: 'tags' as PostFilter['property'],
-      values: tags,
-    };
+      values: [e],
+    }));
+
+    return {
+      allOf: filters,
+    } as PermissionCriteria<PostFilter>;
   },
 });
 
 export const postHasTagsConditionFactory = createConditionFactory(postHasTags);
+
+export const postHasAnyTag = createPermissionRule({
+  name: 'HAS_ANY_TAG',
+  description: 'Should allow only if the post has any of the specific tags',
+  resourceRef: postPermissionResourceRef,
+  paramsSchema: z.object({
+    tags: z.array(z.string()).describe('Tag to match the post'),
+  }),
+  apply: (resource: Post, { tags }) => {
+    return tags.some(t => resource?.tags?.includes(t));
+  },
+  toQuery: ({ tags }) => {
+    return {
+      property: 'tags' as PostFilter['property'],
+      values: tags,
+    } as PermissionCriteria<PostFilter>;
+  },
+});
+
+export const postHasAnyTagConditionFactory =
+  createConditionFactory(postHasAnyTag);
 
 export const postHasEntities = createPermissionRule({
   name: 'HAS_ENTITIES',
@@ -77,16 +103,41 @@ export const postHasEntities = createPermissionRule({
   apply: (resource: Post, { entityRefs }) => {
     return entityRefs.every(t => resource?.entities?.includes(t));
   },
-  toQuery: ({ entityRefs }) => {
-    return {
+  toQuery: ({ entityRefs }): PermissionCriteria<PostFilter> => {
+    const filters: PermissionCriteria<PostFilter>[] = entityRefs.map(e => ({
       property: 'entityRefs' as PostFilter['property'],
-      values: entityRefs,
-    };
+      values: [e],
+    }));
+
+    return {
+      allOf: filters,
+    } as PermissionCriteria<PostFilter>;
   },
 });
 
 export const postHasEntitiesConditionFactory =
   createConditionFactory(postHasEntities);
+
+export const postHasAnyEntity = createPermissionRule({
+  name: 'HAS_ANY_ENTITY',
+  description: 'Should allow only if the post has any of the specific entities',
+  resourceRef: postPermissionResourceRef,
+  paramsSchema: z.object({
+    entityRefs: z.array(z.string()).describe('Entity refs to match the post'),
+  }),
+  apply: (resource: Post, { entityRefs }) => {
+    return entityRefs.some(t => resource?.entities?.includes(t));
+  },
+  toQuery: ({ entityRefs }): PermissionCriteria<PostFilter> => {
+    return {
+      property: 'entityRefs' as PostFilter['property'],
+      values: entityRefs,
+    } as PermissionCriteria<PostFilter>;
+  },
+});
+
+export const postHasAnyEntityConditionFactory =
+  createConditionFactory(postHasAnyEntity);
 
 export const postHasType = createPermissionRule({
   name: 'HAS_TYPE',
@@ -138,12 +189,67 @@ export const isPostTagExpert = createPermissionRule({
 export const postTagExpertConditionFactory =
   createConditionFactory(isPostTagExpert);
 
+export const postDoesNotHaveTags = createPermissionRule({
+  name: 'DOES_NOT_HAVE_TAGS',
+  description:
+    'Should allow only if the post does not have any of the specific tags',
+  resourceRef: postPermissionResourceRef,
+  paramsSchema: z.object({
+    tags: z.array(z.string()).describe('Tags that should not be on the post'),
+  }),
+  apply: (resource: Post, { tags }) => {
+    return !tags.some(t => resource?.tags?.includes(t));
+  },
+  toQuery: ({ tags }) => {
+    return {
+      not: {
+        property: 'tags' as PostFilter['property'],
+        values: tags,
+      },
+    } as PermissionCriteria<PostFilter>;
+  },
+});
+
+export const postDoesNotHaveTagsConditionFactory =
+  createConditionFactory(postDoesNotHaveTags);
+
+export const postDoesNotHaveEntities = createPermissionRule({
+  name: 'DOES_NOT_HAVE_ENTITIES',
+  description:
+    'Should allow only if the post does not have any of the specific entities',
+  resourceRef: postPermissionResourceRef,
+  paramsSchema: z.object({
+    entityRefs: z
+      .array(z.string())
+      .describe('Entity refs that should not be on the post'),
+  }),
+  apply: (resource: Post, { entityRefs }) => {
+    return !entityRefs.some(t => resource?.entities?.includes(t));
+  },
+  toQuery: ({ entityRefs }): PermissionCriteria<PostFilter> => {
+    return {
+      not: {
+        property: 'entityRefs' as PostFilter['property'],
+        values: entityRefs,
+      },
+    } as PermissionCriteria<PostFilter>;
+  },
+});
+
+export const postDoesNotHaveEntitiesConditionFactory = createConditionFactory(
+  postDoesNotHaveEntities,
+);
+
 export const postRules = {
   isPostAuthor,
   postHasTags,
+  postHasAnyTag,
   postHasEntities,
+  postHasAnyEntity,
   postHasType,
   isPostTagExpert,
+  postDoesNotHaveTags,
+  postDoesNotHaveEntities,
 };
 
 export const isAnswerAuthor = createPermissionRule({
@@ -183,15 +289,42 @@ export const answerQuestionHasTags = createPermissionRule({
     return tags.every(t => resource?.post?.tags?.includes(t));
   },
   toQuery: ({ tags }) => {
-    return {
+    const filters: PermissionCriteria<AnswerFilter>[] = tags.map(e => ({
       property: 'tags' as AnswerFilter['property'],
-      values: tags,
-    };
+      values: [e],
+    }));
+
+    return {
+      allOf: filters,
+    } as PermissionCriteria<AnswerFilter>;
   },
 });
 
 export const answerQuestionTagsConditionFactory = createConditionFactory(
   answerQuestionHasTags,
+);
+
+export const answerQuestionHasAnyTag = createPermissionRule({
+  name: 'HAS_ANY_TAG',
+  description:
+    'Should allow only if the answers question has any of the specific tags',
+  resourceRef: answerPermissionResourceRef,
+  paramsSchema: z.object({
+    tags: z.array(z.string()).describe('Tag to match the question'),
+  }),
+  apply: (resource: Answer, { tags }) => {
+    return tags.some(t => resource?.post?.tags?.includes(t));
+  },
+  toQuery: ({ tags }) => {
+    return {
+      property: 'tags' as AnswerFilter['property'],
+      values: tags,
+    } as PermissionCriteria<AnswerFilter>;
+  },
+});
+
+export const answerQuestionAnyTagConditionFactory = createConditionFactory(
+  answerQuestionHasAnyTag,
 );
 
 export const answerQuestionHasEntityRefs = createPermissionRule({
@@ -206,16 +339,42 @@ export const answerQuestionHasEntityRefs = createPermissionRule({
     return entityRefs.every(t => resource?.post?.entities?.includes(t));
   },
   toQuery: ({ entityRefs }) => {
-    return {
+    const filters: PermissionCriteria<AnswerFilter>[] = entityRefs.map(e => ({
       property: 'entityRefs' as AnswerFilter['property'],
-      values: entityRefs,
-    };
+      values: [e],
+    }));
+
+    return {
+      allOf: filters,
+    } as PermissionCriteria<AnswerFilter>;
   },
 });
 
 export const answerQuestionEntitiesConditionFactory = createConditionFactory(
   answerQuestionHasEntityRefs,
 );
+
+export const answerQuestionHasAnyEntityRefs = createPermissionRule({
+  name: 'HAS_ANY_ENTITIES',
+  description:
+    'Should allow only if the answers question has any of the specific entities',
+  resourceRef: answerPermissionResourceRef,
+  paramsSchema: z.object({
+    entityRefs: z.array(z.string()).describe('Tag to match the question'),
+  }),
+  apply: (resource: Answer, { entityRefs }) => {
+    return entityRefs.some(t => resource?.post?.entities?.includes(t));
+  },
+  toQuery: ({ entityRefs }) => {
+    return {
+      property: 'entityRefs' as AnswerFilter['property'],
+      values: entityRefs,
+    } as PermissionCriteria<AnswerFilter>;
+  },
+});
+
+export const answerQuestionHasAnyEntitiesConditionFactory =
+  createConditionFactory(answerQuestionHasEntityRefs);
 
 export const isAnswerTagExpert = createPermissionRule({
   name: 'IS_ANSWER_TAG_EXPERT',
@@ -247,11 +406,67 @@ export const isAnswerTagExpert = createPermissionRule({
 export const answerTagExpertConditionFactory =
   createConditionFactory(isAnswerTagExpert);
 
+export const answerQuestionDoesNotHaveTags = createPermissionRule({
+  name: 'DOES_NOT_HAVE_TAGS',
+  description:
+    'Should allow only if the answers question does not have any of the specific tags',
+  resourceRef: answerPermissionResourceRef,
+  paramsSchema: z.object({
+    tags: z
+      .array(z.string())
+      .describe('Tags that should not be on the question'),
+  }),
+  apply: (resource: Answer, { tags }) => {
+    return !tags.some(t => resource?.post?.tags?.includes(t));
+  },
+  toQuery: ({ tags }) => {
+    return {
+      not: {
+        property: 'tags' as AnswerFilter['property'],
+        values: tags,
+      },
+    } as PermissionCriteria<AnswerFilter>;
+  },
+});
+
+export const answerQuestionDoesNotHaveTagsConditionFactory =
+  createConditionFactory(answerQuestionDoesNotHaveTags);
+
+export const answerQuestionDoesNotHaveEntityRefs = createPermissionRule({
+  name: 'DOES_NOT_HAVE_ENTITIES',
+  description:
+    'Should allow only if the answers question does not have any of the specific entities',
+  resourceRef: answerPermissionResourceRef,
+  paramsSchema: z.object({
+    entityRefs: z
+      .array(z.string())
+      .describe('Entity refs that should not be on the question'),
+  }),
+  apply: (resource: Answer, { entityRefs }) => {
+    return !entityRefs.some(t => resource?.post?.entities?.includes(t));
+  },
+  toQuery: ({ entityRefs }) => {
+    return {
+      not: {
+        property: 'entityRefs' as AnswerFilter['property'],
+        values: entityRefs,
+      },
+    } as PermissionCriteria<AnswerFilter>;
+  },
+});
+
+export const answerQuestionDoesNotHaveEntitiesConditionFactory =
+  createConditionFactory(answerQuestionDoesNotHaveEntityRefs);
+
 export const answerRules = {
   isAnswerAuthor,
   answerQuestionHasTags,
+  answerQuestionHasAnyTag,
   answerQuestionHasEntityRefs,
+  answerQuestionHasAnyEntityRefs,
   isAnswerTagExpert,
+  answerQuestionDoesNotHaveTags,
+  answerQuestionDoesNotHaveEntityRefs,
 };
 
 export const isCommentAuthor = createPermissionRule({
@@ -372,20 +587,46 @@ export const collectionHasTags = createPermissionRule({
     return tags.every(t => resource?.tags?.includes(t));
   },
   toQuery: ({ tags }) => {
-    return {
+    const filters: PermissionCriteria<CollectionFilter>[] = tags.map(e => ({
       property: 'tags' as CollectionFilter['property'],
-      values: tags,
-    };
+      values: [e],
+    }));
+
+    return {
+      allOf: filters,
+    } as PermissionCriteria<CollectionFilter>;
   },
 });
 
 export const collectionHasTagsConditionFactory =
   createConditionFactory(collectionHasTags);
 
+export const collectionHasAnyTag = createPermissionRule({
+  name: 'HAS_ANY_TAG',
+  description:
+    'Should allow only if the posts in the collection have some of the specific tags',
+  resourceRef: collectionPermissionResourceRef,
+  paramsSchema: z.object({
+    tags: z.array(z.string()).describe('Tag to match the collection'),
+  }),
+  apply: (resource: Collection, { tags }) => {
+    return tags.some(t => resource?.tags?.includes(t));
+  },
+  toQuery: ({ tags }) => {
+    return {
+      property: 'tags' as CollectionFilter['property'],
+      values: tags,
+    } as PermissionCriteria<CollectionFilter>;
+  },
+});
+
+export const collectionHasAnyTagConditionFactory =
+  createConditionFactory(collectionHasAnyTag);
+
 export const collectionHasEntities = createPermissionRule({
   name: 'HAS_ENTITIES',
   description:
-    'Should allow only if the posts in the collection have the specific entities',
+    'Should allow only if the posts in the collection have all the specific entities',
   resourceRef: collectionPermissionResourceRef,
   paramsSchema: z.object({
     entityRefs: z
@@ -396,15 +637,46 @@ export const collectionHasEntities = createPermissionRule({
     return entityRefs.every(t => resource?.entities?.includes(t));
   },
   toQuery: ({ entityRefs }) => {
+    const filters: PermissionCriteria<CollectionFilter>[] = entityRefs.map(
+      e => ({
+        property: 'entityRefs' as CollectionFilter['property'],
+        values: [e],
+      }),
+    );
+
     return {
-      property: 'entityRefs' as CollectionFilter['property'],
-      values: entityRefs,
-    };
+      allOf: filters,
+    } as PermissionCriteria<CollectionFilter>;
   },
 });
 
 export const collectionHasEntitiesConditionFactory = createConditionFactory(
   collectionHasEntities,
+);
+
+export const collectionHasAnyEntity = createPermissionRule({
+  name: 'HAS_ANY_ENTITY',
+  description:
+    'Should allow only if the posts in the collection have some of the specific entities',
+  resourceRef: collectionPermissionResourceRef,
+  paramsSchema: z.object({
+    entityRefs: z
+      .array(z.string())
+      .describe('Entity refs to match the collection'),
+  }),
+  apply: (resource: Collection, { entityRefs }) => {
+    return entityRefs.some(t => resource?.entities?.includes(t));
+  },
+  toQuery: ({ entityRefs }) => {
+    return {
+      property: 'entityRefs' as CollectionFilter['property'],
+      values: entityRefs,
+    } as PermissionCriteria<CollectionFilter>;
+  },
+});
+
+export const collectionHasAnyEntityConditionFactory = createConditionFactory(
+  collectionHasAnyEntity,
 );
 
 export const isCollectionTagExpert = createPermissionRule({
@@ -438,11 +710,68 @@ export const collectionTagExpertConditionFactory = createConditionFactory(
   isCollectionTagExpert,
 );
 
+export const collectionDoesNotHaveTags = createPermissionRule({
+  name: 'DOES_NOT_HAVE_TAGS',
+  description:
+    'Should allow only if the posts in the collection do not have any of the specific tags',
+  resourceRef: collectionPermissionResourceRef,
+  paramsSchema: z.object({
+    tags: z
+      .array(z.string())
+      .describe('Tags that should not be in the collection'),
+  }),
+  apply: (resource: Collection, { tags }) => {
+    return !tags.some(t => resource?.tags?.includes(t));
+  },
+  toQuery: ({ tags }) => {
+    return {
+      not: {
+        property: 'tags' as CollectionFilter['property'],
+        values: tags,
+      },
+    } as PermissionCriteria<CollectionFilter>;
+  },
+});
+
+export const collectionDoesNotHaveTagsConditionFactory = createConditionFactory(
+  collectionDoesNotHaveTags,
+);
+
+export const collectionDoesNotHaveEntities = createPermissionRule({
+  name: 'DOES_NOT_HAVE_ENTITIES',
+  description:
+    'Should allow only if the posts in the collection do not have any of the specific entities',
+  resourceRef: collectionPermissionResourceRef,
+  paramsSchema: z.object({
+    entityRefs: z
+      .array(z.string())
+      .describe('Entity refs that should not be in the collection'),
+  }),
+  apply: (resource: Collection, { entityRefs }) => {
+    return !entityRefs.some(t => resource?.entities?.includes(t));
+  },
+  toQuery: ({ entityRefs }) => {
+    return {
+      not: {
+        property: 'entityRefs' as CollectionFilter['property'],
+        values: entityRefs,
+      },
+    } as PermissionCriteria<CollectionFilter>;
+  },
+});
+
+export const collectionDoesNotHaveEntitiesConditionFactory =
+  createConditionFactory(collectionDoesNotHaveEntities);
+
 export const collectionRules = {
   isCollectionOwner,
   collectionHasTags,
+  collectionHasAnyTag,
   collectionHasEntities,
+  collectionHasAnyEntity,
   isCollectionTagExpert,
+  collectionDoesNotHaveTags,
+  collectionDoesNotHaveEntities,
 };
 
 export const rules = {

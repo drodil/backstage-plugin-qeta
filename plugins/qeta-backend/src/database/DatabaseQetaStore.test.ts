@@ -3,6 +3,8 @@ import { DatabaseQetaStore } from './DatabaseQetaStore';
 import { RawAnswerEntity } from './stores/AnswersStore';
 import { RawPostEntity } from './stores/PostsStore';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PostFilter } from '@drodil/backstage-plugin-qeta-common';
 
 jest.setTimeout(60_000);
 
@@ -1025,6 +1027,471 @@ describe.each(databases.eachSupportedId())(
         expect(Number(ret[0].total)).toBe(2);
         expect(ret[1].author).toBe('user2');
         expect(Number(ret[1].total)).toBe(1);
+      });
+    });
+
+    describe('permission filters', () => {
+      beforeEach(async () => {
+        // Create posts with different tag combinations
+        await storage.createPost({
+          user_ref: 'user1',
+          title: 'Post with tag1',
+          content: 'content1',
+          created: new Date(),
+          tags: ['tag1'],
+        });
+
+        await storage.createPost({
+          user_ref: 'user1',
+          title: 'Post with tag2',
+          content: 'content2',
+          created: new Date(),
+          tags: ['tag2'],
+        });
+
+        await storage.createPost({
+          user_ref: 'user1',
+          title: 'Post with tag1 and tag2',
+          content: 'content3',
+          created: new Date(),
+          tags: ['tag1', 'tag2'],
+        });
+
+        await storage.createPost({
+          user_ref: 'user1',
+          title: 'Post with tag3',
+          content: 'content4',
+          created: new Date(),
+          tags: ['tag3'],
+        });
+
+        // Create posts with different entity combinations
+        await storage.createPost({
+          user_ref: 'user1',
+          title: 'Post with entity1',
+          content: 'content5',
+          created: new Date(),
+          entities: ['component:default/test1'],
+        });
+
+        await storage.createPost({
+          user_ref: 'user1',
+          title: 'Post with entity2',
+          content: 'content6',
+          created: new Date(),
+          entities: ['component:default/test2'],
+        });
+
+        await storage.createPost({
+          user_ref: 'user1',
+          title: 'Post with entity1 and entity2',
+          content: 'content7',
+          created: new Date(),
+          entities: ['component:default/test1', 'component:default/test2'],
+        });
+
+        await storage.createPost({
+          user_ref: 'user1',
+          title: 'Post with entity3',
+          content: 'content8',
+          created: new Date(),
+          entities: ['component:default/test3'],
+        });
+      });
+
+      describe('tag filters', () => {
+        it('should filter posts with ANY of the specified tags (OR logic)', async () => {
+          // This simulates postHasAnyTag rule: anyOf [tag1, tag2]
+          const filters = {
+            property: 'tags' as const,
+            values: ['tag1', 'tag2'],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(3);
+          const titles = result.posts.map(p => p.title).sort();
+          expect(titles).toEqual([
+            'Post with tag1',
+            'Post with tag1 and tag2',
+            'Post with tag2',
+          ]);
+        });
+
+        it('should filter posts with ALL of the specified tags (AND logic)', async () => {
+          // This simulates postHasTags rule: allOf [tag1, tag2]
+          const filters: PermissionCriteria<PostFilter> = {
+            allOf: [
+              {
+                property: 'tags',
+                values: ['tag1'],
+              },
+              {
+                property: 'tags',
+                values: ['tag2'],
+              },
+            ],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(1);
+          expect(result.posts[0].title).toBe('Post with tag1 and tag2');
+          expect(result.posts[0].tags).toContain('tag1');
+          expect(result.posts[0].tags).toContain('tag2');
+        });
+
+        it('should return empty when filtering with non-existent tag', async () => {
+          const filters = {
+            property: 'tags' as const,
+            values: ['nonexistent'],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(0);
+        });
+
+        it('should filter posts with ANY of 3 tags', async () => {
+          const filters = {
+            property: 'tags' as const,
+            values: ['tag1', 'tag2', 'tag3'],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(4);
+        });
+
+        it('should filter posts with ALL of 3 tags (none match)', async () => {
+          const filters: PermissionCriteria<PostFilter> = {
+            allOf: [
+              {
+                property: 'tags',
+                values: ['tag1'],
+              },
+              {
+                property: 'tags',
+                values: ['tag2'],
+              },
+              {
+                property: 'tags',
+                values: ['tag3'],
+              },
+            ],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(0);
+        });
+      });
+
+      describe('entity filters', () => {
+        it('should filter posts with ANY of the specified entities (OR logic)', async () => {
+          // This simulates postHasAnyEntity rule: anyOf [entity1, entity2]
+          const filters = {
+            property: 'entityRefs' as const,
+            values: ['component:default/test1', 'component:default/test2'],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(3);
+          const titles = result.posts.map(p => p.title).sort();
+          expect(titles).toEqual([
+            'Post with entity1',
+            'Post with entity1 and entity2',
+            'Post with entity2',
+          ]);
+        });
+
+        it('should filter posts with ALL of the specified entities (AND logic)', async () => {
+          // This simulates postHasEntities rule: allOf [entity1, entity2]
+          const filters: PermissionCriteria<PostFilter> = {
+            allOf: [
+              {
+                property: 'entityRefs',
+                values: ['component:default/test1'],
+              },
+              {
+                property: 'entityRefs',
+                values: ['component:default/test2'],
+              },
+            ],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(1);
+          expect(result.posts[0].title).toBe('Post with entity1 and entity2');
+          expect(result.posts[0].entities).toContain('component:default/test1');
+          expect(result.posts[0].entities).toContain('component:default/test2');
+        });
+
+        it('should return empty when filtering with non-existent entity', async () => {
+          const filters = {
+            property: 'entityRefs' as const,
+            values: ['component:default/nonexistent'],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(0);
+        });
+
+        it('should filter posts with ANY of 3 entities', async () => {
+          const filters = {
+            property: 'entityRefs' as const,
+            values: [
+              'component:default/test1',
+              'component:default/test2',
+              'component:default/test3',
+            ],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(4);
+        });
+
+        it('should filter posts with ALL of 3 entities (none match)', async () => {
+          const filters: PermissionCriteria<PostFilter> = {
+            allOf: [
+              {
+                property: 'entityRefs',
+                values: ['component:default/test1'],
+              },
+              {
+                property: 'entityRefs',
+                values: ['component:default/test2'],
+              },
+              {
+                property: 'entityRefs',
+                values: ['component:default/test3'],
+              },
+            ],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(0);
+        });
+      });
+
+      describe('combined filters', () => {
+        it('should filter posts with ANY tag AND ANY entity', async () => {
+          // Create a post with both tags and entities
+          await storage.createPost({
+            user_ref: 'user1',
+            title: 'Post with tag1 and entity1',
+            content: 'combined content',
+            created: new Date(),
+            tags: ['tag1'],
+            entities: ['component:default/test1'],
+          });
+
+          const filters: PermissionCriteria<PostFilter> = {
+            allOf: [
+              {
+                property: 'tags',
+                values: ['tag1'],
+              },
+              {
+                property: 'entityRefs',
+                values: ['component:default/test1'],
+              },
+            ],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(1);
+          expect(result.posts[0].title).toBe('Post with tag1 and entity1');
+          expect(result.posts[0].tags).toContain('tag1');
+          expect(result.posts[0].entities).toContain('component:default/test1');
+        });
+
+        it('should filter posts with (tag1 OR tag2) AND entity1', async () => {
+          // Create posts for testing
+          await storage.createPost({
+            user_ref: 'user1',
+            title: 'Post with tag1 and entity1',
+            content: 'content',
+            created: new Date(),
+            tags: ['tag1'],
+            entities: ['component:default/test1'],
+          });
+
+          await storage.createPost({
+            user_ref: 'user1',
+            title: 'Post with tag2 and entity1',
+            content: 'content',
+            created: new Date(),
+            tags: ['tag2'],
+            entities: ['component:default/test1'],
+          });
+
+          const filters: PermissionCriteria<PostFilter> = {
+            allOf: [
+              {
+                property: 'tags',
+                values: ['tag1', 'tag2'],
+              },
+              {
+                property: 'entityRefs',
+                values: ['component:default/test1'],
+              },
+            ],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(2);
+          const titles = result.posts.map(p => p.title).sort();
+          expect(titles).toEqual([
+            'Post with tag1 and entity1',
+            'Post with tag2 and entity1',
+          ]);
+        });
+
+        it('should support complex nested filters', async () => {
+          // (tag1 OR tag2) AND (entity1 OR entity2)
+          await storage.createPost({
+            user_ref: 'user1',
+            title: 'Complex post 1',
+            content: 'content',
+            created: new Date(),
+            tags: ['tag1'],
+            entities: ['component:default/test1'],
+          });
+
+          await storage.createPost({
+            user_ref: 'user1',
+            title: 'Complex post 2',
+            content: 'content',
+            created: new Date(),
+            tags: ['tag2'],
+            entities: ['component:default/test2'],
+          });
+
+          const filters: PermissionCriteria<PostFilter> = {
+            allOf: [
+              {
+                property: 'tags',
+                values: ['tag1', 'tag2'],
+              },
+              {
+                property: 'entityRefs',
+                values: ['component:default/test1', 'component:default/test2'],
+              },
+            ],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          expect(result.posts.length).toBe(2);
+          const titles = result.posts.map(p => p.title).sort();
+          expect(titles).toEqual(['Complex post 1', 'Complex post 2']);
+        });
+      });
+
+      describe('NOT filters', () => {
+        it('should filter posts NOT having specific tag', async () => {
+          const filters = {
+            not: {
+              property: 'tags' as const,
+              values: ['tag1'],
+            },
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          // Should get posts without tag1 (both "Post with tag1" and "Post with tag1 and tag2" should be excluded)
+          const titles = result.posts.map(p => p.title);
+          expect(titles).not.toContain('Post with tag1');
+          expect(titles).not.toContain('Post with tag1 and tag2');
+          expect(titles).toContain('Post with tag2');
+          expect(titles).toContain('Post with tag3');
+        });
+
+        it('should filter posts NOT having ANY of multiple tags', async () => {
+          const filters = {
+            not: {
+              property: 'tags' as const,
+              values: ['tag1', 'tag2'],
+            },
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          // Should only get posts that have neither tag1 nor tag2
+          const titles = result.posts.map(p => p.title);
+          expect(titles).not.toContain('Post with tag1');
+          expect(titles).not.toContain('Post with tag2');
+          expect(titles).not.toContain('Post with tag1 and tag2');
+          expect(titles).toContain('Post with tag3');
+        });
+
+        it('should filter posts NOT having specific entity', async () => {
+          const filters = {
+            not: {
+              property: 'entityRefs' as const,
+              values: ['component:default/test1'],
+            },
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          // Should get posts without entity1 (both "Post with entity1" and "Post with entity1 and entity2" should be excluded)
+          const titles = result.posts.map(p => p.title);
+          expect(titles).not.toContain('Post with entity1');
+          expect(titles).not.toContain('Post with entity1 and entity2');
+          expect(titles).toContain('Post with entity2');
+          expect(titles).toContain('Post with entity3');
+        });
+
+        it('should filter posts NOT having ANY of multiple entities', async () => {
+          const filters = {
+            not: {
+              property: 'entityRefs' as const,
+              values: ['component:default/test1', 'component:default/test2'],
+            },
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          // Should only get posts that have neither entity1 nor entity2
+          const titles = result.posts.map(p => p.title);
+          expect(titles).not.toContain('Post with entity1');
+          expect(titles).not.toContain('Post with entity2');
+          expect(titles).not.toContain('Post with entity1 and entity2');
+          expect(titles).toContain('Post with entity3');
+        });
+
+        it('should combine NOT filter with positive filter', async () => {
+          // Get posts with tag2 but NOT tag1
+          const filters: PermissionCriteria<PostFilter> = {
+            allOf: [
+              {
+                property: 'tags',
+                values: ['tag2'],
+              },
+              {
+                not: {
+                  property: 'tags',
+                  values: ['tag1'],
+                },
+              },
+            ],
+          };
+
+          const result = await storage.getPosts('user1', {}, filters);
+
+          // Should only get "Post with tag2"
+          expect(result.posts.length).toBe(1);
+          expect(result.posts[0].title).toBe('Post with tag2');
+        });
       });
     });
   },
