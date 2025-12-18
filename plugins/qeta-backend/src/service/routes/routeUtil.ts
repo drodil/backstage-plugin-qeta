@@ -20,7 +20,7 @@ export const getTags = async (
     options.config.getOptionalStringArray('qeta.tags.allowedTags') ?? [];
   const allowTagCreationResults = await options.permissionMgr.authorizeBoolean(
     request,
-    qetaCreateTagPermission,
+    [{ permission: qetaCreateTagPermission }],
   );
   const allowTagCreation = allowTagCreationResults[0] ?? false;
 

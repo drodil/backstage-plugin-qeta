@@ -261,101 +261,88 @@ export class PermissionManager {
 
   public async authorize(
     request: Request<unknown>,
-    permission: Permission,
+    queries: { permission: Permission; resource?: QetaIdEntity }[],
     options?: {
-      resource?: QetaIdEntity;
-      resources?: QetaIdEntity[];
       audit?: boolean;
       credentials?: BackstageCredentials;
+      throwOnDeny?: boolean;
     },
   ): Promise<DefinitivePolicyDecision[]> {
-    const resources =
-      options?.resources ?? (options?.resource ? [options.resource] : []);
-
     if (!this.permissions) {
       return await Promise.all(
-        resources.length === 0
-          ? [this.authorizeWithoutPermissions(request, permission, options)]
-          : resources.map(resource =>
-              this.authorizeWithoutPermissions(request, permission, {
-                ...options,
-                resource,
-              }),
-            ),
+        queries.map(query =>
+          this.authorizeWithoutPermissions(request, query.permission, {
+            ...options,
+            resource: query.resource,
+          }),
+        ),
       );
     }
 
     const moderator = await this.isModerator(request, options);
 
     if (moderator) {
-      return resources.length === 0
-        ? [{ result: AuthorizeResult.ALLOW }]
-        : resources.map(() => ({ result: AuthorizeResult.ALLOW }));
+      return queries.map(() => ({ result: AuthorizeResult.ALLOW }));
     }
 
     const credentials =
       options?.credentials ?? (await this.httpAuth.credentials(request));
     if (!credentials) {
       if (options?.audit) {
-        this.auditor?.createEvent({
-          eventId: 'authorize',
-          severityLevel: 'high',
-          request,
-          meta: {
-            permission,
-            failure: 'Unauthorized',
-          },
-        });
-      }
-      throw new NotAllowedError('Unauthorized');
-    }
-
-    let decisions: DefinitivePolicyDecision[];
-    if (isResourcePermission(permission)) {
-      if (
-        resources.length === 0 ||
-        resources.some(r => r === null || r === undefined)
-      ) {
-        if (options?.audit) {
+        queries.forEach(query => {
           this.auditor?.createEvent({
             eventId: 'authorize',
             severityLevel: 'high',
             request,
             meta: {
-              permission,
-              resource: JSON.stringify(resources),
-              failure: 'Resource not found',
+              permission: query.permission,
+              failure: 'Unauthorized',
             },
           });
-        }
-        throw new NotFoundError('Resource not found');
+        });
       }
-
-      const result = await this.permissions.authorize(
-        resources.map(resource => ({
-          permission,
-          resourceRef: this.getResourceRef(resource!),
-        })),
-        { credentials },
-      );
-      decisions = result;
-    } else {
-      const result = await this.permissions.authorize([{ permission }], {
-        credentials,
-      });
-      decisions =
-        resources.length === 0 ? result : resources.map(() => result[0]);
+      throw new NotAllowedError('Unauthorized');
     }
 
+    const requests = queries.map(query => {
+      if (isResourcePermission(query.permission)) {
+        if (!query.resource) {
+          if (options?.audit) {
+            this.auditor?.createEvent({
+              eventId: 'authorize',
+              severityLevel: 'high',
+              request,
+              meta: {
+                permission: query.permission,
+                resource: JSON.stringify(query.resource),
+                failure: 'Resource not found',
+              },
+            });
+          }
+          throw new NotFoundError('Resource not found');
+        }
+
+        return {
+          permission: query.permission,
+          resourceRef: this.getResourceRef(query.resource),
+        };
+      }
+      return { permission: query.permission };
+    });
+
+    const decisions = await this.permissions.authorize(requests, {
+      credentials,
+    });
+
     if (options?.audit) {
-      decisions.forEach(decision => {
+      decisions.forEach((decision, index) => {
         if (decision.result === AuthorizeResult.DENY) {
           this.auditor?.createEvent({
             eventId: 'authorize',
             severityLevel: 'high',
             request,
             meta: {
-              permission,
+              permission: queries[index].permission,
               failure: 'Unauthorized',
             },
           });
@@ -364,7 +351,7 @@ export class PermissionManager {
     }
 
     const hasDeny = decisions.some(d => d.result === AuthorizeResult.DENY);
-    if (hasDeny) {
+    if (hasDeny && (options?.throwOnDeny ?? true)) {
       throw new NotAllowedError('Unauthorized');
     }
 
@@ -438,20 +425,20 @@ export class PermissionManager {
 
   public async authorizeBoolean(
     request: Request<unknown>,
-    permission: Permission,
+    queries: { permission: Permission; resource?: QetaIdEntity }[],
     options?: {
-      resources?: QetaIdEntity[];
       credentials?: BackstageCredentials;
     },
   ): Promise<boolean[]> {
     try {
-      const decisions = await this.authorize(request, permission, {
+      const decisions = await this.authorize(request, queries, {
         audit: false,
+        throwOnDeny: false,
         ...options,
       });
       return decisions.map(d => d.result === AuthorizeResult.ALLOW);
     } catch (e) {
-      return (options?.resources ?? []).map(() => false);
+      return queries.map(() => false);
     }
   }
 
