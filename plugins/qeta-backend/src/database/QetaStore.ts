@@ -138,6 +138,8 @@ export type PostOptions = {
   includeAttachments?: boolean;
   includeTotal?: boolean;
   includeExperts?: boolean;
+  includeCollections?: boolean;
+  collectionIds?: number[];
 };
 
 export type CollectionOptions = {

@@ -222,6 +222,8 @@ export class StatsStore extends BaseStore {
       totalUsers,
       totalViews,
       totalVotes,
+      totalTags,
+      totalComments,
     ] = await Promise.all([
       this.getCount('posts', { type: 'question' }),
       this.getCount('answers'),
@@ -229,6 +231,8 @@ export class StatsStore extends BaseStore {
       this.getUsersCount(),
       this.getCount('post_views'),
       this.getTotalVotes(),
+      this.getCount('tags'),
+      this.getCount('comments'),
     ]);
 
     await this.db
@@ -240,8 +244,12 @@ export class StatsStore extends BaseStore {
         totalUsers,
         totalViews,
         totalVotes,
+        totalTags,
+        totalComments,
       })
-      .into('global_stats');
+      .into('global_stats')
+      .onConflict('date')
+      .merge();
   }
 
   async saveUserStats(user: UserResponse, date: Date): Promise<void> {
@@ -254,19 +262,16 @@ export class StatsStore extends BaseStore {
         totalArticles: user.totalArticles,
         totalViews: user.totalViews,
         totalVotes: user.totalVotes,
+        totalComments: user.totalComments,
       })
-      .into('user_stats');
+      .into('user_stats')
+      .onConflict(['userRef', 'date'])
+      .merge();
   }
 
   async getUsersCount(): Promise<number> {
     const res = await this.db('unique_authors').count('* as CNT').first();
     return this.mapToInteger(res?.CNT);
-  }
-
-  private async getTotalVotes(): Promise<number> {
-    const pVotes = await this.db('post_votes').count('* as CNT').first();
-    const aVotes = await this.db('answer_votes').count('* as CNT').first();
-    return this.mapToInteger(pVotes?.CNT) + this.mapToInteger(aVotes?.CNT);
   }
 
   async getTotalViews(
@@ -309,5 +314,11 @@ export class StatsStore extends BaseStore {
       .where('userRef', user_ref)
       .select('*')
       .orderBy('date', 'desc');
+  }
+
+  private async getTotalVotes(): Promise<number> {
+    const pVotes = await this.db('post_votes').count('* as CNT').first();
+    const aVotes = await this.db('answer_votes').count('* as CNT').first();
+    return this.mapToInteger(pVotes?.CNT) + this.mapToInteger(aVotes?.CNT);
   }
 }

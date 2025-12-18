@@ -6,12 +6,12 @@ import {
   CollectionOptions,
   CollectionPostRank,
   Collections,
-  PostOptions,
 } from '../QetaStore';
 import { Knex } from 'knex';
 import { compact } from 'lodash';
 import { BaseStore } from './BaseStore';
 import { AttachmentsStore } from './AttachmentsStore';
+import { PostsStore } from './PostsStore';
 
 export interface RawCollectionEntity {
   id: number;
@@ -26,14 +26,7 @@ export interface RawCollectionEntity {
 export class CollectionsStore extends BaseStore {
   constructor(
     protected readonly db: Knex,
-    private readonly postsStore: {
-      getPosts(
-        user_ref: string,
-        options: any,
-        filters?: any,
-        opts?: PostOptions,
-      ): Promise<any>;
-    },
+    private readonly postsStore: PostsStore,
     private readonly attachmentsStore: AttachmentsStore,
   ) {
     super(db);
@@ -382,7 +375,7 @@ export class CollectionsStore extends BaseStore {
       includePosts && this.postsStore
         ? this.postsStore.getPosts(
             user_ref,
-            { collectionIds: collectionIds, includeEntities: true },
+            { includeEntities: true },
             postFilters,
             {
               tagsFilter: options?.tagFilters,
@@ -392,6 +385,8 @@ export class CollectionsStore extends BaseStore {
               includeVotes: false,
               includeTotal: false,
               includeExperts: includeExperts ?? false,
+              includeCollections: true,
+              collectionIds: collectionIds,
             },
           )
         : { posts: [] },
@@ -412,10 +407,14 @@ export class CollectionsStore extends BaseStore {
     ]);
 
     const postsMap = new Map<number, any[]>();
-    (posts as any).posts?.forEach((p: any) => {
-      const ps = postsMap.get(p.collectionId) || [];
-      ps.push(p);
-      postsMap.set(p.collectionId, ps);
+    posts.posts?.forEach((p: any) => {
+      if (p.collectionIds && Array.isArray(p.collectionIds)) {
+        p.collectionIds.forEach((collectionId: number) => {
+          const ps = postsMap.get(collectionId) || [];
+          ps.push(p);
+          postsMap.set(collectionId, ps);
+        });
+      }
     });
 
     const attachmentsMap = attachments ?? new Map<number, number[]>();

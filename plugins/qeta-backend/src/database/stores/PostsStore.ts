@@ -1,12 +1,12 @@
 import {
   AIResponse,
+  Answer,
+  Comment as QetaComment,
   filterTags,
   Post,
   PostsQuery,
   PostStatus,
   PostType,
-  Answer,
-  Comment as QetaComment,
 } from '@drodil/backstage-plugin-qeta-common';
 import { MaybePost, PostOptions, Posts } from '../QetaStore';
 import { QetaFilters } from '../../service/util';
@@ -211,15 +211,29 @@ export class PostsStore extends BaseStore {
         'collection_posts.postId',
       );
       query.where('collection_posts.collectionId', options.collectionId);
+      if (options.orderBy === 'rank') {
+        query.select('collection_posts.rank');
+      }
+    } else if (opts?.collectionIds) {
+      query.innerJoin(
+        'collection_posts',
+        'posts.id',
+        'collection_posts.postId',
+      );
+      query.whereIn('collection_posts.collectionId', opts.collectionIds);
+      if (options.orderBy === 'rank') {
+        query.select('collection_posts.rank');
+      }
     } else if (options.orderBy === 'rank') {
       query.innerJoin(
         'collection_posts',
         'posts.id',
         'collection_posts.postId',
       );
+      query.select('collection_posts.rank');
     }
     if (options.orderBy === 'rank') {
-      query.groupBy('rank');
+      query.groupBy('posts.id', 'collection_posts.rank');
     }
 
     if (options.noAnswers) {
@@ -235,7 +249,7 @@ export class PostsStore extends BaseStore {
     }
 
     if (options.noVotes) {
-      query.where('votes', 0);
+      query.where('score', 0);
     }
 
     if (options.favorite) {
@@ -626,50 +640,64 @@ export class PostsStore extends BaseStore {
       includeComments = true,
       includeAttachments = true,
       includeExperts = true,
+      includeCollections = true,
     } = options ?? {};
 
-    const [tags, votes, entities, comments, attachments, experts, answers] =
-      await Promise.all([
-        includeTags
-          ? this.tagsStore.getRelatedTags(
-              postIds,
-              'post_tags',
-              'postId',
-              options?.tagsFilter,
-            )
-          : undefined,
-        includeVotes
-          ? this.db<RawPostVoteEntity>('post_votes')
-              .whereIn('postId', postIds)
-              .select()
-          : undefined,
-        includeEntities
-          ? this.entitiesStore.getRelatedEntities(
-              postIds,
-              'post_entities',
-              'postId',
-            )
-          : undefined,
-        includeComments
-          ? this.commentsStore.getPostComments(postIds, options?.commentsFilter)
-          : undefined,
-        includeAttachments
-          ? this.attachmentsStore.getAttachments(postIds, 'postId')
-          : undefined,
-        includeExperts
-          ? this.db('tag_experts')
-              .leftJoin('post_tags', 'tag_experts.tagId', 'post_tags.tagId')
-              .whereIn('post_tags.postId', postIds)
-              .select('post_tags.postId', 'tag_experts.entityRef')
-          : undefined,
-        includeAnswers && this.answersStore
-          ? this.answersStore.getPostAnswers(postIds, user_ref, {
-              ...options,
-              includePost: false,
-              filter: options?.answersFilter,
-            })
-          : undefined,
-      ]);
+    const [
+      tags,
+      votes,
+      entities,
+      comments,
+      attachments,
+      experts,
+      answers,
+      collections,
+    ] = await Promise.all([
+      includeTags
+        ? this.tagsStore.getRelatedTags(
+            postIds,
+            'post_tags',
+            'postId',
+            options?.tagsFilter,
+          )
+        : undefined,
+      includeVotes
+        ? this.db<RawPostVoteEntity>('post_votes')
+            .whereIn('postId', postIds)
+            .select()
+        : undefined,
+      includeEntities
+        ? this.entitiesStore.getRelatedEntities(
+            postIds,
+            'post_entities',
+            'postId',
+          )
+        : undefined,
+      includeComments
+        ? this.commentsStore.getPostComments(postIds, options?.commentsFilter)
+        : undefined,
+      includeAttachments
+        ? this.attachmentsStore.getAttachments(postIds, 'postId')
+        : undefined,
+      includeExperts
+        ? this.db('tag_experts')
+            .leftJoin('post_tags', 'tag_experts.tagId', 'post_tags.tagId')
+            .whereIn('post_tags.postId', postIds)
+            .select('post_tags.postId', 'tag_experts.entityRef')
+        : undefined,
+      includeAnswers && this.answersStore
+        ? this.answersStore.getPostAnswers(postIds, user_ref, {
+            ...options,
+            includePost: false,
+            filter: options?.answersFilter,
+          })
+        : undefined,
+      includeCollections
+        ? this.db('collection_posts')
+            .whereIn('postId', postIds)
+            .select('postId', 'collectionId')
+        : undefined,
+    ]);
 
     const tagsMap = tags ?? new Map<number, string[]>();
 
@@ -705,6 +733,13 @@ export class PostsStore extends BaseStore {
       const ps = answersMap.get(a.postId) || [];
       ps.push(a);
       answersMap.set(a.postId, ps);
+    });
+
+    const collectionsMap = new Map<number, number[]>();
+    (collections as any)?.forEach((c: any) => {
+      const cs = collectionsMap.get(c.postId) || [];
+      cs.push(c.collectionId);
+      collectionsMap.set(c.postId, cs);
     });
 
     return rows.map(val => {
@@ -744,6 +779,7 @@ export class PostsStore extends BaseStore {
         images: attachmentsMap.get(val.id),
         experts: expertsMap.get(val.id),
         published: val.published ? (val.published as Date) : undefined,
+        collectionIds: collectionsMap.get(val.id),
       };
     });
   }
