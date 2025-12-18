@@ -275,6 +275,7 @@ export const AnswersQuerySchema: JSONSchemaType<AnswersQuery> = {
     fromDate: { type: 'string', nullable: true, format: 'date' },
     toDate: { type: 'string', nullable: true, format: 'date' },
     ids: { type: 'array', items: { type: 'integer' }, nullable: true },
+    questionId: { type: 'integer', nullable: true },
     checkAccess: { type: 'boolean', nullable: true },
   },
   required: [],

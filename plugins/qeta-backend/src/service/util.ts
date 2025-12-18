@@ -153,11 +153,7 @@ export type QetaFilter = {
   values: Array<string | undefined>;
 };
 
-export type QetaFilters =
-  | { anyOf: QetaFilter[] }
-  | { allOf: QetaFilter[] }
-  | { not: QetaFilter }
-  | QetaFilter;
+export type QetaFilters = QetaFilter;
 
 export const transformConditions: ConditionTransformer<QetaFilters> =
   createConditionTransformer(Object.values(rules));

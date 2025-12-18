@@ -1,9 +1,7 @@
 import { Knex } from 'knex';
-import {
-  DatabaseQetaStore,
-  RawAnswerEntity,
-  RawPostEntity,
-} from './DatabaseQetaStore';
+import { DatabaseQetaStore } from './DatabaseQetaStore';
+import { RawAnswerEntity } from './stores/AnswersStore';
+import { RawPostEntity } from './stores/PostsStore';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 
 jest.setTimeout(60_000);
@@ -491,7 +489,7 @@ describe.each(databases.eachSupportedId())(
 
         const result = await storage.getCollections('user1', {});
         const found = result.collections.find(
-          c => c.id === collection.id && c.title === 'Empty Collection',
+          c => c.id === collection?.id && c.title === 'Empty Collection',
         );
         expect(found).toBeDefined();
         expect(found?.postsCount).toBe(0);
@@ -559,7 +557,7 @@ describe.each(databases.eachSupportedId())(
           type: 'link',
           url,
         });
-        const deleted = await storage.deletePost(linkPost.id, true);
+        const deleted = await storage.deletePost(linkPost!.id, true);
         expect(deleted).toBeTruthy();
         const fetched = await storage.getPost('user', linkPost.id);
         expect(fetched).toBeNull();

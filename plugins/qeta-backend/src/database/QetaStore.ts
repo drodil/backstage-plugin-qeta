@@ -5,7 +5,7 @@ import {
   Attachment,
   Collection,
   CollectionsQuery,
-  Comment,
+  Comment as QetaComment,
   EntitiesQuery,
   EntityLinks,
   GlobalStat,
@@ -38,7 +38,7 @@ export function isAnswer(entity: QetaIdEntity): entity is Answer {
   return 'postId' in entity && 'correct' in entity;
 }
 
-export function isComment(entity: QetaIdEntity): entity is Comment {
+export function isComment(entity: QetaIdEntity): entity is QetaComment {
   return !('title' in entity) && !('correct' in entity);
 }
 
@@ -52,7 +52,7 @@ export function isCollection(entity: QetaIdEntity): entity is Collection {
 
 export type MaybeAnswer = Answer | null;
 export type MaybePost = Post | null;
-export type MaybeComment = Comment | null;
+export type MaybeComment = QetaComment | null;
 export type MaybeTag = TagResponse | null;
 export type MaybeCollection = Collection | null;
 export type MaybeTemplate = Template | null;
@@ -350,7 +350,7 @@ export interface QetaStore {
   getComments(
     options?: { ids?: number[] },
     opts?: CommentOptions,
-  ): Promise<Comment[]>;
+  ): Promise<QetaComment[]>;
   getComment(
     commentId: number,
     opts?: CommentOptions & { postId?: number; answerId?: number },

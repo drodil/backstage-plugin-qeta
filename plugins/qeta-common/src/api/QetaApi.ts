@@ -108,6 +108,7 @@ export interface AnswersQuery extends PaginatedQuery {
   fromDate?: string;
   toDate?: string;
   ids?: number[];
+  questionId?: number;
   checkAccess?: boolean;
 }
 
