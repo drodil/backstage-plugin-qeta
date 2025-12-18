@@ -142,7 +142,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
         .json({ errors: validateRequestBody.errors, type: 'body' });
       return;
     }
-    await permissionMgr.authorize(request, qetaCreateCollectionPermission);
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaCreateCollectionPermission }],
+      { throwOnDeny: true },
+    );
 
     const username = await permissionMgr.getUsername(request);
     const created = await getCreated(request, options);
@@ -227,9 +231,16 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaEditCollectionPermission, {
-      resources: [originalCollection],
-    });
+    await permissionMgr.authorize(
+      request,
+      [
+        {
+          permission: qetaEditCollectionPermission,
+          resource: originalCollection,
+        },
+      ],
+      { throwOnDeny: true },
+    );
 
     const [postFilters, filters, tagFilters] = await Promise.all([
       permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
@@ -308,9 +319,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaDeleteCollectionPermission, {
-      resources: [collection],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaDeleteCollectionPermission, resource: collection }],
+      { throwOnDeny: true },
+    );
 
     // Act
     const deleted = await database.deleteCollection(collectionId);
@@ -387,9 +400,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(404);
       return;
     }
-    await permissionMgr.authorize(request, qetaReadCollectionPermission, {
-      resources: [collection],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaReadCollectionPermission, resource: collection }],
+      { throwOnDeny: true },
+    );
 
     await database.followCollection(username, collectionId);
 
@@ -419,9 +434,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaReadCollectionPermission, {
-      resources: [collection],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaReadCollectionPermission, resource: collection }],
+      { throwOnDeny: true },
+    );
     await database.unfollowCollection(username, collectionId);
 
     auditor?.createEvent({
@@ -467,9 +484,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaReadCollectionPermission, {
-      resources: [collection],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaReadCollectionPermission, resource: collection }],
+      { throwOnDeny: true },
+    );
 
     await mapAdditionalFields(request, [collection], options, { username });
 
@@ -508,9 +527,20 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
     );
 
-    await permissionMgr.authorize(request, qetaEditCollectionPermission, {
-      resources: [collection!],
-    });
+    const post = await database.getPost(username, request.body.postId, false);
+    if (!post) {
+      response.status(404).send({ errors: 'Post not found', type: 'body' });
+      return;
+    }
+
+    await permissionMgr.authorize(
+      request,
+      [
+        { permission: qetaEditCollectionPermission, resource: collection! },
+        { permission: qetaReadPostPermission, resource: post },
+      ],
+      { throwOnDeny: true },
+    );
 
     const [postFilters, tagFilters] = await Promise.all([
       permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
@@ -520,16 +550,6 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
         allowServicePrincipal: true,
       }),
     ]);
-
-    const post = await database.getPost(username, request.body.postId, false);
-    if (!post) {
-      response.status(404).send({ errors: 'Post not found', type: 'body' });
-      return;
-    }
-
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
 
     // Act
     collection = await database.addPostToCollection(
@@ -609,9 +629,20 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       Number.parseInt(request.params.id, 10),
     );
 
-    await permissionMgr.authorize(request, qetaEditCollectionPermission, {
-      resources: [collection!],
-    });
+    const post = await database.getPost(username, request.body.postId, false);
+    if (!post) {
+      response.status(404).send({ errors: 'Post not found', type: 'body' });
+      return;
+    }
+
+    await permissionMgr.authorize(
+      request,
+      [
+        { permission: qetaEditCollectionPermission, resource: collection! },
+        { permission: qetaReadPostPermission, resource: post },
+      ],
+      { throwOnDeny: true },
+    );
 
     const [postFilters, tagFilters] = await Promise.all([
       permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
@@ -621,16 +652,6 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
         allowServicePrincipal: true,
       }),
     ]);
-
-    const post = await database.getPost(username, request.body.postId, false);
-    if (!post) {
-      response.status(404).send({ errors: 'Post not found', type: 'body' });
-      return;
-    }
-
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
 
     // Act
     collection = await database.removePostFromCollection(
@@ -701,10 +722,6 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaEditCollectionPermission, {
-      resources: [collection],
-    });
-
     const post = await database.getPost(username, request.body.postId, false);
 
     if (!post) {
@@ -712,9 +729,14 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
+    await permissionMgr.authorize(
+      request,
+      [
+        { permission: qetaEditCollectionPermission, resource: collection },
+        { permission: qetaReadPostPermission, resource: post },
+      ],
+      { throwOnDeny: true },
+    );
 
     const currentRank = await database.getPostRank(
       collection.id,

@@ -144,10 +144,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
-    await permissionMgr.authorize(request, qetaCreateAnswerPermission);
+    await permissionMgr.authorize(
+      request,
+      [
+        { permission: qetaReadPostPermission, resource: post },
+        { permission: qetaCreateAnswerPermission },
+      ],
+      { throwOnDeny: true },
+    );
 
     const created = await getCreated(request, options);
 
@@ -240,12 +244,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       response.status(404).send({ errors: 'Post not found', type: 'body' });
       return;
     }
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
-    await permissionMgr.authorize(request, qetaEditAnswerPermission, {
-      resources: [originalAnswer],
-    });
+    await permissionMgr.authorize(
+      request,
+      [
+        { permission: qetaReadPostPermission, resource: post },
+        { permission: qetaEditAnswerPermission, resource: originalAnswer },
+      ],
+      { throwOnDeny: true },
+    );
 
     if (request.body.author && request.body.author !== username) {
       if (!(await permissionMgr.isModerator(request))) {
@@ -315,20 +321,21 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         response.status(404).send({ errors: 'Post not found', type: 'body' });
         return;
       }
-      await permissionMgr.authorize(request, qetaReadPostPermission, {
-        resources: [post],
-      });
-
       let answer = await database.getAnswer(answerId, username);
       if (!answer) {
         response.sendStatus(404);
         return;
       }
 
-      await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resources: [answer],
-      });
-      await permissionMgr.authorize(request, qetaCreateCommentPermission);
+      await permissionMgr.authorize(
+        request,
+        [
+          { permission: qetaReadPostPermission, resource: post },
+          { permission: qetaReadAnswerPermission, resource: answer },
+          { permission: qetaCreateCommentPermission },
+        ],
+        { throwOnDeny: true },
+      );
 
       const created = await getCreated(request, options);
       // Act
@@ -432,15 +439,15 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      await permissionMgr.authorize(request, qetaReadPostPermission, {
-        resources: [post],
-      });
-      await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resources: [answer],
-      });
-      await permissionMgr.authorize(request, qetaEditCommentPermission, {
-        resources: [comment],
-      });
+      await permissionMgr.authorize(
+        request,
+        [
+          { permission: qetaReadPostPermission, resource: post },
+          { permission: qetaReadAnswerPermission, resource: answer },
+          { permission: qetaEditCommentPermission, resource: comment },
+        ],
+        { throwOnDeny: true },
+      );
 
       // Act
       answer = await database.updateAnswerComment(
@@ -503,15 +510,15 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      await permissionMgr.authorize(request, qetaReadPostPermission, {
-        resources: [post],
-      });
-      await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resources: [answer],
-      });
-      await permissionMgr.authorize(request, qetaDeleteCommentPermission, {
-        resources: [comment],
-      });
+      await permissionMgr.authorize(
+        request,
+        [
+          { permission: qetaReadPostPermission, resource: post },
+          { permission: qetaReadAnswerPermission, resource: answer },
+          { permission: qetaDeleteCommentPermission, resource: comment },
+        ],
+        { throwOnDeny: true },
+      );
 
       // Act
       if (comment.status === 'deleted' || request.body?.permanent === true) {
@@ -577,12 +584,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
-    await permissionMgr.authorize(request, qetaEditAnswerPermission, {
-      resources: [answer],
-    });
+    await permissionMgr.authorize(
+      request,
+      [
+        { permission: qetaReadPostPermission, resource: post },
+        { permission: qetaEditAnswerPermission, resource: answer },
+      ],
+      { throwOnDeny: true },
+    );
 
     answer = await database.getAnswer(answerId, username);
 
@@ -633,12 +642,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
-    await permissionMgr.authorize(request, qetaDeleteAnswerPermission, {
-      resources: [answer],
-    });
+    await permissionMgr.authorize(
+      request,
+      [
+        { permission: qetaReadPostPermission, resource: post },
+        { permission: qetaDeleteAnswerPermission, resource: answer },
+      ],
+      { throwOnDeny: true },
+    );
 
     // Act
     let deleted = false;
@@ -712,12 +723,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
-    await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-      resources: [answer],
-    });
+    await permissionMgr.authorize(
+      request,
+      [
+        { permission: qetaReadPostPermission, resource: post },
+        { permission: qetaReadAnswerPermission, resource: answer },
+      ],
+      { throwOnDeny: true },
+    );
 
     if (answer.own) {
       response
@@ -806,12 +819,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      await permissionMgr.authorize(request, qetaReadPostPermission, {
-        resources: [post],
-      });
-      await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resources: [answer],
-      });
+      await permissionMgr.authorize(
+        request,
+        [
+          { permission: qetaReadPostPermission, resource: post },
+          { permission: qetaReadAnswerPermission, resource: answer },
+        ],
+        { throwOnDeny: true },
+      );
 
       const deleted = await database.deleteAnswerVote(username, answerId);
       if (!deleted) {
@@ -867,12 +882,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      await permissionMgr.authorize(request, qetaEditPostPermission, {
-        resources: [post],
-      });
-      await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resources: [answer],
-      });
+      await permissionMgr.authorize(
+        request,
+        [
+          { permission: qetaEditPostPermission, resource: post },
+          { permission: qetaReadAnswerPermission, resource: answer },
+        ],
+        { throwOnDeny: true },
+      );
 
       const marked = await database.markAnswerCorrect(postId, answerId);
 
@@ -936,12 +953,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
-      await permissionMgr.authorize(request, qetaEditPostPermission, {
-        resources: [post],
-      });
-      await permissionMgr.authorize(request, qetaReadAnswerPermission, {
-        resources: [answer],
-      });
+      await permissionMgr.authorize(
+        request,
+        [
+          { permission: qetaEditPostPermission, resource: post },
+          { permission: qetaReadAnswerPermission, resource: answer },
+        ],
+        { throwOnDeny: true },
+      );
 
       const marked = await database.markAnswerIncorrect(postId, answerId);
 

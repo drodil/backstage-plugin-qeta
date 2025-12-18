@@ -151,80 +151,97 @@ export class UsersStore extends BaseStore {
       return this.db('posts')
         .select([
           'author',
-          this.db.raw('0 as totalViews'),
-          this.db.raw('0 as totalQuestions'),
-          this.db.raw('0 as totalArticles'),
-          this.db.raw('0 as totalLinks'),
-          this.db.raw('0 as totalAnswers'),
-          this.db.raw('0 as answerComments'),
-          this.db.raw('0 as postComments'),
-          this.db.raw('0 as answerVotes'),
-          this.db.raw('0 as postVotes'),
-          this.db.raw('0 as totalFollowers'),
+          this.db.raw('0 as "totalViews"'),
+          this.db.raw('0 as "totalQuestions"'),
+          this.db.raw('0 as "totalArticles"'),
+          this.db.raw('0 as "totalLinks"'),
+          this.db.raw('0 as "totalAnswers"'),
+          this.db.raw('0 as comments'),
+          this.db.raw('0 as "answerVotes"'),
+          this.db.raw('0 as "postVotes"'),
+          this.db.raw('0 as "totalFollowers"'),
         ])
         .distinct();
     }
 
-    const authorRef = this.db.ref('unique_authors.author');
-
     const views = this.db('post_views')
-      .where('post_views.author', authorRef)
-      .count('*')
-      .as('totalViews');
+      .select('author')
+      .count('* as totalViews')
+      .groupBy('author')
+      .as('v');
 
     const questions = this.db('posts')
-      .where('posts.author', authorRef)
-      .where('posts.type', 'question')
-      .count('*')
-      .as('totalQuestions');
+      .select('author')
+      .where('type', 'question')
+      .count('* as totalQuestions')
+      .groupBy('author')
+      .as('q');
 
     const articles = this.db('posts')
-      .where('posts.author', authorRef)
-      .where('posts.type', 'article')
-      .count('*')
-      .as('totalArticles');
+      .select('author')
+      .where('type', 'article')
+      .count('* as totalArticles')
+      .groupBy('author')
+      .as('ar');
 
     const links = this.db('posts')
-      .where('posts.author', authorRef)
-      .where('posts.type', 'link')
-      .count('*')
-      .as('totalLinks');
+      .select('author')
+      .where('type', 'link')
+      .count('* as totalLinks')
+      .groupBy('author')
+      .as('l');
 
     const answers = this.db('answers')
-      .where('answers.author', authorRef)
-      .count('*')
-      .as('totalAnswers');
+      .select('author')
+      .count('* as totalAnswers')
+      .groupBy('author')
+      .as('a');
 
     const comments = this.db('comments')
-      .where('comments.author', authorRef)
-      .count('*')
-      .as('comments');
+      .select('author')
+      .count('* as comments')
+      .groupBy('author')
+      .as('c');
+
     const aVotes = this.db('answer_votes')
-      .where('answer_votes.author', authorRef)
-      .count('*')
-      .as('answerVotes');
+      .select('author')
+      .count('* as answerVotes')
+      .groupBy('author')
+      .as('av');
 
     const pVotes = this.db('post_votes')
-      .where('post_votes.author', authorRef)
-      .count('*')
-      .as('postVotes');
+      .select('author')
+      .count('* as postVotes')
+      .groupBy('author')
+      .as('pv');
 
     const followers = this.db('user_users')
-      .where('user_users.followedUserRef', authorRef)
-      .count('*')
-      .as('totalFollowers');
+      .select('followedUserRef as author')
+      .count('* as totalFollowers')
+      .groupBy('followedUserRef')
+      .as('f');
 
-    return this.db('unique_authors').select(
-      'author',
-      views,
-      questions,
-      answers,
-      articles,
-      links,
-      comments,
-      pVotes,
-      aVotes,
-      followers,
-    );
+    return this.db('unique_authors')
+      .leftJoin(views, 'unique_authors.author', 'v.author')
+      .leftJoin(questions, 'unique_authors.author', 'q.author')
+      .leftJoin(articles, 'unique_authors.author', 'ar.author')
+      .leftJoin(links, 'unique_authors.author', 'l.author')
+      .leftJoin(answers, 'unique_authors.author', 'a.author')
+      .leftJoin(comments, 'unique_authors.author', 'c.author')
+      .leftJoin(aVotes, 'unique_authors.author', 'av.author')
+      .leftJoin(pVotes, 'unique_authors.author', 'pv.author')
+      .leftJoin(followers, 'unique_authors.author', 'f.author')
+      .select(
+        'unique_authors.author',
+        this.db.raw('COALESCE(v."totalViews", 0) as "totalViews"'),
+        this.db.raw('COALESCE(q."totalQuestions", 0) as "totalQuestions"'),
+        this.db.raw('COALESCE(ar."totalArticles", 0) as "totalArticles"'),
+        this.db.raw('COALESCE(l."totalLinks", 0) as "totalLinks"'),
+        this.db.raw('COALESCE(a."totalAnswers", 0) as "totalAnswers"'),
+        this.db.raw('COALESCE(c.comments, 0) as comments'),
+        this.db.raw('COALESCE(av."answerVotes", 0) as "answerVotes"'),
+        this.db.raw('COALESCE(pv."postVotes", 0) as "postVotes"'),
+        this.db.raw('COALESCE(f."totalFollowers", 0) as "totalFollowers"'),
+      );
   }
 }

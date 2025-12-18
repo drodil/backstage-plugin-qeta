@@ -297,9 +297,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     if (!ret) return;
     const { post, username } = ret;
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaReadPostPermission, resource: post }],
+      { throwOnDeny: true },
+    );
 
     await mapAdditionalFields(request, [post], options, { username });
     signalPostStats(signals, post);
@@ -329,10 +331,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
-    await permissionMgr.authorize(request, qetaCreateCommentPermission);
+    await permissionMgr.authorize(
+      request,
+      [
+        { permission: qetaReadPostPermission, resource: post },
+        { permission: qetaCreateCommentPermission },
+      ],
+      { throwOnDeny: true },
+    );
 
     const updatedPost = await database.commentPost(
       post.id,
@@ -425,9 +431,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaEditCommentPermission, {
-      resources: [comment],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaEditCommentPermission, resource: comment }],
+      { throwOnDeny: true },
+    );
 
     const updatedPost = await database.updatePostComment(
       postId,
@@ -487,9 +495,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    await permissionMgr.authorize(request, qetaDeleteCommentPermission, {
-      resources: [comment],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaDeleteCommentPermission, resource: comment }],
+      { throwOnDeny: true },
+    );
 
     let updatedPost = null;
     if (comment.status === 'deleted' || request.body?.permanent === true) {
@@ -557,7 +567,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         .json({ errors: validateRequestBody.errors, type: 'body' });
       return;
     }
-    await permissionMgr.authorize(request, qetaCreatePostPermission);
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaCreatePostPermission }],
+      { throwOnDeny: true },
+    );
 
     const existingTags = await database.getTags();
     const [tags, entities, username, created] = await Promise.all([
@@ -670,9 +684,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       commentsFilter,
     } = ret;
 
-    await permissionMgr.authorize(request, qetaEditPostPermission, {
-      resources: [originalPost],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaEditPostPermission, resource: originalPost }],
+      { throwOnDeny: true },
+    );
 
     if (request.body.status !== 'active' && originalPost.status === 'active') {
       if (!(await permissionMgr.isModerator(request))) {
@@ -785,9 +801,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     const { post, username } = ret;
 
-    await permissionMgr.authorize(request, qetaDeletePostPermission, {
-      resources: [post],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaDeletePostPermission, resource: post }],
+      { throwOnDeny: true },
+    );
 
     let deleted = false;
     if (post.status === 'deleted' || request.body?.permanent === true) {
@@ -841,9 +859,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       commentsFilter,
     } = ret;
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaReadPostPermission, resource: post }],
+      { throwOnDeny: true },
+    );
     if (post.own) {
       response
         .status(400)
@@ -988,9 +1008,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       commentsFilter,
     } = ret;
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaReadPostPermission, resource: post }],
+      { throwOnDeny: true },
+    );
 
     const deleted = await database.deletePostVote(username, postId);
     if (!deleted) {
@@ -1047,9 +1069,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       commentsFilter,
     } = ret;
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaReadPostPermission, resource: post }],
+      { throwOnDeny: true },
+    );
 
     const favorited = await database.favoritePost(username, postId);
 
@@ -1106,9 +1130,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       commentsFilter,
     } = ret;
 
-    await permissionMgr.authorize(request, qetaReadPostPermission, {
-      resources: [post],
-    });
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaReadPostPermission, resource: post }],
+      { throwOnDeny: true },
+    );
 
     const unfavorited = await database.unfavoritePost(username, postId);
 
