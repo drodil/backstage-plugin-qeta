@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.48.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.47.2...v3.48.0) (2025-12-18)
+
+
+### Features
+
+* bulk fetching of entities from db ([3a56fb9](https://github.com/drodil/backstage-plugin-qeta/commit/3a56fb9a335645ab4f2fb30493723bb5fc52a0b9))
+* cache views and votes for q&a ([690e7ef](https://github.com/drodil/backstage-plugin-qeta/commit/690e7efb4fa32123a22f363f3b5cd7b1a01cedf7))
+* more db improvements ([0213e34](https://github.com/drodil/backstage-plugin-qeta/commit/0213e34fa1978fd4e1c1c5120ae9fb7dd0c036a6))
+* refactor database to separate stores ([854f4c6](https://github.com/drodil/backstage-plugin-qeta/commit/854f4c6859a20a3e6ae76cfefa316c7edbd711d7))
+
+
+### Bug Fixes
+
+* collection handling ([6a61067](https://github.com/drodil/backstage-plugin-qeta/commit/6a6106725825f52b1ef05cb4ca9426da42728b5e))
+* permission checks for all entities/tags ([ef7aef5](https://github.com/drodil/backstage-plugin-qeta/commit/ef7aef56710d235ba825182d7c0d784633984c04))
+* trend calculation with cache columns ([eba4063](https://github.com/drodil/backstage-plugin-qeta/commit/eba4063ff1b3ed8fc87aa1d52e9ba825c594fb93))
+
 ### [3.47.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.47.1...v3.47.2) (2025-12-15)
 
 
