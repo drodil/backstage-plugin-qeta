@@ -262,10 +262,10 @@ export class PostsStore extends BaseStore {
         this.db.raw(
           `(
             posts.score * 200 + 
-            posts.answersCount * 100 +
-            posts.favoritesCount * 50 +
+            posts."answersCount" * 100 +
+            posts."favoritesCount" * 50 +
             posts.views * 10 +
-            posts.commentsCount * 30
+            posts."commentsCount" * 30
           ) / 
           POWER(
             EXTRACT(EPOCH FROM (now() - posts.created)) / 172800 + 1,
