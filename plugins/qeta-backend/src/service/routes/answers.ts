@@ -253,7 +253,11 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       { throwOnDeny: true },
     );
 
-    if (request.body.author && request.body.author !== username) {
+    if (
+      request.body.author &&
+      request.body.author !== username &&
+      request.body.author !== originalAnswer.author
+    ) {
       if (!(await permissionMgr.isModerator(request))) {
         response
           .status(400)

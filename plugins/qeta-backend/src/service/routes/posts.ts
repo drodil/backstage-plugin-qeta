@@ -699,7 +699,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    if (request.body.author && request.body.author !== username) {
+    if (
+      request.body.author &&
+      request.body.author !== username &&
+      request.body.author !== originalPost.author
+    ) {
       if (!(await permissionMgr.isModerator(request))) {
         response
           .status(400)
