@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 import { Route, Routes } from 'react-router-dom';
 import { AskPage } from '../AskPage';
@@ -51,7 +51,7 @@ import { CollectionCreatePage } from '../CollectionCreatePage/CollectionCreatePa
 import { EntityPage } from '../EntityPage/EntityPage';
 import { UsersPage } from '../UsersPage/UsersPage';
 import { ModeratorPage } from '../ModeratorPage/ModeratorPage';
-import { Box, Container, Grid } from '@material-ui/core';
+import { Box, Container, Grid, makeStyles } from '@material-ui/core';
 import type { PluggableList } from 'unified';
 
 type Props = {
@@ -67,6 +67,30 @@ type Props = {
   rehypePlugins?: PluggableList;
 };
 
+const useStyles = makeStyles(theme => ({
+  sidebarColumn: {
+    padding: 0,
+    transition: 'all 0.2s ease-in-out',
+    flexShrink: 0,
+    [theme.breakpoints.up('lg')]: {
+      width: (props: { compact: boolean }) => (props.compact ? 72 : 220),
+      minWidth: (props: { compact: boolean }) => (props.compact ? 72 : 220),
+    },
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+      marginBottom: theme.spacing(1),
+    },
+  },
+  mainColumn: {
+    paddingRight: 0,
+    minWidth: 0,
+    transition: 'all 0.2s ease-in-out',
+    [theme.breakpoints.down('md')]: {
+      paddingLeft: 0,
+    },
+  },
+}));
+
 export const QetaPage = (props?: Props) => {
   const {
     title = 'Q&A',
@@ -80,6 +104,8 @@ export const QetaPage = (props?: Props) => {
     remarkPlugins,
     rehypePlugins,
   } = props ?? {};
+  const [compact, setCompact] = useState(false);
+  const classes = useStyles({ compact });
 
   return (
     <QetaExtensionProvider
@@ -99,21 +125,19 @@ export const QetaPage = (props?: Props) => {
         <Content className="qetaHomePage">
           {introElement}
           <Container maxWidth="xl">
-            <Grid container spacing={4} justifyContent="flex-start">
-              <Grid item md={1} lg={2} style={{ padding: 0 }}>
-                <Box display={{ md: 'block', lg: 'none' }}>
+            <Grid container spacing={3} justifyContent="flex-start">
+              <Grid item className={classes.sidebarColumn}>
+                <Box display={{ xs: 'block', lg: 'none' }}>
                   <LeftMenuButton />
                 </Box>
-                <Box display={{ xs: 'none', md: 'block' }}>
-                  <LeftMenu />
+                <Box display={{ xs: 'none', lg: 'block' }}>
+                  <LeftMenu
+                    compact={compact}
+                    onToggle={() => setCompact(!compact)}
+                  />
                 </Box>
               </Grid>
-              <Grid
-                item
-                md={12}
-                lg={10}
-                style={{ paddingLeft: '8px', paddingRight: '0' }}
-              >
+              <Grid item xs className={classes.mainColumn}>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route
