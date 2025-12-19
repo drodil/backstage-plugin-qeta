@@ -66,7 +66,7 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
   } = useIdentityApi(api => api.getBackstageIdentity(), []);
 
   return (
-    <Grid item xs={12} sm={6} md={6} xl={4}>
+    <Grid item xs={12} md={6} xl={4}>
       <Card
         className={classes.card}
         style={{ cursor: 'pointer' }}

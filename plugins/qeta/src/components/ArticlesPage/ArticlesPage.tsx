@@ -3,9 +3,6 @@ import { useEffect, useState } from 'react';
 import { ContentHeader } from '@backstage/core-components';
 import {
   ButtonContainer,
-  FollowedEntitiesList,
-  FollowedTagsList,
-  PostHighlightList,
   PostsGrid,
   PostsContainer,
   qetaTranslationRef,
@@ -13,9 +10,8 @@ import {
   ViewType,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import Whatshot from '@material-ui/icons/Whatshot';
 import LibraryBooksOutlined from '@material-ui/icons/LibraryBooksOutlined';
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const ArticlesPage = () => {
@@ -31,43 +27,30 @@ export const ArticlesPage = () => {
   }, [searchParams, setEntityRef]);
 
   return (
-    <Grid container spacing={4}>
-      <Grid item md={12} lg={9} xl={10}>
-        <ContentHeader
-          titleComponent={
-            <Typography
-              variant="h4"
-              style={{ display: 'flex', alignItems: 'center' }}
-            >
-              <LibraryBooksOutlined
-                fontSize="large"
-                style={{ marginRight: '8px' }}
-              />
-              {t('articlesPage.title')}
-            </Typography>
-          }
-        >
-          <ButtonContainer>
-            <WriteArticleButton entity={entityRef} tags={tags} />
-          </ButtonContainer>
-        </ContentHeader>
-        {view === 'grid' ? (
-          <PostsGrid type="article" view={view} onViewChange={setView} />
-        ) : (
-          <PostsContainer type="article" view={view} onViewChange={setView} />
-        )}
-      </Grid>
-      <Grid item lg={3} xl={2}>
-        <PostHighlightList
-          type="hot"
-          title={t('highlights.hotArticles.title')}
-          noQuestionsLabel={t('highlights.hotArticles.noArticlesLabel')}
-          icon={<Whatshot fontSize="small" />}
-          postType="article"
-        />
-        <FollowedTagsList />
-        <FollowedEntitiesList />
-      </Grid>
-    </Grid>
+    <>
+      <ContentHeader
+        titleComponent={
+          <Typography
+            variant="h4"
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
+            <LibraryBooksOutlined
+              fontSize="large"
+              style={{ marginRight: '8px' }}
+            />
+            {t('articlesPage.title')}
+          </Typography>
+        }
+      >
+        <ButtonContainer>
+          <WriteArticleButton entity={entityRef} tags={tags} />
+        </ButtonContainer>
+      </ContentHeader>
+      {view === 'grid' ? (
+        <PostsGrid type="article" view={view} onViewChange={setView} />
+      ) : (
+        <PostsContainer type="article" view={view} onViewChange={setView} />
+      )}
+    </>
   );
 };

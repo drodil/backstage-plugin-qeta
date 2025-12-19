@@ -100,7 +100,7 @@ export const PostsGridContent = (props: {
         >
           {response.posts.map(p => {
             return (
-              <Grid item lg={12} xl={6} key={p.id}>
+              <Grid item xs={12} lg={12} xl={6} key={p.id}>
                 <PostsGridItem
                   post={p}
                   type={type}

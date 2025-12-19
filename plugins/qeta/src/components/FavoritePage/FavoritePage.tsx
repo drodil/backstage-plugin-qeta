@@ -3,14 +3,13 @@ import {
   AskQuestionButton,
   ButtonContainer,
   CreateLinkButton,
-  PostHighlightListContainer,
   PostsContainer,
   PostsGrid,
   qetaTranslationRef,
   ViewType,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Grid, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import StarBorder from '@material-ui/icons/StarBorder';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useState } from 'react';
@@ -20,45 +19,40 @@ export const FavoritePage = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
 
   return (
-    <Grid container spacing={4}>
-      <Grid item md={12} lg={9} xl={10}>
-        <ContentHeader
-          titleComponent={
-            <Typography
-              variant="h4"
-              style={{ display: 'flex', alignItems: 'center' }}
-            >
-              <StarBorder fontSize="large" style={{ marginRight: '8px' }} />
-              {t('favoritePage.title')}
-            </Typography>
-          }
-        >
-          <ButtonContainer>
-            <AskQuestionButton />
-            <WriteArticleButton />
-            <CreateLinkButton />
-          </ButtonContainer>
-        </ContentHeader>
-        {view === 'grid' ? (
-          <PostsGrid
-            favorite
-            showNoQuestionsBtn={false}
-            view={view}
-            onViewChange={setView}
-          />
-        ) : (
-          <PostsContainer
-            favorite
-            showNoQuestionsBtn={false}
-            showTypeLabel
-            view={view}
-            onViewChange={setView}
-          />
-        )}
-      </Grid>
-      <Grid item lg={3} xl={2}>
-        <PostHighlightListContainer options={{ favorite: true }} />
-      </Grid>
-    </Grid>
+    <>
+      <ContentHeader
+        titleComponent={
+          <Typography
+            variant="h4"
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
+            <StarBorder fontSize="large" style={{ marginRight: '8px' }} />
+            {t('favoritePage.title')}
+          </Typography>
+        }
+      >
+        <ButtonContainer>
+          <AskQuestionButton />
+          <WriteArticleButton />
+          <CreateLinkButton />
+        </ButtonContainer>
+      </ContentHeader>
+      {view === 'grid' ? (
+        <PostsGrid
+          favorite
+          showNoQuestionsBtn={false}
+          view={view}
+          onViewChange={setView}
+        />
+      ) : (
+        <PostsContainer
+          favorite
+          showNoQuestionsBtn={false}
+          showTypeLabel
+          view={view}
+          onViewChange={setView}
+        />
+      )}
+    </>
   );
 };

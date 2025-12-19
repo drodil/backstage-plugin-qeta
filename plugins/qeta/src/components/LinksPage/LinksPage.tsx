@@ -4,18 +4,14 @@ import { ContentHeader } from '@backstage/core-components';
 import {
   ButtonContainer,
   CreateLinkButton,
-  FollowedEntitiesList,
-  FollowedTagsList,
-  PostHighlightList,
   PostsContainer,
   PostsGrid,
   qetaTranslationRef,
   ViewType,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import Whatshot from '@material-ui/icons/Whatshot';
 import LinkIcon from '@material-ui/icons/Link';
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const LinksPage = () => {
@@ -31,40 +27,27 @@ export const LinksPage = () => {
   }, [searchParams, setEntityRef]);
 
   return (
-    <Grid container spacing={4}>
-      <Grid item md={12} lg={9} xl={10}>
-        <ContentHeader
-          titleComponent={
-            <Typography
-              variant="h4"
-              style={{ display: 'flex', alignItems: 'center' }}
-            >
-              <LinkIcon fontSize="large" style={{ marginRight: '8px' }} />
-              {t('linksPage.title')}
-            </Typography>
-          }
-        >
-          <ButtonContainer>
-            <CreateLinkButton entity={entityRef} tags={tags} />
-          </ButtonContainer>
-        </ContentHeader>
-        {view === 'grid' ? (
-          <PostsGrid type="link" view={view} onViewChange={setView} />
-        ) : (
-          <PostsContainer type="link" view={view} onViewChange={setView} />
-        )}
-      </Grid>
-      <Grid item lg={3} xl={2}>
-        <PostHighlightList
-          type="hot"
-          title={t('highlights.hotLinks.title')}
-          noQuestionsLabel={t('highlights.hotLinks.noLinksLabel')}
-          icon={<Whatshot fontSize="small" />}
-          postType="link"
-        />
-        <FollowedTagsList />
-        <FollowedEntitiesList />
-      </Grid>
-    </Grid>
+    <>
+      <ContentHeader
+        titleComponent={
+          <Typography
+            variant="h4"
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
+            <LinkIcon fontSize="large" style={{ marginRight: '8px' }} />
+            {t('linksPage.title')}
+          </Typography>
+        }
+      >
+        <ButtonContainer>
+          <CreateLinkButton entity={entityRef} tags={tags} />
+        </ButtonContainer>
+      </ContentHeader>
+      {view === 'grid' ? (
+        <PostsGrid type="link" view={view} onViewChange={setView} />
+      ) : (
+        <PostsContainer type="link" view={view} onViewChange={setView} />
+      )}
+    </>
   );
 };

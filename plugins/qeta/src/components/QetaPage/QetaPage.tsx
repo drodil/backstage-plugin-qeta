@@ -52,6 +52,7 @@ import { EntityPage } from '../EntityPage/EntityPage';
 import { UsersPage } from '../UsersPage/UsersPage';
 import { ModeratorPage } from '../ModeratorPage/ModeratorPage';
 import { Box, Container, Grid, makeStyles } from '@material-ui/core';
+import { RightContent } from '../RightContent/RightContent';
 import type { PluggableList } from 'unified';
 
 type Props = {
@@ -215,6 +216,7 @@ export const QetaPage = (props?: Props) => {
                   />
                 </Routes>
               </Grid>
+              <RightContent />
             </Grid>
           </Container>
         </Content>

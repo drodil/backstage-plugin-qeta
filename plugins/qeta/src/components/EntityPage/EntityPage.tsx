@@ -7,9 +7,6 @@ import {
   CreateLinkButton,
   EntitiesGrid,
   EntityFollowButton,
-  FollowedEntitiesList,
-  PostHighlightList,
-  PostHighlightListContainer,
   PostsContainer,
   PostsGrid,
   qetaApiRef,
@@ -17,11 +14,10 @@ import {
   ViewType,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import Whatshot from '@material-ui/icons/Whatshot';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
-import { Card, CardContent, Grid, Typography, Box } from '@material-ui/core';
+import { Card, CardContent, Typography } from '@material-ui/core';
 import CategoryOutlined from '@material-ui/icons/CategoryOutlined';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -64,99 +60,60 @@ export const EntityPage = () => {
   }
 
   return (
-    <Grid container spacing={4}>
-      <Grid item md={12} lg={9} xl={10}>
-        <ContentHeader
-          titleComponent={
-            <span style={{ display: 'flex', alignItems: 'center' }}>
-              <CategoryOutlined
-                fontSize="large"
-                style={{ marginRight: '8px' }}
-              />
-              <Typography
-                variant="h5"
-                component="h2"
-                style={{ marginRight: '0.5em' }}
-              >
-                {shownTitle} {link}
-              </Typography>
-              {entityRef && <EntityFollowButton entityRef={entityRef} />}
-            </span>
-          }
-        >
-          <ButtonContainer>
-            <AskQuestionButton entity={entityRef} />
-            <WriteArticleButton entity={entityRef} />
-            <CreateLinkButton entity={entityRef} />
-          </ButtonContainer>
-        </ContentHeader>
-        {resp && (
-          <Card variant="outlined" style={{ marginBottom: '1em' }}>
-            <CardContent>
-              <Typography variant="caption">
-                {t('common.posts', {
-                  count: resp.postsCount,
-                  itemType: 'post',
-                })}
-                {' · '}
-                {t('common.followers', { count: resp.followerCount })}
-              </Typography>
-            </CardContent>
-          </Card>
-        )}
-        {entityRef &&
-          (view === 'grid' ? (
-            <PostsGrid
-              entity={entityRef}
-              filterPanelProps={{ showEntityFilter: false }}
-              view={view}
-              onViewChange={setView}
-            />
-          ) : (
-            <PostsContainer
-              entity={entityRef}
-              filterPanelProps={{ showEntityFilter: false }}
-              view={view}
-              showTypeLabel
-              onViewChange={setView}
-            />
-          ))}
-        {!entityRef && <EntitiesGrid />}
-      </Grid>
-      <Grid item lg={3} xl={2}>
-        <FollowedEntitiesList />
-        {resp && (
-          <>
-            <PostHighlightList
-              type="hot"
-              title={t('highlights.hotQuestions.title')}
-              noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
-              icon={<Whatshot fontSize="small" />}
-              options={{ entities: [resp.entityRef] }}
-              postType="question"
-            />
-            <PostHighlightList
-              type="unanswered"
-              title={t('highlights.unanswered.title')}
-              noQuestionsLabel={t('highlights.unanswered.noQuestionsLabel')}
-              options={{ entities: [resp.entityRef] }}
-              postType="question"
-            />
-            <PostHighlightList
-              type="incorrect"
-              title={t('highlights.incorrect.title')}
-              noQuestionsLabel={t('highlights.incorrect.noQuestionsLabel')}
-              options={{ entities: [resp.entityRef] }}
-              postType="question"
-            />
-          </>
-        )}
-        {!resp && (
-          <>
-            <PostHighlightListContainer />
-          </>
-        )}
-      </Grid>
-    </Grid>
+    <>
+      <ContentHeader
+        titleComponent={
+          <span style={{ display: 'flex', alignItems: 'center' }}>
+            <CategoryOutlined fontSize="large" style={{ marginRight: '8px' }} />
+            <Typography
+              variant="h5"
+              component="h2"
+              style={{ marginRight: '0.5em' }}
+            >
+              {shownTitle} {link}
+            </Typography>
+            {entityRef && <EntityFollowButton entityRef={entityRef} />}
+          </span>
+        }
+      >
+        <ButtonContainer>
+          <AskQuestionButton entity={entityRef} />
+          <WriteArticleButton entity={entityRef} />
+          <CreateLinkButton entity={entityRef} />
+        </ButtonContainer>
+      </ContentHeader>
+      {resp && (
+        <Card variant="outlined" style={{ marginBottom: '1em' }}>
+          <CardContent>
+            <Typography variant="caption">
+              {t('common.posts', {
+                count: resp.postsCount,
+                itemType: 'post',
+              })}
+              {' · '}
+              {t('common.followers', { count: resp.followerCount })}
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+      {entityRef &&
+        (view === 'grid' ? (
+          <PostsGrid
+            entity={entityRef}
+            filterPanelProps={{ showEntityFilter: false }}
+            view={view}
+            onViewChange={setView}
+          />
+        ) : (
+          <PostsContainer
+            entity={entityRef}
+            filterPanelProps={{ showEntityFilter: false }}
+            view={view}
+            showTypeLabel
+            onViewChange={setView}
+          />
+        ))}
+      {!entityRef && <EntitiesGrid />}
+    </>
   );
 };
