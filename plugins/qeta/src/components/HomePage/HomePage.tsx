@@ -5,6 +5,7 @@ import {
   FollowedCollectionsList,
   FollowedEntitiesList,
   FollowedTagsList,
+  FollowedUsersList,
   ImpactCard,
   PostsCard,
   qetaTranslationRef,
@@ -70,6 +71,7 @@ export const HomePage = () => {
       <Grid item lg={3} xl={2}>
         <ImpactCard />
         <FollowedTagsList />
+        <FollowedUsersList />
         <FollowedEntitiesList />
         <FollowedCollectionsList />
       </Grid>
