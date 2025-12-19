@@ -60,6 +60,5 @@ const app = createApp({
 });
 ```
 
-Note that these translations might not contain your desired language. If you want to add a new language, you need to
-contribute it to the plugin in `plugins/qeta/src/locales/` and add it in the `plugins/qeta/src/translation.ts`
-with the right language code.
+Note that these translations might not contain your desired language. If you want to add a new language, you can
+contribute it to the plugin by creating a pull request.

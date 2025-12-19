@@ -9,7 +9,7 @@ import {
   WriteArticleButton,
   CreateLinkButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import HomeOutlined from '@material-ui/icons/HomeOutlined';
 

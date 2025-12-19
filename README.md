@@ -1,127 +1,57 @@
 # backstage-plugin-qeta
 
 <p align="center">
-<img src="https://github.com/drodil/backstage-plugin-qeta/blob/b0d06479022b1051548b57aef5a9ce8c98f5ad17/docs/images/logo.png"/>
+<img src="https://github.com/drodil/backstage-plugin-qeta/blob/main/docs/images/logo.png" width="200"/>
 </p>
 
 [![CI](https://github.com/drodil/backstage-plugin-qeta/actions/workflows/ci.yaml/badge.svg)](https://github.com/drodil/backstage-plugin-qeta/actions/workflows/ci.yaml)
 
-Backstage.io plugin for Q&A. This plugin is both frontend and backend that manages and displays questions and answers
-within Backstage. This plugin allows users to:
+**Qeta** is a comprehensive Q&A and knowledge sharing plugin for Backstage, inspired by Stack Overflow. It allows your engineering teams to ask questions, share answers, write articles, and build a knowledge base directly within your developer portal.
 
-- Ask and answer questions
-- Write articles
-- Add links and attach them to entities
-- Vote questions, articles and answers
-- Create custom collections containing questions and articles
-- Favorite questions and articles
-- Subscribe to entities, tags, collections and users and get notifications of activity
-- Integrate with [AI helpers](./docs/ai.md) to answer questions
-- Create question templates for predefined questions
-- See contributing users, entities and tags including statistics
+## ✨ Features
 
-Backstage integrations:
+- **Q&A Platform**: Ask questions, provide answers, and comment on discussions.
+- **Knowledge Base**: Write and publish articles for longer-form content.
+- **Organization**: Use tags and collections to organize content effectively.
+- **Social Features**: Vote on content, mark favorites, and follow users or tags.
+- **Gamification**: View statistics and top contributors (users, specific entities).
+- **AI Integration**: Optional integration with AI models to assist in answering questions.
+- **Entity Integration**: Link questions to specific components or resources in your catalog.
+- **Notifications**: innovative notification system for new questions, answers, and mentions.
 
-- [`@backstage/plugin-search`](https://github.com/backstage/backstage/tree/master/plugins/search) plugin
-- [`@backstage/plugin-catalog-react`](https://github.com/backstage/backstage/tree/master/plugins/catalog-react) plugin
-- [`@backstage/plugin-permission-react`](https://github.com/backstage/backstage/tree/master/plugins/permission-react) plugin
-- [`@backstage/plugin-permission-common`](https://github.com/backstage/backstage/tree/master/plugins/permission-common) plugin
-- [`@backstage/plugin-home`](https://github.com/backstage/backstage/tree/master/plugins/home) plugin
-- [`@backstage/plugin-signals`](https://github.com/backstage/backstage/tree/master/plugins/signals) plugin
-- [`@backstage/plugin-notifications`](https://github.com/backstage/backstage/tree/master/plugins/notifications) plugin
-- [`@backstage/plugin-scaffolder`](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend) plugin
+## 📚 Documentation
 
-See more information from our [documentation](./docs/index.md).
+Detailed documentation is available in the `docs` directory:
 
-## Setup
+| Topic                                            | Description                                                     |
+| :----------------------------------------------- | :-------------------------------------------------------------- |
+| **[Getting Started](./docs/index.md)**           | Overview and quick start guide.                                 |
+| **[Setup](./docs/setup.md)**                     | Installation instructions for frontend and backend.             |
+| **[Configuration](./docs/config.md)**            | detailed configuration options.                                 |
+| **[Integrations](./docs/index.md#integrations)** | How to integrate with Search, Signals, Notifications, and more. |
+| **[AI Assistants](./docs/ai.md)**                | API and setup for AI-powered answers.                           |
+| **[Migration](./docs/migration.md)**             | Guide for upgrading between major versions.                     |
+| **[Permissions](./docs/permissions.md)**         | Setting up RBAC and permission policies.                        |
 
-Find [installation instructions](./docs/index.md#installation) in our documentation.
+## 🔌 Integrations
 
-**IMPORTANT**: From version 2.0.0 forward, this plugin only works with the new backend system. If you are still
-using the old backend system, please use version 1.24.5.
+Qeta integrates seamlessly with many Backstage plugins:
 
-**IMPORTANT**: Migrating from 2.x to 3.x has been briefly explained in this [document](./docs/migration.md).
+- **[Search](https://github.com/backstage/backstage/tree/master/plugins/search)**: Index questions and answers in Backstage global search.
+- **[Catalog](https://github.com/backstage/backstage/tree/master/plugins/catalog-react)**: Link questions to catalog entities.
+- **[Notifications](https://github.com/backstage/backstage/tree/master/plugins/notifications)**: Receive alerts for relevant activity.
+- **[Signals](https://github.com/backstage/backstage/tree/master/plugins/signals)**: Real-time updates.
+- **[Home](https://github.com/backstage/backstage/tree/master/plugins/home)**: Widgets for your homepage.
 
-**IMPORTANT**: From 3.10.0 to 3.12.5 this plugin tried to use MUI5. This was reverted back to MUI4 in 3.13.0. If you have
-updated to 3.10.0 or later, please update to 3.13.0 or later to get back to MUI4. See also the
-related [issue](https://github.com/drodil/backstage-plugin-qeta/issues/244).
+> [!IMPORTANT] > **Version 2.0.0+** requires the new Backstage backend system. Use version 1.24.5 for the old backend system.
+>
+> **Version 3.22.0+** requires Backstage 1.36.0 or later due to permission integration changes.
 
-**IMPORTANT**: From version 3.22.0 forward, Backstage 1.36.0 or later is required. This is due to change in permission
-integration router moving to use `permissionsRegistryService`. If you try to run this plugin with older Backstage
-version, an error is logged and permissions will be disabled.
+## 🤝 Contributing
 
-## Examples
+We welcome contributions! Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+If your organization uses Qeta, please add yourself to our [ADOPTERS](ADOPTERS.md) list! ❤️
 
-Home page:
-
-![Home page](./docs/images/homePage.png)
-
-Questions page:
-
-![Questions page](./docs/images/questionsPage.png)
-
-Posting question:
-
-![Ask page](./docs/images/askPage.png)
-
-OpenAI answer:
-
-![OpenAI](./docs/images/openAi.png)
-
-Answering question:
-
-![Questions answer](./docs/images/questionPage.png)
-
-Adding to collection
-
-![Collection](./docs/images/addToCollection.png)
-
-Articles page:
-
-![Articles page](./docs/images/articlesPage.png)
-
-Article page:
-
-![Article page](./docs/images/articlePage.png)
-
-Collections page:
-
-![Collections page](./docs/images/collectionsPage.png)
-
-Collection page:
-
-![Collection page](./docs/images/collectionPage.png)
-
-Entities page:
-
-![Entities page](./docs/images/entitiesPage.png)
-
-Entity page:
-
-![Entity page](./docs/images/entityPage.png)
-
-Users page:
-
-![Users page](./docs/images/usersPage.png)
-
-Profile page:
-
-![Profile page](./docs/images/profilePage.png)
-
-Stats page:
-
-![Stats page](./docs/images/statisticsPage.png)
-
-Tags page:
-
-![Tags page](./docs/images/tagsPage.png)
-
-## Contributing
-
-All contributions are very welcome. See [CONTRIBUTING](CONTRIBUTING.md) for more information.
-
-If your organization uses this plugin, we'd love to have you listed in our [ADOPTERS](ADOPTERS.md) list! ❤️
-
-## License
+## 📄 License
 
 This library is under the [MIT](LICENSE) license.

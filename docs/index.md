@@ -1,27 +1,23 @@
-# Getting started
+# Documentation
 
-This document provides an overview of the Backstage Q&A plugin, including installation instructions,
-configuration options, and usage examples.
+| Topic                               | Description                                         |
+| :---------------------------------- | :-------------------------------------------------- |
+| **[Setup](setup.md)**               | Installation instructions for frontend and backend. |
+| **[Configuration](config.md)**      | Detailed configuration options and reference.       |
+| **[Migration guide](migration.md)** | instructions for migrating between major versions.  |
+| **[Extensions](extensions.md)**     | How to extend Qeta with markdown plugins and more.  |
+| **[Templates](templates.md)**       | Creating and using question templates.              |
+| **[AI](ai.md)**                     | Setting up AI integration for Q&A.                  |
 
-## Installation
+## Integrations
 
-- [Plugin setup](setup.md)
-- [Configuration](config.md)
-- [Migration guide](migration.md)
-- [Extensions](extensions.md)
-
-## Usage
-
-- [Templates](templates.md)
-- [AI](ai.md)
-
-### Integrations
-
-- [Integration with Backstage search](search.md)
-- [Integration with Backstage events service](events.md)
-- [Integration with Backstage catalog](catalog.md)
-- [Integration with Backstage permission framework](permissions.md)
-- [Integration with Backstage home page](home.md)
-- [Integration with Backstage signals](signals.md)
-- [Integration with Backstage notifications](notifications.md)
-- [Integration with Backstage (experimental) translations](translations.md)
+| Topic                                 | Description                                  |
+| :------------------------------------ | :------------------------------------------- |
+| **[Search](search.md)**               | Indexing questions in Backstage search.      |
+| **[Events](events.md)**               | Publishing and subscribing to Qeta events.   |
+| **[Catalog](catalog.md)**             | Integrating questions with Catalog entities. |
+| **[Permissions](permissions.md)**     | Setting up RBAC and permissions.             |
+| **[Home](home.md)**                   | Adding Qeta widgets to Backstage home.       |
+| **[Signals](signals.md)**             | Real-time updates with Signals plugin.       |
+| **[Notifications](notifications.md)** | Sending notifications to users.              |
+| **[Translations](translations.md)**   | Adding translations and localization.        |

@@ -77,16 +77,6 @@ select which ones to use by implementing the `AiHandler` interface.
 
 This is how the UI will look like for new questions (`answerNewQuestion`):
 
-![OpenAI](./images/openAi.png)
-
-Existing questions (`answerExistingQuestion`):
-
-![OpenAI](./images/openAiQuestionPage.png)
-
-Summarizing articles (`summarizeArticle`):
-
-![OpenAI](./images/openAiArticleSummary.png)
-
 ## OpenAI module
 
 The OpenAI module is a reference implementation of the AI backend module. It uses the OpenAI API to answer questions.

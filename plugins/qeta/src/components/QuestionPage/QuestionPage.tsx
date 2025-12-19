@@ -25,7 +25,6 @@ import {
 import { useSignal } from '@backstage/plugin-signals-react';
 import {
   Box,
-  Divider,
   FormControl,
   Grid,
   makeStyles,

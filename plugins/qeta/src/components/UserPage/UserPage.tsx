@@ -17,14 +17,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { UserStatsContent } from './UserStatsContent';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import {
-  Avatar,
-  Box,
-  makeStyles,
-  Tab,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import { Avatar, Box, makeStyles, Tab, Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';

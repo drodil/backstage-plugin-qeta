@@ -6,9 +6,7 @@ import {
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionRouteRef } from '../../routes';
 import {
-  Button,
   Card,
-  CardActionArea,
   CardContent,
   CardMedia,
   Grid,

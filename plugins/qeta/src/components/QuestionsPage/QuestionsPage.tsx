@@ -11,7 +11,7 @@ import {
 import { ContentHeader } from '@backstage/core-components';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import HelpOutline from '@material-ui/icons/HelpOutline';
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const QuestionsPage = () => {

@@ -55,6 +55,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { DefaultRightContent } from './DefaultRightContent';
 
 export const RightContent = (props: {
   compact?: boolean;
@@ -198,7 +199,7 @@ export const RightContent = (props: {
   }
 
   if (!content) {
-    return null;
+    content = <DefaultRightContent />;
   }
 
   return (

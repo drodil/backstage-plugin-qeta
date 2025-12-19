@@ -4,7 +4,6 @@ import {
   CollectionsGrid,
   CreateCollectionButton,
   qetaTranslationRef,
-  useCollectionsFollow,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Typography } from '@material-ui/core';
 import PlaylistPlayOutlined from '@material-ui/icons/PlaylistPlayOutlined';
@@ -12,7 +11,6 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const CollectionsPage = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
-  const collections = useCollectionsFollow();
 
   return (
     <>
