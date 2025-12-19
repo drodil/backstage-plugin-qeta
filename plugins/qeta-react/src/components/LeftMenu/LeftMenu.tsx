@@ -83,7 +83,7 @@ export const useStyles = makeStyles(
         overflowY: 'auto',
       },
       menuItem: {
-        margin: (props: any) => (props.compact ? 0 : theme.spacing(0.1, 2)),
+        margin: (props: any) => (props.compact ? 0 : theme.spacing(0, 2)),
         justifyContent: (props: any) =>
           props.compact ? 'center' : 'flex-start',
         padding: (props: any) =>
@@ -265,6 +265,7 @@ export const LeftMenu = (props: {
             onClick={onToggle}
             size="small"
             className={isCompact ? '' : styles.toggleButton}
+            style={{ marginBottom: 0 }}
           >
             {isCompact ? <ChevronRightIcon /> : <MenuOpenIcon />}
           </IconButton>

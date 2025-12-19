@@ -7,7 +7,8 @@ import {
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { GlobalStatsContent } from './GlobalStatsContent';
-import { Box, Tab } from '@material-ui/core';
+import { Box, Tab, Typography } from '@material-ui/core';
+import EmojiEventsOutlined from '@material-ui/icons/EmojiEventsOutlined';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { useState } from 'react';
 
@@ -20,7 +21,20 @@ export const StatisticsPage = () => {
 
   return (
     <>
-      <ContentHeader title="Statistics">
+      <ContentHeader
+        titleComponent={
+          <Typography
+            variant="h4"
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
+            <EmojiEventsOutlined
+              fontSize="large"
+              style={{ marginRight: '8px' }}
+            />
+            Statistics
+          </Typography>
+        }
+      >
         <ButtonContainer>
           <AskQuestionButton />
           <WriteArticleButton />

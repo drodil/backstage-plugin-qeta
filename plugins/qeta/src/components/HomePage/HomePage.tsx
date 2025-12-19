@@ -13,8 +13,9 @@ import {
   WriteArticleButton,
   CreateLinkButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Grid } from '@material-ui/core';
+import { Box, Grid, Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import HomeOutlined from '@material-ui/icons/HomeOutlined';
 
 export const HomePage = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -27,7 +28,17 @@ export const HomePage = () => {
   return (
     <Grid container spacing={4}>
       <Grid item md={12} lg={9} xl={10}>
-        <ContentHeader title={t('homePage.title')}>
+        <ContentHeader
+          titleComponent={
+            <Typography
+              variant="h4"
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              <HomeOutlined fontSize="large" style={{ marginRight: '8px' }} />
+              {t('homePage.title')}
+            </Typography>
+          }
+        >
           <ButtonContainer>
             <AskQuestionButton />
             <WriteArticleButton />

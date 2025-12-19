@@ -21,7 +21,8 @@ import Whatshot from '@material-ui/icons/Whatshot';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
-import { Card, CardContent, Grid, Typography } from '@material-ui/core';
+import { Card, CardContent, Grid, Typography, Box } from '@material-ui/core';
+import CategoryOutlined from '@material-ui/icons/CategoryOutlined';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const EntityPage = () => {
@@ -68,6 +69,10 @@ export const EntityPage = () => {
         <ContentHeader
           titleComponent={
             <span style={{ display: 'flex', alignItems: 'center' }}>
+              <CategoryOutlined
+                fontSize="large"
+                style={{ marginRight: '8px' }}
+              />
               <Typography
                 variant="h5"
                 component="h2"

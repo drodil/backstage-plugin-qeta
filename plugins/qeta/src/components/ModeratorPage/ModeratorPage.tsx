@@ -5,10 +5,11 @@ import {
   TemplateList,
   useIsModerator,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box, Tab } from '@material-ui/core';
+import { Box, Tab, Typography } from '@material-ui/core';
 import { ContentHeader } from '@backstage/core-components';
 import { Alert, TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import SettingsOutlined from '@material-ui/icons/SettingsOutlined';
 
 export const ModeratorPage = () => {
   const { isModerator } = useIsModerator();
@@ -25,7 +26,17 @@ export const ModeratorPage = () => {
 
   return (
     <>
-      <ContentHeader title={t('moderatorPage.title')} />
+      <ContentHeader
+        titleComponent={
+          <Typography
+            variant="h4"
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
+            <SettingsOutlined fontSize="large" style={{ marginRight: '8px' }} />
+            {t('moderatorPage.title')}
+          </Typography>
+        }
+      />
       <TabContext value={tab}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList

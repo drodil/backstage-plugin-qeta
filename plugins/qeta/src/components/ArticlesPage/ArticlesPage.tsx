@@ -14,7 +14,8 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import Whatshot from '@material-ui/icons/Whatshot';
-import { Grid } from '@material-ui/core';
+import LibraryBooksOutlined from '@material-ui/icons/LibraryBooksOutlined';
+import { Box, Grid, Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const ArticlesPage = () => {
@@ -32,7 +33,20 @@ export const ArticlesPage = () => {
   return (
     <Grid container spacing={4}>
       <Grid item md={12} lg={9} xl={10}>
-        <ContentHeader title={t('articlesPage.title')}>
+        <ContentHeader
+          titleComponent={
+            <Typography
+              variant="h4"
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              <LibraryBooksOutlined
+                fontSize="large"
+                style={{ marginRight: '8px' }}
+              />
+              {t('articlesPage.title')}
+            </Typography>
+          }
+        >
           <ButtonContainer>
             <WriteArticleButton entity={entityRef} tags={tags} />
           </ButtonContainer>

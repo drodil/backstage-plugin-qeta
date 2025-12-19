@@ -19,6 +19,8 @@ import {
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import Whatshot from '@material-ui/icons/Whatshot';
+import LocalOfferOutlined from '@material-ui/icons/LocalOfferOutlined';
+import { Box } from '@material-ui/core';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
@@ -67,8 +69,16 @@ export const TagPage = () => {
                   variant="h5"
                   component="h2"
                   id="tag-title"
-                  style={{ marginRight: '0.5em' }}
+                  style={{
+                    marginRight: '0.5em',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
                 >
+                  <LocalOfferOutlined
+                    fontSize="large"
+                    style={{ marginRight: '8px' }}
+                  />
                   #{tag}
                 </Typography>
                 <TagFollowButton tag={tag} />
@@ -82,7 +92,20 @@ export const TagPage = () => {
             </ButtonContainer>
           </ContentHeader>
         ) : (
-          <ContentHeader title={t('tagPage.defaultTitle')}>
+          <ContentHeader
+            titleComponent={
+              <Typography
+                variant="h4"
+                style={{ display: 'flex', alignItems: 'center' }}
+              >
+                <LocalOfferOutlined
+                  fontSize="large"
+                  style={{ marginRight: '8px' }}
+                />
+                {t('tagPage.defaultTitle')}
+              </Typography>
+            }
+          >
             <ButtonContainer>
               <AskQuestionButton />
               <WriteArticleButton />

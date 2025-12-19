@@ -14,7 +14,8 @@ import {
 import { ContentHeader } from '@backstage/core-components';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import Whatshot from '@material-ui/icons/Whatshot';
-import { Grid } from '@material-ui/core';
+import HelpOutline from '@material-ui/icons/HelpOutline';
+import { Box, Grid, Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const QuestionsPage = () => {
@@ -32,7 +33,17 @@ export const QuestionsPage = () => {
   return (
     <Grid container spacing={4}>
       <Grid item md={12} lg={9} xl={10}>
-        <ContentHeader title={t('questionsPage.title')}>
+        <ContentHeader
+          titleComponent={
+            <Typography
+              variant="h4"
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              <HelpOutline fontSize="large" style={{ marginRight: '8px' }} />
+              {t('questionsPage.title')}
+            </Typography>
+          }
+        >
           <ButtonContainer>
             <AskQuestionButton entity={entityRef} tags={tags} />
           </ButtonContainer>

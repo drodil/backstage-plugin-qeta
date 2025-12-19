@@ -7,7 +7,8 @@ import {
   qetaTranslationRef,
   useCollectionsFollow,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Grid } from '@material-ui/core';
+import { Box, Grid, Typography } from '@material-ui/core';
+import PlaylistPlayOutlined from '@material-ui/icons/PlaylistPlayOutlined';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const CollectionsPage = () => {
@@ -22,7 +23,20 @@ export const CollectionsPage = () => {
         lg={collections.collections.length > 0 ? 9 : 12}
         xl={collections.collections.length > 0 ? 10 : 12}
       >
-        <ContentHeader title={t('collectionsPage.title')}>
+        <ContentHeader
+          titleComponent={
+            <Typography
+              variant="h4"
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              <PlaylistPlayOutlined
+                fontSize="large"
+                style={{ marginRight: '8px' }}
+              />
+              {t('collectionsPage.title')}
+            </Typography>
+          }
+        >
           <ButtonContainer>
             <CreateCollectionButton />
           </ButtonContainer>

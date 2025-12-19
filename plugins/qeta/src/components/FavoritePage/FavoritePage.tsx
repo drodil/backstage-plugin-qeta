@@ -10,17 +10,29 @@ import {
   ViewType,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
+import StarBorder from '@material-ui/icons/StarBorder';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useState } from 'react';
 
 export const FavoritePage = () => {
   const [view, setView] = useState<ViewType>('list');
   const { t } = useTranslationRef(qetaTranslationRef);
+
   return (
     <Grid container spacing={4}>
       <Grid item md={12} lg={9} xl={10}>
-        <ContentHeader title={t('favoritePage.title')}>
+        <ContentHeader
+          titleComponent={
+            <Typography
+              variant="h4"
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              <StarBorder fontSize="large" style={{ marginRight: '8px' }} />
+              {t('favoritePage.title')}
+            </Typography>
+          }
+        >
           <ButtonContainer>
             <AskQuestionButton />
             <WriteArticleButton />
