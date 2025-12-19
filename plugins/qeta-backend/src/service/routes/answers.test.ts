@@ -2,12 +2,12 @@ import request from 'supertest';
 import express from 'express';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
-  setupTestApp,
-  question,
   answer,
-  comment,
   answerWithComment,
+  comment,
   mockSystemDate,
+  question,
+  setupTestApp,
 } from './__testUtils__';
 import { QetaStore } from '../../database/QetaStore';
 
@@ -282,21 +282,204 @@ describe('Answers Routes', () => {
     });
   });
 
-  describe('POST /posts/:id/answers/:answerId', () => {
-    it('updates answer', async () => {
+  describe('POST /posts/:id/answers/:answerId (update answer)', () => {
+    it('updates answer successfully with same author', async () => {
+      const originalAnswer = { ...answer, author: 'user:default/mock' };
       qetaStore.getPost.mockResolvedValue(question);
-      qetaStore.getAnswer.mockResolvedValue(answer);
-      qetaStore.updateAnswer.mockResolvedValue(answer);
+      qetaStore.getAnswer.mockResolvedValue(originalAnswer);
+      qetaStore.updateAnswer.mockResolvedValue({
+        ...originalAnswer,
+        content: 'updated answer',
+      });
 
       const response = await request(app)
         .post('/posts/1/answers/1')
         .send({ answer: 'updated answer' });
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
+      expect(qetaStore.updateAnswer).toHaveBeenCalled();
+    });
+
+    it('allows moderator to change answer author', async () => {
+      const { app: appWithConfig, qetaStore: storeWithConfig } =
+        await setupTestApp({
+          qeta: { moderators: ['user:default/mock'] },
+        });
+
+      const originalAnswer = {
         ...answer,
-        created: '2022-01-01T00:00:00.000Z',
+        author: 'user:default/originalauthor',
+      };
+      const updatedAnswer = {
+        ...originalAnswer,
+        author: 'user:default/newauthor',
+        content: 'updated answer',
+      };
+
+      storeWithConfig.getPost.mockResolvedValue(question);
+      storeWithConfig.getAnswer.mockResolvedValue(originalAnswer);
+      storeWithConfig.updateAnswer.mockResolvedValue(updatedAnswer);
+
+      const response = await request(appWithConfig)
+        .post('/posts/1/answers/1')
+        .send({
+          answer: 'updated answer',
+          author: 'user:default/newauthor',
+        });
+
+      expect(response.status).toEqual(200);
+      expect(storeWithConfig.updateAnswer).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+        1,
+        'updated answer',
+        'user:default/newauthor',
+        undefined,
+      );
+    });
+
+    it('prevents non-moderator from changing answer author to different user', async () => {
+      const originalAnswer = {
+        ...answer,
+        author: 'user:default/originalauthor',
+      };
+
+      qetaStore.getPost.mockResolvedValue(question);
+      qetaStore.getAnswer.mockResolvedValue(originalAnswer);
+
+      // Mock to deny moderate permission but allow other permissions
+      mockedAuthorize.mockImplementation(async (requests: any) => {
+        return requests.map((req: any) => {
+          // Deny moderate permission
+          if (req.permission.name === 'qeta.moderate') {
+            return { result: AuthorizeResult.DENY };
+          }
+          return { result: AuthorizeResult.ALLOW };
+        });
       });
+
+      const response = await request(app).post('/posts/1/answers/1').send({
+        answer: 'updated answer',
+        author: 'user:default/newauthor',
+      });
+
+      expect(response.status).toEqual(400);
+      expect(qetaStore.updateAnswer).not.toHaveBeenCalled();
+    });
+
+    it('allows original author to keep their author field unchanged', async () => {
+      const originalAnswer = {
+        ...answer,
+        author: 'user:default/originalauthor',
+      };
+
+      qetaStore.getPost.mockResolvedValue(question);
+      qetaStore.getAnswer.mockResolvedValue(originalAnswer);
+      qetaStore.updateAnswer.mockResolvedValue({
+        ...originalAnswer,
+        content: 'updated answer',
+      });
+
+      const response = await request(app).post('/posts/1/answers/1').send({
+        answer: 'updated answer',
+        author: 'user:default/originalauthor',
+      });
+
+      expect(response.status).toEqual(200);
+      expect(qetaStore.updateAnswer).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+        1,
+        'updated answer',
+        'user:default/originalauthor',
+        undefined,
+      );
+    });
+
+    it('allows current user to keep their author field unchanged', async () => {
+      const originalAnswer = {
+        ...answer,
+        author: 'user:default/otherusert',
+      };
+
+      qetaStore.getPost.mockResolvedValue(question);
+      qetaStore.getAnswer.mockResolvedValue(originalAnswer);
+      qetaStore.updateAnswer.mockResolvedValue({
+        ...originalAnswer,
+        content: 'updated answer',
+      });
+
+      const response = await request(app).post('/posts/1/answers/1').send({
+        answer: 'updated answer',
+        author: 'user:default/mock',
+      });
+
+      expect(response.status).toEqual(200);
+      expect(qetaStore.updateAnswer).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+        1,
+        'updated answer',
+        'user:default/mock',
+        undefined,
+      );
+    });
+
+    it('prevents update when user lacks edit permission', async () => {
+      const originalAnswer = { ...answer, author: 'user:default/otherusert' };
+      qetaStore.getPost.mockResolvedValue(question);
+      qetaStore.getAnswer.mockResolvedValue(originalAnswer);
+
+      // Mock authorization to deny moderate permission (so isModerator returns false)
+      // and deny edit permission (so the authorization check fails)
+      mockedAuthorize.mockImplementation(async (requests: any) => {
+        // Single permission check for moderate (from isModerator)
+        if (
+          requests.length === 1 &&
+          requests[0].permission?.name === 'qeta.moderate'
+        ) {
+          return [{ result: AuthorizeResult.DENY }];
+        }
+        // Two permissions: read post (ALLOW), edit answer (DENY)
+        if (requests.length === 2) {
+          return [
+            { result: AuthorizeResult.ALLOW },
+            { result: AuthorizeResult.DENY },
+          ];
+        }
+        return requests.map(() => ({ result: AuthorizeResult.ALLOW }));
+      });
+
+      const response = await request(app).post('/posts/1/answers/1').send({
+        answer: 'updated answer',
+      });
+
+      expect(response.status).toEqual(403);
+      expect(qetaStore.updateAnswer).not.toHaveBeenCalled();
+    });
+
+    it('allows update when user has edit permission', async () => {
+      const originalAnswer = { ...answer, author: 'user:default/otherusert' };
+      qetaStore.getPost.mockResolvedValue(question);
+      qetaStore.getAnswer.mockResolvedValue(originalAnswer);
+      qetaStore.updateAnswer.mockResolvedValue({
+        ...originalAnswer,
+        content: 'updated answer',
+      });
+
+      // Mock to allow both read and edit permissions
+      mockedAuthorize.mockImplementation(async (requests: any) => {
+        return requests.map(() => {
+          return { result: AuthorizeResult.ALLOW };
+        });
+      });
+
+      const response = await request(app).post('/posts/1/answers/1').send({
+        answer: 'updated answer',
+      });
+
+      expect(response.status).toEqual(200);
+      expect(qetaStore.updateAnswer).toHaveBeenCalled();
     });
 
     it('permanently deletes answer comment when permanent flag is set and user is moderator', async () => {

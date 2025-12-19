@@ -695,8 +695,8 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         response
           .status(400)
           .json({ errors: validateRequestBody.errors, type: 'body' });
+        return;
       }
-      return;
     }
 
     if (
