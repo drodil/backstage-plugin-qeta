@@ -13,8 +13,9 @@ import {
   tagsRouteRef,
   userRouteRef,
   usersRouteRef,
+  qetaTranslationRef,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Grid } from '@material-ui/core';
+import { Box, IconButton, makeStyles, Tooltip } from '@material-ui/core';
 import { matchPath, useLocation, useSearchParams } from 'react-router-dom';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { HomeRightContent } from './HomeRightContent';
@@ -28,10 +29,42 @@ import { TagsRightContent } from './TagsRightContent';
 import { EntitiesRightContent } from './EntitiesRightContent';
 import { EntityRightContent } from './EntityRightContent';
 import { CollectionsRightContent } from './CollectionsRightContent';
+import MenuOpenIcon from '@material-ui/icons/MenuOpen';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
-export const RightContent = () => {
+const useStyles = makeStyles(theme => ({
+  container: {
+    width: (props: { compact: boolean }) => (props.compact ? '72px' : '300px'),
+    padding: (props: { compact: boolean }) =>
+      props.compact ? theme.spacing(1) : theme.spacing(0, 0, 0, 2),
+    transition: 'width 0.2s ease-in-out',
+    display: 'flex',
+    flexDirection: 'column',
+    overflowX: 'hidden',
+  },
+  toggleButton: {
+    marginRight: 'auto',
+    marginBottom: theme.spacing(1),
+  },
+  content: {
+    display: (props: { compact: boolean }) =>
+      props.compact ? 'none' : 'block',
+    opacity: (props: { compact: boolean }) => (props.compact ? 0 : 1),
+    transition: 'opacity 0.2s ease-in-out',
+  },
+}));
+
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+
+export const RightContent = (props: {
+  compact?: boolean;
+  onToggle?: () => void;
+}) => {
+  const { compact = false, onToggle } = props;
+  const classes = useStyles({ compact });
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslationRef(qetaTranslationRef);
 
   // Route Refs
   const questionsPath = useRouteRef(questionsRouteRef);
@@ -169,8 +202,26 @@ export const RightContent = () => {
   }
 
   return (
-    <Grid item lg={3} xl={2}>
-      {content}
-    </Grid>
+    <Box className={classes.container}>
+      <Box display="flex" justifyContent={compact ? 'center' : 'flex-start'}>
+        <Tooltip
+          title={compact ? t('rightMenu.expand') : t('rightMenu.collapse')}
+          placement="left"
+        >
+          <IconButton
+            onClick={onToggle}
+            size="small"
+            className={compact ? '' : classes.toggleButton}
+          >
+            {compact ? (
+              <ChevronLeftIcon />
+            ) : (
+              <MenuOpenIcon style={{ transform: 'scaleX(-1)' }} />
+            )}
+          </IconButton>
+        </Tooltip>
+      </Box>
+      <Box className={classes.content}>{content}</Box>
+    </Box>
   );
 };

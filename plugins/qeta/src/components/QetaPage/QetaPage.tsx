@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 import { Route, Routes } from 'react-router-dom';
 import { AskPage } from '../AskPage';
@@ -52,6 +52,7 @@ import { EntityPage } from '../EntityPage/EntityPage';
 import { UsersPage } from '../UsersPage/UsersPage';
 import { ModeratorPage } from '../ModeratorPage/ModeratorPage';
 import { Box, Container, Grid, makeStyles } from '@material-ui/core';
+import { useSidebarSettings } from '../../hooks/useSidebarSettings';
 import { RightContent } from '../RightContent/RightContent';
 import type { PluggableList } from 'unified';
 
@@ -68,18 +69,36 @@ type Props = {
   rehypePlugins?: PluggableList;
 };
 
+type StyleProps = {
+  leftCompact: boolean;
+  rightCompact: boolean;
+};
+
 const useStyles = makeStyles(theme => ({
   sidebarColumn: {
     padding: 0,
     transition: 'all 0.2s ease-in-out',
     flexShrink: 0,
     [theme.breakpoints.up('lg')]: {
-      width: (props: { compact: boolean }) => (props.compact ? 72 : 220),
-      minWidth: (props: { compact: boolean }) => (props.compact ? 72 : 220),
+      width: (props: StyleProps) => (props.leftCompact ? 72 : 220),
+      minWidth: (props: StyleProps) => (props.leftCompact ? 72 : 220),
     },
     [theme.breakpoints.down('md')]: {
       width: '100%',
       marginBottom: theme.spacing(1),
+    },
+  },
+  rightSidebarColumn: {
+    padding: 0,
+    transition: 'all 0.2s ease-in-out',
+    flexShrink: 0,
+    [theme.breakpoints.up('lg')]: {
+      width: (props: StyleProps) => (props.rightCompact ? 72 : 300),
+      minWidth: (props: StyleProps) => (props.rightCompact ? 72 : 300),
+    },
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+      marginTop: theme.spacing(1),
     },
   },
   mainColumn: {
@@ -105,8 +124,13 @@ export const QetaPage = (props?: Props) => {
     remarkPlugins,
     rehypePlugins,
   } = props ?? {};
-  const [compact, setCompact] = useState(false);
-  const classes = useStyles({ compact });
+  const { leftCompact, rightCompact, toggleLeft, toggleRight } =
+    useSidebarSettings();
+
+  const classes = useStyles({
+    leftCompact,
+    rightCompact,
+  });
 
   return (
     <QetaExtensionProvider
@@ -132,10 +156,7 @@ export const QetaPage = (props?: Props) => {
                   <LeftMenuButton />
                 </Box>
                 <Box display={{ xs: 'none', lg: 'block' }}>
-                  <LeftMenu
-                    compact={compact}
-                    onToggle={() => setCompact(!compact)}
-                  />
+                  <LeftMenu compact={leftCompact} onToggle={toggleLeft} />
                 </Box>
               </Grid>
               <Grid item xs className={classes.mainColumn}>
@@ -216,7 +237,9 @@ export const QetaPage = (props?: Props) => {
                   />
                 </Routes>
               </Grid>
-              <RightContent />
+              <Grid item className={classes.rightSidebarColumn}>
+                <RightContent compact={rightCompact} onToggle={toggleRight} />
+              </Grid>
             </Grid>
           </Container>
         </Content>

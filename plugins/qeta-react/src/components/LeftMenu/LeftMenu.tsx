@@ -258,17 +258,23 @@ export const LeftMenu = (props: {
       }`}
       onKeyDown={props.onKeyDown}
       autoFocusItem={props.autoFocusItem}
+      disablePadding
     >
       {!isPopup && (
         <Box display="flex" justifyContent={isCompact ? 'center' : 'flex-end'}>
-          <IconButton
-            onClick={onToggle}
-            size="small"
-            className={isCompact ? '' : styles.toggleButton}
-            style={{ marginBottom: 0 }}
+          <Tooltip
+            title={isCompact ? t('leftMenu.expand') : t('leftMenu.collapse')}
+            placement="right"
           >
-            {isCompact ? <ChevronRightIcon /> : <MenuOpenIcon />}
-          </IconButton>
+            <IconButton
+              onClick={onToggle}
+              size="small"
+              className={isCompact ? '' : styles.toggleButton}
+              style={{ marginBottom: 0 }}
+            >
+              {isCompact ? <ChevronRightIcon /> : <MenuOpenIcon />}
+            </IconButton>
+          </Tooltip>
         </Box>
       )}
 

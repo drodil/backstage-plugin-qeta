@@ -346,6 +346,8 @@ export const qetaTranslationRef = createTranslationRef({
       users: 'Users',
       manage: 'Manage',
       moderate: 'Moderate',
+      expand: 'Expand menu',
+      collapse: 'Collapse menu',
     },
     moderatorPage: {
       title: 'Moderate',
@@ -380,6 +382,8 @@ export const qetaTranslationRef = createTranslationRef({
       followedTags: 'Followed tags',
       followedCollections: 'Followed collections',
       followedUsers: 'Followed users',
+      expand: 'Expand sidebar',
+      collapse: 'Collapse sidebar',
     },
     highlights: {
       loadError: 'Failed to load questions',
