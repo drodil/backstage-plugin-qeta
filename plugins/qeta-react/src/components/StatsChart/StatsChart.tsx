@@ -4,7 +4,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -23,6 +22,7 @@ import {
   CircularProgress,
   Box,
 } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
@@ -199,8 +199,8 @@ const useChartState = (data: Stat[]) => {
   const styles = useStyles();
   const isDark = useIsDarkTheme();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const globalStats = isGlobalStat(data[0]);
-  const isUserStats = isUserStat(data[0]);
+  const globalStats = data && data.length > 0 ? isGlobalStat(data[0]) : false;
+  const isUserStats = data && data.length > 0 ? isUserStat(data[0]) : false;
   const [stats, setStats] = useState<StatType[]>(
     getDefaultStats(isDark, t).filter(stat => {
       if (globalStats && !stat.globalStat) {
@@ -230,16 +230,9 @@ const useChartState = (data: Stat[]) => {
   return { styles, isDark, toggleStat, stats, isDisabled };
 };
 
-const legendWrapperStyle = {
-  cursor: 'pointer',
-  display: 'flex',
-  gap: 16,
-  marginLeft: 48,
-};
-
 // Custom tick renderer for angled date labels
 const XAxisTick = (props: any) => {
-  const { x, y, payload, fill } = props;
+  const { x, y, payload, fill, fontFamily } = props;
   return (
     <g transform={`translate(${x},${y})`}>
       <text
@@ -250,6 +243,7 @@ const XAxisTick = (props: any) => {
         fill={fill}
         transform="rotate(-90)"
         fontSize="12"
+        style={{ fontFamily }}
       >
         {new Date(payload.value).toDateString()}
       </text>
@@ -257,12 +251,15 @@ const XAxisTick = (props: any) => {
   );
 };
 
-const StatsBarChart = (props: { data: Stat[] }) => {
-  const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
-    props.data,
-  );
+const StatsBarChart = (props: {
+  data: any[];
+  stats: StatType[];
+  isDark: boolean;
+  styles: ReturnType<typeof useStyles>;
+}) => {
   const localStyles = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const theme = useTheme();
 
   return (
     <ResponsiveContainer height={500} width="100%">
@@ -275,9 +272,9 @@ const StatsBarChart = (props: { data: Stat[] }) => {
         aria-label={t('stats.barChart')}
       >
         <Tooltip
-          labelClassName={styles.tooltipLabel}
-          wrapperClassName={styles.tooltipWrapper}
-          cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
+          labelClassName={props.styles.tooltipLabel}
+          wrapperClassName={props.styles.tooltipWrapper}
+          cursor={{ fill: props.isDark ? '#4f4f4f' : '#f5f5f5' }}
           content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
               return (
@@ -294,7 +291,7 @@ const StatsBarChart = (props: { data: Stat[] }) => {
             return null;
           }}
         />
-        {stats.map(stat => (
+        {props.stats.map(stat => (
           <Bar
             key={stat.dataKey}
             dataKey={stat.enabled ? stat.dataKey : 'hidden'}
@@ -303,49 +300,43 @@ const StatsBarChart = (props: { data: Stat[] }) => {
             aria-label={stat.name}
           />
         ))}
-        <CartesianGrid stroke={isDark ? '#4f4f4f' : '#e0e0e0'} />
+        <CartesianGrid stroke={props.isDark ? '#4f4f4f' : '#e0e0e0'} />
         <XAxis
           dataKey="date"
           tickFormatter={(tick: string) => new Date(tick).toDateString()}
-          axisLine={{ stroke: isDark ? 'white' : 'black' }}
-          tickLine={{ stroke: isDark ? 'white' : 'black' }}
-          tick={<XAxisTick fill={isDark ? 'white' : 'black'} />}
+          axisLine={{ stroke: props.isDark ? 'white' : 'black' }}
+          tickLine={{ stroke: props.isDark ? 'white' : 'black' }}
+          tick={
+            <XAxisTick
+              fill={props.isDark ? 'white' : 'black'}
+              fontFamily={theme.typography.fontFamily}
+            />
+          }
           angle={-90}
           dy={10}
           aria-label={t('stats.dateAxis')}
         />
         <YAxis
           allowDecimals={false}
-          axisLine={{ stroke: isDark ? 'white' : 'black' }}
-          tickLine={{ stroke: isDark ? 'white' : 'black' }}
-          tick={{ fill: isDark ? 'white' : 'black' }}
+          axisLine={{ stroke: props.isDark ? 'white' : 'black' }}
+          tickLine={{ stroke: props.isDark ? 'white' : 'black' }}
+          tick={{ fill: props.isDark ? 'white' : 'black' }}
           aria-label={t('stats.valueAxis')}
-        />
-        <Legend
-          verticalAlign="top"
-          height={36}
-          wrapperStyle={legendWrapperStyle}
-          className={localStyles.legend}
-          formatter={data => {
-            return isDisabled(data) ? `[ ] ${data}` : `[x] ${data}`;
-          }}
-          onClick={data => {
-            if (data.value) {
-              toggleStat(data.value as string);
-            }
-          }}
         />
       </BarChart>
     </ResponsiveContainer>
   );
 };
 
-const StatsLineChart = (props: { data: Stat[] }) => {
-  const { styles, isDark, stats, toggleStat, isDisabled } = useChartState(
-    props.data,
-  );
+const StatsLineChart = (props: {
+  data: any[];
+  stats: StatType[];
+  isDark: boolean;
+  styles: ReturnType<typeof useStyles>;
+}) => {
   const localStyles = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const theme = useTheme();
 
   return (
     <ResponsiveContainer height={500} width="100%">
@@ -357,11 +348,11 @@ const StatsLineChart = (props: { data: Stat[] }) => {
         className={localStyles.lineChart}
       >
         <Tooltip
-          labelClassName={styles.tooltipLabel}
-          wrapperClassName={styles.tooltipWrapper}
-          cursor={{ fill: isDark ? '#4f4f4f' : '#f5f5f5' }}
+          labelClassName={props.styles.tooltipLabel}
+          wrapperClassName={props.styles.tooltipWrapper}
+          cursor={{ fill: props.isDark ? '#4f4f4f' : '#f5f5f5' }}
         />
-        {stats.map(stat => (
+        {props.stats.map(stat => (
           <Line
             key={stat.dataKey}
             dataKey={stat.enabled ? stat.dataKey : 'hidden'}
@@ -373,32 +364,23 @@ const StatsLineChart = (props: { data: Stat[] }) => {
         <XAxis
           dataKey="date"
           tickFormatter={(tick: string) => new Date(tick).toDateString()}
-          axisLine={{ stroke: isDark ? 'white' : 'black' }}
-          tickLine={{ stroke: isDark ? 'white' : 'black' }}
-          tick={<XAxisTick fill={isDark ? 'white' : 'black'} />}
+          axisLine={{ stroke: props.isDark ? 'white' : 'black' }}
+          tickLine={{ stroke: props.isDark ? 'white' : 'black' }}
+          tick={
+            <XAxisTick
+              fill={props.isDark ? 'white' : 'black'}
+              fontFamily={theme.typography.fontFamily}
+            />
+          }
           angle={-45}
           dy={10}
           aria-label={t('stats.dateAxis')}
         />
         <YAxis
           allowDecimals={false}
-          axisLine={{ stroke: isDark ? 'white' : 'black' }}
-          tickLine={{ stroke: isDark ? 'white' : 'black' }}
-          tick={{ fill: isDark ? 'white' : 'black' }}
-        />
-        <Legend
-          verticalAlign="top"
-          height={36}
-          wrapperStyle={legendWrapperStyle}
-          className={localStyles.legend}
-          formatter={data => {
-            return isDisabled(data) ? `[ ] ${data}` : `[x] ${data}`;
-          }}
-          onClick={data => {
-            if (data.value) {
-              toggleStat(data.value as string);
-            }
-          }}
+          axisLine={{ stroke: props.isDark ? 'white' : 'black' }}
+          tickLine={{ stroke: props.isDark ? 'white' : 'black' }}
+          tick={{ fill: props.isDark ? 'white' : 'black' }}
         />
       </LineChart>
     </ResponsiveContainer>
@@ -407,12 +389,14 @@ const StatsLineChart = (props: { data: Stat[] }) => {
 
 export const StatsChart = (props: {
   data: Stat[];
+  summary?: Record<string, number>;
   loading?: boolean;
   error?: string;
 }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const [chart, setChart] = useState<'line' | 'bar'>('line');
   const classes = useStyles();
+  const { stats, isDark, toggleStat } = useChartState(props.data);
 
   if (props.error) {
     return (
@@ -431,45 +415,109 @@ export const StatsChart = (props: {
     .map(d => ({ ...d, hidden: 0 }));
 
   return (
-    <Box className={classes.chartContainer}>
-      {props.loading && (
-        <div className={classes.loadingOverlay}>
-          <CircularProgress />
-        </div>
-      )}
-      {chart === 'line' ? (
-        <StatsLineChart data={data} />
-      ) : (
-        <StatsBarChart data={data} />
-      )}
-      <ButtonGroup
-        aria-label={t('stats.chartType')}
-        style={{ float: 'right' }}
-        role="radiogroup"
+    <Box>
+      <Box
+        display="flex"
+        flexWrap="wrap"
+        justifyContent="center"
+        mb={4}
+        mt={2}
+        style={{ gap: 16 }}
       >
-        <MuiTooltip title={t('stats.lineChart')}>
-          <IconButton
-            aria-label={t('stats.lineChart')}
-            onClick={() => setChart('line')}
-            className={classes.chartTypeButton}
-            aria-checked={chart === 'line'}
-            role="radio"
-          >
-            <ShowChartIcon />
-          </IconButton>
-        </MuiTooltip>
-        <MuiTooltip title={t('stats.barChart')}>
-          <IconButton
-            aria-label={t('stats.barChart')}
-            onClick={() => setChart('bar')}
-            className={classes.chartTypeButton}
-            aria-checked={chart === 'bar'}
-            role="radio"
-          >
-            <BarChartIcon />
-          </IconButton>
-        </MuiTooltip>
-      </ButtonGroup>
+        {stats.map(stat => {
+          const value = props.summary ? props.summary[stat.dataKey] : undefined;
+          const isActive = stat.enabled;
+          const defaultBorder = isDark
+            ? 'rgba(255,255,255,0.12)'
+            : 'rgba(0,0,0,0.12)';
+          const borderColor = isActive ? stat.color : defaultBorder;
+          const activeBg = isDark
+            ? 'rgba(255,255,255,0.05)'
+            : 'rgba(0,0,0,0.05)';
+          const backgroundColor = isActive ? activeBg : 'transparent';
+
+          return (
+            <Box
+              key={stat.dataKey}
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              p={2}
+              border={1}
+              borderColor={borderColor}
+              borderRadius={8}
+              minWidth={140}
+              style={{
+                cursor: 'pointer',
+                opacity: isActive ? 1 : 0.5,
+                backgroundColor: backgroundColor,
+                transition: 'all 0.2s',
+              }}
+              onClick={() => toggleStat(stat.name)}
+            >
+              <Typography
+                variant="h4"
+                style={{ color: stat.color, fontWeight: 'bold' }}
+              >
+                {value !== undefined ? value : '-'}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {stat.name}
+              </Typography>
+            </Box>
+          );
+        })}
+      </Box>
+      <Box className={classes.chartContainer}>
+        {props.loading && (
+          <div className={classes.loadingOverlay}>
+            <CircularProgress />
+          </div>
+        )}
+        {chart === 'line' ? (
+          <StatsLineChart
+            data={data}
+            stats={stats}
+            isDark={isDark}
+            styles={classes}
+          />
+        ) : (
+          <StatsBarChart
+            data={data}
+            stats={stats}
+            isDark={isDark}
+            styles={classes}
+          />
+        )}
+        <ButtonGroup
+          aria-label={t('stats.chartType')}
+          style={{ float: 'right' }}
+          role="radiogroup"
+        >
+          <MuiTooltip title={t('stats.lineChart')}>
+            <IconButton
+              aria-label={t('stats.lineChart')}
+              onClick={() => setChart('line')}
+              className={classes.chartTypeButton}
+              aria-checked={chart === 'line'}
+              role="radio"
+            >
+              <ShowChartIcon />
+            </IconButton>
+          </MuiTooltip>
+          <MuiTooltip title={t('stats.barChart')}>
+            <IconButton
+              aria-label={t('stats.barChart')}
+              onClick={() => setChart('bar')}
+              className={classes.chartTypeButton}
+              aria-checked={chart === 'bar'}
+              role="radio"
+            >
+              <BarChartIcon />
+            </IconButton>
+          </MuiTooltip>
+        </ButtonGroup>
+      </Box>
     </Box>
   );
 };

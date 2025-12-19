@@ -45,7 +45,7 @@ export const CollectionsGridContent = (props: {
       >
         {response.collections.map(p => {
           return (
-            <Grid item xs={12} md={4} lg={3} key={p.id}>
+            <Grid item xs={12} md={12} lg={6} key={p.id}>
               <CollectionsGridItem collection={p} />
             </Grid>
           );

@@ -24,18 +24,16 @@ import {
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
-import { Link } from '@backstage/core-components';
-import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
+import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { qetaApiRef } from '../../api';
 import VerticalAlignTopIcon from '@material-ui/icons/VerticalAlignTop';
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import { UserLink } from '../Links';
-import { SmallAvatar } from '../Utility/SmallAvatar';
+import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
+import LinkIcon from '@material-ui/icons/Link';
 import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
@@ -54,6 +52,9 @@ export interface PostsGridItemProps {
 const useStyles = makeStyles(theme => ({
   card: {
     height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
   cardContent: {
     padding: theme.spacing(1.5, 2, 1, 2),
@@ -67,6 +68,11 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     marginBottom: 0,
+    height: '80px',
+    overflow: 'hidden',
+    display: '-webkit-box',
+    WebkitLineClamp: 4,
+    WebkitBoxOrient: 'vertical',
   },
   footer: {
     paddingTop: theme.spacing(1),
@@ -86,32 +92,42 @@ const useStyles = makeStyles(theme => ({
   },
   statBox: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'center',
     padding: theme.spacing(0.5, 1),
-    borderRadius: theme.spacing(0.75),
-    background: theme.palette.background.paper,
-    border: `1px solid ${theme.palette.divider}`,
-    minWidth: 60,
-    gap: theme.spacing(0.5),
-    lineHeight: 1.1,
+    borderRadius: theme.shape.borderRadius,
+    background: 'transparent',
+    minWidth: 50,
+    gap: 0,
+    border: '1px solid transparent',
   },
   statValue: {
-    fontWeight: 600,
-    fontSize: '16px',
+    fontWeight: 700,
+    fontSize: '1.2rem',
+    lineHeight: 1.2,
   },
   statLabel: {
     fontWeight: 400,
+    fontSize: '0.8rem',
     color: theme.palette.text.secondary,
+    lineHeight: 1.2,
   },
   answersBox: {
-    background: theme.palette.warning.main,
-    color: theme.palette.text.primary,
-    border: `1px solid ${theme.palette.warning.dark}`,
+    color: theme.palette.warning.main,
+    border: `1px solid ${theme.palette.warning.main}`,
+    backgroundColor:
+      theme.palette.type === 'dark'
+        ? 'rgba(255, 152, 0, 0.05)'
+        : 'rgba(255, 152, 0, 0.05)',
   },
   answersBoxAnswered: {
-    background: theme.palette.success.main,
-    border: `1px solid ${theme.palette.success.dark}`,
+    color: theme.palette.success.main,
+    border: `1px solid ${theme.palette.success.main}`,
+    backgroundColor:
+      theme.palette.type === 'dark'
+        ? 'rgba(76, 175, 80, 0.05)'
+        : 'rgba(76, 175, 80, 0.05)',
   },
   avatar: {
     width: 24,
@@ -127,6 +143,19 @@ const useStyles = makeStyles(theme => ({
   },
   rankingButton: {
     padding: theme.spacing(0.5),
+  },
+  placeholderImage: {
+    height: 140,
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background:
+      theme.palette.type === 'dark'
+        ? `linear-gradient(135deg, ${theme.palette.grey[800]} 0%, ${theme.palette.grey[900]} 100%)`
+        : `linear-gradient(135deg, ${theme.palette.grey[200]} 0%, ${theme.palette.grey[300]} 100%)`,
+    color: theme.palette.text.secondary,
+    opacity: 0.8,
   },
 }));
 
@@ -157,10 +186,19 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
     }
   }, [lastSignal]);
 
+  const [favicon, setFavicon] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (post.type === 'link' && !post.headerImage && post.url) {
+      qetaApi.fetchURLMetadata({ url: post.url }).then(res => {
+        if (res.favicon) setFavicon(res.favicon);
+      });
+    }
+  }, [post.type, post.headerImage, post.url, qetaApi]);
+
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
   const linkRoute = useRouteRef(linkRouteRef);
-  const { name, initials, user } = useEntityAuthor(post);
   const navigate = useNavigate();
 
   const route = selectByPostType(
@@ -187,6 +225,51 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
     });
   };
 
+  const renderHeaderMedia = () => {
+    if (post.headerImage) {
+      return (
+        <CardMedia
+          component="img"
+          onError={e => (e.currentTarget.style.display = 'none')}
+          height="140"
+          image={post.headerImage}
+          alt={post.title}
+          style={{ objectFit: 'cover' }}
+        />
+      );
+    }
+    if (post.type === 'link') {
+      return (
+        <Box className={classes.placeholderImage}>
+          {favicon ? (
+            <img
+              src={favicon}
+              alt={post.title}
+              style={{
+                height: 64,
+                width: 64,
+                objectFit: 'contain',
+              }}
+              onError={e => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          ) : (
+            <LinkIcon style={{ fontSize: 60 }} />
+          )}
+        </Box>
+      );
+    }
+    if (post.type === 'article') {
+      return (
+        <Box className={classes.placeholderImage}>
+          <CollectionsBookmarkIcon style={{ fontSize: 60 }} />
+        </Box>
+      );
+    }
+    return null;
+  };
+
   return (
     <Card className={classes.card}>
       <CardActionArea
@@ -194,18 +277,16 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
         aria-label={post.title}
         tabIndex={0}
         role="link"
-        style={{ outline: 'none' }}
+        style={{
+          outline: 'none',
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          justifyContent: 'flex-start',
+        }}
       >
-        {post.headerImage && (
-          <CardMedia
-            component="img"
-            onError={e => (e.currentTarget.style.display = 'none')}
-            height="140"
-            image={post.headerImage}
-            alt={post.title}
-            style={{ objectFit: 'cover' }}
-          />
-        )}
+        {renderHeaderMedia()}
         <CardContent className={classes.cardContent}>
           <Box
             display="flex"
@@ -297,18 +378,13 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               </Tooltip>
             </Box>
             <Box className={classes.statsGroup}>
-              <SmallAvatar
-                src={user?.spec?.profile?.picture}
-                alt={name}
-                variant="rounded"
-                className={classes.avatar}
-              >
-                {initials}
-              </SmallAvatar>
-              <UserLink entityRef={post.author} anonymous={post.anonymous} />
-              <Link to={href} className="qetaPostListItemQuestionBtn">
-                <RelativeTimeWithTooltip value={getPostDisplayDate(post)} />
-              </Link>
+              <AuthorBox
+                userEntityRef={post.author}
+                time={getPostDisplayDate(post)}
+                label=""
+                anonymous={post.anonymous}
+                compact
+              />
             </Box>
           </Box>
           {allowRanking && (

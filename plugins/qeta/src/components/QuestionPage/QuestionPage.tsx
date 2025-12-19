@@ -281,7 +281,6 @@ export const QuestionPage = () => {
               )}
             </Grid>
           </Box>
-          <Divider />
           {sortedAnswers.map(a => {
             return (
               <Fragment key={a.id}>
@@ -295,7 +294,7 @@ export const QuestionPage = () => {
               </Fragment>
             );
           })}
-          <Divider />
+
           <AnswerForm post={question} onPost={onAnswerPost} />
         </>
       )}

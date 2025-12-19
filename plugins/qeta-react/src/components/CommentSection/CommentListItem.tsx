@@ -36,12 +36,24 @@ const useStyles = makeStyles(
     metadata: {
       color: theme.palette.text.secondary,
       marginTop: theme.spacing(0.5),
+      display: 'flex',
+      alignItems: 'center',
+      gap: theme.spacing(0.5),
       '& a': {
-        color: theme.palette.primary.main,
+        color: theme.palette.text.secondary,
         transition: 'all 0.2s ease-in-out',
+        textDecoration: 'none',
         '&:hover': {
+          color: theme.palette.primary.main,
           textDecoration: 'underline',
-          opacity: 0.8,
+        },
+      },
+      '& .actionBtn': {
+        marginLeft: theme.spacing(1),
+        fontSize: '0.75rem',
+        opacity: 0.7,
+        '&:hover': {
+          opacity: 1,
         },
       },
     },
@@ -158,35 +170,30 @@ export const CommentListItem = (props: {
             className={styles.content}
           />
           <Typography variant="caption" className={styles.metadata}>
-            {' – '}
+            {' • '}
             <AuthorLink entity={comment} />
-            {comment.expert && <ExpertIcon />}{' '}
+            {comment.expert && <ExpertIcon />}
+            {' • '}
             <RelativeTimeWithTooltip value={comment.created} />
             {comment.canEdit && (
-              <>
-                {' / '}
-                <Link
-                  underline="none"
-                  to="#"
-                  className="qetaCommentEditBtn"
-                  onClick={() => setEditing(true)}
-                >
-                  {t('commentList.editLink')}
-                </Link>
-              </>
+              <Link
+                underline="none"
+                to="#"
+                className="actionBtn qetaCommentEditBtn"
+                onClick={() => setEditing(true)}
+              >
+                {t('commentList.editLink')}
+              </Link>
             )}
             {comment.canDelete && (
-              <>
-                {' / '}
-                <Link
-                  underline="none"
-                  to="#"
-                  className="qetaCommentDeleteBtn"
-                  onClick={() => deleteComment(comment.id)}
-                >
-                  {t('commentList.deleteLink')}
-                </Link>
-              </>
+              <Link
+                underline="none"
+                to="#"
+                className="actionBtn qetaCommentDeleteBtn"
+                onClick={() => deleteComment(comment.id)}
+              >
+                {t('commentList.deleteLink')}
+              </Link>
             )}
           </Typography>
         </>

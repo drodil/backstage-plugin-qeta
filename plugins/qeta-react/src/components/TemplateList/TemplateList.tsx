@@ -89,7 +89,7 @@ export const TemplateList = () => {
           navigate('#template:new');
         }}
       >
-        {t('templateList.createButton')}
+        Create New Template
       </Button>
       <Box
         sx={{ width: '100%', bgcolor: 'background.paper', marginTop: '1em' }}

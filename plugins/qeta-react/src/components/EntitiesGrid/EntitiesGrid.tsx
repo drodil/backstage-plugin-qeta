@@ -46,7 +46,9 @@ export const EntitiesGrid = () => {
 
   useDebounce(
     () => {
-      setFilters({ ...filters, searchQuery: searchQuery });
+      if (filters.searchQuery !== searchQuery) {
+        setFilters({ ...filters, searchQuery: searchQuery });
+      }
     },
     300,
     [searchQuery],

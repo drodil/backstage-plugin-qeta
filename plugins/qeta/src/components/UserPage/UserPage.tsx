@@ -41,14 +41,15 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(3),
   },
   avatar: {
-    width: theme.spacing(6),
-    height: theme.spacing(6),
-    marginRight: theme.spacing(2),
+    width: theme.spacing(12),
+    height: theme.spacing(12),
+    marginRight: theme.spacing(3),
+    boxShadow: theme.shadows[2],
   },
   headerContent: {
     display: 'flex',
     alignItems: 'center',
-    padding: theme.spacing(2),
+    padding: theme.spacing(3, 0),
   },
   tabList: {},
   tabLabel: {
@@ -105,21 +106,31 @@ export const UserPage = () => {
       >
         {initials}
       </Avatar>
-      <Box>
-        <Tooltip title={secondaryTitle || ''} arrow>
-          <Typography variant="h5" component="h2" id="user-name">
+      <Box display="flex" flexDirection="column" justifyContent="center">
+        <Box display="flex" alignItems="center">
+          <Typography
+            variant="h4"
+            component="h2"
+            id="user-name"
+            style={{ fontWeight: 700 }}
+          >
             {name}
           </Typography>
-        </Tooltip>
-        {!loadingUser &&
-          !userError &&
-          currentUser?.userEntityRef !== identity && (
-            <UserFollowButton
-              userRef={identity}
-              style={{ marginLeft: '0.5em' }}
-              aria-label={t('userPage.followUser', { name })}
-            />
-          )}
+          {!loadingUser &&
+            !userError &&
+            currentUser?.userEntityRef !== identity && (
+              <UserFollowButton
+                userRef={identity}
+                style={{ marginLeft: '1rem', transform: 'scale(1.2)' }}
+                aria-label={t('userPage.followUser', { name })}
+              />
+            )}
+        </Box>
+        {(secondaryTitle || user?.spec?.profile?.email) && (
+          <Typography variant="h6" color="textSecondary">
+            {secondaryTitle || user?.spec?.profile?.email}
+          </Typography>
+        )}
       </Box>
     </Box>
   );

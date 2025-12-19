@@ -6,15 +6,25 @@ const useGridItemStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-    '&:hover': {
-      transform: 'translateY(-4px)',
-      boxShadow: theme.shadows[4],
+    position: 'relative',
+    '&:hover::after': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'currentColor',
+      opacity: theme.palette.action.hoverOpacity || 0.04,
+      borderRadius: theme.shape.borderRadius,
+      pointerEvents: 'none',
     },
-    backgroundColor: theme.palette.background.default,
   },
   cardHeader: {
     padding: theme.spacing(2, 2, 1, 2),
+    '& .MuiCardHeader-content': {
+      minWidth: 0,
+    },
     '& .MuiTypography-h6': {
       fontSize: '1.25rem',
       fontWeight: 600,

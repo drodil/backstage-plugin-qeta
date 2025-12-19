@@ -36,8 +36,8 @@ const useStyles = makeStyles(
       height: '20px',
     },
     avatarCompact: {
-      width: '16px',
-      height: '16px',
+      width: '20px',
+      height: '20px',
     },
     authorInfo: {
       textOverflow: 'ellipsis',
@@ -91,7 +91,9 @@ export const AuthorBox = (props: {
         >
           {initials}
         </Avatar>
-        <UserLink entityRef={userEntityRef} anonymous={anonymous} />
+        <Typography variant="body2" component="span">
+          <UserLink entityRef={userEntityRef} anonymous={anonymous} />
+        </Typography>
         {expert && <ExpertIcon className={styles.expertIcon} />}
         <Typography className="qetaAuthorBoxCreated" variant="caption">
           <RelativeTimeWithTooltip value={time} />

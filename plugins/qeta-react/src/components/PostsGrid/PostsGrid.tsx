@@ -140,13 +140,15 @@ export const PostsGrid = (props: PostGridProps) => {
         <Box mt={2} mb={2}>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item>
-              <Typography
-                variant="h6"
-                className="qetaPostsContainerQuestionCount"
-                style={{ fontWeight: 500, paddingBottom: 2 }}
-              >
-                {t('common.posts', { count: response?.total ?? 0, itemType })}
-              </Typography>
+              {(response?.total ?? 0) > 0 && (
+                <Typography
+                  variant="h6"
+                  className="qetaPostsContainerQuestionCount"
+                  style={{ fontWeight: 500, paddingBottom: 2 }}
+                >
+                  {t('common.posts', { count: response?.total ?? 0, itemType })}
+                </Typography>
+              )}
             </Grid>
             <Grid item>
               <Grid container spacing={1} alignItems="center">

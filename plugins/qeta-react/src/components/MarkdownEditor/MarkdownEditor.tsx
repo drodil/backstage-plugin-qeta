@@ -249,6 +249,12 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     disableAttachments ||
     false;
 
+  const toolbarCommands = [
+    ['header', 'bold', 'italic', 'strikethrough'],
+    ['link', 'quote', 'code', 'image'],
+    ['unordered-list', 'ordered-list'],
+  ];
+
   return (
     <ReactMde
       classes={{
@@ -315,6 +321,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
               }),
             }
       }
+      toolbarCommands={toolbarCommands}
     />
   );
 };

@@ -14,7 +14,7 @@ export * from './RelativeTimeWithTooltip';
 export * from './Links';
 export * from './PostsTable';
 export * from './StatsChart';
-export * from './SummaryStatsGrid';
+
 export * from './TopRankingUsersCard';
 export * from './TagsGrid';
 export * from './EntitiesGrid';

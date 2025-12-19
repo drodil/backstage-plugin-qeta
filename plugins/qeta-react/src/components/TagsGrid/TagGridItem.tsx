@@ -1,18 +1,22 @@
 import {
-  removeMarkdownFormatting,
   TagResponse,
   truncate,
+  removeMarkdownFormatting,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
-  Button,
   Card,
-  CardActionArea,
-  CardActions,
   CardContent,
-  CardHeader,
   Grid,
   Tooltip,
   Typography,
+  Menu,
+  MenuItem,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Box,
+  makeStyles,
+  Avatar,
 } from '@material-ui/core';
 import { useState } from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -26,11 +30,32 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+import PeopleIcon from '@material-ui/icons/People';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles.ts';
+import { UserLink } from '../Links';
+
+const useStyles = makeStyles(theme => ({
+  statsGrid: {
+    marginTop: 'auto',
+  },
+  statItem: {
+    padding: theme.spacing(1),
+    borderRadius: theme.shape.borderRadius,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+  },
+  flexColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+}));
 
 export const TagGridItem = (props: {
   tag: TagResponse;
@@ -43,50 +68,146 @@ export const TagGridItem = (props: {
   const { t } = useTranslationRef(qetaTranslationRef);
   const tags = useTagsFollow();
   const classes = useGridItemStyles();
+  const localClasses = useStyles();
   const tooltipStyles = useTooltipStyles();
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = (
+    _event: {},
+    _reason: 'backdropClick' | 'escapeKeyDown',
+  ) => {
+    setAnchorEl(null);
+  };
+
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const handleEditModalOpen = () => setEditModalOpen(true);
+  const handleEditModalOpen = (event: React.MouseEvent<HTMLElement>) => {
+    handleMenuClose(event as any, 'backdropClick');
+    setEditModalOpen(true);
+  };
   const handleEditModalClose = () => {
     setEditModalOpen(false);
     onTagEdit();
   };
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalOpen = (event: React.MouseEvent<HTMLElement>) => {
+    handleMenuClose(event as any, 'backdropClick');
+    setDeleteModalOpen(true);
+  };
   const handleDeleteModalClose = () => {
     setDeleteModalOpen(false);
     onTagEdit();
   };
 
   return (
-    <Grid item xs={12} sm={6} md={4} xl={3}>
-      <Card className={classes.card} variant="outlined">
-        <CardActionArea onClick={() => navigate(tagRoute({ tag: tag.tag }))}>
-          <CardHeader
-            className={classes.cardHeader}
-            title={<span className={classes.ellipsis}>{tag.tag}</span>}
-            titleTypographyProps={{ variant: 'h6' }}
-          />
-          <CardContent className={classes.cardContent}>
-            <Typography className={classes.stats} variant="caption">
-              {t('common.posts', { count: tag.postsCount, itemType: 'post' })}
-              {' · '}
-              {t('common.followers', { count: tag.followerCount })}
-            </Typography>
-            {tag.experts && tag.experts.length > 0 && (
-              <Typography className={classes.experts} variant="caption">
-                {t('common.experts')}
-                {': '}
-                {tag.experts.map((e, i) => (
-                  <>
-                    <EntityRefLink key={e} entityRef={e} />
-                    {i === tag.experts!.length - 1 ? '' : ', '}
-                  </>
-                ))}
+    <Grid item xs={12} sm={6} md={6} xl={4}>
+      <Card
+        className={classes.card}
+        style={{ cursor: 'pointer' }}
+        onClick={() => navigate(tagRoute({ tag: tag.tag }))}
+      >
+        <Box className={classes.cardHeader} display="flex" alignItems="center">
+          <Avatar
+            variant="rounded"
+            className="avatar"
+            style={{ marginRight: 16 }}
+          >
+            <LocalOfferIcon />
+          </Avatar>
+          <Box flex={1} minWidth={0}>
+            <Tooltip title={tag.tag} arrow>
+              <Typography variant="h6" noWrap>
+                {tag.tag}
               </Typography>
-            )}
-            {tag.description && (
+            </Tooltip>
+          </Box>
+          <Box display="flex" alignItems="center" flexShrink={0}>
+            <Tooltip
+              title={
+                tags.isFollowingTag(tag.tag)
+                  ? t('tagButton.unfollow')
+                  : t('tagButton.follow')
+              }
+            >
+              <IconButton
+                aria-label="follow"
+                onClick={e => {
+                  e.stopPropagation();
+                  if (tags.isFollowingTag(tag.tag)) {
+                    tags.unfollowTag(tag.tag);
+                  } else {
+                    tags.followTag(tag.tag);
+                  }
+                }}
+              >
+                {tags.isFollowingTag(tag.tag) ? (
+                  <VisibilityOff />
+                ) : (
+                  <Visibility />
+                )}
+              </IconButton>
+            </Tooltip>
+            {tag.canEdit || tag.canDelete ? (
+              <>
+                <IconButton aria-label="settings" onClick={handleMenuClick}>
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  id="tag-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
+                  {tag.canEdit && (
+                    <MenuItem
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleEditModalOpen(e);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <EditIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary={t('tagButton.edit')} />
+                    </MenuItem>
+                  )}
+                  {tag.canDelete && (
+                    <MenuItem
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleDeleteModalOpen(e);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <DeleteIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary={t('tagButton.delete')} />
+                    </MenuItem>
+                  )}
+                </Menu>
+              </>
+            ) : null}
+          </Box>
+        </Box>
+        <CardContent
+          className={`${classes.cardContent} ${localClasses.flexColumn}`}
+        >
+          {tag.description && (
+            <Box mb={2}>
               <Tooltip
                 title={tag.description}
                 arrow
@@ -101,79 +222,74 @@ export const TagGridItem = (props: {
                   )}
                 </Typography>
               </Tooltip>
-            )}
-          </CardContent>
-        </CardActionArea>
-        <CardActions className={classes.cardActions}>
-          <Grid container justifyContent="center" spacing={1}>
-            <Grid item>
-              <Tooltip title={t('tagButton.tooltip')}>
-                <Button
-                  className={classes.actionButton}
-                  size="small"
-                  variant="outlined"
-                  color={tags.isFollowingTag(tag.tag) ? 'secondary' : 'primary'}
-                  onClick={() => {
-                    if (tags.isFollowingTag(tag.tag)) {
-                      tags.unfollowTag(tag.tag);
-                    } else {
-                      tags.followTag(tag.tag);
-                    }
-                  }}
-                  startIcon={
-                    tags.isFollowingTag(tag.tag) ? (
-                      <VisibilityOff />
-                    ) : (
-                      <Visibility />
-                    )
-                  }
-                >
-                  {tags.isFollowingTag(tag.tag)
-                    ? t('tagButton.unfollow')
-                    : t('tagButton.follow')}
-                </Button>
-              </Tooltip>
+            </Box>
+          )}
+
+          {tag.experts && tag.experts.length > 0 && (
+            <Box className={classes.experts} mt={2}>
+              <Typography variant="caption" display="block">
+                {t('common.experts')}
+              </Typography>
+              <Box>
+                {tag.experts.map((expert, i) => (
+                  <span key={expert}>
+                    <UserLink entityRef={expert} />
+                    {i < tag.experts!.length - 1 && ', '}
+                  </span>
+                ))}
+              </Box>
+            </Box>
+          )}
+
+          <Grid container spacing={1} className={localClasses.statsGrid}>
+            <Grid item xs={6}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                className={localClasses.statItem}
+              >
+                <QuestionAnswerIcon fontSize="small" color="disabled" />
+                <Typography variant="body2" style={{ fontWeight: 600 }}>
+                  {tag.postsCount}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {t('common.postsLabel', {
+                    count: tag.postsCount,
+                    itemType: 'post',
+                  })}
+                </Typography>
+              </Box>
             </Grid>
-            {tag.canEdit && (
-              <Grid item>
-                <Button
-                  className={classes.actionButton}
-                  size="small"
-                  onClick={handleEditModalOpen}
-                  variant="outlined"
-                  startIcon={<EditIcon />}
-                >
-                  {t('tagButton.edit')}
-                </Button>
-              </Grid>
-            )}
-            {tag.canDelete && (
-              <Grid item>
-                <Button
-                  className={classes.actionButton}
-                  size="small"
-                  onClick={handleDeleteModalOpen}
-                  variant="contained"
-                  color="secondary"
-                  startIcon={<DeleteIcon />}
-                >
-                  {t('tagButton.delete')}
-                </Button>
-                <DeleteModal
-                  open={deleteModalOpen}
-                  onClose={handleDeleteModalClose}
-                  entity={tag}
-                />
-              </Grid>
-            )}
+            <Grid item xs={6}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                className={localClasses.statItem}
+              >
+                <PeopleIcon fontSize="small" color="disabled" />
+                <Typography variant="body2" style={{ fontWeight: 600 }}>
+                  {tag.followerCount}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {t('common.followersLabel', { count: tag.followerCount })}
+                </Typography>
+              </Box>
+            </Grid>
           </Grid>
-        </CardActions>
+        </CardContent>
       </Card>
       <EditTagModal
         tag={tag}
         open={editModalOpen}
         onClose={handleEditModalClose}
         isModerator={isModerator}
+      />
+      <DeleteModal
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        entity={tag}
       />
     </Grid>
   );

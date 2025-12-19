@@ -83,7 +83,7 @@ const useStyles = makeStyles(theme => {
     rankingRow: {
       display: 'flex',
       alignItems: 'center',
-      padding: theme.spacing(1, 2),
+      padding: theme.spacing(1.5, 2),
     },
     userInfo: {
       display: 'flex',
@@ -91,13 +91,21 @@ const useStyles = makeStyles(theme => {
       flex: 1,
     },
     position: {
-      fontWeight: 600,
-      marginRight: theme.spacing(1),
-      color: theme.palette.text.primary,
+      fontWeight: 800,
+      marginRight: theme.spacing(2),
+      color: theme.palette.text.secondary,
+      minWidth: '30px',
+      textAlign: 'right',
+    },
+    topPosition: {
+      color: theme.palette.primary.main,
+      fontSize: '1.1rem',
     },
     divider: {
       margin: theme.spacing(2, 0),
       opacity: 0.5,
+      border: 0,
+      borderBottom: `1px solid ${theme.palette.divider}`,
     },
   };
 });
@@ -175,7 +183,12 @@ export const RankingRow = (props: {
         className={classes.userInfo}
         primary={
           <Box display="flex" alignItems="center">
-            <Typography className={classes.position} variant="subtitle1">
+            <Typography
+              className={`${classes.position} ${
+                props.position <= 3 ? classes.topPosition : ''
+              }`}
+              variant="subtitle1"
+            >
               {ordinalPosition}
             </Typography>
             <UserLink entityRef={userRef ?? ''} />

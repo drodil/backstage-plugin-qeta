@@ -16,7 +16,14 @@ import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
-import { Box, Button, Typography, useTheme } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -195,84 +202,91 @@ export const AnswerForm = (props: {
       permission={qetaCreateAnswerPermission}
       errorPage={<></>}
     >
-      <form
-        onSubmit={handleSubmit(postAnswer)}
-        onChange={() => {
-          setEdited(true);
-        }}
-      >
-        <Typography variant="h6">Your answer</Typography>
-        {error && (
-          <WarningPanel severity="error" title={t('answerForm.errorPosting')} />
-        )}
-        <Controller
-          control={control}
-          defaultValue=""
-          rules={{
-            required: true,
-          }}
-          render={({ field: { onChange, value } }) => (
-            <MarkdownEditor
-              value={value}
-              onChange={onChange}
-              height={200}
-              error={'answer' in errors}
-              placeholder={t('answerForm.contentInput.placeholder')}
-              onImageUpload={onImageUpload}
-              answerId={id ? Number(id) : undefined}
-            />
-          )}
-          name="answer"
-        />
-        {isModerator && id && (
-          <Box mt={1} mb={1}>
+      <Card variant="outlined">
+        <CardContent>
+          <form
+            onSubmit={handleSubmit(postAnswer)}
+            onChange={() => {
+              setEdited(true);
+            }}
+          >
+            <Typography variant="h6">Your answer</Typography>
+            {error && (
+              <WarningPanel
+                severity="error"
+                title={t('answerForm.errorPosting')}
+              />
+            )}
             <Controller
               control={control}
-              render={({ field, fieldState: { error: authorError } }) => {
-                return (
-                  <EntitiesInput
-                    label={t('postForm.authorInput.label')}
-                    placeholder={t('postForm.authorInput.placeholder')}
-                    hideHelpText
-                    multiple={false}
-                    kind={['User']}
-                    required
-                    {...field}
-                    error={authorError}
-                  />
-                );
+              defaultValue=""
+              rules={{
+                required: true,
               }}
-              name="author"
+              render={({ field: { onChange, value } }) => (
+                <MarkdownEditor
+                  value={value}
+                  onChange={onChange}
+                  height={200}
+                  error={'answer' in errors}
+                  placeholder={t('answerForm.contentInput.placeholder')}
+                  onImageUpload={onImageUpload}
+                  answerId={id ? Number(id) : undefined}
+                />
+              )}
+              name="answer"
             />
-          </Box>
-        )}
-        {allowAnonymouns && !id && (
-          <PostAnonymouslyCheckbox
-            control={control}
-            label={t('anonymousCheckbox.answerAnonymously')}
-          />
-        )}
-        <Button
-          variant="outlined"
-          type="submit"
-          color="primary"
-          disabled={posting || isSubmitting}
-          style={{ marginTop: id ? theme.spacing(1) : '0' }}
-        >
-          {posting || isSubmitting ? (
-            <span>
-              {t('answerForm.submitting')}{' '}
-              <span className="spinner-border spinner-border-sm" />
-            </span>
-          ) : (
-            t(
-              id
-                ? 'answerForm.submit.existingAnswer'
-                : 'answerForm.submit.newAnswer',
-            )
-          )}
-        </Button>
-      </form>
+            {isModerator && id && (
+              <Box mt={1} mb={1}>
+                <Controller
+                  control={control}
+                  render={({ field, fieldState: { error: authorError } }) => {
+                    return (
+                      <EntitiesInput
+                        label={t('postForm.authorInput.label')}
+                        placeholder={t('postForm.authorInput.placeholder')}
+                        hideHelpText
+                        multiple={false}
+                        kind={['User']}
+                        required
+                        {...field}
+                        error={authorError}
+                      />
+                    );
+                  }}
+                  name="author"
+                />
+              </Box>
+            )}
+            {allowAnonymouns && !id && (
+              <PostAnonymouslyCheckbox
+                control={control}
+                label={t('anonymousCheckbox.answerAnonymously')}
+              />
+            )}
+            <Button
+              variant="contained"
+              type="submit"
+              color="primary"
+              disabled={posting || isSubmitting}
+              style={{ marginTop: theme.spacing(2) }}
+            >
+              {posting || isSubmitting ? (
+                <span>
+                  {t('answerForm.submitting')}{' '}
+                  <span className="spinner-border spinner-border-sm" />
+                </span>
+              ) : (
+                t(
+                  id
+                    ? 'answerForm.submit.existingAnswer'
+                    : 'answerForm.submit.newAnswer',
+                )
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </OptionalRequirePermission>
   );
 };

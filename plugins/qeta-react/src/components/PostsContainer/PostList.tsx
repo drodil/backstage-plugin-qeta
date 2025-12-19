@@ -94,7 +94,7 @@ export const PostList = (props: {
     <div ref={listRef}>
       <Box sx={{ mt: 2 }} className="qetaPostList">
         <Card>
-          <Grid container spacing={2} style={{ paddingTop: '1em' }}>
+          <Grid container spacing={0}>
             {response.posts.map((post, i) => {
               return (
                 <Grid item xs={12} key={post.id}>

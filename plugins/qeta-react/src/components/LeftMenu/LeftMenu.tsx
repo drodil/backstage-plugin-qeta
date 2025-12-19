@@ -79,7 +79,6 @@ export const useStyles = makeStyles(
         '&:hover': {
           backgroundColor: theme.palette.primary.dark,
           color: theme.palette.primary.contrastText,
-          transform: 'translateX(4px)',
         },
         '& svg': {
           color: theme.palette.primary.contrastText,
@@ -93,7 +92,6 @@ export const useStyles = makeStyles(
         color: theme.palette.text.primary,
         '&:hover': {
           backgroundColor: theme.palette.action.hover,
-          transform: 'translateX(4px)',
         },
       },
       menuIcon: {

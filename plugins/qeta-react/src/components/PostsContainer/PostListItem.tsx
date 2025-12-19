@@ -1,4 +1,3 @@
-import { Link } from '@backstage/core-components';
 import { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
 import {
@@ -21,10 +20,15 @@ import numeral from 'numeral';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import LinkIcon from '@material-ui/icons/Link';
+import StarIcon from '@material-ui/icons/Star';
+import Visibility from '@material-ui/icons/Visibility';
+import CheckCircle from '@material-ui/icons/CheckCircle';
+import ThumbUp from '@material-ui/icons/ThumbUp';
 import { StatusChip } from '../Utility/StatusChip';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
 import { FaviconItem } from '../FaviconItem';
 import { getPostDisplayDate } from '../../utils/utils';
+import { useNavigate } from 'react-router-dom';
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -39,113 +43,103 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'flex-start',
     height: '100%',
-    padding: theme.spacing(0.5, 2, 2, 2),
-    minHeight: 64,
+    padding: theme.spacing(2.5, 2, 2, 2),
+    minHeight: 80,
     transition: 'all 0.2s ease-in-out',
+    borderRadius: theme.shape.borderRadius,
     '&:hover': {
+      backgroundColor: theme.palette.action.hover,
       '& $title': {
         color: theme.palette.primary.main,
-        '& a': {
-          textDecoration: 'underline',
-        },
       },
     },
+    cursor: 'pointer',
   },
   metaCol: {
-    minWidth: 105,
-    maxWidth: 105,
+    minWidth: 64,
+    maxWidth: 64,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
-    marginTop: '-2px',
-    gap: 2,
+    marginRight: theme.spacing(1.5),
+    gap: theme.spacing(0.75),
   },
-  metaBox: {
-    textAlign: 'right',
-    borderRadius: 6,
-    padding: '5px',
-    color: theme.palette.text.primary,
-    lineHeight: '16px',
-    fontSize: '14px',
-    userSelect: 'none',
+  metaItem: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing(0.5),
+    color: theme.palette.text.secondary,
+    width: '100%',
+    fontSize: '15px',
   },
-  answersBox: {
-    color: theme.palette.text.primary,
-    border: `1px solid ${theme.palette.warning.main}`,
+  metaItemActive: {
+    color: theme.palette.success.main,
+    fontWeight: 500,
   },
-  answersBoxAnswered: {
-    border: `1px solid ${theme.palette.success.dark}`,
+  metaItemWarning: {
+    color: theme.palette.warning.main,
+    fontWeight: 500,
+  },
+  metaIcon: {
+    fontSize: 16,
   },
   title: {
     fontWeight: 700,
+    fontSize: '1.1rem',
     color: theme.palette.text.primary,
-    marginBottom: 2,
-    marginTop: 0,
+    marginBottom: theme.spacing(0.5),
     textOverflow: 'ellipsis',
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     lineHeight: 1.2,
-    '& a': {
-      color: 'inherit',
-      textDecoration: 'none',
-    },
+    textDecoration: 'none',
   },
   content: {
-    color: theme.palette.text.secondary,
-    margin: '2px 0 4px 0',
+    color: theme.palette.text.primary,
+    opacity: 0.9,
+    margin: '4px 0 8px 0',
     display: '-webkit-box',
     WebkitLineClamp: 2,
     WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    minHeight: '24px',
-    flexGrow: 1,
-  },
-  authorRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 6,
-    marginTop: 2,
-    marginBottom: 2,
-    justifyContent: 'flex-end',
-  },
-  tags: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    overflow: 'hidden',
-    flex: '1 1 0',
-    minWidth: 0,
+    fontSize: '0.95rem',
+    minHeight: '20px',
   },
   tagsRow: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
-    gap: 8,
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 'auto',
+  },
+  tags: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 4,
   },
   authorBoxContainer: {
-    flex: '0 0 220px',
-    width: 220,
-    minWidth: 220,
-    maxWidth: 220,
+    marginLeft: 'auto',
     display: 'flex',
-    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   contentContainer: {
     flex: 1,
     minWidth: 0,
     display: 'flex',
-    justifyContent: 'stretch',
     flexDirection: 'column',
-    height: '100%',
+    justifyContent: 'space-between',
   },
   titleContainer: {
     display: 'flex',
     alignItems: 'center',
     gap: theme.spacing(1),
     justifyContent: 'space-between',
+    marginBottom: theme.spacing(0.5),
   },
   titleWrapper: {
     display: 'flex',
@@ -156,8 +150,7 @@ const useStyles = makeStyles(theme => ({
   },
   typeLabel: {
     marginLeft: theme.spacing(1),
-    padding: '0.5rem 0.5rem',
-    flexShrink: 0,
+    height: 24,
   },
 }));
 
@@ -177,6 +170,7 @@ export const PostListItem = (props: PostListItemProps) => {
   const [score, setScore] = useState(post.score);
   const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
+  const navigate = useNavigate();
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
 
   useEffect(() => {
@@ -203,89 +197,111 @@ export const PostListItem = (props: PostListItemProps) => {
     ? `${route({ id: post.id.toString(10) })}?entity=${entity}`
     : route({ id: post.id.toString(10) });
 
+  const handleClick = (e: React.MouseEvent) => {
+    // Prevent navigation if clicking on interactive elements
+    if (
+      (e.target as HTMLElement).closest('a') ||
+      (e.target as HTMLElement).closest('button')
+    ) {
+      return;
+    }
+    navigate(href);
+  };
+
+  /* eslint-disable no-nested-ternary */
+  const answerClassName = correctAnswer
+    ? styles.metaItemActive
+    : answersCount === 0
+    ? styles.metaItemWarning
+    : '';
+  /* eslint-enable no-nested-ternary */
+
   return (
-    <Box className={styles.root}>
+    <Box className={styles.root} onClick={handleClick}>
       <Box className={styles.metaCol} aria-label={t('common.postStats')}>
-        <Tooltip title={score >= 1000 ? score : ''} arrow>
-          <Box
-            className={styles.metaBox}
-            aria-label={t(
-              post.type !== 'link' ? 'common.votesCount' : 'common.clicksCount',
-              { count: score },
-            )}
-          >
-            {formatShortNumber(score)}{' '}
-            {post.type !== 'link' ? t('common.votes') : t('common.clicks')}
+        <Tooltip title={t('common.votesCount', { count: score })} arrow>
+          <Box className={styles.metaItem}>
+            <ThumbUp className={styles.metaIcon} />
+            <Typography variant="caption" style={{ fontSize: 'inherit' }}>
+              {formatShortNumber(score)}
+            </Typography>
           </Box>
         </Tooltip>
+
         {post.type === 'question' && (
-          <Tooltip title={answersCount >= 1000 ? answersCount : ''} arrow>
-            <Box
-              className={
-                correctAnswer
-                  ? `${styles.metaBox} ${styles.answersBoxAnswered}`
-                  : `${styles.metaBox} ${styles.answersBox}`
-              }
-              aria-label={t('common.answersCount', { count: answersCount })}
-            >
-              {formatShortNumber(answersCount)} {t('common.answers')}
+          <Tooltip
+            title={t('common.answersCount', { count: answersCount })}
+            arrow
+          >
+            <Box className={`${styles.metaItem} ${answerClassName}`}>
+              {correctAnswer ? (
+                <CheckCircle className={styles.metaIcon} />
+              ) : (
+                <QuestionAnswer className={styles.metaIcon} />
+              )}
+              <Typography variant="caption" style={{ fontSize: 'inherit' }}>
+                {formatShortNumber(answersCount)}
+              </Typography>
             </Box>
           </Tooltip>
         )}
+
         {post.type !== 'link' && (
-          <Tooltip title={views >= 1000 ? views : ''} arrow>
-            <Box
-              className={styles.metaBox}
-              aria-label={t('common.viewsCount', { count: views })}
-            >
-              {formatShortNumber(views)} {t('common.views')}
+          <Tooltip title={t('common.viewsCount', { count: views })} arrow>
+            <Box className={styles.metaItem}>
+              <Visibility className={styles.metaIcon} />
+              <Typography variant="caption" style={{ fontSize: 'inherit' }}>
+                {formatShortNumber(views)}
+              </Typography>
             </Box>
           </Tooltip>
         )}
       </Box>
+
       <Box className={styles.contentContainer}>
         <Box className={styles.titleContainer}>
           <Box className={styles.titleWrapper}>
+            {post.type === 'link' && <FaviconItem entity={post} />}
             <Typography component="div" className={styles.title}>
-              {post.type === 'link' && <FaviconItem entity={post} />}
-              <Link
-                to={href}
-                className="qetaPostListItemQuestionBtn"
-                aria-label={post.title}
-                tabIndex={0}
-                style={{ color: 'inherit', textDecoration: 'none' }}
-              >
-                {post.title}
-              </Link>
+              {post.title}
             </Typography>
           </Box>
-          <StatusChip status={post.status} />
-          {showTypeLabel && post.type && (
-            <Chip
-              size="small"
-              icon={selectByPostType(
-                post.type,
-                <QuestionAnswer />,
-                <CollectionsBookmarkIcon />,
-                <LinkIcon />,
-              )}
-              label={capitalizeFirstLetter(t(`common.${post.type}`))}
-              className={styles.typeLabel}
-            />
-          )}
-          {post.type === 'link' && <OpenLinkButton entity={post} />}
-        </Box>
-        <Typography variant="body2" component="div" className={styles.content}>
-          <Link
-            to={href}
-            style={{ color: 'inherit', textDecoration: 'none' }}
-            aria-label={t('common.readMore')}
-          >
-            {DOMPurify.sanitize(
-              truncate(removeMarkdownFormatting(post.content), 200),
+
+          <Box display="flex" alignItems="center" style={{ gap: '8px' }}>
+            {post.favorite && (
+              <Tooltip title="Favorite">
+                <StarIcon style={{ color: '#FFB400', fontSize: 20 }} />
+              </Tooltip>
             )}
-          </Link>
+            <StatusChip status={post.status} />
+            {showTypeLabel && post.type && (
+              <Chip
+                size="small"
+                variant="outlined"
+                icon={selectByPostType(
+                  post.type,
+                  <QuestionAnswer style={{ fontSize: 16 }} />,
+                  <CollectionsBookmarkIcon style={{ fontSize: 16 }} />,
+                  <LinkIcon style={{ fontSize: 16 }} />,
+                )}
+                label={capitalizeFirstLetter(t(`common.${post.type}`))}
+                className={styles.typeLabel}
+              />
+            )}
+            {post.type === 'link' && <OpenLinkButton entity={post} />}
+          </Box>
+        </Box>
+
+        <Typography variant="body2" component="div" className={styles.content}>
+          <span
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(
+                truncate(removeMarkdownFormatting(post.content), 200),
+              ),
+            }}
+          />
         </Typography>
+
         <Box className={styles.tagsRow}>
           <Box className={styles.tags}>
             <TagsAndEntities entity={post} />

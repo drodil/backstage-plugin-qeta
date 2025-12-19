@@ -558,6 +558,7 @@ export const PostForm = (props: PostFormProps) => {
         setEdited(true);
         onFormChange?.(control._formValues as QuestionFormValues);
       }}
+      style={{ maxWidth: 1000, margin: '0 auto' }}
     >
       {error && (
         <Alert severity="error">{t('postForm.errorPosting', { type })}</Alert>

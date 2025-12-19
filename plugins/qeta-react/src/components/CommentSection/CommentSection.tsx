@@ -59,9 +59,9 @@ const useStyles = makeStyles(
       marginTop: theme.spacing(1),
     },
     prominentButton: {
-      marginTop: theme.spacing(3),
+      marginTop: theme.spacing(1),
       marginBottom: theme.spacing(2),
-      marginLeft: theme.spacing(1),
+      marginLeft: theme.spacing(-3.5),
       padding: theme.spacing(1, 2.5),
       textTransform: 'none',
       fontSize: '1rem',

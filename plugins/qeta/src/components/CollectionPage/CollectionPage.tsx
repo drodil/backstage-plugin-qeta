@@ -3,19 +3,30 @@ import {
   ButtonContainer,
   CollectionCard,
   CollectionFollowButton,
-  CreateCollectionButton,
+  DeleteModal,
   PostsGrid,
+  collectionEditRouteRef,
   qetaTranslationRef,
   useQetaApi,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { ContentHeader, WarningPanel } from '@backstage/core-components';
-import { Grid, Typography } from '@material-ui/core';
+import { Button, Grid, Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useState } from 'react';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { useNavigate } from 'react-router-dom';
+import { useRouteRef } from '@backstage/core-plugin-api';
 
 export const CollectionPage = () => {
   const { id } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const navigate = useNavigate();
+  const editCollectionRoute = useRouteRef(collectionEditRouteRef);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   const {
     value: collection,
@@ -52,7 +63,33 @@ export const CollectionPage = () => {
         description={t('collectionPage.info')}
       >
         <ButtonContainer>
-          <CreateCollectionButton />
+          {collection.canEdit && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={() =>
+                editCollectionRoute &&
+                navigate(
+                  editCollectionRoute({
+                    id: collection.id.toString(10),
+                  }),
+                )
+              }
+            >
+              {t('templateList.editButton')}
+            </Button>
+          )}
+          {collection.canDelete && (
+            <Button
+              variant="outlined"
+              color="secondary"
+              startIcon={<DeleteIcon />}
+              onClick={handleDeleteModalOpen}
+            >
+              {t('templateList.deleteButton')}
+            </Button>
+          )}
         </ButtonContainer>
       </ContentHeader>
       <Grid container>
@@ -67,6 +104,13 @@ export const CollectionPage = () => {
           />
         </Grid>
       </Grid>
+      {collection.canDelete && (
+        <DeleteModal
+          open={deleteModalOpen}
+          onClose={handleDeleteModalClose}
+          entity={collection}
+        />
+      )}
     </>
   );
 };
