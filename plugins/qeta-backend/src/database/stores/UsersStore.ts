@@ -84,7 +84,7 @@ export class UsersStore extends BaseStore {
 
   async getUser(user_ref: string): Promise<UserResponse | null> {
     const query = this.getUserBaseQuery();
-    const rows = await query.where('author', user_ref);
+    const rows = await query.where('unique_authors.author', user_ref);
     if (rows.length === 0) {
       return null;
     }
