@@ -522,6 +522,7 @@ export const qetaTranslationRef = createTranslationRef({
       updatedAtTime: 'Updated',
       updatedBy: 'by',
       answeredAtTime: 'Answered',
+      correctAnswer: 'Correct answer',
     },
     favorite: {
       remove: 'Remove this post from favorites',

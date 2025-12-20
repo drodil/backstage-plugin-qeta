@@ -92,12 +92,12 @@ export const AnswerList = (props: {
     <div ref={listRef}>
       <Box sx={{ mt: 2 }} className="qetaAnswerList">
         <Card>
-          <Grid container spacing={2} style={{ paddingTop: '1em' }}>
-            {response.answers.map(answer => {
+          <Grid container spacing={0}>
+            {response.answers.map((answer, i) => {
               return (
                 <Grid item xs={12} key={answer.id}>
                   <AnswerListItem answer={answer} entity={entity} />
-                  <Divider />
+                  {i !== response.answers.length - 1 && <Divider />}
                 </Grid>
               );
             })}
