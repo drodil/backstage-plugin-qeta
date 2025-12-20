@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom';
 import {
   ButtonContainer,
-  CollectionCard,
   CollectionFollowButton,
   DeleteModal,
   PostsGrid,
@@ -16,7 +15,11 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useState } from 'react';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+import PeopleIcon from '@material-ui/icons/People';
 import { useNavigate } from 'react-router-dom';
+import { ContentHeaderCard } from '@drodil/backstage-plugin-qeta-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
 export const CollectionPage = () => {
@@ -47,7 +50,8 @@ export const CollectionPage = () => {
   }
 
   const title = (
-    <Typography variant="h5" component="h2">
+    <Typography variant="h5" component="h2" style={{ display: 'flex' }}>
+      <PlaylistPlayIcon fontSize="large" style={{ marginRight: '8px' }} />
       {collection.title}
       <CollectionFollowButton
         collection={collection}
@@ -58,10 +62,7 @@ export const CollectionPage = () => {
 
   return (
     <>
-      <ContentHeader
-        titleComponent={title}
-        description={t('collectionPage.info')}
-      >
+      <ContentHeader titleComponent={title}>
         <ButtonContainer>
           {collection.canEdit && (
             <Button
@@ -94,7 +95,29 @@ export const CollectionPage = () => {
       </ContentHeader>
       <Grid container>
         <Grid item xs={12}>
-          <CollectionCard collection={collection} />
+          <ContentHeaderCard
+            description={collection.description}
+            image={collection.headerImage}
+            imageIcon={<PlaylistPlayIcon style={{ fontSize: 80 }} />}
+            tagsAndEntities={{ entity: collection }}
+            stats={[
+              {
+                label: t('common.postsLabel', {
+                  count: collection.postsCount,
+                  itemType: 'post',
+                }),
+                value: collection.postsCount,
+                icon: <QuestionAnswerIcon fontSize="small" />,
+              },
+              {
+                label: t('common.followersLabel', {
+                  count: collection.followers,
+                }),
+                value: collection.followers,
+                icon: <PeopleIcon fontSize="small" />,
+              },
+            ]}
+          />
         </Grid>
         <Grid item xs={12}>
           <PostsGrid

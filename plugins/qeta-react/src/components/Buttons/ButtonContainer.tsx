@@ -6,6 +6,7 @@ const useStyles = makeStyles(
     root: {
       display: 'flex',
       alignItems: 'center',
+      justifyContent: 'flex-end',
       paddingTop: '0.5em',
       '& *:not(:last-child)': {
         marginRight: '0.3em',

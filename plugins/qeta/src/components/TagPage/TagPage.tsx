@@ -5,7 +5,6 @@ import {
   AskQuestionButton,
   ButtonContainer,
   CreateLinkButton,
-  MarkdownRenderer,
   PostsContainer,
   PostsGrid,
   qetaApiRef,
@@ -16,11 +15,14 @@ import {
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import LocalOfferOutlined from '@material-ui/icons/LocalOfferOutlined';
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+import PeopleIcon from '@material-ui/icons/People';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
-import { Card, CardContent, Typography } from '@material-ui/core';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { ContentHeaderCard } from '@drodil/backstage-plugin-qeta-react';
+import { Typography } from '@material-ui/core';
 
 export const TagPage = () => {
   const { tag } = useParams();
@@ -73,7 +75,7 @@ export const TagPage = () => {
                   fontSize="large"
                   style={{ marginRight: '8px' }}
                 />
-                #{tag}
+                {tag}
               </Typography>
               <TagFollowButton tag={tag} />
             </span>
@@ -108,34 +110,38 @@ export const TagPage = () => {
         </ContentHeader>
       )}
       {resp && (
-        <Card variant="outlined" style={{ marginBottom: '1em' }}>
-          <CardContent>
-            <Typography variant="caption">
-              {t('common.posts', {
+        <ContentHeaderCard
+          description={resp.description}
+          imageIcon={<LocalOfferOutlined style={{ fontSize: 80 }} />}
+          stats={[
+            {
+              label: t('common.postsLabel', {
                 count: resp.postsCount,
                 itemType: 'post',
-              })}
-              {' · '}
-              {t('common.followers', { count: resp.followerCount })}
+              }),
+              value: resp.postsCount,
+              icon: <QuestionAnswerIcon fontSize="small" />,
+            },
+            {
+              label: t('common.followersLabel', { count: resp.followerCount }),
+              value: resp.followerCount,
+              icon: <PeopleIcon fontSize="small" />,
+            },
+          ]}
+        >
+          {resp.experts && resp.experts.length > 0 && (
+            <Typography variant="caption">
+              {t('common.experts')}
+              {': '}
+              {resp.experts.map((e, i) => (
+                <>
+                  <EntityRefLink key={e} entityRef={e} />
+                  {i === resp.experts!.length - 1 ? '' : ','}
+                </>
+              ))}
             </Typography>
-            <br />
-            {resp.experts && resp.experts.length > 0 && (
-              <Typography variant="caption">
-                {t('common.experts')}
-                {': '}
-                {resp.experts.map((e, i) => (
-                  <>
-                    <EntityRefLink key={e} entityRef={e} />
-                    {i === resp.experts!.length - 1 ? '' : ','}
-                  </>
-                ))}
-              </Typography>
-            )}
-            {resp.description && (
-              <MarkdownRenderer content={resp.description} />
-            )}
-          </CardContent>
-        </Card>
+          )}
+        </ContentHeaderCard>
       )}
       {tag &&
         (view === 'grid' ? (

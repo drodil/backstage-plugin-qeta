@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
-import { ContentHeader } from '@backstage/core-components';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useApi } from '@backstage/core-plugin-api';
 import {
   AskQuestionButton,
   ButtonContainer,
@@ -9,111 +10,162 @@ import {
   EntityFollowButton,
   PostsContainer,
   PostsGrid,
-  qetaApiRef,
   qetaTranslationRef,
+  useQetaApi,
   ViewType,
   WriteArticleButton,
+  ContentHeaderCard,
 } from '@drodil/backstage-plugin-qeta-react';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
-import { Card, CardContent, Typography } from '@material-ui/core';
+import {
+  EntityRefLink,
+  useEntityPresentation,
+  catalogApiRef,
+} from '@backstage/plugin-catalog-react';
+import { Typography } from '@material-ui/core';
 import CategoryOutlined from '@material-ui/icons/CategoryOutlined';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+import PeopleIcon from '@material-ui/icons/People';
+import { Skeleton } from '@material-ui/lab';
+import { ContentHeader, WarningPanel } from '@backstage/core-components';
+import { Entity } from '@backstage/catalog-model';
+
+const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
+  const { t } = useTranslationRef(qetaTranslationRef);
+  const [view, setView] = useState<ViewType>('list');
+  const [entity, setEntity] = useState<Entity | undefined>(undefined);
+  const { Icon } = useEntityPresentation(entityRef);
+  const catalogApi = useApi(catalogApiRef);
+
+  useEffect(() => {
+    catalogApi.getEntityByRef(entityRef).then(e => setEntity(e));
+  }, [catalogApi, entityRef]);
+
+  const {
+    value: resp,
+    loading,
+    error,
+  } = useQetaApi(api => api.getEntity(entityRef), [entityRef]);
+
+  if (loading) {
+    return <Skeleton variant="rect" height={200} />;
+  }
+
+  if (error || !resp) {
+    return (
+      <WarningPanel severity="error" title={t('questionPage.errorLoading')}>
+        {error?.message}
+      </WarningPanel>
+    );
+  }
+
+  const title = (
+    <Typography
+      variant="h4"
+      component="h2"
+      style={{ display: 'flex', alignItems: 'center' }}
+    >
+      <CategoryOutlined fontSize="large" style={{ marginRight: '8px' }} />
+      <EntityRefLink
+        entityRef={resp.entityRef}
+        defaultKind="Component"
+        hideIcon
+      />
+      <span style={{ marginLeft: '0.5em' }}>
+        <EntityFollowButton entityRef={resp.entityRef} />
+      </span>
+    </Typography>
+  );
+
+  const description = `${entity?.kind} ${
+    entity?.spec?.type ? `(${entity?.spec?.type})` : ''
+  }`;
+
+  return (
+    <>
+      <ContentHeader titleComponent={title} description={description}>
+        <ButtonContainer>
+          <AskQuestionButton entity={resp.entityRef} />
+          <WriteArticleButton entity={resp.entityRef} />
+          <CreateLinkButton entity={resp.entityRef} />
+        </ButtonContainer>
+      </ContentHeader>
+      {resp && (
+        <ContentHeaderCard
+          description={entity?.metadata?.description}
+          imageIcon={
+            Icon ? (
+              <div style={{ fontSize: '80px', display: 'flex' }}>
+                <Icon fontSize="inherit" />
+              </div>
+            ) : (
+              <CategoryOutlined style={{ fontSize: 80 }} />
+            )
+          }
+          stats={[
+            {
+              label: t('common.postsLabel', {
+                count: resp.postsCount,
+                itemType: 'post',
+              }),
+              value: resp.postsCount,
+              icon: <QuestionAnswerIcon fontSize="small" />,
+            },
+            {
+              label: t('common.followersLabel', { count: resp.followerCount }),
+              value: resp.followerCount,
+              icon: <PeopleIcon fontSize="small" />,
+            },
+          ]}
+        />
+      )}
+      {view === 'grid' ? (
+        <PostsGrid
+          entity={entityRef}
+          filterPanelProps={{ showEntityFilter: false }}
+          view={view}
+          onViewChange={setView}
+        />
+      ) : (
+        <PostsContainer
+          entity={entityRef}
+          filterPanelProps={{ showEntityFilter: false }}
+          view={view}
+          showTypeLabel
+          onViewChange={setView}
+        />
+      )}
+    </>
+  );
+};
 
 export const EntityPage = () => {
   const { entityRef } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const [resp, setResp] = useState<undefined | EntityResponse>();
-  const [view, setView] = useState<ViewType>('list');
 
-  const qetaApi = useApi(qetaApiRef);
-  const alertApi = useApi(alertApiRef);
-
-  useEffect(() => {
-    if (!entityRef) {
-      setResp(undefined);
-      return;
-    }
-
-    qetaApi
-      .getEntity(entityRef)
-      .then(res => {
-        if (res) {
-          setResp(res);
-        }
-      })
-      .catch(e => {
-        alertApi.post({
-          message: e.message,
-          severity: 'error',
-          display: 'transient',
-        });
-      });
-  }, [qetaApi, entityRef, alertApi]);
-
-  let shownTitle: string = t('entitiesPage.defaultTitle');
-  let link = undefined;
   if (entityRef) {
-    shownTitle = '';
-    link = <EntityRefLink entityRef={entityRef} />;
+    return <SingleEntityPage entityRef={entityRef} />;
   }
 
   return (
     <>
       <ContentHeader
         titleComponent={
-          <span style={{ display: 'flex', alignItems: 'center' }}>
+          <Typography
+            variant="h4"
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
             <CategoryOutlined fontSize="large" style={{ marginRight: '8px' }} />
-            <Typography
-              variant="h5"
-              component="h2"
-              style={{ marginRight: '0.5em' }}
-            >
-              {shownTitle} {link}
-            </Typography>
-            {entityRef && <EntityFollowButton entityRef={entityRef} />}
-          </span>
+            {t('entitiesPage.defaultTitle')}
+          </Typography>
         }
       >
         <ButtonContainer>
-          <AskQuestionButton entity={entityRef} />
-          <WriteArticleButton entity={entityRef} />
-          <CreateLinkButton entity={entityRef} />
+          <AskQuestionButton />
+          <WriteArticleButton />
+          <CreateLinkButton />
         </ButtonContainer>
       </ContentHeader>
-      {resp && (
-        <Card variant="outlined" style={{ marginBottom: '1em' }}>
-          <CardContent>
-            <Typography variant="caption">
-              {t('common.posts', {
-                count: resp.postsCount,
-                itemType: 'post',
-              })}
-              {' · '}
-              {t('common.followers', { count: resp.followerCount })}
-            </Typography>
-          </CardContent>
-        </Card>
-      )}
-      {entityRef &&
-        (view === 'grid' ? (
-          <PostsGrid
-            entity={entityRef}
-            filterPanelProps={{ showEntityFilter: false }}
-            view={view}
-            onViewChange={setView}
-          />
-        ) : (
-          <PostsContainer
-            entity={entityRef}
-            filterPanelProps={{ showEntityFilter: false }}
-            view={view}
-            showTypeLabel
-            onViewChange={setView}
-          />
-        ))}
-      {!entityRef && <EntitiesGrid />}
+      <EntitiesGrid />
     </>
   );
 };

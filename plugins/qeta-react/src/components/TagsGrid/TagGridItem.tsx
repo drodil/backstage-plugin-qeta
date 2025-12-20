@@ -225,22 +225,6 @@ export const TagGridItem = (props: {
             </Box>
           )}
 
-          {tag.experts && tag.experts.length > 0 && (
-            <Box className={classes.experts} mt={2}>
-              <Typography variant="caption" display="block">
-                {t('common.experts')}
-              </Typography>
-              <Box>
-                {tag.experts.map((expert, i) => (
-                  <span key={expert}>
-                    <UserLink entityRef={expert} />
-                    {i < tag.experts!.length - 1 && ', '}
-                  </span>
-                ))}
-              </Box>
-            </Box>
-          )}
-
           <Grid container spacing={1} className={localClasses.statsGrid}>
             <Grid item xs={6}>
               <Box

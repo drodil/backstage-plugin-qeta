@@ -23,7 +23,7 @@ export * from './PostsGrid';
 export * from './ArticleContent';
 export * from './CollectionForm';
 export * from './CollectionsGrid';
-export * from './CollectionCard';
+
 export * from './LeftMenu';
 export * from './TemplateList';
 export * from './SelectTemplateList';
@@ -33,3 +33,4 @@ export * from './LinkCard';
 export * from './FaviconItem';
 export * from './ExtensionContext';
 export { DeletedBanner, DraftBanner, StatusChip } from './Utility';
+export * from './ContentHeaderCard/ContentHeaderCard';
