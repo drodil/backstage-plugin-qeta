@@ -750,10 +750,9 @@ describe('Posts Routes', () => {
         .send({ content: 'updated content' });
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
-        ...question,
-        created: '2022-01-01T00:00:00.000Z',
-      });
+      expect(response.body).toEqual(
+        JSON.parse(JSON.stringify(questionWithComment)),
+      );
     });
   });
 
