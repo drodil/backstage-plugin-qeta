@@ -24,6 +24,7 @@ import StarIcon from '@material-ui/icons/Star';
 import Visibility from '@material-ui/icons/Visibility';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import ThumbUp from '@material-ui/icons/ThumbUp';
+import TouchApp from '@material-ui/icons/TouchApp';
 import { StatusChip } from '../Utility/StatusChip';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
 import { FaviconItem } from '../FaviconItem';
@@ -219,9 +220,20 @@ export const PostListItem = (props: PostListItemProps) => {
   return (
     <Box className={styles.root} onClick={handleClick}>
       <Box className={styles.metaCol} aria-label={t('common.postStats')}>
-        <Tooltip title={t('common.votesCount', { count: score })} arrow>
+        <Tooltip
+          title={
+            post.type === 'link'
+              ? t('common.clicksCount', { count: score })
+              : t('common.votesCount', { count: score })
+          }
+          arrow
+        >
           <Box className={styles.metaItem}>
-            <ThumbUp className={styles.metaIcon} />
+            {post.type === 'link' ? (
+              <TouchApp className={styles.metaIcon} />
+            ) : (
+              <ThumbUp className={styles.metaIcon} />
+            )}
             <Typography variant="caption" style={{ fontSize: 'inherit' }}>
               {formatShortNumber(score)}
             </Typography>
@@ -246,16 +258,14 @@ export const PostListItem = (props: PostListItemProps) => {
           </Tooltip>
         )}
 
-        {post.type !== 'link' && (
-          <Tooltip title={t('common.viewsCount', { count: views })} arrow>
-            <Box className={styles.metaItem}>
-              <Visibility className={styles.metaIcon} />
-              <Typography variant="caption" style={{ fontSize: 'inherit' }}>
-                {formatShortNumber(views)}
-              </Typography>
-            </Box>
-          </Tooltip>
-        )}
+        <Tooltip title={t('common.viewsCount', { count: views })} arrow>
+          <Box className={styles.metaItem}>
+            <Visibility className={styles.metaIcon} />
+            <Typography variant="caption" style={{ fontSize: 'inherit' }}>
+              {formatShortNumber(views)}
+            </Typography>
+          </Box>
+        </Tooltip>
       </Box>
 
       <Box className={styles.contentContainer}>

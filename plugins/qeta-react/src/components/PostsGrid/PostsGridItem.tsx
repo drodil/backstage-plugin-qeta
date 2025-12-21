@@ -354,18 +354,16 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
                   </Box>
                 </Tooltip>
               )}
-              {post.type !== 'link' && (
-                <Tooltip title={views >= 1000 ? views : ''} arrow>
-                  <Box className={classes.statBox}>
-                    <Typography className={classes.statValue}>
-                      {formatShortNumber(views)}
-                    </Typography>
-                    <Typography className={classes.statLabel}>
-                      {t('common.views')}
-                    </Typography>
-                  </Box>
-                </Tooltip>
-              )}
+              <Tooltip title={views >= 1000 ? views : ''} arrow>
+                <Box className={classes.statBox}>
+                  <Typography className={classes.statValue}>
+                    {formatShortNumber(views)}
+                  </Typography>
+                  <Typography className={classes.statLabel}>
+                    {t('common.views')}
+                  </Typography>
+                </Box>
+              </Tooltip>
               <Tooltip title={commentsCount >= 1000 ? commentsCount : ''} arrow>
                 <Box className={classes.statBox}>
                   <Typography className={classes.statValue}>
