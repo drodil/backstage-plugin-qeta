@@ -1,13 +1,16 @@
 import { InfoCard, Progress } from '@backstage/core-components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AIAnswerCard,
   ContentHeader,
   PostForm,
   qetaTranslationRef,
+  QuestionFormValues,
   SelectTemplateList,
   useAI,
   useQetaApi,
+  useQetaContext,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
@@ -23,6 +26,14 @@ export const AskPage = () => {
   const [draft, setDraft] = useState<
     { title: string; content: string } | undefined
   >(undefined);
+  const { setDraftQuestion } = useQetaContext();
+
+  useEffect(() => {
+    return () => {
+      setDraftQuestion?.(undefined);
+    };
+  }, [setDraftQuestion]);
+
   const [template, setTemplate] = useState<Template | null | undefined>(
     undefined,
   );
@@ -72,7 +83,15 @@ export const AskPage = () => {
     );
   }
 
-  const handleFormChange = (data: { title: string; content: string }) => {
+  const handleFormChange = (data: QuestionFormValues) => {
+    if (setDraftQuestion) {
+      setDraftQuestion({
+        title: data.title,
+        content: data.content,
+        tags: data.tags,
+        entities: data.entities?.map(stringifyEntityRef),
+      });
+    }
     if (!isNewQuestionsEnabled) {
       return;
     }

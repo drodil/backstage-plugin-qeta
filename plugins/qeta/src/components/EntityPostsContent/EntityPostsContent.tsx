@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   PostsContainer,
   PostsContainerProps,
-  QetaExtensionProvider,
+  QetaProvider,
   ViewType,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Content } from '@backstage/core-components';
@@ -27,7 +27,7 @@ export const EntityPostsContent = (props: EntityPostsContentProps) => {
   }
 
   return (
-    <QetaExtensionProvider
+    <QetaProvider
       remarkPlugins={props.remarkPlugins}
       rehypePlugins={props.rehypePlugins}
     >
@@ -41,6 +41,6 @@ export const EntityPostsContent = (props: EntityPostsContentProps) => {
           />
         </Container>
       </Content>
-    </QetaExtensionProvider>
+    </QetaProvider>
   );
 };

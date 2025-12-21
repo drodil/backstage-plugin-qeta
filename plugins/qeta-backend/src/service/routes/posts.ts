@@ -238,6 +238,43 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     response.json(posts);
   });
 
+  // POST /posts/suggest
+  router.post(`/posts/suggest`, async (request, response) => {
+    const username = await permissionMgr.getUsername(request, true);
+    if (!request.body.title) {
+      response.status(400).send({ errors: 'Title is required', type: 'body' });
+      return;
+    }
+
+    const { title, content, tags, entities } = request.body;
+
+    const [filter, tagsFilter, commentsFilter, answersFilter] =
+      await getPostFilters(request, {
+        includeAnswers: true,
+        includeComments: false,
+        includeAttachments: false,
+        includeExperts: false,
+      });
+
+    console.log(`Request ${JSON.stringify(request.body)}`);
+
+    const posts = await database.suggestPosts(
+      username,
+      title,
+      content,
+      tags,
+      entities,
+      filter,
+      { tagsFilter, commentsFilter, answersFilter },
+    );
+
+    await mapAdditionalFields(request, posts.posts, options, {
+      checkRights: false,
+      username,
+    });
+    response.json(posts);
+  });
+
   // GET /posts/list/:type
   router.get(`/posts/list/:type`, async (request, response) => {
     // Validation

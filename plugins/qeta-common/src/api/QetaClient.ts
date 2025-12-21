@@ -429,6 +429,32 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as EntityResponse;
   }
 
+  async suggest(
+    options: ContentSuggestionsQuery & {
+      tags?: string[];
+      entities?: string[];
+    },
+    requestOptions?: RequestOptions,
+  ): Promise<PostsResponse> {
+    const response = await this.fetch('/posts/suggest', {
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify(options),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+      requestOptions,
+    });
+    const data = (await response.json()) as PostsResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to fetch suggestions', data.errors);
+    }
+
+    return data;
+  }
+
   async clickLink(id: number): Promise<void> {
     if (!id) {
       throw new QetaError('Invalid id provided', undefined);

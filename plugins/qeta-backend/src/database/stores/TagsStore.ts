@@ -381,10 +381,12 @@ export class TagsStore extends BaseStore {
 
   private async updateTagExperts(id: number, experts: string[]) {
     await this.db('tag_experts').where('tagId', id).delete();
-    await this.db
-      .insert(experts.map(e => ({ tagId: id, entityRef: e })))
-      .into('tag_experts')
-      .onConflict(['tagId', 'entityRef'])
-      .merge();
+    if (experts.length > 0) {
+      await this.db
+        .insert(experts.map(e => ({ tagId: id, entityRef: e })))
+        .into('tag_experts')
+        .onConflict(['tagId', 'entityRef'])
+        .merge();
+    }
   }
 }

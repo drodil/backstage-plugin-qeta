@@ -26,7 +26,7 @@ import GithubSlugger from 'github-slugger';
 import { HtmlElementNode } from '@jsdevtools/rehype-toc/lib/types';
 import { find } from 'unist-util-find';
 import { TagChip } from '../TagsAndEntities/TagChip';
-import { useQetaExtensions } from '../ExtensionContext/ExtensionContext';
+import { useQetaContext } from '../QetaContext';
 
 const slugger = new GithubSlugger();
 
@@ -297,7 +297,7 @@ export const MarkdownRenderer = (props: {
     }
   }, []);
 
-  const extensions = useQetaExtensions();
+  const extensions = useQetaContext();
 
   const rehypePlugins: import('unified').PluggableList = [[rehypeSlug]];
   if (showToc) {

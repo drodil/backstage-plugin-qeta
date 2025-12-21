@@ -31,7 +31,7 @@ export * from './AIAnswerCard';
 export * from './SuggestionsCard';
 export * from './LinkCard';
 export * from './FaviconItem';
-export * from './ExtensionContext';
+export * from './QetaContext';
 export { DeletedBanner, DraftBanner, StatusChip } from './Utility';
 export * from './ContentHeaderCard/ContentHeaderCard';
 export * from './ContentHeader/ContentHeader';

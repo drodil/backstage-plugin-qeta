@@ -263,6 +263,14 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<EntityResponse | null>;
 
+  suggest(
+    options: ContentSuggestionsQuery & {
+      tags?: string[];
+      entities?: string[];
+    },
+    requestOptions?: RequestOptions,
+  ): Promise<PostsResponse>;
+
   getUsers(
     options?: UsersQuery,
     requestOptions?: RequestOptions,

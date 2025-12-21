@@ -197,7 +197,7 @@ export const PostForm = (props: PostFormProps) => {
     getValues: getFormValues,
     setValue,
     watch,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting, isValid, isDirty },
   } = useForm<QuestionFormValues>({
     values,
     defaultValues: getDefaultValues(props),
@@ -424,8 +424,6 @@ export const PostForm = (props: PostFormProps) => {
     reset(values);
   }, [values, reset]);
 
-  useConfirmNavigationIfEdited(edited && !posting);
-
   const onImageUpload = useCallback(
     (imageId: number) => {
       setImages(prevImages => [...prevImages, imageId]);
@@ -436,12 +434,18 @@ export const PostForm = (props: PostFormProps) => {
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitleCharCount(e.target.value.length);
-    setValue('title', e.target.value, { shouldValidate: true });
+    setValue('title', e.target.value, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFavicon(undefined);
-    setValue('url', e.target.value, { shouldValidate: true });
+    setValue('url', e.target.value, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   const validateUrl = (value?: string) => {
@@ -543,6 +547,23 @@ export const PostForm = (props: PostFormProps) => {
     localStorage.setItem('qeta-auto-save-enabled', JSON.stringify(newValue));
   };
 
+  useEffect(() => {
+    const subscription = watch((value, { type: eventType }) => {
+      // We still track edits for non-dirty interactions if any,
+      // but isDirty handles most form fields.
+      if (eventType === 'change') {
+        setEdited(true);
+      }
+      // Always trigger suggestions update on value change
+      onFormChange?.(value as QuestionFormValues);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, onFormChange]);
+
+  const hasChanges = isDirty || edited;
+
+  useConfirmNavigationIfEdited(hasChanges && !posting);
+
   if (loadError) {
     return (
       <Alert severity="error">{t('postForm.errorLoading', { type })}</Alert>
@@ -554,10 +575,6 @@ export const PostForm = (props: PostFormProps) => {
       onSubmit={handleSubmit(data =>
         postQuestion({ ...data, status: 'active' }),
       )}
-      onChange={() => {
-        setEdited(true);
-        onFormChange?.(control._formValues as QuestionFormValues);
-      }}
       style={{ maxWidth: 1000, margin: '0 auto' }}
     >
       {error && (

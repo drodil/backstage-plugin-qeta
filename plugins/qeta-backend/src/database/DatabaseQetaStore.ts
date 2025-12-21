@@ -799,6 +799,26 @@ export class DatabaseQetaStore implements QetaStore {
     return this.statsStore.getTotalViews(user_ref, lastDays, excludeUser);
   }
 
+  async suggestPosts(
+    user_ref: string,
+    title: string,
+    content: string,
+    tags?: string[],
+    entities?: string[],
+    filters?: PermissionCriteria<QetaFilters>,
+    opts?: PostOptions,
+  ): Promise<Posts> {
+    return this.postsStore.suggestPosts(
+      user_ref,
+      title,
+      content,
+      tags,
+      entities,
+      filters,
+      opts,
+    );
+  }
+
   async cleanStats(days: number, date: Date): Promise<void> {
     return this.statsStore.cleanStats(days, date);
   }

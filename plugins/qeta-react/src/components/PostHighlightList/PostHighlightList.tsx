@@ -2,6 +2,7 @@ import { Fragment, ReactNode } from 'react';
 import {
   PostsQuery,
   PostType,
+  Post,
   selectByPostType,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from '../../hooks';
@@ -76,48 +77,29 @@ function formatShortNumber(num: number): string {
   return num >= 1000 ? numeral(num).format('0.0 a') : num.toString();
 }
 
-export const PostHighlightList = (props: {
-  type: string;
+export const PostHighlightListContent = (props: {
+  loading?: boolean;
+  error?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  posts: Post[];
   title: string;
-  noQuestionsLabel: string;
   icon?: ReactNode;
-  options?: PostsQuery;
-  postType?: PostType;
+  noPostsLabel?: string;
+  disableLoading?: boolean;
 }) => {
-  const {
-    value: response,
-    loading,
-    error,
-  } = useQetaApi(
-    api =>
-      api.getPostsList(props.type, {
-        limit: 5,
-        type: props.postType,
-        includeTags: false,
-        includeAttachments: false,
-        includeComments: false,
-        includeAnswers: false,
-        includeVotes: false,
-        includeEntities: false,
-        includeExperts: false,
-        ...props.options,
-      }),
-    [],
-  );
+  const { loading, error, posts, title, icon, noPostsLabel, disableLoading } =
+    props;
+  const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
   const navigate = useNavigate();
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
   const linkRoute = useRouteRef(linkRouteRef);
 
-  const classes = useStyles();
-
-  const posts = response?.posts ?? [];
-
   return (
     <RightListContainer>
-      <RightList title={props.title} icon={props.icon}>
+      <RightList title={title} icon={icon}>
         {loading &&
+          !disableLoading &&
           Array.from({ length: 5 }).map((_, i) => (
             <ListItem className={classes.emptyItem} dense key={`skeleton-${i}`}>
               <Skeleton variant="rect" width="100%" height={18} />
@@ -131,10 +113,10 @@ export const PostHighlightList = (props: {
             />
           </ListItem>
         )}
-        {!error && !loading && posts.length === 0 && (
+        {!error && !loading && posts.length === 0 && noPostsLabel && (
           <ListItem className={classes.emptyItem} dense>
             <ListItemText
-              primary={props.noQuestionsLabel}
+              primary={noPostsLabel}
               classes={{ primary: classes.listItemText }}
             />
           </ListItem>
@@ -176,5 +158,47 @@ export const PostHighlightList = (props: {
           })}
       </RightList>
     </RightListContainer>
+  );
+};
+export const PostHighlightList = (props: {
+  type: string;
+  title: string;
+  noQuestionsLabel: string;
+  icon?: ReactNode;
+  options?: PostsQuery;
+  postType?: PostType;
+}) => {
+  const {
+    value: response,
+    loading,
+    error,
+  } = useQetaApi(
+    api =>
+      api.getPostsList(props.type, {
+        limit: 5,
+        type: props.postType,
+        includeTags: false,
+        includeAttachments: false,
+        includeComments: false,
+        includeAnswers: false,
+        includeVotes: false,
+        includeEntities: false,
+        includeExperts: false,
+        ...props.options,
+      }),
+    [],
+  );
+
+  const posts = response?.posts ?? [];
+
+  return (
+    <PostHighlightListContent
+      posts={posts}
+      loading={loading}
+      error={error}
+      title={props.title}
+      icon={props.icon}
+      noPostsLabel={props.noQuestionsLabel}
+    />
   );
 };

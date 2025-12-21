@@ -628,4 +628,14 @@ export interface QetaStore {
     rank: number,
   ): Promise<void>;
   getEntityLinks(): Promise<EntityLinks[]>;
+
+  suggestPosts(
+    user_ref: string,
+    title: string,
+    content: string,
+    tags?: string[],
+    entities?: string[],
+    filters?: PermissionCriteria<QetaFilters>,
+    opts?: PostOptions,
+  ): Promise<Posts>;
 }

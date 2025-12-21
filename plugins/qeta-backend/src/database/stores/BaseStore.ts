@@ -32,11 +32,17 @@ export abstract class BaseStore {
     searchQuery: string,
   ) {
     if (this.db.client.config.client === 'pg') {
+      const formattedQuery = searchQuery
+        .trim()
+        .split(/\s+/)
+        .map(term => `'${term.replace(/'/g, "''")}':*`)
+        .join(' & ');
+
       query.whereRaw(
-        `((to_tsvector(CONCAT(${columns.join(
+        `((to_tsvector('english', CONCAT_WS(' ', ${columns.join(
           ',',
-        )})) @@ to_tsquery(quote_literal(?) || ':*')))`,
-        [`${searchQuery}`],
+        )})) @@ to_tsquery('english', ?)))`,
+        [formattedQuery],
       );
     } else {
       query.whereRaw(`LOWER(CONCAT(${columns.join(',')})) LIKE LOWER(?)`, [

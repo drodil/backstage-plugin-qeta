@@ -1,7 +1,4 @@
-import {
-  PostsTable,
-  QetaExtensionProvider,
-} from '@drodil/backstage-plugin-qeta-react';
+import { PostsTable, QetaProvider } from '@drodil/backstage-plugin-qeta-react';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
 import type { PluggableList } from 'unified';
 
@@ -13,11 +10,11 @@ export const Content = (props: {
   rehypePlugins?: PluggableList;
 }) => {
   return (
-    <QetaExtensionProvider
+    <QetaProvider
       remarkPlugins={props.remarkPlugins}
       rehypePlugins={props.rehypePlugins}
     >
       <PostsTable hideTitle {...props} />
-    </QetaExtensionProvider>
+    </QetaProvider>
   );
 };

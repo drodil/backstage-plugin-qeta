@@ -131,7 +131,7 @@ export const HeaderImageInput = (props: {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(inputValue);
-      if (inputValue !== url) {
+      if (inputValue !== url && !(inputValue === '' && url === undefined)) {
         onChange(inputValue);
       }
     }, 400);

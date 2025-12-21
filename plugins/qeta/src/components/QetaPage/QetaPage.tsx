@@ -27,7 +27,7 @@ import {
   linkRouteRef,
   linksRouteRef,
   moderatorRouteRef,
-  QetaExtensionProvider,
+  QetaProvider,
   questionRouteRef,
   questionsRouteRef,
   statisticsRouteRef,
@@ -133,10 +133,7 @@ export const QetaPage = (props?: Props) => {
   });
 
   return (
-    <QetaExtensionProvider
-      remarkPlugins={remarkPlugins}
-      rehypePlugins={rehypePlugins}
-    >
+    <QetaProvider remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>
       <Page themeId={themeId}>
         <Header
           title={title}
@@ -244,6 +241,6 @@ export const QetaPage = (props?: Props) => {
           </Container>
         </Content>
       </Page>
-    </QetaExtensionProvider>
+    </QetaProvider>
   );
 };

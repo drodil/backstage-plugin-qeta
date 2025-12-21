@@ -21,6 +21,8 @@ import { TAGS } from '../../tagDb';
 import { BaseStore } from './BaseStore';
 import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
 
+import { removeStopwords, eng } from 'stopword';
+
 export interface RawPostEntity {
   id: number;
   author: string;
@@ -318,6 +320,98 @@ export class PostsStore extends BaseStore {
       }),
       total,
     };
+  }
+
+  async suggestPosts(
+    user_ref: string,
+    title: string,
+    content: string,
+    tags?: string[],
+    entities?: string[],
+    filters?: PermissionCriteria<QetaFilters>,
+    opts?: PostOptions,
+  ): Promise<Posts> {
+    const titleWords = removeStopwords(title.split(/\s+/g), eng).join(' ');
+    const contentWords = removeStopwords(content.split(/\s+/g), eng).join(' ');
+
+    console.log(`Search words:`, titleWords, contentWords);
+
+    const [titlePosts, contentPosts, tagPosts, entityPosts] = await Promise.all(
+      [
+        titleWords && titleWords.length > 0
+          ? this.getPosts(
+              user_ref,
+              {
+                searchQuery: titleWords,
+                limit: 5,
+                type: 'question',
+                status: 'active',
+                excludeAuthors: [user_ref],
+              },
+              filters,
+              opts,
+            )
+          : Promise.resolve({ posts: [], total: 0 }),
+        contentWords && contentWords.length > 0
+          ? this.getPosts(
+              user_ref,
+              {
+                searchQuery: contentWords,
+                limit: 5,
+                type: 'question',
+                status: 'active',
+                excludeAuthors: [user_ref],
+              },
+              filters,
+              opts,
+            )
+          : Promise.resolve({ posts: [], total: 0 }),
+        tags && tags.length > 0
+          ? this.getPosts(
+              user_ref,
+              {
+                limit: 5,
+                type: 'question',
+                tags: tags,
+                tagsRelation: 'or',
+                status: 'active',
+                excludeAuthors: [user_ref],
+              },
+              filters,
+              opts,
+            )
+          : Promise.resolve({ posts: [], total: 0 }),
+        entities && entities.length > 0
+          ? this.getPosts(
+              user_ref,
+              {
+                limit: 5,
+                type: 'question',
+                entities: entities,
+                entitiesRelation: 'or',
+                status: 'active',
+                excludeAuthors: [user_ref],
+              },
+              filters,
+              opts,
+            )
+          : Promise.resolve({ posts: [], total: 0 }),
+      ],
+    );
+
+    const allPosts = [
+      ...titlePosts.posts,
+      ...contentPosts.posts,
+      ...tagPosts.posts,
+      ...entityPosts.posts,
+    ];
+
+    const uniquePosts = Array.from(new Set(allPosts.map(p => p.id)))
+      .map(id => allPosts.find(p => p.id === id))
+      .filter((p): p is Post => p !== undefined);
+
+    console.log(`Unique posts: ${uniquePosts.map(p => p.id).join(', ')}`);
+    return { posts: uniquePosts.slice(0, 5), total: uniquePosts.length };
   }
 
   async getPost(

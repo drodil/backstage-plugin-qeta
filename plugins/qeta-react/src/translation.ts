@@ -384,6 +384,7 @@ export const qetaTranslationRef = createTranslationRef({
       followedTags: 'Followed tags',
       followedCollections: 'Followed collections',
       followedUsers: 'Followed users',
+      similarQuestions: 'Similar questions',
       expand: 'Expand sidebar',
       collapse: 'Collapse sidebar',
     },

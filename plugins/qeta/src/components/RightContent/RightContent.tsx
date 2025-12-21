@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { AskRightContent } from './AskRightContent';
 import {
   articlesRouteRef,
+  askRouteRef,
   collectionsRouteRef,
+  editQuestionRouteRef,
   entitiesRouteRef,
   entityRouteRef,
   favoriteQuestionsRouteRef,
@@ -85,6 +88,16 @@ export const RightContent = (props: {
     { path: questionsPath(), end: true },
     location.pathname,
   );
+  const isAsk =
+    matchPath(
+      { path: `${rootPath}${askRouteRef.path}`, end: true },
+      location.pathname,
+    ) ||
+    matchPath(
+      { path: `${rootPath}${editQuestionRouteRef.path}`, end: true },
+      location.pathname,
+    );
+
   const isArticles = matchPath(
     { path: articlesPath(), end: true },
     location.pathname,
@@ -174,6 +187,8 @@ export const RightContent = (props: {
 
   if (isHome) {
     content = <HomeRightContent />;
+  } else if (isAsk) {
+    content = <AskRightContent />;
   } else if (isQuestions) {
     content = <QuestionsRightContent tags={tags} entityRef={entityRef} />;
   } else if (isArticles) {
