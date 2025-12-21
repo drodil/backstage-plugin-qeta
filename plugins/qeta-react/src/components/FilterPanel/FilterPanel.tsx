@@ -29,6 +29,10 @@ import {
 } from '@material-ui/core';
 import AdjustIcon from '@material-ui/icons/Adjust';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import SortIcon from '@material-ui/icons/Sort';
+import SwapVertIcon from '@material-ui/icons/SwapVert';
+import TuneIcon from '@material-ui/icons/Tune';
 import { compact } from 'lodash';
 
 const radioSelect = (value: string, label: string) => {
@@ -178,11 +182,25 @@ export interface FilterPanelProps<T extends Filters>
 const useStyles = makeStyles(
   theme => ({
     root: {
-      padding: '1em',
-      paddingTop: '2em',
+      padding: '1.5em',
       marginTop: '0',
       marginBottom: '1em',
       border: `1px solid ${theme.palette.divider}`,
+      borderRadius: theme.shape.borderRadius,
+      backgroundColor: theme.palette.background.paper,
+    },
+    label: {
+      display: 'flex',
+      alignItems: 'center',
+      textTransform: 'uppercase',
+      fontSize: '0.75rem',
+      fontWeight: 'bold',
+      marginBottom: '0.75em',
+      color: theme.palette.text.secondary,
+      '& > svg': {
+        marginRight: '0.25em',
+        fontSize: '1.1rem',
+      },
     },
   }),
   { name: 'QetaFilterPanel' },
@@ -343,14 +361,15 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     <Box className={styles.root}>
       <Grid
         container
-        spacing={4}
-        alignItems="stretch"
-        justifyContent="space-evenly"
+        spacing={3}
+        alignItems="flex-start"
+        justifyContent="space-between"
       >
         {(postFilters || answerFilters) && (
-          <Grid item>
+          <Grid item xs={12} md={4}>
             <FormGroup>
-              <FormLabel id="qeta-filter-quick">
+              <FormLabel id="qeta-filter-quick" className={styles.label}>
+                <FilterListIcon />
                 {t('filterPanel.quickFilters.label')}
               </FormLabel>
               {postFilters && type === 'question' && (
@@ -439,9 +458,10 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
             </FormGroup>
           </Grid>
         )}
-        <Grid item>
-          <FormControl>
-            <FormLabel id="qeta-filter-order-by">
+        <Grid item xs={12} md={5}>
+          <FormControl component="fieldset" style={{ width: '100%' }}>
+            <FormLabel id="qeta-filter-order-by" className={styles.label}>
+              <SortIcon />
               {t('filterPanel.orderBy.label')}
             </FormLabel>
             <RadioGroup
@@ -540,9 +560,10 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
             </RadioGroup>
           </FormControl>
         </Grid>
-        <Grid item>
-          <FormControl>
-            <FormLabel id="qeta-filter-order">
+        <Grid item xs={12} md={3}>
+          <FormControl component="fieldset">
+            <FormLabel id="qeta-filter-order" className={styles.label}>
+              <SwapVertIcon />
               {t('filterPanel.order.label')}
             </FormLabel>
             <RadioGroup
@@ -562,20 +583,31 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
           <Box marginY="24px">
             <Divider />
           </Box>
-          <Grid container alignItems="stretch" justifyContent="space-evenly">
-            <Grid item>
+          <Box marginBottom="1em">
+            <FormLabel className={styles.label}>
+              <TuneIcon />
+              {t('filterPanel.filters.label')}
+            </FormLabel>
+          </Box>
+          <Grid
+            container
+            spacing={2}
+            alignItems="flex-start"
+            justifyContent="flex-start"
+          >
+            <Grid item xs={12} md={4}>
               <DateRangeFilter
                 value={filters.dateRange}
                 onChange={val => onChange({ key: 'dateRange', value: val })}
               />
             </Grid>
             {showEntityFilter && (
-              <Grid item>
+              <Grid item xs={12} md={4}>
                 <Grid container alignItems="center">
-                  <Grid item>
+                  <Grid item xs>
                     <EntitiesInput
                       disabled={starredEntities || ownedEntities}
-                      style={{ width: '230px' }}
+                      style={{ width: '100%' }}
                       onChange={(newEntities?: Entity[]) => {
                         const entityRefs = (newEntities ?? []).map(e =>
                           stringifyEntityRef(e),
@@ -628,11 +660,11 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
               </Grid>
             )}
             {showTagFilter && (
-              <Grid item>
+              <Grid item xs={12} md={4}>
                 <Grid container alignItems="center">
-                  <Grid item>
+                  <Grid item xs>
                     <TagInput
-                      style={{ width: '230px' }}
+                      style={{ width: '100%' }}
                       onChange={(newTags: string[]) =>
                         onChange({ key: 'tags', value: newTags })
                       }

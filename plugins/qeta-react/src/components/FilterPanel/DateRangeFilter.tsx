@@ -24,7 +24,7 @@ const useStyles = makeStyles(
   theme => ({
     root: {},
     textInput: {
-      minWidth: '230px',
+      width: '100%',
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
       '& input[type="date"]': {
@@ -76,7 +76,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
   );
 
   return (
-    <Grid container className={styles.root}>
+    <Grid container className={styles.root} spacing={1}>
       {validation.message && (
         <Grid item xs={12}>
           <Typography color="error" variant="body2">
@@ -84,7 +84,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
           </Typography>
         </Grid>
       )}
-      <Grid item>
+      <Grid item xs={12}>
         <TextField
           select
           className={styles.textInput}
@@ -111,7 +111,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
       </Grid>
       {dateRangeOption === 'custom' && (
         <>
-          <Grid item>
+          <Grid item xs={6}>
             <TextField
               className={styles.textInput}
               variant="outlined"
@@ -129,7 +129,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
               }}
             />
           </Grid>
-          <Grid item>
+          <Grid item xs={6}>
             <TextField
               className={styles.textInput}
               variant="outlined"
