@@ -113,13 +113,6 @@ export const TagsGrid = () => {
         buttons={
           response && (
             <>
-              <Button
-                onClick={() => setShowFilterPanel(!showFilterPanel)}
-                className="qetaCollectionsContainerFilterPanelBtn"
-                startIcon={<FilterList />}
-              >
-                {t('filterPanel.filterButton')}
-              </Button>
               <OptionalRequirePermission
                 permission={qetaCreateTagPermission}
                 errorPage={<></>}
@@ -139,6 +132,14 @@ export const TagsGrid = () => {
                   isModerator={isModerator}
                 />
               </OptionalRequirePermission>
+              <Button
+                onClick={() => setShowFilterPanel(!showFilterPanel)}
+                className="qetaCollectionsContainerFilterPanelBtn"
+                startIcon={<FilterList />}
+                style={{ marginLeft: '1em' }}
+              >
+                {t('filterPanel.filterButton')}
+              </Button>
             </>
           )
         }

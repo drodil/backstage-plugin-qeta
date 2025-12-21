@@ -5,7 +5,7 @@ import {
   ListItemIcon,
   makeStyles,
   MenuItem,
-  MenuList,
+  List,
   Tooltip,
   Typography,
 } from '@material-ui/core';
@@ -249,15 +249,15 @@ export const LeftMenu = (props: {
   const isCompact = compact && !isPopup;
 
   return (
-    <MenuList
+    <List
       id="left-menu"
       className={`${styles.leftMenu} ${
         isPopup
           ? styles.inPopup
           : `${styles.outsidePopup} ${isCompact ? styles.leftMenuCompact : ''}`
       }`}
-      onKeyDown={props.onKeyDown}
-      autoFocusItem={props.autoFocusItem}
+      component="nav"
+      aria-labelledby="nested-list-subheader"
       disablePadding
     >
       {!isPopup && (
@@ -284,10 +284,12 @@ export const LeftMenu = (props: {
         </ListItemIcon>
       </CustomMenuItem>
 
-      <Typography className={styles.sectionHeader}>
-        {t('leftMenu.content')}
-      </Typography>
-      <Divider className={styles.divider} />
+      <li style={{ listStyle: 'none' }}>
+        <Typography className={styles.sectionHeader}>
+          {t('leftMenu.content')}
+        </Typography>
+      </li>
+      <Divider className={styles.divider} component="li" />
 
       <CustomMenuItem
         route={questionsRoute()}
@@ -348,10 +350,12 @@ export const LeftMenu = (props: {
         </ListItemIcon>
       </CustomMenuItem>
 
-      <Typography className={styles.sectionHeader}>
-        {t('leftMenu.community')}
-      </Typography>
-      <Divider className={styles.divider} />
+      <li style={{ listStyle: 'none' }}>
+        <Typography className={styles.sectionHeader}>
+          {t('leftMenu.community')}
+        </Typography>
+      </li>
+      <Divider className={styles.divider} component="li" />
 
       <CustomMenuItem
         route={collectionsRoute()}
@@ -391,10 +395,12 @@ export const LeftMenu = (props: {
 
       {isModerator && (
         <>
-          <Typography className={styles.sectionHeader}>
-            {t('leftMenu.manage')}
-          </Typography>
-          <Divider className={styles.divider} />
+          <li style={{ listStyle: 'none' }}>
+            <Typography className={styles.sectionHeader}>
+              {t('leftMenu.manage')}
+            </Typography>
+          </li>
+          <Divider className={styles.divider} component="li" />
 
           <CustomMenuItem
             route={moderatorRoute()}
@@ -406,6 +412,6 @@ export const LeftMenu = (props: {
           </CustomMenuItem>
         </>
       )}
-    </MenuList>
+    </List>
   );
 };

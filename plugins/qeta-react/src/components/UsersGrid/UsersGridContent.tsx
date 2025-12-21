@@ -36,7 +36,7 @@ export const UsersGridContent = (props: {
   }
 
   return (
-    <Grid container item xs={12} alignItems="stretch">
+    <Grid container spacing={3} alignItems="stretch">
       {response.users.map(entity => (
         <UsersGridItem user={entity} key={entity.userRef} />
       ))}

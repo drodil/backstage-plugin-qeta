@@ -33,6 +33,7 @@ export const QetaGridHeader = ({
             {!loading && (
               <Typography
                 variant="h6"
+                component="h2"
                 style={{ fontWeight: 500, paddingBottom: 2 }}
               >
                 {title}

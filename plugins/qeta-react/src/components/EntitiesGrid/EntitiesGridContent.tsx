@@ -36,7 +36,7 @@ export const EntitiesGridContent = (props: {
   }
 
   return (
-    <Grid container item xs={12} alignItems="stretch">
+    <Grid container spacing={3} alignItems="stretch">
       {response?.entities.map(entity => (
         <EntitiesGridItem entity={entity} key={entity.entityRef} />
       ))}
