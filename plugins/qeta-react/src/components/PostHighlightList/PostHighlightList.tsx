@@ -101,8 +101,11 @@ export const PostHighlightListContent = (props: {
         {loading &&
           !disableLoading &&
           Array.from({ length: 5 }).map((_, i) => (
-            <ListItem className={classes.emptyItem} dense key={`skeleton-${i}`}>
-              <Skeleton variant="rect" width="100%" height={18} />
+            <ListItem className={classes.listItem} dense key={`skeleton-${i}`}>
+              <Box className={classes.voteBox}>
+                <Skeleton variant="rect" width="100%" height="100%" />
+              </Box>
+              <Skeleton variant="text" width="80%" />
             </ListItem>
           ))}
         {error && (

@@ -404,6 +404,10 @@ export const qetaTranslationRef = createTranslationRef({
       views: 'views',
       error: 'Failed to load impact data',
       contributions: 'Your contributions helped {{lastWeek}} people this week',
+      votes: 'Votes',
+      questions: 'Questions',
+      answers: 'Answers',
+      followers: 'Followers',
     },
     rightMenu: {
       followedEntities: 'Followed entities',

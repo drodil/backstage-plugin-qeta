@@ -459,7 +459,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     const ret = await getPostAndCheckStatus(request, response, false, true);
     if (!ret) return;
-    const { post, username, answersFilter, commentsFilter, tagsFilter } = ret;
+    const { username, answersFilter, commentsFilter, tagsFilter } = ret;
 
     const comment = await database.getComment(commentId, { postId });
 
