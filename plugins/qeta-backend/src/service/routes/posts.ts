@@ -504,10 +504,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
-    await mapAdditionalFields(request, [post], options, { username });
+    await mapAdditionalFields(request, [updatedPost], options, { username });
 
     // Response
-    response.json(post);
+    response.json(updatedPost);
   });
 
   // DELETE /posts/:id/comments/:commentId

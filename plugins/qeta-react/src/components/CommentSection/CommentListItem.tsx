@@ -161,6 +161,7 @@ export const CommentListItem = (props: {
             saveButtonTitle={t('commentList.save')}
             defaultValues={{ content: comment.content }}
             disabled={posting}
+            onDiscard={() => setEditing(false)}
           />
         </>
       ) : (
@@ -170,7 +171,6 @@ export const CommentListItem = (props: {
             className={styles.content}
           />
           <Typography variant="caption" className={styles.metadata}>
-            {' • '}
             <AuthorLink entity={comment} />
             {comment.expert && <ExpertIcon />}
             {' • '}

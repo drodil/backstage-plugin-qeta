@@ -37,6 +37,7 @@ export const qetaTranslationRef = createTranslationRef({
       favorite: 'Favorite',
       readMore: 'Read more',
       clear: 'Clear search',
+      cancel: 'Cancel',
       answersCount_zero: 'No answers',
       answersCount_one: '{{count}} answer',
       answersCount_other: '{{count}} answers',

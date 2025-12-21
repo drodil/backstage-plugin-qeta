@@ -61,7 +61,7 @@ const useStyles = makeStyles(
     prominentButton: {
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(2),
-      marginLeft: theme.spacing(-3.5),
+      marginLeft: theme.spacing(1),
       padding: theme.spacing(1, 2.5),
       textTransform: 'none',
       fontSize: '1rem',
@@ -218,6 +218,7 @@ export const CommentSection = (props: {
               submit={postComment}
               saveButtonTitle={t('commentSection.post')}
               disabled={posting}
+              onDiscard={() => setFormVisible(false)}
             />
           </Box>
         )}
