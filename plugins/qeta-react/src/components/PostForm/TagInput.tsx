@@ -39,6 +39,7 @@ export const TagInput = (props: {
   title?: string;
   name?: string;
   content?: string;
+  entities?: string[];
 }) => {
   const {
     value,
@@ -50,6 +51,7 @@ export const TagInput = (props: {
     name = 'tags',
     title,
     content,
+    entities,
   } = props;
   const qetaApi = useApi(qetaApiRef);
   const config = useApi(configApiRef);
@@ -92,7 +94,7 @@ export const TagInput = (props: {
       if (title && content) {
         setLoadingSuggestions(true);
         qetaApi
-          .getTagSuggestions({ title, content })
+          .getTagSuggestions({ title, content, entities })
           .then(response => {
             setSuggestedTags(response.tags);
           })
@@ -105,7 +107,7 @@ export const TagInput = (props: {
       }
     },
     2000,
-    [title, content, qetaApi],
+    [title, content, entities, qetaApi],
   );
 
   const allowedTags = useMemo(

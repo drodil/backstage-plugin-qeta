@@ -185,7 +185,12 @@ export const EntitiesInput = (props: EntitiesInputProps) => {
       if (title && content) {
         setLoadingSuggestions(true);
         qetaApi
-          .getEntitySuggestions({ title, content, tags })
+          .getEntitySuggestions({
+            title,
+            content,
+            tags,
+            entities: [value ?? []].flat().map(stringifyEntityRef),
+          })
           .then(response => {
             setSuggestedEntities(response.entities);
           })

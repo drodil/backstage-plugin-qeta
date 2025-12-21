@@ -443,6 +443,7 @@ export interface DraftQuestion {
   title: string;
   content: string;
   tags?: string[];
+  entities?: string[];
 }
 
 export const DraftQuestionSchema: JSONSchemaType<DraftQuestion> = {
@@ -451,6 +452,11 @@ export const DraftQuestionSchema: JSONSchemaType<DraftQuestion> = {
     title: { type: 'string', minLength: 1 },
     content: { type: 'string', minLength: 1 },
     tags: {
+      type: 'array',
+      items: { type: 'string' },
+      nullable: true,
+    },
+    entities: {
       type: 'array',
       items: { type: 'string' },
       nullable: true,

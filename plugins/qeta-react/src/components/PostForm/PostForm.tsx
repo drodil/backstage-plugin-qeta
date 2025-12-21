@@ -808,8 +808,9 @@ export const PostForm = (props: PostFormProps) => {
               <TagInput
                 {...field}
                 error={tagError}
-                title={getFormValues('title')}
-                content={getFormValues('content')}
+                title={watch('title')}
+                content={watch('content')}
+                entities={watch('entities')?.map(stringifyEntityRef)}
               />
             );
           }}

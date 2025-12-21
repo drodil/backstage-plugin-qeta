@@ -166,6 +166,7 @@ export interface SuggestionsQuery {
 export interface ContentSuggestionsQuery {
   title: string;
   content: string;
+  entities?: string[];
 }
 
 export interface EntitySuggestionsQuery extends ContentSuggestionsQuery {

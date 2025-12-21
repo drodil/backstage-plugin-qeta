@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Request, Router } from 'express';
 import {
   DeleteMetadataSchema,
   DraftQuestionSchema,
@@ -214,14 +214,46 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     response.status(204).send();
   });
 
-  const getSuggestedTags = async (title: string, content: string) => {
+  const getSuggestedTags = async (
+    request: Request,
+    title: string,
+    content: string,
+    entities?: string[],
+  ) => {
+    const suggestedTags: string[] = [];
+    if (entities && entities.length > 0) {
+      try {
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: await httpAuth.credentials(request),
+          targetPluginId: 'catalog',
+        });
+        const entityResponse = await catalog.getEntitiesByRefs(
+          {
+            entityRefs: entities,
+            fields: ['metadata.tags'],
+          },
+          { token },
+        );
+        const entityTags = entityResponse.items
+          .flatMap(e => e?.metadata?.tags)
+          .filter((t): t is string => !!t)
+          .map(tag => tag.toLocaleLowerCase())
+          .filter(filterTags)
+          .slice(0, 5);
+        suggestedTags.push(...entityTags);
+      } catch (_error) {
+        // Just ignore
+      }
+    }
+
     try {
       if (aiHandler?.suggestTags) {
         const { tags } = await aiHandler.suggestTags(title, content);
-        return tags
+        suggestedTags.unshift(...tags);
+        return [...new Set(suggestedTags)]
           .filter(filterTags)
           .map(tag => tag.toLocaleLowerCase())
-          .slice(0, 8);
+          .slice(0, 10);
       }
     } catch (_error) {
       // NOOP: Fallback to database suggestions
@@ -241,26 +273,28 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       contentLower.split(/\s+/).map(word => word.toLocaleLowerCase()),
     );
 
-    const suggestedTags = existingTags
-      .filter(tag => {
-        if (
-          titleLower.includes(tag.tag.toLocaleLowerCase()) ||
-          contentLower.includes(tag.tag.toLocaleLowerCase())
-        ) {
-          return true;
-        }
+    existingTags.forEach(tag => {
+      if (
+        titleLower.includes(tag.tag.toLocaleLowerCase()) ||
+        contentLower.includes(tag.tag.toLocaleLowerCase())
+      ) {
+        suggestedTags.push(tag.tag);
+        return;
+      }
 
-        const descriptionWords = cleanWords(
-          tag.description?.toLocaleLowerCase().split(/\s+/) || [],
-        );
+      const descriptionWords = cleanWords(
+        tag.description?.toLocaleLowerCase().split(/\s+/) || [],
+      );
 
-        return (
-          titleWords.some(word => descriptionWords.includes(word)) ||
-          contentWords.some(word => descriptionWords.includes(word))
-        );
-      })
-      .map(tag => tag.tag);
-    return suggestedTags.filter(filterTags).slice(0, 8);
+      if (
+        titleWords.some(word => descriptionWords.includes(word)) ||
+        contentWords.some(word => descriptionWords.includes(word))
+      ) {
+        suggestedTags.push(tag.tag);
+      }
+    });
+
+    return [...new Set(suggestedTags)].filter(filterTags).slice(0, 10);
   };
 
   router.post('/tags/suggest', async (request, response) => {
@@ -272,10 +306,19 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
     try {
       const suggestedTags = await getSuggestedTags(
+        request,
         request.body.title,
         request.body.content,
+        request.body.entities,
       );
-      response.json({ tags: suggestedTags });
+
+      const allTags = request.body.tags
+        ? [...new Set([...request.body.tags, ...suggestedTags])]
+        : suggestedTags;
+
+      const uniqueTags = [...new Set(allTags)];
+
+      response.json({ tags: uniqueTags });
     } catch (error) {
       logger.error(`Failed to generate tag suggestions: ${error}`);
       response
@@ -488,8 +531,10 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
     try {
       const suggestedTags = await getSuggestedTags(
+        request,
         request.body.title,
         request.body.content,
+        request.body.entities,
       );
 
       const allTags = request.body.tags
@@ -515,7 +560,12 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         { token },
       );
 
-      response.json({ entities: entities.items });
+      const notSetEntities = entities.items.filter(entity => {
+        const ref = stringifyEntityRef(entity);
+        return !request.body.entities?.includes(ref);
+      });
+
+      response.json({ entities: notSetEntities });
     } catch (error) {
       logger.error(`Failed to generate entity suggestions: ${error}`);
       response
