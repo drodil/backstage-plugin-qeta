@@ -152,16 +152,14 @@ async function main() {
       const user = getUser();
       const score = faker.datatype.boolean() ? 1 : -1;
       const type = score === 1 ? 'upvote' : 'downvote';
-      await fetch(
-        `http://localhost:7007/api/qeta/posts/${id}/${type}?user=${user}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer FO23CjUG7SNlPWPCO3x25W3TlPC8lh8l',
-          },
+      await fetch(`http://localhost:7007/api/qeta/posts/${id}/${type}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer FO23CjUG7SNlPWPCO3x25W3TlPC8lh8l',
+          'x-qeta-user': user,
         },
-      );
+      });
     }
     console.log(`- Created ${voteCount} votes for post ${id}`);
   };
@@ -187,12 +185,13 @@ async function main() {
       const score = faker.datatype.boolean() ? 1 : -1;
       const type = score === 1 ? 'upvote' : 'downvote';
       await fetch(
-        `http://localhost:7007/api/qeta/posts/${postId}/answers/${answerId}/${type}?user=${user}`,
+        `http://localhost:7007/api/qeta/posts/${postId}/answers/${answerId}/${type}`,
         {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             Authorization: 'Bearer FO23CjUG7SNlPWPCO3x25W3TlPC8lh8l',
+            'x-qeta-user': user,
           },
         },
       );
