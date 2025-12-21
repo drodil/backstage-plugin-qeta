@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.49.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.48.2...v3.49.0) (2025-12-21)
+
+
+### Features
+
+* add cancel button to comment form ([2afa99c](https://github.com/drodil/backstage-plugin-qeta/commit/2afa99c2e38d8ae04ade30c31a3e1f2199d0a760))
+* add filter panel to other pages as well ([856ae79](https://github.com/drodil/backstage-plugin-qeta/commit/856ae7900810b60fc785f6b61b20a14494443c6a))
+* add icons to page titles ([71fc3b5](https://github.com/drodil/backstage-plugin-qeta/commit/71fc3b58fd8ffd1f4dfaf0fe23cb4bb090fdc5d8))
+* add more stats to impact card ([3163304](https://github.com/drodil/backstage-plugin-qeta/commit/3163304061f5af98555a32de802a20b2b1e82771))
+* add more variants to suggestions ([6cda31e](https://github.com/drodil/backstage-plugin-qeta/commit/6cda31eb82b8336cdcd600e80cc67c88e6f20e6f))
+* add similar questions list to ask page ([cdbc685](https://github.com/drodil/backstage-plugin-qeta/commit/cdbc685fd4a253f1a5213312c05de67fca520ebc))
+* allow collapsing right content ([d9534bc](https://github.com/drodil/backstage-plugin-qeta/commit/d9534bc50cecf16c98d1892d0409ff5b3fb7bd8f))
+* collapsible menu ([bb876fe](https://github.com/drodil/backstage-plugin-qeta/commit/bb876fe8eb3b8206aff4359d84834a18e63bf19f))
+* improve filter panel ui ([1ec0986](https://github.com/drodil/backstage-plugin-qeta/commit/1ec0986fd1a9a99659885946b9dcd0f9a8804ae6))
+* massive ui improvements ([9694c6a](https://github.com/drodil/backstage-plugin-qeta/commit/9694c6a77a43e9de5922f97e6ccc94a4b5060687))
+* refactor followed lists ([6a6cda4](https://github.com/drodil/backstage-plugin-qeta/commit/6a6cda4873d137ba6193232a256a75d614ee6b9e))
+* refactor page headers for all pages ([3dcbb63](https://github.com/drodil/backstage-plugin-qeta/commit/3dcbb63734f78cddde6ae8aaa6227a2f671449c0))
+* sync all header content for pages ([860af54](https://github.com/drodil/backstage-plugin-qeta/commit/860af54d4d0e8ad2f018ebabd5b783fda1eeb185))
+* use entities and tags product for suggestions ([be43668](https://github.com/drodil/backstage-plugin-qeta/commit/be43668c0a380c33077318b6ebf8488ecfe47a9b))
+
+
+### Bug Fixes
+
+* ai card flickering in case of error ([ab61f7c](https://github.com/drodil/backstage-plugin-qeta/commit/ab61f7c830de230e5c7a55ae20709df4ba0d5dfe))
+* post comment update test ([71b9a85](https://github.com/drodil/backstage-plugin-qeta/commit/71b9a85078e1aaa439167f9f8da6fcf88c1b39af))
+* show views count for links + change icon to clicks ([901a2f4](https://github.com/drodil/backstage-plugin-qeta/commit/901a2f4715e9ed425588a7fd671163617e71538e))
+* user stats page loading ([b95f761](https://github.com/drodil/backstage-plugin-qeta/commit/b95f761e09a79ad912f5e95a78b8932840e37b24))
+* vote generation in generate tool ([825b883](https://github.com/drodil/backstage-plugin-qeta/commit/825b8838a517b635816019bdf046a6d19c7fef9c))
+
 ### [3.48.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.48.1...v3.48.2) (2025-12-19)
 
 
