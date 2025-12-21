@@ -138,6 +138,9 @@ describe('Helpers Routes', () => {
           description: 'Test description',
           experts: [],
           postsCount: 5,
+          questionsCount: 0,
+          articlesCount: 0,
+          linksCount: 0,
           followerCount: 3,
         };
         qetaStore.getTag.mockResolvedValue(tag);
@@ -157,6 +160,9 @@ describe('Helpers Routes', () => {
           description: 'Updated description',
           experts: [],
           postsCount: 5,
+          questionsCount: 0,
+          articlesCount: 0,
+          linksCount: 0,
           followerCount: 3,
         };
         qetaStore.getTagById.mockResolvedValue(tag);
@@ -179,6 +185,9 @@ describe('Helpers Routes', () => {
           description: 'New tag description',
           experts: [],
           postsCount: 0,
+          questionsCount: 0,
+          articlesCount: 0,
+          linksCount: 0,
           followerCount: 0,
         };
         qetaStore.getTag.mockResolvedValue(null);
@@ -202,6 +211,9 @@ describe('Helpers Routes', () => {
           description: 'Test description',
           experts: [],
           postsCount: 5,
+          questionsCount: 0,
+          articlesCount: 0,
+          linksCount: 0,
           followerCount: 3,
         };
         qetaStore.getTagById.mockResolvedValue(tag);
@@ -273,6 +285,9 @@ describe('Helpers Routes', () => {
           id: 1,
           entityRef: 'component:default/test',
           postsCount: 5,
+          questionsCount: 0,
+          articlesCount: 0,
+          linksCount: 0,
           followerCount: 3,
         };
         qetaStore.getEntity.mockResolvedValue(entity);

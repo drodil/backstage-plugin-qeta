@@ -34,6 +34,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import LinkIcon from '@material-ui/icons/Link';
+import StarIcon from '@material-ui/icons/Star';
 import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
@@ -55,6 +56,14 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
+    position: 'relative',
+  },
+  starIcon: {
+    position: 'absolute',
+    top: theme.spacing(1),
+    right: theme.spacing(1),
+    color: '#FFB400',
+    zIndex: 10,
   },
   cardContent: {
     padding: theme.spacing(1.5, 2, 1, 2),
@@ -272,6 +281,11 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
 
   return (
     <Card className={classes.card}>
+      {post.favorite && (
+        <Tooltip title={t('common.favorite')}>
+          <StarIcon className={classes.starIcon} />
+        </Tooltip>
+      )}
       <CardActionArea
         onClick={() => navigate(href)}
         aria-label={post.title}

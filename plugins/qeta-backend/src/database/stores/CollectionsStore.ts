@@ -21,6 +21,9 @@ export interface RawCollectionEntity {
   owner: string;
   headerImage: string;
   postsCount: number | string;
+  questionsCount: number | string;
+  articlesCount: number | string;
+  linksCount: number | string;
 }
 
 export class CollectionsStore extends BaseStore {
@@ -446,6 +449,9 @@ export class CollectionsStore extends BaseStore {
         posts: collectionPosts,
         headerImage: val.headerImage,
         postsCount: this.mapToInteger(val.postsCount),
+        questionsCount: this.mapToInteger(val.questionsCount),
+        articlesCount: this.mapToInteger(val.articlesCount),
+        linksCount: this.mapToInteger(val.linksCount),
         entities: entities as string[],
         tags: tags as string[],
         images: attachmentsMap.get(val.id) || [],
@@ -456,8 +462,29 @@ export class CollectionsStore extends BaseStore {
   }
 
   private getCollectionsBaseQuery() {
+    const questionsCount = this.db('collection_posts')
+      .leftJoin('posts', 'collection_posts.postId', 'posts.id')
+      .where('collection_posts.collectionId', this.db.ref('collections.id'))
+      .where('posts.type', 'question')
+      .count('*')
+      .as('questionsCount');
+
+    const articlesCount = this.db('collection_posts')
+      .leftJoin('posts', 'collection_posts.postId', 'posts.id')
+      .where('collection_posts.collectionId', this.db.ref('collections.id'))
+      .where('posts.type', 'article')
+      .count('*')
+      .as('articlesCount');
+
+    const linksCount = this.db('collection_posts')
+      .leftJoin('posts', 'collection_posts.postId', 'posts.id')
+      .where('collection_posts.collectionId', this.db.ref('collections.id'))
+      .where('posts.type', 'link')
+      .count('*')
+      .as('linksCount');
+
     return this.db<RawCollectionEntity>('collections')
-      .select('collections.*')
+      .select('collections.*', questionsCount, articlesCount, linksCount)
       .groupBy('collections.id');
   }
 }

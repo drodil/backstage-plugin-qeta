@@ -10,23 +10,21 @@ import {
   CardContent,
   CardMedia,
   Grid,
-  Tooltip,
   Typography,
   Box,
   makeStyles,
-  IconButton,
 } from '@material-ui/core';
 import DOMPurify from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import Visibility from '@material-ui/icons/Visibility';
+import { CollectionFollowButton } from '../Buttons/CollectionFollowButton';
 import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import PeopleIcon from '@material-ui/icons/People';
+import LinkIcon from '@material-ui/icons/Link';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 export interface PostsGridItemProps {
   collection: Collection;
@@ -84,7 +82,6 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
 
   const collectionRoute = useRouteRef(collectionRouteRef);
   const navigate = useNavigate();
-  const collections = useCollectionsFollow();
   const href = collectionRoute({ id: collection.id.toString(10) });
 
   return (
@@ -119,31 +116,14 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
           <Typography gutterBottom variant="h6" component="div">
             {collection.title}
           </Typography>
-          <Tooltip
-            title={
-              collections.isFollowingCollection(collection)
-                ? t('collectionButton.unfollow')
-                : t('collectionButton.follow')
-            }
+          <div
+            onClick={e => e.stopPropagation()}
+            onKeyPress={() => {}}
+            role="button"
+            tabIndex={0}
           >
-            <IconButton
-              size="small"
-              onClick={e => {
-                e.stopPropagation();
-                if (collections.isFollowingCollection(collection)) {
-                  collections.unfollowCollection(collection);
-                } else {
-                  collections.followCollection(collection);
-                }
-              }}
-            >
-              {collections.isFollowingCollection(collection) ? (
-                <VisibilityOff />
-              ) : (
-                <Visibility />
-              )}
-            </IconButton>
-          </Tooltip>
+            <CollectionFollowButton collection={collection} />
+          </div>
         </Box>
         {collection.description && (
           <Typography variant="body2" color="textSecondary" gutterBottom>
@@ -156,7 +136,7 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
           <TagsAndEntities entity={collection} />
         </Box>
         <Grid container spacing={1} className={classes.statsGrid}>
-          <Grid item xs={6}>
+          <Grid item xs={3}>
             <Box
               display="flex"
               flexDirection="column"
@@ -165,17 +145,46 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
             >
               <QuestionAnswerIcon fontSize="small" color="disabled" />
               <Typography variant="body2" style={{ fontWeight: 600 }}>
-                {collection.postsCount}
+                {collection.questionsCount}
               </Typography>
               <Typography variant="caption" color="textSecondary">
-                {t('common.postsLabel', {
-                  count: collection.postsCount,
-                  itemType: 'post',
-                })}
+                {t('common.questions')}
               </Typography>
             </Box>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={3}>
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              className={classes.statItem}
+            >
+              <DescriptionIcon fontSize="small" color="disabled" />
+              <Typography variant="body2" style={{ fontWeight: 600 }}>
+                {collection.articlesCount}
+              </Typography>
+              <Typography variant="caption" color="textSecondary">
+                {t('common.articles')}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={3}>
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              className={classes.statItem}
+            >
+              <LinkIcon fontSize="small" color="disabled" />
+              <Typography variant="body2" style={{ fontWeight: 600 }}>
+                {collection.linksCount}
+              </Typography>
+              <Typography variant="caption" color="textSecondary">
+                {t('common.links')}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={3}>
             <Box
               display="flex"
               flexDirection="column"
@@ -187,7 +196,7 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
                 {collection.followers}
               </Typography>
               <Typography variant="caption" color="textSecondary">
-                {t('common.followersLabel', { count: collection.followers })}
+                {t('common.followersPlain')}
               </Typography>
             </Box>
           </Grid>

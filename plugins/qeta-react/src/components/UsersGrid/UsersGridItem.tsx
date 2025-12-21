@@ -3,7 +3,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { userRouteRef } from '../../routes';
-import { useIdentityApi, useUserFollow } from '../../hooks';
+import { useIdentityApi } from '../../hooks';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import {
   Avatar,
@@ -14,9 +14,8 @@ import {
   Typography,
   Box,
   makeStyles,
-  IconButton,
 } from '@material-ui/core';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { UserFollowButton } from '../Buttons/UserFollowButton';
 import Visibility from '@material-ui/icons/Visibility';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
@@ -58,7 +57,6 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
     user: userEntity,
     secondaryTitle,
   } = useEntityAuthor(user);
-  const users = useUserFollow();
   const {
     value: currentUser,
     loading: loadingUser,
@@ -95,31 +93,14 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
           !userError &&
           currentUser?.userEntityRef !== user.userRef ? (
             <Box flexShrink={0}>
-              <Tooltip
-                title={
-                  users.isFollowingUser(user.userRef)
-                    ? t('userButton.unfollow')
-                    : t('userButton.follow')
-                }
+              <div
+                onClick={e => e.stopPropagation()}
+                onKeyPress={() => {}}
+                role="button"
+                tabIndex={0}
               >
-                <IconButton
-                  aria-label="follow"
-                  onClick={e => {
-                    e.stopPropagation();
-                    if (users.isFollowingUser(user.userRef)) {
-                      users.unfollowUser(user.userRef);
-                    } else {
-                      users.followUser(user.userRef);
-                    }
-                  }}
-                >
-                  {users.isFollowingUser(user.userRef) ? (
-                    <VisibilityOff />
-                  ) : (
-                    <Visibility />
-                  )}
-                </IconButton>
-              </Tooltip>
+                <UserFollowButton userRef={user.userRef} />
+              </div>
             </Box>
           ) : null}
         </Box>

@@ -16,6 +16,11 @@ export interface RawTagEntity {
   id: number;
   tag: string;
   description?: string;
+  postsCount: number | string;
+  questionsCount: number | string;
+  articlesCount: number | string;
+  linksCount: number | string;
+  followerCount: number | string;
 }
 
 export interface RawTagExpert {
@@ -295,6 +300,27 @@ export class TagsStore extends BaseStore {
       .count('*')
       .as('postsCount');
 
+    const questionsCount = this.db('post_tags')
+      .leftJoin('posts', 'post_tags.postId', 'posts.id')
+      .where('post_tags.tagId', tagRef)
+      .where('posts.type', 'question')
+      .count('*')
+      .as('questionsCount');
+
+    const articlesCount = this.db('post_tags')
+      .leftJoin('posts', 'post_tags.postId', 'posts.id')
+      .where('post_tags.tagId', tagRef)
+      .where('posts.type', 'article')
+      .count('*')
+      .as('articlesCount');
+
+    const linksCount = this.db('post_tags')
+      .leftJoin('posts', 'post_tags.postId', 'posts.id')
+      .where('post_tags.tagId', tagRef)
+      .where('posts.type', 'link')
+      .count('*')
+      .as('linksCount');
+
     const followerCount = this.db('user_tags')
       .where('user_tags.tagId', tagRef)
       .count('*')
@@ -303,7 +329,16 @@ export class TagsStore extends BaseStore {
     return this.db('tags')
       .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
       .orderBy('postsCount', 'desc')
-      .select('id', 'tag', 'description', postsCount, followerCount)
+      .select(
+        'id',
+        'tag',
+        'description',
+        postsCount,
+        questionsCount,
+        articlesCount,
+        linksCount,
+        followerCount,
+      )
       .groupBy('tags.id');
   }
 
@@ -334,8 +369,11 @@ export class TagsStore extends BaseStore {
         id: row.id,
         tag: row.tag,
         description: options?.noDescription ? undefined : row.description,
-        postsCount: this.mapToInteger((row as any).postsCount),
-        followerCount: this.mapToInteger((row as any).followerCount),
+        postsCount: this.mapToInteger(row.postsCount),
+        questionsCount: this.mapToInteger(row.questionsCount),
+        articlesCount: this.mapToInteger(row.articlesCount),
+        linksCount: this.mapToInteger(row.linksCount),
+        followerCount: this.mapToInteger(row.followerCount),
         experts: expertsMap.get(row.id) ?? [],
       };
     });

@@ -52,6 +52,9 @@ export class EntitiesStore extends BaseStore {
           id: entity.id,
           entityRef: entity.entity_ref,
           postsCount: this.mapToInteger(entity.postsCount),
+          questionsCount: this.mapToInteger(entity.questionsCount),
+          articlesCount: this.mapToInteger(entity.articlesCount),
+          linksCount: this.mapToInteger(entity.linksCount),
           followerCount: this.mapToInteger(entity.followerCount),
         };
       }),
@@ -68,6 +71,9 @@ export class EntitiesStore extends BaseStore {
       id: rows[0].id,
       entityRef: rows[0].entity_ref,
       postsCount: this.mapToInteger(rows[0].postsCount),
+      questionsCount: this.mapToInteger(rows[0].questionsCount),
+      articlesCount: this.mapToInteger(rows[0].articlesCount),
+      linksCount: this.mapToInteger(rows[0].linksCount),
       followerCount: this.mapToInteger(rows[0].followerCount),
     };
   }
@@ -227,6 +233,27 @@ export class EntitiesStore extends BaseStore {
       .count('*')
       .as('postsCount');
 
+    const questionsCount = this.db('post_entities')
+      .leftJoin('posts', 'post_entities.postId', 'posts.id')
+      .where('post_entities.entityId', entityId)
+      .where('posts.type', 'question')
+      .count('*')
+      .as('questionsCount');
+
+    const articlesCount = this.db('post_entities')
+      .leftJoin('posts', 'post_entities.postId', 'posts.id')
+      .where('post_entities.entityId', entityId)
+      .where('posts.type', 'article')
+      .count('*')
+      .as('articlesCount');
+
+    const linksCount = this.db('post_entities')
+      .leftJoin('posts', 'post_entities.postId', 'posts.id')
+      .where('post_entities.entityId', entityId)
+      .where('posts.type', 'link')
+      .count('*')
+      .as('linksCount');
+
     const followerCount = this.db('user_entities')
       .where('user_entities.entityRef', entityRef)
       .count('*')
@@ -235,7 +262,15 @@ export class EntitiesStore extends BaseStore {
     return this.db('entities')
       .rightJoin('post_entities', 'entities.id', 'post_entities.entityId')
       .orderBy('postsCount', 'desc')
-      .select('id', 'entity_ref', postsCount, followerCount)
+      .select(
+        'id',
+        'entity_ref',
+        postsCount,
+        questionsCount,
+        articlesCount,
+        linksCount,
+        followerCount,
+      )
       .groupBy('entities.id');
   }
 }

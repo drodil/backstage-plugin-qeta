@@ -6,8 +6,12 @@ import OpenLinkIcon from '@material-ui/icons/OpenInNew';
 import { qetaApiRef } from '../../api.ts';
 import { useApi } from '@backstage/core-plugin-api';
 
-export const OpenLinkButton = (props: { entity: PostResponse }) => {
-  const { entity } = props;
+export const OpenLinkButton = (props: {
+  entity: PostResponse;
+  className?: string;
+  style?: React.CSSProperties;
+}) => {
+  const { entity, className, style } = props;
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
 
@@ -28,6 +32,8 @@ export const OpenLinkButton = (props: { entity: PostResponse }) => {
         aria-label={t('link.open')}
         size="small"
         onClick={handleClick}
+        className={className}
+        style={style}
       >
         <OpenLinkIcon />
       </IconButton>

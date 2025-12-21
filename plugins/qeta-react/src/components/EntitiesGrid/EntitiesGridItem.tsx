@@ -1,4 +1,5 @@
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
+import { EntityFollowButton } from '../Buttons/EntityFollowButton';
 import {
   Avatar,
   Card,
@@ -6,7 +7,6 @@ import {
   Grid,
   Tooltip,
   Typography,
-  IconButton,
   Box,
   makeStyles,
 } from '@material-ui/core';
@@ -15,9 +15,9 @@ import { useNavigate } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
 import { parseEntityRef } from '@backstage/catalog-model';
-import { useEntityFollow } from '../../hooks';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import Visibility from '@material-ui/icons/Visibility';
+
+import LinkIcon from '@material-ui/icons/Link';
+import DescriptionIcon from '@material-ui/icons/Description';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import PeopleIcon from '@material-ui/icons/People';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -48,7 +48,6 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
   const entityRoute = useRouteRef(entityRouteRef);
   const navigate = useNavigate();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const entityFollow = useEntityFollow();
   const compound = parseEntityRef(entity.entityRef);
   const { primaryTitle, Icon, secondaryTitle } =
     useEntityPresentation(compound);
@@ -74,38 +73,21 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
             </Tooltip>
           </Box>
           <Box flexShrink={0}>
-            <Tooltip
-              title={
-                entityFollow.isFollowingEntity(entity.entityRef)
-                  ? t('entityButton.unfollow')
-                  : t('entityButton.follow')
-              }
+            <div
+              onClick={e => e.stopPropagation()}
+              onKeyPress={() => {}}
+              role="button"
+              tabIndex={0}
             >
-              <IconButton
-                aria-label="follow"
-                onClick={e => {
-                  e.stopPropagation();
-                  if (entityFollow.isFollowingEntity(entity.entityRef)) {
-                    entityFollow.unfollowEntity(entity.entityRef);
-                  } else {
-                    entityFollow.followEntity(entity.entityRef);
-                  }
-                }}
-              >
-                {entityFollow.isFollowingEntity(entity.entityRef) ? (
-                  <VisibilityOff />
-                ) : (
-                  <Visibility />
-                )}
-              </IconButton>
-            </Tooltip>
+              <EntityFollowButton entityRef={entity.entityRef} />
+            </div>
           </Box>
         </Box>
         <CardContent
           className={`${classes.cardContent} ${localClasses.flexColumn}`}
         >
           <Grid container spacing={1} className={localClasses.statsGrid}>
-            <Grid item xs={6}>
+            <Grid item xs={3}>
               <Box
                 display="flex"
                 flexDirection="column"
@@ -114,17 +96,46 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
               >
                 <QuestionAnswerIcon fontSize="small" color="disabled" />
                 <Typography variant="body2" style={{ fontWeight: 600 }}>
-                  {entity.postsCount}
+                  {entity.questionsCount}
                 </Typography>
                 <Typography variant="caption" color="textSecondary">
-                  {t('common.postsLabel', {
-                    count: entity.postsCount,
-                    itemType: 'post',
-                  })}
+                  {t('stats.questions', {})}
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={3}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                className={localClasses.statItem}
+              >
+                <DescriptionIcon fontSize="small" color="disabled" />
+                <Typography variant="body2" style={{ fontWeight: 600 }}>
+                  {entity.articlesCount}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {t('stats.articles', {})}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                className={localClasses.statItem}
+              >
+                <LinkIcon fontSize="small" color="disabled" />
+                <Typography variant="body2" style={{ fontWeight: 600 }}>
+                  {entity.linksCount}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {t('stats.links', {})}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
               <Box
                 display="flex"
                 flexDirection="column"
@@ -136,7 +147,7 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
                   {entity.followerCount}
                 </Typography>
                 <Typography variant="caption" color="textSecondary">
-                  {t('common.followersLabel', { count: entity.followerCount })}
+                  {t('stats.followers', {})}
                 </Typography>
               </Box>
             </Grid>

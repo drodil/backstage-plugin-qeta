@@ -150,8 +150,23 @@ const useStyles = makeStyles(theme => ({
     minWidth: 0,
   },
   typeLabel: {
-    marginLeft: theme.spacing(1),
     height: 24,
+    marginBottom: 0,
+    marginRight: 0,
+    padding: theme.spacing(0, 0.5, 0, 1),
+  },
+  openLinkButton: {
+    padding: 0,
+    height: 24,
+    width: 24,
+  },
+  starContainer: {
+    height: 24,
+    width: 24,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
   },
 }));
 
@@ -279,8 +294,10 @@ export const PostListItem = (props: PostListItemProps) => {
 
           <Box display="flex" alignItems="center" style={{ gap: '8px' }}>
             {post.favorite && (
-              <Tooltip title="Favorite">
-                <StarIcon style={{ color: '#FFB400', fontSize: 20 }} />
+              <Tooltip title={t('common.favorite')}>
+                <Box className={styles.starContainer}>
+                  <StarIcon style={{ color: '#FFB400', fontSize: 20 }} />
+                </Box>
               </Tooltip>
             )}
             <StatusChip status={post.status} />
@@ -298,7 +315,9 @@ export const PostListItem = (props: PostListItemProps) => {
                 className={styles.typeLabel}
               />
             )}
-            {post.type === 'link' && <OpenLinkButton entity={post} />}
+            {post.type === 'link' && (
+              <OpenLinkButton entity={post} className={styles.openLinkButton} />
+            )}
           </Box>
         </Box>
 

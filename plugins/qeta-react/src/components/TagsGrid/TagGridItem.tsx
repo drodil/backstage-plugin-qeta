@@ -3,6 +3,7 @@ import {
   truncate,
   removeMarkdownFormatting,
 } from '@drodil/backstage-plugin-qeta-common';
+import { TagFollowButton } from '../Buttons/TagFollowButton';
 import {
   Card,
   CardContent,
@@ -24,16 +25,15 @@ import { tagRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
 import { EditTagModal } from './EditTagModal';
 import DOMPurify from 'dompurify';
-import { useTagsFollow } from '../../hooks';
 import { DeleteModal } from '../DeleteModal';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import PeopleIcon from '@material-ui/icons/People';
+import LinkIcon from '@material-ui/icons/Link';
+import DescriptionIcon from '@material-ui/icons/Description';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
@@ -65,7 +65,6 @@ export const TagGridItem = (props: {
   const tagRoute = useRouteRef(tagRouteRef);
   const navigate = useNavigate();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const tags = useTagsFollow();
   const classes = useGridItemStyles();
   const localClasses = useStyles();
   const tooltipStyles = useTooltipStyles();
@@ -125,31 +124,14 @@ export const TagGridItem = (props: {
             </Tooltip>
           </Box>
           <Box display="flex" alignItems="center" flexShrink={0}>
-            <Tooltip
-              title={
-                tags.isFollowingTag(tag.tag)
-                  ? t('tagButton.unfollow')
-                  : t('tagButton.follow')
-              }
+            <div
+              onClick={e => e.stopPropagation()}
+              onKeyPress={() => {}}
+              role="button"
+              tabIndex={0}
             >
-              <IconButton
-                aria-label="follow"
-                onClick={e => {
-                  e.stopPropagation();
-                  if (tags.isFollowingTag(tag.tag)) {
-                    tags.unfollowTag(tag.tag);
-                  } else {
-                    tags.followTag(tag.tag);
-                  }
-                }}
-              >
-                {tags.isFollowingTag(tag.tag) ? (
-                  <VisibilityOff />
-                ) : (
-                  <Visibility />
-                )}
-              </IconButton>
-            </Tooltip>
+              <TagFollowButton tag={tag.tag} />
+            </div>
             {tag.canEdit || tag.canDelete ? (
               <>
                 <IconButton aria-label="settings" onClick={handleMenuClick}>
@@ -225,7 +207,7 @@ export const TagGridItem = (props: {
           )}
 
           <Grid container spacing={1} className={localClasses.statsGrid}>
-            <Grid item xs={6}>
+            <Grid item xs={3}>
               <Box
                 display="flex"
                 flexDirection="column"
@@ -234,17 +216,46 @@ export const TagGridItem = (props: {
               >
                 <QuestionAnswerIcon fontSize="small" color="disabled" />
                 <Typography variant="body2" style={{ fontWeight: 600 }}>
-                  {tag.postsCount}
+                  {tag.questionsCount}
                 </Typography>
                 <Typography variant="caption" color="textSecondary">
-                  {t('common.postsLabel', {
-                    count: tag.postsCount,
-                    itemType: 'post',
-                  })}
+                  {t('common.questions')}
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={3}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                className={localClasses.statItem}
+              >
+                <DescriptionIcon fontSize="small" color="disabled" />
+                <Typography variant="body2" style={{ fontWeight: 600 }}>
+                  {tag.articlesCount}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {t('common.articles')}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                className={localClasses.statItem}
+              >
+                <LinkIcon fontSize="small" color="disabled" />
+                <Typography variant="body2" style={{ fontWeight: 600 }}>
+                  {tag.linksCount}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {t('common.links')}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
               <Box
                 display="flex"
                 flexDirection="column"
@@ -256,7 +267,7 @@ export const TagGridItem = (props: {
                   {tag.followerCount}
                 </Typography>
                 <Typography variant="caption" color="textSecondary">
-                  {t('common.followersLabel', { count: tag.followerCount })}
+                  {t('common.followersPlain')}
                 </Typography>
               </Box>
             </Grid>

@@ -83,6 +83,9 @@ export const collection = {
   posts: [],
   images: [],
   postsCount: 0,
+  questionsCount: 0,
+  articlesCount: 0,
+  linksCount: 0,
   owner: 'user:default/mock',
 };
 
@@ -102,6 +105,9 @@ export const tag = {
   author: 'user:default/mock',
   created: new Date('2022-01-01T00:00:00Z'),
   followers: 0,
+  questionsCount: 0,
+  articlesCount: 0,
+  linksCount: 0,
   status: 'active',
 };
 
@@ -112,6 +118,9 @@ export const entity = {
   author: 'user:default/mock',
   created: new Date('2022-01-01T00:00:00Z'),
   followers: 0,
+  questionsCount: 0,
+  articlesCount: 0,
+  linksCount: 0,
   status: 'active',
 };
 

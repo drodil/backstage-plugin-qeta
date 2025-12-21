@@ -45,6 +45,9 @@ const TagTooltip = (props: { tag: string }) => {
           id: 0,
           tag,
           postsCount: 0,
+          questionsCount: 0,
+          articlesCount: 0,
+          linksCount: 0,
           followerCount: 0,
           description: t('tagChip.nonExistingTag'),
         });

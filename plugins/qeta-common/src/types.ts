@@ -192,6 +192,9 @@ export interface Collection extends CollectionEntity {
   canDelete?: boolean;
   images: number[];
   postsCount: number;
+  questionsCount: number;
+  articlesCount: number;
+  linksCount: number;
   followers: number;
 }
 
@@ -328,6 +331,9 @@ export interface TagResponse extends QetaIdEntity {
   description?: string;
   experts?: string[];
   postsCount: number;
+  questionsCount: number;
+  articlesCount: number;
+  linksCount: number;
   followerCount: number;
   canEdit?: boolean;
   canDelete?: boolean;
@@ -342,6 +348,9 @@ export interface EntityResponse {
   id: number;
   entityRef: string;
   postsCount: number;
+  questionsCount: number;
+  articlesCount: number;
+  linksCount: number;
   followerCount: number;
 }
 
