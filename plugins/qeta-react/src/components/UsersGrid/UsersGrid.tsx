@@ -6,7 +6,6 @@ import useDebounce from 'react-use/lib/useDebounce';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { QetaGridHeader } from '../Utility/QetaGridHeader';
-import { Grid } from '@material-ui/core';
 
 type EntityFilters = {
   order: 'asc' | 'desc';
@@ -63,20 +62,16 @@ export const UsersGrid = () => {
         loading={loading}
         onSearch={setSearchQuery}
       />
-      <Grid container justifyContent="center">
-        <UsersGridContent response={response} loading={loading} error={error} />
-        {response && response?.total > 0 && (
-          <QetaPagination
-            pageSize={entitiesPerPage}
-            handlePageChange={(_e, p) => setPage(p)}
-            handlePageSizeChange={e =>
-              setEntitiesPerPage(Number(e.target.value))
-            }
-            page={page}
-            pageCount={pageCount}
-          />
-        )}
-      </Grid>
+      <UsersGridContent response={response} loading={loading} error={error} />
+      {response && response?.total > 0 && (
+        <QetaPagination
+          pageSize={entitiesPerPage}
+          handlePageChange={(_e, p) => setPage(p)}
+          handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
+          page={page}
+          pageCount={pageCount}
+        />
+      )}
     </>
   );
 };

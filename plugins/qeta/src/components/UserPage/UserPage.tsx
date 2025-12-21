@@ -1,11 +1,10 @@
 import { ChangeEvent, useState } from 'react';
-import { ContentHeader } from '@backstage/core-components';
 import { useParams, useSearchParams } from 'react-router-dom';
 import {
   AnswersContainer,
   AskQuestionButton,
-  ButtonContainer,
   CollectionsGrid,
+  ContentHeader,
   CreateLinkButton,
   PostsContainer,
   PostsGrid,
@@ -31,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1),
   },
   tabPanel: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(3, 0),
   },
   avatar: {
     width: theme.spacing(12),
@@ -131,11 +130,9 @@ export const UserPage = () => {
   return (
     <>
       <ContentHeader titleComponent={title}>
-        <ButtonContainer>
-          <AskQuestionButton />
-          <WriteArticleButton />
-          <CreateLinkButton />
-        </ButtonContainer>
+        <AskQuestionButton />
+        <WriteArticleButton />
+        <CreateLinkButton />
       </ContentHeader>
       <TabContext value={tab}>
         <Box className={classes.tabList}>

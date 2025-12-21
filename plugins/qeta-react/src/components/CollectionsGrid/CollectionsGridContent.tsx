@@ -36,13 +36,7 @@ export const CollectionsGridContent = (props: {
 
   return (
     <>
-      <Grid
-        container
-        item
-        direction="row"
-        alignItems="stretch"
-        style={{ marginTop: '1rem' }}
-      >
+      <Grid container item direction="row" alignItems="stretch">
         {response.collections.map(p => {
           return (
             <Grid item xs={12} md={12} lg={6} key={p.id}>

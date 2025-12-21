@@ -4,7 +4,6 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   AskQuestionButton,
-  ButtonContainer,
   CreateLinkButton,
   EntitiesGrid,
   EntityFollowButton,
@@ -15,18 +14,18 @@ import {
   ViewType,
   WriteArticleButton,
   ContentHeaderCard,
+  ContentHeader,
 } from '@drodil/backstage-plugin-qeta-react';
 import {
   EntityRefLink,
   useEntityPresentation,
   catalogApiRef,
 } from '@backstage/plugin-catalog-react';
-import { Typography } from '@material-ui/core';
 import CategoryOutlined from '@material-ui/icons/CategoryOutlined';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import PeopleIcon from '@material-ui/icons/People';
 import { Skeleton } from '@material-ui/lab';
-import { ContentHeader, WarningPanel } from '@backstage/core-components';
+import { WarningPanel } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 
 const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
@@ -59,21 +58,16 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
   }
 
   const title = (
-    <Typography
-      variant="h4"
-      component="h2"
-      style={{ display: 'flex', alignItems: 'center' }}
-    >
-      <CategoryOutlined fontSize="large" style={{ marginRight: '8px' }} />
+    <div style={{ display: 'flex', alignItems: 'center' }}>
       <EntityRefLink
         entityRef={resp.entityRef}
         defaultKind="Component"
         hideIcon
       />
-      <span style={{ marginLeft: '0.5em' }}>
+      <span style={{ marginLeft: '0.5em', display: 'flex' }}>
         <EntityFollowButton entityRef={resp.entityRef} />
       </span>
-    </Typography>
+    </div>
   );
 
   const description = `${entity?.kind} ${
@@ -82,12 +76,14 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
 
   return (
     <>
-      <ContentHeader titleComponent={title} description={description}>
-        <ButtonContainer>
-          <AskQuestionButton entity={resp.entityRef} />
-          <WriteArticleButton entity={resp.entityRef} />
-          <CreateLinkButton entity={resp.entityRef} />
-        </ButtonContainer>
+      <ContentHeader
+        title={title}
+        titleIcon={<CategoryOutlined fontSize="large" />}
+        description={description}
+      >
+        <AskQuestionButton entity={resp.entityRef} />
+        <WriteArticleButton entity={resp.entityRef} />
+        <CreateLinkButton entity={resp.entityRef} />
       </ContentHeader>
       {resp && (
         <ContentHeaderCard
@@ -149,21 +145,12 @@ export const EntityPage = () => {
   return (
     <>
       <ContentHeader
-        titleComponent={
-          <Typography
-            variant="h4"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <CategoryOutlined fontSize="large" style={{ marginRight: '8px' }} />
-            {t('entitiesPage.defaultTitle')}
-          </Typography>
-        }
+        title={t('entitiesPage.defaultTitle')}
+        titleIcon={<CategoryOutlined fontSize="large" />}
       >
-        <ButtonContainer>
-          <AskQuestionButton />
-          <WriteArticleButton />
-          <CreateLinkButton />
-        </ButtonContainer>
+        <AskQuestionButton />
+        <WriteArticleButton />
+        <CreateLinkButton />
       </ContentHeader>
       <EntitiesGrid />
     </>

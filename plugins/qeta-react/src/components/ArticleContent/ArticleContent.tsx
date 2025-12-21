@@ -76,7 +76,6 @@ export const ArticleContent = (props: {
 
   return (
     <>
-      <Typography variant="h2">{postEntity.title}</Typography>
       {postEntity.status === 'draft' && <DraftBanner />}
       {postEntity.status === 'deleted' && <DeletedBanner />}
       <Grid container alignItems="center">

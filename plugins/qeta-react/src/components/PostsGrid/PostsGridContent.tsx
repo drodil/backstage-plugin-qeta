@@ -96,7 +96,6 @@ export const PostsGridContent = (props: {
           direction="row"
           alignItems="stretch"
           justifyContent="space-between"
-          style={{ marginTop: '1rem' }}
         >
           {response.posts.map(p => {
             return (

@@ -1,4 +1,4 @@
-import { Box, Grid } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { useQetaApi } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
@@ -70,24 +70,20 @@ export const EntitiesGrid = () => {
         loading={loading}
         onSearch={onSearchQueryChange}
       />
-      <Grid container justifyContent="center">
-        <EntitiesGridContent
-          response={response}
-          loading={loading}
-          error={error}
+      <EntitiesGridContent
+        response={response}
+        loading={loading}
+        error={error}
+      />
+      {response && response?.total > 0 && (
+        <QetaPagination
+          pageSize={entitiesPerPage}
+          handlePageChange={(_e, p) => setPage(p)}
+          handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
+          page={page}
+          pageCount={pageCount}
         />
-        {response && response?.total > 0 && (
-          <QetaPagination
-            pageSize={entitiesPerPage}
-            handlePageChange={(_e, p) => setPage(p)}
-            handlePageSizeChange={e =>
-              setEntitiesPerPage(Number(e.target.value))
-            }
-            page={page}
-            pageCount={pageCount}
-          />
-        )}
-      </Grid>
+      )}
     </Box>
   );
 };

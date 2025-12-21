@@ -34,3 +34,4 @@ export * from './FaviconItem';
 export * from './ExtensionContext';
 export { DeletedBanner, DraftBanner, StatusChip } from './Utility';
 export * from './ContentHeaderCard/ContentHeaderCard';
+export * from './ContentHeader/ContentHeader';

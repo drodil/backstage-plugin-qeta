@@ -1,7 +1,8 @@
-import { ContentHeader, InfoCard, Progress } from '@backstage/core-components';
+import { InfoCard, Progress } from '@backstage/core-components';
 import { useState } from 'react';
 import {
   AIAnswerCard,
+  ContentHeader,
   PostForm,
   qetaTranslationRef,
   SelectTemplateList,

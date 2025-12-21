@@ -1,12 +1,11 @@
 import CreateIcon from '@material-ui/icons/Create';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
-import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { writeRouteRef } from '../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { Box } from '@material-ui/core';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
+import { ContentHeaderButton } from './ContentHeaderButton';
 
 export const WriteArticleButton = (props: {
   entity?: string;
@@ -33,21 +32,15 @@ export const WriteArticleButton = (props: {
       permission={qetaCreatePostPermission}
       errorPage={<></>}
     >
-      <Box sx={{ marginLeft: 2 }}>
-        <LinkButton
-          size="small"
-          variant="contained"
-          to={
-            entity || tags
-              ? `${writeRoute()}?${params.toString()}`
-              : writeRoute()
-          }
-          color="primary"
-          startIcon={<CreateIcon />}
-        >
-          {t('writeArticleButton.title')}
-        </LinkButton>
-      </Box>
+      <ContentHeaderButton
+        to={
+          entity || tags ? `${writeRoute()}?${params.toString()}` : writeRoute()
+        }
+        color="primary"
+        icon={<CreateIcon />}
+      >
+        {t('writeArticleButton.title')}
+      </ContentHeaderButton>
     </OptionalRequirePermission>
   );
 };

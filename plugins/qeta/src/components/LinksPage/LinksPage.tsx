@@ -1,8 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { ContentHeader } from '@backstage/core-components';
 import {
-  ButtonContainer,
+  ContentHeader,
   CreateLinkButton,
   PostsContainer,
   PostsGrid,
@@ -39,9 +38,7 @@ export const LinksPage = () => {
           </Typography>
         }
       >
-        <ButtonContainer>
-          <CreateLinkButton entity={entityRef} tags={tags} />
-        </ButtonContainer>
+        <CreateLinkButton entity={entityRef} tags={tags} />
       </ContentHeader>
       {view === 'grid' ? (
         <PostsGrid type="link" view={view} onViewChange={setView} />

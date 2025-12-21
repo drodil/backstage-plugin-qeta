@@ -16,6 +16,7 @@ import { qetaApiRef } from '../../api';
 import { useQetaApi } from '../../hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { ContentHeaderButton } from './ContentHeaderButton';
 
 export const AddToCollectionButton = (props: { post: PostResponse }) => {
   const { post } = props;
@@ -94,14 +95,9 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
 
   return (
     <>
-      <Button
-        variant="contained"
-        size="small"
-        onClick={handleClickOpen}
-        startIcon={<PlayListAddIcon />}
-      >
+      <ContentHeaderButton onClick={handleClickOpen} icon={<PlayListAddIcon />}>
         {t('addToCollectionButton.title')}
-      </Button>
+      </ContentHeaderButton>
       <Dialog open={open} onClose={handleClose} fullWidth>
         <DialogTitle>{t('addToCollectionButton.manage')}</DialogTitle>
         <DialogContent>

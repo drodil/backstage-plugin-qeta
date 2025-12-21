@@ -1,13 +1,12 @@
-import { ContentHeader } from '@backstage/core-components';
 import {
   AskQuestionButton,
-  ButtonContainer,
+  ContentHeader,
   CreateLinkButton,
   TopRankingUsers,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { GlobalStatsContent } from './GlobalStatsContent';
-import { Box, Tab, Typography } from '@material-ui/core';
+import { Box, Tab } from '@material-ui/core';
 import EmojiEventsOutlined from '@material-ui/icons/EmojiEventsOutlined';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { useState } from 'react';
@@ -22,24 +21,12 @@ export const StatisticsPage = () => {
   return (
     <>
       <ContentHeader
-        titleComponent={
-          <Typography
-            variant="h4"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <EmojiEventsOutlined
-              fontSize="large"
-              style={{ marginRight: '8px' }}
-            />
-            Statistics
-          </Typography>
-        }
+        title="Statistics"
+        titleIcon={<EmojiEventsOutlined fontSize="large" />}
       >
-        <ButtonContainer>
-          <AskQuestionButton />
-          <WriteArticleButton />
-          <CreateLinkButton />
-        </ButtonContainer>
+        <AskQuestionButton />
+        <WriteArticleButton />
+        <CreateLinkButton />
       </ContentHeader>
       <TabContext value={tab}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

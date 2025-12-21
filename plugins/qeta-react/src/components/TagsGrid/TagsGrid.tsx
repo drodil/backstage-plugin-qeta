@@ -3,7 +3,7 @@ import { useIsModerator, useQetaApi } from '../../hooks';
 import { QetaPagination } from '../QetaPagination/QetaPagination';
 import useDebounce from 'react-use/lib/useDebounce';
 import { TagsGridContent } from './TagsGridContent';
-import { Button, Grid } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { CreateTagModal } from './CreateTagModal';
 import { qetaCreateTagPermission } from '@drodil/backstage-plugin-qeta-common';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
@@ -111,24 +111,22 @@ export const TagsGrid = () => {
           )
         }
       />
-      <Grid container justifyContent="center">
-        <TagsGridContent
-          response={response}
-          onTagEdit={onTagsModify}
-          loading={loading}
-          error={error}
-          isModerator={isModerator}
+      <TagsGridContent
+        response={response}
+        onTagEdit={onTagsModify}
+        loading={loading}
+        error={error}
+        isModerator={isModerator}
+      />
+      {response && response?.total > 0 && (
+        <QetaPagination
+          pageSize={tagsPerPage}
+          handlePageChange={(_e, p) => setPage(p)}
+          handlePageSizeChange={e => setTagsPerPage(Number(e.target.value))}
+          page={page}
+          pageCount={pageCount}
         />
-        {response && response?.total > 0 && (
-          <QetaPagination
-            pageSize={tagsPerPage}
-            handlePageChange={(_e, p) => setPage(p)}
-            handlePageSizeChange={e => setTagsPerPage(Number(e.target.value))}
-            page={page}
-            pageCount={pageCount}
-          />
-        )}
-      </Grid>
+      )}
     </>
   );
 };

@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ContentHeader } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
-  ButtonContainer,
+  ContentHeader,
   CreateLinkButton,
   PostsContainer,
   PostsGrid,
@@ -59,54 +58,26 @@ export const TagPage = () => {
     <>
       {tag ? (
         <ContentHeader
-          titleComponent={
+          title={
             <span style={{ display: 'flex', alignItems: 'center' }}>
-              <Typography
-                variant="h5"
-                component="h2"
-                id="tag-title"
-                style={{
-                  marginRight: '0.5em',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <LocalOfferOutlined
-                  fontSize="large"
-                  style={{ marginRight: '8px' }}
-                />
-                {tag}
-              </Typography>
+              {tag}
               <TagFollowButton tag={tag} />
             </span>
           }
+          titleIcon={<LocalOfferOutlined fontSize="large" />}
         >
-          <ButtonContainer>
-            <AskQuestionButton tags={[tag]} />
-            <WriteArticleButton tags={[tag]} />
-            <CreateLinkButton tags={[tag]} />
-          </ButtonContainer>
+          <AskQuestionButton tags={[tag]} />
+          <WriteArticleButton tags={[tag]} />
+          <CreateLinkButton tags={[tag]} />
         </ContentHeader>
       ) : (
         <ContentHeader
-          titleComponent={
-            <Typography
-              variant="h4"
-              style={{ display: 'flex', alignItems: 'center' }}
-            >
-              <LocalOfferOutlined
-                fontSize="large"
-                style={{ marginRight: '8px' }}
-              />
-              {t('tagPage.defaultTitle')}
-            </Typography>
-          }
+          title={t('tagPage.defaultTitle')}
+          titleIcon={<LocalOfferOutlined fontSize="large" />}
         >
-          <ButtonContainer>
-            <AskQuestionButton />
-            <WriteArticleButton />
-            <CreateLinkButton />
-          </ButtonContainer>
+          <AskQuestionButton />
+          <WriteArticleButton />
+          <CreateLinkButton />
         </ContentHeader>
       )}
       {resp && (

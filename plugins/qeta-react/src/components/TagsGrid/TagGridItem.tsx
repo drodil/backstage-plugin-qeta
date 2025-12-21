@@ -38,7 +38,6 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles.ts';
-import { UserLink } from '../Links';
 
 const useStyles = makeStyles(theme => ({
   statsGrid: {

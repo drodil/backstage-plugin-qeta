@@ -1,13 +1,13 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { ContentHeader, WarningPanel } from '@backstage/core-components';
+import { WarningPanel } from '@backstage/core-components';
 import { Article, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import {
   AddToCollectionButton,
   AIAnswerCard,
   ArticleContent,
-  ButtonContainer,
+  ContentHeader,
   qetaTranslationRef,
   useQetaApi,
   WriteArticleButton,
@@ -15,6 +15,7 @@ import {
 import { Container } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import LibraryBooksOutlined from '@material-ui/icons/LibraryBooksOutlined';
 
 export const ArticlePage = () => {
   const { id } = useParams();
@@ -62,11 +63,12 @@ export const ArticlePage = () => {
 
   return (
     <>
-      <ContentHeader>
-        <ButtonContainer>
-          <WriteArticleButton />
-          <AddToCollectionButton post={post} />
-        </ButtonContainer>
+      <ContentHeader
+        title={post.title}
+        titleIcon={<LibraryBooksOutlined fontSize="large" />}
+      >
+        <WriteArticleButton />
+        <AddToCollectionButton post={post} />
       </ContentHeader>
       <Container maxWidth={false}>
         <AIAnswerCard

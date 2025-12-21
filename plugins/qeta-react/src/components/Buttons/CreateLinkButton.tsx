@@ -1,12 +1,11 @@
 import LinkIcon from '@material-ui/icons/Link';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
-import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { createLinkRouteRef } from '../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { Box } from '@material-ui/core';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
+import { ContentHeaderButton } from './ContentHeaderButton';
 
 export const CreateLinkButton = (props: {
   entity?: string;
@@ -33,19 +32,15 @@ export const CreateLinkButton = (props: {
       permission={qetaCreatePostPermission}
       errorPage={<></>}
     >
-      <Box sx={{ marginLeft: 2 }}>
-        <LinkButton
-          size="small"
-          variant="contained"
-          to={
-            entity || tags ? `${linkRoute()}?${params.toString()}` : linkRoute()
-          }
-          color="primary"
-          startIcon={<LinkIcon />}
-        >
-          {t('createLinkButton.title')}
-        </LinkButton>
-      </Box>
+      <ContentHeaderButton
+        to={
+          entity || tags ? `${linkRoute()}?${params.toString()}` : linkRoute()
+        }
+        color="primary"
+        icon={<LinkIcon />}
+      >
+        {t('createLinkButton.title')}
+      </ContentHeaderButton>
     </OptionalRequirePermission>
   );
 };

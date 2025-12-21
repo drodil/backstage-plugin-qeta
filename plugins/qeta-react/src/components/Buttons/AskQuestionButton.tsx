@@ -1,12 +1,11 @@
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
-import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef } from '../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { Box } from '@material-ui/core';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
+import { ContentHeaderButton } from './ContentHeaderButton';
 
 export const AskQuestionButton = (props: {
   entity?: string;
@@ -33,19 +32,13 @@ export const AskQuestionButton = (props: {
       permission={qetaCreatePostPermission}
       errorPage={<></>}
     >
-      <Box>
-        <LinkButton
-          variant="contained"
-          size="small"
-          to={
-            entity || tags ? `${askRoute()}?${params.toString()}` : askRoute()
-          }
-          color="primary"
-          startIcon={<HelpOutline />}
-        >
-          {t('askQuestionButton.title')}
-        </LinkButton>
-      </Box>
+      <ContentHeaderButton
+        to={entity || tags ? `${askRoute()}?${params.toString()}` : askRoute()}
+        color="primary"
+        icon={<HelpOutline />}
+      >
+        {t('askQuestionButton.title')}
+      </ContentHeaderButton>
     </OptionalRequirePermission>
   );
 };

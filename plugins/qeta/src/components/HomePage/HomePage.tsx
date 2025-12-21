@@ -1,15 +1,14 @@
-import { ContentHeader } from '@backstage/core-components';
 import {
   AskQuestionButton,
-  ButtonContainer,
+  ContentHeader,
+  CreateLinkButton,
   PostsCard,
   qetaTranslationRef,
   SuggestionsCard,
   useIdentityApi,
   WriteArticleButton,
-  CreateLinkButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Grid, Typography } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import HomeOutlined from '@material-ui/icons/HomeOutlined';
 
@@ -24,21 +23,12 @@ export const HomePage = () => {
   return (
     <>
       <ContentHeader
-        titleComponent={
-          <Typography
-            variant="h4"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <HomeOutlined fontSize="large" style={{ marginRight: '8px' }} />
-            {t('homePage.title')}
-          </Typography>
-        }
+        title={t('homePage.title')}
+        titleIcon={<HomeOutlined fontSize="large" />}
       >
-        <ButtonContainer>
-          <AskQuestionButton />
-          <WriteArticleButton />
-          <CreateLinkButton />
-        </ButtonContainer>
+        <AskQuestionButton />
+        <WriteArticleButton />
+        <CreateLinkButton />
       </ContentHeader>
       <Grid container>
         <Grid item xs={12}>

@@ -1,8 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { ContentHeader } from '@backstage/core-components';
 import {
-  ButtonContainer,
+  ContentHeader,
   PostsGrid,
   PostsContainer,
   qetaTranslationRef,
@@ -42,9 +41,7 @@ export const ArticlesPage = () => {
           </Typography>
         }
       >
-        <ButtonContainer>
-          <WriteArticleButton entity={entityRef} tags={tags} />
-        </ButtonContainer>
+        <WriteArticleButton entity={entityRef} tags={tags} />
       </ContentHeader>
       {view === 'grid' ? (
         <PostsGrid type="article" view={view} onViewChange={setView} />

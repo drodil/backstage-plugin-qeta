@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { ContentHeader, WarningPanel } from '@backstage/core-components';
+import { WarningPanel } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
   AddToCollectionButton,
@@ -7,7 +7,8 @@ import {
   AnswerCard,
   AnswerForm,
   AskQuestionButton,
-  ButtonContainer,
+  ContentHeader,
+  ContentHeaderButton,
   DeletedBanner,
   DraftBanner,
   qetaTranslationRef,
@@ -16,6 +17,7 @@ import {
   UpdatedByLink,
   useQetaApi,
 } from '@drodil/backstage-plugin-qeta-react';
+import Comment from '@material-ui/icons/Comment';
 import {
   Answer,
   AnswerResponse,
@@ -34,6 +36,7 @@ import {
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import HelpOutline from '@material-ui/icons/HelpOutline';
 
 const useDescriptionStyles = makeStyles(
   () => ({
@@ -194,13 +197,26 @@ export const QuestionPage = () => {
     <>
       <ContentHeader
         title={question.title}
-        // @ts-ignore
         description={getDescription(question)}
+        titleIcon={<HelpOutline fontSize="large" />}
       >
-        <ButtonContainer>
-          <AskQuestionButton />
-          <AddToCollectionButton post={question} />
-        </ButtonContainer>
+        <AskQuestionButton />
+        <ContentHeaderButton
+          onClick={() => {
+            const element = document.getElementById('qeta-answer-form');
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth' });
+              const input = element.querySelector('textarea');
+              if (input) {
+                input.focus();
+              }
+            }
+          }}
+          icon={<Comment />}
+        >
+          {t('questionPage.answerButton')}
+        </ContentHeaderButton>
+        <AddToCollectionButton post={question} />
       </ContentHeader>
       {question.status === 'draft' && <DraftBanner />}
       {question.status === 'deleted' && <DeletedBanner />}
@@ -294,7 +310,9 @@ export const QuestionPage = () => {
             );
           })}
 
-          <AnswerForm post={question} onPost={onAnswerPost} />
+          <div id="qeta-answer-form">
+            <AnswerForm post={question} onPost={onAnswerPost} />
+          </div>
         </>
       )}
     </>

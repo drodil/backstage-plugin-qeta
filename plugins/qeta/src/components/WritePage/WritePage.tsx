@@ -1,11 +1,12 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import {
+  ContentHeader,
   PostForm,
   qetaTranslationRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
-import { ContentHeader, InfoCard } from '@backstage/core-components';
+import { InfoCard } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 

@@ -1,11 +1,11 @@
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
 import { qetaCreateCollectionPermission } from '@drodil/backstage-plugin-qeta-common';
-import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionCreateRouteRef } from '../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
+import { ContentHeaderButton } from './ContentHeaderButton';
 
 export const CreateCollectionButton = () => {
   const createRoute = useRouteRef(collectionCreateRouteRef);
@@ -16,15 +16,13 @@ export const CreateCollectionButton = () => {
       permission={qetaCreateCollectionPermission}
       errorPage={<></>}
     >
-      <LinkButton
-        size="small"
-        variant="contained"
+      <ContentHeaderButton
         to={createRoute()}
         color="primary"
-        startIcon={<PlayListAddIcon />}
+        icon={<PlayListAddIcon />}
       >
         {t('createCollectionButton.title')}
-      </LinkButton>
+      </ContentHeaderButton>
     </OptionalRequirePermission>
   );
 };

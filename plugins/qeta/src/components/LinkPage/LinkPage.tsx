@@ -1,11 +1,11 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { ContentHeader, WarningPanel } from '@backstage/core-components';
+import { WarningPanel } from '@backstage/core-components';
 import { PostResponse, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import {
   AddToCollectionButton,
-  ButtonContainer,
+  ContentHeader,
   CreateLinkButton,
   DeletedBanner,
   DraftBanner,
@@ -19,7 +19,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { Box, makeStyles, Typography } from '@material-ui/core';
+import { Box, makeStyles } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
 
 const useDescriptionStyles = makeStyles(
@@ -100,38 +100,30 @@ export const LinkPage = () => {
   return (
     <>
       <ContentHeader
-        title={post.title}
-        titleComponent={
+        title={
           post.url ? (
-            <Box display="flex" alignItems="center">
-              <FaviconItem entity={post} />
-              <Typography variant="h3">
-                <a
-                  href={post.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: 'inherit', textDecoration: 'none' }}
-                  data-testid="link-title"
-                  onClick={event => {
-                    event.stopPropagation();
-                    qetaApi.clickLink(post.id);
-                  }}
-                >
-                  {post.title}
-                </a>
-              </Typography>
-            </Box>
+            <a
+              href={post.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'inherit', textDecoration: 'none' }}
+              data-testid="link-title"
+              onClick={event => {
+                event.stopPropagation();
+                qetaApi.clickLink(post.id);
+              }}
+            >
+              {post.title}
+            </a>
           ) : (
             post.title
           )
         }
-        // @ts-ignore, it can accept a react node. See QuestionPage.
+        titleIcon={post.url ? <FaviconItem entity={post} /> : undefined}
         description={getDescription(post)}
       >
-        <ButtonContainer>
-          <CreateLinkButton />
-          <AddToCollectionButton post={post} />
-        </ButtonContainer>
+        <CreateLinkButton />
+        <AddToCollectionButton post={post} />
       </ContentHeader>
       {post.status === 'draft' && <DraftBanner />}
       {post.status === 'deleted' && <DeletedBanner />}

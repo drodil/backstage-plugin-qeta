@@ -1,12 +1,12 @@
 import { ChangeEvent, useState } from 'react';
 import {
+  ContentHeader,
   PostsContainer,
   qetaTranslationRef,
   TemplateList,
   useIsModerator,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box, Tab, Typography } from '@material-ui/core';
-import { ContentHeader } from '@backstage/core-components';
+import { Box, Tab } from '@material-ui/core';
 import { Alert, TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import SettingsOutlined from '@material-ui/icons/SettingsOutlined';
@@ -27,15 +27,8 @@ export const ModeratorPage = () => {
   return (
     <>
       <ContentHeader
-        titleComponent={
-          <Typography
-            variant="h4"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <SettingsOutlined fontSize="large" style={{ marginRight: '8px' }} />
-            {t('moderatorPage.title')}
-          </Typography>
-        }
+        title={t('moderatorPage.title')}
+        titleIcon={<SettingsOutlined fontSize="large" />}
       />
       <TabContext value={tab}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -47,13 +40,13 @@ export const ModeratorPage = () => {
             <Tab label={t('moderatorPage.deletedPosts')} value="deletedPosts" />
           </TabList>
         </Box>
-        <TabPanel value="templates">
+        <TabPanel value="templates" style={{ padding: '24px 0' }}>
           <Alert severity="info" style={{ marginBottom: '1em' }}>
             {t('moderatorPage.templatesInfo')}
           </Alert>
           <TemplateList />
         </TabPanel>
-        <TabPanel value="deletedPosts">
+        <TabPanel value="deletedPosts" style={{ padding: '24px 0' }}>
           <PostsContainer
             status="deleted"
             showNoQuestionsBtn={false}

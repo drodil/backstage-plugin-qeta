@@ -153,7 +153,6 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
       })}#answer_${answer.id}`;
 
   const handleClick = (e: React.MouseEvent) => {
-    // Prevent navigation if clicking on interactive elements
     if (
       (e.target as HTMLElement).closest('a') ||
       (e.target as HTMLElement).closest('button')

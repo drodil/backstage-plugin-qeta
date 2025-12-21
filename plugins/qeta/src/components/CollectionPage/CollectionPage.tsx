@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import {
-  ButtonContainer,
   CollectionFollowButton,
+  ContentHeader,
   DeleteModal,
   PostsGrid,
   collectionEditRouteRef,
@@ -9,7 +9,7 @@ import {
   useQetaApi,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
-import { ContentHeader, WarningPanel } from '@backstage/core-components';
+import { WarningPanel } from '@backstage/core-components';
 import { Button, Grid, Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useState } from 'react';
@@ -63,35 +63,33 @@ export const CollectionPage = () => {
   return (
     <>
       <ContentHeader titleComponent={title}>
-        <ButtonContainer>
-          {collection.canEdit && (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<EditIcon />}
-              onClick={() =>
-                editCollectionRoute &&
-                navigate(
-                  editCollectionRoute({
-                    id: collection.id.toString(10),
-                  }),
-                )
-              }
-            >
-              {t('templateList.editButton')}
-            </Button>
-          )}
-          {collection.canDelete && (
-            <Button
-              variant="outlined"
-              color="secondary"
-              startIcon={<DeleteIcon />}
-              onClick={handleDeleteModalOpen}
-            >
-              {t('templateList.deleteButton')}
-            </Button>
-          )}
-        </ButtonContainer>
+        {collection.canEdit && (
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<EditIcon />}
+            onClick={() =>
+              editCollectionRoute &&
+              navigate(
+                editCollectionRoute({
+                  id: collection.id.toString(10),
+                }),
+              )
+            }
+          >
+            {t('templateList.editButton')}
+          </Button>
+        )}
+        {collection.canDelete && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            startIcon={<DeleteIcon />}
+            onClick={handleDeleteModalOpen}
+          >
+            {t('templateList.deleteButton')}
+          </Button>
+        )}
       </ContentHeader>
       <Grid container>
         <Grid item xs={12}>

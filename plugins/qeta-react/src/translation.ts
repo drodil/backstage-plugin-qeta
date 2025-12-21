@@ -501,6 +501,7 @@ export const qetaTranslationRef = createTranslationRef({
         'This is a draft post. Please edit and publish it to make it visible to others.',
       deletedStatus:
         'This post has been deleted. You can delete it permanently or restore it.',
+      answerButton: 'Answer',
       sortAnswers: {
         label: 'Sort answers',
         menuLabel: 'Sort answers menu',

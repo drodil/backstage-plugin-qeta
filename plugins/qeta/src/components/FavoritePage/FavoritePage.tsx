@@ -1,7 +1,6 @@
-import { ContentHeader } from '@backstage/core-components';
 import {
   AskQuestionButton,
-  ButtonContainer,
+  ContentHeader,
   CreateLinkButton,
   PostsContainer,
   PostsGrid,
@@ -9,7 +8,6 @@ import {
   ViewType,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Typography } from '@material-ui/core';
 import StarBorder from '@material-ui/icons/StarBorder';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useState } from 'react';
@@ -21,21 +19,12 @@ export const FavoritePage = () => {
   return (
     <>
       <ContentHeader
-        titleComponent={
-          <Typography
-            variant="h4"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <StarBorder fontSize="large" style={{ marginRight: '8px' }} />
-            {t('favoritePage.title')}
-          </Typography>
-        }
+        title={t('favoritePage.title')}
+        titleIcon={<StarBorder fontSize="large" />}
       >
-        <ButtonContainer>
-          <AskQuestionButton />
-          <WriteArticleButton />
-          <CreateLinkButton />
-        </ButtonContainer>
+        <AskQuestionButton />
+        <WriteArticleButton />
+        <CreateLinkButton />
       </ContentHeader>
       {view === 'grid' ? (
         <PostsGrid

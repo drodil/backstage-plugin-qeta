@@ -1,11 +1,11 @@
-import { ContentHeader } from '@backstage/core-components';
 import {
-  ButtonContainer,
+  AskQuestionButton,
+  ContentHeader,
+  CreateLinkButton,
   CollectionsGrid,
-  CreateCollectionButton,
   qetaTranslationRef,
+  WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Typography } from '@material-ui/core';
 import PlaylistPlayOutlined from '@material-ui/icons/PlaylistPlayOutlined';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -15,22 +15,12 @@ export const CollectionsPage = () => {
   return (
     <>
       <ContentHeader
-        titleComponent={
-          <Typography
-            variant="h4"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <PlaylistPlayOutlined
-              fontSize="large"
-              style={{ marginRight: '8px' }}
-            />
-            {t('collectionsPage.title')}
-          </Typography>
-        }
+        title={t('collectionsPage.title')}
+        titleIcon={<PlaylistPlayOutlined fontSize="large" />}
       >
-        <ButtonContainer>
-          <CreateCollectionButton />
-        </ButtonContainer>
+        <AskQuestionButton />
+        <WriteArticleButton />
+        <CreateLinkButton />
       </ContentHeader>
       <CollectionsGrid />
     </>
