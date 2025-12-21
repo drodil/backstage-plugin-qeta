@@ -189,6 +189,7 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
           <FilterPanel<CollectionFilters>
             onChange={onFilterChange}
             filters={filters}
+            mode="collections"
             {...props.filterPanelProps}
           />
         </Collapse>

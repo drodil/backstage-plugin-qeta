@@ -8,21 +8,46 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { QetaGridHeader } from '../Utility/QetaGridHeader';
 
-type EntityFilters = {
-  order: 'asc' | 'desc';
-  orderBy?: 'entityRef';
-  searchQuery: string;
-};
+import { Change, EntityFilters, FilterPanel } from '../FilterPanel/FilterPanel';
+import { Collapse, Button } from '@material-ui/core';
+import FilterList from '@material-ui/icons/FilterList';
+
+const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-entities-filters-expanded';
 
 export const EntitiesGrid = () => {
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [entitiesPerPage, setEntitiesPerPage] = useState(25);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showFilterPanel, setShowFilterPanel] = useState(
+    localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
+  );
   const [filters, setFilters] = useState<EntityFilters>({
     order: 'desc',
+    orderBy: 'postsCount',
     searchQuery: '',
   });
+
+  useEffect(() => {
+    localStorage.setItem(
+      EXPANDED_LOCAL_STORAGE_KEY,
+      showFilterPanel ? 'true' : 'false',
+    );
+  }, [showFilterPanel]);
+
+  const onFilterChange = (
+    changes: Change<EntityFilters> | Change<EntityFilters>[],
+  ) => {
+    const changesArray = Array.isArray(changes) ? changes : [changes];
+    setPage(1);
+    setFilters(prev => {
+      const newValue = { ...prev };
+      for (const { key, value } of changesArray) {
+        (newValue as any)[key] = value;
+      }
+      return newValue;
+    });
+  };
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const {
@@ -69,7 +94,22 @@ export const EntitiesGrid = () => {
         searchBarLabel={t('entitiesPage.search.label')}
         loading={loading}
         onSearch={onSearchQueryChange}
+        buttons={
+          <Button
+            onClick={() => setShowFilterPanel(!showFilterPanel)}
+            startIcon={<FilterList />}
+          >
+            {t('filterPanel.filterButton')}
+          </Button>
+        }
       />
+      <Collapse in={showFilterPanel}>
+        <FilterPanel<EntityFilters>
+          onChange={onFilterChange}
+          filters={filters}
+          mode="entities"
+        />
+      </Collapse>
       <EntitiesGridContent
         response={response}
         loading={loading}

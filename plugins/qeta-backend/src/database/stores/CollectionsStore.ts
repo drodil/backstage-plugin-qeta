@@ -24,6 +24,7 @@ export interface RawCollectionEntity {
   questionsCount: number | string;
   articlesCount: number | string;
   linksCount: number | string;
+  followerCount: number | string;
 }
 
 export class CollectionsStore extends BaseStore {
@@ -483,8 +484,19 @@ export class CollectionsStore extends BaseStore {
       .count('*')
       .as('linksCount');
 
+    const followerCount = this.db('user_collections')
+      .where('user_collections.collectionId', this.db.ref('collections.id'))
+      .count('*')
+      .as('followerCount');
+
     return this.db<RawCollectionEntity>('collections')
-      .select('collections.*', questionsCount, articlesCount, linksCount)
+      .select(
+        'collections.*',
+        questionsCount,
+        articlesCount,
+        linksCount,
+        followerCount,
+      )
       .groupBy('collections.id');
   }
 }

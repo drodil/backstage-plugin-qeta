@@ -28,7 +28,14 @@ export class UsersStore extends BaseStore {
     const totalQuery = query.clone();
 
     if (options?.orderBy) {
-      query.orderBy(options?.orderBy, options?.order || 'desc');
+      let orderBy: string = options.orderBy;
+      if (orderBy === 'userRef') {
+        orderBy =
+          this.db.client.config.client === 'pg'
+            ? 'unique_authors.author'
+            : 'author';
+      }
+      query.orderBy(orderBy as any, options?.order || 'desc');
     }
 
     if (options?.limit) {
@@ -64,12 +71,10 @@ export class UsersStore extends BaseStore {
           totalViews: this.mapToInteger(val.totalViews),
           totalQuestions: this.mapToInteger(val.totalQuestions),
           totalAnswers: this.mapToInteger(val.totalAnswers),
-          totalComments: this.mapToInteger(val.comments),
-          totalVotes:
-            this.mapToInteger(val.answerVotes) +
-            this.mapToInteger(val.postVotes),
+          totalComments: this.mapToInteger(val.totalComments),
+          totalVotes: this.mapToInteger(val.totalVotes),
           totalArticles: this.mapToInteger(val.totalArticles),
-          totalFollowers: this.mapToInteger(val.totalFollowers),
+          totalFollowers: this.mapToInteger(val.followerCount),
           totalLinks: this.mapToInteger(val.totalLinks),
         };
       }),
@@ -94,11 +99,10 @@ export class UsersStore extends BaseStore {
       totalViews: this.mapToInteger(val.totalViews),
       totalQuestions: this.mapToInteger(val.totalQuestions),
       totalAnswers: this.mapToInteger(val.totalAnswers),
-      totalComments: this.mapToInteger(val.comments),
-      totalVotes:
-        this.mapToInteger(val.answerVotes) + this.mapToInteger(val.postVotes),
+      totalComments: this.mapToInteger(val.totalComments),
+      totalVotes: this.mapToInteger(val.totalVotes),
       totalArticles: this.mapToInteger(val.totalArticles),
-      totalFollowers: this.mapToInteger(val.totalFollowers),
+      totalFollowers: this.mapToInteger(val.followerCount),
       totalLinks: this.mapToInteger(val.totalLinks),
     };
   }
@@ -156,10 +160,12 @@ export class UsersStore extends BaseStore {
           this.db.raw('0 as "totalArticles"'),
           this.db.raw('0 as "totalLinks"'),
           this.db.raw('0 as "totalAnswers"'),
-          this.db.raw('0 as comments'),
+          this.db.raw('0 as "totalComments"'),
           this.db.raw('0 as "answerVotes"'),
           this.db.raw('0 as "postVotes"'),
-          this.db.raw('0 as "totalFollowers"'),
+          this.db.raw('0 as "totalVotes"'),
+          this.db.raw('0 as "totalPosts"'),
+          this.db.raw('0 as "followerCount"'),
         ])
         .distinct();
     }
@@ -238,10 +244,16 @@ export class UsersStore extends BaseStore {
         this.db.raw('COALESCE(ar."totalArticles", 0) as "totalArticles"'),
         this.db.raw('COALESCE(l."totalLinks", 0) as "totalLinks"'),
         this.db.raw('COALESCE(a."totalAnswers", 0) as "totalAnswers"'),
-        this.db.raw('COALESCE(c.comments, 0) as comments'),
+        this.db.raw('COALESCE(c.comments, 0) as "totalComments"'),
         this.db.raw('COALESCE(av."answerVotes", 0) as "answerVotes"'),
         this.db.raw('COALESCE(pv."postVotes", 0) as "postVotes"'),
-        this.db.raw('COALESCE(f."totalFollowers", 0) as "totalFollowers"'),
+        this.db.raw(
+          'COALESCE(av."answerVotes", 0) + COALESCE(pv."postVotes", 0) as "totalVotes"',
+        ),
+        this.db.raw(
+          'COALESCE(q."totalQuestions", 0) + COALESCE(ar."totalArticles", 0) + COALESCE(l."totalLinks", 0) as "totalPosts"',
+        ),
+        this.db.raw('COALESCE(f."totalFollowers", 0) as "followerCount"'),
       );
   }
 }

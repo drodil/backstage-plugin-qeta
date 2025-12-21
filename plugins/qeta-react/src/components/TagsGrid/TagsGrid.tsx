@@ -12,11 +12,11 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { QetaGridHeader } from '../Utility/QetaGridHeader';
 import Add from '@material-ui/icons/Add';
 
-type TagFilters = {
-  order: 'asc' | 'desc';
-  orderBy: 'tag' | 'followersCount' | 'postsCount';
-  searchQuery: string;
-};
+import { Change, FilterPanel, TagFilters } from '../FilterPanel/FilterPanel';
+import { Collapse } from '@material-ui/core';
+import FilterList from '@material-ui/icons/FilterList';
+
+const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-tags-filters-expanded';
 
 export const TagsGrid = () => {
   const [page, setPage] = useState(1);
@@ -25,11 +25,35 @@ export const TagsGrid = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const { t } = useTranslationRef(qetaTranslationRef);
   const { isModerator } = useIsModerator();
+  const [showFilterPanel, setShowFilterPanel] = useState(
+    localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
+  );
   const [filters, setFilters] = useState<TagFilters>({
     order: 'desc',
-    orderBy: 'tag',
+    orderBy: 'postsCount',
     searchQuery: '',
   });
+
+  useEffect(() => {
+    localStorage.setItem(
+      EXPANDED_LOCAL_STORAGE_KEY,
+      showFilterPanel ? 'true' : 'false',
+    );
+  }, [showFilterPanel]);
+
+  const onFilterChange = (
+    changes: Change<TagFilters> | Change<TagFilters>[],
+  ) => {
+    const changesArray = Array.isArray(changes) ? changes : [changes];
+    setPage(1);
+    setFilters(prev => {
+      const newValue = { ...prev };
+      for (const { key, value } of changesArray) {
+        (newValue as any)[key] = value;
+      }
+      return newValue;
+    });
+  };
 
   const onSearchQueryChange = (val: string) => {
     setPage(1);
@@ -88,29 +112,44 @@ export const TagsGrid = () => {
         onSearch={onSearchQueryChange}
         buttons={
           response && (
-            <OptionalRequirePermission
-              permission={qetaCreateTagPermission}
-              errorPage={<></>}
-            >
+            <>
               <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<Add />}
-                size="small"
-                onClick={handleCreateModalOpen}
-                style={{ float: 'right' }}
+                onClick={() => setShowFilterPanel(!showFilterPanel)}
+                className="qetaCollectionsContainerFilterPanelBtn"
+                startIcon={<FilterList />}
               >
-                {t('tagPage.createTag')}
+                {t('filterPanel.filterButton')}
               </Button>
-              <CreateTagModal
-                open={createModalOpen}
-                onClose={handleCreateModalClose}
-                isModerator={isModerator}
-              />
-            </OptionalRequirePermission>
+              <OptionalRequirePermission
+                permission={qetaCreateTagPermission}
+                errorPage={<></>}
+              >
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<Add />}
+                  size="small"
+                  onClick={handleCreateModalOpen}
+                >
+                  {t('tagPage.createTag')}
+                </Button>
+                <CreateTagModal
+                  open={createModalOpen}
+                  onClose={handleCreateModalClose}
+                  isModerator={isModerator}
+                />
+              </OptionalRequirePermission>
+            </>
           )
         }
       />
+      <Collapse in={showFilterPanel}>
+        <FilterPanel<TagFilters>
+          onChange={onFilterChange}
+          filters={filters}
+          mode="tags"
+        />
+      </Collapse>
       <TagsGridContent
         response={response}
         onTagEdit={onTagsModify}

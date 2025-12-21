@@ -113,17 +113,38 @@ export interface AnswersQuery extends PaginatedQuery {
 }
 
 export interface TagsQuery extends PaginatedQuery {
-  orderBy?: 'tag' | 'postsCount' | 'followersCount';
+  orderBy?:
+    | 'tag'
+    | 'postsCount'
+    | 'questionsCount'
+    | 'articlesCount'
+    | 'linksCount'
+    | 'followerCount';
   checkAccess?: boolean;
   includeExperts?: boolean;
 }
 
 export interface UsersQuery extends PaginatedQuery {
-  orderBy?: 'userRef';
+  orderBy?:
+    | 'userRef'
+    | 'totalPosts'
+    | 'totalQuestions'
+    | 'totalAnswers'
+    | 'totalArticles'
+    | 'totalLinks'
+    | 'totalViews'
+    | 'totalVotes'
+    | 'followerCount';
 }
 
 export interface EntitiesQuery extends PaginatedQuery {
-  orderBy?: 'entityRef';
+  orderBy?:
+    | 'entityRef'
+    | 'postsCount'
+    | 'questionsCount'
+    | 'articlesCount'
+    | 'linksCount'
+    | 'followerCount';
 }
 
 export interface AIQuery {

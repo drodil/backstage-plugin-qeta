@@ -98,7 +98,47 @@ export type AnswerFilters = Filters & {
 };
 
 export type CollectionFilters = Filters & {
-  orderBy?: 'created' | 'title';
+  orderBy?:
+    | 'created'
+    | 'title'
+    | 'postsCount'
+    | 'questionsCount'
+    | 'articlesCount'
+    | 'linksCount'
+    | 'followerCount';
+};
+
+export type TagFilters = Filters & {
+  orderBy?:
+    | 'postsCount'
+    | 'questionsCount'
+    | 'articlesCount'
+    | 'linksCount'
+    | 'followerCount'
+    | 'tag';
+};
+
+export type EntityFilters = Filters & {
+  orderBy?:
+    | 'postsCount'
+    | 'questionsCount'
+    | 'articlesCount'
+    | 'linksCount'
+    | 'followerCount'
+    | 'entityRef';
+};
+
+export type UserFilters = Filters & {
+  orderBy?:
+    | 'totalPosts'
+    | 'totalQuestions'
+    | 'totalAnswers'
+    | 'totalArticles'
+    | 'totalLinks'
+    | 'totalViews'
+    | 'totalVotes'
+    | 'followerCount'
+    | 'userRef';
 };
 
 function isPostFilters(filters: Filters): filters is PostFilters {
@@ -126,6 +166,7 @@ export interface CommonFilterPanelProps {
   showTagFilter?: boolean;
   answerFilters?: boolean;
   type?: PostType;
+  mode?: 'posts' | 'collections' | 'tags' | 'entities' | 'users';
 }
 
 export interface FilterPanelProps<T extends Filters>
@@ -139,7 +180,8 @@ const useStyles = makeStyles(
     root: {
       padding: '1em',
       paddingTop: '2em',
-      marginTop: '1em',
+      marginTop: '0',
+      marginBottom: '1em',
       border: `1px solid ${theme.palette.divider}`,
     },
   }),
@@ -153,6 +195,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     showEntityFilter = true,
     showTagFilter = true,
     type,
+    mode = 'posts',
   } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const [entities, setEntities] = useState<Entity[] | undefined>(undefined);
@@ -293,6 +336,9 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const answerFilters = isAnswerFilters(filters);
   const collectionFilters = isCollectionFilters(filters);
 
+  const showBottomSection =
+    mode !== 'tags' && mode !== 'entities' && mode !== 'users';
+
   return (
     <Box className={styles.root}>
       <Grid
@@ -412,8 +458,14 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
               {postFilters &&
                 filters.collectionId !== undefined &&
                 radioSelect('rank', t('filterPanel.orderBy.rank'))}
-              {radioSelect('created', t('filterPanel.orderBy.created'))}
+              {mode !== 'users' &&
+                mode !== 'tags' &&
+                mode !== 'entities' &&
+                radioSelect('created', t('filterPanel.orderBy.created'))}
               {(postFilters || collectionFilters) &&
+                mode !== 'tags' &&
+                mode !== 'entities' &&
+                mode !== 'users' &&
                 radioSelect('title', t('filterPanel.orderBy.title'))}
               {postFilters &&
                 type !== 'link' &&
@@ -432,6 +484,59 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                 radioSelect('answersCount', t('filterPanel.orderBy.answers'))}
               {(postFilters || answerFilters) &&
                 radioSelect('updated', t('filterPanel.orderBy.updated'))}
+
+              {mode === 'tags' &&
+                radioSelect('tag', t('filterPanel.orderBy.tag'))}
+              {mode === 'entities' &&
+                radioSelect('entityRef', t('filterPanel.orderBy.entityRef'))}
+              {mode === 'users' &&
+                radioSelect('userRef', t('filterPanel.orderBy.user'))}
+
+              {(mode === 'tags' ||
+                mode === 'entities' ||
+                mode === 'collections') &&
+                radioSelect('postsCount', t('filterPanel.orderBy.posts'))}
+              {(mode === 'tags' ||
+                mode === 'entities' ||
+                mode === 'collections') &&
+                radioSelect(
+                  'questionsCount',
+                  t('filterPanel.orderBy.questions'),
+                )}
+              {(mode === 'tags' ||
+                mode === 'entities' ||
+                mode === 'collections') &&
+                radioSelect('articlesCount', t('filterPanel.orderBy.articles'))}
+              {(mode === 'tags' ||
+                mode === 'entities' ||
+                mode === 'collections') &&
+                radioSelect('linksCount', t('filterPanel.orderBy.links'))}
+              {(mode === 'tags' ||
+                mode === 'entities' ||
+                mode === 'users' ||
+                mode === 'collections') &&
+                radioSelect(
+                  'followerCount',
+                  t('filterPanel.orderBy.followers'),
+                )}
+
+              {mode === 'users' &&
+                radioSelect('totalPosts', t('filterPanel.orderBy.posts'))}
+              {mode === 'users' &&
+                radioSelect(
+                  'totalQuestions',
+                  t('filterPanel.orderBy.questions'),
+                )}
+              {mode === 'users' &&
+                radioSelect('totalAnswers', t('filterPanel.orderBy.answers'))}
+              {mode === 'users' &&
+                radioSelect('totalArticles', t('filterPanel.orderBy.articles'))}
+              {mode === 'users' &&
+                radioSelect('totalLinks', t('filterPanel.orderBy.links'))}
+              {mode === 'users' &&
+                radioSelect('totalViews', t('filterPanel.orderBy.views'))}
+              {mode === 'users' &&
+                radioSelect('totalVotes', t('filterPanel.orderBy.votes'))}
             </RadioGroup>
           </FormControl>
         </Grid>
@@ -452,113 +557,123 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
           </FormControl>
         </Grid>
       </Grid>
-      <Box marginY="24px">
-        <Divider />
-      </Box>
-      <Grid container alignItems="stretch" justifyContent="space-evenly">
-        <Grid item>
-          <DateRangeFilter
-            value={filters.dateRange}
-            onChange={val => onChange({ key: 'dateRange', value: val })}
-          />
-        </Grid>
-        {showEntityFilter && (
-          <Grid item>
-            <Grid container alignItems="center">
+      {showBottomSection && (
+        <>
+          <Box marginY="24px">
+            <Divider />
+          </Box>
+          <Grid container alignItems="stretch" justifyContent="space-evenly">
+            <Grid item>
+              <DateRangeFilter
+                value={filters.dateRange}
+                onChange={val => onChange({ key: 'dateRange', value: val })}
+              />
+            </Grid>
+            {showEntityFilter && (
               <Grid item>
-                <EntitiesInput
-                  disabled={starredEntities || ownedEntities}
-                  style={{ width: '230px' }}
-                  onChange={(newEntities?: Entity[]) => {
-                    const entityRefs = (newEntities ?? []).map(e =>
-                      stringifyEntityRef(e),
-                    );
-                    handleChange({
-                      target: { name: 'entities', value: entityRefs },
-                    });
-                    setEntities(newEntities);
-                  }}
-                  value={entities}
-                  useOnlyUsedEntities
-                  hideHelpText
-                />
-              </Grid>
-              {entities && entities?.length > 1 && (
-                <Grid item>
-                  <Tooltip
-                    title={
-                      filters.entitiesRelation === 'or'
-                        ? t('filterPanel.toggleEntityRelation.and')
-                        : t('filterPanel.toggleEntityRelation.or')
-                    }
-                  >
-                    <IconButton
+                <Grid container alignItems="center">
+                  <Grid item>
+                    <EntitiesInput
                       disabled={starredEntities || ownedEntities}
-                      onClick={() => {
-                        if (filters.entitiesRelation === 'or') {
-                          onChange({ key: 'entitiesRelation', value: 'and' });
-                        } else {
-                          onChange({ key: 'entitiesRelation', value: 'or' });
-                        }
+                      style={{ width: '230px' }}
+                      onChange={(newEntities?: Entity[]) => {
+                        const entityRefs = (newEntities ?? []).map(e =>
+                          stringifyEntityRef(e),
+                        );
+                        handleChange({
+                          target: { name: 'entities', value: entityRefs },
+                        });
+                        setEntities(newEntities);
                       }}
-                    >
-                      {filters.entitiesRelation === 'or' ? (
-                        <AdjustIcon />
-                      ) : (
-                        <FiberManualRecordIcon />
-                      )}
-                    </IconButton>
-                  </Tooltip>
+                      value={entities}
+                      useOnlyUsedEntities
+                      hideHelpText
+                    />
+                  </Grid>
+                  {entities && entities?.length > 1 && (
+                    <Grid item>
+                      <Tooltip
+                        title={
+                          filters.entitiesRelation === 'or'
+                            ? t('filterPanel.toggleEntityRelation.and')
+                            : t('filterPanel.toggleEntityRelation.or')
+                        }
+                      >
+                        <IconButton
+                          disabled={starredEntities || ownedEntities}
+                          onClick={() => {
+                            if (filters.entitiesRelation === 'or') {
+                              onChange({
+                                key: 'entitiesRelation',
+                                value: 'and',
+                              });
+                            } else {
+                              onChange({
+                                key: 'entitiesRelation',
+                                value: 'or',
+                              });
+                            }
+                          }}
+                        >
+                          {filters.entitiesRelation === 'or' ? (
+                            <AdjustIcon />
+                          ) : (
+                            <FiberManualRecordIcon />
+                          )}
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                  )}
                 </Grid>
-              )}
-            </Grid>
-          </Grid>
-        )}
-        {showTagFilter && (
-          <Grid item>
-            <Grid container alignItems="center">
-              <Grid item>
-                <TagInput
-                  style={{ width: '230px' }}
-                  onChange={(newTags: string[]) =>
-                    onChange({ key: 'tags', value: newTags })
-                  }
-                  value={filters.tags}
-                  hideHelpText
-                  allowCreate={false}
-                />
               </Grid>
-              {filters.tags && filters.tags?.length > 1 && (
-                <Grid item>
-                  <Tooltip
-                    title={
-                      filters.tagsRelation === 'or'
-                        ? t('filterPanel.toggleTagRelation.and')
-                        : t('filterPanel.toggleTagRelation.or')
-                    }
-                  >
-                    <IconButton
-                      onClick={() => {
-                        if (filters.tagsRelation === 'or') {
-                          onChange({ key: 'tagsRelation', value: 'and' });
-                        } else {
-                          onChange({ key: 'tagsRelation', value: 'or' });
+            )}
+            {showTagFilter && (
+              <Grid item>
+                <Grid container alignItems="center">
+                  <Grid item>
+                    <TagInput
+                      style={{ width: '230px' }}
+                      onChange={(newTags: string[]) =>
+                        onChange({ key: 'tags', value: newTags })
+                      }
+                      value={filters.tags}
+                      hideHelpText
+                      allowCreate={false}
+                    />
+                  </Grid>
+                  {filters.tags && filters.tags?.length > 1 && (
+                    <Grid item>
+                      <Tooltip
+                        title={
+                          filters.tagsRelation === 'or'
+                            ? t('filterPanel.toggleTagRelation.and')
+                            : t('filterPanel.toggleTagRelation.or')
                         }
-                      }}
-                    >
-                      {filters.tagsRelation === 'or' ? (
-                        <AdjustIcon />
-                      ) : (
-                        <FiberManualRecordIcon />
-                      )}
-                    </IconButton>
-                  </Tooltip>
+                      >
+                        <IconButton
+                          onClick={() => {
+                            if (filters.tagsRelation === 'or') {
+                              onChange({ key: 'tagsRelation', value: 'and' });
+                            } else {
+                              onChange({ key: 'tagsRelation', value: 'or' });
+                            }
+                          }}
+                        >
+                          {filters.tagsRelation === 'or' ? (
+                            <AdjustIcon />
+                          ) : (
+                            <FiberManualRecordIcon />
+                          )}
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                  )}
                 </Grid>
-              )}
-            </Grid>
+              </Grid>
+            )}
           </Grid>
-        )}
-      </Grid>
+        </>
+      )}
     </Box>
   );
 };
