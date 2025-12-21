@@ -1,5 +1,5 @@
 import { useQetaApi } from '../../hooks';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import {
   DraftPostSuggestion,
   NewArticleSuggestion,
@@ -75,6 +75,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const getRandomVariant = (key: string) => {
+  return `${key}${Math.floor(Math.random() * 5) + 1}`;
+};
+
 const SuggestionListItem = (props: {
   children: ReactNode;
   href: string;
@@ -109,6 +113,10 @@ const NoCorrectAnswerSuggestionItem = (props: {
   const { suggestion } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const questionRoute = useRouteRef(questionRouteRef);
+  const variant = useMemo(
+    () => getRandomVariant('suggestionsCard.noCorrectAnswer'),
+    [],
+  );
   return (
     <SuggestionListItem
       href={questionRoute({ id: suggestion.question.id.toString(10) })}
@@ -117,7 +125,7 @@ const NoCorrectAnswerSuggestionItem = (props: {
         <RelativeTimeWithTooltip value={suggestion.question.created} />
       }
     >
-      {t('suggestionsCard.noCorrectAnswer', {
+      {t(variant as any, {
         title: suggestion.question.title,
       })}
     </SuggestionListItem>
@@ -130,6 +138,10 @@ const NewQuestionSuggestionItem = (props: {
   const { suggestion } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const questionRoute = useRouteRef(questionRouteRef);
+  const variant = useMemo(
+    () => getRandomVariant('suggestionsCard.newQuestion'),
+    [],
+  );
   return (
     <SuggestionListItem
       href={questionRoute({ id: suggestion.question.id.toString(10) })}
@@ -138,7 +150,7 @@ const NewQuestionSuggestionItem = (props: {
         <RelativeTimeWithTooltip value={suggestion.question.created} />
       }
     >
-      {t('suggestionsCard.newQuestion', {
+      {t(variant as any, {
         title: suggestion.question.title,
       })}
     </SuggestionListItem>
@@ -159,13 +171,17 @@ const DraftPostSuggestionItem = (props: {
     articleRoute,
     linkRoute,
   );
+  const variant = useMemo(
+    () => getRandomVariant('suggestionsCard.draftPost'),
+    [],
+  );
   return (
     <SuggestionListItem
       href={route({ id: suggestion.post.id.toString(10) })}
       icon={<HelpOutlinedIcon />}
       timestamp={<RelativeTimeWithTooltip value={suggestion.post.created} />}
     >
-      {t('suggestionsCard.draftPost', {
+      {t(variant as any, {
         title: suggestion.post.title,
       })}
     </SuggestionListItem>
@@ -178,6 +194,10 @@ const NewArticleSuggestionItem = (props: {
   const { suggestion } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const articleRoute = useRouteRef(articleRouteRef);
+  const variant = useMemo(
+    () => getRandomVariant('suggestionsCard.newArticle'),
+    [],
+  );
   return (
     <SuggestionListItem
       href={articleRoute({ id: suggestion.article.id.toString(10) })}
@@ -188,7 +208,7 @@ const NewArticleSuggestionItem = (props: {
         />
       }
     >
-      {t('suggestionsCard.newArticle', {
+      {t(variant as any, {
         title: suggestion.article.title,
       })}
     </SuggestionListItem>
@@ -199,6 +219,10 @@ const NewLinkSuggestionItem = (props: { suggestion: NewLinkSuggestion }) => {
   const { suggestion } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const linkRoute = useRouteRef(linkRouteRef);
+  const variant = useMemo(
+    () => getRandomVariant('suggestionsCard.newLink'),
+    [],
+  );
   return (
     <SuggestionListItem
       href={linkRoute({ id: suggestion.link.id.toString(10) })}
@@ -207,7 +231,7 @@ const NewLinkSuggestionItem = (props: { suggestion: NewLinkSuggestion }) => {
         <RelativeTimeWithTooltip value={getPostDisplayDate(suggestion.link)} />
       }
     >
-      {t('suggestionsCard.newLink', {
+      {t(variant as any, {
         title: suggestion.link.title,
       })}
     </SuggestionListItem>
@@ -228,13 +252,17 @@ const RandomPostSuggestionItem = (props: {
     articleRoute,
     linkRoute,
   );
+  const variant = useMemo(
+    () => getRandomVariant('suggestionsCard.randomPost'),
+    [],
+  );
   return (
     <SuggestionListItem
       href={route({ id: suggestion.post.id.toString(10) })}
       icon={<HelpOutlinedIcon />}
       timestamp={<RelativeTimeWithTooltip value={suggestion.post.created} />}
     >
-      {t('suggestionsCard.randomPost', {
+      {t(variant as any, {
         title: suggestion.post.title,
       })}
     </SuggestionListItem>

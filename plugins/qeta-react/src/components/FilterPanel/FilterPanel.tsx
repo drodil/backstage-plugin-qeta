@@ -184,7 +184,7 @@ const useStyles = makeStyles(
     root: {
       padding: '1.5em',
       marginTop: '0',
-      marginBottom: '1em',
+      marginBottom: '2em',
       border: `1px solid ${theme.palette.divider}`,
       borderRadius: theme.shape.borderRadius,
       backgroundColor: theme.palette.background.paper,
