@@ -22,7 +22,8 @@ program
     '-c, --comments <comments>',
     'Number of comments to generate, defaults to random',
   )
-  .option('-r --articles <articles>', 'Number of articles to generate', 1);
+  .option('-r --articles <articles>', 'Number of articles to generate', 5)
+  .option('-l --links <links>', 'Number of links to generate', 5);
 
 async function main() {
   program.parse();
@@ -101,6 +102,101 @@ async function main() {
     }
 
     return `\n\n\`\`\`${language}\n${code}\n\`\`\``;
+  };
+
+  const fs = require('fs');
+  const path = require('path');
+  const yaml = require('js-yaml');
+
+  const getEntities = () => {
+    try {
+      const localDevPath = path.join(__dirname, '../local_dev.yaml');
+      if (!fs.existsSync(localDevPath)) {
+        return [];
+      }
+      const fileContent = fs.readFileSync(localDevPath, 'utf8');
+      const docs = yaml.loadAll(fileContent);
+      const entities = [];
+      docs.forEach(doc => {
+        if (!doc || !doc.metadata || !doc.metadata.name || !doc.kind) {
+          return;
+        }
+        if (doc.kind.toLowerCase() === 'user') {
+          return;
+        }
+        const kind = doc.kind.toLowerCase();
+        const name = doc.metadata.name;
+        const namespace = doc.metadata.namespace || 'default';
+        entities.push(`${kind}:${namespace}/${name}`);
+      });
+      return entities;
+    } catch (e) {
+      console.error('Failed to parse local_dev.yaml', e);
+      return [];
+    }
+  };
+
+  const entities = getEntities();
+
+  const getRandomEntities = () => {
+    if (entities.length === 0) {
+      return [];
+    }
+    const count = faker.number.int({ min: 0, max: 5 });
+    return faker.helpers.arrayElements(entities, count);
+  };
+
+  const createVotesForPost = async id => {
+    const voteCount = faker.number.int({ min: 0, max: 20 });
+    for (let i = 0; i < voteCount; i++) {
+      const user = getUser();
+      const score = faker.datatype.boolean() ? 1 : -1;
+      const type = score === 1 ? 'upvote' : 'downvote';
+      await fetch(
+        `http://localhost:7007/api/qeta/posts/${id}/${type}?user=${user}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer FO23CjUG7SNlPWPCO3x25W3TlPC8lh8l',
+          },
+        },
+      );
+    }
+    console.log(`- Created ${voteCount} votes for post ${id}`);
+  };
+
+  const createViewsForPost = async id => {
+    const viewCount = faker.number.int({ min: 0, max: 50 });
+    for (let i = 0; i < viewCount; i++) {
+      await fetch(`http://localhost:7007/api/qeta/posts/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer FO23CjUG7SNlPWPCO3x25W3TlPC8lh8l',
+        },
+      });
+    }
+    console.log(`- Created ${viewCount} views for post ${id}`);
+  };
+
+  const createVotesForAnswer = async (postId, answerId) => {
+    const voteCount = faker.number.int({ min: 0, max: 10 });
+    for (let i = 0; i < voteCount; i++) {
+      const user = getUser();
+      const score = faker.datatype.boolean() ? 1 : -1;
+      const type = score === 1 ? 'upvote' : 'downvote';
+      await fetch(
+        `http://localhost:7007/api/qeta/posts/${postId}/answers/${answerId}/${type}?user=${user}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer FO23CjUG7SNlPWPCO3x25W3TlPC8lh8l',
+          },
+        },
+      );
+    }
   };
 
   const createCommentsForPost = async id => {
@@ -189,6 +285,7 @@ async function main() {
       );
       const data = await resp.json();
       console.log(`- Created answer for question ${id} with id: ${data.id}`);
+      await createVotesForAnswer(id, data.id);
       commentCount += await createCommentsForAnswer(id, data.id);
     }
     return { answerCount: answers.length, commentCount };
@@ -204,6 +301,7 @@ async function main() {
     tags: getTags(),
     user: getUser(),
     created: getCreated(),
+    entities: getRandomEntities(),
     type: 'question',
   }));
 
@@ -219,6 +317,8 @@ async function main() {
     const data = await resp.json();
     const id = data.id;
     console.log(`Created question with id: ${id}`);
+    await createVotesForPost(id);
+    await createViewsForPost(id);
     const ret = await createAnswersForPost(id);
     answerCount += ret.answerCount;
     commentCount += ret.commentCount;
@@ -234,6 +334,7 @@ async function main() {
     tags: getTags(),
     user: getUser(),
     created: getCreated(),
+    entities: getRandomEntities(),
     type: 'article',
   }));
 
@@ -248,13 +349,41 @@ async function main() {
     });
     const data = await resp.json();
     console.log(`Created article with id: ${data.id}`);
+    await createVotesForPost(data.id);
+    await createViewsForPost(data.id);
+    commentCount += await createCommentsForPost(data.id);
+  }
+
+  const links = Array.from({ length: options.number }, () => ({
+    title: faker.lorem.sentence(),
+    content: faker.internet.url(),
+    type: 'link',
+    tags: getTags(),
+    user: getUser(),
+    created: getCreated(),
+    entities: getRandomEntities(),
+  }));
+
+  for (const link of links) {
+    const resp = await fetch('http://localhost:7007/api/qeta/posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer FO23CjUG7SNlPWPCO3x25W3TlPC8lh8l',
+      },
+      body: JSON.stringify(link),
+    });
+    const data = await resp.json();
+    console.log(`Created link with id: ${data.id}`);
+    await createVotesForPost(data.id);
+    await createViewsForPost(data.id);
     commentCount += await createCommentsForPost(data.id);
   }
 
   console.log('---------');
   console.log('DONE!');
   console.log(
-    `Created ${questions.length} questions, ${articles.length} articles, ${answerCount} answers, and ${commentCount} comments`,
+    `Created ${questions.length} questions, ${articles.length} articles, ${links.length} links, ${answerCount} answers, and ${commentCount} comments`,
   );
 }
 

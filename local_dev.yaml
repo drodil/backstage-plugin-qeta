@@ -89,3 +89,158 @@ spec:
   owner: user:development/guest
   type: website
   lifecycle: experimental
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: search-service
+  title: Search Service
+  description: The core search service powering the platform
+  tags:
+    - java
+    - search
+    - backend
+  links:
+    - url: https://admin.search.example.com
+      title: Admin Dashboard
+      icon: dashboard
+spec:
+  type: service
+  lifecycle: production
+  owner: user:development/john.doe
+  system: search-system
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: frontend-app
+  title: Frontend Application
+  description: The main user-facing React application
+  tags:
+    - react
+    - typescript
+    - frontend
+spec:
+  type: website
+  lifecycle: production
+  owner: user:development/jane.doe
+  system: core-system
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: user-api
+  title: User API
+  description: API for managing user profiles and authentication
+  tags:
+    - api
+    - rest
+    - openapi
+spec:
+  type: openapi
+  lifecycle: production
+  owner: user:development/guest
+  system: identity-system
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: User API
+      version: 1.0.0
+    paths: {}
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: identity-system
+  title: Identity System
+  description: System responsible for all identity and access management
+spec:
+  owner: user:development/guest
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: payment-gateway
+  title: Payment Gateway
+  description: Service interacting with external payment providers
+  tags:
+    - go
+    - payments
+    - finance
+spec:
+  type: service
+  lifecycle: production
+  owner: user:development/john.doe
+  system: finance-system
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ui-library
+  title: UI Library
+  description: Shared UI component library
+  tags:
+    - react
+    - library
+    - design-system
+spec:
+  type: library
+  lifecycle: production
+  owner: user:development/jane.doe
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: user-db
+  title: User Database
+  description: The primary database for user data
+  tags:
+    - postgres
+    - db
+spec:
+  type: database
+  owner: user:development/guest
+  system: identity-system
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: notification-service
+  title: Notification Service
+  description: Handles sending emails, SMS, and push notifications
+  tags:
+    - nodejs
+    - notifications
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:development/john.doe
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: search-api
+  title: Search API
+  description: API definition for the search service
+spec:
+  type: grpc
+  lifecycle: production
+  owner: user:development/john.doe
+  system: search-system
+  definition: 'syntax = "proto3";'
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: analytics-pipeline
+  title: Analytics Pipeline
+  description: Data pipeline for processing user analytics events
+  tags:
+    - python
+    - data
+    - analytics
+spec:
+  type: service
+  lifecycle: production
+  owner: user:development/jane.doe
