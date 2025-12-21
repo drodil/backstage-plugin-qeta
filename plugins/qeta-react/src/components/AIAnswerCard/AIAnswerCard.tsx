@@ -78,27 +78,28 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
       }
 
       if (question) {
-        setAnswer(undefined);
         answerExistingQuestion(question.id, options)
           .catch(_ => setAnswer(null))
           .then(res => {
             setAnswer(res ?? null);
           });
       } else if (article) {
-        setAnswer(undefined);
-        summarizeArticle(article.id, options).then(res => {
-          setAnswer(res);
-        });
+        summarizeArticle(article.id, options)
+          .catch(_ => setAnswer(null))
+          .then(res => {
+            setAnswer(res ?? null);
+          });
       } else if (
         draft &&
         draft.title &&
         draft.content &&
         draft.title.length + draft.content.length > 30
       ) {
-        setAnswer(undefined);
-        answerDraftQuestion(draft).then(res => {
-          setAnswer(res);
-        });
+        answerDraftQuestion(draft)
+          .catch(_ => setAnswer(null))
+          .then(res => {
+            setAnswer(res ?? null);
+          });
       } else {
         setAnswer(null);
       }
