@@ -1,5 +1,6 @@
 import { useQetaApi } from '../../hooks';
 import { ReactNode, useMemo } from 'react';
+import { Skeleton } from '@material-ui/lab';
 import {
   DraftPostSuggestion,
   NewArticleSuggestion,
@@ -22,7 +23,6 @@ import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import {
   Card,
   CardHeader,
-  CircularProgress,
   Divider,
   IconButton,
   List,
@@ -296,15 +296,27 @@ export const SuggestionsCard = () => {
   const renderContent = () => {
     if (loading) {
       return (
-        <div className={classes.loadingContainer}>
-          <CircularProgress size={24} />
-        </div>
+        <List>
+          {Array.from(new Array(5)).map((_, index) => (
+            <ListItem key={index} className={classes.listItem}>
+              <ListItemIcon className={classes.listItemIcon}>
+                <Skeleton variant="circle" width={24} height={24} />
+              </ListItemIcon>
+              <ListItemText
+                primary={<Skeleton variant="text" width="80%" />}
+                secondary={<Skeleton variant="text" width="40%" />}
+                className={classes.listItemText}
+              />
+            </ListItem>
+          ))}
+        </List>
       );
     }
 
     if (suggestions.length === 0) {
       return (
         <div className={classes.emptyState}>
+          <AssistantIcon style={{ fontSize: 40 }} />
           <Typography variant="body1">
             {t('suggestionsCard.noSuggestions')}
           </Typography>
