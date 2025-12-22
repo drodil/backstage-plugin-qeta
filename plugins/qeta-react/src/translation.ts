@@ -826,6 +826,9 @@ export const qetaTranslationRef = createTranslationRef({
       totalLinks: 'Total links',
       totalFollowers: 'Total followers',
       reputation: 'Reputation',
+      answerScore: 'Answer score',
+      postScore: 'Post score',
+      correctAnswers: 'Correct answers',
     },
     collectionButton: {
       follow: 'Follow',

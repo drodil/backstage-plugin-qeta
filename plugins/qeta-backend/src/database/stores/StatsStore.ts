@@ -254,6 +254,9 @@ export class StatsStore extends BaseStore {
         totalVotes: userStats.totalVotes || 0,
         totalComments: userStats.totalComments || 0,
         reputation: userStats.reputation || 0,
+        answerScore: userStats.answerScore || 0,
+        postScore: userStats.postScore || 0,
+        correctAnswers: userStats.correctAnswers || 0,
       })
       .into('user_stats')
       .onConflict(['userRef', 'date'])

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
   PostHighlightListContent,
   qetaTranslationRef,
@@ -8,14 +6,15 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Post } from '@drodil/backstage-plugin-qeta-common';
+import { useState, useEffect } from 'react';
 
 export const SimilarQuestions = () => {
   const { draftQuestion } = useQetaContext();
   const { t } = useTranslationRef(qetaTranslationRef);
   const [debouncedDraftQuestion, setDebouncedDraftQuestion] =
-    React.useState(draftQuestion);
+    useState(draftQuestion);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedDraftQuestion(draftQuestion);
     }, 1500);
@@ -43,15 +42,15 @@ export const SimilarQuestions = () => {
     [debouncedDraftQuestion],
   );
 
-  const [displayQuestions, setDisplayQuestions] = React.useState<Post[]>([]);
+  const [displayQuestions, setDisplayQuestions] = useState<Post[]>([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (questions) {
       setDisplayQuestions(questions.posts);
     }
   }, [questions]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       (!draftQuestion || draftQuestion.title.length === 0) &&
       displayQuestions.length > 0

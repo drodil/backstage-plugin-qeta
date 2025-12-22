@@ -89,6 +89,9 @@ export interface UserResponse {
   totalFollowers: number;
   totalLinks: number;
   reputation: number;
+  answerScore: number;
+  postScore: number;
+  correctAnswers: number;
 }
 
 export interface UsersResponse {

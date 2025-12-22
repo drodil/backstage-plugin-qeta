@@ -1242,6 +1242,9 @@ export class QetaClient implements QetaApi {
           totalFollowers: 0,
           date: new Date(),
           reputation: 0,
+          answerScore: 0,
+          postScore: 0,
+          correctAnswers: 0,
         },
       };
     }

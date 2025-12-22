@@ -194,6 +194,9 @@ describe('Statistics Routes', () => {
           totalFollowers: 0,
           totalLinks: 0,
           reputation: 0,
+          answerScore: 0,
+          postScore: 0,
+          correctAnswers: 0,
         },
       ]);
       qetaStore.getUser.mockResolvedValue({
@@ -207,6 +210,9 @@ describe('Statistics Routes', () => {
         totalLinks: 0,
         totalFollowers: 0,
         reputation: 0,
+        answerScore: 0,
+        postScore: 0,
+        correctAnswers: 0,
       });
 
       const response = await request(app).get(

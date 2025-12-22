@@ -105,7 +105,10 @@ type StatType = {
     | 'totalArticles'
     | 'totalLinks'
     | 'totalFollowers'
-    | 'reputation';
+    | 'reputation'
+    | 'answerScore'
+    | 'postScore'
+    | 'correctAnswers';
   name: string;
   color: string;
   enabled: boolean;
@@ -200,6 +203,30 @@ const getDefaultStats = (isDark: boolean, t: any): StatType[] => [
     color: isDark ? '#26c6da' : '#00838f', // teal-400 / teal-900
     enabled: true,
     globalStat: true,
+    userStat: true,
+  },
+  {
+    dataKey: 'answerScore',
+    name: t('stats.answerScore'),
+    color: isDark ? '#a855f7' : '#7e22ce', // purple-500 / purple-700
+    enabled: false,
+    globalStat: false,
+    userStat: true,
+  },
+  {
+    dataKey: 'postScore',
+    name: t('stats.postScore'),
+    color: isDark ? '#22c55e' : '#15803d', // green-500 / green-700
+    enabled: false,
+    globalStat: false,
+    userStat: true,
+  },
+  {
+    dataKey: 'correctAnswers',
+    name: t('stats.correctAnswers'),
+    color: isDark ? '#eab308' : '#a16207', // yellow-500 / yellow-700
+    enabled: true,
+    globalStat: false,
     userStat: true,
   },
 ];

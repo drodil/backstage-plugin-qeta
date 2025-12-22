@@ -33,6 +33,9 @@ export interface GlobalStat extends Stat {
 export interface UserStat extends Stat {
   totalFollowers: number;
   reputation: number;
+  answerScore: number;
+  postScore: number;
+  correctAnswers: number;
 }
 
 export interface Badge {
@@ -390,6 +393,9 @@ export interface UserResponse {
   totalLinks: number;
   reputation: number;
   totalFollowers: number;
+  answerScore: number;
+  postScore: number;
+  correctAnswers: number;
 }
 
 export interface UsersResponse {

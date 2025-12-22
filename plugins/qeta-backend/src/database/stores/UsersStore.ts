@@ -77,6 +77,9 @@ export class UsersStore extends BaseStore {
           totalFollowers: this.mapToInteger(val.followerCount),
           totalLinks: this.mapToInteger(val.totalLinks),
           reputation: this.mapToInteger(val.reputation),
+          answerScore: this.mapToInteger(val.answerScore),
+          postScore: this.mapToInteger(val.postScore),
+          correctAnswers: this.mapToInteger(val.correctAnswers),
         };
       }),
       total,
@@ -106,6 +109,9 @@ export class UsersStore extends BaseStore {
       totalFollowers: this.mapToInteger(val.followerCount),
       totalLinks: this.mapToInteger(val.totalLinks),
       reputation: this.mapToInteger(val.reputation),
+      answerScore: this.mapToInteger(val.answerScore),
+      postScore: this.mapToInteger(val.postScore),
+      correctAnswers: this.mapToInteger(val.correctAnswers),
     };
   }
 
@@ -169,6 +175,9 @@ export class UsersStore extends BaseStore {
           this.db.raw('0 as "totalPosts"'),
           this.db.raw('0 as "followerCount"'),
           this.db.raw('0 as "reputation"'),
+          this.db.raw('0 as "answerScore"'),
+          this.db.raw('0 as "postScore"'),
+          this.db.raw('0 as "correctAnswers"'),
         ])
         .distinct();
     }
@@ -214,6 +223,13 @@ export class UsersStore extends BaseStore {
         ),
         this.db.raw(
           'COALESCE(user_stats_view."reputation", 0) as "reputation"',
+        ),
+        this.db.raw(
+          'COALESCE(user_stats_view."answerScore", 0) as "answerScore"',
+        ),
+        this.db.raw('COALESCE(user_stats_view."postScore", 0) as "postScore"'),
+        this.db.raw(
+          'COALESCE(user_stats_view."correctAnswers", 0) as "correctAnswers"',
         ),
       );
   }
