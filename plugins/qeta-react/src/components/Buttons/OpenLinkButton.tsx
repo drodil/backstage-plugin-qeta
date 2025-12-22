@@ -15,15 +15,21 @@ export const OpenLinkButton = (props: {
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
 
+  if (!entity.url) {
+    return null;
+  }
+
   const handleClick = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
   ) => {
     event.stopPropagation();
+    event.preventDefault();
     qetaApi.clickLink(entity.id);
+    window.open(entity.url, '_blank', 'noopener,noreferrer');
   };
 
   return (
-    <Tooltip title={t('link.open')}>
+    <Tooltip title={`${t('link.open')}: ${entity.url}`}>
       <IconButton
         component="a"
         href={entity.url}

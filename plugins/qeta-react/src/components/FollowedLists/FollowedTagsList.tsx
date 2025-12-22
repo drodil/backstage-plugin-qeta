@@ -10,7 +10,7 @@ import {
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import LocalOfferOutlined from '@material-ui/icons/LocalOfferOutlined';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { tagRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
@@ -22,6 +22,8 @@ const useStyles = makeStyles(theme => ({
     minHeight: 28,
     cursor: 'pointer',
     transition: 'background 0.2s',
+    textDecoration: 'none',
+    color: 'inherit',
     '&:hover': {
       background: theme.palette.action.hover,
     },
@@ -51,7 +53,6 @@ export const FollowedTagsList = () => {
   const tags = useTagsFollow();
   const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useStyles();
-  const navigate = useNavigate();
   const tagRoute = useRouteRef(tagRouteRef);
 
   if (tags.tags.length === 0 || tags.loading) {
@@ -61,25 +62,29 @@ export const FollowedTagsList = () => {
   return (
     <RightListContainer>
       <RightList title={t('rightMenu.followedTags')}>
-        {tags.tags.map(tag => (
-          <ListItem
-            key={tag}
-            dense
-            button
-            className={classes.listItem}
-            onClick={() => navigate(tagRoute({ tag: tag }))}
-          >
-            <Box className={classes.iconBox}>
-              <LocalOfferOutlined fontSize="small" />
-            </Box>
-            <Tooltip title={tag} arrow>
-              <ListItemText
-                primary={`${tag}`}
-                classes={{ primary: classes.listItemText }}
-              />
-            </Tooltip>
-          </ListItem>
-        ))}
+        {tags.tags.map(tag => {
+          const href = tagRoute({ tag: tag });
+          return (
+            <ListItem
+              key={tag}
+              dense
+              button
+              className={classes.listItem}
+              component={Link}
+              to={href}
+            >
+              <Box className={classes.iconBox}>
+                <LocalOfferOutlined fontSize="small" />
+              </Box>
+              <Tooltip title={tag} arrow>
+                <ListItemText
+                  primary={`${tag}`}
+                  classes={{ primary: classes.listItemText }}
+                />
+              </Tooltip>
+            </ListItem>
+          );
+        })}
       </RightList>
     </RightListContainer>
   );

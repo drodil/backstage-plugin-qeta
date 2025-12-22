@@ -1,28 +1,27 @@
 import {
+  removeMarkdownFormatting,
   TagResponse,
   truncate,
-  removeMarkdownFormatting,
 } from '@drodil/backstage-plugin-qeta-common';
 import { TagFollowButton } from '../Buttons/TagFollowButton';
 import {
+  Avatar,
+  Box,
   Card,
   CardContent,
   Grid,
-  Tooltip,
-  Typography,
-  Menu,
-  MenuItem,
   IconButton,
   ListItemIcon,
   ListItemText,
-  Box,
   makeStyles,
-  Avatar,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Typography,
 } from '@material-ui/core';
 import { useState } from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
-import { useNavigate } from 'react-router-dom';
 import { EditTagModal } from './EditTagModal';
 import DOMPurify from 'dompurify';
 import { DeleteModal } from '../DeleteModal';
@@ -38,6 +37,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles.ts';
+import { ClickableLink } from '../Utility/ClickableLink';
 
 const useStyles = makeStyles(theme => ({
   statsGrid: {
@@ -63,7 +63,6 @@ export const TagGridItem = (props: {
 }) => {
   const { tag, onTagEdit, isModerator } = props;
   const tagRoute = useRouteRef(tagRouteRef);
-  const navigate = useNavigate();
   const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useGridItemStyles();
   const localClasses = useStyles();
@@ -71,6 +70,7 @@ export const TagGridItem = (props: {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
@@ -101,178 +101,183 @@ export const TagGridItem = (props: {
     onTagEdit();
   };
 
+  const href = tagRoute({ tag: tag.tag });
+
   return (
     <Grid item xs={12} sm={6} md={6} xl={4}>
-      <Card
-        className={classes.card}
-        style={{ cursor: 'pointer' }}
-        onClick={() => navigate(tagRoute({ tag: tag.tag }))}
-      >
-        <Box className={classes.cardHeader} display="flex" alignItems="center">
-          <Avatar
-            variant="rounded"
-            className="avatar"
-            style={{ marginRight: 16 }}
+      <Card className={classes.card}>
+        <ClickableLink href={href} ariaLabel={tag.tag}>
+          <Box
+            className={classes.cardHeader}
+            display="flex"
+            alignItems="center"
           >
-            <LocalOfferIcon />
-          </Avatar>
-          <Box flex={1} minWidth={0}>
-            <Tooltip title={tag.tag} arrow>
-              <Typography variant="h6" noWrap>
-                {tag.tag}
-              </Typography>
-            </Tooltip>
-          </Box>
-          <Box display="flex" alignItems="center" flexShrink={0}>
-            <div
-              onClick={e => e.stopPropagation()}
-              onKeyPress={() => {}}
-              role="button"
-              tabIndex={0}
+            <Avatar
+              variant="rounded"
+              className="avatar"
+              style={{ marginRight: 16 }}
             >
-              <TagFollowButton tag={tag.tag} />
-            </div>
-            {tag.canEdit || tag.canDelete ? (
-              <>
-                <IconButton aria-label="settings" onClick={handleMenuClick}>
-                  <MoreVertIcon />
-                </IconButton>
-                <Menu
-                  id="tag-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}
-                  getContentAnchorEl={null}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                >
-                  {tag.canEdit && (
-                    <MenuItem
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleEditModalOpen(e);
-                      }}
-                    >
-                      <ListItemIcon>
-                        <EditIcon fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText primary={t('tagButton.edit')} />
-                    </MenuItem>
-                  )}
-                  {tag.canDelete && (
-                    <MenuItem
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleDeleteModalOpen(e);
-                      }}
-                    >
-                      <ListItemIcon>
-                        <DeleteIcon fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText primary={t('tagButton.delete')} />
-                    </MenuItem>
-                  )}
-                </Menu>
-              </>
-            ) : null}
-          </Box>
-        </Box>
-        <CardContent
-          className={`${classes.cardContent} ${localClasses.flexColumn}`}
-        >
-          {tag.description && (
-            <Box mb={2}>
-              <Tooltip
-                title={tag.description}
-                arrow
-                classes={{
-                  tooltip: tooltipStyles.tooltip,
-                  arrow: tooltipStyles.tooltipArrow,
-                }}
-              >
-                <Typography className={classes.description} variant="body2">
-                  {DOMPurify.sanitize(
-                    truncate(removeMarkdownFormatting(tag.description), 80),
-                  )}
+              <LocalOfferIcon />
+            </Avatar>
+            <Box flex={1} minWidth={0}>
+              <Tooltip title={tag.tag} arrow>
+                <Typography variant="h6" noWrap>
+                  {tag.tag}
                 </Typography>
               </Tooltip>
             </Box>
-          )}
+            <Box
+              display="flex"
+              alignItems="center"
+              flexShrink={0}
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <TagFollowButton tag={tag.tag} />
+              {tag.canEdit || tag.canDelete ? (
+                <>
+                  <IconButton aria-label="settings" onClick={handleMenuClick}>
+                    <MoreVertIcon />
+                  </IconButton>
+                  <Menu
+                    id="tag-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    getContentAnchorEl={null}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                  >
+                    {tag.canEdit && (
+                      <MenuItem
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleEditModalOpen(e);
+                        }}
+                      >
+                        <ListItemIcon style={{ minWidth: '32px' }}>
+                          <EditIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary={t('tagButton.edit')} />
+                      </MenuItem>
+                    )}
+                    {tag.canDelete && (
+                      <MenuItem
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleDeleteModalOpen(e);
+                        }}
+                      >
+                        <ListItemIcon style={{ minWidth: '32px' }}>
+                          <DeleteIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary={t('tagButton.delete')} />
+                      </MenuItem>
+                    )}
+                  </Menu>
+                </>
+              ) : null}
+            </Box>
+          </Box>
+          <CardContent
+            className={`${classes.cardContent} ${localClasses.flexColumn}`}
+          >
+            {tag.description && (
+              <Box mb={2}>
+                <Tooltip
+                  title={tag.description}
+                  arrow
+                  classes={{
+                    tooltip: tooltipStyles.tooltip,
+                    arrow: tooltipStyles.tooltipArrow,
+                  }}
+                >
+                  <Typography className={classes.description} variant="body2">
+                    {DOMPurify.sanitize(
+                      truncate(removeMarkdownFormatting(tag.description), 80),
+                    )}
+                  </Typography>
+                </Tooltip>
+              </Box>
+            )}
 
-          <Grid container spacing={1} className={localClasses.statsGrid}>
-            <Grid item xs={3}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                className={localClasses.statItem}
-              >
-                <QuestionAnswerIcon fontSize="small" color="disabled" />
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
-                  {tag.questionsCount}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                  {t('common.questions')}
-                </Typography>
-              </Box>
+            <Grid container spacing={1} className={localClasses.statsGrid}>
+              <Grid item xs={3}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  className={localClasses.statItem}
+                >
+                  <QuestionAnswerIcon fontSize="small" color="disabled" />
+                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+                    {tag.questionsCount}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {t('common.questions')}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={3}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  className={localClasses.statItem}
+                >
+                  <DescriptionIcon fontSize="small" color="disabled" />
+                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+                    {tag.articlesCount}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {t('common.articles')}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={3}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  className={localClasses.statItem}
+                >
+                  <LinkIcon fontSize="small" color="disabled" />
+                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+                    {tag.linksCount}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {t('common.links')}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={3}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  className={localClasses.statItem}
+                >
+                  <PeopleIcon fontSize="small" color="disabled" />
+                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+                    {tag.followerCount}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {t('common.followersPlain')}
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={3}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                className={localClasses.statItem}
-              >
-                <DescriptionIcon fontSize="small" color="disabled" />
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
-                  {tag.articlesCount}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                  {t('common.articles')}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={3}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                className={localClasses.statItem}
-              >
-                <LinkIcon fontSize="small" color="disabled" />
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
-                  {tag.linksCount}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                  {t('common.links')}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={3}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                className={localClasses.statItem}
-              >
-                <PeopleIcon fontSize="small" color="disabled" />
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
-                  {tag.followerCount}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                  {t('common.followersPlain')}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
+          </CardContent>
+        </ClickableLink>
       </Card>
       <EditTagModal
         tag={tag}

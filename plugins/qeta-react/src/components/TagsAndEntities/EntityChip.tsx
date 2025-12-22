@@ -6,6 +6,7 @@ import { entityRouteRef } from '../../routes';
 import { qetaApiRef } from '../../api';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useEntityFollow } from '../../hooks';
+import { Link } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -16,7 +17,6 @@ import {
 } from '@material-ui/core';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Visibility from '@material-ui/icons/Visibility';
-import { useNavigate } from 'react-router-dom';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles';
@@ -119,10 +119,11 @@ export const EntityChip = (props: {
   const { entity } = props;
   const entityRoute = useRouteRef(entityRouteRef);
   const { primaryTitle, Icon } = useEntityPresentation(entity);
-  const navigate = useNavigate();
   const entityRef =
     typeof entity === 'string' ? entity : stringifyEntityRef(entity);
   const classes = useTooltipStyles();
+  const href = entityRoute({ entityRef });
+
   return (
     <Tooltip
       title={<EntityTooltip entity={entity} />}
@@ -141,16 +142,13 @@ export const EntityChip = (props: {
         icon={Icon ? <Icon fontSize="small" /> : undefined}
         variant="outlined"
         className="qetaEntityChip"
-        component="a"
-        href={props.useHref ? entityRoute({ entityRef }) : undefined}
+        component={props.useHref ? 'a' : Link}
+        to={props.useHref ? undefined : href}
+        href={props.useHref ? href : undefined}
         target={props.useHref ? '_blank' : undefined}
-        onClick={
-          !props.useHref
-            ? () => {
-                navigate(entityRoute({ entityRef }));
-              }
-            : undefined
-        }
+        onClick={(e: React.MouseEvent) => {
+          e.stopPropagation();
+        }}
         clickable
       />
     </Tooltip>

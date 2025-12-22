@@ -287,10 +287,14 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
         </Tooltip>
       )}
       <CardActionArea
-        onClick={() => navigate(href)}
+        component="a"
+        href={href}
+        onClick={(e: React.MouseEvent) => {
+          e.preventDefault();
+          navigate(href);
+        }}
         aria-label={post.title}
         tabIndex={0}
-        role="link"
         style={{
           outline: 'none',
           flexGrow: 1,

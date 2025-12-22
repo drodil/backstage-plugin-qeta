@@ -6,20 +6,20 @@ import {
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionRouteRef } from '../../routes';
 import {
+  Box,
   Card,
   CardContent,
   CardMedia,
   Grid,
-  Typography,
-  Box,
   makeStyles,
+  Typography,
 } from '@material-ui/core';
 import DOMPurify from 'dompurify';
-import { useNavigate } from 'react-router-dom';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { CollectionFollowButton } from '../Buttons/CollectionFollowButton';
+import { ClickableLink } from '../Utility/ClickableLink';
 import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import PeopleIcon from '@material-ui/icons/People';
@@ -81,127 +81,128 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const collectionRoute = useRouteRef(collectionRouteRef);
-  const navigate = useNavigate();
   const href = collectionRoute({ id: collection.id.toString(10) });
 
   return (
-    <Card className={classes.card} onClick={() => navigate(href)}>
-      {collection.headerImage ? (
-        <CardMedia
-          component="img"
-          height="140"
-          onError={e => (e.currentTarget.style.display = 'none')}
-          image={collection.headerImage}
-          alt={collection.title}
-          style={{ objectFit: 'cover' }}
-        />
-      ) : (
-        <Box className={classes.placeholderImage}>
-          <PlaylistPlayIcon style={{ fontSize: 60 }} />
-        </Box>
-      )}
-      <CardContent
-        style={{
-          paddingBottom: '0.5rem',
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="flex-start"
-        >
-          <Typography gutterBottom variant="h6" component="div">
-            {collection.title}
-          </Typography>
-          <div
-            onClick={e => e.stopPropagation()}
-            onKeyPress={() => {}}
-            role="button"
-            tabIndex={0}
-          >
-            <CollectionFollowButton collection={collection} />
-          </div>
-        </Box>
-        {collection.description && (
-          <Typography variant="body2" color="textSecondary" gutterBottom>
-            {DOMPurify.sanitize(
-              truncate(removeMarkdownFormatting(collection.description), 200),
-            )}
-          </Typography>
+    <Card className={classes.card}>
+      <ClickableLink href={href} ariaLabel={collection.title}>
+        {collection.headerImage ? (
+          <CardMedia
+            component="img"
+            height="140"
+            onError={e => (e.currentTarget.style.display = 'none')}
+            image={collection.headerImage}
+            alt={collection.title}
+            style={{ objectFit: 'cover' }}
+          />
+        ) : (
+          <Box className={classes.placeholderImage}>
+            <PlaylistPlayIcon style={{ fontSize: 60 }} />
+          </Box>
         )}
-        <Box mt={2}>
-          <TagsAndEntities entity={collection} />
-        </Box>
-        <Grid container spacing={1} className={classes.statsGrid}>
-          <Grid item xs={3}>
+        <CardContent
+          style={{
+            paddingBottom: '0.5rem',
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="flex-start"
+          >
+            <Typography gutterBottom variant="h6" component="div">
+              {collection.title}
+            </Typography>
             <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              className={classes.statItem}
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
             >
-              <QuestionAnswerIcon fontSize="small" color="disabled" />
-              <Typography variant="body2" style={{ fontWeight: 600 }}>
-                {collection.questionsCount}
-              </Typography>
-              <Typography variant="caption" color="textSecondary">
-                {t('common.questions')}
-              </Typography>
+              <CollectionFollowButton collection={collection} />
             </Box>
+          </Box>
+          {collection.description && (
+            <Typography variant="body2" color="textSecondary" gutterBottom>
+              {DOMPurify.sanitize(
+                truncate(removeMarkdownFormatting(collection.description), 200),
+              )}
+            </Typography>
+          )}
+          <Box mt={2}>
+            <TagsAndEntities entity={collection} />
+          </Box>
+          <Grid container spacing={1} className={classes.statsGrid}>
+            <Grid item xs={3}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                className={classes.statItem}
+              >
+                <QuestionAnswerIcon fontSize="small" color="disabled" />
+                <Typography variant="body2" style={{ fontWeight: 600 }}>
+                  {collection.questionsCount}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {t('common.questions')}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                className={classes.statItem}
+              >
+                <DescriptionIcon fontSize="small" color="disabled" />
+                <Typography variant="body2" style={{ fontWeight: 600 }}>
+                  {collection.articlesCount}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {t('common.articles')}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                className={classes.statItem}
+              >
+                <LinkIcon fontSize="small" color="disabled" />
+                <Typography variant="body2" style={{ fontWeight: 600 }}>
+                  {collection.linksCount}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {t('common.links')}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                className={classes.statItem}
+              >
+                <PeopleIcon fontSize="small" color="disabled" />
+                <Typography variant="body2" style={{ fontWeight: 600 }}>
+                  {collection.followers}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {t('common.followersPlain')}
+                </Typography>
+              </Box>
+            </Grid>
           </Grid>
-          <Grid item xs={3}>
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              className={classes.statItem}
-            >
-              <DescriptionIcon fontSize="small" color="disabled" />
-              <Typography variant="body2" style={{ fontWeight: 600 }}>
-                {collection.articlesCount}
-              </Typography>
-              <Typography variant="caption" color="textSecondary">
-                {t('common.articles')}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={3}>
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              className={classes.statItem}
-            >
-              <LinkIcon fontSize="small" color="disabled" />
-              <Typography variant="body2" style={{ fontWeight: 600 }}>
-                {collection.linksCount}
-              </Typography>
-              <Typography variant="caption" color="textSecondary">
-                {t('common.links')}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={3}>
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              className={classes.statItem}
-            >
-              <PeopleIcon fontSize="small" color="disabled" />
-              <Typography variant="body2" style={{ fontWeight: 600 }}>
-                {collection.followers}
-              </Typography>
-              <Typography variant="caption" color="textSecondary">
-                {t('common.followersPlain')}
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
-      </CardContent>
+        </CardContent>
+      </ClickableLink>
     </Card>
   );
 };

@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { entityRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
@@ -22,6 +22,8 @@ const useStyles = makeStyles(theme => ({
     minHeight: 28,
     cursor: 'pointer',
     transition: 'background 0.2s',
+    textDecoration: 'none',
+    color: 'inherit',
     '&:hover': {
       background: theme.palette.action.hover,
     },
@@ -49,16 +51,17 @@ const useStyles = makeStyles(theme => ({
 
 const FollowedEntityItem = ({ entityRef }: { entityRef: string }) => {
   const classes = useStyles();
-  const navigate = useNavigate();
   const entityRoute = useRouteRef(entityRouteRef);
   const { primaryTitle, Icon } = useEntityPresentation(entityRef);
+  const href = entityRoute({ entityRef: entityRef });
 
   return (
     <ListItem
       dense
       button
       className={classes.listItem}
-      onClick={() => navigate(entityRoute({ entityRef: entityRef }))}
+      component={Link}
+      to={href}
     >
       <Box className={classes.iconBox}>
         {Icon ? <Icon fontSize="small" /> : null}

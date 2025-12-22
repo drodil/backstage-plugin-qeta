@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import PlaylistPlayOutlined from '@material-ui/icons/PlaylistPlayOutlined';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { collectionRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
@@ -22,6 +22,8 @@ const useStyles = makeStyles(theme => ({
     minHeight: 28,
     cursor: 'pointer',
     transition: 'background 0.2s',
+    textDecoration: 'none',
+    color: 'inherit',
     '&:hover': {
       background: theme.palette.action.hover,
     },
@@ -51,7 +53,6 @@ export const FollowedCollectionsList = () => {
   const collections = useCollectionsFollow();
   const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useStyles();
-  const navigate = useNavigate();
   const collectionRoute = useRouteRef(collectionRouteRef);
 
   if (collections.collections.length === 0 || collections.loading) {
@@ -61,27 +62,29 @@ export const FollowedCollectionsList = () => {
   return (
     <RightListContainer>
       <RightList title={t('rightMenu.followedCollections')}>
-        {collections.collections.map(collection => (
-          <ListItem
-            key={collection.id}
-            dense
-            button
-            className={classes.listItem}
-            onClick={() =>
-              navigate(collectionRoute({ id: collection.id.toString(10) }))
-            }
-          >
-            <Box className={classes.iconBox}>
-              <PlaylistPlayOutlined fontSize="small" />
-            </Box>
-            <Tooltip title={collection.title} arrow>
-              <ListItemText
-                primary={collection.title}
-                classes={{ primary: classes.listItemText }}
-              />
-            </Tooltip>
-          </ListItem>
-        ))}
+        {collections.collections.map(collection => {
+          const href = collectionRoute({ id: collection.id.toString(10) });
+          return (
+            <ListItem
+              key={collection.id}
+              dense
+              button
+              className={classes.listItem}
+              component={Link}
+              to={href}
+            >
+              <Box className={classes.iconBox}>
+                <PlaylistPlayOutlined fontSize="small" />
+              </Box>
+              <Tooltip title={collection.title} arrow>
+                <ListItemText
+                  primary={collection.title}
+                  classes={{ primary: classes.listItemText }}
+                />
+              </Tooltip>
+            </ListItem>
+          );
+        })}
       </RightList>
     </RightListContainer>
   );

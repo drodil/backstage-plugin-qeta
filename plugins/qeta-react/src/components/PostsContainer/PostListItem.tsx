@@ -29,7 +29,7 @@ import { StatusChip } from '../Utility/StatusChip';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
 import { FaviconItem } from '../FaviconItem';
 import { getPostDisplayDate } from '../../utils/utils';
-import { useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
 export interface PostListItemProps {
   post: PostResponse;
@@ -48,6 +48,8 @@ const useStyles = makeStyles(theme => ({
     minHeight: 80,
     transition: 'all 0.2s ease-in-out',
     borderRadius: theme.shape.borderRadius,
+    textDecoration: 'none',
+    color: 'inherit',
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
       '& $title': {
@@ -186,7 +188,6 @@ export const PostListItem = (props: PostListItemProps) => {
   const [score, setScore] = useState(post.score);
   const { t } = useTranslationRef(qetaTranslationRef);
   const styles = useStyles();
-  const navigate = useNavigate();
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
 
   useEffect(() => {
@@ -213,17 +214,6 @@ export const PostListItem = (props: PostListItemProps) => {
     ? `${route({ id: post.id.toString(10) })}?entity=${entity}`
     : route({ id: post.id.toString(10) });
 
-  const handleClick = (e: React.MouseEvent) => {
-    // Prevent navigation if clicking on interactive elements
-    if (
-      (e.target as HTMLElement).closest('a') ||
-      (e.target as HTMLElement).closest('button')
-    ) {
-      return;
-    }
-    navigate(href);
-  };
-
   /* eslint-disable no-nested-ternary */
   const answerClassName = correctAnswer
     ? styles.metaItemActive
@@ -233,7 +223,7 @@ export const PostListItem = (props: PostListItemProps) => {
   /* eslint-enable no-nested-ternary */
 
   return (
-    <Box className={styles.root} onClick={handleClick}>
+    <RouterLink to={href} className={styles.root}>
       <Box className={styles.metaCol} aria-label={t('common.postStats')}>
         <Tooltip
           title={
@@ -347,6 +337,6 @@ export const PostListItem = (props: PostListItemProps) => {
           </Box>
         </Box>
       </Box>
-    </Box>
+    </RouterLink>
   );
 };

@@ -1,12 +1,12 @@
 import { Fragment, ReactNode } from 'react';
 import {
+  Post,
   PostsQuery,
   PostType,
-  Post,
   selectByPostType,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from '../../hooks';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { RightList, RightListContainer } from '../Utility/RightList';
 import {
   Box,
@@ -34,6 +34,8 @@ const useStyles = makeStyles(theme => ({
     minHeight: 28,
     cursor: 'pointer',
     transition: 'background 0.2s',
+    textDecoration: 'none',
+    color: 'inherit',
     '&:hover': {
       background: theme.palette.action.hover,
     },
@@ -90,7 +92,6 @@ export const PostHighlightListContent = (props: {
     props;
   const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const navigate = useNavigate();
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
   const linkRoute = useRouteRef(linkRouteRef);
@@ -132,6 +133,7 @@ export const PostHighlightListContent = (props: {
               articleRoute,
               linkRoute,
             );
+            const href = route({ id: q.id.toString(10) });
             const vote = formatShortNumber(q.score);
             let voteBoxClass = classes.voteBox;
             if (q.correctAnswer) {
@@ -145,7 +147,8 @@ export const PostHighlightListContent = (props: {
                   dense
                   button
                   className={classes.listItem}
-                  onClick={() => navigate(route({ id: q.id.toString(10) }))}
+                  component={Link}
+                  to={href}
                   aria-label={q.title}
                 >
                   <Box className={voteBoxClass}>{vote}</Box>

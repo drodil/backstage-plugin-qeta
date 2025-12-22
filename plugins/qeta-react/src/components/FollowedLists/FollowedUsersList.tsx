@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { userRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
@@ -22,6 +22,8 @@ const useStyles = makeStyles(theme => ({
     minHeight: 28,
     cursor: 'pointer',
     transition: 'background 0.2s',
+    textDecoration: 'none',
+    color: 'inherit',
     '&:hover': {
       background: theme.palette.action.hover,
     },
@@ -44,16 +46,17 @@ const useStyles = makeStyles(theme => ({
 
 const FollowedUserItem = ({ entityRef }: { entityRef: string }) => {
   const classes = useStyles();
-  const navigate = useNavigate();
   const userRoute = useRouteRef(userRouteRef);
   const { name, initials, user } = useUserInfo(entityRef);
+  const href = `${userRoute()}/${entityRef}`;
 
   return (
     <ListItem
       dense
       button
       className={classes.listItem}
-      onClick={() => navigate(`${userRoute()}/${entityRef}`)}
+      component={Link}
+      to={href}
     >
       <Avatar
         src={user?.spec?.profile?.picture}

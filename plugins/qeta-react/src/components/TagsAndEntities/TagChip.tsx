@@ -3,9 +3,9 @@ import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
 import { qetaApiRef } from '../../api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
-import { useNavigate } from 'react-router-dom';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { useTagsFollow } from '../../hooks';
+import { Link } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -121,9 +121,10 @@ export const TagChip = (props: {
   useHref?: boolean;
 }) => {
   const tagRoute = useRouteRef(tagRouteRef);
-  const navigate = useNavigate();
   const { tag } = props;
   const classes = useTooltipStyles();
+  const href = tagRoute({ tag });
+
   return (
     <Tooltip
       arrow
@@ -139,17 +140,14 @@ export const TagChip = (props: {
         label={tag}
         size="small"
         className="qetaTagChip"
-        component="a"
+        component={props.useHref ? 'a' : Link}
         style={props.style}
-        href={props.useHref ? tagRoute({ tag }) : undefined}
+        to={props.useHref ? undefined : href}
+        href={props.useHref ? href : undefined}
         target={props.useHref ? '_blank' : undefined}
-        onClick={
-          !props.useHref
-            ? () => {
-                navigate(tagRoute({ tag }));
-              }
-            : undefined
-        }
+        onClick={(e: React.MouseEvent) => {
+          e.stopPropagation();
+        }}
         clickable
       />
     </Tooltip>

@@ -355,7 +355,8 @@ async function main() {
 
   const links = Array.from({ length: options.number }, () => ({
     title: faker.lorem.sentence(),
-    content: faker.internet.url(),
+    content: faker.lorem.paragraph(),
+    url: faker.internet.url(),
     type: 'link',
     tags: getTags(),
     user: getUser(),
