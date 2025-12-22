@@ -1,4 +1,8 @@
-import { StatsChart, useQetaApi } from '@drodil/backstage-plugin-qeta-react';
+import {
+  StatsChart,
+  useQetaApi,
+  UserBadges,
+} from '@drodil/backstage-plugin-qeta-react';
 import { Card, CardContent, CircularProgress, Grid } from '@material-ui/core';
 
 export const UserStatsContent = (props: { userRef: string }) => {
@@ -11,7 +15,14 @@ export const UserStatsContent = (props: { userRef: string }) => {
     return null;
   }
   return (
-    <Grid container>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <Card>
+          <CardContent>
+            <UserBadges entityRef={props.userRef} />
+          </CardContent>
+        </Card>
+      </Grid>
       <Grid item xs={12}>
         <Card>
           <CardContent>

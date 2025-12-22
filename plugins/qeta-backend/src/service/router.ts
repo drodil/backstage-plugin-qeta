@@ -14,6 +14,7 @@ import { templateRoutes } from './routes/templates';
 import { aiRoutes } from './routes/ai';
 import { suggestionRoutes } from './routes/suggestions';
 import { permissionsRoute } from './routes/permissions';
+import { badgesRoutes } from './routes/badges';
 import { PermissionManager } from './PermissionManager.ts';
 
 export async function createRouter(
@@ -64,6 +65,7 @@ export async function createRouter(
   templateRoutes(router, routeOptions);
   aiRoutes(router, routeOptions);
   suggestionRoutes(router, routeOptions);
+  badgesRoutes(router, routeOptions);
 
   router.use(MiddlewareFactory.create({ config, logger }).error());
   return router;

@@ -3,7 +3,6 @@ import {
   PostType,
   Statistic,
   StatisticsRequestParameters,
-  UserResponse,
   UserStat,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Knex } from 'knex';
@@ -215,54 +214,46 @@ export class StatsStore extends BaseStore {
   }
 
   async saveGlobalStats(date: Date): Promise<void> {
-    const [
-      totalQuestions,
-      totalAnswers,
-      totalArticles,
-      totalUsers,
-      totalViews,
-      totalVotes,
-      totalTags,
-      totalComments,
-    ] = await Promise.all([
-      this.getCount('posts', { type: 'question' }),
-      this.getCount('answers'),
-      this.getCount('posts', { type: 'article' }),
-      this.getUsersCount(),
-      this.getCount('post_views'),
-      this.getTotalVotes(),
-      this.getCount('tags'),
-      this.getCount('comments'),
-    ]);
+    const globalStats = await this.db('global_stats_view').select('*').first();
 
     await this.db
       .insert({
         date: date,
-        totalQuestions,
-        totalAnswers,
-        totalArticles,
-        totalUsers,
-        totalViews,
-        totalVotes,
-        totalTags,
-        totalComments,
+        totalQuestions: globalStats.totalQuestions || 0,
+        totalAnswers: globalStats.totalAnswers || 0,
+        totalArticles: globalStats.totalArticles || 0,
+        totalUsers: globalStats.totalUsers || 0,
+        totalViews: globalStats.totalViews || 0,
+        totalVotes: globalStats.totalVotes || 0,
+        totalTags: globalStats.totalTags || 0,
+        totalComments: globalStats.totalComments || 0,
       })
       .into('global_stats')
       .onConflict('date')
       .merge();
   }
 
-  async saveUserStats(user: UserResponse, date: Date): Promise<void> {
+  async saveUserStats(userRef: string, date: Date): Promise<void> {
+    const userStats = await this.db('user_stats_view')
+      .where('userRef', userRef)
+      .select('*')
+      .first();
+
+    if (!userStats) {
+      return;
+    }
+
     await this.db
       .insert({
-        userRef: user.userRef,
+        userRef: userRef,
         date: date,
-        totalQuestions: user.totalQuestions,
-        totalAnswers: user.totalAnswers,
-        totalArticles: user.totalArticles,
-        totalViews: user.totalViews,
-        totalVotes: user.totalVotes,
-        totalComments: user.totalComments,
+        totalQuestions: userStats.totalQuestions || 0,
+        totalAnswers: userStats.totalAnswers || 0,
+        totalArticles: userStats.totalArticles || 0,
+        totalViews: userStats.totalViews || 0,
+        totalVotes: userStats.totalVotes || 0,
+        totalComments: userStats.totalComments || 0,
+        reputation: userStats.reputation || 0,
       })
       .into('user_stats')
       .onConflict(['userRef', 'date'])
@@ -314,11 +305,5 @@ export class StatsStore extends BaseStore {
       .where('userRef', user_ref)
       .select('*')
       .orderBy('date', 'desc');
-  }
-
-  private async getTotalVotes(): Promise<number> {
-    const pVotes = await this.db('post_votes').count('* as CNT').first();
-    const aVotes = await this.db('answer_votes').count('* as CNT').first();
-    return this.mapToInteger(pVotes?.CNT) + this.mapToInteger(aVotes?.CNT);
   }
 }

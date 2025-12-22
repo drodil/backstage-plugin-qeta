@@ -14,6 +14,8 @@ export * from './RelativeTimeWithTooltip';
 export * from './Links';
 export * from './PostsTable';
 export * from './StatsChart';
+export * from './Badges/BadgeChip';
+export * from './Badges/UserBadges';
 
 export * from './TopRankingUsersCard';
 export * from './TagsGrid';

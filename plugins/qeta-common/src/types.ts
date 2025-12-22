@@ -32,6 +32,26 @@ export interface GlobalStat extends Stat {
 
 export interface UserStat extends Stat {
   totalFollowers: number;
+  reputation: number;
+}
+
+export interface Badge {
+  id: number;
+  key: string;
+  name: string;
+  description: string;
+  icon: string;
+  level: 'diamond' | 'gold' | 'silver' | 'bronze';
+  type: 'one-time' | 'repetitive';
+  reputation: number;
+}
+
+export interface UserBadge {
+  id: number;
+  userRef: string;
+  badge: Badge;
+  created: Date;
+  uniqueKey?: string;
 }
 
 export interface StatisticsOptions {
@@ -368,6 +388,8 @@ export interface UserResponse {
   totalVotes: number;
   totalArticles: number;
   totalLinks: number;
+  reputation: number;
+  totalFollowers: number;
 }
 
 export interface UsersResponse {

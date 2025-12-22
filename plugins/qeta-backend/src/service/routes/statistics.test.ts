@@ -5,8 +5,6 @@ import {
   mostUpvotedQuestions,
   mostUpvotedAnswers,
   globalStats,
-  userStats,
-  user,
 } from './__testUtils__';
 import { QetaStore } from '../../database/QetaStore';
 
@@ -184,8 +182,32 @@ describe('Statistics Routes', () => {
 
   describe('GET /statistics/user/:userRef', () => {
     it('returns user statistics', async () => {
-      qetaStore.getUserStats.mockResolvedValue(userStats);
-      qetaStore.getUser.mockResolvedValue(user);
+      qetaStore.getUserStats.mockResolvedValue([
+        {
+          date: new Date('2022-01-01'),
+          totalViews: 0,
+          totalQuestions: 0,
+          totalAnswers: 0,
+          totalComments: 0,
+          totalVotes: 0,
+          totalArticles: 0,
+          totalFollowers: 0,
+          totalLinks: 0,
+          reputation: 0,
+        },
+      ]);
+      qetaStore.getUser.mockResolvedValue({
+        userRef: 'user:default/test',
+        totalViews: 0,
+        totalQuestions: 0,
+        totalAnswers: 0,
+        totalComments: 0,
+        totalVotes: 0,
+        totalArticles: 0,
+        totalLinks: 0,
+        totalFollowers: 0,
+        reputation: 0,
+      });
 
       const response = await request(app).get(
         '/statistics/user/user:default/test',

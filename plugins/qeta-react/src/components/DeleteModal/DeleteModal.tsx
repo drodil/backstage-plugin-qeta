@@ -4,6 +4,9 @@ import {
   PostResponse,
   selectByPostType,
   TagResponse,
+  isPost,
+  isCollection,
+  isTag,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   Backdrop,
@@ -50,18 +53,18 @@ export const DeleteModal = (props: {
   const [error, setError] = useState(false);
   const [reason, setReason] = useState<undefined | string>(undefined);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const isQuestion = 'title' in entity;
-  const isCollection = 'owner' in entity;
-  const isTag = 'tag' in entity;
+  const isPostEntity = isPost(entity);
+  const isCollectionEntity = isCollection(entity);
+  const isTagEntity = isTag(entity);
 
   const getTitle = () => {
-    if (isCollection) {
+    if (isCollectionEntity) {
       return t('deleteModal.title.collection');
     }
-    if (isTag) {
+    if (isTagEntity) {
       return t('deleteModal.title.tag');
     }
-    if (isQuestion) {
+    if (isPostEntity) {
       return t('deleteModal.title.question');
     }
     return t('deleteModal.title.answer');
@@ -71,7 +74,7 @@ export const DeleteModal = (props: {
   const title = getTitle();
 
   const handleDelete = () => {
-    if (isCollection) {
+    if (isCollectionEntity) {
       qetaApi
         .deleteCollection(entity.id, reason)
         .catch(_ => setError(true))
@@ -89,7 +92,7 @@ export const DeleteModal = (props: {
             setError(true);
           }
         });
-    } else if (isTag) {
+    } else if (isTagEntity) {
       qetaApi
         .deleteTag(entity.id, reason)
         .catch(_ => setError(true))
@@ -107,7 +110,7 @@ export const DeleteModal = (props: {
             setError(true);
           }
         });
-    } else if (isQuestion) {
+    } else if (isPostEntity) {
       qetaApi
         .deletePost(entity.id, reason)
         .catch(_ => setError(true))
@@ -117,7 +120,7 @@ export const DeleteModal = (props: {
             onDelete?.(entity);
             alertApi.post({
               message: selectByPostType(
-                entity.type,
+                (entity as PostResponse).type,
                 t('deleteModal.questionDeleted'),
                 t('deleteModal.articleDeleted'),
                 t('deleteModal.linkDeleted'),
@@ -127,7 +130,7 @@ export const DeleteModal = (props: {
             });
             navigate(
               selectByPostType(
-                entity.type,
+                (entity as PostResponse).type,
                 questionsRoute(),
                 articlesRoute(),
                 linksRoute(),

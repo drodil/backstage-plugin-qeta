@@ -408,6 +408,12 @@ export const qetaTranslationRef = createTranslationRef({
       questions: 'Questions',
       answers: 'Answers',
       followers: 'Followers',
+      reputation: 'Reputation',
+    },
+    userBadges: {
+      title: 'Badges',
+      error: 'Failed to load badges',
+      noBadges: 'No badges earned yet',
     },
     rightMenu: {
       followedEntities: 'Followed entities',
@@ -661,6 +667,7 @@ export const qetaTranslationRef = createTranslationRef({
         tag: 'Name',
         entityRef: 'Name',
         user: 'Name',
+        reputation: 'Reputation',
       },
       order: {
         label: 'Order',
@@ -818,6 +825,7 @@ export const qetaTranslationRef = createTranslationRef({
       totalArticles: 'Total articles',
       totalLinks: 'Total links',
       totalFollowers: 'Total followers',
+      reputation: 'Reputation',
     },
     collectionButton: {
       follow: 'Follow',

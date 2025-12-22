@@ -10,6 +10,7 @@ import { notificationService } from '@backstage/plugin-notifications-node';
 import { StatsCollector } from './service/StatsCollector';
 import { TagsUpdater } from './service/TagsUpdater';
 import { AttachmentCleaner } from './service/AttachmentCleaner';
+import { BadgeManager } from './service/BadgeManager';
 import { CatalogClient } from '@backstage/catalog-client';
 import {
   AIHandler,
@@ -164,11 +165,15 @@ export const qetaPlugin = createBackendPlugin({
 
         registerActions({ auth, actionsRegistry, discovery });
 
+        const badgeManager = new BadgeManager(qetaStore);
+
         await StatsCollector.initStatsCollector(
           config,
           scheduler,
           logger,
           qetaStore,
+          badgeManager,
+          events,
         );
 
         await TagsUpdater.initTagsUpdater(

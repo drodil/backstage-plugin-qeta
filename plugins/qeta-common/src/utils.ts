@@ -3,6 +3,18 @@ import { compact } from 'lodash';
 import { isValidTag } from './tags';
 import { PostType } from './types.ts';
 import { Config } from '@backstage/config';
+import {
+  Answer,
+  Article,
+  Collection,
+  Comment,
+  Link,
+  Post,
+  QetaIdEntity,
+  Question,
+  UserResponse as User,
+  TagResponse as Tag,
+} from './types';
 
 export const truncate = (str: string, n: number): string => {
   return str.length > n ? `${str.slice(0, n - 1)}...` : str;
@@ -125,3 +137,39 @@ export function getSupportedEntityKinds(config?: Config): string[] {
     ]
   ).map(k => k.toLowerCase());
 }
+
+export const isQuestion = (entity: QetaIdEntity): entity is Question => {
+  return 'type' in entity && entity.type === 'question';
+};
+
+export const isPost = (entity: QetaIdEntity): entity is Post => {
+  return 'type' in entity;
+};
+
+export const isArticle = (entity: QetaIdEntity): entity is Article => {
+  return 'type' in entity && entity.type === 'article';
+};
+
+export const isLink = (entity: QetaIdEntity): entity is Link => {
+  return 'type' in entity && entity.type === 'link';
+};
+
+export const isAnswer = (entity: QetaIdEntity): entity is Answer => {
+  return 'postId' in entity && 'correct' in entity;
+};
+
+export const isComment = (entity: QetaIdEntity): entity is Comment => {
+  return 'postId' in entity && !('correct' in entity);
+};
+
+export const isCollection = (entity: QetaIdEntity): entity is Collection => {
+  return 'title' in entity && 'owner' in entity && !('type' in entity);
+};
+
+export const isTag = (entity: QetaIdEntity): entity is Tag => {
+  return 'tag' in entity;
+};
+
+export const isUser = (entity: any): entity is User => {
+  return 'userRef' in entity;
+};

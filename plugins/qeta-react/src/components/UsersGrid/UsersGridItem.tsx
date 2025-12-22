@@ -21,6 +21,7 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import DescriptionIcon from '@material-ui/icons/Description';
 import LinkIcon from '@material-ui/icons/Link';
+import StarIcon from '@material-ui/icons/Star';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
@@ -109,7 +110,24 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
             className={`${classes.cardContent} ${localClasses.flexColumn}`}
           >
             <Grid container spacing={1} className={localClasses.statsGrid}>
-              <Grid item xs={4}>
+              {/* First row: Reputation, Questions, Articles, Links */}
+              <Grid item xs={3}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  className={localClasses.statItem}
+                >
+                  <StarIcon fontSize="small" color="disabled" />
+                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+                    {user.reputation}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {t('impactCard.reputation')}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={3}>
                 <Box
                   display="flex"
                   flexDirection="column"
@@ -125,6 +143,39 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
                   </Typography>
                 </Box>
               </Grid>
+              <Grid item xs={3}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  className={localClasses.statItem}
+                >
+                  <DescriptionIcon fontSize="small" color="disabled" />
+                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+                    {user.totalArticles}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {t('common.articles')}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={3}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  className={localClasses.statItem}
+                >
+                  <LinkIcon fontSize="small" color="disabled" />
+                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+                    {user.totalLinks}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {t('common.links')}
+                  </Typography>
+                </Box>
+              </Grid>
+              {/* Second row: Answers, Votes, Views */}
               <Grid item xs={4}>
                 <Box
                   display="flex"
@@ -164,44 +215,12 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
                   alignItems="center"
                   className={localClasses.statItem}
                 >
-                  <DescriptionIcon fontSize="small" color="disabled" />
-                  <Typography variant="body2" style={{ fontWeight: 600 }}>
-                    {user.totalArticles}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    {t('common.articles')}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={4}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  className={localClasses.statItem}
-                >
                   <Visibility fontSize="small" color="disabled" />
                   <Typography variant="body2" style={{ fontWeight: 600 }}>
                     {user.totalViews}
                   </Typography>
                   <Typography variant="caption" color="textSecondary">
                     {t('common.views')}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={4}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  className={localClasses.statItem}
-                >
-                  <LinkIcon fontSize="small" color="disabled" />
-                  <Typography variant="body2" style={{ fontWeight: 600 }}>
-                    {user.totalLinks}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    {t('common.links')}
                   </Typography>
                 </Box>
               </Grid>

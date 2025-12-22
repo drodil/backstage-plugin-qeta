@@ -142,6 +142,7 @@ export type UserFilters = Filters & {
     | 'totalViews'
     | 'totalVotes'
     | 'followerCount'
+    | 'reputation'
     | 'userRef';
 };
 
@@ -557,6 +558,8 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                 radioSelect('totalViews', t('filterPanel.orderBy.views'))}
               {mode === 'users' &&
                 radioSelect('totalVotes', t('filterPanel.orderBy.votes'))}
+              {mode === 'users' &&
+                radioSelect('reputation', t('filterPanel.orderBy.reputation'))}
             </RadioGroup>
           </FormControl>
         </Grid>

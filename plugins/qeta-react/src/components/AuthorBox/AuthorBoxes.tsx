@@ -1,16 +1,12 @@
 import {
   Answer,
   PostAnswerEntity,
-  QetaIdEntity,
+  isAnswer,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Box } from '@material-ui/core';
 import { AuthorBox } from './AuthorBox.tsx';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-
-function isAnswer(entity: QetaIdEntity): entity is Answer {
-  return 'postId' in entity && 'correct' in entity;
-}
 
 export const AuthorBoxes = (props: { entity: PostAnswerEntity }) => {
   const entity = props.entity;
@@ -40,7 +36,7 @@ export const AuthorBoxes = (props: { entity: PostAnswerEntity }) => {
             ? t('authorBox.answeredAtTime')
             : t('authorBox.postedAtTime')
         }
-        expert={isAnswer(entity) ? entity.expert : false}
+        expert={isAnswer(entity) ? (entity as Answer).expert : false}
         anonymous={entity.anonymous}
       />
     </Box>

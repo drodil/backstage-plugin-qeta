@@ -3,6 +3,7 @@ import {
   Answer,
   AnswersQuery,
   Attachment,
+  Badge,
   Collection,
   CollectionsQuery,
   Comment as QetaComment,
@@ -13,7 +14,6 @@ import {
   PostsQuery,
   PostStatus,
   PostType,
-  QetaIdEntity,
   Statistic,
   StatisticsRequestParameters,
   TagResponse,
@@ -24,31 +24,20 @@ import {
   UserEntitiesResponse,
   UsersQuery,
   UserStat,
+  UserBadge,
   UserTagsResponse,
   UserUsersResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
-export function isPost(entity: QetaIdEntity): entity is Post {
-  return 'title' in entity && !('followers' in entity);
-}
-
-export function isAnswer(entity: QetaIdEntity): entity is Answer {
-  return 'postId' in entity && 'correct' in entity;
-}
-
-export function isComment(entity: QetaIdEntity): entity is QetaComment {
-  return !('title' in entity) && !('correct' in entity);
-}
-
-export function isTag(entity: QetaIdEntity): entity is TagResponse {
-  return 'tag' in entity;
-}
-
-export function isCollection(entity: QetaIdEntity): entity is Collection {
-  return 'followers' in entity;
-}
+export {
+  isPost,
+  isAnswer,
+  isComment,
+  isTag,
+  isCollection,
+} from '@drodil/backstage-plugin-qeta-common';
 
 export type MaybeAnswer = Answer | null;
 export type MaybePost = Post | null;
@@ -99,6 +88,7 @@ export interface UserResponse {
   totalArticles: number;
   totalFollowers: number;
   totalLinks: number;
+  reputation: number;
 }
 
 export interface UsersResponse {
@@ -527,7 +517,7 @@ export interface QetaStore {
     filters?: { author?: string; type?: PostType },
   ): Promise<number>;
   saveGlobalStats(date: Date): Promise<void>;
-  saveUserStats(user: UserResponse, date: Date): Promise<void>;
+  saveUserStats(userRef: string, date: Date): Promise<void>;
   getTotalViews(
     user_ref: string,
     lastDays?: number,
@@ -638,4 +628,14 @@ export interface QetaStore {
     filters?: PermissionCriteria<QetaFilters>,
     opts?: PostOptions,
   ): Promise<Posts>;
+
+  getBadges(): Promise<Badge[]>;
+  getBadge(key: string): Promise<Badge | undefined>;
+  getUserBadges(userRef: string): Promise<UserBadge[]>;
+  awardBadge(
+    userRef: string,
+    badgeKey: string,
+    uniqueKey?: string,
+  ): Promise<UserBadge | null>;
+  createBadge(badge: Omit<Badge, 'id'>): Promise<void>;
 }

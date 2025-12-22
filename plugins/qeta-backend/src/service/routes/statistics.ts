@@ -103,18 +103,22 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     if (!todayStatsAdded) {
       if (!summary) {
         summary = {
-          userRef,
-          totalAnswers: 0,
-          totalArticles: 0,
-          totalComments: 0,
-          totalQuestions: 0,
+          userRef: userRef,
           totalViews: 0,
+          totalQuestions: 0,
+          totalAnswers: 0,
+          totalComments: 0,
           totalVotes: 0,
+          totalArticles: 0,
           totalFollowers: 0,
           totalLinks: 0,
+          reputation: 0,
         };
       }
-      statistics.push({ date: new Date(), ...summary });
+
+      if (userStats.length === 0) {
+        statistics.push({ date: new Date(), ...summary });
+      }
     }
 
     return response.status(200).json({ statistics, summary });

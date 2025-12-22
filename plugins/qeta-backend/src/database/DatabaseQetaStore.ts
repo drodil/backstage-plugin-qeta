@@ -23,6 +23,7 @@ import {
   UserResponse,
   UsersResponse,
 } from './QetaStore';
+import { Badge, UserBadge } from '@drodil/backstage-plugin-qeta-common';
 import {
   AIResponse,
   AnswersQuery,
@@ -62,6 +63,7 @@ import { UsersStore } from './stores/UsersStore';
 import { EntitiesStore } from './stores/EntitiesStore';
 import { TemplatesStore } from './stores/TemplatesStore';
 import { AttachmentsStore } from './stores/AttachmentsStore';
+import { BadgesStore } from './stores/BadgesStore';
 
 const migrationsDir = resolvePackagePath(
   '@drodil/backstage-plugin-qeta-backend',
@@ -82,6 +84,7 @@ export class DatabaseQetaStore implements QetaStore {
     private readonly entitiesStore: EntitiesStore,
     private readonly templatesStore: TemplatesStore,
     private readonly attachmentsStore: AttachmentsStore,
+    private readonly badgesStore: BadgesStore,
   ) {}
 
   static async create({
@@ -127,6 +130,7 @@ export class DatabaseQetaStore implements QetaStore {
       attachmentsStore,
     );
     const statsStore = new StatsStore(client);
+    const badgesStore = new BadgesStore(client);
 
     postsStore.setAnswersStore(answersStore);
 
@@ -141,6 +145,7 @@ export class DatabaseQetaStore implements QetaStore {
       entitiesStore,
       templatesStore,
       attachmentsStore,
+      badgesStore,
     );
   }
 
@@ -787,8 +792,8 @@ export class DatabaseQetaStore implements QetaStore {
     return this.statsStore.saveGlobalStats(date);
   }
 
-  async saveUserStats(user: UserResponse, date: Date): Promise<void> {
-    return this.statsStore.saveUserStats(user, date);
+  async saveUserStats(userRef: string, date: Date): Promise<void> {
+    return this.statsStore.saveUserStats(userRef, date);
   }
 
   async getTotalViews(
@@ -797,6 +802,30 @@ export class DatabaseQetaStore implements QetaStore {
     excludeUser?: boolean,
   ): Promise<number> {
     return this.statsStore.getTotalViews(user_ref, lastDays, excludeUser);
+  }
+
+  async getBadges(): Promise<Badge[]> {
+    return this.badgesStore.getBadges();
+  }
+
+  async getBadge(key: string): Promise<Badge | undefined> {
+    return this.badgesStore.getBadge(key);
+  }
+
+  async getUserBadges(userRef: string): Promise<UserBadge[]> {
+    return this.badgesStore.getUserBadges(userRef);
+  }
+
+  async awardBadge(
+    userRef: string,
+    badgeKey: string,
+    uniqueKey?: string,
+  ): Promise<UserBadge | null> {
+    return this.badgesStore.awardBadge(userRef, badgeKey, uniqueKey);
+  }
+
+  async createBadge(badge: Omit<Badge, 'id'>): Promise<void> {
+    return this.badgesStore.createBadge(badge);
   }
 
   async suggestPosts(

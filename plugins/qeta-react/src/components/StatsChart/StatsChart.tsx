@@ -104,7 +104,8 @@ type StatType = {
     | 'totalTags'
     | 'totalArticles'
     | 'totalLinks'
-    | 'totalFollowers';
+    | 'totalFollowers'
+    | 'reputation';
   name: string;
   color: string;
   enabled: boolean;
@@ -113,6 +114,14 @@ type StatType = {
 };
 
 const getDefaultStats = (isDark: boolean, t: any): StatType[] => [
+  {
+    dataKey: 'reputation',
+    name: t('stats.reputation'),
+    color: isDark ? '#fcd34d' : '#d97706', // amber-300 / amber-600
+    enabled: false,
+    globalStat: false,
+    userStat: true,
+  },
   {
     dataKey: 'totalViews',
     name: t('stats.totalViews'),

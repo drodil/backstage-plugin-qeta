@@ -38,6 +38,8 @@ import {
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
+  Badge,
+  UserBadge,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export interface PaginatedQuery {
@@ -134,7 +136,8 @@ export interface UsersQuery extends PaginatedQuery {
     | 'totalLinks'
     | 'totalViews'
     | 'totalVotes'
-    | 'followerCount';
+    | 'followerCount'
+    | 'reputation';
 }
 
 export interface EntitiesQuery extends PaginatedQuery {
@@ -238,6 +241,8 @@ export interface QetaApi {
     options?: TagsQuery,
     requestOptions?: RequestOptions,
   ): Promise<TagsResponse>;
+  getBadges(): Promise<Badge[]>;
+  getUserBadges(userRef: string): Promise<UserBadge[]>;
   getTag(
     tag: string,
     requestOptions?: RequestOptions,

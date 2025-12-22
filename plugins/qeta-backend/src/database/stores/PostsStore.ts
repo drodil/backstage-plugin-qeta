@@ -78,7 +78,9 @@ export class PostsStore extends BaseStore {
   }
 
   async getAIAnswer(postId: number): Promise<AIResponse | null> {
-    const row = await this.db('ai_answers').where('postId', postId).first();
+    const row = await this.db('post_ai_answers')
+      .where('postId', postId)
+      .first();
     if (!row) {
       return null;
     }
@@ -95,13 +97,15 @@ export class PostsStore extends BaseStore {
         answer: response.answer,
         created: response.created,
       })
-      .into('ai_answers')
+      .into('post_ai_answers')
       .onConflict('postId')
       .merge();
   }
 
   async deleteAIAnswer(postId: number): Promise<boolean> {
-    const rows = await this.db('ai_answers').where('postId', postId).delete();
+    const rows = await this.db('post_ai_answers')
+      .where('postId', postId)
+      .delete();
     return rows > 0;
   }
 

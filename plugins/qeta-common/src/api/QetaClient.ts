@@ -58,6 +58,8 @@ import {
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
+  Badge,
+  UserBadge,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CustomErrorBase } from '@backstage/errors';
 import omitBy from 'lodash/omitBy';
@@ -311,6 +313,28 @@ export class QetaClient implements QetaApi {
     }
 
     return (await response.json()) as TagsResponse;
+  }
+
+  async getBadges(requestOptions?: RequestOptions): Promise<Badge[]> {
+    const response = await this.fetch('/badges', { requestOptions });
+    if (!response.ok) {
+      return [];
+    }
+    return (await response.json()) as Badge[];
+  }
+
+  async getUserBadges(
+    userRef: string,
+    requestOptions?: RequestOptions,
+  ): Promise<UserBadge[]> {
+    const response = await this.fetch('/badges', {
+      queryParams: { userRef },
+      requestOptions,
+    });
+    if (!response.ok) {
+      return [];
+    }
+    return (await response.json()) as UserBadge[];
   }
 
   async getTag(
@@ -1217,6 +1241,7 @@ export class QetaClient implements QetaApi {
           totalVotes: 0,
           totalFollowers: 0,
           date: new Date(),
+          reputation: 0,
         },
       };
     }

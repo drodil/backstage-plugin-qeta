@@ -162,6 +162,24 @@ export const ImpactCard = () => {
                 </Box>
               </Grid>
             ))}
+            {/* Reputation Grid Item */}
+            <Grid item xs={6}>
+              <Box display="flex" alignItems="center" color="textSecondary">
+                <Tooltip title={t('impactCard.reputation', {})}>
+                  <Box display="flex" alignItems="center">
+                    {/* You might want a specific icon for reputation, e.g., Star */}
+                    {/* <Star fontSize="small" /> */}
+                    {/* For now, using a generic icon or no icon if not specified */}
+                  </Box>
+                </Tooltip>
+                <Box ml={1}>
+                  <Typography variant="subtitle2" component="span">
+                    {stats.summary.reputation || 0}{' '}
+                    {t('impactCard.reputation', {}).toLowerCase()}
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
           </Grid>
         </Box>
       </>
