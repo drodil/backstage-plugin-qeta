@@ -1,16 +1,29 @@
 import { QetaStore } from '../database/QetaStore';
 import { BADGE_EVALUATORS } from '../badges';
 import { UserBadge } from '@drodil/backstage-plugin-qeta-common';
+import { BadgeEvaluator } from '@drodil/backstage-plugin-qeta-node';
+
+export interface BadgeManagerOptions {
+  store: QetaStore;
+  customEvaluators?: BadgeEvaluator[];
+}
 
 export class BadgeManager {
   private initPromise: Promise<void>;
+  private readonly store: QetaStore;
+  private readonly evaluators: BadgeEvaluator[];
 
-  constructor(private readonly store: QetaStore) {
+  constructor(options: BadgeManagerOptions) {
+    this.store = options.store;
+    this.evaluators = [
+      ...BADGE_EVALUATORS,
+      ...(options.customEvaluators ?? []),
+    ];
     this.initPromise = this.initializeBadges();
   }
 
   private async initializeBadges(): Promise<void> {
-    for (const badge of BADGE_EVALUATORS) {
+    for (const badge of this.evaluators) {
       await this.store.createBadge(badge);
     }
   }
@@ -25,7 +38,7 @@ export class BadgeManager {
     });
 
     for (const post of postsResponse.posts) {
-      for (const evaluator of BADGE_EVALUATORS) {
+      for (const evaluator of this.evaluators) {
         if (evaluator.evaluate) {
           const achieved = await evaluator.evaluate(post);
           if (achieved) {
@@ -43,7 +56,7 @@ export class BadgeManager {
       }
     }
 
-    for (const evaluator of BADGE_EVALUATORS) {
+    for (const evaluator of this.evaluators) {
       if (evaluator.evaluateCollection) {
         const achieved = await evaluator.evaluateCollection(
           postsResponse.posts,
@@ -61,7 +74,7 @@ export class BadgeManager {
       author: userRef,
     });
     for (const answer of answersResponse.answers) {
-      for (const evaluator of BADGE_EVALUATORS) {
+      for (const evaluator of this.evaluators) {
         if (evaluator.evaluate) {
           const achieved = await evaluator.evaluate(answer);
           if (achieved) {
@@ -79,7 +92,7 @@ export class BadgeManager {
       }
     }
 
-    for (const evaluator of BADGE_EVALUATORS) {
+    for (const evaluator of this.evaluators) {
       if (evaluator.evaluateCollection) {
         const achieved = await evaluator.evaluateCollection(
           answersResponse.answers,
@@ -95,7 +108,7 @@ export class BadgeManager {
 
     const user = await this.store.getUser(userRef);
 
-    for (const evaluator of BADGE_EVALUATORS) {
+    for (const evaluator of this.evaluators) {
       if (evaluator.evaluateUser && user) {
         const achieved = await evaluator.evaluateUser(user);
         if (achieved) {

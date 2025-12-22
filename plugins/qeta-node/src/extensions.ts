@@ -7,9 +7,12 @@ import {
   AIResponse,
   Answer,
   Article,
+  Badge,
   Collection,
   Post,
+  QetaIdEntity,
   Question,
+  UserResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export interface AIHandler {
@@ -119,4 +122,21 @@ export interface QetaNotificationReceiversExtensionPoint {
 export const qetaNotificationReceiversExtensionPoint =
   createExtensionPoint<QetaNotificationReceiversExtensionPoint>({
     id: 'qeta.notifications',
+  });
+
+export interface BadgeEvaluator extends Omit<Badge, 'id'> {
+  evaluate?(entity: QetaIdEntity): Promise<boolean>;
+
+  evaluateCollection?(entities: QetaIdEntity[]): Promise<boolean>;
+
+  evaluateUser?(user: UserResponse): Promise<boolean>;
+}
+
+export interface QetaBadgeEvaluatorExtensionPoint {
+  addEvaluator(evaluator: BadgeEvaluator): void;
+}
+
+export const qetaBadgeEvaluatorExtensionPoint =
+  createExtensionPoint<QetaBadgeEvaluatorExtensionPoint>({
+    id: 'qeta.badges',
   });

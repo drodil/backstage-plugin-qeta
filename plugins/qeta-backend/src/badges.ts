@@ -7,12 +7,7 @@ import {
   isLink,
   isAnswer,
 } from '@drodil/backstage-plugin-qeta-common';
-
-export interface BadgeEvaluator extends Omit<Badge, 'id'> {
-  evaluate?(entity: QetaIdEntity): Promise<boolean>;
-  evaluateCollection?(entities: QetaIdEntity[]): Promise<boolean>;
-  evaluateUser?(user: UserResponse): Promise<boolean>;
-}
+import { BadgeEvaluator } from '@drodil/backstage-plugin-qeta-node';
 
 export class GoodQuestionEvaluator implements BadgeEvaluator {
   public readonly key = 'good-question';

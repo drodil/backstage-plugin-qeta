@@ -1,6 +1,7 @@
 import { BadgeManager } from './BadgeManager';
 import { QetaStore } from '../database/QetaStore';
-import { BadgeEvaluator } from '../badges';
+// Import BadgeEvaluator from qeta-node
+import { BadgeEvaluator } from '@drodil/backstage-plugin-qeta-node';
 // Import the constant to manipulate it
 import { BADGE_EVALUATORS } from '../badges';
 
@@ -15,9 +16,10 @@ describe('BadgeManager', () => {
     getAnswers: jest.fn(),
     awardBadge: jest.fn(),
     getUser: jest.fn(),
+    createBadge: jest.fn(),
   } as unknown as QetaStore;
 
-  const manager = new BadgeManager(mockStore);
+  const manager = new BadgeManager({ store: mockStore });
 
   beforeEach(() => {
     jest.clearAllMocks();

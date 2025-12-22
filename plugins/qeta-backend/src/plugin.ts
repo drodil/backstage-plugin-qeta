@@ -14,9 +14,12 @@ import { BadgeManager } from './service/BadgeManager';
 import { CatalogClient } from '@backstage/catalog-client';
 import {
   AIHandler,
+  BadgeEvaluator,
   NotificationReceiversHandler,
   qetaAIExtensionPoint,
   QetaAIExtensionPoint,
+  qetaBadgeEvaluatorExtensionPoint,
+  QetaBadgeEvaluatorExtensionPoint,
   qetaNotificationReceiversExtensionPoint,
   QetaNotificationReceiversExtensionPoint,
   qetaTagDatabaseExtensionPoint,
@@ -66,6 +69,20 @@ class QetaNotificationReceiversExtensionPointImpl
   }
 }
 
+class QetaBadgeEvaluatorExtensionPointImpl
+  implements QetaBadgeEvaluatorExtensionPoint
+{
+  #evaluators: BadgeEvaluator[] = [];
+
+  get evaluators() {
+    return this.#evaluators;
+  }
+
+  addEvaluator(evaluator: BadgeEvaluator) {
+    this.#evaluators.push(evaluator);
+  }
+}
+
 /**
  * Qeta backend plugin
  *
@@ -85,6 +102,12 @@ export const qetaPlugin = createBackendPlugin({
     env.registerExtensionPoint(
       qetaNotificationReceiversExtensionPoint,
       notificationReceiversExtension,
+    );
+
+    const badgeEvaluatorExtension = new QetaBadgeEvaluatorExtensionPointImpl();
+    env.registerExtensionPoint(
+      qetaBadgeEvaluatorExtensionPoint,
+      badgeEvaluatorExtension,
     );
 
     env.registerInit({
@@ -165,7 +188,10 @@ export const qetaPlugin = createBackendPlugin({
 
         registerActions({ auth, actionsRegistry, discovery });
 
-        const badgeManager = new BadgeManager(qetaStore);
+        const badgeManager = new BadgeManager({
+          store: qetaStore,
+          customEvaluators: badgeEvaluatorExtension.evaluators,
+        });
 
         await StatsCollector.initStatsCollector(
           config,
