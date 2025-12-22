@@ -64,7 +64,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: theme.spacing(1.5),
-    gap: theme.spacing(0.75),
+    gap: '6px',
   },
   metaItem: {
     display: 'flex',
@@ -89,7 +89,7 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     fontWeight: 700,
-    fontSize: '1.1rem',
+    fontSize: '16px',
     color: theme.palette.text.primary,
     marginBottom: theme.spacing(0.5),
     textOverflow: 'ellipsis',
@@ -101,13 +101,13 @@ const useStyles = makeStyles(theme => ({
   content: {
     color: theme.palette.text.primary,
     opacity: 0.9,
-    margin: '4px 0 8px 0',
+    margin: '0px 0 12px 0px',
     display: '-webkit-box',
     WebkitLineClamp: 2,
     WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    fontSize: '0.95rem',
+    fontSize: '14px',
     minHeight: '20px',
   },
   tagsRow: {

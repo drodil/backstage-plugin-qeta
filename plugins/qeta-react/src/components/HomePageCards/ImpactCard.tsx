@@ -4,15 +4,14 @@ import {
   Box,
   Card,
   CardContent,
-  Typography,
-  Grid,
   Divider,
+  Grid,
   Tooltip,
+  Typography,
 } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Alert, Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { Alert } from '@material-ui/lab';
 import {
   ImpactResponse,
   StatisticsResponse,
@@ -122,10 +121,9 @@ export const ImpactCard = () => {
         </Typography>
         <Box display="flex" alignItems="center" mb={1}>
           <Typography
-            variant="h3"
-            component="p"
+            variant="body1"
             aria-label={`${formattedImpact} views`}
-            style={{ fontWeight: 'bold', marginBottom: 0 }}
+            style={{ fontWeight: 'bold', marginBottom: 0, fontSize: '32px' }}
           >
             {formattedImpact}
           </Typography>
