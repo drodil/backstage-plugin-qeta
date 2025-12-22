@@ -22,6 +22,7 @@ import {
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { eng, removeStopwords } from 'stopword';
+import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -231,6 +232,9 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
           {
             entityRefs: entities,
             fields: ['metadata.tags'],
+            filter: {
+              'metadata.tags': CATALOG_FILTER_EXISTS,
+            },
           },
           { token },
         );
