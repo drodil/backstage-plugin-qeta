@@ -6,6 +6,7 @@ import {
   removeMarkdownFormatting,
   selectByPostType,
   truncate,
+  UserBadge,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   AuthService,
@@ -697,6 +698,35 @@ export class NotificationManager {
       console.error(e);
     }
     return username;
+  }
+
+  async onBadgeAwarded(userRef: string, badge: UserBadge): Promise<void> {
+    if (!this.notifications || !this.enabled) {
+      return;
+    }
+
+    try {
+      const baseUrl = this.config.getOptionalString('qeta.baseUrl') ?? '/qeta';
+      const link = `${baseUrl}/users/${encodeURIComponent(userRef)}`;
+
+      await this.notifications.send({
+        recipients: {
+          type: 'entity',
+          entityRef: [userRef],
+        },
+        payload: {
+          title: `New badge earned: ${badge.badge.name}`,
+          description: this.formatDescription(
+            `Congratulations! You've earned the "${badge.badge.name}" badge: ${badge.badge.description}`,
+          ),
+          link,
+          topic: 'Badge awarded',
+          scope: `badge:${badge.badge.key}`,
+        },
+      });
+    } catch (e) {
+      this.logger.error(`Failed to send notification for badge award: ${e}`);
+    }
   }
 
   private formatDescription(description: string) {

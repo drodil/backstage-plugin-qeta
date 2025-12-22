@@ -636,6 +636,11 @@ export interface QetaStore {
     userRef: string,
     badgeKey: string,
     uniqueKey?: string,
-  ): Promise<UserBadge | null>;
+  ): Promise<AwardBadgeResult | null>;
   createBadge(badge: Omit<Badge, 'id'>): Promise<void>;
+}
+
+export interface AwardBadgeResult {
+  badge: UserBadge;
+  isNew: boolean;
 }

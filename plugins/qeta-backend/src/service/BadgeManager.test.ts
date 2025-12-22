@@ -4,6 +4,7 @@ import { QetaStore } from '../database/QetaStore';
 import { BadgeEvaluator } from '@drodil/backstage-plugin-qeta-node';
 // Import the constant to manipulate it
 import { BADGE_EVALUATORS } from '../badges';
+import { NotificationManager } from './NotificationManager';
 
 // Mock the whole module, returning an empty array for BADGE_EVALUATORS initially
 jest.mock('../badges', () => ({
@@ -19,7 +20,14 @@ describe('BadgeManager', () => {
     createBadge: jest.fn(),
   } as unknown as QetaStore;
 
-  const manager = new BadgeManager({ store: mockStore });
+  const mockNotificationManager = {
+    onBadgeAwarded: jest.fn(),
+  } as unknown as NotificationManager;
+
+  const manager = new BadgeManager({
+    store: mockStore,
+    notificationManager: mockNotificationManager,
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -37,7 +45,10 @@ describe('BadgeManager', () => {
 
     (mockStore.getPosts as jest.Mock).mockResolvedValue({ posts: [{ id: 1 }] });
     (mockStore.getAnswers as jest.Mock).mockResolvedValue({ answers: [] });
-    (mockStore.awardBadge as jest.Mock).mockResolvedValue({ id: 1 });
+    (mockStore.awardBadge as jest.Mock).mockResolvedValue({
+      badge: { id: 1 },
+      isNew: true,
+    });
 
     await manager.processUserBadges('user:default/test');
 
@@ -47,6 +58,7 @@ describe('BadgeManager', () => {
       'test-badge',
       'post:1',
     );
+    expect(mockNotificationManager.onBadgeAwarded).toHaveBeenCalled();
   });
 
   it('should process collection badges', async () => {
@@ -59,7 +71,10 @@ describe('BadgeManager', () => {
     const posts = [{ id: 1 }, { id: 2 }];
     (mockStore.getPosts as jest.Mock).mockResolvedValue({ posts });
     (mockStore.getAnswers as jest.Mock).mockResolvedValue({ answers: [] });
-    (mockStore.awardBadge as jest.Mock).mockResolvedValue({ id: 1 });
+    (mockStore.awardBadge as jest.Mock).mockResolvedValue({
+      badge: { id: 1 },
+      isNew: true,
+    });
 
     await manager.processUserBadges('user:default/test');
 
@@ -81,7 +96,10 @@ describe('BadgeManager', () => {
     const posts = [{ id: 1 }];
     (mockStore.getPosts as jest.Mock).mockResolvedValue({ posts });
     (mockStore.getAnswers as jest.Mock).mockResolvedValue({ answers: [] });
-    (mockStore.awardBadge as jest.Mock).mockResolvedValue({ id: 1 });
+    (mockStore.awardBadge as jest.Mock).mockResolvedValue({
+      badge: { id: 1 },
+      isNew: false,
+    });
 
     await manager.processUserBadges('user:default/test');
 
@@ -91,6 +109,8 @@ describe('BadgeManager', () => {
       'user:default/test',
       'collection-only-badge',
     );
+    // Should NOT send notification for existing badge
+    expect(mockNotificationManager.onBadgeAwarded).not.toHaveBeenCalled();
   });
 
   it('should process user badges', async () => {
@@ -104,7 +124,10 @@ describe('BadgeManager', () => {
     (mockStore.getUser as jest.Mock).mockResolvedValue(user);
     (mockStore.getPosts as jest.Mock).mockResolvedValue({ posts: [] });
     (mockStore.getAnswers as jest.Mock).mockResolvedValue({ answers: [] });
-    (mockStore.awardBadge as jest.Mock).mockResolvedValue({ id: 1 });
+    (mockStore.awardBadge as jest.Mock).mockResolvedValue({
+      badge: { id: 1 },
+      isNew: true,
+    });
 
     await manager.processUserBadges('user:default/test');
 

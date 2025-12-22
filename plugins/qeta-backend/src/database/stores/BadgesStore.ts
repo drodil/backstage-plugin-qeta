@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import { BaseStore } from './BaseStore';
 import { Badge, UserBadge } from '@drodil/backstage-plugin-qeta-common';
+import { AwardBadgeResult } from '../QetaStore';
 
 export class BadgesStore extends BaseStore {
   constructor(protected readonly db: Knex) {
@@ -44,32 +45,47 @@ export class BadgesStore extends BaseStore {
     userRef: string,
     badgeKey: string,
     uniqueKey?: string,
-  ): Promise<UserBadge | null> {
+  ): Promise<AwardBadgeResult | null> {
     const badge = await this.getBadge(badgeKey);
     if (!badge) {
       return null;
     }
 
+    // Check if badge already exists
+    let existing;
     if (uniqueKey) {
-      const existing = await this.db('user_badges')
+      existing = await this.db('user_badges')
         .where('userRef', userRef)
         .where('badgeId', badge.id)
         .where('uniqueKey', uniqueKey)
         .first();
-
-      if (existing) {
-        return existing;
-      }
-    } else if (badge.type === 'one-time') {
-      const existing = await this.db('user_badges')
+    } else {
+      existing = await this.db('user_badges')
         .where('userRef', userRef)
         .where('badgeId', badge.id)
         .first();
-      if (existing) {
-        return existing;
-      }
     }
 
+    if (existing) {
+      return {
+        badge: {
+          id: existing.id,
+          userRef: existing.userRef,
+          badge,
+          created: existing.created,
+          uniqueKey: existing.uniqueKey,
+        },
+        isNew: false,
+      };
+    }
+
+    // For one-time badges without uniqueKey, we already checked above
+    // For repetitive badges, we allow multiple with different uniqueKeys
+    if (badge.type === 'one-time' && !uniqueKey) {
+      // Already checked above, this is just for clarity
+    }
+
+    // Create new badge
     const created = new Date();
     const [id] = await this.db('user_badges')
       .insert({
@@ -78,16 +94,17 @@ export class BadgesStore extends BaseStore {
         created,
         uniqueKey,
       })
-      .onConflict(['userRef', 'badgeId', 'uniqueKey'])
-      .merge()
       .returning('id');
 
     return {
-      id,
-      userRef,
-      badge,
-      created,
-      uniqueKey,
+      badge: {
+        id,
+        userRef,
+        badge,
+        created,
+        uniqueKey,
+      },
+      isNew: true,
     };
   }
 

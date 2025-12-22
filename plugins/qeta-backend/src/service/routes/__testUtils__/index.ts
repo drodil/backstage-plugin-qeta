@@ -14,6 +14,7 @@ import {
 import { mockServices } from '@backstage/backend-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { createRouter } from '../../router';
+import { NotificationManager } from '../../NotificationManager';
 
 // Mock the database storage engine
 export const globalMockEngine = {
@@ -320,6 +321,22 @@ export const buildApp = async (
   const config = ConfigReader.fromConfigs([
     { context: 'qeta', data: qetaConfig || {} },
   ]);
+  const mockNotificationMgr = {
+    onNewPost: jest.fn(),
+    onNewPostComment: jest.fn(),
+    onPostDelete: jest.fn(),
+    onCollectionDelete: jest.fn(),
+    onAnswerDelete: jest.fn(),
+    onPostEdit: jest.fn(),
+    onNewAnswer: jest.fn(),
+    onAnswerComment: jest.fn(),
+    onCorrectAnswer: jest.fn(),
+    onMention: jest.fn(),
+    onNewCollection: jest.fn(),
+    onNewPostToCollection: jest.fn(),
+    onBadgeAwarded: jest.fn(),
+  } as unknown as NotificationManager;
+
   const router = await createRouter({
     logger: mockServices.logger.mock(),
     httpAuth: mockServices.httpAuth(),
@@ -331,6 +348,7 @@ export const buildApp = async (
     config,
     permissions: permissionEvaluator,
     permissionsRegistry: mockServices.permissionsRegistry.mock(),
+    notificationMgr: mockNotificationMgr,
   });
   return express().use(router);
 };

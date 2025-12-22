@@ -7,6 +7,7 @@ import {
   AnswerOptions,
   Answers,
   AttachmentParameters,
+  AwardBadgeResult,
   CollectionOptions,
   CollectionPostRank,
   Collections,
@@ -820,7 +821,7 @@ export class DatabaseQetaStore implements QetaStore {
     userRef: string,
     badgeKey: string,
     uniqueKey?: string,
-  ): Promise<UserBadge | null> {
+  ): Promise<AwardBadgeResult | null> {
     return this.badgesStore.awardBadge(userRef, badgeKey, uniqueKey);
   }
 

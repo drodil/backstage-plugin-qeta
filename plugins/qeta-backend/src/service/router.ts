@@ -6,7 +6,6 @@ import { attachmentsRoutes } from './routes/attachments';
 import { answersRoutes } from './routes/answers';
 import { helperRoutes } from './routes/helpers';
 import { RouterOptions } from './types';
-import { NotificationManager } from './NotificationManager';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { postsRoutes } from './routes/posts';
 import { collectionsRoutes } from './routes/collections';
@@ -24,15 +23,6 @@ export async function createRouter(
   router.use(express.json());
   router.use(bodyParser.urlencoded({ extended: true }));
   const { config, logger, httpAuth } = options;
-  const notificationMgr = new NotificationManager(
-    logger,
-    options.catalog,
-    options.auth,
-    config,
-    options.notifications,
-    options.cache,
-    options.notificationReceivers,
-  );
 
   const permissionMgr = new PermissionManager(
     config,
@@ -46,7 +36,7 @@ export async function createRouter(
   const routeOptions = {
     ...options,
     httpAuth,
-    notificationMgr,
+    notificationMgr: options.notificationMgr,
     permissionMgr,
   };
 

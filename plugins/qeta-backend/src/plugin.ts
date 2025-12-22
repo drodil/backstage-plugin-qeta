@@ -11,6 +11,7 @@ import { StatsCollector } from './service/StatsCollector';
 import { TagsUpdater } from './service/TagsUpdater';
 import { AttachmentCleaner } from './service/AttachmentCleaner';
 import { BadgeManager } from './service/BadgeManager';
+import { NotificationManager } from './service/NotificationManager';
 import { CatalogClient } from '@backstage/catalog-client';
 import {
   AIHandler,
@@ -159,6 +160,16 @@ export const qetaPlugin = createBackendPlugin({
 
         const catalog = new CatalogClient({ discoveryApi: discovery });
 
+        const notificationMgr = new NotificationManager(
+          logger,
+          catalog,
+          auth,
+          config,
+          notifications,
+          cache,
+          notificationReceiversExtension.handler,
+        );
+
         httpRouter.use(
           await createRouter({
             config,
@@ -177,7 +188,7 @@ export const qetaPlugin = createBackendPlugin({
             aiHandler: aiExtension.aiHandler,
             permissionsRegistry,
             auditor,
-            notificationReceivers: notificationReceiversExtension.handler,
+            notificationMgr,
           }),
         );
         // Allowing attachments download
@@ -191,6 +202,7 @@ export const qetaPlugin = createBackendPlugin({
         const badgeManager = new BadgeManager({
           store: qetaStore,
           customEvaluators: badgeEvaluatorExtension.evaluators,
+          notificationManager: notificationMgr,
         });
 
         await StatsCollector.initStatsCollector(
