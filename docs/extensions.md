@@ -69,7 +69,7 @@ export class CustomBadgeEvaluator implements BadgeEvaluator {
   // Reputation points awarded when badge is earned
   public readonly reputation = 50;
 
-  // Option 1: Evaluate individual posts/answers
+  // Option 1: Evaluate individual entities
   async evaluate(entity: QetaIdEntity): Promise<boolean> {
     // Return true if the entity qualifies for this badge
     return false;

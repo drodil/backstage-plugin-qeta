@@ -994,7 +994,6 @@ export class LegendEvaluator implements BadgeEvaluator {
   }
 }
 
-// Fun badges
 export class PicassoEvaluator implements BadgeEvaluator {
   public readonly key = 'picasso';
   public readonly name = 'Picasso';
@@ -1021,7 +1020,7 @@ export class PaparazziEvaluator implements BadgeEvaluator {
   public readonly icon = 'camera_alt';
   public readonly level = 'silver' as const;
   public readonly type = 'one-time' as const;
-  public readonly reputation = 25;
+  public readonly reputation = 15;
 
   async evaluate(entity: QetaIdEntity): Promise<boolean> {
     if (!isPost(entity)) {
@@ -1039,7 +1038,7 @@ export class TagHoarderEvaluator implements BadgeEvaluator {
   public readonly icon = 'label_important';
   public readonly level = 'bronze' as const;
   public readonly type = 'repetitive' as const;
-  public readonly reputation = 15;
+  public readonly reputation = 5;
 
   async evaluate(entity: QetaIdEntity): Promise<boolean> {
     if (!isPost(entity)) {
@@ -1107,7 +1106,6 @@ export const BADGE_EVALUATORS: BadgeEvaluator[] = [
   new TasteMarkerEvaluator(),
   new IconicCollectionEvaluator(),
   new LegendEvaluator(),
-  // Fun badges
   new PicassoEvaluator(),
   new PaparazziEvaluator(),
   new TagHoarderEvaluator(),
