@@ -1,12 +1,9 @@
 import { BadgeManager } from './BadgeManager';
 import { QetaStore } from '../database/QetaStore';
-// Import BadgeEvaluator from qeta-node
 import { BadgeEvaluator } from '@drodil/backstage-plugin-qeta-node';
-// Import the constant to manipulate it
 import { BADGE_EVALUATORS } from '../badges';
 import { NotificationManager } from './NotificationManager';
 
-// Mock the whole module, returning an empty array for BADGE_EVALUATORS initially
 jest.mock('../badges', () => ({
   BADGE_EVALUATORS: [],
 }));
@@ -15,6 +12,7 @@ describe('BadgeManager', () => {
   const mockStore = {
     getPosts: jest.fn(),
     getAnswers: jest.fn(),
+    getCollections: jest.fn(),
     awardBadge: jest.fn(),
     getUser: jest.fn(),
     createBadge: jest.fn(),
@@ -24,10 +22,11 @@ describe('BadgeManager', () => {
     onBadgeAwarded: jest.fn(),
   } as unknown as NotificationManager;
 
-  const manager = new BadgeManager({
-    store: mockStore,
-    notificationManager: mockNotificationManager,
-  });
+  const createManager = () =>
+    new BadgeManager({
+      store: mockStore,
+      notificationManager: mockNotificationManager,
+    });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -40,11 +39,15 @@ describe('BadgeManager', () => {
       key: 'test-badge',
       evaluate: jest.fn().mockResolvedValue(true),
     } as unknown as BadgeEvaluator;
-    // Push into the mocked array
     (BADGE_EVALUATORS as unknown as any[]).push(mockEvaluator);
+
+    const manager = createManager();
 
     (mockStore.getPosts as jest.Mock).mockResolvedValue({ posts: [{ id: 1 }] });
     (mockStore.getAnswers as jest.Mock).mockResolvedValue({ answers: [] });
+    (mockStore.getCollections as jest.Mock).mockResolvedValue({
+      collections: [],
+    });
     (mockStore.awardBadge as jest.Mock).mockResolvedValue({
       badge: { id: 1 },
       isNew: true,
@@ -68,9 +71,14 @@ describe('BadgeManager', () => {
     } as unknown as BadgeEvaluator;
     (BADGE_EVALUATORS as unknown as any[]).push(mockEvaluator);
 
+    const manager = createManager();
+
     const posts = [{ id: 1 }, { id: 2 }];
     (mockStore.getPosts as jest.Mock).mockResolvedValue({ posts });
     (mockStore.getAnswers as jest.Mock).mockResolvedValue({ answers: [] });
+    (mockStore.getCollections as jest.Mock).mockResolvedValue({
+      collections: [],
+    });
     (mockStore.awardBadge as jest.Mock).mockResolvedValue({
       badge: { id: 1 },
       isNew: true,
@@ -93,9 +101,14 @@ describe('BadgeManager', () => {
     } as unknown as BadgeEvaluator;
     (BADGE_EVALUATORS as unknown as any[]).push(mockEvaluator);
 
+    const manager = createManager();
+
     const posts = [{ id: 1 }];
     (mockStore.getPosts as jest.Mock).mockResolvedValue({ posts });
     (mockStore.getAnswers as jest.Mock).mockResolvedValue({ answers: [] });
+    (mockStore.getCollections as jest.Mock).mockResolvedValue({
+      collections: [],
+    });
     (mockStore.awardBadge as jest.Mock).mockResolvedValue({
       badge: { id: 1 },
       isNew: false,
@@ -120,10 +133,15 @@ describe('BadgeManager', () => {
     } as unknown as BadgeEvaluator;
     (BADGE_EVALUATORS as unknown as any[]).push(mockEvaluator);
 
+    const manager = createManager();
+
     const user = { userRef: 'user:default/test' };
     (mockStore.getUser as jest.Mock).mockResolvedValue(user);
     (mockStore.getPosts as jest.Mock).mockResolvedValue({ posts: [] });
     (mockStore.getAnswers as jest.Mock).mockResolvedValue({ answers: [] });
+    (mockStore.getCollections as jest.Mock).mockResolvedValue({
+      collections: [],
+    });
     (mockStore.awardBadge as jest.Mock).mockResolvedValue({
       badge: { id: 1 },
       isNew: true,

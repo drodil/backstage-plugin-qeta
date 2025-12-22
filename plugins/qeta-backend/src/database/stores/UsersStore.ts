@@ -173,26 +173,48 @@ export class UsersStore extends BaseStore {
         .distinct();
     }
 
-    return this.db('user_stats_view')
-      .join(
-        'unique_authors',
+    return this.db('unique_authors')
+      .leftJoin(
+        'user_stats_view',
         'unique_authors.author',
         'user_stats_view.userRef',
       )
       .select(
         'unique_authors.author',
-        'user_stats_view.totalViews',
-        'user_stats_view.totalQuestions',
-        'user_stats_view.totalArticles',
-        'user_stats_view.totalLinks',
-        'user_stats_view.totalAnswers',
-        'user_stats_view.totalComments',
-        'user_stats_view.answerVotes',
-        'user_stats_view.postVotes',
-        'user_stats_view.totalVotes',
-        'user_stats_view.totalPosts',
-        'user_stats_view.totalFollowers as followerCount',
-        'user_stats_view.reputation',
+        this.db.raw(
+          'COALESCE(user_stats_view."totalViews", 0) as "totalViews"',
+        ),
+        this.db.raw(
+          'COALESCE(user_stats_view."totalQuestions", 0) as "totalQuestions"',
+        ),
+        this.db.raw(
+          'COALESCE(user_stats_view."totalArticles", 0) as "totalArticles"',
+        ),
+        this.db.raw(
+          'COALESCE(user_stats_view."totalLinks", 0) as "totalLinks"',
+        ),
+        this.db.raw(
+          'COALESCE(user_stats_view."totalAnswers", 0) as "totalAnswers"',
+        ),
+        this.db.raw(
+          'COALESCE(user_stats_view."totalComments", 0) as "totalComments"',
+        ),
+        this.db.raw(
+          'COALESCE(user_stats_view."answerVotes", 0) as "answerVotes"',
+        ),
+        this.db.raw('COALESCE(user_stats_view."postVotes", 0) as "postVotes"'),
+        this.db.raw(
+          'COALESCE(user_stats_view."totalVotes", 0) as "totalVotes"',
+        ),
+        this.db.raw(
+          'COALESCE(user_stats_view."totalPosts", 0) as "totalPosts"',
+        ),
+        this.db.raw(
+          'COALESCE(user_stats_view."totalFollowers", 0) as "followerCount"',
+        ),
+        this.db.raw(
+          'COALESCE(user_stats_view."reputation", 0) as "reputation"',
+        ),
       );
   }
 }

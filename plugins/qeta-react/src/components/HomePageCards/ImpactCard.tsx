@@ -8,6 +8,7 @@ import {
   Grid,
   Tooltip,
   Typography,
+  useTheme,
 } from '@material-ui/core';
 import { Alert, Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -21,9 +22,11 @@ import ThumbUp from '@material-ui/icons/ThumbUp';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import People from '@material-ui/icons/People';
+import EmojiEvents from '@material-ui/icons/EmojiEvents';
 
 export const ImpactCard = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
+  const theme = useTheme();
   const { value: user, loading: userLoading } = useIdentityApi(
     api => api.getBackstageIdentity(),
     [],
@@ -142,6 +145,22 @@ export const ImpactCard = () => {
           })}
         </Typography>
 
+        <Box display="flex" alignItems="center" mt={2} mb={2}>
+          <EmojiEvents
+            style={{ color: theme.palette.secondary.main, marginRight: '8px' }}
+          />
+          <Typography
+            variant="subtitle1"
+            component="span"
+            style={{ fontWeight: 'bold' }}
+          >
+            {t('impactCard.reputation')}:{' '}
+            <Box component="span" style={{ fontSize: '1.1em' }}>
+              {stats.summary.reputation || 0}
+            </Box>
+          </Typography>
+        </Box>
+
         <Divider />
 
         <Box mt={2}>
@@ -162,24 +181,6 @@ export const ImpactCard = () => {
                 </Box>
               </Grid>
             ))}
-            {/* Reputation Grid Item */}
-            <Grid item xs={6}>
-              <Box display="flex" alignItems="center" color="textSecondary">
-                <Tooltip title={t('impactCard.reputation', {})}>
-                  <Box display="flex" alignItems="center">
-                    {/* You might want a specific icon for reputation, e.g., Star */}
-                    {/* <Star fontSize="small" /> */}
-                    {/* For now, using a generic icon or no icon if not specified */}
-                  </Box>
-                </Tooltip>
-                <Box ml={1}>
-                  <Typography variant="subtitle2" component="span">
-                    {stats.summary.reputation || 0}{' '}
-                    {t('impactCard.reputation', {}).toLowerCase()}
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
           </Grid>
         </Box>
       </>

@@ -40,18 +40,42 @@ export const UserBadges = ({ entityRef }: { entityRef: string }) => {
 
   const sortedBadges = badges ? sortBadgesByLevel(badges) : [];
 
+  const groupedBadges = sortedBadges.reduce((acc, userBadge) => {
+    const key = userBadge.badge.id;
+    if (!acc[key]) {
+      acc[key] = {
+        badge: userBadge.badge,
+        count: 0,
+      };
+    }
+    acc[key].count += 1;
+    return acc;
+  }, {} as Record<string, { badge: UserBadge['badge']; count: number }>);
+
+  const displayBadges = Object.values(groupedBadges).sort((a, b) => {
+    const levelA = LEVEL_ORDER[a.badge.level] ?? 99;
+    const levelB = LEVEL_ORDER[b.badge.level] ?? 99;
+    return levelA - levelB;
+  });
+
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
         {t('userBadges.title')}
       </Typography>
-      {sortedBadges.length === 0 ? (
+      {displayBadges.length === 0 ? (
         <Typography variant="body2">{t('userBadges.noBadges')}</Typography>
       ) : (
-        <Grid container spacing={2}>
-          {sortedBadges.map((userBadge: UserBadge, index: number) => (
+        <Grid
+          container
+          spacing={3}
+          style={{ padding: '1em' }}
+          justifyContent="center"
+          alignItems="center"
+        >
+          {displayBadges.map((item, index: number) => (
             <Grid item key={index}>
-              <BadgeChip badge={userBadge.badge} />
+              <BadgeChip badge={item.badge} count={item.count} />
             </Grid>
           ))}
         </Grid>

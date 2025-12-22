@@ -51,7 +51,6 @@ export class BadgesStore extends BaseStore {
       return null;
     }
 
-    // Check if badge already exists
     let existing;
     if (uniqueKey) {
       existing = await this.db('user_badges')
@@ -79,13 +78,6 @@ export class BadgesStore extends BaseStore {
       };
     }
 
-    // For one-time badges without uniqueKey, we already checked above
-    // For repetitive badges, we allow multiple with different uniqueKeys
-    if (badge.type === 'one-time' && !uniqueKey) {
-      // Already checked above, this is just for clarity
-    }
-
-    // Create new badge
     const created = new Date();
     const [id] = await this.db('user_badges')
       .insert({

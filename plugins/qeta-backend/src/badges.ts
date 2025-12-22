@@ -3,9 +3,11 @@ import {
   QetaIdEntity,
   UserResponse,
   isQuestion,
+  isPost,
   isArticle,
   isLink,
   isAnswer,
+  isCollection,
 } from '@drodil/backstage-plugin-qeta-common';
 import { BadgeEvaluator } from '@drodil/backstage-plugin-qeta-node';
 
@@ -826,6 +828,227 @@ export class ChatterboxEvaluator implements BadgeEvaluator {
   }
 }
 
+export class CuratorEvaluator implements BadgeEvaluator {
+  public readonly key = 'curator';
+  public readonly name = 'Curator';
+  public readonly description = 'Created a collection with more than 5 posts';
+  public readonly icon = 'collections_bookmark';
+  public readonly level = 'bronze' as const;
+  public readonly type = 'repetitive' as const;
+  public readonly reputation = 15;
+
+  async evaluate(entity: QetaIdEntity): Promise<boolean> {
+    if (!isCollection(entity)) {
+      return false;
+    }
+    return entity.postsCount >= 5;
+  }
+}
+
+export class LibrarianEvaluator implements BadgeEvaluator {
+  public readonly key = 'librarian';
+  public readonly name = 'Librarian';
+  public readonly description = 'Created a collection with more than 20 posts';
+  public readonly icon = 'local_library';
+  public readonly level = 'silver' as const;
+  public readonly type = 'repetitive' as const;
+  public readonly reputation = 40;
+
+  async evaluate(entity: QetaIdEntity): Promise<boolean> {
+    if (!isCollection(entity)) {
+      return false;
+    }
+    return entity.postsCount >= 20;
+  }
+}
+
+export class ArchivistEvaluator implements BadgeEvaluator {
+  public readonly key = 'archivist';
+  public readonly name = 'Archivist';
+  public readonly description = 'Created a collection with more than 50 posts';
+  public readonly icon = 'archive';
+  public readonly level = 'gold' as const;
+  public readonly type = 'repetitive' as const;
+  public readonly reputation = 100;
+
+  async evaluate(entity: QetaIdEntity): Promise<boolean> {
+    if (!isCollection(entity)) {
+      return false;
+    }
+    return entity.postsCount >= 50;
+  }
+}
+
+export class CollectorEvaluator implements BadgeEvaluator {
+  public readonly key = 'collector';
+  public readonly name = 'Collector';
+  public readonly description = 'Created your first collection';
+  public readonly icon = 'playlist_add';
+  public readonly level = 'bronze' as const;
+  public readonly type = 'one-time' as const;
+  public readonly reputation = 10;
+
+  async evaluateCollection(entities: QetaIdEntity[]): Promise<boolean> {
+    return entities.filter(e => isCollection(e)).length >= 1;
+  }
+}
+
+export class OrganizerEvaluator implements BadgeEvaluator {
+  public readonly key = 'organizer';
+  public readonly name = 'Organizer';
+  public readonly description = 'Created more than 5 collections';
+  public readonly icon = 'folder_special';
+  public readonly level = 'silver' as const;
+  public readonly type = 'one-time' as const;
+  public readonly reputation = 35;
+
+  async evaluateCollection(entities: QetaIdEntity[]): Promise<boolean> {
+    return entities.filter(e => isCollection(e)).length >= 5;
+  }
+}
+
+export class CatalogerEvaluator implements BadgeEvaluator {
+  public readonly key = 'cataloger';
+  public readonly name = 'Cataloger';
+  public readonly description = 'Created more than 15 collections';
+  public readonly icon = 'inventory';
+  public readonly level = 'gold' as const;
+  public readonly type = 'one-time' as const;
+  public readonly reputation = 75;
+
+  async evaluateCollection(entities: QetaIdEntity[]): Promise<boolean> {
+    return entities.filter(e => isCollection(e)).length >= 15;
+  }
+}
+
+export class TrendsetterEvaluator implements BadgeEvaluator {
+  public readonly key = 'trendsetter';
+  public readonly name = 'Trendsetter';
+  public readonly description = 'Collection has more than 10 followers';
+  public readonly icon = 'trending_up';
+  public readonly level = 'bronze' as const;
+  public readonly type = 'repetitive' as const;
+  public readonly reputation = 20;
+
+  async evaluate(entity: QetaIdEntity): Promise<boolean> {
+    if (!isCollection(entity)) {
+      return false;
+    }
+    return entity.followers >= 10;
+  }
+}
+
+export class TasteMarkerEvaluator implements BadgeEvaluator {
+  public readonly key = 'taste-maker';
+  public readonly name = 'Taste Maker';
+  public readonly description = 'Collection has more than 50 followers';
+  public readonly icon = 'star_rate';
+  public readonly level = 'silver' as const;
+  public readonly type = 'repetitive' as const;
+  public readonly reputation = 50;
+
+  async evaluate(entity: QetaIdEntity): Promise<boolean> {
+    if (!isCollection(entity)) {
+      return false;
+    }
+    return entity.followers >= 50;
+  }
+}
+
+export class IconicCollectionEvaluator implements BadgeEvaluator {
+  public readonly key = 'iconic-collection';
+  public readonly name = 'Iconic Collection';
+  public readonly description = 'Collection has more than 200 followers';
+  public readonly icon = 'diamond';
+  public readonly level = 'gold' as const;
+  public readonly type = 'repetitive' as const;
+  public readonly reputation = 150;
+
+  async evaluate(entity: QetaIdEntity): Promise<boolean> {
+    if (!isCollection(entity)) {
+      return false;
+    }
+    return entity.followers >= 200;
+  }
+}
+
+export class LegendEvaluator implements BadgeEvaluator {
+  public readonly key = 'legend';
+  public readonly name = 'Legend';
+  public readonly description =
+    'The ultimate achievement - You are basically running this company!';
+  public readonly icon = 'whatshot';
+  public readonly level = 'diamond' as const;
+  public readonly type = 'one-time' as const;
+  public readonly reputation = 1000;
+
+  async evaluateUser(user: UserResponse): Promise<boolean> {
+    return (
+      user.reputation >= 25000 &&
+      user.totalQuestions >= 50 &&
+      user.totalAnswers >= 100 &&
+      user.totalArticles >= 25 &&
+      user.totalLinks >= 50 &&
+      user.totalFollowers >= 20
+    );
+  }
+}
+
+// Fun badges
+export class PicassoEvaluator implements BadgeEvaluator {
+  public readonly key = 'picasso';
+  public readonly name = 'Picasso';
+  public readonly description =
+    'Visual artist - Added a header image to your post';
+  public readonly icon = 'palette';
+  public readonly level = 'bronze' as const;
+  public readonly type = 'one-time' as const;
+  public readonly reputation = 10;
+
+  async evaluate(entity: QetaIdEntity): Promise<boolean> {
+    if (!isPost(entity)) {
+      return false;
+    }
+    return !!entity.headerImage;
+  }
+}
+
+export class PaparazziEvaluator implements BadgeEvaluator {
+  public readonly key = 'paparazzi';
+  public readonly name = 'Paparazzi';
+  public readonly description =
+    'A picture is worth a thousand words - Embedded 3+ images in a post';
+  public readonly icon = 'camera_alt';
+  public readonly level = 'silver' as const;
+  public readonly type = 'one-time' as const;
+  public readonly reputation = 25;
+
+  async evaluate(entity: QetaIdEntity): Promise<boolean> {
+    if (!isPost(entity)) {
+      return false;
+    }
+    return (entity.images?.length ?? 0) >= 3;
+  }
+}
+
+export class TagHoarderEvaluator implements BadgeEvaluator {
+  public readonly key = 'tag-hoarder';
+  public readonly name = 'Tag Hoarder';
+  public readonly description =
+    'Categorization enthusiast - Used 5+ tags on a post';
+  public readonly icon = 'label_important';
+  public readonly level = 'bronze' as const;
+  public readonly type = 'repetitive' as const;
+  public readonly reputation = 15;
+
+  async evaluate(entity: QetaIdEntity): Promise<boolean> {
+    if (!isPost(entity)) {
+      return false;
+    }
+    return (entity.tags?.length ?? 0) >= 5;
+  }
+}
+
 export const BADGE_EVALUATORS: BadgeEvaluator[] = [
   new GoodQuestionEvaluator(),
   new GreatQuestionEvaluator(),
@@ -874,6 +1097,20 @@ export const BADGE_EVALUATORS: BadgeEvaluator[] = [
   new EncyclopediaEvaluator(),
   new PolyglotEvaluator(),
   new ChatterboxEvaluator(),
+  new CuratorEvaluator(),
+  new LibrarianEvaluator(),
+  new ArchivistEvaluator(),
+  new CollectorEvaluator(),
+  new OrganizerEvaluator(),
+  new CatalogerEvaluator(),
+  new TrendsetterEvaluator(),
+  new TasteMarkerEvaluator(),
+  new IconicCollectionEvaluator(),
+  new LegendEvaluator(),
+  // Fun badges
+  new PicassoEvaluator(),
+  new PaparazziEvaluator(),
+  new TagHoarderEvaluator(),
 ];
 
 export const SYSTEM_BADGES: Omit<Badge, 'id'>[] = BADGE_EVALUATORS;

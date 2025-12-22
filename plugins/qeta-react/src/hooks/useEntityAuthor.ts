@@ -1,4 +1,8 @@
-import { parseEntityRef, UserEntity } from '@backstage/catalog-model';
+import {
+  parseEntityRef,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import DataLoader from 'dataloader';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
@@ -54,13 +58,15 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
   const [user, setUser] = useState<UserEntity | null>(null);
   const [initials, setInitials] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
-  const ref = entityRef.startsWith('user:') ? entityRef : `user:${entityRef}`;
+  const ref = stringifyEntityRef(
+    parseEntityRef(entityRef, { defaultKind: 'user' }),
+  );
 
   const {
     primaryTitle: userName,
     secondaryTitle,
     Icon,
-  } = useEntityPresentation(ref);
+  } = useEntityPresentation(ref, { defaultKind: 'user' });
 
   useEffect(() => {
     if (anonymous) {
@@ -95,8 +101,10 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
   useEffect(() => {
     let displayName = userName;
     if (currentUser) {
-      const currentUserRef = parseEntityRef(currentUser);
-      const userRef = parseEntityRef(ref);
+      const currentUserRef = parseEntityRef(currentUser, {
+        defaultKind: 'user',
+      });
+      const userRef = parseEntityRef(ref, { defaultKind: 'user' });
       if (
         currentUserRef.name === userRef.name &&
         currentUserRef.namespace === userRef.namespace

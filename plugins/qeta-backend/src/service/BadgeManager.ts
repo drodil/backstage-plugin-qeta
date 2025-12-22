@@ -133,6 +133,55 @@ export class BadgeManager {
       }
     }
 
+    const collectionsResponse = await this.store.getCollections(userRef, {
+      owner: userRef,
+    });
+
+    for (const collection of collectionsResponse.collections) {
+      for (const evaluator of this.evaluators) {
+        if (!evaluator.evaluate) {
+          continue;
+        }
+        const achieved = await evaluator.evaluate(collection);
+        if (!achieved) {
+          continue;
+        }
+        const uniqueKey = `collection:${collection.id}`;
+        const result = await this.store.awardBadge(
+          userRef,
+          evaluator.key,
+          uniqueKey,
+        );
+        if (!result) {
+          continue;
+        }
+        userBadges.push(result.badge);
+        if (result.isNew) {
+          await this.notificationManager.onBadgeAwarded(userRef, result.badge);
+        }
+      }
+    }
+
+    for (const evaluator of this.evaluators) {
+      if (!evaluator.evaluateCollection) {
+        continue;
+      }
+      const achieved = await evaluator.evaluateCollection(
+        collectionsResponse.collections,
+      );
+      if (!achieved) {
+        continue;
+      }
+      const result = await this.store.awardBadge(userRef, evaluator.key);
+      if (!result) {
+        continue;
+      }
+      userBadges.push(result.badge);
+      if (result.isNew) {
+        await this.notificationManager.onBadgeAwarded(userRef, result.badge);
+      }
+    }
+
     const user = await this.store.getUser(userRef);
     for (const evaluator of this.evaluators) {
       if (!evaluator.evaluateUser || !user) {

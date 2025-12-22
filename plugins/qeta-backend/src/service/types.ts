@@ -244,6 +244,7 @@ export const UsersQuerySchema: JSONSchemaType<UsersQuery> = {
         'totalViews',
         'totalVotes',
         'followerCount',
+        'reputation',
       ],
       nullable: true,
     },

@@ -21,11 +21,12 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import DescriptionIcon from '@material-ui/icons/Description';
 import LinkIcon from '@material-ui/icons/Link';
-import StarIcon from '@material-ui/icons/Star';
+import EmojiEvents from '@material-ui/icons/EmojiEvents';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
 import { ClickableLink } from '../Utility/ClickableLink';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 
 const useStyles = makeStyles(theme => ({
   statsGrid: {
@@ -50,7 +51,10 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
   const localClasses = useStyles();
   const userRoute = useRouteRef(userRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const { primaryTitle, Icon } = useEntityPresentation(user.userRef);
+  const entityRef = stringifyEntityRef(
+    parseEntityRef(user.userRef, { defaultKind: 'user' }),
+  );
+  const { primaryTitle, Icon } = useEntityPresentation(entityRef);
   const {
     name,
     initials,
@@ -110,7 +114,6 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
             className={`${classes.cardContent} ${localClasses.flexColumn}`}
           >
             <Grid container spacing={1} className={localClasses.statsGrid}>
-              {/* First row: Reputation, Questions, Articles, Links */}
               <Grid item xs={3}>
                 <Box
                   display="flex"
@@ -118,7 +121,7 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
                   alignItems="center"
                   className={localClasses.statItem}
                 >
-                  <StarIcon fontSize="small" color="disabled" />
+                  <EmojiEvents fontSize="small" color="disabled" />
                   <Typography variant="body2" style={{ fontWeight: 600 }}>
                     {user.reputation}
                   </Typography>
@@ -175,7 +178,6 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
                   </Typography>
                 </Box>
               </Grid>
-              {/* Second row: Answers, Votes, Views */}
               <Grid item xs={4}>
                 <Box
                   display="flex"

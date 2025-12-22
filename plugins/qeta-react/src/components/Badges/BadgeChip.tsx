@@ -36,6 +36,16 @@ import NightsStay from '@material-ui/icons/NightsStay';
 import ChatBubble from '@material-ui/icons/ChatBubble';
 import Translate from '@material-ui/icons/Translate';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import CollectionsBookmark from '@material-ui/icons/CollectionsBookmark';
+import LocalLibrary from '@material-ui/icons/LocalLibrary';
+import Archive from '@material-ui/icons/Archive';
+import PlaylistAdd from '@material-ui/icons/PlaylistAdd';
+import FolderSpecial from '@material-ui/icons/FolderSpecial';
+import StarRate from '@material-ui/icons/StarRate';
+import Whatshot from '@material-ui/icons/Whatshot';
+import Palette from '@material-ui/icons/Palette';
+import CameraAlt from '@material-ui/icons/CameraAlt';
+import LabelImportant from '@material-ui/icons/LabelImportant';
 
 const useStyles = makeStyles(theme => ({
   badge: {
@@ -171,12 +181,43 @@ const getIcon = (icon: string) => {
       return <Translate />;
     case 'chat_bubble':
       return <ChatBubble />;
+    // Collection badges
+    case 'collections_bookmark':
+      return <CollectionsBookmark />;
+    case 'local_library':
+      return <LocalLibrary />;
+    case 'archive':
+      return <Archive />;
+    case 'playlist_add':
+      return <PlaylistAdd />;
+    case 'folder_special':
+      return <FolderSpecial />;
+    case 'inventory':
+      return <Archive />;
+    case 'star_rate':
+      return <StarRate />;
+    case 'diamond':
+      return <Stars />;
+    case 'whatshot':
+      return <Whatshot />;
+    case 'palette':
+      return <Palette />;
+    case 'camera_alt':
+      return <CameraAlt />;
+    case 'label_important':
+      return <LabelImportant />;
     default:
       return <VerifiedUser />;
   }
 };
 
-export const BadgeChip = ({ badge }: { badge: Badge }) => {
+export const BadgeChip = ({
+  badge,
+  count,
+}: {
+  badge: Badge;
+  count?: number;
+}) => {
   const classes = useStyles();
   const IconComponent = getIcon(badge.icon);
 
@@ -188,6 +229,11 @@ export const BadgeChip = ({ badge }: { badge: Badge }) => {
       <Typography className={classes.description}>
         {badge.description}
       </Typography>
+      {count && count > 1 && (
+        <Typography variant="caption" style={{ marginTop: 'auto' }}>
+          x {count}
+        </Typography>
+      )}
     </Box>
   );
 };
