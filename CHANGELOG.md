@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.50.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.49.1...v3.50.0) (2025-12-22)
+
+
+### Features
+
+* extension point for custom badges ([f870926](https://github.com/drodil/backstage-plugin-qeta/commit/f870926243110fd8d7464e1b198586944dfad852))
+* initial reputation system implementation ([763f6fc](https://github.com/drodil/backstage-plugin-qeta/commit/763f6fc0797caf40e957e4d6c1fc0a1404cd47d7))
+* send notifications from badges ([407de5a](https://github.com/drodil/backstage-plugin-qeta/commit/407de5a8664727c9bff9ac5fca570342b49e568f))
+
+
+### Bug Fixes
+
+* small badge ui tunings and clean up ([be98a2a](https://github.com/drodil/backstage-plugin-qeta/commit/be98a2af41530e50a24b7e0aef64229a3308053a))
+
 ### [3.49.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.49.0...v3.49.1) (2025-12-22)
 
 
