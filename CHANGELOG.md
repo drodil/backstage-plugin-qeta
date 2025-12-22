@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.49.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.49.0...v3.49.1) (2025-12-22)
+
+
+### Bug Fixes
+
+* navigation urls on hover ([0ab986e](https://github.com/drodil/backstage-plugin-qeta/commit/0ab986e56e72a89589e587ee4e8560cada0aadfd))
+* vote generation in generate tool ([825b883](https://github.com/drodil/backstage-plugin-qeta/commit/825b8838a517b635816019bdf046a6d19c7fef9c))
+
 ## [3.49.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.48.2...v3.49.0) (2025-12-21)
 
 
