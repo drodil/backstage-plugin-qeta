@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.52.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.51.1...v3.52.0) (2025-12-23)
+
+
+### Features
+
+* add infinite scroll to grids and lists ([cbe3a96](https://github.com/drodil/backstage-plugin-qeta/commit/cbe3a96bb5a608e6ed42e7bea6faa1c63025e54f))
+* add suggestion item for reviews ([ca64f3c](https://github.com/drodil/backstage-plugin-qeta/commit/ca64f3c621e2fa2014cdc80cb45660b04e414a03))
+* add timeline component to home page ([7e521c8](https://github.com/drodil/backstage-plugin-qeta/commit/7e521c8ea38705ae870b513ec3ea44414a8a4f18))
+
+
+### Bug Fixes
+
+* timeline links ([03ce0c4](https://github.com/drodil/backstage-plugin-qeta/commit/03ce0c43f0318f10a65446150c0297a79775924a))
+
 ### [3.51.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.51.0...v3.51.1) (2025-12-23)
 
 
