@@ -61,6 +61,8 @@ import {
   Badge,
   UserBadge,
   PostReview,
+  TimelineOptions,
+  TimelineResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CustomErrorBase } from '@backstage/errors';
 import omitBy from 'lodash/omitBy';
@@ -1619,5 +1621,24 @@ export class QetaClient implements QetaApi {
     }
     const cleaned = omitBy(params, v => !Boolean(v));
     return qs.stringify(cleaned);
+  }
+
+  async getTimeline(
+    options?: TimelineOptions,
+    requestOptions?: RequestOptions,
+  ): Promise<TimelineResponse> {
+    const query = qs.stringify(options, { addQueryPrefix: true });
+    const url = `${await this.discoveryApi.getBaseUrl(
+      'qeta',
+    )}/timeline${query}`;
+    const response = await this.fetchApi.fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(requestOptions?.token
+          ? { Authorization: `Bearer ${requestOptions.token}` }
+          : {}),
+      },
+    });
+    return (await response.json()) as TimelineResponse;
   }
 }

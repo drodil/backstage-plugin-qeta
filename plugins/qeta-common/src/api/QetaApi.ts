@@ -41,6 +41,8 @@ import {
   Badge,
   UserBadge,
   PostReview,
+  TimelineOptions,
+  TimelineResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export interface PaginatedQuery {
@@ -599,4 +601,9 @@ export interface QetaApi {
   fetchURLMetadata(request: URLMetadataRequest): Promise<URLMetadataResponse>;
 
   getEntityLinks(options?: RequestOptions): Promise<EntityLinks[]>;
+
+  getTimeline(
+    options?: TimelineOptions,
+    requestOptions?: RequestOptions,
+  ): Promise<TimelineResponse>;
 }

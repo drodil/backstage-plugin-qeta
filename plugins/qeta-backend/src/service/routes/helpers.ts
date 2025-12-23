@@ -16,6 +16,10 @@ import {
   qetaCreateTagPermission,
   qetaDeleteTagPermission,
   qetaEditTagPermission,
+  qetaReadAnswerPermission,
+  qetaReadCollectionPermission,
+  qetaReadCommentPermission,
+  qetaReadPostPermission,
   qetaReadTagPermission,
   TagsQuery,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -643,5 +647,57 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       meta: { entityRef: request.params.entityRef },
     });
     response.json(entity);
+  });
+
+  // GET /timeline
+  router.get(`/timeline`, async (request, response) => {
+    const username = await permissionMgr.getUsername(request, true);
+    const limit = request.query.limit
+      ? Number.parseInt(request.query.limit as string, 10)
+      : 10;
+    const offset = request.query.offset
+      ? Number.parseInt(request.query.offset as string, 10)
+      : 0;
+    const includeTotal = request.query.includeTotal === 'true';
+
+    const [filter, commentsFilter, answersFilter, collectionsFilter] =
+      await Promise.all([
+        permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+          allowServicePrincipal: true,
+        }),
+        permissionMgr.getAuthorizeConditions(
+          request,
+          qetaReadCommentPermission,
+          {
+            allowServicePrincipal: true,
+          },
+        ),
+        permissionMgr.getAuthorizeConditions(
+          request,
+          qetaReadAnswerPermission,
+          {
+            allowServicePrincipal: true,
+          },
+        ),
+        permissionMgr.getAuthorizeConditions(
+          request,
+          qetaReadCollectionPermission,
+          {
+            allowServicePrincipal: true,
+          },
+        ),
+      ]);
+
+    const timeline = await database.getTimeline(
+      username,
+      { limit, offset, includeTotal },
+      {
+        posts: filter,
+        answers: answersFilter,
+        comments: commentsFilter,
+        collections: collectionsFilter,
+      },
+    );
+    response.json(timeline);
   });
 };

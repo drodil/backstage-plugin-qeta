@@ -1,3 +1,4 @@
+export * from './Timeline';
 export * from './PostForm';
 export * from './PostsContainer';
 export * from './AnswersContainer';

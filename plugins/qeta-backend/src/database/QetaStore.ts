@@ -28,6 +28,8 @@ import {
   UserBadge,
   UserTagsResponse,
   UserUsersResponse,
+  TimelineOptions,
+  TimelineResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -655,6 +657,19 @@ export interface QetaStore {
     uniqueKey?: string,
   ): Promise<AwardBadgeResult | null>;
   createBadge(badge: Omit<Badge, 'id'>): Promise<void>;
+
+  getTimeline(
+    user_ref: string,
+    options: TimelineOptions,
+    filters?: TimelineFilters,
+  ): Promise<TimelineResponse>;
+}
+
+export interface TimelineFilters {
+  posts?: PermissionCriteria<QetaFilters>;
+  answers?: PermissionCriteria<QetaFilters>;
+  comments?: PermissionCriteria<QetaFilters>;
+  collections?: PermissionCriteria<QetaFilters>;
 }
 
 export interface AwardBadgeResult {

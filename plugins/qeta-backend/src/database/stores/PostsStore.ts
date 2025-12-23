@@ -494,8 +494,6 @@ export class PostsStore extends BaseStore {
     const uniquePosts = Array.from(new Set(allPosts.map(p => p.id)))
       .map(id => allPosts.find(p => p.id === id))
       .filter((p): p is Post => p !== undefined);
-
-    console.log(`Unique posts: ${uniquePosts.map(p => p.id).join(', ')}`);
     return { posts: uniquePosts.slice(0, 5), total: uniquePosts.length };
   }
 

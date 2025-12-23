@@ -3890,6 +3890,7 @@ __metadata:
     numeral: "npm:^2.0.6"
     react-dropzone: "npm:^14.3.8"
     react-hook-form: "npm:^7.46.2"
+    react-infinite-scroll-hook: "npm:^6.0.1"
     react-markdown: "npm:^10.1.0"
     react-mde: "npm:^11.5.0"
     react-relative-time: "npm:^0.0.9"
@@ -26580,6 +26581,28 @@ __metadata:
     react: ">=16"
     react-dom: ">=16"
   checksum: 10c0/ccb02df074e59009df875b331a224e8ee2e407400e8a47c21eb55d08f67315eadb993b2f50c9065f38a1e08043431c5d14ceee682bc3f262a9c7bcd7d672ef43
+  languageName: node
+  linkType: hard
+
+"react-infinite-scroll-hook@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "react-infinite-scroll-hook@npm:6.0.1"
+  dependencies:
+    react-intersection-observer-hook: "npm:^4.0.0"
+  peerDependencies:
+    react: ">=19"
+    react-dom: ">=19"
+  checksum: 10c0/acf217576de7b2655cf084d6dfaee2a790975bf567a2e6d6305f2b87c1062ddcd004a0c61ce4d63a0c672374b577e9d70ffbfc0fab95db042c79a750757d46db
+  languageName: node
+  linkType: hard
+
+"react-intersection-observer-hook@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "react-intersection-observer-hook@npm:4.0.1"
+  peerDependencies:
+    react: ">=19"
+    react-dom: ">=19"
+  checksum: 10c0/c33e23da7aed81f09c3311b483a130530dfc26fbabb3aaeb2d520f056c05ec4b1143166212238d78455ba8168977ed606ea38e7eb8848bd54716d032ba294689
   languageName: node
   linkType: hard
 

@@ -24,6 +24,7 @@ import {
   Templates,
   UserResponse,
   UsersResponse,
+  TimelineFilters,
 } from './QetaStore';
 import { Badge, UserBadge } from '@drodil/backstage-plugin-qeta-common';
 import {
@@ -51,6 +52,8 @@ import {
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
+  TimelineOptions,
+  TimelineResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -66,6 +69,7 @@ import { EntitiesStore } from './stores/EntitiesStore';
 import { TemplatesStore } from './stores/TemplatesStore';
 import { AttachmentsStore } from './stores/AttachmentsStore';
 import { BadgesStore } from './stores/BadgesStore';
+import { HelpersStore } from './stores/HelpersStore';
 
 const migrationsDir = resolvePackagePath(
   '@drodil/backstage-plugin-qeta-backend',
@@ -87,7 +91,16 @@ export class DatabaseQetaStore implements QetaStore {
     private readonly templatesStore: TemplatesStore,
     private readonly attachmentsStore: AttachmentsStore,
     private readonly badgesStore: BadgesStore,
+    private readonly helpersStore: HelpersStore,
   ) {}
+
+  async getTimeline(
+    user_ref: string,
+    options: TimelineOptions,
+    filters?: TimelineFilters,
+  ): Promise<TimelineResponse> {
+    return this.helpersStore.getTimeline(user_ref, options, filters);
+  }
 
   static async create({
     database,
@@ -133,6 +146,7 @@ export class DatabaseQetaStore implements QetaStore {
     );
     const statsStore = new StatsStore(client);
     const badgesStore = new BadgesStore(client);
+    const helpersStore = new HelpersStore(client);
 
     postsStore.setAnswersStore(answersStore);
 
@@ -148,6 +162,7 @@ export class DatabaseQetaStore implements QetaStore {
       templatesStore,
       attachmentsStore,
       badgesStore,
+      helpersStore,
     );
   }
 

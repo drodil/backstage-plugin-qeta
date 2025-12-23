@@ -1,4 +1,30 @@
 import { IndexableDocument } from '@backstage/plugin-search-common';
+
+export interface TimelineOptions {
+  limit?: number;
+  offset?: number;
+  includeTotal?: boolean;
+}
+
+export interface TimelineItem {
+  type: 'post' | 'answer' | 'comment' | 'collection';
+  id: number;
+  author: string;
+  date: Date;
+  action: 'created' | 'updated';
+  content: string;
+  postId: number;
+  answerId?: number;
+  headerImage?: string;
+  title?: string; // For posts
+  postTitle?: string; // For answers/comments
+  postType?: PostType;
+}
+
+export interface TimelineResponse {
+  items: TimelineItem[];
+  total?: number;
+}
 import { ErrorObject } from 'ajv';
 import { RequestOptions } from './api';
 import { Entity, EntityLink } from '@backstage/catalog-model';
