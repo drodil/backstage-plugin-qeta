@@ -32,6 +32,8 @@ qeta:
     disabled: true
     type: database
     folder: /tmp/my-attachments
+  contentHealth:
+    postsOlderThan: { months: 6 }
 ```
 
 See also config values for AI module [here](ai.md).
@@ -100,5 +102,9 @@ The allowed configuration values are:
 - `storage.blobStorageContainer`, string, Azure Blob Storage container name, optional. Default `backstage-qeta-images`
 
 > Note: For Azure Blob Storage you can either use passwordless authentication by configuring `blobStorageAccountName`. This requires your Backstage backend to run as an Azure Managed Identity. Alternatively, you can use `blobStorageConnectionString` to authenticate with a connection string.
+
+## Content Health
+
+- `contentHealth.postsOlderThan`, [HumanDuration](https://github.com/backstage/backstage/blob/master/packages/types/src/index.ts#L43) object (e.g. `{ months: 6 }`). Posts older than this duration will be marked as needing review if they haven't been updated recently. Default is `{ months: 6 }`.
 
 Additionally, there are more config values for the [OpenAI module](ai.md).
