@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.51.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.51.0...v3.51.1) (2025-12-23)
+
+
+### Bug Fixes
+
+* remove limit from review page table ([f4090ee](https://github.com/drodil/backstage-plugin-qeta/commit/f4090ee51cf397530b78faebb10ff1b127b32a00))
+* review access rights ([3a9dec0](https://github.com/drodil/backstage-plugin-qeta/commit/3a9dec045864f2c784396d91ef147bbfe847c4c8))
+
 ## [3.51.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.50.0...v3.51.0) (2025-12-23)
 
 
