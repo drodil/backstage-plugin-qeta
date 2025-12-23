@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.51.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.50.0...v3.51.0) (2025-12-23)
+
+
+### Features
+
+* allow users to review old posts ([377a43c](https://github.com/drodil/backstage-plugin-qeta/commit/377a43c7e6cd232e9237d93f9b38086fb1b20d0d))
+* improve reputation calculation ([1ca3570](https://github.com/drodil/backstage-plugin-qeta/commit/1ca357076639c953dfaeafbdddaac845e5b46d1e))
+
+
+### Bug Fixes
+
+* clean up ([647ece7](https://github.com/drodil/backstage-plugin-qeta/commit/647ece7cefbb2de074a9f993fe1a563e66df1fb1))
+* stats for users with sqlite ([168a070](https://github.com/drodil/backstage-plugin-qeta/commit/168a0704f88faa253bcd185dbc304c97ba2c743b))
+
 ## [3.50.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.49.1...v3.50.0) (2025-12-22)
 
 
