@@ -22,7 +22,11 @@ export class UsersStore extends BaseStore {
   ): Promise<UsersResponse> {
     const query = this.getUserBaseQuery();
     if (options?.entityRefs) {
-      query.whereIn('unique_authors.author', options.entityRefs);
+      const authorColumn =
+        this.db.client.config.client === 'pg'
+          ? 'unique_authors.author'
+          : 'author';
+      query.whereIn(authorColumn, options.entityRefs);
     }
 
     const totalQuery = query.clone();
@@ -87,13 +91,21 @@ export class UsersStore extends BaseStore {
   }
 
   async getUsersCount(): Promise<number> {
-    const res = await this.db('unique_authors').count('* as CNT').first();
+    if (this.db.client.config.client === 'pg') {
+      const res = await this.db('unique_authors').count('* as CNT').first();
+      return this.mapToInteger(res?.CNT);
+    }
+    const res = await this.db('posts').countDistinct('author as CNT').first();
     return this.mapToInteger(res?.CNT);
   }
 
   async getUser(user_ref: string): Promise<UserResponse | null> {
     const query = this.getUserBaseQuery();
-    const rows = await query.where('unique_authors.author', user_ref);
+    const authorColumn =
+      this.db.client.config.client === 'pg'
+        ? 'unique_authors.author'
+        : 'author';
+    const rows = await query.where(authorColumn, user_ref);
     if (rows.length === 0) {
       return null;
     }
@@ -158,38 +170,15 @@ export class UsersStore extends BaseStore {
   }
 
   private getUserBaseQuery() {
-    if (this.db.client.config.client !== 'pg') {
-      // Subqueries do not work in sqlite so we just return all stats as empty, at least for now
-      return this.db('posts')
-        .select([
-          'author',
-          this.db.raw('0 as "totalViews"'),
-          this.db.raw('0 as "totalQuestions"'),
-          this.db.raw('0 as "totalArticles"'),
-          this.db.raw('0 as "totalLinks"'),
-          this.db.raw('0 as "totalAnswers"'),
-          this.db.raw('0 as "totalComments"'),
-          this.db.raw('0 as "answerVotes"'),
-          this.db.raw('0 as "postVotes"'),
-          this.db.raw('0 as "totalVotes"'),
-          this.db.raw('0 as "totalPosts"'),
-          this.db.raw('0 as "followerCount"'),
-          this.db.raw('0 as "reputation"'),
-          this.db.raw('0 as "answerScore"'),
-          this.db.raw('0 as "postScore"'),
-          this.db.raw('0 as "correctAnswers"'),
-        ])
-        .distinct();
-    }
+    const authorCol =
+      this.db.client.config.client === 'pg'
+        ? 'unique_authors.author'
+        : 'author';
 
     return this.db('unique_authors')
-      .leftJoin(
-        'user_stats_view',
-        'unique_authors.author',
-        'user_stats_view.userRef',
-      )
+      .leftJoin('user_stats_view', authorCol, 'user_stats_view.userRef')
       .select(
-        'unique_authors.author',
+        authorCol,
         this.db.raw(
           'COALESCE(user_stats_view."totalViews", 0) as "totalViews"',
         ),

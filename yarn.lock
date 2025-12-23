@@ -3923,6 +3923,7 @@ __metadata:
     "@backstage/plugin-home": "backstage:^"
     "@backstage/plugin-home-react": "backstage:^"
     "@backstage/plugin-notifications": "backstage:^"
+    "@backstage/plugin-permission-react": "backstage:^"
     "@backstage/plugin-search": "backstage:^"
     "@backstage/plugin-search-common": "backstage:^"
     "@backstage/plugin-search-react": "backstage:^"

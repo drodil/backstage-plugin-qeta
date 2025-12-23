@@ -9,7 +9,7 @@ import { PostFilter } from '@drodil/backstage-plugin-qeta-common';
 jest.setTimeout(60_000);
 
 const databases = TestDatabases.create({
-  ids: ['POSTGRES_13', 'SQLITE_3'],
+  ids: ['POSTGRES_17', 'SQLITE_3'],
   disableDocker: !process.env.GITHUB_ACTIONS,
 });
 
@@ -1492,6 +1492,32 @@ describe.each(databases.eachSupportedId())(
           expect(result.posts.length).toBe(1);
           expect(result.posts[0].title).toBe('Post with tag2');
         });
+      });
+    });
+
+    describe('users', () => {
+      it('should return user stats', async () => {
+        await insertPost({ ...post, author: 'user1', title: 't1' });
+        await insertPost({ ...post, author: 'user1', title: 't2' });
+        const user = await storage.getUser('user1');
+        expect(user).toBeDefined();
+        expect(user?.totalQuestions).toBe(2);
+        expect(user?.userRef).toBe('user1');
+      });
+
+      it('should return users', async () => {
+        await insertPost({ ...post, author: 'user1', title: 't1' });
+        await insertPost({ ...post, author: 'user2', title: 't2' });
+        const users = await storage.getUsers();
+        expect(users.users.length).toBe(2);
+        expect(users.total).toBe(2);
+      });
+
+      it('should return users count', async () => {
+        await insertPost({ ...post, author: 'user1', title: 't1' });
+        await insertPost({ ...post, author: 'user2', title: 't2' });
+        const count = await storage.getUsersCount();
+        expect(count).toBe(2);
       });
     });
   },
