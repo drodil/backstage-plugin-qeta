@@ -436,6 +436,11 @@ export const qetaTranslationRef = createTranslationRef({
       randomPost3: 'Have you seen "{{title}}"?',
       randomPost4: 'Join the discussion on "{{title}}"',
       randomPost5: 'Check this out: "{{title}}"',
+      needsReview1: '"{{title}}" needs a content review',
+      needsReview2: 'Please review "{{title}}" for accuracy',
+      needsReview3: 'Content review needed: "{{title}}"',
+      needsReview4: 'Can you verify "{{title}}" is still valid?',
+      needsReview5: '"{{title}}" is due for a review',
     },
     homePage: {
       title: 'Home',

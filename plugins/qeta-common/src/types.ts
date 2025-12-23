@@ -513,7 +513,8 @@ export type SuggestionType =
   | 'newArticle'
   | 'newLink'
   | 'draftPost'
-  | 'randomPost';
+  | 'randomPost'
+  | 'needsReview';
 
 export interface Suggestion {
   type: SuggestionType;
@@ -548,6 +549,11 @@ export interface NewArticleSuggestion extends Suggestion {
 export interface NewLinkSuggestion extends Suggestion {
   type: 'newLink';
   link: Link;
+}
+
+export interface NeedsReviewSuggestion extends Suggestion {
+  type: 'needsReview';
+  post: Post;
 }
 
 export interface SuggestionsResponse {

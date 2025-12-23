@@ -5,10 +5,12 @@ import {
   Article,
   DraftPostSuggestion,
   Link,
+  NeedsReviewSuggestion,
   NewArticleSuggestion,
   NewLinkSuggestion,
   NewQuestionSuggestion,
   NoCorrectAnswerSuggestion,
+  qetaCreatePostReviewPermission,
   qetaReadPostPermission,
   Question,
   RandomPostSuggestion,
@@ -18,12 +20,18 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { PostOptions } from '../../database/QetaStore';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const suggestionRoutes = (router: Router, options: RouteOptions) => {
-  const { database, permissionMgr } = options;
+  const { database, permissionMgr, config } = options;
+
+  const postsOlderThan = config.getOptional<HumanDuration>(
+    'qeta.contentHealth.postsOlderThan',
+  ) ?? { months: 6 };
+  const reviewThresholdMs = durationToMilliseconds(postsOlderThan);
 
   const includeNothingOptions: PostOptions = {
     includeVotes: false,
@@ -323,6 +331,23 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
     }));
   };
 
+  const getPostsNeedingReview = async (
+    username: string,
+    filter?: PermissionCriteria<QetaFilters>,
+  ): Promise<NeedsReviewSuggestion[]> => {
+    const posts = await database.getPosts(
+      username,
+      { reviewNeeded: true, includeHealth: true, limit: 5 },
+      filter,
+      { ...includeNothingOptions, reviewThresholdMs },
+    );
+    return posts.posts.map(post => ({
+      id: `r_${post.id}`,
+      type: 'needsReview',
+      post,
+    }));
+  };
+
   const getRandomPosts = async (
     username: string,
     limit: number,
@@ -360,7 +385,13 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       qetaReadPostPermission,
     );
 
-    const raw = await Promise.all([
+    // Check if user has review permissions
+    const canReviewResults = await permissionMgr.authorizeBoolean(request, [
+      { permission: qetaCreatePostReviewPermission },
+    ]);
+    const canReview = canReviewResults[0] ?? false;
+
+    const promises: Promise<Suggestion[]>[] = [
       getNotCorrectQuestions(username, filter),
       getNewTagQuestions(username, filter),
       getNewTagArticles(username, filter),
@@ -372,7 +403,10 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       getNewUserArticles(username, filter),
       getNewUserLinks(username, filter),
       getUsersDraftPosts(username, filter),
-    ]);
+      canReview ? getPostsNeedingReview(username, filter) : Promise.resolve([]),
+    ];
+
+    const raw = await Promise.all(promises);
 
     const suggestionsRaw = raw
       .flat()

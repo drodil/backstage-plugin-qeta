@@ -3,6 +3,7 @@ import { ReactNode, useMemo } from 'react';
 import { Skeleton } from '@material-ui/lab';
 import {
   DraftPostSuggestion,
+  NeedsReviewSuggestion,
   NewArticleSuggestion,
   NewLinkSuggestion,
   NewQuestionSuggestion,
@@ -17,6 +18,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import LinkIcon from '@material-ui/icons/Link';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import RateReviewIcon from '@material-ui/icons/RateReview';
 import { Link as RouterLink } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
@@ -269,6 +271,37 @@ const RandomPostSuggestionItem = (props: {
   );
 };
 
+const NeedsReviewSuggestionItem = (props: {
+  suggestion: NeedsReviewSuggestion;
+}) => {
+  const { suggestion } = props;
+  const { t } = useTranslationRef(qetaTranslationRef);
+  const questionRoute = useRouteRef(questionRouteRef);
+  const articleRoute = useRouteRef(articleRouteRef);
+  const linkRoute = useRouteRef(linkRouteRef);
+  const route = selectByPostType(
+    suggestion.post.type,
+    questionRoute,
+    articleRoute,
+    linkRoute,
+  );
+  const variant = useMemo(
+    () => getRandomVariant('suggestionsCard.needsReview'),
+    [],
+  );
+  return (
+    <SuggestionListItem
+      href={route({ id: suggestion.post.id.toString(10) })}
+      icon={<RateReviewIcon />}
+      timestamp={<RelativeTimeWithTooltip value={suggestion.post.created} />}
+    >
+      {t(variant as any, {
+        title: suggestion.post.title,
+      })}
+    </SuggestionListItem>
+  );
+};
+
 const suggestionTypeMap: Record<SuggestionType, any> = {
   noCorrectAnswer: NoCorrectAnswerSuggestionItem,
   newQuestion: NewQuestionSuggestionItem,
@@ -276,6 +309,7 @@ const suggestionTypeMap: Record<SuggestionType, any> = {
   newLink: NewLinkSuggestionItem,
   draftPost: DraftPostSuggestionItem,
   randomPost: RandomPostSuggestionItem,
+  needsReview: NeedsReviewSuggestionItem,
 };
 
 export const SuggestionsCard = () => {
