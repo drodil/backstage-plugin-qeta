@@ -41,7 +41,6 @@ export const ReviewPage = () => {
       includeAttachments: false,
       includeExperts: false,
       includeTags: false,
-      limit: 100,
       order: 'asc',
       orderBy: 'created',
       includeEntities: false,
