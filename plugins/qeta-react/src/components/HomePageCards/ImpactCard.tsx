@@ -23,6 +23,11 @@ import HelpOutline from '@material-ui/icons/HelpOutline';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import People from '@material-ui/icons/People';
 import EmojiEvents from '@material-ui/icons/EmojiEvents';
+import DescriptionIcon from '@material-ui/icons/Description';
+import LinkIcon from '@material-ui/icons/Link';
+import Star from '@material-ui/icons/Star';
+import CheckCircle from '@material-ui/icons/CheckCircle';
+import TrendingUp from '@material-ui/icons/TrendingUp';
 
 export const ImpactCard = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -94,11 +99,17 @@ export const ImpactCard = () => {
 
     const formattedImpact = formatNumber(impact.impact);
 
+    const totalContributions =
+      stats.summary.totalQuestions +
+      stats.summary.totalAnswers +
+      stats.summary.totalArticles +
+      stats.summary.totalLinks;
+
     const statItems = [
       {
-        icon: <ThumbUp fontSize="small" />,
-        value: formatNumber(stats.summary.totalVotes),
-        label: t('impactCard.votes'),
+        icon: <TrendingUp fontSize="small" />,
+        value: formatNumber(totalContributions),
+        label: t('impactCard.totalContributions'),
       },
       {
         icon: <HelpOutline fontSize="small" />,
@@ -111,9 +122,39 @@ export const ImpactCard = () => {
         label: t('impactCard.answers'),
       },
       {
+        icon: <DescriptionIcon fontSize="small" />,
+        value: formatNumber(stats.summary.totalArticles),
+        label: t('impactCard.articles'),
+      },
+      {
+        icon: <LinkIcon fontSize="small" />,
+        value: formatNumber(stats.summary.totalLinks),
+        label: t('impactCard.links'),
+      },
+      {
+        icon: <ThumbUp fontSize="small" />,
+        value: formatNumber(stats.summary.totalVotes),
+        label: t('impactCard.votes'),
+      },
+      {
         icon: <People fontSize="small" />,
         value: formatNumber(stats.summary.totalFollowers),
         label: t('impactCard.followers'),
+      },
+      {
+        icon: <Star fontSize="small" />,
+        value: formatNumber(stats.summary.answerScore),
+        label: t('impactCard.answerScore'),
+      },
+      {
+        icon: <Star fontSize="small" />,
+        value: formatNumber(stats.summary.postScore),
+        label: t('impactCard.postScore'),
+      },
+      {
+        icon: <CheckCircle fontSize="small" />,
+        value: formatNumber(stats.summary.correctAnswers),
+        label: t('impactCard.correctAnswers'),
       },
     ];
 
@@ -166,7 +207,7 @@ export const ImpactCard = () => {
         <Box mt={2}>
           <Grid container spacing={1}>
             {statItems.map((item, index) => (
-              <Grid item xs={6} key={index}>
+              <Grid item xs={12} key={index}>
                 <Box display="flex" alignItems="center" color="textSecondary">
                   <Tooltip title={item.label}>
                     <Box display="flex" alignItems="center">
