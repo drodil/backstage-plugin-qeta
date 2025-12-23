@@ -55,7 +55,9 @@ export const FavoriteButton = (props: { entity: PostResponse }) => {
           <IconButton
             aria-label="unfavorite"
             size="small"
-            disabled={entity.status !== 'active'}
+            disabled={
+              entity.status !== 'active' && entity.status !== 'obsolete'
+            }
             onClick={unfavoriteQuestion}
             className="qetaUnfavoriteBtn"
           >
@@ -67,7 +69,9 @@ export const FavoriteButton = (props: { entity: PostResponse }) => {
           <IconButton
             aria-label="favorite"
             size="small"
-            disabled={entity.status !== 'active'}
+            disabled={
+              entity.status !== 'active' && entity.status !== 'obsolete'
+            }
             onClick={favoriteQuestion}
             className="qetaFavoriteBtn"
           >

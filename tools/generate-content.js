@@ -50,9 +50,9 @@ async function main() {
 
   const getCreated = () => {
     if (options.created) {
-      return options.created;
+      return new Date(options.created);
     }
-    return faker.date.recent();
+    return faker.date.recent({ days: 365 });
   };
 
   const generateCodeBlock = () => {

@@ -35,6 +35,7 @@ export const qetaTranslationRef = createTranslationRef({
       anonymousAuthor: 'Anonymous',
       search: 'Search',
       favorite: 'Favorite',
+      obsolete: 'Obsolete',
       readMore: 'Read more',
       clear: 'Clear search',
       cancel: 'Cancel',
@@ -329,6 +330,26 @@ export const qetaTranslationRef = createTranslationRef({
       answerDeleted: 'Answer deleted',
       linkDeleted: 'Link deleted',
     },
+    obsoleteModal: {
+      title: 'Mark post as obsolete',
+      description:
+        'Marking a post as obsolete indicates that the content is outdated and no longer relevant. Obsolete posts cannot be edited or receive new answers.',
+      comment: 'Comment (optional)',
+      confirmButton: 'Mark as obsolete',
+      cancelButton: 'Cancel',
+      errorMarking: 'Failed to mark as obsolete',
+      success: 'Post marked as obsolete',
+    },
+    validReviewModal: {
+      title: 'Mark post as valid',
+      description:
+        'Confirming this post is still valid indicates that the content is up-to-date and relevant. This will reset the review timer.',
+      comment: 'Comment (optional)',
+      confirmButton: 'Confirm valid',
+      cancelButton: 'Cancel',
+      errorMarking: 'Failed to mark as valid',
+      success: 'Post marked as valid',
+    },
     favoritePage: {
       title: 'Favorited posts',
     },
@@ -349,6 +370,7 @@ export const qetaTranslationRef = createTranslationRef({
       users: 'Users',
       manage: 'Manage',
       moderate: 'Moderate',
+      review: 'Review',
       expand: 'Expand menu',
       collapse: 'Collapse menu',
     },
@@ -421,6 +443,7 @@ export const qetaTranslationRef = createTranslationRef({
       followedCollections: 'Followed collections',
       followedUsers: 'Followed users',
       similarQuestions: 'Similar questions',
+      similarPosts: 'Similar posts',
       expand: 'Expand sidebar',
       collapse: 'Collapse sidebar',
     },
@@ -540,6 +563,9 @@ export const qetaTranslationRef = createTranslationRef({
         'This is a draft post. Please edit and publish it to make it visible to others.',
       deletedStatus:
         'This post has been deleted. You can delete it permanently or restore it.',
+      obsoleteTitle: 'Obsolete Content',
+      obsoleteStatus:
+        'This post has been marked as obsolete. It may contain outdated information. Commenting and answering are disabled.',
       answerButton: 'Answer',
       sortAnswers: {
         label: 'Sort answers',
@@ -859,6 +885,41 @@ export const qetaTranslationRef = createTranslationRef({
     viewToggle: {
       listView: 'List View',
       gridView: 'Grid View',
+    },
+    contentHealth: {
+      cardTitle: 'Content Health',
+      description:
+        'This content has been marked as potentially outdated. Please review it and mark it as valid or obsolete.',
+      healthScore: 'Health Score: {{score}}%',
+      obsoleteWarning: 'This content has been marked as obsolete.',
+      markValid: 'Mark as Valid',
+      markObsolete: 'Mark as Obsolete',
+      valid: 'Valid',
+      obsolete: 'Obsolete',
+      reviewHistory: 'Review History',
+    },
+    reviewPage: {
+      title: 'Review',
+      description: 'Review posts that are possibly outdated.',
+      errorLoading: 'Could not load posts for review',
+      table: {
+        title: 'Title',
+        author: 'Author',
+        created: 'Created',
+        score: 'Health Score',
+        healthScore: 'Health',
+        actions: 'Actions',
+      },
+      actions: {
+        markObsolete: 'Mark Obsolete',
+        markValid: 'Mark Valid',
+      },
+      dialog: {
+        title: 'Mark Post as Obsolete',
+        commentLabel: 'Comment (Optional)',
+        cancel: 'Cancel',
+        confirm: 'Mark as Obsolete',
+      },
     },
   },
 });

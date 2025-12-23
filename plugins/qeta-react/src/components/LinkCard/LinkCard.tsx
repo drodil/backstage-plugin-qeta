@@ -3,7 +3,7 @@ import {
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useState } from 'react';
-import { DeleteModal } from '../DeleteModal/DeleteModal';
+import { DeleteModal } from '../Modals';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import RestoreIcon from '@material-ui/icons/Restore';
@@ -171,43 +171,39 @@ export const LinkCard = (props: { link: PostResponse }) => {
                 <Box flex="1 1 0%" minWidth={0}>
                   <TagsAndEntities entity={linkEntity} />
                   <Box className={styles.buttons}>
-                    {(link.canEdit || link.canDelete) && (
+                    {link.canEdit && link.status !== 'obsolete' && (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<EditIcon />}
+                        onClick={() =>
+                          navigate(
+                            editLinkRoute({
+                              id: link.id.toString(10),
+                            }),
+                          )
+                        }
+                        className="qetaQuestionCardEditBtn"
+                      >
+                        {t('linkPage.editButton')}
+                      </Button>
+                    )}
+                    {link.canDelete && (
                       <>
-                        {link.canEdit && (
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            startIcon={<EditIcon />}
-                            onClick={() =>
-                              navigate(
-                                editLinkRoute({
-                                  id: link.id.toString(10),
-                                }),
-                              )
-                            }
-                            className="qetaQuestionCardEditBtn"
-                          >
-                            {t('linkPage.editButton')}
-                          </Button>
-                        )}
-                        {link.canDelete && (
-                          <>
-                            <Button
-                              variant="outlined"
-                              size="small"
-                              color="secondary"
-                              onClick={handleDeleteModalOpen}
-                              startIcon={<DeleteIcon />}
-                            >
-                              {t('deleteModal.deleteButton')}
-                            </Button>
-                            <DeleteModal
-                              open={deleteModalOpen}
-                              onClose={handleDeleteModalClose}
-                              entity={linkEntity}
-                            />
-                          </>
-                        )}
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          color="secondary"
+                          onClick={handleDeleteModalOpen}
+                          startIcon={<DeleteIcon />}
+                        >
+                          {t('deleteModal.deleteButton')}
+                        </Button>
+                        <DeleteModal
+                          open={deleteModalOpen}
+                          onClose={handleDeleteModalClose}
+                          entity={linkEntity}
+                        />
                       </>
                     )}
                     {isModerator && linkEntity.status === 'deleted' && (
@@ -229,7 +225,7 @@ export const LinkCard = (props: { link: PostResponse }) => {
           </Grid>
         </CardContent>
       </Card>
-      {link.status === 'active' && (
+      {(link.status === 'active' || link.status === 'obsolete') && (
         <CommentSection post={linkEntity} onCommentAction={onCommentAction} />
       )}
     </>

@@ -58,11 +58,19 @@ export const VoteButtons = (props: {
   const classes = useStyles();
 
   const isDisabled = (isCorrectButton = false) => {
+    // Check if parent post is obsolete (for answers)
+    if (props.post?.status === 'obsolete') {
+      return true;
+    }
     if (isCorrectButton) {
       return 'status' in props.entity && props.entity.status !== 'active';
     }
     return (
-      own || ('status' in props.entity && props.entity.status !== 'active')
+      own ||
+      ('status' in props.entity &&
+        props.entity.status !== 'active' &&
+        props.entity.status !== 'obsolete') ||
+      ('status' in props.entity && props.entity.status === 'obsolete')
     );
   };
 

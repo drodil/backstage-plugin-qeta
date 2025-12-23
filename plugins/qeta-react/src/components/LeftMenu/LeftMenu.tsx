@@ -28,6 +28,7 @@ import EmojiEventsOutlined from '@material-ui/icons/EmojiEventsOutlined'; // Che
 import SettingsOutlined from '@material-ui/icons/SettingsOutlined';
 import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import RateReviewOutlined from '@material-ui/icons/RateReviewOutlined';
 
 import {
   articlesRouteRef,
@@ -42,8 +43,9 @@ import {
   tagsRouteRef,
   userRouteRef,
   usersRouteRef,
+  reviewRouteRef,
 } from '../../routes';
-import { useIdentityApi, useIsModerator } from '../../hooks';
+import { useIdentityApi, useIsModerator, useCanReview } from '../../hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 
@@ -183,11 +185,13 @@ export const LeftMenu = (props: {
   const entitiesRoute = useRouteRef(entitiesRouteRef);
   const usersRoute = useRouteRef(usersRouteRef);
   const moderatorRoute = useRouteRef(moderatorRouteRef);
+  const reviewRoute = useRouteRef(reviewRouteRef);
   const styles = useStyles(props);
   const { t } = useTranslationRef(qetaTranslationRef);
   const location = useLocation();
   const navigate = useNavigate();
   const { isModerator } = useIsModerator();
+  const { canReview } = useCanReview();
   const app = useApp();
   const { compact = false, onToggle } = props;
   const {
@@ -393,7 +397,7 @@ export const LeftMenu = (props: {
         </ListItemIcon>
       </CustomMenuItem>
 
-      {isModerator && (
+      {(isModerator || canReview) && (
         <>
           <li style={{ listStyle: 'none' }}>
             <Typography className={styles.sectionHeader}>
@@ -401,7 +405,11 @@ export const LeftMenu = (props: {
             </Typography>
           </li>
           <Divider className={styles.divider} component="li" />
-
+          <CustomMenuItem route={reviewRoute()} label={t('leftMenu.review')}>
+            <ListItemIcon className={styles.menuIcon}>
+              <RateReviewOutlined fontSize="small" />
+            </ListItemIcon>
+          </CustomMenuItem>
           <CustomMenuItem
             route={moderatorRoute()}
             label={t('leftMenu.moderate')}

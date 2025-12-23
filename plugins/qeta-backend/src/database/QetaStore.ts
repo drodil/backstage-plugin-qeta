@@ -11,6 +11,7 @@ import {
   EntityLinks,
   GlobalStat,
   Post,
+  PostReview,
   PostsQuery,
   PostStatus,
   PostType,
@@ -37,6 +38,7 @@ export {
   isComment,
   isTag,
   isCollection,
+  type PostReview,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export type MaybeAnswer = Answer | null;
@@ -133,6 +135,9 @@ export type PostOptions = {
   includeExperts?: boolean;
   includeCollections?: boolean;
   collectionIds?: number[];
+  includeHealth?: boolean;
+  reviewThresholdMs?: number;
+  reviewNeeded?: boolean;
 };
 
 export type CollectionOptions = {
@@ -601,6 +606,15 @@ export interface QetaStore {
   getAIAnswer(postId: number): Promise<AIResponse | null>;
   saveAIAnswer(postId: number, response: AIResponse): Promise<void>;
   deleteAIAnswer(postId: number): Promise<boolean>;
+
+  reviewPost(
+    user_ref: string,
+    postId: number,
+    status: 'valid' | 'obsolete',
+    comment?: string,
+  ): Promise<MaybePost>;
+
+  getPostReviews(postId: number): Promise<PostReview[]>;
 
   getPostRank(collectionId: number, postId: number): Promise<number | null>;
   getTopRankedPostId(collectionId: number): Promise<CollectionPostRank | null>;

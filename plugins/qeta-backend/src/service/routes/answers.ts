@@ -144,6 +144,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    if (post.status === 'obsolete') {
+      response
+        .status(400)
+        .send({ errors: 'Cannot add answers to obsolete posts', type: 'body' });
+      return;
+    }
+
     await permissionMgr.authorize(
       request,
       [
@@ -244,6 +251,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       response.status(404).send({ errors: 'Post not found', type: 'body' });
       return;
     }
+
+    if (post.status === 'obsolete') {
+      response.status(400).send({
+        errors: 'Cannot edit answers on obsolete posts',
+        type: 'body',
+      });
+      return;
+    }
     await permissionMgr.authorize(
       request,
       [
@@ -323,6 +338,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
       if (!post) {
         response.status(404).send({ errors: 'Post not found', type: 'body' });
+        return;
+      }
+
+      if (post.status === 'obsolete') {
+        response.status(400).send({
+          errors: 'Cannot add comments to obsolete posts',
+          type: 'body',
+        });
         return;
       }
       let answer = await database.getAnswer(answerId, username);
@@ -443,6 +466,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         return;
       }
 
+      if (post.status === 'obsolete') {
+        response.status(400).send({
+          errors: 'Cannot edit comments on obsolete posts',
+          type: 'body',
+        });
+        return;
+      }
+
       await permissionMgr.authorize(
         request,
         [
@@ -511,6 +542,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         response
           .status(404)
           .send({ errors: 'Post, answer or comment not found', type: 'body' });
+        return;
+      }
+
+      if (post.status === 'obsolete') {
+        response.status(400).send({
+          errors: 'Cannot delete comments on obsolete posts',
+          type: 'body',
+        });
         return;
       }
 
@@ -727,6 +766,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    if (post.status === 'obsolete') {
+      response
+        .status(400)
+        .send({ errors: 'Cannot vote on obsolete posts', type: 'body' });
+      return;
+    }
+
     await permissionMgr.authorize(
       request,
       [
@@ -883,6 +929,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         response
           .status(404)
           .send({ errors: 'Post or answer not found', type: 'body' });
+        return;
+      }
+
+      if (post.status === 'obsolete') {
+        response.status(400).send({
+          errors: 'Cannot mark answers on obsolete posts',
+          type: 'body',
+        });
         return;
       }
 

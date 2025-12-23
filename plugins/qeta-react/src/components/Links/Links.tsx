@@ -11,14 +11,33 @@ export const UserLink = (props: {
   entityRef: string;
   anonymous?: boolean;
   linkProps?: LinkProps;
+  noLink?: boolean;
 }) => {
-  const { entityRef, linkProps, anonymous } = props;
+  const { entityRef, linkProps, anonymous, noLink } = props;
   const userRoute = useRouteRef(userRouteRef);
   const { name } = useUserInfo(
     entityRef,
     anonymous ?? entityRef === 'anonymous',
   );
   const classes = useTooltipStyles();
+
+  if (noLink) {
+    return (
+      <Tooltip
+        arrow
+        title={<UserTooltip entityRef={entityRef} anonymous={anonymous} />}
+        enterDelay={400}
+        interactive
+        classes={{
+          tooltip: classes.tooltip,
+          arrow: classes.tooltipArrow,
+        }}
+      >
+        <span>{name}</span>
+      </Tooltip>
+    );
+  }
+
   return (
     <Tooltip
       arrow

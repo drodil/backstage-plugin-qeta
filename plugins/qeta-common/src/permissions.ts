@@ -127,6 +127,21 @@ export const qetaDeleteCollectionPermission = createPermission({
   resourceType: COLLECTION_RESOUCE_TYPE,
 });
 
+export const qetaReadPostReviewPermission = createPermission({
+  name: 'qeta.read.post-review',
+  attributes: { action: 'read' },
+});
+
+export const qetaCreatePostReviewPermission = createPermission({
+  name: 'qeta.create.post-review',
+  attributes: { action: 'create' },
+});
+
+export const qetaDeletePostReviewPermission = createPermission({
+  name: 'qeta.delete.post-review',
+  attributes: { action: 'delete' },
+});
+
 export const qetaPermissions = [
   qetaModeratePermission,
   qetaReadPostPermission,
@@ -149,6 +164,9 @@ export const qetaPermissions = [
   qetaCreateCollectionPermission,
   qetaEditCollectionPermission,
   qetaDeleteCollectionPermission,
+  qetaReadPostReviewPermission,
+  qetaCreatePostReviewPermission,
+  qetaDeletePostReviewPermission,
 ];
 
 export const qetaPostPermissions = [
@@ -184,6 +202,12 @@ export const qetaCollectionPermissions = [
   qetaCreateCollectionPermission,
   qetaEditCollectionPermission,
   qetaDeleteCollectionPermission,
+];
+
+export const qetaPostReviewPermissions = [
+  qetaReadPostReviewPermission,
+  qetaCreatePostReviewPermission,
+  qetaDeletePostReviewPermission,
 ];
 
 export const isQetaPermission = (

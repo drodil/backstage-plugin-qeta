@@ -21,6 +21,7 @@ import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import LinkIcon from '@material-ui/icons/Link';
 import StarIcon from '@material-ui/icons/Star';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import Visibility from '@material-ui/icons/Visibility';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import ThumbUp from '@material-ui/icons/ThumbUp';
@@ -50,6 +51,7 @@ const useStyles = makeStyles(theme => ({
     borderRadius: theme.shape.borderRadius,
     textDecoration: 'none',
     color: 'inherit',
+    position: 'relative',
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
       '& $title': {
@@ -57,6 +59,22 @@ const useStyles = makeStyles(theme => ({
       },
     },
     cursor: 'pointer',
+  },
+  overlayLink: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
+  },
+  contentWrapper: {
+    pointerEvents: 'none',
+  },
+  contentClickable: {
+    position: 'relative',
+    zIndex: 1,
+    pointerEvents: 'auto',
   },
   metaCol: {
     minWidth: 64,
@@ -93,7 +111,6 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 700,
     fontSize: '16px',
     color: theme.palette.text.primary,
-    marginBottom: theme.spacing(0.5),
     textOverflow: 'ellipsis',
     overflow: 'hidden',
     whiteSpace: 'nowrap',
@@ -142,7 +159,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     gap: theme.spacing(1),
     justifyContent: 'space-between',
-    marginBottom: theme.spacing(0.5),
+    marginBottom: theme.spacing(1),
   },
   titleWrapper: {
     display: 'flex',
@@ -223,7 +240,12 @@ export const PostListItem = (props: PostListItemProps) => {
   /* eslint-enable no-nested-ternary */
 
   return (
-    <RouterLink to={href} className={styles.root}>
+    <Box className={styles.root}>
+      <RouterLink
+        to={href}
+        className={styles.overlayLink}
+        aria-label={post.title}
+      />
       <Box className={styles.metaCol} aria-label={t('common.postStats')}>
         <Tooltip
           title={
@@ -273,7 +295,7 @@ export const PostListItem = (props: PostListItemProps) => {
         </Tooltip>
       </Box>
 
-      <Box className={styles.contentContainer}>
+      <Box className={`${styles.contentContainer} ${styles.contentWrapper}`}>
         <Box className={styles.titleContainer}>
           <Box className={styles.titleWrapper}>
             {post.type === 'link' && <FaviconItem entity={post} />}
@@ -287,6 +309,15 @@ export const PostListItem = (props: PostListItemProps) => {
               <Tooltip title={t('common.favorite')}>
                 <Box className={styles.starContainer}>
                   <StarIcon style={{ color: '#FFB400', fontSize: 20 }} />
+                </Box>
+              </Tooltip>
+            )}
+            {post.status === 'obsolete' && (
+              <Tooltip title={t('common.obsolete')}>
+                <Box className={styles.starContainer}>
+                  <ErrorOutlineIcon
+                    style={{ color: '#FF9800', fontSize: 20 }}
+                  />
                 </Box>
               </Tooltip>
             )}
@@ -322,10 +353,12 @@ export const PostListItem = (props: PostListItemProps) => {
         </Typography>
 
         <Box className={styles.tagsRow}>
-          <Box className={styles.tags}>
+          <Box className={`${styles.tags} ${styles.contentClickable}`}>
             <TagsAndEntities entity={post} />
           </Box>
-          <Box className={styles.authorBoxContainer}>
+          <Box
+            className={`${styles.authorBoxContainer} ${styles.contentClickable}`}
+          >
             <AuthorBox
               userEntityRef={post.author}
               time={getPostDisplayDate(post)}
@@ -337,6 +370,6 @@ export const PostListItem = (props: PostListItemProps) => {
           </Box>
         </Box>
       </Box>
-    </RouterLink>
+    </Box>
   );
 };

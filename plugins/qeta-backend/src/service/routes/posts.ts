@@ -1,4 +1,6 @@
 import { getCreated, mapAdditionalFields } from '../util';
+import { HumanDuration } from '@backstage/types';
+import { durationToMilliseconds } from '@backstage/types';
 import Ajv from 'ajv';
 import { Request, Router } from 'express';
 import {
@@ -34,6 +36,11 @@ import {
 } from './util';
 import { getEntities, getTags } from './routeUtil';
 import { PostOptions } from '../../database/QetaStore';
+import {
+  qetaCreatePostReviewPermission,
+  qetaReadPostReviewPermission,
+} from '@drodil/backstage-plugin-qeta-common';
+import { PostReviewBodySchema } from '../types';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -49,6 +56,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     auditor,
     permissionMgr,
   } = options;
+
+  const postsOlderThan = config.getOptional<HumanDuration>(
+    'qeta.contentHealth.postsOlderThan',
+  ) ?? { months: 6 };
+  const reviewThresholdMs = durationToMilliseconds(postsOlderThan);
 
   const getPostFilters = async (request: Request, opts: PostOptions) => {
     return await Promise.all([
@@ -109,6 +121,8 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       tagsFilter,
       commentsFilter,
       answersFilter,
+      includeHealth: true,
+      reviewThresholdMs,
     });
 
     if (!post) {
@@ -162,6 +176,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     const opts = request.query as PostsQuery;
 
+    if (opts.reviewNeeded) {
+      opts.obsolete = false;
+      opts.includeHealth = true;
+    }
+
     const [filter, tagsFilter, commentsFilter, answersFilter] =
       await getPostFilters(request, opts);
 
@@ -182,7 +201,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       includeComments: false,
       includeAttachments: false,
       includeExperts: false,
+      includeHealth: opts.includeHealth,
+      reviewThresholdMs,
+      reviewNeeded: opts.reviewNeeded,
     });
+
     await mapAdditionalFields(request, posts.posts, options, {
       checkRights: opts.checkAccess ?? false,
       username,
@@ -221,6 +244,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const [filter, tagsFilter, commentsFilter, answersFilter] =
       await getPostFilters(request, opts);
 
+    if (opts.reviewNeeded) {
+      opts.obsolete = false;
+      opts.includeHealth = true;
+    }
+
     // Act
     const posts = await database.getPosts(username, opts, filter, {
       tagsFilter,
@@ -230,6 +258,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       includeComments: false,
       includeAttachments: false,
       includeExperts: false,
+      includeHealth: opts.includeHealth,
+      reviewThresholdMs,
+      reviewNeeded: opts.reviewNeeded,
     });
     await mapAdditionalFields(request, posts.posts, options, {
       checkRights: opts.checkAccess ?? false,
@@ -368,6 +399,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    if (post.status === 'obsolete') {
+      response.status(400).send({
+        errors: 'Cannot add comments to obsolete posts',
+        type: 'body',
+      });
+      return;
+    }
+
     await permissionMgr.authorize(
       request,
       [
@@ -459,7 +498,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     const ret = await getPostAndCheckStatus(request, response, false, true);
     if (!ret) return;
-    const { username, answersFilter, commentsFilter, tagsFilter } = ret;
+    const { post, username, answersFilter, commentsFilter, tagsFilter } = ret;
+
+    if (post.status === 'obsolete') {
+      response.status(400).send({
+        errors: 'Cannot edit comments on obsolete posts',
+        type: 'body',
+      });
+      return;
+    }
 
     const comment = await database.getComment(commentId, { postId });
 
@@ -523,7 +570,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     const ret = await getPostAndCheckStatus(request, response, false, true);
     if (!ret) return;
-    const { username, answersFilter, tagsFilter, commentsFilter } = ret;
+    const { post, username, answersFilter, tagsFilter, commentsFilter } = ret;
+
+    if (post.status === 'obsolete') {
+      response.status(400).send({
+        errors: 'Cannot delete comments on obsolete posts',
+        type: 'body',
+      });
+      return;
+    }
 
     const comment = await database.getComment(commentId, { postId });
 
@@ -1095,6 +1150,63 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       meta: { post: entityToJsonObject(post) },
     });
     response.json(resp);
+  });
+
+  // POST /posts/:id/review
+  router.post('/posts/:id/review', async (request, response) => {
+    const validateRequestBody = ajv.compile(PostReviewBodySchema);
+    if (!validateRequestBody(request.body)) {
+      response
+        .status(400)
+        .json({ errors: validateRequestBody.errors, type: 'body' });
+      return;
+    }
+
+    const ret = await getPostAndCheckStatus(request, response);
+    if (!ret) return;
+    const { post, postId } = ret;
+
+    const user = await options.permissionMgr.getUsername(request, true);
+
+    await options.permissionMgr.authorize(
+      request,
+      [
+        { permission: qetaReadPostPermission, resource: post },
+        { permission: qetaCreatePostReviewPermission },
+      ],
+      { throwOnDeny: true },
+    );
+
+    const updatedPost = await options.database.reviewPost(
+      user,
+      postId,
+      request.body.status,
+      request.body.comment,
+    );
+    if (!updatedPost) {
+      response.sendStatus(404);
+      return;
+    }
+    response.json(updatedPost);
+  });
+
+  // GET /posts/:id/reviews
+  router.get('/posts/:id/reviews', async (request, response) => {
+    const ret = await getPostAndCheckStatus(request, response);
+    if (!ret) return;
+    const { post, postId } = ret;
+
+    await options.permissionMgr.authorize(
+      request,
+      [
+        { permission: qetaReadPostPermission, resource: post },
+        { permission: qetaReadPostReviewPermission },
+      ],
+      { throwOnDeny: true },
+    );
+
+    const reviews = await options.database.getPostReviews(postId);
+    response.json(reviews);
   });
 
   // GET /posts/:id/favorite

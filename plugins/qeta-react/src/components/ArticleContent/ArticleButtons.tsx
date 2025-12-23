@@ -14,7 +14,7 @@ import { LinkButton } from '../Buttons/LinkButton';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { editArticleRouteRef } from '../../routes';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { DeleteModal } from '../DeleteModal';
+import { DeleteModal } from '../Modals';
 import EditIcon from '@material-ui/icons/Edit';
 import RestoreIcon from '@material-ui/icons/Restore';
 import { useVoting } from '../../hooks/useVoting';
@@ -138,55 +138,51 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
         <Grid item>
           <FavoriteButton entity={post} />
           <LinkButton entity={post} />
-          {(post.canEdit || post.canDelete) && (
+          {post.canEdit && post.status !== 'obsolete' && (
+            <Tooltip title={t('articlePage.editButton')}>
+              <IconButton
+                size="small"
+                onClick={() =>
+                  navigate(
+                    editArticleRoute({
+                      id: post.id.toString(10),
+                    }),
+                  )
+                }
+                color="primary"
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+          {post.canDelete && (
             <>
-              {post.canEdit && (
-                <Tooltip title={t('articlePage.editButton')}>
-                  <IconButton
-                    size="small"
-                    onClick={() =>
-                      navigate(
-                        editArticleRoute({
-                          id: post.id.toString(10),
-                        }),
-                      )
-                    }
-                    color="primary"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
-              {post.canDelete && (
-                <>
-                  <Tooltip title={t('articlePage.deleteButton')}>
-                    <IconButton
-                      size="small"
-                      onClick={handleDeleteModalOpen}
-                      color="secondary"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <DeleteModal
-                    open={deleteModalOpen}
-                    onClose={handleDeleteModalClose}
-                    entity={post}
-                  />
-                </>
-              )}
-              {isModerator && post.status === 'deleted' && (
-                <Tooltip title={t('articlePage.restoreButton')}>
-                  <IconButton
-                    size="small"
-                    onClick={() => restoreArticle()}
-                    color="primary"
-                  >
-                    <RestoreIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
+              <Tooltip title={t('articlePage.deleteButton')}>
+                <IconButton
+                  size="small"
+                  onClick={handleDeleteModalOpen}
+                  color="secondary"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+              <DeleteModal
+                open={deleteModalOpen}
+                onClose={handleDeleteModalClose}
+                entity={post}
+              />
             </>
+          )}
+          {isModerator && post.status === 'deleted' && (
+            <Tooltip title={t('articlePage.restoreButton')}>
+              <IconButton
+                size="small"
+                onClick={() => restoreArticle()}
+                color="primary"
+              >
+                <RestoreIcon />
+              </IconButton>
+            </Tooltip>
           )}
         </Grid>
       </Grid>

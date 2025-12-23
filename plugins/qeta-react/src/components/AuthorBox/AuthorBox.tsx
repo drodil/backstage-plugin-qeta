@@ -20,6 +20,7 @@ const useStyles = makeStyles(
       gap: theme.spacing(0.5),
       alignItems: 'center',
       marginBottom: '8px',
+      whiteSpace: 'nowrap',
       '& > *': {
         fontSize: '12px',
         display: 'inline-flex',
@@ -75,8 +76,10 @@ export const AuthorBox = (props: {
   expert?: boolean;
   anonymous?: boolean;
   compact?: boolean;
+  noLink?: boolean;
 }) => {
-  const { userEntityRef, time, label, expert, anonymous, compact } = props;
+  const { userEntityRef, time, label, expert, anonymous, compact, noLink } =
+    props;
   const { name, initials, user } = useUserInfo(userEntityRef);
   const styles = useStyles();
 
@@ -92,7 +95,11 @@ export const AuthorBox = (props: {
           {initials}
         </Avatar>
         <Typography variant="body2" component="span">
-          <UserLink entityRef={userEntityRef} anonymous={anonymous} />
+          <UserLink
+            entityRef={userEntityRef}
+            anonymous={anonymous}
+            noLink={noLink}
+          />
         </Typography>
         {expert && <ExpertIcon className={styles.expertIcon} />}
         <Typography className="qetaAuthorBoxCreated" variant="caption">
@@ -119,7 +126,11 @@ export const AuthorBox = (props: {
           {initials}
         </Avatar>
         <Box className={styles.authorLink}>
-          <UserLink entityRef={userEntityRef} anonymous={anonymous} />
+          <UserLink
+            entityRef={userEntityRef}
+            anonymous={anonymous}
+            noLink={noLink}
+          />
           {expert && <ExpertIcon className={styles.expertIcon} />}
         </Box>
       </Box>

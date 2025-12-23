@@ -181,6 +181,9 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     includeAnswers: { type: 'boolean', nullable: true },
     includeVotes: { type: 'boolean', nullable: true },
     includeAttachments: { type: 'boolean', nullable: true },
+    includeHealth: { type: 'boolean', nullable: true },
+    reviewNeeded: { type: 'boolean', nullable: true },
+    obsolete: { type: 'boolean', nullable: true },
     includeTags: { type: 'boolean', nullable: true },
     includeEntities: { type: 'boolean', nullable: true },
     includeTrend: { type: 'boolean', nullable: true },
@@ -497,5 +500,20 @@ export const URLMetadataSchema: JSONSchemaType<URLMetadataQuery> = {
     url: { type: 'string', minLength: 7 }, // http://
   },
   required: ['url'],
+  additionalProperties: false,
+};
+
+export interface PostReviewBody {
+  status: 'valid' | 'obsolete';
+  comment?: string;
+}
+
+export const PostReviewBodySchema: JSONSchemaType<PostReviewBody> = {
+  type: 'object',
+  properties: {
+    status: { type: 'string', enum: ['valid', 'obsolete'] },
+    comment: { type: 'string', nullable: true },
+  },
+  required: ['status'],
   additionalProperties: false,
 };

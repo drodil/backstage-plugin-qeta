@@ -1,4 +1,5 @@
 import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
+import { HumanDuration } from '@backstage/types';
 
 export interface Config {
   qeta?: {
@@ -190,6 +191,16 @@ export interface Config {
        * Number of days to keep the unused attachments, defaults to 7
        */
       dayLimit?: number;
+    };
+    /**
+     * Content health configuration
+     */
+    contentHealth?: {
+      /**
+       * Posts older than this will be considered for review.
+       * Default: 6 months
+       */
+      postsOlderThan?: HumanDuration;
     };
   };
 }

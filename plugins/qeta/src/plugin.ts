@@ -34,6 +34,14 @@ export const QetaPage = qetaPlugin.provide(
   }),
 );
 
+export const QetaReviewPage = qetaPlugin.provide(
+  createRoutableExtension({
+    name: 'QetaReviewPage',
+    component: () => import('./components/ReviewPage').then(m => m.ReviewPage),
+    mountPoint: qetaRouteRef,
+  }),
+);
+
 export const PostsTableCard = qetaPlugin.provide(
   createCardExtension<{
     postType?: PostType;

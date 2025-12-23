@@ -40,6 +40,7 @@ import {
   UserUsersResponse,
   Badge,
   UserBadge,
+  PostReview,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export interface PaginatedQuery {
@@ -67,7 +68,10 @@ export interface PostsQuery extends PaginatedQuery {
   includeVotes?: boolean;
   includeEntities?: boolean;
   includeTrend?: boolean;
+  reviewNeeded?: boolean;
+  obsolete?: boolean;
   includeComments?: boolean;
+  includeHealth?: boolean;
   includeTags?: boolean;
   includeAttachments?: boolean;
   includeExperts?: boolean;
@@ -206,11 +210,35 @@ export interface QetaApi {
     requestOptions?: RequestOptions,
   ): Promise<PostResponse>;
 
+  reviewPost(
+    id: number,
+    status: 'valid' | 'obsolete',
+    comment?: string,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
+
+  getPostReviews(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostReview[]>;
+
   deletePostComment(
     postId: number,
     id: number,
     requestOptions?: RequestOptions,
   ): Promise<PostResponse>;
+
+  reviewPost(
+    id: number,
+    status: 'valid' | 'obsolete',
+    comment?: string,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
+
+  getPostReviews(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostReview[]>;
 
   getPost(
     id: string | number | undefined,

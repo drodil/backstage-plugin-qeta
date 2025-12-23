@@ -5,9 +5,10 @@ import { Box, Checkbox, FormControlLabel, Tooltip } from '@material-ui/core';
 
 export const PostAnonymouslyCheckbox = (props: {
   control: Control<any>;
+  disabled?: boolean;
   label: string;
 }) => {
-  const { control, label } = props;
+  const { control, disabled, label } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   return (
     <Box style={{ marginLeft: '0.2em' }}>
@@ -21,6 +22,7 @@ export const PostAnonymouslyCheckbox = (props: {
                   onChange={onChange}
                   value={value}
                   size="small"
+                  disabled={disabled}
                   name="anonymous"
                 />
               </Tooltip>

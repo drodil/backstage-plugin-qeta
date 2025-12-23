@@ -153,3 +153,9 @@ export const moderatorRouteRef = createSubRouteRef({
   parent: qetaRouteRef,
   path: '/moderate',
 });
+
+export const reviewRouteRef = createSubRouteRef({
+  id: 'qeta.review',
+  parent: qetaRouteRef,
+  path: '/review',
+});

@@ -4,7 +4,7 @@ export * from './AnswersContainer';
 export * from './Buttons';
 export * from './PostHighlightList';
 export * from './MarkdownRenderer';
-export * from './DeleteModal';
+export * from './Modals';
 export * from './AnswerCard';
 export * from './QuestionCard';
 export * from './HomePageCards';
@@ -34,6 +34,11 @@ export * from './SuggestionsCard';
 export * from './LinkCard';
 export * from './FaviconItem';
 export * from './QetaContext';
-export { DeletedBanner, DraftBanner, StatusChip } from './Utility';
+export {
+  DeletedBanner,
+  DraftBanner,
+  ObsoleteBanner,
+  StatusChip,
+} from './Utility';
 export * from './ContentHeaderCard/ContentHeaderCard';
 export * from './ContentHeader/ContentHeader';

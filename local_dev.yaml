@@ -159,6 +159,33 @@ spec:
   owner: user:development/guest
 ---
 apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: search-system
+  title: Search System
+  description: System for search functionality
+spec:
+  owner: user:development/john.doe
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: core-system
+  title: Core System
+  description: Core platform system
+spec:
+  owner: user:development/jane.doe
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: finance-system
+  title: Finance System
+  description: System for financial operations
+spec:
+  owner: user:development/john.doe
+---
+apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: payment-gateway

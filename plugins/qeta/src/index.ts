@@ -1,6 +1,7 @@
 export {
   qetaPlugin,
   QetaPage,
+  QetaReviewPage,
   PostsTableCard,
   QuestionsTableCard,
   QetaSearchResultListItem,

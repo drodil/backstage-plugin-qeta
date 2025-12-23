@@ -19,7 +19,10 @@ import {
   COLLECTION_RESOUCE_TYPE,
   COMMENT_RESOURCE_TYPE,
   POST_RESOURCE_TYPE,
+  qetaCreatePostReviewPermission,
+  qetaDeletePostReviewPermission,
   qetaModeratePermission,
+  qetaReadPostReviewPermission,
   TAG_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
@@ -58,6 +61,14 @@ export class DefaultQetaPermissionPolicy implements PermissionPolicy {
         user.identity.ownershipEntityRefs.some(ref => moderators.includes(ref)))
     ) {
       return { result: AuthorizeResult.ALLOW };
+    }
+
+    if (
+      isPermission(request.permission, qetaReadPostReviewPermission) ||
+      isPermission(request.permission, qetaCreatePostReviewPermission) ||
+      isPermission(request.permission, qetaDeletePostReviewPermission)
+    ) {
+      return { result: AuthorizeResult.DENY };
     }
 
     if (

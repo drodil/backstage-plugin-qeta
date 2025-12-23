@@ -175,7 +175,7 @@ export const CommentListItem = (props: {
             {comment.expert && <ExpertIcon />}
             {' • '}
             <RelativeTimeWithTooltip value={comment.created} />
-            {comment.canEdit && (
+            {comment.canEdit && post.status !== 'obsolete' && (
               <Link
                 underline="none"
                 to="#"
@@ -185,7 +185,7 @@ export const CommentListItem = (props: {
                 {t('commentList.editLink')}
               </Link>
             )}
-            {comment.canDelete && (
+            {comment.canDelete && post.status !== 'obsolete' && (
               <Link
                 underline="none"
                 to="#"

@@ -228,6 +228,7 @@ export const AnswerForm = (props: {
                   value={value}
                   onChange={onChange}
                   height={200}
+                  disabled={post.status === 'obsolete'}
                   error={'answer' in errors}
                   placeholder={t('answerForm.contentInput.placeholder')}
                   onImageUpload={onImageUpload}
@@ -246,6 +247,7 @@ export const AnswerForm = (props: {
                         label={t('postForm.authorInput.label')}
                         placeholder={t('postForm.authorInput.placeholder')}
                         hideHelpText
+                        disabled={post.status === 'obsolete'}
                         multiple={false}
                         kind={['User']}
                         required
@@ -261,6 +263,7 @@ export const AnswerForm = (props: {
             {allowAnonymouns && !id && (
               <PostAnonymouslyCheckbox
                 control={control}
+                disabled={post.status === 'obsolete'}
                 label={t('anonymousCheckbox.answerAnonymously')}
               />
             )}
@@ -268,7 +271,7 @@ export const AnswerForm = (props: {
               variant="contained"
               type="submit"
               color="primary"
-              disabled={posting || isSubmitting}
+              disabled={posting || isSubmitting || post.status === 'obsolete'}
               style={{ marginTop: theme.spacing(2) }}
             >
               {posting || isSubmitting ? (

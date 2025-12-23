@@ -60,6 +60,7 @@ import {
   UserUsersResponse,
   Badge,
   UserBadge,
+  PostReview,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CustomErrorBase } from '@backstage/errors';
 import omitBy from 'lodash/omitBy';
@@ -202,6 +203,39 @@ export class QetaClient implements QetaApi {
     }
 
     return data;
+  }
+
+  async reviewPost(
+    id: number,
+    status: 'valid' | 'obsolete',
+    comment?: string,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse> {
+    const response = await this.fetch(`/posts/${id}/review`, {
+      requestOptions,
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify({ status, comment }),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    });
+    const data = (await response.json()) as PostResponseBody;
+
+    if ('errors' in data) {
+      throw new QetaError('Failed to review post', data.errors);
+    }
+
+    return data;
+  }
+
+  async getPostReviews(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostReview[]> {
+    const response = await this.fetch(`/posts/${id}/reviews`, {
+      requestOptions,
+    });
+    return (await response.json()) as PostReview[];
   }
 
   async deletePostComment(

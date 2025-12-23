@@ -102,7 +102,10 @@ describe('Posts Routes', () => {
         'user:default/mock',
         1,
         true,
-        {},
+        expect.objectContaining({
+          includeHealth: true,
+          reviewThresholdMs: 15552000000,
+        }),
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({

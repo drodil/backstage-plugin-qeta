@@ -29,6 +29,9 @@ describe('StatsCollector', () => {
     totalFollowers: 0,
     totalLinks: 0,
     reputation: 0,
+    answerScore: 0,
+    postScore: 0,
+    correctAnswers: 0,
   };
 
   beforeEach(() => {

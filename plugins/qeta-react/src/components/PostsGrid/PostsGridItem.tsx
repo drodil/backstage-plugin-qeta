@@ -35,6 +35,7 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import LinkIcon from '@material-ui/icons/Link';
 import StarIcon from '@material-ui/icons/Star';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
@@ -58,12 +59,19 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
     position: 'relative',
   },
-  starIcon: {
+  iconsContainer: {
     position: 'absolute',
     top: theme.spacing(1),
     right: theme.spacing(1),
-    color: '#FFB400',
+    display: 'flex',
+    gap: theme.spacing(0.5),
     zIndex: 10,
+  },
+  starIcon: {
+    color: '#FFB400',
+  },
+  obsoleteIcon: {
+    color: '#FF9800',
   },
   cardContent: {
     padding: theme.spacing(1.5, 2, 1, 2),
@@ -281,11 +289,18 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
 
   return (
     <Card className={classes.card}>
-      {post.favorite && (
-        <Tooltip title={t('common.favorite')}>
-          <StarIcon className={classes.starIcon} />
-        </Tooltip>
-      )}
+      <Box className={classes.iconsContainer}>
+        {post.status === 'obsolete' && (
+          <Tooltip title={t('common.obsolete', {})}>
+            <ErrorOutlineIcon className={classes.obsoleteIcon} />
+          </Tooltip>
+        )}
+        {post.favorite && (
+          <Tooltip title={t('common.favorite')}>
+            <StarIcon className={classes.starIcon} />
+          </Tooltip>
+        )}
+      </Box>
       <CardActionArea
         component="a"
         href={href}

@@ -3,6 +3,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { AskRightContent } from './AskRightContent';
 import {
   articlesRouteRef,
+  articleRouteRef,
   askRouteRef,
   collectionsRouteRef,
   editQuestionRouteRef,
@@ -10,8 +11,10 @@ import {
   entityRouteRef,
   favoriteQuestionsRouteRef,
   linksRouteRef,
+  linkRouteRef,
   qetaRouteRef,
   questionsRouteRef,
+  questionRouteRef,
   tagRouteRef,
   tagsRouteRef,
   userRouteRef,
@@ -59,6 +62,7 @@ const useStyles = makeStyles(theme => ({
 
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { DefaultRightContent } from './DefaultRightContent';
+import { PostRightContent } from './PostRightContent';
 
 export const RightContent = (props: {
   compact?: boolean;
@@ -135,7 +139,19 @@ export const RightContent = (props: {
     { path: favoritePath(), end: true },
     location.pathname,
   );
-  // Home is tricky because it's root, checking others first might be safer or check exact root
+  const questionMatch = matchPath(
+    { path: `${rootPath}${questionRouteRef.path}` },
+    location.pathname,
+  );
+  const articleMatch = matchPath(
+    { path: `${rootPath}${articleRouteRef.path}` },
+    location.pathname,
+  );
+  const linkMatch = matchPath(
+    { path: `${rootPath}${linkRouteRef.path}` },
+    location.pathname,
+  );
+  const isPostPage = !!(questionMatch || articleMatch || linkMatch);
   const isHome =
     matchPath({ path: homePath(), end: true }, location.pathname) ||
     location.pathname === homePath();
@@ -189,6 +205,12 @@ export const RightContent = (props: {
     content = <HomeRightContent />;
   } else if (isAsk) {
     content = <AskRightContent />;
+  } else if (isPostPage) {
+    const id =
+      questionMatch?.params.id ||
+      articleMatch?.params.id ||
+      linkMatch?.params.id;
+    content = <PostRightContent id={id} />;
   } else if (isQuestions) {
     content = <QuestionsRightContent tags={tags} entityRef={entityRef} />;
   } else if (isArticles) {

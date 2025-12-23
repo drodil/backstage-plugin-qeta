@@ -7,3 +7,4 @@ export * from './useIdentityApi';
 export * from './useCollectionsFollow';
 export * from './useIsModerator';
 export * from './useAI';
+export * from './useCanReview';

@@ -24,7 +24,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
 import { EditTagModal } from './EditTagModal';
 import DOMPurify from 'dompurify';
-import { DeleteModal } from '../DeleteModal';
+import { DeleteModal } from '../Modals';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import MoreVertIcon from '@material-ui/icons/MoreVert';

@@ -36,6 +36,9 @@ import {
   qetaCreateTagPermission,
   QetaIdEntity,
   qetaModeratePermission,
+  qetaReadPostReviewPermission,
+  qetaCreatePostReviewPermission,
+  qetaDeletePostReviewPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Config } from '@backstage/config';
 import { QetaFilters, transformConditions } from './util.ts';
@@ -225,6 +228,14 @@ export class PermissionManager {
     const moderator = await this.isModerator(request, options);
     if (moderator) {
       return { result: AuthorizeResult.ALLOW };
+    }
+
+    if (
+      isPermission(permission, qetaReadPostReviewPermission) ||
+      isPermission(permission, qetaCreatePostReviewPermission) ||
+      isPermission(permission, qetaDeletePostReviewPermission)
+    ) {
+      return { result: AuthorizeResult.DENY };
     }
 
     const globalEdit =

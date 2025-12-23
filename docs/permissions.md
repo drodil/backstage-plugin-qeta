@@ -11,6 +11,7 @@ your installation. These include:
 - Only author can delete their own comments
 - User cannot vote their own questions or answers
 - Only question author can mark answer as correct
+- Only moderators can review posts (mark as valid/obsolete) and view content health information
 - Except for moderators, who can do these for any post/answer/comment
 
 If you are using your own permission policy, you must configure the moderators using
@@ -75,6 +76,9 @@ The Q&A permissions are exported from `@drodil/backstage-plugin-qeta-common` pac
 - qetaCreateCollectionPermission - Allows or denies creating of collections
 - qetaEditCollectionPermission - Allows or denies editing of collections
 - qetaDeleteCollectionPermission - Allows or denies deleting of collections
+- qetaReadPostReviewPermission - Allows or denies viewing post reviews and content health information
+- qetaCreatePostReviewPermission - Allows or denies marking posts as valid or obsolete
+- qetaDeletePostReviewPermission - Allows or denies deleting post reviews
 
 You can find example permission policy in the `plugins/qeta-backend/dev/PermissionPolicy.ts` file.
 

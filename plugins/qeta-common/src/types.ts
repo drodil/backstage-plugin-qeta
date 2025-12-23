@@ -106,7 +106,7 @@ export interface CollectionEntity extends QetaIdEntity {
 
 export type PostType = 'question' | 'article' | 'link';
 
-export type PostStatus = 'draft' | 'active' | 'deleted';
+export type PostStatus = 'draft' | 'active' | 'deleted' | 'obsolete';
 
 export type AnswerCommentStatus = 'active' | 'deleted';
 
@@ -117,6 +117,8 @@ export interface Post extends PostAnswerEntity {
   commentsCount: number;
   correctAnswer: boolean;
   favorite: boolean;
+  healthScore?: number;
+  needsReview?: boolean;
   tags?: string[];
   entities?: string[];
   answers?: Answer[];
@@ -244,6 +246,14 @@ export interface Attachment {
   mimeType: string;
   extension: string;
   creator: string;
+  created: Date;
+}
+
+export interface PostReview extends QetaIdEntity {
+  postId: number;
+  reviewer: string;
+  status: 'valid' | 'obsolete';
+  comment?: string;
   created: Date;
 }
 

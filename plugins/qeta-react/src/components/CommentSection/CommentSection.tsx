@@ -137,9 +137,11 @@ export const CommentSection = (props: {
 
   useConfirmNavigationIfEdited(edited);
 
-  if (post.status !== 'active') {
+  if (post.status !== 'active' && post.status !== 'obsolete') {
     return null;
   }
+
+  const isObsolete = post.status === 'obsolete';
 
   return (
     <Box
@@ -178,51 +180,53 @@ export const CommentSection = (props: {
           />
         </Box>
       )}
-      <OptionalRequirePermission
-        permission={qetaCreateCommentPermission}
-        errorPage={<></>}
-      >
-        {!formVisible && showProminentButton && (
-          <Grid container justifyContent="flex-start">
-            <Grid item>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                startIcon={<AddCommentIcon />}
-                onClick={() => setFormVisible(true)}
-                className={styles.prominentButton}
-              >
-                {t('commentSection.leaveComment')}
-              </Button>
+      {!isObsolete && (
+        <OptionalRequirePermission
+          permission={qetaCreateCommentPermission}
+          errorPage={<></>}
+        >
+          {!formVisible && showProminentButton && (
+            <Grid container justifyContent="flex-start">
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  startIcon={<AddCommentIcon />}
+                  onClick={() => setFormVisible(true)}
+                  className={styles.prominentButton}
+                >
+                  {t('commentSection.leaveComment')}
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        )}
-        {!formVisible && !showProminentButton && (
-          <Grid container justifyContent="flex-end">
-            <Grid item>
-              <Button
-                size="small"
-                startIcon={<AddCommentIcon fontSize="small" />}
-                onClick={() => setFormVisible(true)}
-                className={styles.addCommentButton}
-              >
-                {t('commentSection.addComment')}
-              </Button>
+          )}
+          {!formVisible && !showProminentButton && (
+            <Grid container justifyContent="flex-end">
+              <Grid item>
+                <Button
+                  size="small"
+                  startIcon={<AddCommentIcon fontSize="small" />}
+                  onClick={() => setFormVisible(true)}
+                  className={styles.addCommentButton}
+                >
+                  {t('commentSection.addComment')}
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        )}
-        {formVisible && (
-          <Box className={styles.commentForm}>
-            <CommentForm
-              submit={postComment}
-              saveButtonTitle={t('commentSection.post')}
-              disabled={posting}
-              onDiscard={() => setFormVisible(false)}
-            />
-          </Box>
-        )}
-      </OptionalRequirePermission>
+          )}
+          {formVisible && (
+            <Box className={styles.commentForm}>
+              <CommentForm
+                submit={postComment}
+                saveButtonTitle={t('commentSection.post')}
+                disabled={posting}
+                onDiscard={() => setFormVisible(false)}
+              />
+            </Box>
+          )}
+        </OptionalRequirePermission>
+      )}
     </Box>
   );
 };

@@ -18,6 +18,7 @@ import {
   MaybeCollection,
   MaybePost,
   PostOptions,
+  PostReview,
   Posts,
   QetaStore,
   Templates,
@@ -697,6 +698,19 @@ export class DatabaseQetaStore implements QetaStore {
     entities?: string[];
   }): Promise<Template | null> {
     return this.templatesStore.updateTemplate(options);
+  }
+
+  async reviewPost(
+    user_ref: string,
+    postId: number,
+    status: 'valid' | 'obsolete',
+    comment?: string,
+  ): Promise<MaybePost> {
+    return this.postsStore.reviewPost(user_ref, postId, status, comment);
+  }
+
+  async getPostReviews(postId: number): Promise<PostReview[]> {
+    return this.postsStore.getPostReviews(postId);
   }
 
   async getAIAnswer(postId: number): Promise<AIResponse | null> {

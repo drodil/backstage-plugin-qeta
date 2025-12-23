@@ -11,6 +11,7 @@ import {
   ContentHeaderButton,
   DeletedBanner,
   DraftBanner,
+  ObsoleteBanner,
   qetaTranslationRef,
   QuestionCard,
   RelativeTimeWithTooltip,
@@ -213,6 +214,7 @@ export const QuestionPage = () => {
             }
           }}
           icon={<Comment />}
+          disabled={question.status === 'obsolete'}
         >
           {t('questionPage.answerButton')}
         </ContentHeaderButton>
@@ -220,9 +222,10 @@ export const QuestionPage = () => {
       </ContentHeader>
       {question.status === 'draft' && <DraftBanner />}
       {question.status === 'deleted' && <DeletedBanner />}
+      {question.status === 'obsolete' && <ObsoleteBanner />}
       <QuestionCard question={question} />
       <AIAnswerCard question={question} debounceMs={0} />
-      {question.status === 'active' && (
+      {(question.status === 'active' || question.status === 'obsolete') && (
         <>
           <Box sx={{ mt: 3, mb: 2 }}>
             <Grid container justifyContent="space-between" alignItems="center">
@@ -310,9 +313,11 @@ export const QuestionPage = () => {
             );
           })}
 
-          <div id="qeta-answer-form">
-            <AnswerForm post={question} onPost={onAnswerPost} />
-          </div>
+          {question.status === 'active' && (
+            <div id="qeta-answer-form">
+              <AnswerForm post={question} onPost={onAnswerPost} />
+            </div>
+          )}
         </>
       )}
     </>

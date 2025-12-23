@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { AskPage } from '../AskPage';
 import { QuestionPage } from '../QuestionPage/QuestionPage';
 import { TagPage } from '../TagPage/TagPage';
@@ -36,6 +36,7 @@ import {
   userRouteRef,
   usersRouteRef,
   writeRouteRef,
+  reviewRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { QuestionsPage } from '../QuestionsPage/QuestionsPage';
 import { HomePage } from '../HomePage/HomePage';
@@ -51,6 +52,7 @@ import { CollectionCreatePage } from '../CollectionCreatePage/CollectionCreatePa
 import { EntityPage } from '../EntityPage/EntityPage';
 import { UsersPage } from '../UsersPage/UsersPage';
 import { ModeratorPage } from '../ModeratorPage/ModeratorPage';
+import { ReviewPage } from '../ReviewPage/ReviewPage';
 import { Box, Container, Grid, makeStyles } from '@material-ui/core';
 import { useSidebarSettings } from '../../hooks/useSidebarSettings';
 import { RightContent } from '../RightContent/RightContent';
@@ -126,6 +128,12 @@ export const QetaPage = (props?: Props) => {
   } = props ?? {};
   const { leftCompact, rightCompact, toggleLeft, toggleRight } =
     useSidebarSettings();
+  const location = useLocation();
+
+  // Hide right sidebar on review and moderator pages
+  const hideRightSidebar =
+    location.pathname.includes('/review') ||
+    location.pathname.includes('/moderate');
 
   const classes = useStyles({
     leftCompact,
@@ -232,11 +240,14 @@ export const QetaPage = (props?: Props) => {
                     path={moderatorRouteRef.path}
                     element={<ModeratorPage />}
                   />
+                  <Route path={reviewRouteRef.path} element={<ReviewPage />} />
                 </Routes>
               </Grid>
-              <Grid item className={classes.rightSidebarColumn}>
-                <RightContent compact={rightCompact} onToggle={toggleRight} />
-              </Grid>
+              {!hideRightSidebar && (
+                <Grid item className={classes.rightSidebarColumn}>
+                  <RightContent compact={rightCompact} onToggle={toggleRight} />
+                </Grid>
+              )}
             </Grid>
           </Container>
         </Content>

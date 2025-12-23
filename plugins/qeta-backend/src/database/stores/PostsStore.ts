@@ -4,6 +4,7 @@ import {
   Comment as QetaComment,
   filterTags,
   Post,
+  PostReview,
   PostsQuery,
   PostStatus,
   PostType,
@@ -44,6 +45,8 @@ export interface RawPostEntity {
   headerImage: string;
   url: string | null;
   published: Date | string | null;
+  obsolete: number | string | boolean;
+  last_interaction?: Date | string;
 }
 
 export interface RawPostVoteEntity {
@@ -103,10 +106,52 @@ export class PostsStore extends BaseStore {
   }
 
   async deleteAIAnswer(postId: number): Promise<boolean> {
-    const rows = await this.db('post_ai_answers')
+    const deleted = await this.db('post_ai_answers')
       .where('postId', postId)
-      .delete();
-    return rows > 0;
+      .del();
+    return deleted > 0;
+  }
+
+  async reviewPost(
+    user_ref: string,
+    postId: number,
+    status: 'valid' | 'obsolete',
+    comment?: string,
+  ): Promise<MaybePost> {
+    await this.db('post_reviews').insert({
+      post_id: postId,
+      reviewer: user_ref,
+      status,
+      comment,
+      created: new Date(),
+    });
+
+    if (status === 'obsolete') {
+      await this.db('posts').where('id', postId).update({ status: 'obsolete' });
+    } else {
+      await this.db('posts').where('id', postId).update({ status: 'active' });
+    }
+
+    return this.getPost(user_ref, postId, false, {
+      includeHealth: true,
+      reviewThresholdMs: 15552000000, // 180 days default
+    });
+  }
+
+  async getPostReviews(postId: number): Promise<PostReview[]> {
+    const rows = await this.db('post_reviews')
+      .where('post_id', postId)
+      .orderBy('created', 'desc')
+      .select('*');
+
+    return rows.map(row => ({
+      id: row.id,
+      postId: row.post_id,
+      reviewer: row.reviewer,
+      status: row.status,
+      comment: row.comment,
+      created: new Date(row.created),
+    }));
   }
 
   async getPosts(
@@ -115,10 +160,24 @@ export class PostsStore extends BaseStore {
     filters?: PermissionCriteria<QetaFilters>,
     opts?: PostOptions,
   ): Promise<Posts> {
-    const { includeTotal = true, includeDraftFilter = true } = opts ?? {};
+    const {
+      includeTotal = true,
+      includeDraftFilter = true,
+      includeHealth = false,
+    } = opts ?? {};
     const query = this.getPostsBaseQuery(user_ref, options);
     if (options.type) {
       query.where('posts.type', options.type);
+    }
+
+    if (options.obsolete !== undefined) {
+      if (options.obsolete) {
+        query.where('posts.status', 'obsolete');
+      } else {
+        query.where(q => {
+          q.whereNot('posts.status', 'obsolete');
+        });
+      }
     }
 
     if (options.fromDate && options.toDate) {
@@ -151,7 +210,7 @@ export class PostsStore extends BaseStore {
       query.where('posts.status', '=', options.status);
     } else if (includeDraftFilter) {
       query.where(q => {
-        q.where('posts.status', 'active').orWhere(q2 => {
+        q.whereIn('posts.status', ['active', 'obsolete']).orWhere(q2 => {
           q2.where('posts.status', 'draft').where(
             'posts.author',
             '=',
@@ -281,6 +340,29 @@ export class PostsStore extends BaseStore {
       );
     }
 
+    if (includeHealth || options.reviewNeeded) {
+      const func = this.db.client.config.client === 'pg' ? 'GREATEST' : 'MAX';
+      const lastInteractionQuery = `${func}(
+        posts.created,
+        COALESCE((SELECT MAX(created) FROM answers WHERE answers."postId" = posts.id), posts.created),
+        COALESCE((SELECT MAX(created) FROM comments WHERE comments."postId" = posts.id), posts.created),
+        COALESCE((SELECT MAX(ac.created) FROM answers a JOIN comments ac ON ac."answerId" = a.id WHERE a."postId" = posts.id), posts.created),
+        COALESCE((SELECT MAX(created) FROM post_reviews WHERE post_reviews.post_id = posts.id), posts.created)
+      )`;
+
+      query.select(this.db.raw(`${lastInteractionQuery} as last_interaction`));
+
+      const reviewThresholdMs = opts?.reviewThresholdMs || 0;
+      if (options.reviewNeeded && reviewThresholdMs > 0) {
+        const thresholdDate = new Date(Date.now() - reviewThresholdMs);
+        const thresholdParam = thresholdDate.toISOString();
+        query.whereRaw(`${lastInteractionQuery} < ?`, [thresholdParam]);
+      }
+      if (options.reviewNeeded) {
+        query.whereNotIn('posts.status', ['deleted', 'obsolete']);
+      }
+    }
+
     if (options.ids) {
       query.whereIn('posts.id', options.ids);
     }
@@ -321,6 +403,7 @@ export class PostsStore extends BaseStore {
         includeAttachments:
           options.includeAttachments ?? opts?.includeAttachments,
         includeExperts: options.includeExperts ?? opts?.includeExperts,
+        includeHealth: options.includeHealth ?? opts?.includeHealth,
       }),
       total,
     };
@@ -337,8 +420,6 @@ export class PostsStore extends BaseStore {
   ): Promise<Posts> {
     const titleWords = removeStopwords(title.split(/\s+/g), eng).join(' ');
     const contentWords = removeStopwords(content.split(/\s+/g), eng).join(' ');
-
-    console.log(`Search words:`, titleWords, contentWords);
 
     const [titlePosts, contentPosts, tagPosts, entityPosts] = await Promise.all(
       [
@@ -424,11 +505,21 @@ export class PostsStore extends BaseStore {
     recordView?: boolean,
     options?: PostOptions,
   ): Promise<MaybePost> {
-    const rows = await this.getPostsBaseQuery(user_ref).where(
-      'posts.id',
-      '=',
-      id,
-    );
+    const query = this.getPostsBaseQuery(user_ref).where('posts.id', '=', id);
+
+    if (options?.includeHealth) {
+      const func = this.db.client.config.client === 'pg' ? 'GREATEST' : 'MAX';
+      const lastInteractionQuery = `${func}(
+        posts.created,
+        COALESCE((SELECT MAX(created) FROM answers WHERE answers."postId" = posts.id), posts.created),
+        COALESCE((SELECT MAX(created) FROM comments WHERE comments."postId" = posts.id), posts.created),
+        COALESCE((SELECT MAX(ac.created) FROM answers a JOIN comments ac ON ac."answerId" = a.id WHERE a."postId" = posts.id), posts.created),
+        COALESCE((SELECT MAX(created) FROM post_reviews WHERE post_reviews.post_id = posts.id), posts.created)
+      )`;
+      query.select(this.db.raw(`${lastInteractionQuery} as last_interaction`));
+    }
+
+    const rows = await query;
 
     if (!rows || rows.length === 0) {
       return null;
@@ -739,6 +830,7 @@ export class PostsStore extends BaseStore {
       includeAttachments = true,
       includeExperts = true,
       includeCollections = true,
+      includeHealth = false,
     } = options ?? {};
 
     const [
@@ -842,7 +934,7 @@ export class PostsStore extends BaseStore {
 
     return rows.map(val => {
       const postVotes = votesMap.get(val.id) || [];
-      return {
+      const post: Post = {
         id: val.id,
         author:
           val.anonymous && val.author !== user_ref ? 'anonymous' : val.author,
@@ -879,6 +971,34 @@ export class PostsStore extends BaseStore {
         published: val.published ? (val.published as Date) : undefined,
         collectionIds: collectionsMap.get(val.id),
       };
+
+      if (includeHealth || options?.reviewNeeded) {
+        const reviewThreshold =
+          options?.reviewThresholdMs || 180 * 24 * 60 * 60 * 1000;
+        const lastInteraction = val.last_interaction
+          ? new Date(val.last_interaction)
+          : new Date(val.updated || val.created);
+        const now = Date.now();
+        const diff = now - lastInteraction.getTime();
+
+        let score = 100;
+        if (reviewThreshold > 0) {
+          score = Math.max(
+            0,
+            Math.min(100, Math.floor(100 - (diff / reviewThreshold) * 25)),
+          );
+        }
+        if (val.status === 'obsolete') {
+          score = 0;
+        }
+        post.healthScore = score;
+
+        if (reviewThreshold > 0 && val.status !== 'obsolete') {
+          post.needsReview = diff >= reviewThreshold;
+        }
+      }
+
+      return post;
     });
   }
 

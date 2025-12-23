@@ -15,6 +15,7 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import { DraftBanner } from '../Utility/DraftBanner';
 import { DeletedBanner } from '../Utility/DeletedBanner.tsx';
+import { ObsoleteBanner } from '../Utility/ObsoleteBanner.tsx';
 import { getPostDisplayDate } from '../../utils/utils';
 
 export type QetaArticleContentClassKey =
@@ -78,6 +79,7 @@ export const ArticleContent = (props: {
     <>
       {postEntity.status === 'draft' && <DraftBanner />}
       {postEntity.status === 'deleted' && <DeletedBanner />}
+      {postEntity.status === 'obsolete' && <ObsoleteBanner />}
       <Grid container alignItems="center">
         <Grid item>
           <Avatar

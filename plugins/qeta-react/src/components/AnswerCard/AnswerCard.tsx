@@ -10,7 +10,7 @@ import {
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { MarkdownRenderer } from '../MarkdownRenderer';
-import { DeleteModal } from '../DeleteModal';
+import { DeleteModal } from '../Modals';
 import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
 import {
   Box,
@@ -140,46 +140,48 @@ export const AnswerCard = (props: {
                     style={{ width: '100%' }}
                   >
                     <Box flex="1 1 0%" minWidth={0}>
-                      {(answerEntity.canDelete || answerEntity.canEdit) && (
-                        <Box
-                          className={styles.buttons}
-                          style={{ alignSelf: 'flex-end' }}
-                        >
-                          {answerEntity.canEdit && (
-                            <Button
-                              variant="outlined"
-                              size="small"
-                              startIcon={<EditIcon />}
-                              onClick={() => setEditMode(true)}
-                              className="qetaAnswerCardEditBtn"
-                            >
-                              {t('questionPage.editButton')}
-                            </Button>
-                          )}
-                          {!answerEntity.correct && answerEntity.canDelete && (
-                            <>
+                      {(answerEntity.canDelete || answerEntity.canEdit) &&
+                        question.status !== 'obsolete' && (
+                          <Box
+                            className={styles.buttons}
+                            style={{ alignSelf: 'flex-end' }}
+                          >
+                            {answerEntity.canEdit && (
                               <Button
                                 variant="outlined"
                                 size="small"
-                                color="secondary"
-                                onClick={handleDeleteModalOpen}
-                                startIcon={<DeleteIcon />}
+                                startIcon={<EditIcon />}
+                                onClick={() => setEditMode(true)}
+                                className="qetaAnswerCardEditBtn"
                               >
-                                {t('deleteModal.deleteButton')}
+                                {t('questionPage.editButton')}
                               </Button>
-                              <DeleteModal
-                                open={deleteModalOpen}
-                                onClose={handleDeleteModalClose}
-                                entity={answerEntity}
-                                question={question}
-                                onDelete={() =>
-                                  props.onAnswerDelete?.(answerEntity)
-                                }
-                              />
-                            </>
-                          )}
-                        </Box>
-                      )}
+                            )}
+                            {!answerEntity.correct &&
+                              answerEntity.canDelete && (
+                                <>
+                                  <Button
+                                    variant="outlined"
+                                    size="small"
+                                    color="secondary"
+                                    onClick={handleDeleteModalOpen}
+                                    startIcon={<DeleteIcon />}
+                                  >
+                                    {t('deleteModal.deleteButton')}
+                                  </Button>
+                                  <DeleteModal
+                                    open={deleteModalOpen}
+                                    onClose={handleDeleteModalClose}
+                                    entity={answerEntity}
+                                    question={question}
+                                    onDelete={() =>
+                                      props.onAnswerDelete?.(answerEntity)
+                                    }
+                                  />
+                                </>
+                              )}
+                          </Box>
+                        )}
                     </Box>
                     <AuthorBoxes entity={answerEntity} />
                   </Box>
