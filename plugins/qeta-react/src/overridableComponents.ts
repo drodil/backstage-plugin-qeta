@@ -9,7 +9,6 @@ import { QetaMarkdownEditorClassKey } from './components/MarkdownEditor/Markdown
 import { QetaCommentListClassKey } from './components/CommentSection/CommentList';
 import { QetaCommentSectionClassKey } from './components/CommentSection/CommentSection';
 import { QetaSearchBarClassKeys } from './components/SearchBar/SearchBar';
-import { QetaPaginationClassKeys } from './components/QetaPagination/QetaPagination';
 import { AnswerCardClassKeys } from './components/AnswerCard/AnswerCard';
 import { QuestionCardClassKeys } from './components/QuestionCard/QuestionCard';
 
@@ -23,7 +22,6 @@ type QetaComponentsNameToClassKey = {
   QetaCommentList: QetaCommentListClassKey;
   QetaCommentSection: QetaCommentSectionClassKey;
   QetaSearchBar: QetaSearchBarClassKeys;
-  QetaPagination: QetaPaginationClassKeys;
   QetaQuestionCard: QuestionCardClassKeys;
   QetaAnswerCard: AnswerCardClassKeys;
 };

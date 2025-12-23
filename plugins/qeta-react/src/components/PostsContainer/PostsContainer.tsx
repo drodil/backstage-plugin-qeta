@@ -56,12 +56,11 @@ export const PostsContainer = (props: PostsContainerProps) => {
     setShowFilterPanel,
     showFilterPanel,
     onFilterChange,
-    onPageChange,
-    onPageSizeChange,
-    page,
-    postsPerPage,
-    pageCount,
+    posts,
+    hasMore,
+    loadNextPage,
   } = usePaginatedPosts(props);
+  const combinedResponse = response ? { ...response, posts } : response;
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const itemType = capitalize(t(`common.${type ?? 'post'}`, {}));
@@ -190,18 +189,15 @@ export const PostsContainer = (props: PostsContainerProps) => {
       <PostList
         loading={loading}
         error={error}
-        response={response}
-        onPageChange={onPageChange}
-        onPageSizeChange={onPageSizeChange}
+        response={combinedResponse}
         entity={entity ?? filters.entity}
-        page={page}
-        pageSize={postsPerPage}
-        pageCount={pageCount}
         showNoQuestionsBtn={showNoQuestionsBtn}
         entityPage={entity !== undefined}
         tags={tags ?? filters.tags}
         type={type}
         showTypeLabel={showTypeLabel}
+        hasMore={hasMore}
+        loadNextPage={loadNextPage}
       />
     </Box>
   );

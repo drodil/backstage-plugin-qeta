@@ -33,7 +33,7 @@ const useStyles = makeStyles(() => ({
     display: 'inline',
   },
   avatar: {
-    minWidth: '40px',
+    minWidth: '36px',
   },
   text: {
     whiteSpace: 'nowrap',
@@ -115,7 +115,7 @@ export const TimelineItemCard = ({ item }: { item: TimelineItem }) => {
         <Avatar
           alt={item.author}
           src={item.headerImage || user?.spec?.profile?.picture}
-          style={{ width: '30px', height: '30px', fontSize: '14px' }}
+          style={{ width: '26px', height: '26px', fontSize: '14px' }}
         />
       </ListItemAvatar>
       <ListItemText

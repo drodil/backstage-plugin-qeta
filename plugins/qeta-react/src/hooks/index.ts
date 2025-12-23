@@ -8,3 +8,4 @@ export * from './useCollectionsFollow';
 export * from './useIsModerator';
 export * from './useAI';
 export * from './useCanReview';
+export * from './useGridPageSize';

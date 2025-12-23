@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useIsModerator, useQetaApi } from '../../hooks';
-import { QetaPagination } from '../QetaPagination/QetaPagination';
+import { useGridPageSize, useIsModerator, useQetaApi } from '../../hooks';
+
 import useDebounce from 'react-use/lib/useDebounce';
 import { TagsGridContent } from './TagsGridContent';
 import { Button } from '@material-ui/core';
@@ -20,8 +20,7 @@ const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-tags-filters-expanded';
 
 export const TagsGrid = () => {
   const [page, setPage] = useState(1);
-  const [pageCount, setPageCount] = useState(1);
-  const [tagsPerPage, setTagsPerPage] = useState(25);
+  const tagsPerPage = useGridPageSize('tags', 24);
   const [searchQuery, setSearchQuery] = useState('');
   const { t } = useTranslationRef(qetaTranslationRef);
   const { isModerator } = useIsModerator();
@@ -33,6 +32,9 @@ export const TagsGrid = () => {
     orderBy: 'postsCount',
     searchQuery: '',
   });
+  const [tags, setTags] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     localStorage.setItem(
@@ -46,6 +48,7 @@ export const TagsGrid = () => {
   ) => {
     const changesArray = Array.isArray(changes) ? changes : [changes];
     setPage(1);
+    setTags([]);
     setFilters(prev => {
       const newValue = { ...prev };
       for (const { key, value } of changesArray) {
@@ -57,6 +60,7 @@ export const TagsGrid = () => {
 
   const onSearchQueryChange = (val: string) => {
     setPage(1);
+    setTags([]);
     setSearchQuery(val);
   };
 
@@ -88,9 +92,17 @@ export const TagsGrid = () => {
 
   useEffect(() => {
     if (response) {
-      setPageCount(Math.ceil(response.total / tagsPerPage));
+      if (page === 1) {
+        setTags(response.tags);
+      } else {
+        setTags(prev => [...prev, ...response.tags]);
+      }
+      setHasMore(response.tags.length >= tagsPerPage);
+      setTotal(response.total);
     }
-  }, [response, tagsPerPage]);
+  }, [response, page, tagsPerPage]);
+
+  const combinedResponse = response ? { ...response, tags, total } : undefined;
 
   const onTagsModify = () => {
     retry();
@@ -152,21 +164,14 @@ export const TagsGrid = () => {
         />
       </Collapse>
       <TagsGridContent
-        response={response}
+        response={combinedResponse}
         onTagEdit={onTagsModify}
         loading={loading}
         error={error}
         isModerator={isModerator}
+        hasMore={hasMore}
+        loadNextPage={() => setPage(prev => prev + 1)}
       />
-      {response && response?.total > 0 && (
-        <QetaPagination
-          pageSize={tagsPerPage}
-          handlePageChange={(_e, p) => setPage(p)}
-          handlePageSizeChange={e => setTagsPerPage(Number(e.target.value))}
-          page={page}
-          pageCount={pageCount}
-        />
-      )}
     </>
   );
 };

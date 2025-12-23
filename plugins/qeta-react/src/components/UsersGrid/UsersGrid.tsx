@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useQetaApi } from '../../hooks';
-import { QetaPagination } from '../QetaPagination/QetaPagination';
+import { useGridPageSize, useQetaApi } from '../../hooks';
+
 import { UsersGridContent } from './UsersGridContent';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -15,8 +15,7 @@ const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-users-filters-expanded';
 
 export const UsersGrid = () => {
   const [page, setPage] = useState(1);
-  const [pageCount, setPageCount] = useState(1);
-  const [entitiesPerPage, setEntitiesPerPage] = useState(25);
+  const entitiesPerPage = useGridPageSize('users', 24);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilterPanel, setShowFilterPanel] = useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
@@ -26,6 +25,9 @@ export const UsersGrid = () => {
     orderBy: 'totalPosts',
     searchQuery: '',
   });
+  const [users, setUsers] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     localStorage.setItem(
@@ -39,6 +41,7 @@ export const UsersGrid = () => {
   ) => {
     const changesArray = Array.isArray(changes) ? changes : [changes];
     setPage(1);
+    setUsers([]);
     setFilters(prev => {
       const newValue = { ...prev };
       for (const { key, value } of changesArray) {
@@ -66,6 +69,8 @@ export const UsersGrid = () => {
   useDebounce(
     () => {
       if (filters.searchQuery !== searchQuery) {
+        setPage(1);
+        setUsers([]);
         setFilters({ ...filters, searchQuery: searchQuery });
       }
     },
@@ -75,9 +80,17 @@ export const UsersGrid = () => {
 
   useEffect(() => {
     if (response) {
-      setPageCount(Math.ceil(response.total / entitiesPerPage));
+      if (page === 1) {
+        setUsers(response.users);
+      } else {
+        setUsers(prev => [...prev, ...response.users]);
+      }
+      setHasMore(response.users.length >= entitiesPerPage);
+      setTotal(response.total);
     }
-  }, [response, entitiesPerPage]);
+  }, [response, entitiesPerPage, page]);
+
+  const combinedResponse = response ? { ...response, users, total } : undefined;
 
   return (
     <>
@@ -102,16 +115,13 @@ export const UsersGrid = () => {
           mode="users"
         />
       </Collapse>
-      <UsersGridContent response={response} loading={loading} error={error} />
-      {response && response?.total > 0 && (
-        <QetaPagination
-          pageSize={entitiesPerPage}
-          handlePageChange={(_e, p) => setPage(p)}
-          handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
-          page={page}
-          pageCount={pageCount}
-        />
-      )}
+      <UsersGridContent
+        response={combinedResponse}
+        loading={loading}
+        error={error}
+        hasMore={hasMore}
+        loadNextPage={() => setPage(prev => prev + 1)}
+      />
     </>
   );
 };

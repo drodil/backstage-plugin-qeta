@@ -8,7 +8,7 @@ import { Box, Typography } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 
-import useInfiniteScroll from 'react-infinite-scroll-hook';
+import { useInfiniteScroll } from 'infinite-scroll-hook';
 
 export interface TimelineProps {
   loadMore?: boolean;
@@ -16,7 +16,7 @@ export interface TimelineProps {
 }
 
 export const Timeline = (props: TimelineProps) => {
-  const { loadMore = true, limit = 10 } = props;
+  const { loadMore = true, limit = 25 } = props;
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const [items, setItems] = useState<TimelineItem[]>([]);
@@ -57,13 +57,12 @@ export const Timeline = (props: TimelineProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [sentryRef] = useInfiniteScroll({
-    loading,
-    hasNextPage: hasMore,
-    onLoadMore: () => fetchTimeline(false),
-    disabled: !!error,
-    rootMargin: '0px 0px 400px 0px',
-    delayInMs: 0,
+  const { containerRef: sentryRef } = useInfiniteScroll({
+    shouldStop: !hasMore || !!error || loading,
+    onLoadMore: async () => {
+      await fetchTimeline(false);
+    },
+    offset: '800px',
   });
 
   if (loading && items.length === 0) {

@@ -1,13 +1,13 @@
 import { PostsResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
-import { ChangeEvent, useRef } from 'react';
+import { useRef } from 'react';
 import { WarningPanel } from '@backstage/core-components';
 import { NoPostsCard } from '../PostsContainer/NoPostsCard';
 import { Box, Grid } from '@material-ui/core';
 import { PostsGridItem } from './PostsGridItem';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { QetaPagination } from '../QetaPagination/QetaPagination';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
+import { useInfiniteScroll } from 'infinite-scroll-hook';
 
 export const PostsGridContent = (props: {
   loading: boolean;
@@ -16,16 +16,14 @@ export const PostsGridContent = (props: {
   entity?: string;
   tags?: string[];
   showNoQuestionsBtn?: boolean;
-  onPageSizeChange: (size: number) => void;
-  pageSize: number;
+  pageSize?: number;
   entityPage?: boolean;
   type?: PostType;
-  onPageChange: (page: number) => void;
-  page: number;
-  pageCount: number;
   allowRanking?: boolean;
   onRankUpdate?: () => void;
   collectionId?: number;
+  hasMore?: boolean;
+  loadNextPage?: () => void;
 }) => {
   const {
     loading,
@@ -33,33 +31,26 @@ export const PostsGridContent = (props: {
     response,
     entity,
     showNoQuestionsBtn = true,
-    onPageSizeChange,
-    pageSize,
     entityPage,
     tags,
     type,
-    onPageChange,
-    page,
-    pageCount,
+    hasMore,
+    loadNextPage,
   } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const gridRef = useRef<HTMLDivElement | null>(null);
 
-  const handlePageChange = (_event: ChangeEvent<unknown>, value: number) => {
-    if (gridRef.current) {
-      gridRef.current.scrollIntoView();
-    }
-    onPageChange(value);
-  };
+  const { containerRef: sentryRef } = useInfiniteScroll({
+    shouldStop: !hasMore || !!error || loading,
+    onLoadMore: async () => {
+      if (loadNextPage) {
+        await loadNextPage();
+      }
+    },
+    offset: '800px',
+  }) as any;
 
-  const handlePageSizeChange = (event: ChangeEvent<{ value: unknown }>) => {
-    if (gridRef.current) {
-      gridRef.current.scrollIntoView();
-    }
-    onPageSizeChange(Number.parseInt(event.target.value as string, 10));
-  };
-
-  if (loading) {
+  if (loading && (!response || response.posts.length === 0)) {
     return <LoadingGrid />;
   }
 
@@ -112,14 +103,9 @@ export const PostsGridContent = (props: {
             );
           })}
         </Grid>
-        <QetaPagination
-          pageSize={pageSize}
-          handlePageChange={handlePageChange}
-          handlePageSizeChange={handlePageSizeChange}
-          page={page}
-          pageCount={pageCount}
-          tooltip={t('postsList.postsPerPage', { itemType })}
-        />
+        <div ref={sentryRef} style={{ marginTop: '10px', textAlign: 'center' }}>
+          {loading && <LoadingGrid />}
+        </div>
       </Box>
     </div>
   );

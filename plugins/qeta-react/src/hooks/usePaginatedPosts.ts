@@ -46,8 +46,8 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
   } = props;
   const analytics = useAnalytics();
   const [page, setPage] = useState(1);
-  const [pageCount, setPageCount] = useState(1);
-  const [postsPerPage, setPostsPerPage] = useState(initialPageSize ?? 10);
+  const pageCount = 1; // No longer using pagination
+  const [postsPerPage, setPostsPerPage] = useState(initialPageSize ?? 25);
   const [showFilterPanel, setShowFilterPanel] = useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
   );
@@ -68,6 +68,10 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     type,
   });
 
+  const [posts, setPosts] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [total, setTotal] = useState(0);
+
   useEffect(() => {
     localStorage.setItem(
       EXPANDED_LOCAL_STORAGE_KEY,
@@ -85,6 +89,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
       collectionId: props.collectionId,
     }));
     setPage(1);
+    setPosts([]);
   }, [tags, entities, entity, type, status, props.collectionId]);
 
   const onPageChange = (value: number) => {
@@ -103,6 +108,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
   const onFilterChange = (changes: PostFilterChange | PostFilterChange[]) => {
     const changesArray = Array.isArray(changes) ? changes : [changes];
     setPage(1);
+    setPosts([]);
     setFilters(prev => {
       const newValue = { ...prev };
       for (const { key, value } of changesArray) {
@@ -138,6 +144,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
 
   const onSearchQueryChange = (query: string) => {
     onPageChange(1);
+    setPosts([]);
     if (query) {
       analytics.captureEvent('qeta_search', query);
     }
@@ -164,6 +171,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
             setPage(pv);
           } else {
             setPage(1);
+            setPosts([]);
           }
         } else if (key === 'postsPerPage') {
           const qpp = Number.parseInt(value, 10);
@@ -215,9 +223,15 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
 
   useEffect(() => {
     if (response) {
-      setPageCount(Math.ceil(response.total / postsPerPage));
+      if (page === 1) {
+        setPosts(response.posts);
+      } else {
+        setPosts(prev => [...prev, ...response.posts]);
+      }
+      setHasMore(response.posts.length >= postsPerPage);
+      setTotal(response.total);
     }
-  }, [response, postsPerPage]);
+  }, [response, page, postsPerPage]);
 
   const onPageSizeChange = (value: number) => {
     if (response) {
@@ -253,10 +267,14 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     onFilterChange,
     onSearchQueryChange,
     response,
+    posts,
+    hasMore,
+    total,
     loading,
     error,
     loadNextPage,
     pageCount,
     retry,
+    fetchNextPage: loadNextPage,
   };
 }

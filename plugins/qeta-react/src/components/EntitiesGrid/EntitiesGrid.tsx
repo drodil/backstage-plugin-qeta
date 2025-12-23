@@ -1,8 +1,8 @@
 import { Box } from '@material-ui/core';
 import { useEffect, useState } from 'react';
-import { useQetaApi } from '../../hooks';
+import { useGridPageSize, useQetaApi } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
-import { QetaPagination } from '../QetaPagination/QetaPagination';
+
 import { EntitiesGridContent } from './EntitiesGridContent';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -16,8 +16,7 @@ const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-entities-filters-expanded';
 
 export const EntitiesGrid = () => {
   const [page, setPage] = useState(1);
-  const [pageCount, setPageCount] = useState(1);
-  const [entitiesPerPage, setEntitiesPerPage] = useState(25);
+  const entitiesPerPage = useGridPageSize('entities', 24);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilterPanel, setShowFilterPanel] = useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
@@ -27,6 +26,9 @@ export const EntitiesGrid = () => {
     orderBy: 'postsCount',
     searchQuery: '',
   });
+  const [entities, setEntities] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     localStorage.setItem(
@@ -40,6 +42,7 @@ export const EntitiesGrid = () => {
   ) => {
     const changesArray = Array.isArray(changes) ? changes : [changes];
     setPage(1);
+    setEntities([]);
     setFilters(prev => {
       const newValue = { ...prev };
       for (const { key, value } of changesArray) {
@@ -66,6 +69,7 @@ export const EntitiesGrid = () => {
 
   const onSearchQueryChange = (val: string) => {
     setPage(1);
+    setEntities([]);
     setSearchQuery(val);
   };
 
@@ -81,9 +85,19 @@ export const EntitiesGrid = () => {
 
   useEffect(() => {
     if (response) {
-      setPageCount(Math.ceil(response.total / entitiesPerPage));
+      if (page === 1) {
+        setEntities(response.entities);
+      } else {
+        setEntities(prev => [...prev, ...response.entities]);
+      }
+      setHasMore(response.entities.length >= entitiesPerPage);
+      setTotal(response.total);
     }
-  }, [response, entitiesPerPage]);
+  }, [response, entitiesPerPage, page]);
+
+  const combinedResponse = response
+    ? { ...response, entities, total }
+    : undefined;
 
   return (
     <Box>
@@ -111,19 +125,12 @@ export const EntitiesGrid = () => {
         />
       </Collapse>
       <EntitiesGridContent
-        response={response}
+        response={combinedResponse}
         loading={loading}
         error={error}
+        hasMore={hasMore}
+        loadNextPage={() => setPage(prev => prev + 1)}
       />
-      {response && response?.total > 0 && (
-        <QetaPagination
-          pageSize={entitiesPerPage}
-          handlePageChange={(_e, p) => setPage(p)}
-          handlePageSizeChange={e => setEntitiesPerPage(Number(e.target.value))}
-          page={page}
-          pageCount={pageCount}
-        />
-      )}
     </Box>
   );
 };

@@ -557,9 +557,6 @@ export const qetaTranslationRef = createTranslationRef({
       genericQuestion: 'Generic question',
       genericQuestionDescription: 'Create a generic question',
     },
-    pagination: {
-      defaultTooltip: 'Number of items',
-    },
     collectionsPage: {
       title: 'Collections',
       search: {

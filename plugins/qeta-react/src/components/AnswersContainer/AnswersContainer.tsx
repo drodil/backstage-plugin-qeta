@@ -39,10 +39,13 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
   const { tags, author, entity, showFilters, showTitle, title } = props;
   const analytics = useAnalytics();
   const [page, setPage] = useState(1);
-  const [answersPerPage, setAnswersPerPage] = useState(10);
+  const [answersPerPage, setAnswersPerPage] = useState(25);
   const [showFilterPanel, setShowFilterPanel] = useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
   );
+  const [answers, setAnswers] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [total, setTotal] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<AnswerFilters>({
@@ -63,20 +66,12 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
     );
   }, [showFilterPanel]);
 
-  const onPageChange = (value: number) => {
-    setPage(value);
-    setSearchParams(prev => {
-      const newValue = prev;
-      newValue.set('page', String(value));
-      return newValue;
-    });
-  };
-
   const onFilterChange = (
     changes: AnswerFilterChange | AnswerFilterChange[],
   ) => {
     const changesArray = Array.isArray(changes) ? changes : [changes];
     setPage(1);
+    setAnswers([]);
     setFilters(prev => {
       const newValue = { ...prev };
       for (const { key, value } of changesArray) {
@@ -106,7 +101,8 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
   };
 
   const onSearchQueryChange = (query: string) => {
-    onPageChange(1);
+    setPage(1);
+    setAnswers([]);
     if (query) {
       analytics.captureEvent('qeta_search', query);
     }
@@ -116,6 +112,8 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
   useDebounce(
     () => {
       if (filters.searchQuery !== searchQuery) {
+        setPage(1);
+        setAnswers([]);
         setFilters({ ...filters, searchQuery: searchQuery });
       }
     },
@@ -133,6 +131,7 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
             setPage(pv);
           } else {
             setPage(1);
+            setAnswers([]);
           }
         } else if (key === 'answersPerPage') {
           const qpp = Number.parseInt(value, 10);
@@ -173,21 +172,21 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
     [page, filters, answersPerPage],
   );
 
-  const onPageSizeChange = (value: number) => {
+  useEffect(() => {
     if (response) {
-      let newPage = page;
-      while (newPage * value > response.total) {
-        newPage -= 1;
+      if (page === 1) {
+        setAnswers(response.answers);
+      } else {
+        setAnswers(prev => [...prev, ...response.answers]);
       }
-      onPageChange(Math.max(1, newPage));
+      setHasMore(response.answers.length >= answersPerPage);
+      setTotal(response.total);
     }
-    setAnswersPerPage(value);
-    setSearchParams(prev => {
-      const newValue = prev;
-      newValue.set('answersPerPage', String(value));
-      return newValue;
-    });
-  };
+  }, [response, page, answersPerPage]);
+
+  const combinedResponse = response
+    ? { ...response, answers, total }
+    : undefined;
 
   let shownTitle = title;
   let link = undefined;
@@ -269,14 +268,12 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
       <AnswerList
         loading={loading}
         error={error}
-        response={response}
-        onPageChange={onPageChange}
-        onPageSizeChange={onPageSizeChange}
+        response={combinedResponse}
         entity={entity}
-        page={page}
-        pageSize={answersPerPage}
         entityPage={entity !== undefined}
         tags={tags}
+        hasMore={hasMore}
+        loadNextPage={() => setPage(prev => prev + 1)}
       />
     </Box>
   );

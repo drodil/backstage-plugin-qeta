@@ -49,8 +49,8 @@ const useStyles = makeStyles(theme => ({
     overflowX: 'hidden',
   },
   toggleButton: {
-    marginRight: 'auto',
     marginBottom: theme.spacing(1),
+    marginRight: theme.spacing(1.5),
   },
   content: {
     display: (props: { compact: boolean }) =>
@@ -241,7 +241,12 @@ export const RightContent = (props: {
 
   return (
     <Box className={classes.container}>
-      <Box display="flex" justifyContent={compact ? 'center' : 'flex-start'}>
+      <Box className={classes.content}>{content}</Box>
+      <Box
+        display="flex"
+        justifyContent={compact ? 'center' : 'flex-end'}
+        style={{ marginTop: 'auto' }}
+      >
         <Tooltip
           title={compact ? t('rightMenu.expand') : t('rightMenu.collapse')}
           placement="left"
@@ -250,6 +255,7 @@ export const RightContent = (props: {
             onClick={onToggle}
             size="small"
             className={compact ? '' : classes.toggleButton}
+            style={{ marginTop: 8 }}
           >
             {compact ? (
               <ChevronLeftIcon />
@@ -259,7 +265,6 @@ export const RightContent = (props: {
           </IconButton>
         </Tooltip>
       </Box>
-      <Box className={classes.content}>{content}</Box>
     </Box>
   );
 };

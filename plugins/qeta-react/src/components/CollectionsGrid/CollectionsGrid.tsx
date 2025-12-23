@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Box, Button, Collapse } from '@material-ui/core';
 import { CollectionsGridContent } from './CollectionsGridContent';
-import { useQetaApi } from '../../hooks';
+import { useGridPageSize, useQetaApi } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
-import { QetaPagination } from '../QetaPagination/QetaPagination';
+
 import {
   CollectionFilters,
   CommonFilterPanelProps,
@@ -36,18 +36,22 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
   const { showFilters, owner } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const [page, setPage] = useState(1);
-  const [pageCount, setPageCount] = useState(1);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
-  const [collectionsPerPage, setCollectionsPerPage] = useState(25);
+  const collectionsPerPage = useGridPageSize('collections', 24);
   const [showFilterPanel, setShowFilterPanel] = useState(
     localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
   );
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const [filters, setFilters] = useState<CollectionFilters>({
     order: 'desc',
     searchQuery: '',
     orderBy: 'created',
   });
+  const [collections, setCollections] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     localStorage.setItem(
@@ -77,6 +81,8 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
   useDebounce(
     () => {
       if (filters.searchQuery !== searchQuery) {
+        setPage(1);
+        setCollections([]);
         setFilters({ ...filters, searchQuery: searchQuery });
       }
     },
@@ -86,15 +92,26 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
 
   useEffect(() => {
     if (response) {
-      setPageCount(Math.ceil(response.total / collectionsPerPage));
+      if (page === 1) {
+        setCollections(response.collections);
+      } else {
+        setCollections(prev => [...prev, ...response.collections]);
+      }
+      setHasMore(response.collections.length >= collectionsPerPage);
+      setTotal(response.total);
     }
-  }, [response, collectionsPerPage]);
+  }, [response, collectionsPerPage, page]);
+
+  const combinedResponse = response
+    ? { ...response, collections, total }
+    : undefined;
 
   const onFilterChange = (
     changes: CollectionFilterChange | CollectionFilterChange[],
   ) => {
     const changesArray = Array.isArray(changes) ? changes : [changes];
     setPage(1);
+    setCollections([]);
     setFilters(prev => {
       const newValue = { ...prev };
       for (const { key, value } of changesArray) {
@@ -138,10 +155,8 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
             setPage(pv);
           } else {
             setPage(1);
+            setCollections([]);
           }
-        } else if (key === 'collectionsPerPage') {
-          const qpp = Number.parseInt(value, 10);
-          if (qpp > 0) setCollectionsPerPage(qpp);
         } else if (filterKeys.includes(key as FilterKey)) {
           filtersApplied = true;
           if (key === 'tags') {
@@ -197,19 +212,10 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
       <CollectionsGridContent
         loading={loading}
         error={error}
-        response={response}
+        response={combinedResponse}
+        hasMore={hasMore}
+        loadNextPage={() => setPage(prev => prev + 1)}
       />
-      {response && response?.total > 0 && (
-        <QetaPagination
-          pageSize={collectionsPerPage}
-          handlePageChange={(_e, p) => setPage(p)}
-          handlePageSizeChange={e =>
-            setCollectionsPerPage(Number(e.target.value))
-          }
-          page={page}
-          pageCount={pageCount}
-        />
-      )}
     </Box>
   );
 };

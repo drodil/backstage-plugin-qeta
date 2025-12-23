@@ -81,6 +81,11 @@ const useStyles = makeStyles(theme => ({
     padding: 0,
     transition: 'all 0.2s ease-in-out',
     flexShrink: 0,
+    position: 'sticky',
+    top: theme.spacing(2),
+    alignSelf: 'flex-start',
+    maxHeight: 'calc(100vh - 100px)',
+    overflow: 'hidden',
     [theme.breakpoints.up('lg')]: {
       width: (props: StyleProps) => (props.leftCompact ? 72 : 220),
       minWidth: (props: StyleProps) => (props.leftCompact ? 72 : 220),
@@ -88,12 +93,20 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       width: '100%',
       marginBottom: theme.spacing(1),
+      position: 'static',
+      maxHeight: 'none',
     },
   },
   rightSidebarColumn: {
     padding: 0,
     transition: 'all 0.2s ease-in-out',
     flexShrink: 0,
+    position: 'sticky',
+    top: theme.spacing(2),
+    alignSelf: 'flex-start',
+    maxHeight: 'calc(100vh - 100px)',
+    overflowY: 'auto',
+    overflowX: 'hidden',
     [theme.breakpoints.up('lg')]: {
       width: (props: StyleProps) => (props.rightCompact ? 72 : 300),
       minWidth: (props: StyleProps) => (props.rightCompact ? 72 : 300),
@@ -101,6 +114,8 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       width: '100%',
       marginTop: theme.spacing(1),
+      position: 'static',
+      maxHeight: 'none',
     },
   },
   mainColumn: {
@@ -155,7 +170,12 @@ export const QetaPage = (props?: Props) => {
         <Content className="qetaHomePage">
           {introElement}
           <Container maxWidth="xl">
-            <Grid container spacing={3} justifyContent="flex-start">
+            <Grid
+              container
+              spacing={3}
+              justifyContent="flex-start"
+              alignItems="flex-start"
+            >
               <Grid item className={classes.sidebarColumn}>
                 <Box display={{ xs: 'block', lg: 'none' }}>
                   <LeftMenuButton />

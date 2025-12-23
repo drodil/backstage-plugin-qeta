@@ -1,6 +1,5 @@
 import {
   Box,
-  Divider,
   IconButton,
   List,
   ListItemIcon,
@@ -68,9 +67,6 @@ export const useStyles = makeStyles(
         '& $sectionHeader': {
           display: 'none',
         },
-        '& $divider': {
-          display: 'none',
-        },
       },
       inPopup: {
         marginRight: 0,
@@ -78,18 +74,14 @@ export const useStyles = makeStyles(
         width: 'auto',
       },
       outsidePopup: {
-        position: 'sticky',
-        top: theme.spacing(2),
-        float: 'right',
-        maxHeight: 'calc(100vh - 100px)',
-        overflowY: 'auto',
+        paddingRight: theme.spacing(2),
       },
       menuItem: {
-        margin: (props: any) => (props.compact ? 0 : theme.spacing(0, 2)),
+        margin: (props: any) => (props.compact ? 0 : theme.spacing(0, 1.5)),
         justifyContent: (props: any) =>
           props.compact ? 'center' : 'flex-start',
         padding: (props: any) =>
-          props.compact ? theme.spacing(1, 0) : theme.spacing(1, 1),
+          props.compact ? theme.spacing(1, 0) : theme.spacing(1, 0.5),
         borderRadius: (props: any) =>
           props.compact ? 0 : theme.shape.borderRadius,
         transition: 'all 0.2s ease-in-out',
@@ -131,7 +123,7 @@ export const useStyles = makeStyles(
         justifyContent: 'center',
       },
       sectionHeader: {
-        padding: theme.spacing(0.5, 3, 0.5, 3),
+        padding: theme.spacing(0.5, 2, 0.5, 2),
         marginTop: theme.spacing(2),
         color: theme.palette.text.secondary,
         fontWeight: 600,
@@ -140,17 +132,13 @@ export const useStyles = makeStyles(
         letterSpacing: '0.5px',
         whiteSpace: 'nowrap',
       },
-      divider: {
-        margin: theme.spacing(1, 2.5),
-        backgroundColor: theme.palette.divider,
-      },
       toggleButton: {
         marginLeft: 'auto',
-        marginRight: theme.spacing(1),
+        marginRight: theme.spacing(0),
         marginBottom: theme.spacing(1),
       },
       label: {
-        marginLeft: theme.spacing(1.5),
+        marginLeft: theme.spacing(1),
         whiteSpace: 'nowrap',
         opacity: 1,
         transition: 'opacity 0.2s',
@@ -264,24 +252,6 @@ export const LeftMenu = (props: {
       aria-labelledby="nested-list-subheader"
       disablePadding
     >
-      {!isPopup && (
-        <Box display="flex" justifyContent={isCompact ? 'center' : 'flex-end'}>
-          <Tooltip
-            title={isCompact ? t('leftMenu.expand') : t('leftMenu.collapse')}
-            placement="right"
-          >
-            <IconButton
-              onClick={onToggle}
-              size="small"
-              className={isCompact ? '' : styles.toggleButton}
-              style={{ marginBottom: 0 }}
-            >
-              {isCompact ? <ChevronRightIcon /> : <MenuOpenIcon />}
-            </IconButton>
-          </Tooltip>
-        </Box>
-      )}
-
       <CustomMenuItem route={rootRoute()} label={t('leftMenu.home')}>
         <ListItemIcon className={styles.menuIcon}>
           <HomeOutlined fontSize="small" />
@@ -293,7 +263,6 @@ export const LeftMenu = (props: {
           {t('leftMenu.content')}
         </Typography>
       </li>
-      <Divider className={styles.divider} component="li" />
 
       <CustomMenuItem
         route={questionsRoute()}
@@ -359,7 +328,6 @@ export const LeftMenu = (props: {
           {t('leftMenu.community')}
         </Typography>
       </li>
-      <Divider className={styles.divider} component="li" />
 
       <CustomMenuItem
         route={collectionsRoute()}
@@ -404,7 +372,7 @@ export const LeftMenu = (props: {
               {t('leftMenu.manage')}
             </Typography>
           </li>
-          <Divider className={styles.divider} component="li" />
+
           {canReview && (
             <CustomMenuItem route={reviewRoute()} label={t('leftMenu.review')}>
               <ListItemIcon className={styles.menuIcon}>
@@ -423,6 +391,27 @@ export const LeftMenu = (props: {
             </CustomMenuItem>
           )}
         </>
+      )}
+      {!isPopup && (
+        <Box
+          display="flex"
+          justifyContent={isCompact ? 'center' : 'flex-start'}
+          style={{ marginTop: 'auto' }}
+        >
+          <Tooltip
+            title={isCompact ? t('leftMenu.expand') : t('leftMenu.collapse')}
+            placement="right"
+          >
+            <IconButton
+              onClick={onToggle}
+              size="small"
+              className={isCompact ? '' : styles.toggleButton}
+              style={{ marginTop: 8, marginLeft: isCompact ? 0 : 18 }}
+            >
+              {isCompact ? <ChevronRightIcon /> : <MenuOpenIcon />}
+            </IconButton>
+          </Tooltip>
+        </Box>
       )}
     </List>
   );

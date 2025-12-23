@@ -59,13 +59,12 @@ export const PostsGrid = (props: PostGridProps) => {
     setShowFilterPanel,
     showFilterPanel,
     onFilterChange,
-    onPageSizeChange,
-    postsPerPage,
-    page,
-    pageCount,
-    onPageChange,
+    posts,
+    hasMore,
+    loadNextPage,
     retry,
   } = usePaginatedPosts(props);
+  const combinedResponse = response ? { ...response, posts } : response;
 
   const itemType = capitalize(t(`common.${type ?? 'post'}`, {}));
   let shownTitle = title;
@@ -186,20 +185,17 @@ export const PostsGrid = (props: PostGridProps) => {
       <PostsGridContent
         loading={loading}
         error={error}
-        response={response}
+        response={combinedResponse}
         entity={entity}
         showNoQuestionsBtn={showNoQuestionsBtn}
-        onPageSizeChange={onPageSizeChange}
-        pageSize={postsPerPage}
         entityPage={entity !== undefined}
         tags={tags}
         type={type}
-        page={page}
-        pageCount={pageCount}
-        onPageChange={onPageChange}
         onRankUpdate={() => retry()}
         collectionId={props.collectionId}
         allowRanking={allowRanking}
+        hasMore={hasMore}
+        loadNextPage={loadNextPage}
       />
     </Box>
   );
