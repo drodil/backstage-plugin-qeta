@@ -39,13 +39,13 @@ import {
   moderatorRouteRef,
   qetaRouteRef,
   questionsRouteRef,
+  reviewRouteRef,
   statisticsRouteRef,
   tagsRouteRef,
   userRouteRef,
   usersRouteRef,
-  reviewRouteRef,
 } from '../../routes';
-import { useIdentityApi, useIsModerator, useCanReview } from '../../hooks';
+import { useCanReview, useIdentityApi, useIsModerator } from '../../hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 
@@ -405,19 +405,23 @@ export const LeftMenu = (props: {
             </Typography>
           </li>
           <Divider className={styles.divider} component="li" />
-          <CustomMenuItem route={reviewRoute()} label={t('leftMenu.review')}>
-            <ListItemIcon className={styles.menuIcon}>
-              <RateReviewOutlined fontSize="small" />
-            </ListItemIcon>
-          </CustomMenuItem>
-          <CustomMenuItem
-            route={moderatorRoute()}
-            label={t('leftMenu.moderate')}
-          >
-            <ListItemIcon className={styles.menuIcon}>
-              <SettingsOutlined fontSize="small" />
-            </ListItemIcon>
-          </CustomMenuItem>
+          {canReview && (
+            <CustomMenuItem route={reviewRoute()} label={t('leftMenu.review')}>
+              <ListItemIcon className={styles.menuIcon}>
+                <RateReviewOutlined fontSize="small" />
+              </ListItemIcon>
+            </CustomMenuItem>
+          )}
+          {isModerator && (
+            <CustomMenuItem
+              route={moderatorRoute()}
+              label={t('leftMenu.moderate')}
+            >
+              <ListItemIcon className={styles.menuIcon}>
+                <SettingsOutlined fontSize="small" />
+              </ListItemIcon>
+            </CustomMenuItem>
+          )}
         </>
       )}
     </List>

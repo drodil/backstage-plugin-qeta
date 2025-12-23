@@ -1,31 +1,30 @@
 import { useState } from 'react';
 import {
-  useQetaApi,
-  qetaTranslationRef,
-  UserLink,
-  linkRouteRef,
+  articleRouteRef,
   DeleteModal,
+  linkRouteRef,
   ObsoleteModal,
-  ValidReviewModal,
+  qetaTranslationRef,
+  questionRouteRef,
   RelativeTimeWithTooltip,
+  useCanReview,
+  useQetaApi,
+  UserLink,
+  ValidReviewModal,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
+  Link,
   Table,
   TableColumn,
-  Link,
   WarningPanel,
 } from '@backstage/core-components';
-import { Grid, Tooltip, IconButton, Box, Typography } from '@material-ui/core';
+import { Box, Grid, IconButton, Tooltip, Typography } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import BlockIcon from '@material-ui/icons/Block';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Post } from '@drodil/backstage-plugin-qeta-common';
-import {
-  questionRouteRef,
-  articleRouteRef,
-} from '@drodil/backstage-plugin-qeta-react';
 
 export const ReviewPage = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -54,6 +53,7 @@ export const ReviewPage = () => {
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
   const linkRoute = useRouteRef(linkRouteRef);
+  const { canReview } = useCanReview();
 
   const getPostLink = (post: Post) => {
     if (post.type === 'article') {
@@ -145,6 +145,10 @@ export const ReviewPage = () => {
       ),
     },
   ];
+
+  if (!canReview) {
+    return null;
+  }
 
   if (error) {
     return (

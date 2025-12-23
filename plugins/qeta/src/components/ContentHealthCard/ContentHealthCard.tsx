@@ -1,27 +1,23 @@
 import { useState } from 'react';
-import {
-  Post,
-  qetaCreatePostReviewPermission,
-  qetaReadPostReviewPermission,
-} from '@drodil/backstage-plugin-qeta-common';
+import { Post } from '@drodil/backstage-plugin-qeta-common';
 import {
   Button,
-  Typography,
-  makeStyles,
-  LinearProgress,
-  Tooltip,
   Card,
   CardContent,
   CardHeader,
   Divider,
+  LinearProgress,
+  makeStyles,
+  Tooltip,
+  Typography,
 } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { usePermission } from '@backstage/plugin-permission-react';
 import {
-  qetaTranslationRef,
   ObsoleteModal,
-  ValidReviewModal,
+  qetaTranslationRef,
+  useCanReview,
   useQetaApi,
+  ValidReviewModal,
 } from '@drodil/backstage-plugin-qeta-react';
 import CheckIcon from '@material-ui/icons/Check';
 import BlockIcon from '@material-ui/icons/Block';
@@ -66,13 +62,8 @@ const useStyles = makeStyles(theme => ({
 
 export const ContentHealthCard = ({ post }: { post: Post }) => {
   const classes = useStyles();
+  const { canReview, canRead } = useCanReview();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const { allowed: canReview } = usePermission({
-    permission: qetaCreatePostReviewPermission,
-  });
-  const { allowed: canRead } = usePermission({
-    permission: qetaReadPostReviewPermission,
-  });
 
   const { value: reviews } = useQetaApi(
     api => api.getPostReviews(post.id),
@@ -86,7 +77,7 @@ export const ContentHealthCard = ({ post }: { post: Post }) => {
     window.location.reload();
   };
 
-  if (!canRead) {
+  if (!canRead && !canReview) {
     return null;
   }
 
