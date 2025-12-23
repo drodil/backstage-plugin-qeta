@@ -87,8 +87,8 @@ const useStyles = makeStyles(theme => ({
     maxHeight: 'calc(100vh - 100px)',
     overflow: 'hidden',
     [theme.breakpoints.up('lg')]: {
-      width: (props: StyleProps) => (props.leftCompact ? 72 : 220),
-      minWidth: (props: StyleProps) => (props.leftCompact ? 72 : 220),
+      width: (props: StyleProps) => (props.leftCompact ? 80 : 220),
+      minWidth: (props: StyleProps) => (props.leftCompact ? 80 : 220),
     },
     [theme.breakpoints.down('md')]: {
       width: '100%',

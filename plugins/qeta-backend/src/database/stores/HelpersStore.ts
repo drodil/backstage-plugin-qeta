@@ -26,6 +26,7 @@ export class HelpersStore extends BaseStore {
       'collections.headerImage',
       'collections.title',
       this.db.raw('CAST(null as TEXT) as "postTitle"'),
+      this.db.raw('CAST(null as TEXT) as "postType"'),
     );
     if (filters?.collections) {
       this.parseFilter(
@@ -49,6 +50,7 @@ export class HelpersStore extends BaseStore {
         'headerImage',
         'title',
         'title as postTitle',
+        'type as postType',
       )
       .where('status', 'active');
     if (filters?.posts) {
@@ -68,6 +70,7 @@ export class HelpersStore extends BaseStore {
         'headerImage',
         'title',
         'title as postTitle',
+        'type as postType',
       )
       .where('status', 'active')
       .whereNotNull('updated')
@@ -90,6 +93,7 @@ export class HelpersStore extends BaseStore {
         this.db.raw('CAST(null as TEXT) as "headerImage"'),
         this.db.raw('CAST(null as TEXT) as "title"'),
         'posts.title as postTitle',
+        'posts.type as postType',
       )
       .where('posts.status', 'active');
     if (filters?.posts) {
@@ -113,6 +117,7 @@ export class HelpersStore extends BaseStore {
         this.db.raw('CAST(null as TEXT) as "headerImage"'),
         this.db.raw('CAST(null as TEXT) as "title"'),
         'posts.title as postTitle',
+        'posts.type as postType',
       )
       .where('posts.status', 'active')
       .whereNotNull('answers.updated')
@@ -143,6 +148,9 @@ export class HelpersStore extends BaseStore {
         this.db.raw('CAST(null as TEXT) as "title"'),
         this.db.raw(
           'COALESCE("posts"."title", "answerPosts"."title") as "postTitle"',
+        ),
+        this.db.raw(
+          'COALESCE("posts"."type", "answerPosts"."type") as "postType"',
         ),
       )
       .where(builder => {
@@ -198,6 +206,7 @@ export class HelpersStore extends BaseStore {
         headerImage: row.headerImage,
         title: row.title,
         postTitle: row.postTitle,
+        postType: row.postType,
       })),
       total,
     };

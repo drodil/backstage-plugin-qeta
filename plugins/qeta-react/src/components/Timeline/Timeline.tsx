@@ -16,7 +16,7 @@ export interface TimelineProps {
 }
 
 export const Timeline = (props: TimelineProps) => {
-  const { loadMore = true, limit = 25 } = props;
+  const { loadMore = true, limit = 30 } = props;
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const [items, setItems] = useState<TimelineItem[]>([]);

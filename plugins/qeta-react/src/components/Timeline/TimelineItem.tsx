@@ -3,7 +3,6 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Link,
   Avatar,
   makeStyles,
 } from '@material-ui/core';
@@ -23,11 +22,38 @@ import { UserLink } from '../Links';
 
 import { useUserInfo } from '../../hooks';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
-    padding: 0,
-    marginBottom: '2px',
+    padding: theme.spacing(1, 1.5),
+    marginBottom: 0,
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    borderRadius: theme.shape.borderRadius,
+    transition: 'background-color 0.15s ease-in-out',
+    position: 'relative',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    '&:last-child': {
+      borderBottom: 'none',
+    },
+  },
+  overlayLink: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
+  },
+  contentWrapper: {
+    pointerEvents: 'none',
+  },
+  contentClickable: {
+    position: 'relative',
+    zIndex: 1,
+    pointerEvents: 'auto',
   },
   inline: {
     display: 'inline',
@@ -73,45 +99,55 @@ export const TimelineItemCard = ({ item }: { item: TimelineItem }) => {
 
   let title = item.title;
   let link: string = '';
+  let action: string = '';
 
   if (item.type === 'post') {
-    if (item.postType === 'article') {
-      link = articleRoute({ id: item.postId.toString() });
-    } else if (item.postType === 'link') {
-      link = linkRoute({ id: item.postId.toString() });
+    const postType = item.postType || 'question';
+    const isUpdated = item.action === 'updated';
+    if (postType === 'article') {
+      link = articleRoute({ id: item.id.toString() });
+      action = isUpdated
+        ? t('timeline.updatedArticle')
+        : t('timeline.postedArticle');
+    } else if (postType === 'link') {
+      link = linkRoute({ id: item.id.toString() });
+      action = isUpdated ? t('timeline.updatedLink') : t('timeline.postedLink');
     } else {
-      link = questionRoute({ id: item.postId.toString() });
+      link = questionRoute({ id: item.id.toString() });
+      action = isUpdated
+        ? t('timeline.updatedQuestion')
+        : t('timeline.postedQuestion');
     }
   } else if (item.type === 'answer') {
     link = `${questionRoute({ id: item.postId.toString() })}#answer_${item.id}`;
-    title = `${item.postTitle}`;
-  } else if (item.type === 'comment') {
-    if (item.postType === 'article') {
-      link = articleRoute({ id: item.postId.toString() });
-    } else if (item.postType === 'link') {
-      link = linkRoute({ id: item.postId.toString() });
-    } else {
-      link = questionRoute({ id: item.postId.toString() });
-    }
-    title = `${item.postTitle}`;
-  } else if (item.type === 'collection') {
-    link = collectionRoute({ id: item.id.toString() });
-  }
-
-  let action: string = t('timeline.created');
-  if (item.action === 'updated') {
-    action = t('timeline.updated');
-  }
-
-  if (item.type === 'answer') {
+    title = item.postTitle;
     action = t('timeline.answered');
   } else if (item.type === 'comment') {
-    action = t('timeline.commentOn');
+    title = item.postTitle;
+    const postType = item.postType || 'question';
+    if (postType === 'article') {
+      link = articleRoute({ id: item.postId.toString() });
+      action = t('timeline.commentedOnArticle');
+    } else if (postType === 'link') {
+      link = linkRoute({ id: item.postId.toString() });
+      action = t('timeline.commentedOnLink');
+    } else {
+      link = questionRoute({ id: item.postId.toString() });
+      action = t('timeline.commentedOnQuestion');
+    }
+  } else if (item.type === 'collection') {
+    link = collectionRoute({ id: item.id.toString() });
+    action = t('timeline.createdCollection');
   }
 
   return (
     <ListItem alignItems="center" className={classes.root} dense>
-      <ListItemAvatar className={classes.avatar}>
+      <RouterLink
+        to={link}
+        className={classes.overlayLink}
+        aria-label={title}
+      />
+      <ListItemAvatar className={`${classes.avatar} ${classes.contentWrapper}`}>
         <Avatar
           alt={item.author}
           src={item.headerImage || user?.spec?.profile?.picture}
@@ -119,13 +155,14 @@ export const TimelineItemCard = ({ item }: { item: TimelineItem }) => {
         />
       </ListItemAvatar>
       <ListItemText
+        className={classes.contentWrapper}
         primary={
           <div className={classes.text}>
-            <UserLink entityRef={item.author} />
+            <span className={classes.contentClickable}>
+              <UserLink entityRef={item.author} />
+            </span>
             <span className={classes.action}>{action}</span>
-            <Link component={RouterLink} to={link} className={classes.link}>
-              {title}
-            </Link>
+            <span className={classes.link}>{title}</span>
             <span className={classes.time}>
               <RelativeTimeWithTooltip value={item.date} />
             </span>

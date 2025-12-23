@@ -62,7 +62,7 @@ export const useStyles = makeStyles(
         height: '100%',
       },
       leftMenuCompact: {
-        width: '72px',
+        width: '70px',
         overflowX: 'hidden',
         '& $sectionHeader': {
           display: 'none',

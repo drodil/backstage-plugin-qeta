@@ -17,7 +17,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import LinkIcon from '@material-ui/icons/Link';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import { useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import {
@@ -85,12 +85,12 @@ const SuggestionListItem = (props: {
   icon?: ReactNode;
   timestamp?: ReactNode;
 }) => {
-  const navigate = useNavigate();
   const classes = useStyles();
   return (
     <ListItem
       button
-      onClick={() => navigate(props.href)}
+      component={RouterLink}
+      to={props.href}
       className={classes.listItem}
     >
       {props.icon && (
