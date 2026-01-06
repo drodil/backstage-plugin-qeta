@@ -8,7 +8,11 @@ import {
 } from '../components/FilterPanel/FilterPanel';
 import useDebounce from 'react-use/lib/useDebounce';
 import { getFiltersWithDateRange } from '../utils';
-import { filterTags, PostStatus } from '@drodil/backstage-plugin-qeta-common';
+import {
+  filterTags,
+  Post,
+  PostStatus,
+} from '@drodil/backstage-plugin-qeta-common';
 import { useQetaApi } from './useQetaApi';
 
 export type PaginatedPostsProps = PostFilters & {
@@ -68,7 +72,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     type,
   });
 
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
 
@@ -267,7 +271,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
     onFilterChange,
     onSearchQueryChange,
     response,
-    posts,
+    posts: page === 1 && !loading && response ? response.posts : posts,
     hasMore,
     total,
     loading,

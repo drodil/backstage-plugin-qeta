@@ -90,7 +90,13 @@ export const UsersGrid = () => {
     }
   }, [response, entitiesPerPage, page]);
 
-  const combinedResponse = response ? { ...response, users, total } : undefined;
+  const combinedResponse = response
+    ? {
+        ...response,
+        users: page === 1 && !loading ? response.users : users,
+        total,
+      }
+    : undefined;
 
   return (
     <>
