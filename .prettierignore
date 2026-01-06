@@ -6,3 +6,5 @@ coverage
 app-config.yaml
 .yarn
 CHANGELOG.md
+playwright-report
+test-results

@@ -103,7 +103,12 @@ export const CollectionsGrid = (props: CollectionsGridProps) => {
   }, [response, collectionsPerPage, page]);
 
   const combinedResponse = response
-    ? { ...response, collections, total }
+    ? {
+        ...response,
+        collections:
+          page === 1 && !loading ? response.collections : collections,
+        total,
+      }
     : undefined;
 
   const onFilterChange = (

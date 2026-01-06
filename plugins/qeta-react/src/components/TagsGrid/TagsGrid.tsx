@@ -102,7 +102,13 @@ export const TagsGrid = () => {
     }
   }, [response, page, tagsPerPage]);
 
-  const combinedResponse = response ? { ...response, tags, total } : undefined;
+  const combinedResponse = response
+    ? {
+        ...response,
+        tags: page === 1 && !loading ? response.tags : tags,
+        total,
+      }
+    : undefined;
 
   const onTagsModify = () => {
     retry();

@@ -119,3 +119,6 @@ dist
 
 dist-types/
 app-config.local.yaml
+
+test-results
+playwright-report

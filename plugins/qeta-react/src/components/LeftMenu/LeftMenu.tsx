@@ -407,7 +407,7 @@ export const LeftMenu = (props: {
               onClick={onToggle}
               size="small"
               className={isCompact ? '' : styles.toggleButton}
-              style={{ marginTop: 8, marginLeft: isCompact ? 0 : 18 }}
+              style={{ marginTop: 8, marginLeft: isCompact ? -10 : 18 }}
             >
               {isCompact ? <ChevronRightIcon /> : <MenuOpenIcon />}
             </IconButton>

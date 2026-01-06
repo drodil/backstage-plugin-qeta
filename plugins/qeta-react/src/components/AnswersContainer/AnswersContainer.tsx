@@ -185,7 +185,11 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
   }, [response, page, answersPerPage]);
 
   const combinedResponse = response
-    ? { ...response, answers, total }
+    ? {
+        ...response,
+        answers: page === 1 && !loading ? response.answers : answers,
+        total,
+      }
     : undefined;
 
   let shownTitle = title;
