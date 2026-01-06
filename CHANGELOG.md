@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.52.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.52.0...v3.52.1) (2026-01-06)
+
 ## [3.52.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.51.1...v3.52.0) (2025-12-23)
 
 
