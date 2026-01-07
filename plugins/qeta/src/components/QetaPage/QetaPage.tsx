@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { Fragment, ReactNode } from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { AskPage } from '../AskPage';
@@ -30,13 +30,13 @@ import {
   QetaProvider,
   questionRouteRef,
   questionsRouteRef,
+  reviewRouteRef,
   statisticsRouteRef,
   tagRouteRef,
   tagsRouteRef,
   userRouteRef,
   usersRouteRef,
   writeRouteRef,
-  reviewRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { QuestionsPage } from '../QuestionsPage/QuestionsPage';
 import { HomePage } from '../HomePage/HomePage';
@@ -165,7 +165,9 @@ export const QetaPage = (props?: Props) => {
           typeLink={headerTypeLink}
           tooltip={headerTooltip}
         >
-          {headerElements}
+          {headerElements?.map((element, index) => (
+            <Fragment key={index}>{element}</Fragment>
+          ))}
         </Header>
         <Content className="qetaHomePage">
           {introElement}
