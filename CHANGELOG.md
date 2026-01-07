@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.52.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.52.2...v3.52.3) (2026-01-07)
+
+
+### Bug Fixes
+
+* collection posts fetching ([432c30a](https://github.com/drodil/backstage-plugin-qeta/commit/432c30a4e28270b5aa74530588a9a213946d3a4f))
+* missing collection create button ([eb30162](https://github.com/drodil/backstage-plugin-qeta/commit/eb30162fb5bc6413502f22ccff83a798cec5bec4))
+* paginated posts when empty response ([3f39571](https://github.com/drodil/backstage-plugin-qeta/commit/3f39571b45afa0151526f3cfaaf13e11e732b4b1))
+
 ### [3.52.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.52.1...v3.52.2) (2026-01-07)
 
 
