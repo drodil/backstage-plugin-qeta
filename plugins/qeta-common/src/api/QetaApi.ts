@@ -6,6 +6,7 @@ import {
   AnswerResponseBody,
   AnswersResponse,
   AttachmentResponseBody,
+  Badge,
   CollectionRequest,
   CollectionResponse,
   CollectionsResponse,
@@ -17,6 +18,7 @@ import {
   ImpactResponse,
   PostRequest,
   PostResponse,
+  PostReview,
   PostsResponse,
   PostStatus,
   PostType,
@@ -30,19 +32,17 @@ import {
   TemplateRequest,
   TemplateResponse,
   TemplatesResponse,
+  TimelineOptions,
+  TimelineResponse,
   URLMetadataRequest,
   URLMetadataResponse,
+  UserBadge,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UsersResponse,
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
-  Badge,
-  UserBadge,
-  PostReview,
-  TimelineOptions,
-  TimelineResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export interface PaginatedQuery {
@@ -84,6 +84,10 @@ export interface PostsQuery extends PaginatedQuery {
   ids?: number[];
   checkAccess?: boolean;
   status?: PostStatus;
+}
+
+export interface PostQuery {
+  anonymous?: boolean;
 }
 
 export interface CollectionsQuery extends PaginatedQuery {
@@ -244,6 +248,7 @@ export interface QetaApi {
 
   getPost(
     id: string | number | undefined,
+    options?: PostQuery,
     requestOptions?: RequestOptions,
   ): Promise<PostResponse>;
 

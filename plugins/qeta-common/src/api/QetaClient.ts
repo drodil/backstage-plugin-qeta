@@ -5,6 +5,7 @@ import {
   CollectionsQuery,
   EntitiesQuery,
   EntitySuggestionsQuery,
+  PostQuery,
   PostsQuery,
   QetaApi,
   RequestOptions,
@@ -22,6 +23,7 @@ import {
   AnswersResponse,
   AnswersResponseBody,
   AttachmentResponseBody,
+  Badge,
   CollectionRequest,
   CollectionResponse,
   CollectionResponseBody,
@@ -38,6 +40,7 @@ import {
   PostRequest,
   PostResponse,
   PostResponseBody,
+  PostReview,
   PostsResponse,
   PostsResponseBody,
   StatisticResponse,
@@ -50,19 +53,17 @@ import {
   TemplateRequest,
   TemplateResponse,
   TemplatesResponse,
+  TimelineOptions,
+  TimelineResponse,
   URLMetadataRequest,
   URLMetadataResponse,
+  UserBadge,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UsersResponse,
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
-  Badge,
-  UserBadge,
-  PostReview,
-  TimelineOptions,
-  TimelineResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CustomErrorBase } from '@backstage/errors';
 import omitBy from 'lodash/omitBy';
@@ -258,12 +259,19 @@ export class QetaClient implements QetaApi {
     return data;
   }
 
-  async getPost(id?: string, requestOptions?: RequestOptions): Promise<Post> {
+  async getPost(
+    id?: string,
+    options?: PostQuery,
+    requestOptions?: RequestOptions,
+  ): Promise<Post> {
     if (!id) {
       throw new QetaError('Invalid id provided', undefined);
     }
 
-    const response = await this.fetch(`/posts/${id}`, { requestOptions });
+    const response = await this.fetch(`/posts/${id}`, {
+      queryParams: options,
+      requestOptions,
+    });
     const data = (await response.json()) as PostResponseBody;
 
     if ('errors' in data) {
@@ -1580,6 +1588,25 @@ export class QetaClient implements QetaApi {
     return (await response.json()) as EntityLinks[];
   }
 
+  async getTimeline(
+    options?: TimelineOptions,
+    requestOptions?: RequestOptions,
+  ): Promise<TimelineResponse> {
+    const query = qs.stringify(options, { addQueryPrefix: true });
+    const url = `${await this.discoveryApi.getBaseUrl(
+      'qeta',
+    )}/timeline${query}`;
+    const response = await this.fetchApi.fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(requestOptions?.token
+          ? { Authorization: `Bearer ${requestOptions.token}` }
+          : {}),
+      },
+    });
+    return (await response.json()) as TimelineResponse;
+  }
+
   private async getBaseUrl(): Promise<string> {
     return this.discoveryApi.getBaseUrl('qeta');
   }
@@ -1600,6 +1627,7 @@ export class QetaClient implements QetaApi {
     if (query) {
       url += `?${query}`;
     }
+    console.log(url);
 
     return this.fetchApi.fetch(url, {
       method: 'GET',
@@ -1621,24 +1649,5 @@ export class QetaClient implements QetaApi {
     }
     const cleaned = omitBy(params, v => !Boolean(v));
     return qs.stringify(cleaned);
-  }
-
-  async getTimeline(
-    options?: TimelineOptions,
-    requestOptions?: RequestOptions,
-  ): Promise<TimelineResponse> {
-    const query = qs.stringify(options, { addQueryPrefix: true });
-    const url = `${await this.discoveryApi.getBaseUrl(
-      'qeta',
-    )}/timeline${query}`;
-    const response = await this.fetchApi.fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(requestOptions?.token
-          ? { Authorization: `Bearer ${requestOptions.token}` }
-          : {}),
-      },
-    });
-    return (await response.json()) as TimelineResponse;
   }
 }

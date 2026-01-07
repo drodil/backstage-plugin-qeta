@@ -536,7 +536,7 @@ export class PostsStore extends BaseStore {
     }
     const post = rows[0] as unknown as RawPostEntity;
 
-    if ((recordView === undefined || recordView) && post.status === 'active') {
+    if (recordView && post.status === 'active') {
       this.recordPostView(id, user_ref);
     }
     const posts = await this.mapPostEntities(
@@ -560,7 +560,7 @@ export class PostsStore extends BaseStore {
     if (!rows || rows.length === 0) {
       return null;
     }
-    if (recordView === undefined || recordView) {
+    if (recordView) {
       this.recordPostView(rows[0].id, user_ref);
     }
     const posts = await this.mapPostEntities(

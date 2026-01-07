@@ -5,6 +5,7 @@ import {
   FollowedTagsList,
   FollowedUsersList,
   PostHighlightList,
+  qetaTranslationRef,
   useQetaApi,
 } from '@drodil/backstage-plugin-qeta-react';
 import { DefaultRightContent } from './DefaultRightContent';
@@ -13,14 +14,16 @@ import { SimilarPosts } from './SimilarPosts';
 import { Box } from '@material-ui/core';
 import Whatshot from '@material-ui/icons/Whatshot';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
 
 export const PostRightContent = (props?: { id?: string }) => {
   const { id: paramId } = useParams();
   const id = props?.id || paramId;
   const { t } = useTranslationRef(qetaTranslationRef);
 
-  const { value: post } = useQetaApi(api => api.getPost(id), [id]);
+  const { value: post } = useQetaApi(
+    api => api.getPost(id, { anonymous: true }),
+    [id],
+  );
 
   let title: string;
 

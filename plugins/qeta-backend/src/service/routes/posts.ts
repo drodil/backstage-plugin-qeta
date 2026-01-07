@@ -1,6 +1,5 @@
 import { getCreated, mapAdditionalFields } from '../util';
-import { HumanDuration } from '@backstage/types';
-import { durationToMilliseconds } from '@backstage/types';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import Ajv from 'ajv';
 import { Request, Router } from 'express';
 import {
@@ -8,6 +7,7 @@ import {
   PostsQuery,
   qetaCreateCommentPermission,
   qetaCreatePostPermission,
+  qetaCreatePostReviewPermission,
   qetaDeleteCommentPermission,
   qetaDeletePostPermission,
   qetaEditCommentPermission,
@@ -15,12 +15,15 @@ import {
   qetaReadAnswerPermission,
   qetaReadCommentPermission,
   qetaReadPostPermission,
+  qetaReadPostReviewPermission,
   qetaReadTagPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import addFormats from 'ajv-formats';
 import {
   CommentSchema,
   DeleteMetadataSchema,
+  PostQuerySchema,
+  PostReviewBodySchema,
   PostSchema,
   PostsQuerySchema,
   RouteOptions,
@@ -36,11 +39,6 @@ import {
 } from './util';
 import { getEntities, getTags } from './routeUtil';
 import { PostOptions } from '../../database/QetaStore';
-import {
-  qetaCreatePostReviewPermission,
-  qetaReadPostReviewPermission,
-} from '@drodil/backstage-plugin-qeta-common';
-import { PostReviewBodySchema } from '../types';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -361,7 +359,21 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
   // GET /posts/:id
   router.get(`/posts/:id`, async (request, response) => {
-    const ret = await getPostAndCheckStatus(request, response, true, true);
+    const validateQuery = ajv.compile(PostQuerySchema);
+    if (!validateQuery(request.query)) {
+      response
+        .status(400)
+        .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+    const anonymous = request.query.anonymous as undefined | boolean;
+
+    const ret = await getPostAndCheckStatus(
+      request,
+      response,
+      anonymous ? !anonymous : true,
+      true,
+    );
     if (!ret) return;
     const { post, username } = ret;
 
@@ -757,6 +769,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   // POST /posts/:id
   router.post(`/posts/:id`, async (request, response) => {
     // Validation
+
     const validateRequestBody = ajv.compile(PostSchema);
     if (!validateRequestBody(request.body)) {
       response

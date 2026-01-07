@@ -21,6 +21,7 @@ import {
   AnswersQuery,
   CollectionsQuery,
   EntitiesQuery,
+  PostQuery,
   PostsQuery,
   PostStatus,
   PostType,
@@ -202,6 +203,13 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
   },
   required: [],
   additionalProperties: false,
+};
+
+export const PostQuerySchema: JSONSchemaType<PostQuery> = {
+  type: 'object',
+  properties: {
+    anonymous: { type: 'boolean', nullable: true },
+  },
 };
 
 export const TagsQuerySchema: JSONSchemaType<TagsQuery> = {
