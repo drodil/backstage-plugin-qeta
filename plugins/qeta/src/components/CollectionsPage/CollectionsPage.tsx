@@ -1,10 +1,8 @@
 import {
-  AskQuestionButton,
-  ContentHeader,
-  CreateLinkButton,
   CollectionsGrid,
+  ContentHeader,
+  CreateCollectionButton,
   qetaTranslationRef,
-  WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import PlaylistPlayOutlined from '@material-ui/icons/PlaylistPlayOutlined';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -18,9 +16,7 @@ export const CollectionsPage = () => {
         title={t('collectionsPage.title')}
         titleIcon={<PlaylistPlayOutlined fontSize="large" />}
       >
-        <AskQuestionButton />
-        <WriteArticleButton />
-        <CreateLinkButton />
+        <CreateCollectionButton />
       </ContentHeader>
       <CollectionsGrid />
     </>
