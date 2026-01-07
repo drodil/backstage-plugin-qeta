@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.52.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.52.1...v3.52.2) (2026-01-07)
+
+
+### Bug Fixes
+
+* add missing key for header elements ([05c9a0c](https://github.com/drodil/backstage-plugin-qeta/commit/05c9a0cbbc7e53924337eb676dc64fd3daf524c1))
+* react errors ([e6b6f5d](https://github.com/drodil/backstage-plugin-qeta/commit/e6b6f5d5ff02a43936b1649c766af5e02e42e65a))
+
 ### [3.52.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.52.0...v3.52.1) (2026-01-06)
 
 ## [3.52.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.51.1...v3.52.0) (2025-12-23)
