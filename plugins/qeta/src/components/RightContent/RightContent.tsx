@@ -2,24 +2,24 @@ import { useEffect, useState } from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { AskRightContent } from './AskRightContent';
 import {
-  articlesRouteRef,
   articleRouteRef,
+  articlesRouteRef,
   askRouteRef,
   collectionsRouteRef,
   editQuestionRouteRef,
   entitiesRouteRef,
   entityRouteRef,
   favoriteQuestionsRouteRef,
-  linksRouteRef,
   linkRouteRef,
+  linksRouteRef,
   qetaRouteRef,
-  questionsRouteRef,
+  qetaTranslationRef,
   questionRouteRef,
+  questionsRouteRef,
   tagRouteRef,
   tagsRouteRef,
   userRouteRef,
   usersRouteRef,
-  qetaTranslationRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Box, IconButton, makeStyles, Tooltip } from '@material-ui/core';
 import { matchPath, useLocation, useSearchParams } from 'react-router-dom';
@@ -37,6 +37,9 @@ import { EntityRightContent } from './EntityRightContent';
 import { CollectionsRightContent } from './CollectionsRightContent';
 import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { DefaultRightContent } from './DefaultRightContent';
+import { PostRightContent } from './PostRightContent';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -59,10 +62,6 @@ const useStyles = makeStyles(theme => ({
     transition: 'opacity 0.2s ease-in-out',
   },
 }));
-
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { DefaultRightContent } from './DefaultRightContent';
-import { PostRightContent } from './PostRightContent';
 
 export const RightContent = (props: {
   compact?: boolean;
@@ -88,11 +87,11 @@ export const RightContent = (props: {
   const rootPath = homePath();
 
   // Matchers
-  const isQuestions = matchPath(
+  const isQuestions = !!matchPath(
     { path: questionsPath(), end: true },
     location.pathname,
   );
-  const isAsk =
+  const isAsk = !!(
     matchPath(
       { path: `${rootPath}${askRouteRef.path}`, end: true },
       location.pathname,
@@ -100,13 +99,14 @@ export const RightContent = (props: {
     matchPath(
       { path: `${rootPath}${editQuestionRouteRef.path}`, end: true },
       location.pathname,
-    );
+    )
+  );
 
-  const isArticles = matchPath(
+  const isArticles = !!matchPath(
     { path: articlesPath(), end: true },
     location.pathname,
   );
-  const isUsers = matchPath(
+  const isUsers = !!matchPath(
     { path: usersPath(), end: true },
     location.pathname,
   );
@@ -114,16 +114,19 @@ export const RightContent = (props: {
     { path: `${rootPath}${userRouteRef.path}` },
     location.pathname,
   );
-  const isTags = matchPath({ path: tagsPath(), end: true }, location.pathname);
+  const isTags = !!matchPath(
+    { path: tagsPath(), end: true },
+    location.pathname,
+  );
   const tagMatch = matchPath(
     { path: `${rootPath}${tagRouteRef.path}` },
     location.pathname,
   );
-  const isCollections = matchPath(
+  const isCollections = !!matchPath(
     { path: collectionsPath(), end: true },
     location.pathname,
   );
-  const isEntities = matchPath(
+  const isEntities = !!matchPath(
     { path: entitiesPath(), end: true },
     location.pathname,
   );
@@ -131,11 +134,11 @@ export const RightContent = (props: {
     { path: `${rootPath}${entityRouteRef.path}` },
     location.pathname,
   );
-  const isLinks = matchPath(
+  const isLinks = !!matchPath(
     { path: linksPath(), end: true },
     location.pathname,
   );
-  const isFavorite = matchPath(
+  const isFavorite = !!matchPath(
     { path: favoritePath(), end: true },
     location.pathname,
   );
@@ -152,35 +155,37 @@ export const RightContent = (props: {
     location.pathname,
   );
   const isPostPage = !!(questionMatch || articleMatch || linkMatch);
-  const isHome =
+  const isHome = !!(
     matchPath({ path: homePath(), end: true }, location.pathname) ||
-    location.pathname === homePath();
+    location.pathname === homePath()
+  );
 
   const [entityRef, setEntityRef] = useState<string | undefined>(undefined);
   const [tags, setTags] = useState<string[] | undefined>(undefined);
   const [userRef, setUserRef] = useState<string | undefined>(undefined);
 
+  const tagParam = tagMatch?.params.tag;
+  const userParam = userMatch?.params['*'];
+  const entityParam = entityMatch?.params.entityRef;
+
+  const entitySearchParam = searchParams.get('entity') ?? undefined;
+  const tagsSearchParam = searchParams.get('tags');
+
   useEffect(() => {
     if (isQuestions || isArticles || isLinks) {
-      setEntityRef(searchParams.get('entity') ?? undefined);
-      setTags(filterTags(searchParams.get('tags')));
+      setEntityRef(entitySearchParam);
+      setTags(filterTags(tagsSearchParam));
       setUserRef(undefined);
-    } else if (tagMatch) {
-      if (tagMatch.params.tag) {
-        setTags([tagMatch.params.tag]);
-      }
+    } else if (tagParam) {
+      setTags([tagParam]);
       setEntityRef(undefined);
       setUserRef(undefined);
-    } else if (userMatch) {
-      if (userMatch.params['*']) {
-        setUserRef(userMatch.params['*']);
-      }
+    } else if (userParam) {
+      setUserRef(userParam);
       setTags(undefined);
       setEntityRef(undefined);
-    } else if (entityMatch) {
-      if (entityMatch.params.entityRef) {
-        setEntityRef(entityMatch.params.entityRef);
-      }
+    } else if (entityParam) {
+      setEntityRef(entityParam);
       setTags(undefined);
       setUserRef(undefined);
     } else {
@@ -189,13 +194,14 @@ export const RightContent = (props: {
       setUserRef(undefined);
     }
   }, [
-    searchParams,
+    entitySearchParam,
+    tagsSearchParam,
     isQuestions,
     isArticles,
     isLinks,
-    tagMatch,
-    userMatch,
-    entityMatch,
+    tagParam,
+    userParam,
+    entityParam,
     location.pathname,
   ]);
 

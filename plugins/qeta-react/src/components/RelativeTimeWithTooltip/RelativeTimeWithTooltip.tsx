@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import { Tooltip } from '@material-ui/core';
@@ -21,9 +21,7 @@ export const RelativeTimeWithTooltip = (props: { value: Date | string }) => {
 
   return (
     <Tooltip title={date.toLocaleString(navigator.languages)}>
-      <div style={{ display: 'inline' }}>
-        <RelativeTime value={date} />
-      </div>
+      <RelativeTime value={date} />
     </Tooltip>
   );
 };

@@ -52,7 +52,7 @@ async function main() {
     if (options.created) {
       return new Date(options.created);
     }
-    return faker.date.recent({ days: 365 });
+    return faker.date.recent({ days: 30 });
   };
 
   const generateCodeBlock = () => {

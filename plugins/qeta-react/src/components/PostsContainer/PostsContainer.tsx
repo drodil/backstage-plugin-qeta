@@ -20,6 +20,7 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { SearchBar } from '../SearchBar/SearchBar';
 import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
 import FilterList from '@material-ui/icons/FilterList';
+import { PostsGridContent } from '../PostsGrid/PostsGridContent';
 
 export type PostsContainerProps = PaginatedPostsProps & {
   entity?: string;
@@ -186,19 +187,35 @@ export const PostsContainer = (props: PostsContainerProps) => {
           />
         </Collapse>
       )}
-      <PostList
-        loading={loading}
-        error={error}
-        response={combinedResponse}
-        entity={entity ?? filters.entity}
-        showNoQuestionsBtn={showNoQuestionsBtn}
-        entityPage={entity !== undefined}
-        tags={tags ?? filters.tags}
-        type={type}
-        showTypeLabel={showTypeLabel}
-        hasMore={hasMore}
-        loadNextPage={loadNextPage}
-      />
+      {view === 'list' && (
+        <PostList
+          loading={loading}
+          error={error}
+          response={combinedResponse}
+          entity={entity ?? filters.entity}
+          showNoQuestionsBtn={showNoQuestionsBtn}
+          entityPage={entity !== undefined}
+          tags={tags ?? filters.tags}
+          type={type}
+          showTypeLabel={showTypeLabel}
+          hasMore={hasMore}
+          loadNextPage={loadNextPage}
+        />
+      )}
+      {view === 'grid' && (
+        <PostsGridContent
+          loading={loading}
+          error={error}
+          response={combinedResponse}
+          entity={entity ?? filters.entity}
+          showNoQuestionsBtn={showNoQuestionsBtn}
+          entityPage={entity !== undefined}
+          tags={tags ?? filters.tags}
+          type={type}
+          hasMore={hasMore}
+          loadNextPage={loadNextPage}
+        />
+      )}
     </Box>
   );
 };
