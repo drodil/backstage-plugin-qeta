@@ -37,8 +37,8 @@ async function main() {
     return `user:default/${faker.person
       .fullName()
       .toLowerCase()
-      .replace(/\s/g, '.')
-      .replace(/\.+/g, '.')}`;
+      .replaceAll(/\s/g, '.')
+      .replaceAll(/\.+/g, '.')}`;
   };
 
   const getTags = () => {
@@ -165,6 +165,7 @@ async function main() {
   };
 
   const createViewsForPost = async id => {
+    const user = getUser();
     const viewCount = faker.number.int({ min: 0, max: 50 });
     for (let i = 0; i < viewCount; i++) {
       await fetch(`http://localhost:7007/api/qeta/posts/${id}`, {
@@ -172,6 +173,7 @@ async function main() {
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer FO23CjUG7SNlPWPCO3x25W3TlPC8lh8l',
+          'x-qeta-user': user,
         },
       });
     }

@@ -90,8 +90,8 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   const getPostAndCheckStatus = async (
     request: Request,
     response: Response,
-    recordView: boolean = false,
-    allowServiceToken: boolean = false,
+    recordView?: boolean,
+    allowServiceToken?: boolean,
   ) => {
     const username = await permissionMgr.getUsername(
       request,
