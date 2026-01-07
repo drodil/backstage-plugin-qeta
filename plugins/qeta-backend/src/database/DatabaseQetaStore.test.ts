@@ -116,7 +116,7 @@ describe.each(databases.eachSupportedId())(
         await voteAnswer(answerId, 'user3');
         await voteAnswer(answerId, 'user4');
 
-        let ret = await storage.getPost('user', id);
+        let ret = await storage.getPost('user', id, true);
         expect(ret).toBeDefined();
         expect(ret?.author).toEqual('user');
         expect(ret?.title).toEqual('title');
@@ -127,7 +127,7 @@ describe.each(databases.eachSupportedId())(
         expect(answers?.length).toEqual(1);
         expect(answers?.at(0)?.content).toEqual('content');
 
-        ret = await storage.getPost('user', id);
+        ret = await storage.getPost('user', id, false);
         expect(ret?.views).toEqual(1);
 
         const ans = await storage.getPost('user', answerId);
