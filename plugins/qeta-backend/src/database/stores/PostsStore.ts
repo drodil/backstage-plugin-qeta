@@ -22,7 +22,7 @@ import { TAGS } from '../../tagDb';
 import { BaseStore } from './BaseStore';
 import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
 
-import { removeStopwords, eng } from 'stopword';
+import { eng, removeStopwords } from 'stopword';
 
 export interface RawPostEntity {
   id: number;
@@ -298,7 +298,19 @@ export class PostsStore extends BaseStore {
       query.select('collection_posts.rank');
     }
     if (options.orderBy === 'rank') {
-      query.groupBy('posts.id', 'collection_posts.rank');
+      if (this.db.client.config.client === 'pg') {
+        query.groupBy(
+          'posts.id',
+          'collection_posts.rank',
+          this.db.raw('user_favorite."postId"'),
+        );
+      } else {
+        query.groupBy(
+          'posts.id',
+          'collection_posts.rank',
+          'user_favorite.postId',
+        );
+      }
     }
 
     if (options.noAnswers) {
