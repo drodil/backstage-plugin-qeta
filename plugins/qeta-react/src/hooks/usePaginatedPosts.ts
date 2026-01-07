@@ -232,7 +232,7 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
       } else {
         setPosts(prev => [...prev, ...response.posts]);
       }
-      setHasMore(response.posts.length >= postsPerPage);
+      setHasMore((response.posts ?? []).length >= postsPerPage);
       setTotal(response.total);
     }
   }, [response, page, postsPerPage]);
