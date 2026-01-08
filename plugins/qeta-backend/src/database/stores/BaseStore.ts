@@ -32,22 +32,35 @@ export abstract class BaseStore {
     searchQuery: string,
   ) {
     if (this.db.client.config.client === 'pg') {
-      const formattedQuery = searchQuery
-        .trim()
-        .split(/\s+/)
-        .map(term => `'${term.replace(/'/g, "''")}':*`)
-        .join(' & ');
+      const terms = searchQuery.trim().split(/\s+/);
 
-      query.whereRaw(
-        `((to_tsvector('english', CONCAT_WS(' ', ${columns.join(
-          ',',
-        )})) @@ to_tsquery('english', ?)))`,
-        [formattedQuery],
-      );
+      query.andWhere(builder => {
+        const coalescedColumns = columns
+          .map(col => `COALESCE(${col}::text, '')`)
+          .join(` || ' ' || `);
+
+        terms.forEach(term => {
+          builder.andWhereRaw(`(${coalescedColumns}) %> ?`, [term]);
+        });
+
+        const concatenatedColumns = `LOWER(CONCAT(${columns.join(',')}))`;
+        terms.forEach(term => {
+          builder.andWhereRaw(`${concatenatedColumns} LIKE LOWER(?)`, [
+            `%${term}%`,
+          ]);
+        });
+      });
     } else {
-      query.whereRaw(`LOWER(CONCAT(${columns.join(',')})) LIKE LOWER(?)`, [
-        `%${searchQuery}%`,
-      ]);
+      query.andWhere(builder => {
+        const terms = searchQuery.trim().split(/\s+/);
+
+        terms.forEach(term => {
+          builder.orWhereRaw(
+            `LOWER(CONCAT(${columns.join(',')})) LIKE LOWER(?)`,
+            [`%${term}%`],
+          );
+        });
+      });
     }
   }
 

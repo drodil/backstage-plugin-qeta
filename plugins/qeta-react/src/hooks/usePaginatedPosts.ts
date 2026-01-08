@@ -158,6 +158,8 @@ export function usePaginatedPosts(props: PaginatedPostsProps) {
   useDebounce(
     () => {
       if (filters.searchQuery !== searchQuery) {
+        setPage(1);
+        setPosts([]);
         setFilters({ ...filters, searchQuery: searchQuery });
       }
     },

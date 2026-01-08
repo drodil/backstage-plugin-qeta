@@ -21,12 +21,20 @@ export class UsersStore extends BaseStore {
     options?: { entityRefs?: string[] } & UsersQuery,
   ): Promise<UsersResponse> {
     const query = this.getUserBaseQuery();
-    if (options?.entityRefs) {
+    if (options?.entityRefs && options.entityRefs.length > 0) {
       const authorColumn =
         this.db.client.config.client === 'pg'
           ? 'unique_authors.author'
           : 'author';
       query.whereIn(authorColumn, options.entityRefs);
+    }
+
+    if (options?.searchQuery) {
+      const authorColumn =
+        this.db.client.config.client === 'pg'
+          ? 'unique_authors.author'
+          : 'author';
+      this.applySearchQuery(query, [authorColumn], options.searchQuery);
     }
 
     const totalQuery = query.clone();
@@ -48,16 +56,6 @@ export class UsersStore extends BaseStore {
 
     if (options?.offset) {
       query.offset(options.offset);
-    }
-
-    if (options?.searchQuery) {
-      if (this.db.client.config.client === 'pg') {
-        query.whereRaw('author % ?', [options.searchQuery]);
-      } else {
-        query.whereRaw('LOWER(author) LIKE LOWER(?)', [
-          `%${options.searchQuery}%`,
-        ]);
-      }
     }
 
     const results = await Promise.all([
