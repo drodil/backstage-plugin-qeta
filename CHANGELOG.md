@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.52.6](https://github.com/drodil/backstage-plugin-qeta/compare/v3.52.5...v3.52.6) (2026-01-08)
+
+
+### Bug Fixes
+
+* search to use trigram + gin indexes ([be73d7b](https://github.com/drodil/backstage-plugin-qeta/commit/be73d7b72939ccb4ba3836006957aed15b037452))
+
 ### [3.52.5](https://github.com/drodil/backstage-plugin-qeta/compare/v3.52.4...v3.52.5) (2026-01-08)
 
 
