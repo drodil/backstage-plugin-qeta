@@ -21,6 +21,7 @@ export type QetaEntitiesProps<T, F> = {
   filterKeys?: string[];
   fetchDeps?: any[];
   getKey?: (item: T) => string | number;
+  usePagination?: boolean;
 };
 
 export type FilterChange<F> = {
@@ -37,6 +38,7 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
     filterKeys,
     fetchDeps,
     getKey,
+    usePagination,
   } = props;
   const analytics = useAnalytics();
   const [page, setPage] = useState(1);
@@ -52,6 +54,12 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
   const [items, setItems] = useState<T[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    if (defaultPageSize) {
+      setPageSize(defaultPageSize);
+    }
+  }, [defaultPageSize]);
 
   useEffect(() => {
     const currentExpanded = getSetting('filterPanelExpanded');
@@ -77,7 +85,6 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
   const onFilterChange = (changes: FilterChange<F> | FilterChange<F>[]) => {
     const changesArray = Array.isArray(changes) ? changes : [changes];
     setPage(1);
-    setItems([]);
     setFilters(prev => {
       const newValue = { ...prev };
       for (const { key, value } of changesArray) {
@@ -114,7 +121,6 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
 
   const onSearchQueryChange = (query: string) => {
     onPageChange(1);
-    setItems([]);
     if (query) {
       analytics.captureEvent(`qeta_search_${prefix}`, query);
     }
@@ -181,7 +187,7 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
 
   useEffect(() => {
     if (response) {
-      if (page === 1) {
+      if (page === 1 || usePagination) {
         setItems(response.items);
       } else {
         setItems(prev => {
@@ -200,7 +206,7 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
       setHasMore((response.items ?? []).length >= pageSize);
       setTotal(response.total);
     }
-  }, [response, page, pageSize, getKey]);
+  }, [response, page, pageSize, getKey, usePagination]);
 
   const onPageSizeChange = (value: number) => {
     if (response) {
@@ -236,7 +242,10 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
     onFilterChange,
     onSearchQueryChange,
     response,
-    items: page === 1 && !loading && response ? response.items : items,
+    items:
+      (page === 1 || usePagination) && !loading && response
+        ? response.items
+        : items,
     hasMore,
     total,
     loading,

@@ -417,6 +417,11 @@ export const qetaTranslationRef = createTranslationRef({
         description:
           'Show AI-generated answers in expanded state when viewing questions',
       },
+      usePagination: {
+        label: 'Use Pagination',
+        description:
+          'Use traditional pagination instead of infinite scrolling to load more items',
+      },
       viewTypePreferences: {
         title: 'View Type Preferences',
         description:
@@ -707,6 +712,9 @@ export const qetaTranslationRef = createTranslationRef({
       bottom: 'Rank this question to the bottom in this collection',
       up: 'Rank this question up in this collection',
       down: 'Rank this question down in this collection',
+    },
+    pagination: {
+      defaultTooltip: 'Items per page',
     },
     filterPanel: {
       filterButton: 'Filter',

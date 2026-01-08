@@ -187,6 +187,22 @@ export const SettingsPage = () => {
             </div>
           )}
 
+          <div className={classes.settingItem}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={settings.usePagination}
+                  onChange={e => setSetting('usePagination', e.target.checked)}
+                  color="primary"
+                />
+              }
+              label={t('settingsPage.usePagination.label', {})}
+            />
+            <Typography className={classes.description}>
+              {t('settingsPage.usePagination.description', {})}
+            </Typography>
+          </div>
+
           <Box mt={3}>
             <Typography
               variant="subtitle1"

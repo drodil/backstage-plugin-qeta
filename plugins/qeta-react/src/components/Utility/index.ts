@@ -3,3 +3,4 @@ export * from './DeletedBanner.tsx';
 export * from './DraftBanner.tsx';
 export * from './ObsoleteBanner.tsx';
 export * from './StatusChip.tsx';
+export * from './QetaPagination.tsx';

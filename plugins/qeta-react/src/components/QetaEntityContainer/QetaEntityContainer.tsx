@@ -24,13 +24,14 @@ import {
   Filters,
 } from '../FilterPanel/FilterPanel';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
+import { QetaPagination } from '../Utility';
 import { qetaTranslationRef } from '../../translation';
 import { ViewToggle, ViewType } from '../ViewToggle/ViewToggle';
 import {
   QetaIdEntity,
   UserResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useRef } from 'react';
 import { useUserSettings } from '../../hooks/useUserSettings';
 
 export type QetaEntityContainerProps<T, F extends Filters> = QetaEntitiesProps<
@@ -103,14 +104,31 @@ export function QetaEntityContainer<
     onSearchQueryChange,
     onFilterChange,
     filters,
+    page,
     loadNextPage,
+    onPageChange,
+    onPageSizeChange,
+    pageSize,
     retry,
-  } = useQetaEntities({ ...hookProps, getKey });
+  } = useQetaEntities<T, F>({
+    ...hookProps,
+    getKey,
+    usePagination: settings.usePagination,
+    defaultPageSize: settings.usePagination ? 10 : hookProps.defaultPageSize,
+  });
+
+  const topRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (settings.usePagination) {
+      topRef.current?.scrollIntoView({ behavior: 'auto' });
+    }
+  }, [page, settings.usePagination]);
 
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const { containerRef: sentryRef } = useInfiniteScroll({
-    shouldStop: !hasMore || !!error || loading,
+    shouldStop: settings.usePagination || !hasMore || !!error || loading,
     onLoadMore: async () => {
       if (loadNextPage) {
         loadNextPage();
@@ -122,101 +140,121 @@ export function QetaEntityContainer<
   const resolvedTitle = typeof title === 'function' ? title(total) : title;
 
   return (
-    <Box>
-      <QetaGridHeader
-        title={resolvedTitle}
-        searchBarLabel={searchPlaceholder ?? t('common.search')}
-        loading={loading}
-        onSearch={onSearchQueryChange}
-        buttons={
-          <>
-            {typeof headerButtons === 'function'
-              ? headerButtons({ retry })
-              : headerButtons}
-            {filterPanelProps && (
-              <Button
-                onClick={() => setShowFilterPanel(!showFilterPanel)}
-                startIcon={<FilterList />}
-              >
-                {t('filterPanel.filterButton')}
-              </Button>
-            )}
-          </>
-        }
-        rightElement={
-          renderListItem &&
-          renderGridItem && <ViewToggle view={view} onChange={onSetView} />
-        }
-      />
-
-      {filterPanelProps && (
-        <Collapse in={showFilterPanel}>
-          <FilterPanel<F>
-            onChange={onFilterChange}
-            filters={filters}
-            mode={filterPanelProps.mode ?? 'posts'}
-            {...filterPanelProps}
-          />
-        </Collapse>
-      )}
-
-      {loading && items.length === 0 && <LoadingGrid />}
-
-      {error && (
-        <WarningPanel severity="error" title={t('common.error')}>
-          {error?.message}
-        </WarningPanel>
-      )}
-
-      {!loading && !error && items.length === 0 && emptyState}
-
-      {items.length > 0 && (
-        <>
-          {view === 'grid' && renderGridItem && (
-            <Grid container spacing={3} direction="row" alignItems="stretch">
-              {items.map((item, index) => (
-                <Grid
-                  item
-                  xs={12}
-                  md={6}
-                  xl={4}
-                  key={getKey ? getKey(item) : index}
-                  {...gridItemProps}
+    <div ref={topRef}>
+      <Box>
+        <QetaGridHeader
+          title={resolvedTitle}
+          searchBarLabel={searchPlaceholder ?? t('common.search')}
+          loading={loading}
+          onSearch={onSearchQueryChange}
+          buttons={
+            <>
+              {typeof headerButtons === 'function'
+                ? headerButtons({ retry })
+                : headerButtons}
+              {filterPanelProps && (
+                <Button
+                  onClick={() => setShowFilterPanel(!showFilterPanel)}
+                  startIcon={<FilterList />}
                 >
-                  {renderGridItem(item, { retry })}
-                </Grid>
-              ))}
-            </Grid>
-          )}
-          {view === 'list' && renderListItem && (
-            <Card>
-              <Grid container direction="column">
+                  {t('filterPanel.filterButton')}
+                </Button>
+              )}
+            </>
+          }
+          rightElement={
+            renderListItem &&
+            renderGridItem && <ViewToggle view={view} onChange={onSetView} />
+          }
+        />
+
+        {filterPanelProps && (
+          <Collapse in={showFilterPanel}>
+            <FilterPanel<F>
+              onChange={onFilterChange}
+              filters={filters}
+              mode={filterPanelProps.mode ?? 'posts'}
+              {...filterPanelProps}
+            />
+          </Collapse>
+        )}
+
+        {loading && (items.length === 0 || settings.usePagination) && (
+          <LoadingGrid />
+        )}
+
+        {error && (
+          <WarningPanel severity="error" title={t('common.error')}>
+            {error?.message}
+          </WarningPanel>
+        )}
+
+        {!loading && !error && items.length === 0 && emptyState}
+
+        {items.length > 0 && (!loading || !settings.usePagination) && (
+          <>
+            {view === 'grid' && renderGridItem && (
+              <Grid container spacing={3} direction="row" alignItems="stretch">
                 {items.map((item, index) => (
-                  <Fragment
-                    key={getKey ? getKey(item) : (item as any).id || index}
+                  <Grid
+                    item
+                    xs={12}
+                    md={6}
+                    xl={4}
+                    key={getKey ? getKey(item) : index}
+                    {...gridItemProps}
                   >
-                    {renderListItem(item, { retry })}
-                    {index < items.length - 1 && <Divider />}
-                  </Fragment>
+                    {renderGridItem(item, { retry })}
+                  </Grid>
                 ))}
               </Grid>
-            </Card>
-          )}
+            )}
+            {view === 'list' && renderListItem && (
+              <Card>
+                <Grid container direction="column">
+                  {items.map((item, index) => (
+                    <Fragment
+                      key={getKey ? getKey(item) : (item as any).id || index}
+                    >
+                      {renderListItem(item, { retry })}
+                      {index < items.length - 1 && <Divider />}
+                    </Fragment>
+                  ))}
+                </Grid>
+              </Card>
+            )}
 
-          {!renderGridItem && !renderListItem && (
-            <Typography variant="body1">
-              No renderer provided for current view.
-            </Typography>
-          )}
+            {!renderGridItem && !renderListItem && (
+              <Typography variant="body1">
+                No renderer provided for current view.
+              </Typography>
+            )}
 
-          <div
-            ref={sentryRef as any}
-            style={{ width: '100%', marginTop: '10px', textAlign: 'center' }}
-          >
-            {loading && <LoadingGrid />}
-          </div>
-        </>
-      )}
-    </Box>
+            <div
+              ref={!settings.usePagination ? (sentryRef as any) : undefined}
+              style={{
+                width: '100%',
+                marginTop: '10px',
+                textAlign: 'center',
+              }}
+            >
+              {loading && <LoadingGrid />}
+            </div>
+          </>
+        )}
+
+        {settings.usePagination && total > pageSize && (
+          <QetaPagination
+            pageSize={pageSize}
+            handlePageSizeChange={e =>
+              onPageSizeChange(e.target.value as number)
+            }
+            handlePageChange={(_e, p) => onPageChange(p)}
+            page={page}
+            pageCount={Math.ceil(total / pageSize)}
+          />
+        )}
+      </Box>
+    </div>
   );
 }

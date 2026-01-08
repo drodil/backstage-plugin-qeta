@@ -8,6 +8,7 @@ export type UserSettings = {
   filterPanelExpanded: Record<string, boolean>;
   viewType: Record<string, ViewType>;
   aiAnswerExpanded: boolean;
+  usePagination: boolean;
 };
 
 const DEFAULT_SETTINGS: UserSettings = {
@@ -15,6 +16,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   filterPanelExpanded: {},
   viewType: {},
   aiAnswerExpanded: false,
+  usePagination: false,
 };
 
 const BUCKET_KEY = 'qeta';
