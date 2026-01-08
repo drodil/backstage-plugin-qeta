@@ -29,6 +29,7 @@ import { capitalize } from 'lodash';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
 import LinkIcon from '@material-ui/icons/Link';
+import { parseEntityRef } from '@backstage/catalog-model';
 
 const useStyles = makeStyles({
   excerptText: {
@@ -86,7 +87,12 @@ const Excerpt = (props: {
       300,
     ),
   );
+
   if (isQetaPostDocument(document)) {
+    const authorEntity = parseEntityRef(document.author, {
+      defaultKind: 'user',
+      defaultNamespace: 'default',
+    });
     return (
       <>
         <span className={classes.excerptText}>
@@ -95,7 +101,7 @@ const Excerpt = (props: {
           {t('searchResult.created')}{' '}
           {DateTime.fromISO(document.created.toString() as string).toRelative()}
           {' · '}
-          <EntityRefLink entityRef={document.author} hideIcon />
+          <EntityRefLink entityRef={authorEntity} hideIcon />
           {document.postType !== 'link' && (
             <>
               {' · '}
@@ -128,6 +134,10 @@ const Excerpt = (props: {
       </>
     );
   } else if (isQetaCollectionDocument(document)) {
+    const ownerEntity = parseEntityRef(document.owner, {
+      defaultKind: 'user',
+      defaultNamespace: 'default',
+    });
     return (
       <>
         <span className={classes.excerptText}>
@@ -136,7 +146,7 @@ const Excerpt = (props: {
           {t('searchResult.created')}{' '}
           {DateTime.fromISO(document.created.toString() as string).toRelative()}
           {' · '}
-          <EntityRefLink entityRef={document.owner} hideIcon />
+          <EntityRefLink entityRef={ownerEntity} hideIcon />
           {' · '}
           {t('common.posts', {
             count: document.postsCount,
