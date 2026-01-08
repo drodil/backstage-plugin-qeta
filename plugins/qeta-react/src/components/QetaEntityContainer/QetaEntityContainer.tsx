@@ -30,7 +30,8 @@ import {
   QetaIdEntity,
   UserResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
+import { useUserSettings } from '../../hooks/useUserSettings';
 
 export type QetaEntityContainerProps<T, F extends Filters> = QetaEntitiesProps<
   T,
@@ -70,21 +71,25 @@ export function QetaEntityContainer<
   defaultView = 'grid',
   ...hookProps
 }: QetaEntityContainerProps<T, F>) {
-  const [view, setView] = useState<ViewType>(() => {
-    if (typeof localStorage !== 'undefined') {
-      const savedView = localStorage.getItem(
-        `qeta-${hookProps.prefix}-view`,
-      ) as ViewType;
+  const { settings, getSetting, setSetting, isLoaded } = useUserSettings();
+  const [view, setView] = useState<ViewType>(defaultView);
+
+  useEffect(() => {
+    if (isLoaded) {
+      const savedView = settings.viewType[hookProps.prefix];
       if (savedView) {
-        return savedView;
+        setView(savedView);
       }
     }
-    return defaultView;
-  });
+  }, [isLoaded, settings.viewType, hookProps.prefix]);
 
   const onSetView = (v: ViewType) => {
     setView(v);
-    localStorage.setItem(`qeta-${hookProps.prefix}-view`, v);
+    const currentViewTypes = getSetting('viewType');
+    setSetting('viewType', {
+      ...currentViewTypes,
+      [hookProps.prefix]: v,
+    });
   };
 
   const {
@@ -173,8 +178,8 @@ export function QetaEntityContainer<
                 <Grid
                   item
                   xs={12}
-                  md={12}
-                  lg={6}
+                  md={6}
+                  xl={4}
                   key={getKey ? getKey(item) : index}
                   {...gridItemProps}
                 >

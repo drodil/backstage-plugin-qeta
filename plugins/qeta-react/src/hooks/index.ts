@@ -12,3 +12,4 @@ export * from './useAI';
 export * from './useCanReview';
 export * from './useGridPageSize';
 export * from './useQetaEntities';
+export * from './useUserSettings';

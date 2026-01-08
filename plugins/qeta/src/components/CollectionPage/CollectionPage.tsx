@@ -43,7 +43,7 @@ export const CollectionPage = () => {
 
   if (error || collection === undefined) {
     return (
-      <WarningPanel severity="error" title={t('questionPage.errorLoading')}>
+      <WarningPanel severity="error" title={t('questionPage.errorLoading', {})}>
         {error?.message}
       </WarningPanel>
     );
@@ -77,7 +77,7 @@ export const CollectionPage = () => {
               )
             }
           >
-            {t('templateList.editButton')}
+            {t('templateList.editButton', {})}
           </Button>
         )}
         {collection.canDelete && (
@@ -87,7 +87,7 @@ export const CollectionPage = () => {
             startIcon={<DeleteIcon />}
             onClick={handleDeleteModalOpen}
           >
-            {t('templateList.deleteButton')}
+            {t('templateList.deleteButton', {})}
           </Button>
         )}
       </ContentHeader>
@@ -123,6 +123,7 @@ export const CollectionPage = () => {
             orderBy="rank"
             allowRanking={collection.canEdit}
             defaultView="grid"
+            prefix="collection-posts"
           />
         </Grid>
       </Grid>

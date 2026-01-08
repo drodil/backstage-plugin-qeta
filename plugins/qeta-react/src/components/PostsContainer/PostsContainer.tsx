@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   CommonFilterPanelProps,
   PostFilters,
@@ -42,6 +41,7 @@ export type PostsContainerProps = {
   view?: ViewType;
   onViewChange?: (view: ViewType) => void;
   status?: string;
+  prefix?: string;
   orderBy?:
     | 'rank'
     | 'created'
@@ -73,6 +73,7 @@ export const PostsContainer = (props: PostsContainerProps) => {
     collectionId,
     initialPageSize,
     orderBy,
+    prefix,
   } = props;
 
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -148,7 +149,7 @@ export const PostsContainer = (props: PostsContainerProps) => {
     <Box className="qetaPostsContainer">
       {headerElement}
       <QetaEntityContainer<PostResponse, PostFilters>
-        prefix={`posts${type ? `-${type}` : ''}`}
+        prefix={prefix ?? `posts${type ? `-${type}` : ''}`}
         defaultPageSize={initialPageSize}
         initialFilters={{
           order: 'desc',
@@ -162,6 +163,7 @@ export const PostsContainer = (props: PostsContainerProps) => {
           noVotes: 'false',
           noCorrectAnswer: 'false',
           status: props.status as any,
+          collectionId: collectionId,
         }}
         filterPanelProps={
           showFilters ?? true
@@ -200,12 +202,15 @@ export const PostsContainer = (props: PostsContainerProps) => {
             collectionId={collectionId}
           />
         )}
-        renderListItem={post => (
+        renderListItem={(post, { retry }) => (
           <PostListItem
             post={post}
             entity={entity}
             type={type as PostType}
             showTypeLabel={showTypeLabel}
+            allowRanking={allowRanking}
+            onRankUpdate={retry}
+            collectionId={collectionId}
           />
         )}
         title={total => (

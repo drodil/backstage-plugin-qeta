@@ -6,6 +6,7 @@ import { useQetaApi } from './useQetaApi';
 import { QetaApi } from '@drodil/backstage-plugin-qeta-common';
 import { filterKeys as globalFilterKeys } from '../components/FilterPanel/FilterPanel';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
+import { useUserSettings } from './useUserSettings';
 
 export type QetaEntitiesProps<T, F> = {
   fetch: (
@@ -40,8 +41,9 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
   const analytics = useAnalytics();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize ?? 24);
+  const { getSetting, setSetting } = useUserSettings();
   const [showFilterPanel, setShowFilterPanel] = useState(
-    localStorage.getItem(`qeta-${prefix}-filters-expanded`) === 'true',
+    getSetting('filterPanelExpanded')[prefix] ?? false,
   );
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,11 +54,12 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    localStorage.setItem(
-      `qeta-${prefix}-filters-expanded`,
-      showFilterPanel ? 'true' : 'false',
-    );
-  }, [showFilterPanel, prefix]);
+    const currentExpanded = getSetting('filterPanelExpanded');
+    setSetting('filterPanelExpanded', {
+      ...currentExpanded,
+      [prefix]: showFilterPanel,
+    });
+  }, [showFilterPanel, prefix, getSetting, setSetting]);
 
   const onPageChange = (value: number) => {
     setPage(value);

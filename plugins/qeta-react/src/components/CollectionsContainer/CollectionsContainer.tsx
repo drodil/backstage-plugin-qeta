@@ -11,13 +11,14 @@ export const CollectionsContainer = (props: {
   filterPanelProps?: CommonFilterPanelProps;
   defaultView?: ViewType;
   owner?: string;
+  prefix?: string;
 }) => {
-  const { filterPanelProps, defaultView, owner } = props;
+  const { filterPanelProps, defaultView, owner, prefix } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
 
   return (
     <QetaEntityContainer<CollectionResponse, any>
-      prefix="collections"
+      prefix={prefix ?? 'collections'}
       defaultPageSize={24}
       defaultView={defaultView}
       initialFilters={{

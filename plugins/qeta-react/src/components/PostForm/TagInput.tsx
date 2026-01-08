@@ -10,6 +10,7 @@ import {
 import {
   ComponentType,
   CSSProperties,
+  forwardRef,
   HTMLAttributes,
   useEffect,
   useMemo,
@@ -29,18 +30,21 @@ import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { useDebounce } from 'react-use';
 
-export const TagInput = (props: {
-  value?: string[];
-  onChange: (value: string[]) => void;
-  error?: FieldError;
-  allowCreate?: boolean;
-  hideHelpText?: boolean;
-  style?: CSSProperties;
-  title?: string;
-  name?: string;
-  content?: string;
-  entities?: string[];
-}) => {
+export const TagInput = forwardRef<
+  any,
+  {
+    value?: string[];
+    onChange: (value: string[]) => void;
+    error?: FieldError;
+    allowCreate?: boolean;
+    hideHelpText?: boolean;
+    style?: CSSProperties;
+    title?: string;
+    name?: string;
+    content?: string;
+    entities?: string[];
+  }
+>((props, _ref) => {
   const {
     value,
     onChange,
@@ -271,4 +275,6 @@ export const TagInput = (props: {
       )}{' '}
     </Box>
   );
-};
+});
+
+TagInput.displayName = 'TagInput';

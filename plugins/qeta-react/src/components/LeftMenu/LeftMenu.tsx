@@ -25,6 +25,7 @@ import PeopleOutline from '@material-ui/icons/PeopleOutline';
 import PersonOutline from '@material-ui/icons/PersonOutline';
 import EmojiEventsOutlined from '@material-ui/icons/EmojiEventsOutlined'; // Check, else plain
 import SettingsOutlined from '@material-ui/icons/SettingsOutlined';
+import GavelOutlined from '@material-ui/icons/GavelOutlined';
 import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import RateReviewOutlined from '@material-ui/icons/RateReviewOutlined';
@@ -39,6 +40,7 @@ import {
   qetaRouteRef,
   questionsRouteRef,
   reviewRouteRef,
+  settingsRouteRef,
   statisticsRouteRef,
   tagsRouteRef,
   userRouteRef,
@@ -175,6 +177,7 @@ export const LeftMenu = (props: {
   const usersRoute = useRouteRef(usersRouteRef);
   const moderatorRoute = useRouteRef(moderatorRouteRef);
   const reviewRoute = useRouteRef(reviewRouteRef);
+  const settingsRoute = useRouteRef(settingsRouteRef);
   const styles = useStyles(props);
   const { t } = useTranslationRef(qetaTranslationRef);
   const location = useLocation();
@@ -366,32 +369,30 @@ export const LeftMenu = (props: {
         </ListItemIcon>
       </CustomMenuItem>
 
-      {(isModerator || canReview) && (
-        <>
-          <li style={{ listStyle: 'none' }}>
-            <Typography className={styles.sectionHeader}>
-              {t('leftMenu.manage')}
-            </Typography>
-          </li>
+      <li style={{ listStyle: 'none' }}>
+        <Typography className={styles.sectionHeader}>
+          {t('leftMenu.manage')}
+        </Typography>
+      </li>
+      <CustomMenuItem route={settingsRoute()} label={t('leftMenu.settings')}>
+        <ListItemIcon className={styles.menuIcon}>
+          <SettingsOutlined fontSize="small" />
+        </ListItemIcon>
+      </CustomMenuItem>
 
-          {canReview && (
-            <CustomMenuItem route={reviewRoute()} label={t('leftMenu.review')}>
-              <ListItemIcon className={styles.menuIcon}>
-                <RateReviewOutlined fontSize="small" />
-              </ListItemIcon>
-            </CustomMenuItem>
-          )}
-          {isModerator && (
-            <CustomMenuItem
-              route={moderatorRoute()}
-              label={t('leftMenu.moderate')}
-            >
-              <ListItemIcon className={styles.menuIcon}>
-                <SettingsOutlined fontSize="small" />
-              </ListItemIcon>
-            </CustomMenuItem>
-          )}
-        </>
+      {canReview && (
+        <CustomMenuItem route={reviewRoute()} label={t('leftMenu.review')}>
+          <ListItemIcon className={styles.menuIcon}>
+            <RateReviewOutlined fontSize="small" />
+          </ListItemIcon>
+        </CustomMenuItem>
+      )}
+      {isModerator && (
+        <CustomMenuItem route={moderatorRoute()} label={t('leftMenu.moderate')}>
+          <ListItemIcon className={styles.menuIcon}>
+            <GavelOutlined fontSize="small" />
+          </ListItemIcon>
+        </CustomMenuItem>
       )}
       {!isPopup && (
         <Box

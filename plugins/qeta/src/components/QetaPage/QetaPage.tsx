@@ -31,6 +31,7 @@ import {
   questionRouteRef,
   questionsRouteRef,
   reviewRouteRef,
+  settingsRouteRef,
   statisticsRouteRef,
   tagRouteRef,
   tagsRouteRef,
@@ -53,6 +54,7 @@ import { EntityPage } from '../EntityPage/EntityPage';
 import { UsersPage } from '../UsersPage/UsersPage';
 import { ModeratorPage } from '../ModeratorPage/ModeratorPage';
 import { ReviewPage } from '../ReviewPage/ReviewPage';
+import { SettingsPage } from '../SettingsPage/SettingsPage';
 import { Box, Container, Grid, makeStyles } from '@material-ui/core';
 import { useSidebarSettings } from '../../hooks/useSidebarSettings';
 import { RightContent } from '../RightContent/RightContent';
@@ -105,8 +107,7 @@ const useStyles = makeStyles(theme => ({
     top: theme.spacing(2),
     alignSelf: 'flex-start',
     maxHeight: 'calc(100vh - 100px)',
-    overflowY: 'auto',
-    overflowX: 'hidden',
+    overflow: 'hidden',
     [theme.breakpoints.up('lg')]: {
       width: (props: StyleProps) => (props.rightCompact ? 72 : 320),
       minWidth: (props: StyleProps) => (props.rightCompact ? 72 : 320),
@@ -263,6 +264,10 @@ export const QetaPage = (props?: Props) => {
                     element={<ModeratorPage />}
                   />
                   <Route path={reviewRouteRef.path} element={<ReviewPage />} />
+                  <Route
+                    path={settingsRouteRef.path}
+                    element={<SettingsPage />}
+                  />
                 </Routes>
               </Grid>
               {!hideRightSidebar && (

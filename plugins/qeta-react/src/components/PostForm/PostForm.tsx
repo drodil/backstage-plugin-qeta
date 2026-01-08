@@ -50,7 +50,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import HelpIcon from '@material-ui/icons/Help';
 import { useDebounce } from 'react-use';
-import { useIdentityApi, useIsModerator } from '../../hooks';
+import { useIdentityApi, useIsModerator, useUserSettings } from '../../hooks';
 
 const formToRequest = (
   form: QuestionFormValues,
@@ -163,15 +163,10 @@ export const PostForm = (props: PostFormProps) => {
   const [loadError, setLoadError] = useState(false);
   const [edited, setEdited] = useState(false);
   const [draftId, setDraftId] = useState<string | undefined>(id);
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState(() => {
-    const saved = localStorage.getItem('qeta-auto-save-enabled');
-    try {
-      return saved ? JSON.parse(saved) : false;
-    } catch (_) {
-      localStorage.removeItem('qeta-auto-save-enabled');
-      return false;
-    }
-  });
+  const { settings, setSetting } = useUserSettings();
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(
+    settings.autoSaveEnabled,
+  );
   const [images, setImages] = useState<number[]>([]);
   const [status, setStatus] = useState<PostStatus>('draft');
   const [searchParams, _setSearchParams] = useSearchParams();
@@ -544,17 +539,18 @@ export const PostForm = (props: PostFormProps) => {
   const handleAutoSaveChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.checked;
     setAutoSaveEnabled(newValue);
-    localStorage.setItem('qeta-auto-save-enabled', JSON.stringify(newValue));
+    setSetting('autoSaveEnabled', newValue);
   };
 
   useEffect(() => {
+    setAutoSaveEnabled(settings.autoSaveEnabled);
+  }, [settings.autoSaveEnabled]);
+
+  useEffect(() => {
     const subscription = watch((value, { type: eventType }) => {
-      // We still track edits for non-dirty interactions if any,
-      // but isDirty handles most form fields.
       if (eventType === 'change') {
         setEdited(true);
       }
-      // Always trigger suggestions update on value change
       onFormChange?.(value as QuestionFormValues);
     });
     return () => subscription.unsubscribe();

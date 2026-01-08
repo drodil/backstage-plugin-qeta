@@ -199,8 +199,8 @@ export class CollectionsStore extends BaseStore {
     postId: number,
   ): Promise<number | null> {
     const post = await this.db('collection_posts')
-      .where('collection_id', collectionId)
-      .where('post_id', postId)
+      .where('collectionId', collectionId)
+      .where('postId', postId)
       .first();
 
     if (!post) {
@@ -214,22 +214,22 @@ export class CollectionsStore extends BaseStore {
     collectionId: number,
   ): Promise<CollectionPostRank | null> {
     const post = await this.db('collection_posts')
-      .where('collection_id', collectionId)
+      .where('collectionId', collectionId)
       .orderBy('rank', 'asc')
       .first();
 
-    return post ? { postId: post.post_id, rank: post.rank } : null;
+    return post ? { postId: post.postId, rank: post.rank } : null;
   }
 
   async getBottomRankedPostId(
     collectionId: number,
   ): Promise<CollectionPostRank | null> {
     const post = await this.db('collection_posts')
-      .where('collection_id', collectionId)
+      .where('collectionId', collectionId)
       .orderBy('rank', 'desc')
       .first();
 
-    return post ? { postId: post.post_id, rank: post.rank } : null;
+    return post ? { postId: post.postId, rank: post.rank } : null;
   }
 
   async getNextRankedPostId(
@@ -242,12 +242,12 @@ export class CollectionsStore extends BaseStore {
     }
 
     const post = await this.db('collection_posts')
-      .where('collection_id', collectionId)
+      .where('collectionId', collectionId)
       .where('rank', '>', currentPostRank)
       .orderBy('rank', 'asc')
       .first();
 
-    return post ? { postId: post.post_id, rank: post.rank } : null;
+    return post ? { postId: post.postId, rank: post.rank } : null;
   }
 
   async getPreviousRankedPostId(
@@ -260,12 +260,12 @@ export class CollectionsStore extends BaseStore {
     }
 
     const post = await this.db('collection_posts')
-      .where('collection_id', collectionId)
+      .where('collectionId', collectionId)
       .where('rank', '<', currentPostRank)
       .orderBy('rank', 'desc')
       .first();
 
-    return post ? { postId: post.post_id, rank: post.rank } : null;
+    return post ? { postId: post.postId, rank: post.rank } : null;
   }
 
   async updatePostRank(
@@ -274,8 +274,8 @@ export class CollectionsStore extends BaseStore {
     rank: number,
   ): Promise<void> {
     await this.db('collection_posts')
-      .where('collection_id', collectionId)
-      .where('post_id', postId)
+      .where('collectionId', collectionId)
+      .where('postId', postId)
       .update({ rank });
   }
 

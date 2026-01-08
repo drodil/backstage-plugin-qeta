@@ -7,6 +7,7 @@ import {
   QetaEntityContainerProps,
 } from '../QetaEntityContainer/QetaEntityContainer';
 import { AnswerListItem } from './AnswerListItem';
+import { AnswersGridItem } from './AnswersGridItem';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 
@@ -17,10 +18,11 @@ export interface AnswersContainerProps {
   showFilters?: boolean;
   showTitle?: boolean;
   title?: string;
+  prefix?: string;
 }
 
 export const AnswersContainer = (props: AnswersContainerProps) => {
-  const { tags, author, entity, showFilters, title, showTitle } = props;
+  const { tags, author, entity, showFilters, title, showTitle, prefix } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const fetchAnswers: QetaEntityContainerProps<
@@ -44,14 +46,14 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
   if (author) {
     resolvedTitle = (
       <>
-        {t('answerContainer.title.answersBy')}{' '}
+        {t('answerContainer.title.answersBy', {})}{' '}
         <EntityRefLink entityRef={author} hideIcon defaultKind="user" />
       </>
     );
   } else if (entity) {
     resolvedTitle = (
       <>
-        {t('answerContainer.title.answersAbout')}{' '}
+        {t('answerContainer.title.answersAbout', {})}{' '}
         <EntityRefLink entityRef={entity} />
       </>
     );
@@ -63,10 +65,13 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
 
   return (
     <QetaEntityContainer<AnswerResponse, AnswerFilters>
-      prefix="answers"
+      prefix={prefix ?? 'answers'}
       fetch={fetchAnswers}
       renderListItem={(answer: AnswerResponse) => (
         <AnswerListItem answer={answer} entity={entity} />
+      )}
+      renderGridItem={(answer: AnswerResponse) => (
+        <AnswersGridItem answer={answer} entity={entity} />
       )}
       defaultView="list"
       filterPanelProps={

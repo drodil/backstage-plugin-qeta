@@ -12,6 +12,7 @@ import {
 import {
   ComponentType,
   CSSProperties,
+  forwardRef,
   HTMLAttributes,
   useCallback,
   useMemo,
@@ -78,279 +79,283 @@ const CATALOG_FIELDS = [
   'spec.profile.email',
 ];
 
-export const EntitiesInput = (props: EntitiesInputProps) => {
-  const {
-    value,
-    singleValue,
-    onChange,
-    multiple = true,
-    required = false,
-    useOnlyUsedEntities = false,
-    hideHelpText = false,
-    style,
-    disabled,
-    kind,
-    error,
-    maximum,
-    label,
-    name = 'entities',
-    placeholder,
-    autocompleteProps,
-    title,
-    content,
-    tags,
-  } = props;
+export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
+  (props, _ref) => {
+    const {
+      value,
+      singleValue,
+      onChange,
+      multiple = true,
+      required = false,
+      useOnlyUsedEntities = false,
+      hideHelpText = false,
+      style,
+      disabled,
+      kind,
+      error,
+      maximum,
+      label,
+      name = 'entities',
+      placeholder,
+      autocompleteProps,
+      title,
+      content,
+      tags,
+    } = props;
 
-  const configApi = useApi(configApiRef);
-  const catalogApi = useApi(catalogApiRef);
-  const qetaApi = useApi(qetaApiRef);
-  const [availableEntities, setAvailableEntities] = useState<Entity[] | null>(
-    [],
-  );
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const { t } = useTranslationRef(qetaTranslationRef);
-  const [suggestedEntities, setSuggestedEntities] = useState<Entity[]>([]);
-  const [, setLoadingSuggestions] = useState(false);
+    const configApi = useApi(configApiRef);
+    const catalogApi = useApi(catalogApiRef);
+    const qetaApi = useApi(qetaApiRef);
+    const [availableEntities, setAvailableEntities] = useState<Entity[] | null>(
+      [],
+    );
+    const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
+    const { t } = useTranslationRef(qetaTranslationRef);
+    const [suggestedEntities, setSuggestedEntities] = useState<Entity[]>([]);
+    const [, setLoadingSuggestions] = useState(false);
 
-  const entityKinds: string[] = useMemo(() => {
-    if (kind) {
-      return kind;
-    }
-    return getSupportedEntityKinds(configApi);
-  }, [configApi, kind]);
-  const max = useMemo(() => {
-    if (maximum) {
-      return maximum;
-    }
-    return configApi.getOptionalNumber('qeta.entities.max') ?? 3;
-  }, [configApi, maximum]);
-
-  const handleOpen = useCallback(() => {
-    setOpen(true);
-    (async () => {
-      setLoading(true);
-      if (singleValue) {
-        const entity = await catalogApi.getEntityByRef(singleValue);
-        setLoading(false);
-        setAvailableEntities(entity ? [entity] : null);
-        return;
+    const entityKinds: string[] = useMemo(() => {
+      if (kind) {
+        return kind;
       }
-
-      if (useOnlyUsedEntities) {
-        const qetaEntities = await qetaApi.getEntities();
-        const refs = qetaEntities.entities.map(r => r.entityRef);
-        const catalogData = await catalogApi.getEntitiesByRefs({
-          entityRefs: refs,
-          fields: CATALOG_FIELDS,
-        });
-        setLoading(false);
-        setAvailableEntities(
-          catalogData
-            ? compact(catalogData.items).sort((a, b) =>
-                getEntityTitle(a).localeCompare(getEntityTitle(b)),
-              )
-            : null,
-        );
-        return;
+      return getSupportedEntityKinds(configApi);
+    }, [configApi, kind]);
+    const max = useMemo(() => {
+      if (maximum) {
+        return maximum;
       }
+      return configApi.getOptionalNumber('qeta.entities.max') ?? 3;
+    }, [configApi, maximum]);
 
-      if (entityKinds && entityKinds.length > 0) {
-        const entities = await catalogApi.getEntities({
-          filter: { kind: entityKinds },
-          fields: CATALOG_FIELDS,
-          order: [
-            { field: 'kind', order: 'asc' },
-            { field: 'metadata.title', order: 'asc' },
-          ],
-        });
-        setLoading(false);
-        setAvailableEntities(entities ? entities.items : null);
-        return;
-      }
-      setLoading(false);
-      setAvailableEntities(null);
-    })();
-  }, [singleValue, useOnlyUsedEntities, entityKinds, catalogApi, qetaApi]);
+    const handleOpen = useCallback(() => {
+      setOpen(true);
+      (async () => {
+        setLoading(true);
+        if (singleValue) {
+          const entity = await catalogApi.getEntityByRef(singleValue);
+          setLoading(false);
+          setAvailableEntities(entity ? [entity] : null);
+          return;
+        }
 
-  const usedValue = useMemo(() => {
-    if (!value) {
-      return multiple ? [] : null;
-    }
-    return value;
-  }, [value, multiple]);
-
-  useDebounce(
-    () => {
-      if (title && content) {
-        setLoadingSuggestions(true);
-        qetaApi
-          .getEntitySuggestions({
-            title,
-            content,
-            tags,
-            entities: [value ?? []].flat().map(stringifyEntityRef),
-          })
-          .then(response => {
-            setSuggestedEntities(response.entities);
-          })
-          .catch(() => {
-            // Ignore errors
-          })
-          .finally(() => {
-            setLoadingSuggestions(false);
+        if (useOnlyUsedEntities) {
+          const qetaEntities = await qetaApi.getEntities();
+          const refs = qetaEntities.entities.map(r => r.entityRef);
+          const catalogData = await catalogApi.getEntitiesByRefs({
+            entityRefs: refs,
+            fields: CATALOG_FIELDS,
           });
+          setLoading(false);
+          setAvailableEntities(
+            catalogData
+              ? compact(catalogData.items).sort((a, b) =>
+                  getEntityTitle(a).localeCompare(getEntityTitle(b)),
+                )
+              : null,
+          );
+          return;
+        }
+
+        if (entityKinds && entityKinds.length > 0) {
+          const entities = await catalogApi.getEntities({
+            filter: { kind: entityKinds },
+            fields: CATALOG_FIELDS,
+            order: [
+              { field: 'kind', order: 'asc' },
+              { field: 'metadata.title', order: 'asc' },
+            ],
+          });
+          setLoading(false);
+          setAvailableEntities(entities ? entities.items : null);
+          return;
+        }
+        setLoading(false);
+        setAvailableEntities(null);
+      })();
+    }, [singleValue, useOnlyUsedEntities, entityKinds, catalogApi, qetaApi]);
+
+    const usedValue = useMemo(() => {
+      if (!value) {
+        return multiple ? [] : null;
       }
-    },
-    2000,
-    [title, content, qetaApi],
-  );
+      return value;
+    }, [value, multiple]);
 
-  const handleSuggestedEntityClick = (entity: Entity) => {
-    const values = [value ?? []].flat();
-    if (values && values.length < max && !values.includes(entity)) {
-      onChange([...values, entity]);
+    useDebounce(
+      () => {
+        if (title && content) {
+          setLoadingSuggestions(true);
+          qetaApi
+            .getEntitySuggestions({
+              title,
+              content,
+              tags,
+              entities: [value ?? []].flat().map(stringifyEntityRef),
+            })
+            .then(response => {
+              setSuggestedEntities(response.entities);
+            })
+            .catch(() => {
+              // Ignore errors
+            })
+            .finally(() => {
+              setLoadingSuggestions(false);
+            });
+        }
+      },
+      2000,
+      [title, content, qetaApi],
+    );
+
+    const handleSuggestedEntityClick = (entity: Entity) => {
+      const values = [value ?? []].flat();
+      if (values && values.length < max && !values.includes(entity)) {
+        onChange([...values, entity]);
+      }
+    };
+
+    if (!availableEntities) {
+      return null;
     }
-  };
 
-  if (!availableEntities) {
-    return null;
-  }
-
-  return (
-    <Box>
-      <Autocomplete
-        multiple={multiple}
-        autoHighlight
-        autoComplete
-        className="qetaEntitiesInput"
-        value={usedValue}
-        disabled={disabled}
-        loading={loading}
-        loadingText={t('common.loading')}
-        groupBy={entityKinds.length > 1 ? option => option.kind : undefined}
-        renderGroup={renderGroup}
-        handleHomeEndKeys
-        open={open}
-        onOpen={handleOpen}
-        onClose={() => setOpen(false)}
-        options={availableEntities}
-        getOptionLabel={getEntityTitle}
-        ListboxComponent={
-          AutocompleteListboxComponent as ComponentType<
-            HTMLAttributes<HTMLElement>
-          >
-        }
-        disableListWrap
-        style={style}
-        getOptionSelected={(o, v) =>
-          stringifyEntityRef(o) === stringifyEntityRef(v)
-        }
-        onChange={(_e, newValue) => {
-          if (multiple) {
-            if (!newValue) {
-              onChange([]);
-              return;
-            }
-            const val = Array.isArray(newValue) ? newValue : [newValue];
-            if (max === null || val.length <= max) {
-              onChange(val.filter(v => typeof v !== 'string'));
-            }
-          } else {
-            if (!newValue) {
-              return;
-            }
-            onChange(newValue as Entity);
+    return (
+      <Box>
+        <Autocomplete
+          multiple={multiple}
+          autoHighlight
+          autoComplete
+          className="qetaEntitiesInput"
+          value={usedValue}
+          disabled={disabled}
+          loading={loading}
+          loadingText={t('common.loading')}
+          groupBy={entityKinds.length > 1 ? option => option.kind : undefined}
+          renderGroup={renderGroup}
+          handleHomeEndKeys
+          open={open}
+          onOpen={handleOpen}
+          onClose={() => setOpen(false)}
+          options={availableEntities}
+          getOptionLabel={getEntityTitle}
+          ListboxComponent={
+            AutocompleteListboxComponent as ComponentType<
+              HTMLAttributes<HTMLElement>
+            >
           }
-        }}
-        renderOption={(option: Entity) => {
-          const stringified = stringifyEntityRef(option);
-          return (
-            <span key={stringified}>
-              <Tooltip
-                arrow
-                placement="right"
-                title={
-                  <>
-                    <Typography>{getEntityTitle(option)}</Typography>
-                    <Typography variant="caption">
-                      {getEntityDescription(option)}
-                    </Typography>
-                  </>
-                }
-              >
-                <span>{getEntityTitle(option, { withType: false })}</span>
-              </Tooltip>
-            </span>
-          );
-        }}
-        renderInput={params => {
-          let helperText = '';
-          if (!hideHelpText) {
-            if (error && error.message) {
-              helperText = error.message;
+          disableListWrap
+          style={style}
+          getOptionSelected={(o, v) =>
+            stringifyEntityRef(o) === stringifyEntityRef(v)
+          }
+          onChange={(_e, newValue) => {
+            if (multiple) {
+              if (!newValue) {
+                onChange([]);
+                return;
+              }
+              const val = Array.isArray(newValue) ? newValue : [newValue];
+              if (max === null || val.length <= max) {
+                onChange(val.filter(v => typeof v !== 'string'));
+              }
             } else {
-              helperText = t('entitiesInput.helperText', {
-                max: max.toString(),
-              });
+              if (!newValue) {
+                return;
+              }
+              onChange(newValue as Entity);
             }
-          }
+          }}
+          renderOption={(option: Entity) => {
+            const stringified = stringifyEntityRef(option);
+            return (
+              <span key={stringified}>
+                <Tooltip
+                  arrow
+                  placement="right"
+                  title={
+                    <>
+                      <Typography>{getEntityTitle(option)}</Typography>
+                      <Typography variant="caption">
+                        {getEntityDescription(option)}
+                      </Typography>
+                    </>
+                  }
+                >
+                  <span>{getEntityTitle(option, { withType: false })}</span>
+                </Tooltip>
+              </span>
+            );
+          }}
+          renderInput={params => {
+            let helperText = '';
+            if (!hideHelpText) {
+              if (error && error.message) {
+                helperText = error.message;
+              } else {
+                helperText = t('entitiesInput.helperText', {
+                  max: max.toString(),
+                });
+              }
+            }
 
-          return (
-            <TextField
-              {...params}
-              variant="outlined"
-              margin="normal"
-              required={required}
-              label={label || t('entitiesInput.label')}
-              placeholder={placeholder || t('entitiesInput.placeholder')}
-              helperText={helperText}
-              name={name}
-              FormHelperTextProps={{
-                style: { marginLeft: '0.2em' },
-              }}
-              InputProps={{
-                ...params.InputProps,
-                endAdornment: (
-                  <>
-                    {loading ? (
-                      <CircularProgress color="inherit" size={20} />
-                    ) : null}
-                    {params.InputProps.endAdornment}
-                  </>
-                ),
-              }}
-              error={error !== undefined}
-            />
-          );
-        }}
-        {...autocompleteProps}
-      />
-      {suggestedEntities?.length > 0 && (
-        <Box style={{ marginLeft: '4px' }}>
-          <Typography variant="caption" color="textSecondary">
-            {t('entitiesInput.suggestedEntities')}
-          </Typography>
-          <Box mt={0.5}>
-            {suggestedEntities.map(entity => (
-              <Chip
-                key={stringifyEntityRef(entity)}
-                label={getEntityTitle(entity)}
-                size="small"
-                onClick={() => handleSuggestedEntityClick(entity)}
-                style={{ margin: '0 4px 4px 0' }}
-                disabled={
-                  [value ?? []]
-                    .flat()
-                    .map(stringifyEntityRef)
-                    .includes(stringifyEntityRef(entity)) ||
-                  [value ?? []].flat().length >= max
-                }
+            return (
+              <TextField
+                {...params}
+                variant="outlined"
+                margin="normal"
+                required={required}
+                label={label || t('entitiesInput.label')}
+                placeholder={placeholder || t('entitiesInput.placeholder')}
+                helperText={helperText}
+                name={name}
+                FormHelperTextProps={{
+                  style: { marginLeft: '0.2em' },
+                }}
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {loading ? (
+                        <CircularProgress color="inherit" size={20} />
+                      ) : null}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                }}
+                error={error !== undefined}
               />
-            ))}
+            );
+          }}
+          {...autocompleteProps}
+        />
+        {suggestedEntities?.length > 0 && (
+          <Box style={{ marginLeft: '4px' }}>
+            <Typography variant="caption" color="textSecondary">
+              {t('entitiesInput.suggestedEntities')}
+            </Typography>
+            <Box mt={0.5}>
+              {suggestedEntities.map(entity => (
+                <Chip
+                  key={stringifyEntityRef(entity)}
+                  label={getEntityTitle(entity)}
+                  size="small"
+                  onClick={() => handleSuggestedEntityClick(entity)}
+                  style={{ margin: '0 4px 4px 0' }}
+                  disabled={
+                    [value ?? []]
+                      .flat()
+                      .map(stringifyEntityRef)
+                      .includes(stringifyEntityRef(entity)) ||
+                    [value ?? []].flat().length >= max
+                  }
+                />
+              ))}
+            </Box>
           </Box>
-        </Box>
-      )}{' '}
-    </Box>
-  );
-};
+        )}{' '}
+      </Box>
+    );
+  },
+);
+
+EntitiesInput.displayName = 'EntitiesInput';

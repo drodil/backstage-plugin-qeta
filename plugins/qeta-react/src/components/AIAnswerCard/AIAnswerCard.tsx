@@ -7,6 +7,7 @@ import {
 import { CSSProperties, useCallback, useState } from 'react';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useAI } from '../../hooks';
+import { useUserSettings } from '../../hooks/useUserSettings';
 import FlareIcon from '@material-ui/icons/Flare';
 import useDebounce from 'react-use/lib/useDebounce';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
@@ -47,18 +48,15 @@ export type AIAnswerCardProps = {
   style?: CSSProperties;
 };
 
-const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-ai-expanded';
-
 export const AIAnswerCard = (props: AIAnswerCardProps) => {
   const { question, draft, article, style, debounceMs = 3000 } = props;
   const [answer, setAnswer] = useState<AIResponse | null | undefined>(null);
-  const [expanded, setExpanded] = useState(
-    localStorage.getItem(EXPANDED_LOCAL_STORAGE_KEY) === 'true',
-  );
   const { t } = useTranslationRef(qetaTranslationRef);
   const config = useApi(configApiRef);
   const botName = config.getOptionalString('qeta.aiBotName') ?? 'AI';
   const styles = useStyles();
+  const { getSetting, setSetting } = useUserSettings();
+  const [expanded, setExpanded] = useState(getSetting('aiAnswerExpanded'));
 
   const {
     isAIEnabled,
@@ -176,10 +174,7 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
               <IconButton
                 onClick={() => {
                   setExpanded(!expanded);
-                  localStorage.setItem(
-                    EXPANDED_LOCAL_STORAGE_KEY,
-                    expanded ? 'false' : 'true',
-                  );
+                  setSetting('aiAnswerExpanded', !expanded);
                 }}
                 aria-expanded={expanded}
               >

@@ -69,7 +69,7 @@ export const TagPage = () => {
         </ContentHeader>
       ) : (
         <ContentHeader
-          title={t('tagPage.defaultTitle')}
+          title={t('tagPage.defaultTitle', {})}
           titleIcon={<LocalOfferOutlined fontSize="large" />}
         >
           <AskQuestionButton />
@@ -117,6 +117,7 @@ export const TagPage = () => {
           filterPanelProps={{ showTagFilter: false }}
           showTypeLabel
           defaultView="list"
+          prefix="tag-posts"
         />
       )}
       {!tag && <TagsContainer />}

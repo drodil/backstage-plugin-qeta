@@ -16,7 +16,6 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
-  IconButton,
   makeStyles,
   Tooltip,
   Typography,
@@ -28,10 +27,6 @@ import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { qetaApiRef } from '../../api';
-import VerticalAlignTopIcon from '@material-ui/icons/VerticalAlignTop';
-import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import LinkIcon from '@material-ui/icons/Link';
 import StarIcon from '@material-ui/icons/Star';
@@ -41,6 +36,7 @@ import numeral from 'numeral';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
 import { FaviconItem } from '../FaviconItem';
 import { getPostDisplayDate } from '../../utils/utils';
+import { RankingButtons } from '../Buttons';
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -231,17 +227,6 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
       })}?entity=${entity}`
     : route({ id: post.id.toString(10) });
 
-  const rank = (direction: 'top' | 'bottom' | 'up' | 'down') => {
-    if (!collectionId) {
-      return;
-    }
-    qetaApi.rankPostInCollection(collectionId, post.id, direction).then(res => {
-      if (res) {
-        onRankUpdate?.();
-      }
-    });
-  };
-
   const renderHeaderMedia = () => {
     if (post.headerImage) {
       return (
@@ -419,44 +404,11 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             </Box>
           </Box>
           {allowRanking && (
-            <Box className={classes.rankingControls}>
-              <Tooltip title={t('ranking.top')}>
-                <IconButton
-                  size="small"
-                  onClick={() => rank('top')}
-                  className={classes.rankingButton}
-                >
-                  <VerticalAlignTopIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={t('ranking.up')}>
-                <IconButton
-                  size="small"
-                  onClick={() => rank('up')}
-                  className={classes.rankingButton}
-                >
-                  <KeyboardArrowUpIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={t('ranking.down')}>
-                <IconButton
-                  size="small"
-                  onClick={() => rank('down')}
-                  className={classes.rankingButton}
-                >
-                  <KeyboardArrowDownIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={t('ranking.bottom')}>
-                <IconButton
-                  size="small"
-                  onClick={() => rank('bottom')}
-                  className={classes.rankingButton}
-                >
-                  <VerticalAlignBottomIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Box>
+            <RankingButtons
+              postId={post.id}
+              collectionId={collectionId}
+              onRankUpdate={onRankUpdate}
+            />
           )}
         </Box>
       </CardContent>

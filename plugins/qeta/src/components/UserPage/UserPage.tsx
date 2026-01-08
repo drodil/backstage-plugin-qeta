@@ -86,7 +86,7 @@ export const UserPage = () => {
     <Box
       className={classes.headerContent}
       role="banner"
-      aria-label={t('userPage.profileHeader')}
+      aria-label={t('userPage.profileHeader', {})}
     >
       <Avatar
         src={user?.spec?.profile?.picture}
@@ -137,7 +137,7 @@ export const UserPage = () => {
         <Box className={classes.tabList}>
           <TabList
             onChange={handleChange}
-            aria-label={t('userPage.profileTab')}
+            aria-label={t('userPage.profileTab', {})}
             aria-labelledby="user-name"
             variant="scrollable"
             scrollButtons="auto"
@@ -147,7 +147,7 @@ export const UserPage = () => {
               label={
                 <TabLabel
                   icon={<AssessmentIcon className={classes.tabIcon} />}
-                  label={t('userPage.statistics')}
+                  label={t('userPage.statistics', {})}
                 />
               }
             />
@@ -156,7 +156,7 @@ export const UserPage = () => {
               label={
                 <TabLabel
                   icon={<HelpOutlineIcon className={classes.tabIcon} />}
-                  label={t('userPage.questions')}
+                  label={t('userPage.questions', {})}
                 />
               }
             />
@@ -165,7 +165,7 @@ export const UserPage = () => {
               label={
                 <TabLabel
                   icon={<CollectionsBookmarkIcon className={classes.tabIcon} />}
-                  label={t('userPage.articles')}
+                  label={t('userPage.articles', {})}
                 />
               }
             />
@@ -174,7 +174,7 @@ export const UserPage = () => {
               label={
                 <TabLabel
                   icon={<LinkIcon className={classes.tabIcon} />}
-                  label={t('userPage.links')}
+                  label={t('userPage.links', {})}
                 />
               }
             />
@@ -183,7 +183,7 @@ export const UserPage = () => {
               label={
                 <TabLabel
                   icon={<CollectionsIcon className={classes.tabIcon} />}
-                  label={t('userPage.collections')}
+                  label={t('userPage.collections', {})}
                 />
               }
             />
@@ -192,7 +192,7 @@ export const UserPage = () => {
               label={
                 <TabLabel
                   icon={<QuestionAnswerIcon className={classes.tabIcon} />}
-                  label={t('userPage.answers')}
+                  label={t('userPage.answers', {})}
                 />
               }
             />
@@ -206,6 +206,7 @@ export const UserPage = () => {
             author={identity ?? ''}
             showNoQuestionsBtn={false}
             type="question"
+            prefix="user-questions"
           />
         </TabPanel>
         <TabPanel value="articles" className={classes.tabPanel}>
@@ -213,6 +214,7 @@ export const UserPage = () => {
             author={identity ?? ''}
             type="article"
             showNoQuestionsBtn={false}
+            prefix="user-articles"
           />
         </TabPanel>
         <TabPanel value="links" className={classes.tabPanel}>
@@ -220,15 +222,20 @@ export const UserPage = () => {
             author={identity ?? ''}
             type="link"
             showNoQuestionsBtn={false}
+            prefix="user-links"
           />
         </TabPanel>
         <TabPanel value="collections" className={classes.tabPanel}>
-          <CollectionsContainer owner={identity ?? ''} />
+          <CollectionsContainer
+            owner={identity ?? ''}
+            prefix="user-collections"
+          />
         </TabPanel>
         <TabPanel value="answers" className={classes.tabPanel}>
           <AnswersContainer
             author={identity ?? ''}
-            title={t('userPage.answers')}
+            title={t('userPage.answers', {})}
+            prefix="user-answers"
           />
         </TabPanel>
       </TabContext>

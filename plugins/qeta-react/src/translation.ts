@@ -391,6 +391,7 @@ export const qetaTranslationRef = createTranslationRef({
       manage: 'Manage',
       moderate: 'Moderate',
       review: 'Review',
+      settings: 'Settings',
       expand: 'Expand menu',
       collapse: 'Collapse menu',
     },
@@ -401,6 +402,46 @@ export const qetaTranslationRef = createTranslationRef({
       templatesInfo:
         'Templates can be used to prefill question content for the user',
       deletedPosts: 'Deleted posts',
+    },
+    settingsPage: {
+      title: 'User Settings',
+      editorPreferences: 'Editor Preferences',
+      displayPreferences: 'Display Preferences',
+      autoSave: {
+        label: 'Enable Auto-save',
+        description:
+          'Automatically save your drafts while writing questions and articles',
+      },
+      aiAnswerExpanded: {
+        label: 'Expand AI Answers by Default',
+        description:
+          'Show AI-generated answers in expanded state when viewing questions',
+      },
+      viewTypePreferences: {
+        title: 'View Type Preferences',
+        description:
+          'Choose how you want to view different types of content. Select "Default" to use the system default view.',
+        grid: 'Grid',
+        list: 'List',
+        default: 'Default',
+        labels: {
+          questions: 'Questions',
+          articles: 'Articles',
+          links: 'Links',
+          favorites: 'Favorites',
+          collections: 'Collections',
+          tags: 'Tags',
+          users: 'Users',
+          entities: 'Entities',
+          tagPosts: 'Tag page posts',
+          collectionPosts: 'Collection page posts',
+          userQuestions: 'User page questions',
+          userArticles: 'User page articles',
+          userLinks: 'User page links',
+          userCollections: 'User page collections',
+          userAnswers: 'User page answers',
+        },
+      },
     },
     suggestionsCard: {
       title: 'Suggestions',

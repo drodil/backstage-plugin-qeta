@@ -27,7 +27,7 @@ import CheckCircle from '@material-ui/icons/CheckCircle';
 import ThumbUp from '@material-ui/icons/ThumbUp';
 import TouchApp from '@material-ui/icons/TouchApp';
 import { StatusChip } from '../Utility/StatusChip';
-import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
+import { OpenLinkButton, RankingButtons } from '../Buttons';
 import { FaviconItem } from '../FaviconItem';
 import { getPostDisplayDate } from '../../utils/utils';
 import { Link as RouterLink } from 'react-router-dom';
@@ -37,6 +37,9 @@ export interface PostListItemProps {
   entity?: string;
   type?: PostType;
   showTypeLabel?: boolean;
+  allowRanking?: boolean;
+  onRankUpdate?: () => void;
+  collectionId?: number;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -200,7 +203,14 @@ function capitalizeFirstLetter(val: string) {
 }
 
 export const PostListItem = (props: PostListItemProps) => {
-  const { post, entity, showTypeLabel } = props;
+  const {
+    post,
+    entity,
+    showTypeLabel,
+    allowRanking,
+    onRankUpdate,
+    collectionId,
+  } = props;
   const [correctAnswer, setCorrectAnswer] = useState(post.correctAnswer);
   const [answersCount, setAnswersCount] = useState(post.answersCount);
   const [views, setViews] = useState(post.views);
@@ -361,6 +371,15 @@ export const PostListItem = (props: PostListItemProps) => {
           <Box
             className={`${styles.authorBoxContainer} ${styles.contentClickable}`}
           >
+            {allowRanking && (
+              <Box mr={2} mb={1}>
+                <RankingButtons
+                  postId={post.id}
+                  collectionId={collectionId}
+                  onRankUpdate={onRankUpdate}
+                />
+              </Box>
+            )}
             <AuthorBox
               userEntityRef={post.author}
               time={getPostDisplayDate(post)}

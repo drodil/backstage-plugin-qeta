@@ -159,3 +159,9 @@ export const reviewRouteRef = createSubRouteRef({
   parent: qetaRouteRef,
   path: '/review',
 });
+
+export const settingsRouteRef = createSubRouteRef({
+  id: 'qeta.settings',
+  parent: qetaRouteRef,
+  path: '/settings',
+});

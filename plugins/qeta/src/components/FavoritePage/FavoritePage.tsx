@@ -27,6 +27,7 @@ export const FavoritePage = () => {
         showNoQuestionsBtn={false}
         showTypeLabel
         defaultView="list"
+        prefix="favorites"
       />
     </>
   );
