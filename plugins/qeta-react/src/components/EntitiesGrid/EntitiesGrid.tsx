@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box, Button, Collapse } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { useGridPageSize, useQetaApi } from '../../hooks';
 import useDebounce from 'react-use/lib/useDebounce';
@@ -9,7 +9,6 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { QetaGridHeader } from '../Utility/QetaGridHeader';
 
 import { Change, EntityFilters, FilterPanel } from '../FilterPanel/FilterPanel';
-import { Collapse, Button } from '@material-ui/core';
 import FilterList from '@material-ui/icons/FilterList';
 
 const EXPANDED_LOCAL_STORAGE_KEY = 'qeta-entities-filters-expanded';
@@ -79,7 +78,7 @@ export const EntitiesGrid = () => {
         setFilters({ ...filters, searchQuery: searchQuery });
       }
     },
-    300,
+    400,
     [searchQuery],
   );
 
@@ -96,7 +95,11 @@ export const EntitiesGrid = () => {
   }, [response, entitiesPerPage, page]);
 
   const combinedResponse = response
-    ? { ...response, entities, total }
+    ? {
+        ...response,
+        entities: page === 1 && !loading ? response.entities : entities,
+        total,
+      }
     : undefined;
 
   return (
