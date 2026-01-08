@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.53.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.52.6...v3.53.0) (2026-01-08)
+
+
+### Features
+
+* add list/grid views to rest of the pages ([003cc50](https://github.com/drodil/backstage-plugin-qeta/commit/003cc5060e7bc6cecb4cd75f5ab74732190a9b8f))
+* add support to change to pagination mode ([08e1ca9](https://github.com/drodil/backstage-plugin-qeta/commit/08e1ca9f0ece89b78bc92a6d61791085594170d1)), closes [#384](https://github.com/drodil/backstage-plugin-qeta/issues/384)
+* initial user settings page ([acf865f](https://github.com/drodil/backstage-plugin-qeta/commit/acf865fb57d8b9c64e803c12be53beec883a8104))
+
+
+### Bug Fixes
+
+* entities loading to not show no entities box ([9f4756f](https://github.com/drodil/backstage-plugin-qeta/commit/9f4756f9619651dfcedadfde7e6b79db09221e20))
+
 ### [3.52.6](https://github.com/drodil/backstage-plugin-qeta/compare/v3.52.5...v3.52.6) (2026-01-08)
 
 
