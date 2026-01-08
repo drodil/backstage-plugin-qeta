@@ -158,6 +158,7 @@ export type AnswerOptions = {
   includePost?: boolean;
   includeExperts?: boolean;
   commentsFilter?: PermissionCriteria<QetaFilters>;
+  correct?: boolean;
 };
 
 export type CommentOptions = {

@@ -85,6 +85,10 @@ export class AnswersStore extends BaseStore {
       query.whereNull('answer_votes.answerId');
     }
 
+    if (opts?.correct !== undefined) {
+      query.where('answers.correct', '=', opts.correct);
+    }
+
     const totalQuery = query.clone();
 
     if (options.orderBy) {
@@ -121,6 +125,10 @@ export class AnswersStore extends BaseStore {
     const query = this.getAnswerBaseQuery().where('answers.id', '=', answerId);
     if (options?.filter) {
       this.parseFilter(options.filter, query, this.db, 'answer');
+    }
+
+    if (options?.correct !== undefined) {
+      query.where('answers.correct', '=', options.correct);
     }
 
     const rows = await query.select();
@@ -314,13 +322,10 @@ export class AnswersStore extends BaseStore {
     correct: boolean,
   ): Promise<boolean> {
     if (correct) {
-      const exists = await this.db('answers')
-        .select('id')
+      await this.db('answers')
         .where('correct', '=', true)
-        .where('postId', '=', postId);
-      if (exists && exists.length > 0) {
-        return false;
-      }
+        .where('postId', '=', postId)
+        .update({ correct: false });
     }
 
     const ret = await this.db('answers')

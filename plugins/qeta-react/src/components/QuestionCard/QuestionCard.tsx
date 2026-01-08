@@ -100,7 +100,11 @@ export const QuestionCard = (props: { question: PostResponse }) => {
 
   return (
     <>
-      <Card variant="outlined" className={styles.root}>
+      <Card
+        variant="outlined"
+        className={styles.root}
+        data-testid="question-card"
+      >
         <CardContent>
           <Grid
             container

@@ -119,4 +119,53 @@ test.describe.serial('Articles', () => {
       expect(updatedViews).toBe(initialViews + 1);
     }).toPass({ timeout: 10000 });
   });
+  test('vote article', async ({ page, request }) => {
+    const { id: articleId } = await createArticle(request, {
+      user: 'user:default/user2',
+    });
+
+    await page.goto(`/qeta/articles/${articleId}`);
+    await page.waitForLoadState('networkidle');
+
+    const voteUpBtn = page.locator('[data-testid^="vote-up-btn"]');
+    const voteDownBtn = page.locator('[data-testid^="vote-down-btn"]');
+    const voteCount = page.locator('[data-testid="vote-count"]');
+
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-unselected',
+    );
+    await expect(voteCount).toHaveText('0');
+
+    await voteUpBtn.click();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-selected',
+    );
+    await expect(voteCount).toHaveText('1');
+
+    await voteDownBtn.click();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteDownBtn).toHaveAttribute(
+      'data-testid',
+      'vote-down-btn-selected',
+    );
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-unselected',
+    );
+    await expect(voteCount).toHaveText('-1');
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteDownBtn).toHaveAttribute(
+      'data-testid',
+      'vote-down-btn-selected',
+    );
+    await expect(voteCount).toHaveText('-1');
+  });
 });

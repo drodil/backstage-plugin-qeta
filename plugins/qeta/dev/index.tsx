@@ -15,6 +15,7 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import searchPlugin from '@backstage/plugin-search/alpha';
 import rehypeMermaid from 'rehype-mermaid';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
+import signalsPlugin from '@backstage/plugin-signals/alpha';
 
 // eslint-disable-next-line @backstage/no-ui-css-imports-in-non-frontend
 import '@backstage/ui/css/styles.css';
@@ -136,6 +137,7 @@ const app = createApp({
     searchPlugin,
     techdocsPlugin,
     module,
+    signalsPlugin,
   ],
 });
 

@@ -55,6 +55,7 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
   const identityApi = useApi(identityApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const [name, setName] = useState<string>('');
+  const [isCurrentUser, setIsCurrentUser] = useState<boolean>(false);
   const [user, setUser] = useState<UserEntity | null>(null);
   const [initials, setInitials] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
@@ -109,6 +110,7 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
         currentUserRef.name === userRef.name &&
         currentUserRef.namespace === userRef.namespace
       ) {
+        setIsCurrentUser(true);
         displayName = `${t('userLink.you')}${
           anonymous
             ? ` (${t('userLink.anonymous').toLocaleLowerCase('en-US')})`
@@ -134,7 +136,7 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
     setInitials(init);
   }, [name]);
 
-  return { name, initials, user, secondaryTitle, Icon };
+  return { name, initials, user, secondaryTitle, Icon, isCurrentUser };
 };
 
 export const useEntityAuthor = (

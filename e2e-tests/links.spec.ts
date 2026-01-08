@@ -61,7 +61,7 @@ test.describe.serial('Links', () => {
   });
 
   test('increase view count', async ({ page, request }) => {
-    const { id: linkId, title } = await createLink(request);
+    const { title } = await createLink(request);
 
     await page.goto('/qeta/links?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');

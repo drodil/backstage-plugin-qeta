@@ -924,6 +924,14 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
       const post = await database.getPost(username, postId, false);
       const answer = await database.getAnswer(answerId, username);
+      const previousCorrectAnswers = await database.getAnswers(
+        username,
+        { questionId: postId, limit: 1 },
+        undefined,
+        {
+          correct: true,
+        },
+      );
 
       if (!post || !answer) {
         response
@@ -945,9 +953,22 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
         [
           { permission: qetaEditPostPermission, resource: post },
           { permission: qetaReadAnswerPermission, resource: answer },
+          ...previousCorrectAnswers.answers.map(a => ({
+            permission: qetaReadAnswerPermission,
+            resource: a,
+          })),
         ],
         { throwOnDeny: true },
       );
+
+      if (previousCorrectAnswers.answers.length > 0) {
+        const previousCorrectAnswer = previousCorrectAnswers.answers[0];
+        await database.markAnswerIncorrect(postId, previousCorrectAnswer.id);
+        await signalAnswerStats(signals, {
+          ...previousCorrectAnswer,
+          correct: false,
+        });
+      }
 
       const marked = await database.markAnswerCorrect(postId, answerId);
 

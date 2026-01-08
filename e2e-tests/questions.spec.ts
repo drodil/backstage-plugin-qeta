@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loginAsGuest, createQuestion } from './utils';
+import { loginAsGuest, createQuestion, createAnswer } from './utils';
 import { faker } from '@faker-js/faker';
 
 test.describe.serial('Questions', () => {
@@ -76,7 +76,7 @@ test.describe.serial('Questions', () => {
   });
 
   test('increase view count', async ({ page, request }) => {
-    const { id: questionId, title } = await createQuestion(request);
+    const { title } = await createQuestion(request);
 
     await page.goto('/qeta/questions?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');
@@ -91,9 +91,6 @@ test.describe.serial('Questions', () => {
 
     const initialTitle = await viewsItem.getAttribute('title');
     const initialViews = parseInt(initialTitle?.replace(/\D/g, '') || '0', 10);
-    console.log(
-      `Initial views: ${initialViews} (from title "${initialTitle}")`,
-    );
 
     await page.locator(`a[aria-label="${title}"]`).first().click();
     await page.waitForLoadState('networkidle');
@@ -117,5 +114,178 @@ test.describe.serial('Questions', () => {
       );
       expect(updatedViews).toBe(initialViews + 1);
     }).toPass({ timeout: 10000 });
+  });
+
+  test('mark answer as correct', async ({ page, request }) => {
+    const { id: questionId } = await createQuestion(request, {
+      user: 'user:development/guest',
+    });
+
+    const { id: answer1Id } = await createAnswer(request, questionId, {
+      content: faker.lorem.paragraph(),
+      user: 'user:default/user2',
+    });
+    const { id: answer2Id } = await createAnswer(request, questionId, {
+      content: faker.lorem.paragraph(),
+      user: 'user:default/user2',
+    });
+
+    await page.goto(`/qeta/questions/${questionId}`);
+    await page.waitForLoadState('networkidle');
+
+    const answer1 = page.locator(`div#answer_${answer1Id}`);
+    const answer2 = page.locator(`div#answer_${answer2Id}`);
+
+    const markCorrectBtn1 = answer1.locator(
+      'button[aria-label="mark correct"]',
+    );
+    const markCorrectBtn2 = answer2.locator(
+      'button[aria-label="mark correct"]',
+    );
+
+    await expect(markCorrectBtn1).toBeVisible();
+    await expect(markCorrectBtn2).toBeVisible();
+
+    await markCorrectBtn1.click();
+    await page.waitForLoadState('networkidle');
+
+    await expect(markCorrectBtn1).toHaveAttribute(
+      'data-testid',
+      'mark-correct-answer-btn-checked',
+    );
+
+    await expect(markCorrectBtn2).toHaveAttribute(
+      'data-testid',
+      'mark-correct-answer-btn-unchecked',
+    );
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+
+    await expect(markCorrectBtn1).toHaveAttribute(
+      'data-testid',
+      'mark-correct-answer-btn-checked',
+    );
+    await expect(markCorrectBtn2).toHaveAttribute(
+      'data-testid',
+      'mark-correct-answer-btn-unchecked',
+    );
+  });
+
+  test('vote answer', async ({ page, request }) => {
+    const { id: questionId } = await createQuestion(request, {
+      user: 'user:development/guest',
+    });
+
+    const { id: answer1Id } = await createAnswer(request, questionId, {
+      content: faker.lorem.paragraph(),
+      user: 'user:default/user2',
+    });
+
+    await page.goto(`/qeta/questions/${questionId}`);
+    await page.waitForLoadState('networkidle');
+
+    const answer1 = page.locator(`div#answer_${answer1Id}`);
+
+    const voteUpBtn = answer1.locator('[data-testid^="vote-up-btn"]');
+    const voteCount = answer1.locator('[data-testid="vote-count"]');
+
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-unselected',
+    );
+    await expect(voteCount).toHaveText('0');
+
+    await voteUpBtn.click();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-selected',
+    );
+    await expect(voteCount).toHaveText('1');
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-selected',
+    );
+    await expect(voteCount).toHaveText('1');
+
+    const voteDownBtn = answer1.locator('[data-testid^="vote-down-btn"]');
+    await voteDownBtn.click();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteDownBtn).toHaveAttribute(
+      'data-testid',
+      'vote-down-btn-selected',
+    );
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-unselected',
+    );
+    await expect(voteCount).toHaveText('-1');
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteDownBtn).toHaveAttribute(
+      'data-testid',
+      'vote-down-btn-selected',
+    );
+    await expect(voteCount).toHaveText('-1');
+  });
+
+  test('vote question', async ({ page, request }) => {
+    const { id: questionId } = await createQuestion(request, {
+      user: 'user:default/user2',
+    });
+
+    await page.goto(`/qeta/questions/${questionId}`);
+    await page.waitForLoadState('networkidle');
+
+    const questionCard = page.locator('[data-testid="question-card"]');
+    const voteUpBtn = questionCard.locator('[data-testid^="vote-up-btn"]');
+    const voteDownBtn = questionCard.locator('[data-testid^="vote-down-btn"]');
+    const voteCount = questionCard.locator('[data-testid="vote-count"]');
+
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-unselected',
+    );
+    await expect(voteCount).toHaveText('0');
+
+    await voteUpBtn.click();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-selected',
+    );
+    await expect(voteCount).toHaveText('1');
+
+    await voteDownBtn.click();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteDownBtn).toHaveAttribute(
+      'data-testid',
+      'vote-down-btn-selected',
+    );
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-unselected',
+    );
+    await expect(voteCount).toHaveText('-1');
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteDownBtn).toHaveAttribute(
+      'data-testid',
+      'vote-down-btn-selected',
+    );
+    await expect(voteCount).toHaveText('-1');
   });
 });

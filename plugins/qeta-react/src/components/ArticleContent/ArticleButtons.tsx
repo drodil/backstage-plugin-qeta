@@ -108,6 +108,9 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
                 disabled={isDisabled()}
                 size="small"
                 onClick={voteUp}
+                data-testid={`vote-up-btn-${
+                  ownVote > 0 ? 'selected' : 'unselected'
+                }`}
               >
                 <ArrowUpward />
               </IconButton>
@@ -124,13 +127,20 @@ export const ArticleButtons = (props: { post: PostResponse }) => {
                 disabled={isDisabled()}
                 size="small"
                 onClick={voteDown}
+                data-testid={`vote-down-btn-${
+                  ownVote < 0 ? 'selected' : 'unselected'
+                }`}
               >
                 <ArrowDownward />
               </IconButton>
             </span>
           </Tooltip>
           <Tooltip title={t('common.score', { score: score.toString(10) })}>
-            <Typography className={styles.scoreText} display="inline">
+            <Typography
+              className={styles.scoreText}
+              display="inline"
+              data-testid="vote-count"
+            >
               {score}
             </Typography>
           </Tooltip>

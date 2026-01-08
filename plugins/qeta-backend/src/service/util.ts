@@ -420,7 +420,7 @@ const mapPostAnswers = async (
       return {
         ...a,
         ownVote: a.votes?.find(v => v.author === username)?.score,
-        own: resource.author === username,
+        own: a.author === username,
         canEdit,
         canDelete,
         expert: a.experts?.includes(resource.author),

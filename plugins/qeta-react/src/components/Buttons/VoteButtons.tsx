@@ -105,13 +105,20 @@ export const VoteButtons = (props: {
             className={ownVote > 0 ? 'qetaVoteUpSelected' : 'qetaVoteUp'}
             disabled={isDisabled()}
             size="small"
+            data-testid={`vote-up-btn-${
+              ownVote > 0 ? 'selected' : 'unselected'
+            }`}
             onClick={voteUp}
           >
             <ArrowUpward />
           </IconButton>
         </span>
       </Tooltip>
-      <Typography variant="h6" style={{ userSelect: 'none' }}>
+      <Typography
+        variant="h6"
+        style={{ userSelect: 'none' }}
+        data-testid="vote-count"
+      >
         {score}
       </Typography>
       <Tooltip title={getVoteDownTooltip()}>
@@ -122,6 +129,9 @@ export const VoteButtons = (props: {
             className={ownVote < 0 ? 'qetaVoteDownSelected' : 'qetaVoteDown'}
             disabled={isDisabled()}
             size="small"
+            data-testid={`vote-down-btn-${
+              ownVote < 0 ? 'selected' : 'unselected'
+            }`}
             onClick={voteDown}
           >
             <ArrowDownward />
@@ -137,6 +147,9 @@ export const VoteButtons = (props: {
                   aria-label="mark correct"
                   size="small"
                   disabled={isDisabled(true)}
+                  data-testid={`mark-correct-answer-btn-${
+                    correctAnswer ? 'checked' : 'unchecked'
+                  }`}
                   onClick={
                     props.post?.own || props.post?.canEdit
                       ? toggleCorrectAnswer
