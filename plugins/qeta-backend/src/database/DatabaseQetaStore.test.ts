@@ -439,13 +439,13 @@ describe.each(databases.eachSupportedId())(
         expect(answers?.length).toEqual(2);
         expect(answers?.at(0)?.correct).toBeTruthy();
 
-        // should not allow setting correct with wrong user
+        // should allow setting correct again (idempotent)
         marked = await storage.markAnswerCorrect(id, answerId);
-        expect(marked).toBeFalsy();
+        expect(marked).toBeTruthy();
 
-        // should not allow setting two answers correct for one post
+        // should allow setting another answer correct (switching)
         marked = await storage.markAnswerCorrect(id, anotherAnswerId);
-        expect(marked).toBeFalsy();
+        expect(marked).toBeTruthy();
 
         marked = await storage.markAnswerIncorrect(id, answerId);
         expect(marked).toBeTruthy();

@@ -222,6 +222,7 @@ describe('Answers Routes', () => {
     it('marks answer correct', async () => {
       qetaStore.getPost.mockResolvedValue(question);
       qetaStore.getAnswer.mockResolvedValue(answer);
+      qetaStore.getAnswers.mockResolvedValue({ answers: [], total: 0 });
       qetaStore.markAnswerCorrect.mockResolvedValue(true);
 
       const response = await request(app).get('/posts/1/answers/2/correct');
@@ -233,6 +234,7 @@ describe('Answers Routes', () => {
     it('marking answer correct fails', async () => {
       qetaStore.getPost.mockResolvedValue(question);
       qetaStore.getAnswer.mockResolvedValue(answer);
+      qetaStore.getAnswers.mockResolvedValue({ answers: [], total: 0 });
       qetaStore.markAnswerCorrect.mockResolvedValue(false);
 
       const response = await request(app).get('/posts/1/answers/2/correct');
@@ -248,6 +250,7 @@ describe('Answers Routes', () => {
         });
       newQetaStore.getPost.mockResolvedValue(question);
       newQetaStore.getAnswer.mockResolvedValue(answer);
+      newQetaStore.getAnswers.mockResolvedValue({ answers: [], total: 0 });
       newQetaStore.markAnswerCorrect.mockResolvedValue(false);
 
       const response = await request(appWithConfig)
