@@ -1,29 +1,25 @@
 import { test, expect } from '@playwright/test';
-import { loginAsGuest, createQuestion } from './utils';
+import { loginAsGuest, createLink } from './utils';
 import { faker } from '@faker-js/faker';
 
-test.describe.serial('Questions', () => {
-  let questionId: string;
+test.describe.serial('Links', () => {
   const title = `${faker.lorem.sentence()} ${faker.string.uuid()}`;
-  const content = faker.lorem.paragraphs(3);
+  const content = faker.lorem.paragraphs(1);
   const tags = [faker.word.adjective(), faker.word.adjective()];
+  const url = faker.internet.url();
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await loginAsGuest(page);
   });
 
-  test('post a new question', async ({ page }) => {
-    await page.goto('/qeta/questions/ask');
+  test('post a new link', async ({ page }) => {
+    await page.goto('/qeta/links/create');
     await page.waitForLoadState('networkidle');
 
-    const titleInput = page.locator('input[name="title"]');
-    await titleInput.click();
-    await titleInput.fill(title);
-    await expect(titleInput).toHaveValue(title);
-
-    const contentInput = page.locator('.mde-text');
-    await contentInput.fill(content);
+    await page.locator('input[name="url"]').fill(url);
+    await page.locator('input[name="title"]').fill(title);
+    await page.locator('.mde-text').fill(content);
 
     const tagsInput = page.getByRole('textbox', { name: 'Tags' });
     await tagsInput.click();
@@ -31,32 +27,21 @@ test.describe.serial('Questions', () => {
     await page.waitForTimeout(500);
     await tagsInput.press('Enter');
 
-    await expect(page.getByText(tags[0], { exact: true })).toBeVisible();
-
     await page.getByRole('button', { name: /Publish|Post/i }).click();
 
-    await expect(page).toHaveURL(/\/qeta\/questions\/\d+/);
-
+    await expect(page).toHaveURL(/\/qeta\/links\/\d+/);
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
-
-    const url = page.url();
-    const match = url.match(/\/qeta\/questions\/(\d+)/);
-    if (match) {
-      questionId = match[1];
-    } else {
-      throw new Error('Could not capture questionId from URL');
-    }
   });
 
-  test('list the question', async ({ page }) => {
-    await page.goto('/qeta/questions?orderBy=created&order=desc');
+  test('list the link', async ({ page }) => {
+    await page.goto('/qeta/links?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByText(title).first()).toBeVisible({ timeout: 10000 });
   });
 
-  test('search for a question', async ({ page }) => {
-    await page.goto('/qeta/questions');
+  test('search for a link', async ({ page }) => {
+    await page.goto('/qeta/links');
     await page.waitForLoadState('networkidle');
 
     const searchInput = page.getByRole('textbox', { name: /Search/i });
@@ -76,9 +61,9 @@ test.describe.serial('Questions', () => {
   });
 
   test('increase view count', async ({ page, request }) => {
-    const { id: questionId, title } = await createQuestion(request);
+    const { id: linkId, title } = await createLink(request);
 
-    await page.goto('/qeta/questions?orderBy=created&order=desc');
+    await page.goto('/qeta/links?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');
 
     const postRow = page
@@ -91,15 +76,12 @@ test.describe.serial('Questions', () => {
 
     const initialTitle = await viewsItem.getAttribute('title');
     const initialViews = parseInt(initialTitle?.replace(/\D/g, '') || '0', 10);
-    console.log(
-      `Initial views: ${initialViews} (from title "${initialTitle}")`,
-    );
 
     await page.locator(`a[aria-label="${title}"]`).first().click();
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
 
-    await page.goto('/qeta/questions?orderBy=created&order=desc');
+    await page.goto('/qeta/links?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');
 
     const updatedPostRow = page

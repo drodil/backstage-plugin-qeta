@@ -1,20 +1,20 @@
 import { test, expect } from '@playwright/test';
-import { loginAsGuest, createQuestion } from './utils';
+import { loginAsGuest, createArticle } from './utils';
 import { faker } from '@faker-js/faker';
 
-test.describe.serial('Questions', () => {
-  let questionId: string;
+test.describe.serial('Articles', () => {
   const title = `${faker.lorem.sentence()} ${faker.string.uuid()}`;
   const content = faker.lorem.paragraphs(3);
   const tags = [faker.word.adjective(), faker.word.adjective()];
+  let articleId: string;
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await loginAsGuest(page);
   });
 
-  test('post a new question', async ({ page }) => {
-    await page.goto('/qeta/questions/ask');
+  test('post a new article', async ({ page }) => {
+    await page.goto('/qeta/articles/write');
     await page.waitForLoadState('networkidle');
 
     const titleInput = page.locator('input[name="title"]');
@@ -35,28 +35,28 @@ test.describe.serial('Questions', () => {
 
     await page.getByRole('button', { name: /Publish|Post/i }).click();
 
-    await expect(page).toHaveURL(/\/qeta\/questions\/\d+/);
+    await expect(page).toHaveURL(/\/qeta\/articles\/\d+/);
 
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
 
     const url = page.url();
-    const match = url.match(/\/qeta\/questions\/(\d+)/);
+    const match = url.match(/\/qeta\/articles\/(\d+)/);
     if (match) {
-      questionId = match[1];
+      articleId = match[1];
     } else {
-      throw new Error('Could not capture questionId from URL');
+      throw new Error('Could not capture articleId from URL');
     }
   });
 
-  test('list the question', async ({ page }) => {
-    await page.goto('/qeta/questions?orderBy=created&order=desc');
+  test('list the article', async ({ page }) => {
+    await page.goto('/qeta/articles?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByText(title).first()).toBeVisible({ timeout: 10000 });
   });
 
-  test('search for a question', async ({ page }) => {
-    await page.goto('/qeta/questions');
+  test('search for an article', async ({ page }) => {
+    await page.goto('/qeta/articles');
     await page.waitForLoadState('networkidle');
 
     const searchInput = page.getByRole('textbox', { name: /Search/i });
@@ -76,10 +76,14 @@ test.describe.serial('Questions', () => {
   });
 
   test('increase view count', async ({ page, request }) => {
-    const { id: questionId, title } = await createQuestion(request);
+    const { title } = await createArticle(request);
 
-    await page.goto('/qeta/questions?orderBy=created&order=desc');
+    await page.goto('/qeta/articles?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');
+    const listButton = page.getByRole('button', { name: 'List View' });
+    if (await listButton.isVisible()) {
+      await listButton.click();
+    }
 
     const postRow = page
       .locator(`a[aria-label="${title}"]`)
@@ -91,15 +95,12 @@ test.describe.serial('Questions', () => {
 
     const initialTitle = await viewsItem.getAttribute('title');
     const initialViews = parseInt(initialTitle?.replace(/\D/g, '') || '0', 10);
-    console.log(
-      `Initial views: ${initialViews} (from title "${initialTitle}")`,
-    );
 
     await page.locator(`a[aria-label="${title}"]`).first().click();
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
 
-    await page.goto('/qeta/questions?orderBy=created&order=desc');
+    await page.goto('/qeta/articles?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');
 
     const updatedPostRow = page

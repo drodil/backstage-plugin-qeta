@@ -140,7 +140,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: 'auto',
+    marginTop: '10px',
   },
   tags: {
     display: 'flex',

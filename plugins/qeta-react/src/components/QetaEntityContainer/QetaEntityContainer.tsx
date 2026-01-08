@@ -211,16 +211,14 @@ export function QetaEntityContainer<
             )}
             {view === 'list' && renderListItem && (
               <Card>
-                <Grid container direction="column">
-                  {items.map((item, index) => (
-                    <Fragment
-                      key={getKey ? getKey(item) : (item as any).id || index}
-                    >
-                      {renderListItem(item, { retry })}
-                      {index < items.length - 1 && <Divider />}
-                    </Fragment>
-                  ))}
-                </Grid>
+                {items.map((item, index) => (
+                  <Fragment
+                    key={getKey ? getKey(item) : (item as any).id || index}
+                  >
+                    {renderListItem(item, { retry })}
+                    {index < items.length - 1 && <Divider />}
+                  </Fragment>
+                ))}
               </Card>
             )}
 
