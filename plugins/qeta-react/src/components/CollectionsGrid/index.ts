@@ -1,1 +1,0 @@
-export { CollectionsGrid } from './CollectionsGrid';

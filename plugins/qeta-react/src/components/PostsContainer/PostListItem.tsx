@@ -45,12 +45,14 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'flex-start',
     height: '100%',
-    padding: theme.spacing(2.5, 2, 2, 2),
+    padding: theme.spacing(2.5, 3.5, 2, 2),
     minHeight: 80,
     transition: 'all 0.2s ease-in-out',
-    borderRadius: theme.shape.borderRadius,
     textDecoration: 'none',
     color: 'inherit',
+    '&:first-child': {
+      paddingTop: theme.spacing(3),
+    },
     position: 'relative',
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
@@ -120,7 +122,7 @@ const useStyles = makeStyles(theme => ({
   content: {
     color: theme.palette.text.primary,
     opacity: 0.9,
-    margin: '0px 0 12px 0px',
+    margin: '0px 0 4px 0px',
     display: '-webkit-box',
     WebkitLineClamp: 2,
     WebkitBoxOrient: 'vertical',
@@ -159,7 +161,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     gap: theme.spacing(1),
     justifyContent: 'space-between',
-    marginBottom: theme.spacing(1),
+    marginBottom: theme.spacing(0.5),
   },
   titleWrapper: {
     display: 'flex',

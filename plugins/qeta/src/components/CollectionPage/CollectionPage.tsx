@@ -3,10 +3,10 @@ import {
   CollectionFollowButton,
   ContentHeader,
   DeleteModal,
-  PostsGrid,
   collectionEditRouteRef,
   qetaTranslationRef,
   useQetaApi,
+  PostsContainer,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { WarningPanel } from '@backstage/core-components';
@@ -118,10 +118,11 @@ export const CollectionPage = () => {
           />
         </Grid>
         <Grid item xs={12}>
-          <PostsGrid
+          <PostsContainer
             collectionId={collection.id}
             orderBy="rank"
             allowRanking={collection.canEdit}
+            defaultView="grid"
           />
         </Grid>
       </Grid>

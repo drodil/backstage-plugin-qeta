@@ -88,6 +88,7 @@ export type PostFilters = Filters & {
   noVotes?: 'true' | 'false';
   collectionId?: number;
   type?: PostType;
+  author?: string;
   entities?: string[];
   tags?: string[];
   tagsRelation?: 'and' | 'or';

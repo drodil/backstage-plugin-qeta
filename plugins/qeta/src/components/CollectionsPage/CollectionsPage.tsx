@@ -1,5 +1,5 @@
 import {
-  CollectionsGrid,
+  CollectionsContainer,
   ContentHeader,
   CreateCollectionButton,
   qetaTranslationRef,
@@ -18,7 +18,7 @@ export const CollectionsPage = () => {
       >
         <CreateCollectionButton />
       </ContentHeader>
-      <CollectionsGrid />
+      <CollectionsContainer />
     </>
   );
 };

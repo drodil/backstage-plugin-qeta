@@ -5,13 +5,11 @@ import { useApi } from '@backstage/core-plugin-api';
 import {
   AskQuestionButton,
   CreateLinkButton,
-  EntitiesGrid,
+  EntitiesContainer,
   EntityFollowButton,
   PostsContainer,
-  PostsGrid,
   qetaTranslationRef,
   useQetaApi,
-  ViewType,
   WriteArticleButton,
   ContentHeaderCard,
   ContentHeader,
@@ -30,7 +28,6 @@ import { Entity } from '@backstage/catalog-model';
 
 const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
-  const [view, setView] = useState<ViewType>('list');
   const [entity, setEntity] = useState<Entity | undefined>(undefined);
   const { Icon } = useEntityPresentation(entityRef);
   const catalogApi = useApi(catalogApiRef);
@@ -114,22 +111,12 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
           ]}
         />
       )}
-      {view === 'grid' ? (
-        <PostsGrid
-          entity={entityRef}
-          filterPanelProps={{ showEntityFilter: false }}
-          view={view}
-          onViewChange={setView}
-        />
-      ) : (
-        <PostsContainer
-          entity={entityRef}
-          filterPanelProps={{ showEntityFilter: false }}
-          view={view}
-          showTypeLabel
-          onViewChange={setView}
-        />
-      )}
+      <PostsContainer
+        entity={entityRef}
+        filterPanelProps={{ showEntityFilter: false }}
+        defaultView="list"
+        showTypeLabel
+      />
     </>
   );
 };
@@ -152,7 +139,7 @@ export const EntityPage = () => {
         <WriteArticleButton />
         <CreateLinkButton />
       </ContentHeader>
-      <EntitiesGrid />
+      <EntitiesContainer />
     </>
   );
 };

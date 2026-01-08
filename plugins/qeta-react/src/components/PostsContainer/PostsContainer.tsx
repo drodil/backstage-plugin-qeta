@@ -1,33 +1,56 @@
+import React from 'react';
 import {
   CommonFilterPanelProps,
-  FilterPanel,
   PostFilters,
 } from '../FilterPanel/FilterPanel';
-import { PostList } from './PostList';
 import { AskQuestionButton } from '../Buttons/AskQuestionButton';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { TagFollowButton } from '../Buttons/TagFollowButton';
 import { EntityFollowButton } from '../Buttons/EntityFollowButton';
 import { CreateLinkButton, WriteArticleButton } from '../Buttons';
-import { ViewToggle, ViewType } from '../ViewToggle/ViewToggle';
+import { ViewType } from '../ViewToggle/ViewToggle';
 import { capitalize } from 'lodash';
-import {
-  PaginatedPostsProps,
-  usePaginatedPosts,
-} from '../../hooks/usePaginatedPosts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { qetaTranslationRef } from '../../translation.ts';
-import { SearchBar } from '../SearchBar/SearchBar';
-import { Box, Button, Collapse, Grid, Typography } from '@material-ui/core';
-import FilterList from '@material-ui/icons/FilterList';
-import { PostsGridContent } from '../PostsGrid/PostsGridContent';
+import { qetaTranslationRef } from '../../translation';
+import { Box, Grid, Typography } from '@material-ui/core';
+import { QetaEntityContainer } from '../QetaEntityContainer/QetaEntityContainer';
+import { PostsGridItem } from './PostsGridItem';
+import { PostListItem } from './PostListItem';
+import { PostResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
+import { getFiltersWithDateRange } from '../../utils';
+import { NoPostsCard } from './NoPostsCard';
 
-export type PostsContainerProps = PaginatedPostsProps & {
+export type PostsContainerProps = {
+  type?: PostType;
+  tags?: string[];
+  author?: string;
+  showFilters?: boolean;
+  showTitle?: boolean;
+  title?: string;
+  favorite?: boolean;
+  showAskButton?: boolean;
+  showWriteButton?: boolean;
+  showLinkButton?: boolean;
+  showNoQuestionsBtn?: boolean;
+  collectionId?: number;
+  initialPageSize?: number;
   entity?: string;
   filterPanelProps?: CommonFilterPanelProps;
   showTypeLabel?: boolean;
+  allowRanking?: boolean;
+  defaultView?: ViewType;
   view?: ViewType;
   onViewChange?: (view: ViewType) => void;
+  status?: string;
+  orderBy?:
+    | 'rank'
+    | 'created'
+    | 'title'
+    | 'views'
+    | 'score'
+    | 'trend'
+    | 'answersCount'
+    | 'updated';
 };
 
 export const PostsContainer = (props: PostsContainerProps) => {
@@ -45,29 +68,20 @@ export const PostsContainer = (props: PostsContainerProps) => {
     showLinkButton,
     showNoQuestionsBtn,
     showTypeLabel,
-    view,
-    onViewChange,
+    allowRanking,
+    defaultView,
+    collectionId,
+    initialPageSize,
+    orderBy,
   } = props;
-  const {
-    onSearchQueryChange,
-    filters,
-    response,
-    loading,
-    error,
-    setShowFilterPanel,
-    showFilterPanel,
-    onFilterChange,
-    posts,
-    hasMore,
-    loadNextPage,
-  } = usePaginatedPosts(props);
-  const combinedResponse = response ? { ...response, posts } : response;
+
   const { t } = useTranslationRef(qetaTranslationRef);
 
-  const itemType = capitalize(t(`common.${type ?? 'post'}`, {}));
-  let shownTitle = title;
+  const itemType = capitalize(t(`common.${type ?? 'post'}` as any, {}));
+  let shownTitle: React.ReactNode = title;
   let link = undefined;
   let btn = undefined;
+
   if (author) {
     shownTitle = t(`postsContainer.title.by`, { itemType });
     link = <EntityRefLink entityRef={author} hideIcon defaultKind="user" />;
@@ -86,136 +100,139 @@ export const PostsContainer = (props: PostsContainerProps) => {
     });
   }
 
-  return (
-    <Box className="qetaPostsContainer">
-      {(showTitle || showAskButton || showWriteButton || showLinkButton) && (
-        <Box mb={3}>
-          <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item>
-              {showTitle && (
-                <Typography
-                  variant="h5"
-                  className="qetaPostsContainerTitle"
-                  style={{ fontWeight: 500, paddingBottom: 2 }}
-                >
-                  {shownTitle} {link} {btn}
-                </Typography>
-              )}
-            </Grid>
-            <Grid item>
-              {showAskButton && (
-                <AskQuestionButton
-                  entity={entity ?? filters.entity}
-                  entityPage={entity !== undefined}
-                  tags={tags}
-                />
-              )}
-              {showWriteButton && (
-                <WriteArticleButton
-                  entity={entity ?? filters.entity}
-                  entityPage={entity !== undefined}
-                  tags={tags}
-                />
-              )}
-              {showLinkButton && (
-                <CreateLinkButton
-                  entity={entity ?? filters.entity}
-                  entityPage={entity !== undefined}
-                  tags={tags}
-                />
-              )}
-            </Grid>
-          </Grid>
-        </Box>
-      )}
-      <Grid container alignItems="flex-end" justifyContent="space-between">
-        <Grid item xs={12} md={4}>
-          <SearchBar
-            onSearch={onSearchQueryChange}
-            label={t('postsContainer.search.label', {
-              itemType: itemType.toLowerCase(),
-            })}
-            loading={loading}
-          />
+  const headerElement = (showTitle ||
+    showAskButton ||
+    showWriteButton ||
+    showLinkButton) && (
+    <Box mb={3}>
+      <Grid container alignItems="center" justifyContent="space-between">
+        <Grid item>
+          {showTitle && (
+            <Typography
+              variant="h5"
+              className="qetaPostsContainerTitle"
+              style={{ fontWeight: 500, paddingBottom: 2 }}
+            >
+              {shownTitle} {link} {btn}
+            </Typography>
+          )}
+        </Grid>
+        <Grid item>
+          {showAskButton && (
+            <AskQuestionButton
+              entity={entity}
+              entityPage={entity !== undefined}
+              tags={tags}
+            />
+          )}
+          {showWriteButton && (
+            <WriteArticleButton
+              entity={entity}
+              entityPage={entity !== undefined}
+              tags={tags}
+            />
+          )}
+          {showLinkButton && (
+            <CreateLinkButton
+              entity={entity}
+              entityPage={entity !== undefined}
+              tags={tags}
+            />
+          )}
         </Grid>
       </Grid>
-      {response && (
-        <Box mt={2} mb={2}>
-          <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item>
-              <Typography
-                variant="h6"
-                className="qetaPostsContainerQuestionCount"
-                style={{ fontWeight: 500, paddingBottom: 2 }}
-              >
-                {t('common.posts', { count: response?.total ?? 0, itemType })}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Grid container spacing={1} alignItems="center">
-                {view && onViewChange && (
-                  <Grid item>
-                    <ViewToggle view={view} onChange={onViewChange} />
-                  </Grid>
-                )}
-                {(showFilters ?? true) && (
-                  <Grid item>
-                    <Button
-                      onClick={() => {
-                        setShowFilterPanel(!showFilterPanel);
-                      }}
-                      className="qetaPostsContainerFilterPanelBtn"
-                      startIcon={<FilterList />}
-                    >
-                      {t('filterPanel.filterButton')}
-                    </Button>
-                  </Grid>
-                )}
-              </Grid>
-            </Grid>
-          </Grid>
-        </Box>
-      )}
-      {(showFilters ?? true) && (
-        <Collapse in={showFilterPanel}>
-          <FilterPanel<PostFilters>
-            onChange={onFilterChange}
-            filters={filters}
-            type={type}
-            showEntityFilter={entity === undefined}
-            {...props.filterPanelProps}
+    </Box>
+  );
+
+  return (
+    <Box className="qetaPostsContainer">
+      {headerElement}
+      <QetaEntityContainer<PostResponse, PostFilters>
+        prefix={`posts${type ? `-${type}` : ''}`}
+        defaultPageSize={initialPageSize}
+        initialFilters={{
+          order: 'desc',
+          searchQuery: '',
+          orderBy: orderBy ?? 'created',
+          type: type,
+          tags: tags,
+          entity: entity,
+          author: author,
+          noAnswers: 'false',
+          noVotes: 'false',
+          noCorrectAnswer: 'false',
+          status: props.status as any,
+        }}
+        filterPanelProps={
+          showFilters ?? true
+            ? {
+                mode: 'posts',
+                type: type as PostType,
+                showEntityFilter: entity === undefined,
+                ...props.filterPanelProps,
+              }
+            : undefined
+        }
+        fetchDeps={[type, tags, author, entity, favorite, collectionId]}
+        fetch={(api, limit, offset, filters) => {
+          const { entity: _entity, ...otherFilters } = filters;
+          return api
+            .getPosts({
+              limit,
+              offset,
+              ...(getFiltersWithDateRange(otherFilters) as any),
+              type: type,
+              tags: tags ?? filters.tags,
+              entities: entity ? [entity] : filters.entities,
+              author: author ?? filters.author,
+              favorite: favorite,
+              collectionId: collectionId,
+            })
+            .then(res => ({ items: res.posts, total: res.total }));
+        }}
+        renderGridItem={(post, { retry }) => (
+          <PostsGridItem
+            post={post}
+            entity={entity}
+            type={type as PostType}
+            allowRanking={allowRanking}
+            onRankUpdate={retry}
+            collectionId={collectionId}
           />
-        </Collapse>
-      )}
-      {view === 'list' && (
-        <PostList
-          loading={loading}
-          error={error}
-          response={combinedResponse}
-          entity={entity ?? filters.entity}
-          showNoQuestionsBtn={showNoQuestionsBtn}
-          entityPage={entity !== undefined}
-          tags={tags ?? filters.tags}
-          type={type}
-          showTypeLabel={showTypeLabel}
-          hasMore={hasMore}
-          loadNextPage={loadNextPage}
-        />
-      )}
-      {view === 'grid' && (
-        <PostsGridContent
-          loading={loading}
-          error={error}
-          response={combinedResponse}
-          entity={entity ?? filters.entity}
-          showNoQuestionsBtn={showNoQuestionsBtn}
-          entityPage={entity !== undefined}
-          tags={tags ?? filters.tags}
-          type={type}
-          hasMore={hasMore}
-          loadNextPage={loadNextPage}
-        />
-      )}
+        )}
+        renderListItem={post => (
+          <PostListItem
+            post={post}
+            entity={entity}
+            type={type as PostType}
+            showTypeLabel={showTypeLabel}
+          />
+        )}
+        title={total => (
+          <Typography
+            variant="h6"
+            className="qetaPostsContainerQuestionCount"
+            style={{ fontWeight: 500, paddingBottom: 2 }}
+          >
+            {t('common.posts', { count: total, itemType })}
+          </Typography>
+        )}
+        searchPlaceholder={t('postsContainer.search.label', {
+          itemType: itemType.toLowerCase(),
+        })}
+        emptyMessage={t('common.posts', { count: 0, itemType })}
+        getKey={post => post.id}
+        defaultView={defaultView} // Pass the view prop as defaultView
+        emptyState={
+          <NoPostsCard
+            showNoPostsBtn={showNoQuestionsBtn}
+            entity={entity}
+            entityPage={entity !== undefined}
+            tags={tags}
+            type={type}
+          />
+        }
+      />
     </Box>
   );
 };

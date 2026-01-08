@@ -5,12 +5,10 @@ import {
   ContentHeader,
   CreateLinkButton,
   PostsContainer,
-  PostsGrid,
   qetaApiRef,
   qetaTranslationRef,
   TagFollowButton,
-  TagsGrid,
-  ViewType,
+  TagsContainer,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import LocalOfferOutlined from '@material-ui/icons/LocalOfferOutlined';
@@ -27,7 +25,6 @@ export const TagPage = () => {
   const { tag } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
   const [resp, setResp] = useState<undefined | TagResponse>();
-  const [view, setView] = useState<ViewType>('list');
 
   const qetaApi = useApi(qetaApiRef);
   const alertApi = useApi(alertApiRef);
@@ -114,24 +111,15 @@ export const TagPage = () => {
           )}
         </ContentHeaderCard>
       )}
-      {tag &&
-        (view === 'grid' ? (
-          <PostsGrid
-            tags={[tag ?? '']}
-            filterPanelProps={{ showTagFilter: false }}
-            view={view}
-            onViewChange={setView}
-          />
-        ) : (
-          <PostsContainer
-            tags={[tag ?? '']}
-            filterPanelProps={{ showTagFilter: false }}
-            view={view}
-            showTypeLabel
-            onViewChange={setView}
-          />
-        ))}
-      {!tag && <TagsGrid />}
+      {tag && (
+        <PostsContainer
+          tags={[tag ?? '']}
+          filterPanelProps={{ showTagFilter: false }}
+          showTypeLabel
+          defaultView="list"
+        />
+      )}
+      {!tag && <TagsContainer />}
     </>
   );
 };

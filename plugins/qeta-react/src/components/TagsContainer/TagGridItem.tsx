@@ -104,7 +104,7 @@ export const TagGridItem = (props: {
   const href = tagRoute({ tag: tag.tag });
 
   return (
-    <Grid item xs={12} sm={6} md={6} xl={4}>
+    <>
       <Card className={classes.card}>
         <ClickableLink href={href} ariaLabel={tag.tag}>
           <Box
@@ -290,6 +290,6 @@ export const TagGridItem = (props: {
         onClose={handleDeleteModalClose}
         entity={tag}
       />
-    </Grid>
+    </>
   );
 };

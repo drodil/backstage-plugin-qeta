@@ -28,15 +28,17 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'flex-start',
     height: '100%',
-    padding: theme.spacing(2.5, 2, 2, 2),
+    padding: theme.spacing(1, 2),
     minHeight: 80,
     transition: 'all 0.2s ease-in-out',
-    borderRadius: theme.shape.borderRadius,
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
       '& $title': {
         color: theme.palette.primary.main,
       },
+    },
+    '&:first-child': {
+      paddingTop: theme.spacing(2),
     },
     cursor: 'pointer',
   },

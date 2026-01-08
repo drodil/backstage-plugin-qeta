@@ -3,11 +3,10 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import {
   AnswersContainer,
   AskQuestionButton,
-  CollectionsGrid,
+  CollectionsContainer,
   ContentHeader,
   CreateLinkButton,
   PostsContainer,
-  PostsGrid,
   qetaTranslationRef,
   useIdentityApi,
   UserFollowButton,
@@ -210,21 +209,21 @@ export const UserPage = () => {
           />
         </TabPanel>
         <TabPanel value="articles" className={classes.tabPanel}>
-          <PostsGrid
+          <PostsContainer
             author={identity ?? ''}
             type="article"
             showNoQuestionsBtn={false}
           />
         </TabPanel>
         <TabPanel value="links" className={classes.tabPanel}>
-          <PostsGrid
+          <PostsContainer
             author={identity ?? ''}
             type="link"
             showNoQuestionsBtn={false}
           />
         </TabPanel>
         <TabPanel value="collections" className={classes.tabPanel}>
-          <CollectionsGrid owner={identity ?? ''} />
+          <CollectionsContainer owner={identity ?? ''} />
         </TabPanel>
         <TabPanel value="answers" className={classes.tabPanel}>
           <AnswersContainer

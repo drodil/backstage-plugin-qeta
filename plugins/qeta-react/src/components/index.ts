@@ -19,13 +19,13 @@ export * from './Badges/BadgeChip';
 export * from './Badges/UserBadges';
 
 export * from './TopRankingUsersCard';
-export * from './TagsGrid';
-export * from './EntitiesGrid';
-export * from './UsersGrid';
-export * from './PostsGrid';
+export * from './TagsContainer';
+export * from './EntitiesContainer';
+export * from './UsersContainer';
+
 export * from './ArticleContent';
 export * from './CollectionForm';
-export * from './CollectionsGrid';
+export * from './CollectionsContainer';
 
 export * from './LeftMenu';
 export * from './TemplateList';

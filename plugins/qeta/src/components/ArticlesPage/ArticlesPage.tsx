@@ -2,11 +2,9 @@ import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
   ContentHeader,
-  PostsGrid,
   PostsContainer,
   qetaTranslationRef,
   WriteArticleButton,
-  ViewType,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import LibraryBooksOutlined from '@material-ui/icons/LibraryBooksOutlined';
@@ -15,7 +13,6 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const ArticlesPage = () => {
   const [searchParams] = useSearchParams();
-  const [view, setView] = useState<ViewType>('grid');
 
   const [entityRef, setEntityRef] = useState<string | undefined>(undefined);
   const [tags, setTags] = useState<string[] | undefined>(undefined);
@@ -43,11 +40,7 @@ export const ArticlesPage = () => {
       >
         <WriteArticleButton entity={entityRef} tags={tags} />
       </ContentHeader>
-      {view === 'grid' ? (
-        <PostsGrid type="article" view={view} onViewChange={setView} />
-      ) : (
-        <PostsContainer type="article" view={view} onViewChange={setView} />
-      )}
+      <PostsContainer type="article" defaultView="grid" />
     </>
   );
 };
