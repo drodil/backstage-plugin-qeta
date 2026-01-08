@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.52.5](https://github.com/drodil/backstage-plugin-qeta/compare/v3.52.4...v3.52.5) (2026-01-08)
+
+
+### Bug Fixes
+
+* anonymous posts in search results ([9989a13](https://github.com/drodil/backstage-plugin-qeta/commit/9989a13c7d9be20282b2668876f8fda0a33cfca0)), closes [#378](https://github.com/drodil/backstage-plugin-qeta/issues/378)
+* content generate tool views to include user ([7e96ebc](https://github.com/drodil/backstage-plugin-qeta/commit/7e96ebc035fea30358a0217f41207e2e2592e06f))
+
 ### [3.52.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.52.3...v3.52.4) (2026-01-07)
 
 
