@@ -285,8 +285,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         includeExperts: false,
       });
 
-    console.log(`Request ${JSON.stringify(request.body)}`);
-
     const posts = await database.suggestPosts(
       username,
       title,

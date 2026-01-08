@@ -1627,7 +1627,6 @@ export class QetaClient implements QetaApi {
     if (query) {
       url += `?${query}`;
     }
-    console.log(url);
 
     return this.fetchApi.fetch(url, {
       method: 'GET',
