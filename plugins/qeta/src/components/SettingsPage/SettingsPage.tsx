@@ -16,6 +16,7 @@ import {
   ViewType,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   content: {
@@ -53,6 +54,8 @@ export const SettingsPage = () => {
   const { settings, setSetting, isLoaded } = useUserSettings();
   const { t } = useTranslationRef(qetaTranslationRef);
   const { isAIEnabled } = useAI();
+  const configApi = useApi(configApiRef);
+  const allowAnonymous = configApi.getOptionalBoolean('qeta.allowAnonymous');
 
   const viewTypes = [
     {
@@ -161,6 +164,30 @@ export const SettingsPage = () => {
               {t('settingsPage.autoSave.description', {})}
             </Typography>
           </div>
+
+          {allowAnonymous && (
+            <div
+              className={classes.settingItem}
+              data-testid="anonymous-posting-setting"
+            >
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={settings.anonymousPosting}
+                    onChange={e =>
+                      setSetting('anonymousPosting', e.target.checked)
+                    }
+                    color="primary"
+                    data-testid="anonymous-posting-switch"
+                  />
+                }
+                label={t('settingsPage.anonymousPosting.label', {})}
+              />
+              <Typography className={classes.description}>
+                {t('settingsPage.anonymousPosting.description', {})}
+              </Typography>
+            </div>
+          )}
         </div>
 
         <div className={classes.section}>

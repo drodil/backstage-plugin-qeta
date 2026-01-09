@@ -27,7 +27,7 @@ import {
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { useIdentityApi, useIsModerator } from '../../hooks';
+import { useIdentityApi, useIsModerator, useUserSettings } from '../../hooks';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
@@ -55,6 +55,7 @@ export const AnswerForm = (props: {
   );
   const analytics = useAnalytics();
   const { isModerator } = useIsModerator();
+  const { settings } = useUserSettings();
   const { value: identity } = useIdentityApi(
     api => api.getBackstageIdentity(),
     [],
@@ -67,7 +68,7 @@ export const AnswerForm = (props: {
   const [edited, setEdited] = useState(false);
   const qetaApi = useApi(qetaApiRef);
   const configApi = useApi(configApiRef);
-  const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
+  const allowAnonymous = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const { t } = useTranslationRef(qetaTranslationRef);
   const alertApi = useApi(alertApiRef);
 
@@ -185,6 +186,12 @@ export const AnswerForm = (props: {
   }, [catalogApi, id, identity]);
 
   useEffect(() => {
+    if (!id && allowAnonymous) {
+      setValues(v => ({ ...v, anonymous: settings.anonymousPosting }));
+    }
+  }, [id, settings.anonymousPosting, allowAnonymous]);
+
+  useEffect(() => {
     reset(values);
   }, [values, reset]);
 
@@ -260,7 +267,7 @@ export const AnswerForm = (props: {
                 />
               </Box>
             )}
-            {allowAnonymouns && !id && (
+            {allowAnonymous && !id && (
               <PostAnonymouslyCheckbox
                 control={control}
                 disabled={post.status === 'obsolete'}

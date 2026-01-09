@@ -179,7 +179,7 @@ export const PostForm = (props: PostFormProps) => {
   const catalogApi = useApi(catalogApiRef);
   const configApi = useApi(configApiRef);
   const alertApi = useApi(alertApiRef);
-  const allowAnonymouns = configApi.getOptionalBoolean('qeta.allowAnonymous');
+  const allowAnonymous = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const minEntities = configApi.getOptionalNumber('qeta.entities.min') ?? 0;
   const minTags = configApi.getOptionalNumber('qeta.tags.min') ?? 0;
 
@@ -403,6 +403,12 @@ export const PostForm = (props: PostFormProps) => {
       });
     }
   }, [catalogApi, id, identity]);
+
+  useEffect(() => {
+    if (!id && !loading && allowAnonymous) {
+      setValues(v => ({ ...v, anonymous: settings.anonymousPosting }));
+    }
+  }, [id, loading, settings.anonymousPosting, allowAnonymous]);
 
   const authorValue = watch('author');
   const customAuthor = useMemo(() => {
@@ -835,7 +841,7 @@ export const PostForm = (props: PostFormProps) => {
           />
         </Box>
       )}
-      {allowAnonymouns && !id && (
+      {allowAnonymous && !id && (
         <Box mt={2} mb={2} display="flex" alignItems="center">
           <PostAnonymouslyCheckbox
             control={control}

@@ -4,6 +4,7 @@ import { ViewType } from '../components/ViewToggle/ViewToggle';
 
 export type UserSettings = {
   autoSaveEnabled: boolean;
+  anonymousPosting: boolean;
   filterPanelExpanded: Record<string, boolean>;
   viewType: Record<string, ViewType>;
   aiAnswerExpanded: boolean;
@@ -12,6 +13,7 @@ export type UserSettings = {
 
 const DEFAULT_SETTINGS: UserSettings = {
   autoSaveEnabled: false,
+  anonymousPosting: false,
   filterPanelExpanded: {},
   viewType: {},
   aiAnswerExpanded: false,
@@ -38,8 +40,8 @@ export const useUserSettings = () => {
     const stored = snapshot.value as UserSettings | undefined;
 
     if (stored) {
-      setSettings(stored);
-      settingsRef.current = stored;
+      setSettings({ ...DEFAULT_SETTINGS, ...stored });
+      settingsRef.current = { ...DEFAULT_SETTINGS, ...stored };
     }
 
     setIsLoaded(true);
@@ -50,10 +52,10 @@ export const useUserSettings = () => {
           return;
         }
 
-        const value = newSnapshot.value as UserSettings | undefined;
+        const value = newSnapshot.value;
         if (value) {
-          setSettings(value);
-          settingsRef.current = value;
+          setSettings({ ...DEFAULT_SETTINGS, ...value });
+          settingsRef.current = { ...DEFAULT_SETTINGS, ...value };
         } else {
           setSettings(DEFAULT_SETTINGS);
           settingsRef.current = DEFAULT_SETTINGS;
@@ -72,7 +74,7 @@ export const useUserSettings = () => {
       const currentSettings = settingsRef.current;
       const newSettings = {
         ...currentSettings,
-        ...(updates as Partial<UserSettings>),
+        ...updates,
       };
       settingsRef.current = newSettings;
       setSettings(newSettings);
@@ -91,7 +93,7 @@ export const useUserSettings = () => {
 
   const getSetting = useCallback(
     <K extends keyof UserSettings>(key: K): UserSettings[K] => {
-      return settingsRef.current[key];
+      return settingsRef.current[key] ?? DEFAULT_SETTINGS[key];
     },
     [],
   );
@@ -112,7 +114,7 @@ export const useUserSettings = () => {
   }, [storageApi]);
 
   return {
-    settings,
+    settings: settingsRef.current,
     updateSettings,
     getSetting,
     setSetting,

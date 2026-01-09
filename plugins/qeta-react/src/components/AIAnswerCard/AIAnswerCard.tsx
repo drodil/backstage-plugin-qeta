@@ -55,8 +55,8 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   const config = useApi(configApiRef);
   const botName = config.getOptionalString('qeta.aiBotName') ?? 'AI';
   const styles = useStyles();
-  const { getSetting, setSetting } = useUserSettings();
-  const [expanded, setExpanded] = useState(getSetting('aiAnswerExpanded'));
+  const { settings, setSetting } = useUserSettings();
+  const [expanded, setExpanded] = useState(settings.aiAnswerExpanded);
 
   const {
     isAIEnabled,

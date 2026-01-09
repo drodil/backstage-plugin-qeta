@@ -412,6 +412,11 @@ export const qetaTranslationRef = createTranslationRef({
         description:
           'Automatically save your drafts while writing questions and articles',
       },
+      anonymousPosting: {
+        label: 'Post Anonymously by default',
+        description:
+          'Set posts and answers to anonymous by default when creating new content',
+      },
       aiAnswerExpanded: {
         label: 'Expand AI Answers by Default',
         description:

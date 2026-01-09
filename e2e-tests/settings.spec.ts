@@ -148,6 +148,69 @@ test.describe.serial('Settings', () => {
     await page.waitForTimeout(500);
   });
 
+  test('toggle anonymous posting setting and verify it persists', async ({
+    page,
+  }) => {
+    await page.goto('/qeta/settings');
+    await page.waitForLoadState('networkidle');
+
+    const anonymousSwitch = page.getByTestId('anonymous-posting-switch');
+    const isAnonymousFeatureAvailable = await anonymousSwitch.isVisible();
+
+    if (!isAnonymousFeatureAvailable) {
+      console.log('Anonymous posting feature not enabled, skipping test');
+      return;
+    }
+
+    const initialChecked = await anonymousSwitch.isChecked();
+
+    if (!initialChecked) {
+      await anonymousSwitch.click();
+      await page.waitForTimeout(500);
+    }
+
+    const enabledChecked = await anonymousSwitch.isChecked();
+    expect(enabledChecked).toBe(true);
+
+    await page.goto('/qeta/questions/ask');
+    await page.waitForLoadState('networkidle');
+
+    const formAnonymousCheckbox = page.getByTestId('post-anonymously-checkbox');
+
+    await expect(formAnonymousCheckbox).toBeChecked();
+
+    await page.goto('/qeta/settings');
+    await page.waitForLoadState('networkidle');
+
+    const anonymousSwitchAgain = page.getByTestId('anonymous-posting-switch');
+    await anonymousSwitchAgain.click();
+    await page.waitForTimeout(500);
+
+    const disabledChecked = await anonymousSwitchAgain.isChecked();
+    expect(disabledChecked).toBe(false);
+
+    await page.goto('/qeta/questions/ask');
+    await page.waitForLoadState('networkidle');
+
+    const formAnonymousCheckboxDisabled = page.getByTestId(
+      'post-anonymously-checkbox',
+    );
+
+    await expect(formAnonymousCheckboxDisabled).not.toBeChecked();
+
+    await page.goto('/qeta/settings');
+    await page.waitForLoadState('networkidle');
+
+    const anonymousSwitchAfter = page.getByTestId('anonymous-posting-switch');
+    const persistedChecked = await anonymousSwitchAfter.isChecked();
+    expect(persistedChecked).toBe(false);
+
+    if (initialChecked) {
+      await anonymousSwitchAfter.click();
+      await page.waitForTimeout(500);
+    }
+  });
+
   test('reset view type to default and verify it persists', async ({
     page,
   }) => {
