@@ -1,5 +1,4 @@
-import { useApi } from '@backstage/core-plugin-api';
-import { storageApiRef } from '@backstage/core-plugin-api';
+import { storageApiRef, useApi } from '@backstage/core-plugin-api';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ViewType } from '../components/ViewToggle/ViewToggle';
 
@@ -27,6 +26,7 @@ export const useUserSettings = () => {
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
   const [isLoaded, setIsLoaded] = useState(false);
   const settingsRef = useRef<UserSettings>(DEFAULT_SETTINGS);
+  const isUpdatingRef = useRef(false);
 
   useEffect(() => {
     settingsRef.current = settings;
@@ -39,17 +39,24 @@ export const useUserSettings = () => {
 
     if (stored) {
       setSettings(stored);
+      settingsRef.current = stored;
     }
 
     setIsLoaded(true);
 
     const subscription = bucket.observe$<UserSettings>(STORAGE_KEY).subscribe({
       next: newSnapshot => {
+        if (isUpdatingRef.current) {
+          return;
+        }
+
         const value = newSnapshot.value as UserSettings | undefined;
         if (value) {
           setSettings(value);
+          settingsRef.current = value;
         } else {
           setSettings(DEFAULT_SETTINGS);
+          settingsRef.current = DEFAULT_SETTINGS;
         }
       },
     });
@@ -62,14 +69,22 @@ export const useUserSettings = () => {
   const updateSettings = useCallback(
     async (updates: Partial<UserSettings>) => {
       const bucket = storageApi.forBucket(BUCKET_KEY);
-      const snapshot = bucket.snapshot(STORAGE_KEY);
-      const currentSettings =
-        (snapshot.value as UserSettings) || DEFAULT_SETTINGS;
+      const currentSettings = settingsRef.current;
       const newSettings = {
         ...currentSettings,
         ...(updates as Partial<UserSettings>),
       };
-      await bucket.set(STORAGE_KEY, newSettings);
+      settingsRef.current = newSettings;
+      setSettings(newSettings);
+
+      isUpdatingRef.current = true;
+      try {
+        await bucket.set(STORAGE_KEY, newSettings);
+      } finally {
+        setTimeout(() => {
+          isUpdatingRef.current = false;
+        }, 100);
+      }
     },
     [storageApi],
   );
