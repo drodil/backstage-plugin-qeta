@@ -37,15 +37,18 @@ export const QetaGridHeader = ({
       <Box mt={3} mb={2}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            {!loading && (
-              <Typography
-                variant="h6"
-                component="h2"
-                style={{ fontWeight: 500 }}
-              >
-                {title}
-              </Typography>
-            )}
+            {!loading &&
+              (typeof title === 'string' ? (
+                <Typography
+                  variant="h6"
+                  component="h2"
+                  style={{ fontWeight: 500, paddingBottom: 2 }}
+                >
+                  {title}
+                </Typography>
+              ) : (
+                title
+              ))}
           </Grid>
           {buttons && <Grid item>{buttons}</Grid>}
         </Grid>

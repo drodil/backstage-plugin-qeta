@@ -216,6 +216,7 @@ export const PostsContainer = (props: PostsContainerProps) => {
         title={total => (
           <Typography
             variant="h6"
+            component="h2"
             className="qetaPostsContainerQuestionCount"
             style={{ fontWeight: 500, paddingBottom: 2 }}
           >
