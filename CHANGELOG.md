@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.53.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.53.1...v3.53.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* heading nesting in grid header ([aa0168b](https://github.com/drodil/backstage-plugin-qeta/commit/aa0168b9e8e84e856e79639fa0bdea9eb0c389b6))
+* voting test ([3a5a351](https://github.com/drodil/backstage-plugin-qeta/commit/3a5a3516c5bb3d4a98621a9bf04793e155d184c9))
+
 ### [3.53.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.53.0...v3.53.1) (2026-01-08)
 
 
