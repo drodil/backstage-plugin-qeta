@@ -83,14 +83,14 @@ export const useStyles = makeStyles(
         justifyContent: (props: any) =>
           props.compact ? 'center' : 'flex-start',
         padding: (props: any) =>
-          props.compact ? theme.spacing(1, 0) : theme.spacing(1, 0.5),
+          props.compact ? theme.spacing(1, 0) : theme.spacing(0.5, 0.5),
         borderRadius: (props: any) =>
           props.compact ? 0 : theme.shape.borderRadius,
         transition: 'all 0.2s ease-in-out',
         color: theme.palette.text.primary,
         display: 'flex',
         alignItems: 'center',
-        minHeight: 48,
+        minHeight: 40,
         maxWidth: '80%',
         '&:hover': {
           backgroundColor: theme.palette.action.hover,
