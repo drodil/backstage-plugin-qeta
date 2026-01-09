@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.55.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.54.0...v3.55.0) (2026-01-09)
+
+
+### Features
+
+* automatic collections ([cad1313](https://github.com/drodil/backstage-plugin-qeta/commit/cad13136006c7d158f1704dab75114013952600a)), closes [#380](https://github.com/drodil/backstage-plugin-qeta/issues/380)
+
+
+### Bug Fixes
+
+* e2e test selectors ([ba650dc](https://github.com/drodil/backstage-plugin-qeta/commit/ba650dcba1a2aa1a4b3fd52b2a740a37c04c9841))
+* entity access right check performance ([e1fd2df](https://github.com/drodil/backstage-plugin-qeta/commit/e1fd2df6f53c6445bdb6e3bf568d9733b5655a61))
+* tests for collection adding ([8565366](https://github.com/drodil/backstage-plugin-qeta/commit/856536625e6a34f9d36a6d57482ac9c856f38af2))
+
 ## [3.54.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.53.3...v3.54.0) (2026-01-09)
 
 
