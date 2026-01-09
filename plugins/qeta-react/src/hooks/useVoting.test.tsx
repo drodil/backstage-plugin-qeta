@@ -181,12 +181,10 @@ describe('useVoting', () => {
       result.current.toggleCorrectAnswer();
     });
 
-    const initialValue = result.current;
     await waitFor(() => {
-      expect(result.current).not.toBe(initialValue);
+      expect(result.current.correctAnswer).toBe(true);
     });
 
     expect(mockQetaApi.markAnswerCorrect).toHaveBeenCalledWith(2, 1);
-    expect(result.current.correctAnswer).toBe(true);
   });
 });
