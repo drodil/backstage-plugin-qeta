@@ -646,6 +646,7 @@ export const qetaTranslationRef = createTranslationRef({
       obsoleteStatus:
         'This post has been marked as obsolete. It may contain outdated information. Commenting and answering are disabled.',
       answerButton: 'Answer',
+      correctAnswer: 'Has correct answer',
       sortAnswers: {
         label: 'Sort answers',
         menuLabel: 'Sort answers menu',
