@@ -10,10 +10,10 @@ import {
 } from '@material-ui/core';
 import { InfoCard } from '@backstage/core-components';
 import {
-  useUserSettings,
   qetaTranslationRef,
-  ViewType,
   useAI,
+  useUserSettings,
+  ViewType,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -136,14 +136,14 @@ export const SettingsPage = () => {
   }
 
   return (
-    <InfoCard title={t('settingsPage.title', {})}>
+    <InfoCard title={t('settingsPage.title', {})} data-testid="settings-page">
       <CardContent>
         <div className={classes.section}>
           <Typography variant="h6" className={classes.sectionTitle}>
             {t('settingsPage.editorPreferences', {})}
           </Typography>
 
-          <div className={classes.settingItem}>
+          <div className={classes.settingItem} data-testid="auto-save-setting">
             <FormControlLabel
               control={
                 <Switch
@@ -152,6 +152,7 @@ export const SettingsPage = () => {
                     setSetting('autoSaveEnabled', e.target.checked)
                   }
                   color="primary"
+                  data-testid="auto-save-switch"
                 />
               }
               label={t('settingsPage.autoSave.label', {})}
@@ -168,7 +169,10 @@ export const SettingsPage = () => {
           </Typography>
 
           {isAIEnabled && (
-            <div className={classes.settingItem}>
+            <div
+              className={classes.settingItem}
+              data-testid="ai-answer-setting"
+            >
               <FormControlLabel
                 control={
                   <Switch
@@ -177,6 +181,7 @@ export const SettingsPage = () => {
                       setSetting('aiAnswerExpanded', e.target.checked)
                     }
                     color="primary"
+                    data-testid="ai-answer-switch"
                   />
                 }
                 label={t('settingsPage.aiAnswerExpanded.label', {})}
@@ -187,13 +192,14 @@ export const SettingsPage = () => {
             </div>
           )}
 
-          <div className={classes.settingItem}>
+          <div className={classes.settingItem} data-testid="pagination-setting">
             <FormControlLabel
               control={
                 <Switch
                   checked={settings.usePagination}
                   onChange={e => setSetting('usePagination', e.target.checked)}
                   color="primary"
+                  data-testid="pagination-switch"
                 />
               }
               label={t('settingsPage.usePagination.label', {})}
@@ -220,7 +226,11 @@ export const SettingsPage = () => {
             {viewTypes.map(({ key, label }) => {
               const currentView = getViewType(key);
               return (
-                <div key={key} className={classes.viewTypeItem}>
+                <div
+                  key={key}
+                  className={classes.viewTypeItem}
+                  data-testid={`view-type-${key}`}
+                >
                   <Typography className={classes.viewTypeLabel}>
                     {label}
                   </Typography>
@@ -230,6 +240,7 @@ export const SettingsPage = () => {
                         currentView === 'grid' ? 'contained' : 'outlined'
                       }
                       onClick={() => handleViewTypeChange(key, 'grid')}
+                      data-testid={`view-type-${key}-grid`}
                     >
                       {t('settingsPage.viewTypePreferences.grid', {})}
                     </Button>
@@ -238,12 +249,14 @@ export const SettingsPage = () => {
                         currentView === 'list' ? 'contained' : 'outlined'
                       }
                       onClick={() => handleViewTypeChange(key, 'list')}
+                      data-testid={`view-type-${key}-list`}
                     >
                       {t('settingsPage.viewTypePreferences.list', {})}
                     </Button>
                     <Button
                       variant={currentView === null ? 'contained' : 'outlined'}
                       onClick={() => handleViewTypeChange(key, null)}
+                      data-testid={`view-type-${key}-default`}
                     >
                       {t('settingsPage.viewTypePreferences.default', {})}
                     </Button>
