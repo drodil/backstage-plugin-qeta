@@ -1,9 +1,8 @@
-import { test, expect } from '@playwright/test';
-import { loginAsGuest, createQuestion, createAnswer } from './utils';
+import { expect, test } from '@playwright/test';
+import { createAnswer, createQuestion, loginAsGuest } from './utils';
 import { faker } from '@faker-js/faker';
 
-test.describe.serial('Questions', () => {
-  let questionId: string;
+test.describe.serial('Questions - Form Flow', () => {
   const title = `${faker.lorem.sentence()} ${faker.string.uuid()}`;
   const content = faker.lorem.paragraphs(3);
   const tags = [faker.word.adjective(), faker.word.adjective()];
@@ -38,14 +37,6 @@ test.describe.serial('Questions', () => {
     await expect(page).toHaveURL(/\/qeta\/questions\/\d+/);
 
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
-
-    const url = page.url();
-    const match = url.match(/\/qeta\/questions\/(\d+)/);
-    if (match) {
-      questionId = match[1];
-    } else {
-      throw new Error('Could not capture questionId from URL');
-    }
   });
 
   test('list the question', async ({ page }) => {
@@ -73,6 +64,13 @@ test.describe.serial('Questions', () => {
     await searchInput.fill(partialContent);
     await page.waitForTimeout(1000);
     await expect(page.getByText(title).first()).toBeVisible();
+  });
+});
+
+test.describe('Questions - Independent Tests', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await loginAsGuest(page);
   });
 
   test('increase view count', async ({ page, request }) => {

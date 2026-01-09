@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { createQuestion, loginAsGuest } from './utils';
 
-test.describe.serial('Settings', () => {
+test.describe('Settings', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await loginAsGuest(page);

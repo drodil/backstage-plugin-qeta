@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
-import { loginAsGuest, createLink } from './utils';
+import { expect, test } from '@playwright/test';
+import { createLink, loginAsGuest } from './utils';
 import { faker } from '@faker-js/faker';
 
-test.describe.serial('Links', () => {
+test.describe.serial('Links - Form Flow', () => {
   const title = `${faker.lorem.sentence()} ${faker.string.uuid()}`;
   const content = faker.lorem.paragraphs(1);
   const tags = [faker.word.adjective(), faker.word.adjective()];
@@ -59,6 +59,13 @@ test.describe.serial('Links', () => {
     await page.waitForTimeout(1000);
     await expect(page.getByText(title).first()).toBeVisible();
   });
+});
+
+test.describe('Links - Independent Tests', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await loginAsGuest(page);
+  });
 
   test('increase view count', async ({ page, request }) => {
     const { title } = await createLink(request);
@@ -101,8 +108,8 @@ test.describe.serial('Links', () => {
     }).toPass({ timeout: 10000 });
   });
 
-  test('open link button functionality', async ({ page, context, request }) => {
-    const { title, url } = await createLink(request);
+  test('open link button functionality', async ({ page, request }) => {
+    const { title } = await createLink(request);
 
     await page.goto('/qeta/links?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');
