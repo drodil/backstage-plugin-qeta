@@ -205,21 +205,25 @@ export const ImpactCard = () => {
         <Divider />
 
         <Box mt={2}>
-          <Grid container spacing={1}>
+          <Grid container spacing={2}>
             {statItems.map((item, index) => (
-              <Grid item xs={12} key={index}>
-                <Box display="flex" alignItems="center" color="textSecondary">
-                  <Tooltip title={item.label}>
-                    <Box display="flex" alignItems="center">
-                      {item.icon}
-                    </Box>
-                  </Tooltip>
-                  <Box ml={1}>
-                    <Typography variant="subtitle2" component="span">
-                      {item.value} {item.label.toLowerCase()}
+              <Grid item xs={6} sm={4} md={3} key={index}>
+                <Tooltip title={item.label}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    style={{ cursor: 'default' }}
+                  >
+                    <Box color="textSecondary">{item.icon}</Box>
+                    <Typography
+                      variant="body2"
+                      style={{ fontWeight: 'bold', marginTop: '4px' }}
+                    >
+                      {item.value}
                     </Typography>
                   </Box>
-                </Box>
+                </Tooltip>
               </Grid>
             ))}
           </Grid>
