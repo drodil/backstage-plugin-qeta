@@ -119,16 +119,17 @@ export const TagChip = (props: {
   tag: string;
   style?: CSSProperties;
   useHref?: boolean;
+  tooltip?: React.ReactElement;
 }) => {
   const tagRoute = useRouteRef(tagRouteRef);
-  const { tag } = props;
+  const { tag, tooltip } = props;
   const classes = useTooltipStyles();
   const href = tagRoute({ tag });
 
   return (
     <Tooltip
       arrow
-      title={<TagTooltip tag={tag} />}
+      title={tooltip ? tooltip : <TagTooltip tag={tag} />}
       enterDelay={400}
       interactive
       classes={{

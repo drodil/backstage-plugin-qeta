@@ -95,6 +95,7 @@ export const qetaTranslationRef = createTranslationRef({
       loading: 'Loading...',
       draft: 'Draft',
       deleted: 'Deleted',
+      more: '+{{count}} more',
     },
     markdownEditor: {
       write: 'Write',

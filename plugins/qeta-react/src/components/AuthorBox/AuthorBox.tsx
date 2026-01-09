@@ -19,7 +19,6 @@ const useStyles = makeStyles(
       display: 'flex',
       gap: theme.spacing(0.5),
       alignItems: 'center',
-      marginBottom: '8px',
       whiteSpace: 'nowrap',
       '& > *': {
         fontSize: '12px',

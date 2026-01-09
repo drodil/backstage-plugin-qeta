@@ -27,7 +27,7 @@ test.describe.serial('Links - Form Flow', () => {
     await page.waitForTimeout(500);
     await tagsInput.press('Enter');
 
-    await page.getByRole('button', { name: /Publish|Post/i }).click();
+    await page.getByRole('button', { name: 'Publish', exact: true }).click();
 
     await expect(page).toHaveURL(/\/qeta\/links\/\d+/);
     await expect(page.getByRole('heading', { name: title })).toBeVisible();

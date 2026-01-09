@@ -57,7 +57,8 @@ test.describe.serial('Questions - Form Flow', () => {
     await page.waitForTimeout(1000);
     await expect(page.getByText(title).first()).toBeVisible();
 
-    await page.getByRole('button', { name: /clear/i }).click();
+    await page.waitForLoadState('networkidle');
+    await page.getByRole('button', { name: 'clear', exact: true }).click();
     await expect(searchInput).toHaveValue('');
 
     const partialContent = content.split(' ')[0];

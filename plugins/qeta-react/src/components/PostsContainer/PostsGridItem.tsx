@@ -74,6 +74,7 @@ const useStyles = makeStyles(theme => ({
   },
   cardContentFooter: {
     padding: theme.spacing(1, 2, 1.5, 2),
+    flexGrow: 'unset',
   },
   title: {
     fontWeight: 600,
@@ -90,6 +91,18 @@ const useStyles = makeStyles(theme => ({
   footer: {
     paddingTop: theme.spacing(1),
     marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.5),
+    display: 'flex',
+    gap: theme.spacing(1),
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+  },
+  authorRanking: {
+    display: 'flex',
+    gap: theme.spacing(1),
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginLeft: theme.spacing(1),
   },
   statsContainer: {
     display: 'flex',
@@ -393,23 +406,23 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
                 </Box>
               </Tooltip>
             </Box>
-            <Box className={classes.statsGroup}>
-              <AuthorBox
-                userEntityRef={post.author}
-                time={getPostDisplayDate(post)}
-                label=""
-                anonymous={post.anonymous}
-                compact
-              />
-            </Box>
           </Box>
-          {allowRanking && (
-            <RankingButtons
-              postId={post.id}
-              collectionId={collectionId}
-              onRankUpdate={onRankUpdate}
+          <Box className={classes.authorRanking}>
+            <AuthorBox
+              userEntityRef={post.author}
+              time={getPostDisplayDate(post)}
+              label=""
+              anonymous={post.anonymous}
+              compact
             />
-          )}
+            {allowRanking && (
+              <RankingButtons
+                postId={post.id}
+                collectionId={collectionId}
+                onRankUpdate={onRankUpdate}
+              />
+            )}
+          </Box>
         </Box>
       </CardContent>
     </Card>

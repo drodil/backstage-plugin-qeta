@@ -133,7 +133,11 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
             </Typography>
           )}
           <Box mt={2}>
-            <TagsAndEntities entity={collection} />
+            <TagsAndEntities
+              entity={collection}
+              tagsLimit={5}
+              entitiesLimit={5}
+            />
           </Box>
           <Grid container spacing={1} className={classes.statsGrid}>
             <Grid item xs={3}>

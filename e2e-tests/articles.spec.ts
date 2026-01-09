@@ -32,7 +32,7 @@ test.describe.serial('Articles - Form Flow', () => {
 
     await expect(page.getByText(tags[0], { exact: true })).toBeVisible();
 
-    await page.getByRole('button', { name: /Publish|Post/i }).click();
+    await page.getByRole('button', { name: 'Publish', exact: true }).click();
 
     await expect(page).toHaveURL(/\/qeta\/articles\/\d+/);
 
@@ -117,6 +117,7 @@ test.describe('Articles - Independent Tests', () => {
       expect(updatedViews).toBe(initialViews + 1);
     }).toPass({ timeout: 10000 });
   });
+
   test('vote article', async ({ page, request }) => {
     const { id: articleId } = await createArticle(request, {
       user: 'user:default/user2',
