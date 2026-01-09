@@ -81,11 +81,6 @@ export const getResourceUrl = (
   return undefined;
 };
 
-/**
- * Filter entity refs based on catalog permissions.
- * Uses catalogApi.getEntitiesByRefs which automatically filters out entities
- * the user doesn't have permission to see.
- */
 const filterEntitiesByPermissions = async (
   entityRefs: string[] | undefined,
   routeOpts: RouteOptions,
@@ -96,25 +91,71 @@ const filterEntitiesByPermissions = async (
   }
 
   try {
-    // Get a plugin token on behalf of the user to call the catalog
-    const { token } = await routeOpts.auth.getPluginRequestToken({
-      onBehalfOf: credentials,
-      targetPluginId: 'catalog',
-    });
+    let userKey: string | undefined = undefined;
+    if (routeOpts.auth.isPrincipal(credentials, 'user')) {
+      userKey = credentials.principal.userEntityRef;
+    } else if (routeOpts.auth.isPrincipal(credentials, 'service')) {
+      userKey = credentials.principal.subject;
+    } else {
+      return [];
+    }
 
-    // catalogApi.getEntitiesByRefs handles permission checks automatically
-    // It only returns entities the user has permission to see
-    const entities = await routeOpts.catalog.getEntitiesByRefs(
-      { entityRefs },
-      { token },
-    );
+    const cacheKey = `qeta:entity-permissions:${userKey}`;
+    const cache = routeOpts.cache;
+    let cachedPermissions: Record<string, boolean> = {};
 
-    // Return only the refs of entities that were successfully retrieved
-    return entities.items
-      .filter(entity => entity !== undefined)
-      .map(stringifyEntityRef);
+    if (cache) {
+      const cached = await cache.get<Record<string, boolean>>(cacheKey);
+      if (cached) {
+        cachedPermissions = cached;
+      }
+    }
+
+    const refsToCheck: string[] = [];
+    const allowedRefs: string[] = [];
+
+    for (const ref of entityRefs) {
+      if (ref in cachedPermissions) {
+        if (cachedPermissions[ref]) {
+          allowedRefs.push(ref);
+        }
+      } else {
+        refsToCheck.push(ref);
+      }
+    }
+
+    if (refsToCheck.length > 0) {
+      const { token } = await routeOpts.auth.getPluginRequestToken({
+        onBehalfOf: credentials,
+        targetPluginId: 'catalog',
+      });
+
+      const entities = await routeOpts.catalog.getEntitiesByRefs(
+        { entityRefs: refsToCheck },
+        { token },
+      );
+
+      const fetchedRefs = new Set(
+        entities.items
+          .filter(entity => entity !== undefined)
+          .map(stringifyEntityRef),
+      );
+
+      refsToCheck.forEach(ref => {
+        const isAllowed = fetchedRefs.has(ref);
+        cachedPermissions[ref] = isAllowed;
+        if (isAllowed) {
+          allowedRefs.push(ref);
+        }
+      });
+
+      if (cache) {
+        await cache.set(cacheKey, cachedPermissions, { ttl: 300000 }); // 5 minutes
+      }
+    }
+
+    return allowedRefs;
   } catch (error) {
-    // If there's an error, return empty array to be safe
     routeOpts.logger.warn('Error filtering entities by permissions', error);
     return [];
   }
@@ -242,15 +283,25 @@ const mapCollectionAdditionalFields = async (
   resource.entities = filteredEntities;
 
   if (resource.posts && routeOpts) {
-    await Promise.all(
-      resource.posts.map(async post => {
-        post.entities = await filterEntitiesByPermissions(
-          post.entities,
-          routeOpts,
-          credentials,
-        );
-      }),
-    );
+    const allEntityRefs = new Set<string>();
+    resource.posts.forEach(post => {
+      post.entities?.forEach(ref => allEntityRefs.add(ref));
+    });
+
+    if (allEntityRefs.size > 0) {
+      const allowedRefs = await filterEntitiesByPermissions(
+        Array.from(allEntityRefs),
+        routeOpts,
+        credentials,
+      );
+
+      if (allowedRefs) {
+        const allowedSet = new Set(allowedRefs);
+        resource.posts.forEach(post => {
+          post.entities = post.entities?.filter(ref => allowedSet.has(ref));
+        });
+      }
+    }
   }
 
   return resource;

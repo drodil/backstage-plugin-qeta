@@ -589,6 +589,8 @@ export class CollectionsStore extends BaseStore {
                 includeVotes: false,
                 includeTotal: false,
                 includeExperts: includeExperts ?? false,
+                includeHealth: false,
+                includeTags: true,
                 includeCollections: true,
                 collectionIds: collectionIds,
               },
