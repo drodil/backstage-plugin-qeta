@@ -1520,5 +1520,203 @@ describe.each(databases.eachSupportedId())(
         expect(count).toBe(2);
       });
     });
+
+    describe('Automatic Collections', () => {
+      it('should automatically add post to collection based on tags', async () => {
+        await insertTag('java');
+        const collection = await storage.createCollection({
+          user_ref: 'user1',
+          title: 'Java Collection',
+          created: new Date(),
+          tags: ['java'],
+        });
+
+        const post1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'Java Post',
+          content: 'content',
+          created: new Date(),
+          tags: ['java'],
+        });
+
+        const collectionPosts = await storage.getCollection(
+          'user1',
+          collection.id,
+        );
+        expect(collectionPosts?.posts?.length).toBe(1);
+        expect(collectionPosts?.posts?.[0]?.id).toBe(post1.id);
+      });
+
+      it('should automatically add post to collection based on users', async () => {
+        const collection = await storage.createCollection({
+          user_ref: 'user1',
+          title: 'User Collection',
+          created: new Date(),
+          users: ['user:default/author1'],
+        });
+
+        const post1 = await storage.createPost({
+          user_ref: 'user:default/author1',
+          title: 'User Post',
+          content: 'content',
+          created: new Date(),
+        });
+
+        const collectionPosts = await storage.getCollection(
+          'user1',
+          collection.id,
+        );
+        expect(collectionPosts?.posts?.length).toBe(1);
+        expect(collectionPosts?.posts?.[0]?.id).toBe(post1.id);
+      });
+
+      it('should automatically add post to collection based on entities', async () => {
+        const collection = await storage.createCollection({
+          user_ref: 'user1',
+          title: 'Component Collection',
+          created: new Date(),
+          entities: ['component:default/comp1'],
+        });
+
+        const post1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'Component Post',
+          content: 'content',
+          created: new Date(),
+          entities: ['component:default/comp1'],
+        });
+
+        const collectionPosts = await storage.getCollection(
+          'user1',
+          collection.id,
+        );
+        expect(collectionPosts?.posts?.length).toBe(1);
+        expect(collectionPosts?.posts?.[0]?.id).toBe(post1.id);
+      });
+
+      it('should sync existing posts when creating collection', async () => {
+        const post1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'Java Post',
+          content: 'content',
+          created: new Date(),
+          tags: ['java'],
+        });
+
+        const collection = await storage.createCollection({
+          user_ref: 'user1',
+          title: 'Java Collection',
+          created: new Date(),
+          tags: ['java'],
+        });
+
+        const collectionPosts = await storage.getCollection(
+          'user1',
+          collection.id,
+        );
+        expect(collectionPosts?.posts?.length).toBe(1);
+        expect(collectionPosts?.posts?.[0]?.id).toBe(post1.id);
+      });
+
+      it('should sync existing posts when updating collection', async () => {
+        const post1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'Java Post',
+          content: 'content',
+          created: new Date(),
+          tags: ['java'],
+        });
+
+        const collection = await storage.createCollection({
+          user_ref: 'user1',
+          title: 'Java Collection',
+          created: new Date(),
+        });
+
+        let collectionPosts = await storage.getCollection(
+          'user1',
+          collection.id,
+        );
+        expect(collectionPosts?.posts?.length).toBe(0);
+
+        await storage.updateCollection({
+          id: collection.id,
+          user_ref: 'user1',
+          title: 'Java Collection',
+          tags: ['java'],
+        });
+
+        collectionPosts = await storage.getCollection('user1', collection.id);
+        expect(collectionPosts?.posts?.length).toBe(1);
+        expect(collectionPosts?.posts?.[0]?.id).toBe(post1.id);
+      });
+
+      it('should remove post from collection if tags change', async () => {
+        const collection = await storage.createCollection({
+          user_ref: 'user1',
+          title: 'Java Collection',
+          created: new Date(),
+          tags: ['java'],
+        });
+
+        const post1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'Java Post',
+          content: 'content',
+          created: new Date(),
+          tags: ['java'],
+        });
+
+        let collectionPosts = await storage.getCollection(
+          'user1',
+          collection.id,
+        );
+        expect(collectionPosts?.posts?.length).toBe(1);
+
+        await storage.updatePost({
+          id: post1.id,
+          user_ref: 'user1',
+          tags: ['python'],
+        });
+
+        collectionPosts = await storage.getCollection('user1', collection.id);
+        expect(collectionPosts?.posts?.length).toBe(0);
+      });
+
+      it('should not remove manually added posts even if tags mismatch', async () => {
+        const collection = await storage.createCollection({
+          user_ref: 'user1',
+          title: 'Java Collection',
+          created: new Date(),
+          tags: ['java'],
+        });
+
+        const post1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'Python Post',
+          content: 'content',
+          created: new Date(),
+          tags: ['python'],
+        });
+
+        await storage.addPostToCollection('user1', collection.id, post1.id);
+
+        let collectionPosts = await storage.getCollection(
+          'user1',
+          collection.id,
+        );
+        expect(collectionPosts?.posts?.length).toBe(1);
+
+        // Update post tags - should trigger sync but not remove manually added post
+        await storage.updatePost({
+          id: post1.id,
+          user_ref: 'user1',
+          tags: ['ruby'],
+        });
+
+        collectionPosts = await storage.getCollection('user1', collection.id);
+        expect(collectionPosts?.posts?.length).toBe(1);
+      });
+    });
   },
 );

@@ -558,6 +558,9 @@ export interface QetaStore {
     images?: number[];
     headerImage?: string;
     opts?: CollectionOptions;
+    tags?: string[];
+    entities?: string[];
+    users?: string[];
   }): Promise<Collection>;
 
   updateCollection(options: {
@@ -568,6 +571,9 @@ export interface QetaStore {
     images?: number[];
     headerImage?: string;
     opts?: CollectionOptions;
+    tags?: string[];
+    entities?: string[];
+    users?: string[];
   }): Promise<MaybeCollection>;
 
   deleteCollection(id: number): Promise<boolean>;

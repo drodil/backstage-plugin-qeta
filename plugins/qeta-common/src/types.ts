@@ -238,6 +238,9 @@ export interface Answer extends PostAnswerEntity {
 export interface Collection extends CollectionEntity {
   tags?: string[];
   entities?: string[];
+  users?: string[];
+  postTags?: string[];
+  postEntities?: string[];
   posts?: Post[];
   canEdit?: boolean;
   canDelete?: boolean;
@@ -344,6 +347,9 @@ export interface CollectionRequest {
   description?: string;
   images: number[];
   headerImage?: string;
+  tags?: string[];
+  entities?: string[];
+  users?: string[];
 }
 
 export interface PostRequest {

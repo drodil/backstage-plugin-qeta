@@ -43,6 +43,7 @@ export const TagInput = forwardRef<
     name?: string;
     content?: string;
     entities?: string[];
+    label?: string;
   }
 >((props, _ref) => {
   const {
@@ -56,6 +57,7 @@ export const TagInput = forwardRef<
     title,
     content,
     entities,
+    label,
   } = props;
   const qetaApi = useApi(qetaApiRef);
   const config = useApi(configApiRef);
@@ -184,7 +186,7 @@ export const TagInput = forwardRef<
         multiple
         id="tags-select"
         className="qetaTagInput"
-        value={value}
+        value={value || []}
         loading={loading}
         autoHighlight
         autoComplete
@@ -230,7 +232,7 @@ export const TagInput = forwardRef<
             {...params}
             variant="outlined"
             margin="normal"
-            label={t('tagsInput.label')}
+            label={label ?? t('tagsInput.label')}
             placeholder={t('tagsInput.placeholder')}
             helperText={error !== undefined ? error.message : getHelperText()}
             FormHelperTextProps={{

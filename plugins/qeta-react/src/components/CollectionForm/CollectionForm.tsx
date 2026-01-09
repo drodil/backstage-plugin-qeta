@@ -31,6 +31,12 @@ import { CollectionFormData } from './types';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { TagInput } from '../PostForm/TagInput';
+import { EntitiesInput } from '../PostForm/EntitiesInput';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { CatalogApi } from '@backstage/catalog-client';
+import { compact } from 'lodash';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import HelpIcon from '@material-ui/icons/Help';
@@ -42,6 +48,8 @@ const formToRequest = (
   return {
     ...form,
     images,
+    entities: form.entities?.map(stringifyEntityRef),
+    users: form.users?.map(stringifyEntityRef),
   };
 };
 
@@ -54,11 +62,15 @@ const getDefaultValues = (): CollectionFormData => {
   return {
     title: '',
     images: [],
+    tags: [],
+    entities: [],
+    users: [],
   };
 };
 
 const getValues = async (
   api: QetaApi,
+  catalogApi: CatalogApi,
   id?: string,
 ): Promise<{ form: CollectionFormData; collection?: CollectionResponse }> => {
   if (!id) {
@@ -66,12 +78,48 @@ const getValues = async (
   }
 
   const collection = await api.getCollection(id);
+
+  const entities =
+    collection.entities && collection.entities.length > 0
+      ? await catalogApi.getEntitiesByRefs({
+          entityRefs: collection.entities,
+          fields: [
+            'kind',
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
+          ],
+        })
+      : [];
+
+  const users =
+    collection.users && collection.users.length > 0
+      ? await catalogApi.getEntitiesByRefs({
+          entityRefs: collection.users,
+          fields: [
+            'kind',
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
+          ],
+        })
+      : [];
+
   return {
     form: {
       title: collection.title,
       description: collection.description,
       headerImage: collection.headerImage,
       images: collection.images,
+      tags: collection.tags || [],
+      entities: 'items' in entities ? compact(entities.items) : [],
+      users: 'items' in users ? compact(users.items) : [],
     },
     collection,
   };
@@ -93,11 +141,13 @@ export const CollectionForm = (props: CollectionFormProps) => {
   const alertApi = useApi(alertApiRef);
 
   const qetaApi = useApi(qetaApiRef);
+  const catalogApi = useApi(catalogApiRef);
   const {
     handleSubmit,
     control,
     reset,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CollectionFormData>({
     values,
@@ -160,7 +210,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
 
   useEffect(() => {
     if (id) {
-      getValues(qetaApi, id)
+      getValues(qetaApi, catalogApi, id)
         .catch(e =>
           alertApi.post({
             message: e.message,
@@ -175,7 +225,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
           }
         });
     }
-  }, [qetaApi, id, alertApi]);
+  }, [qetaApi, id, alertApi, catalogApi]);
 
   useEffect(() => {
     reset(values);
@@ -300,6 +350,58 @@ export const CollectionForm = (props: CollectionFormProps) => {
         )}
         name="description"
       />
+      <Box mt={3} mb={1}>
+        <Typography variant="h6">
+          {t('collectionForm.automaticRules.title')}
+        </Typography>
+        <Typography variant="body2" color="textSecondary">
+          {t('collectionForm.automaticRules.description')}
+        </Typography>
+      </Box>
+      <Box mt={1} mb={1}>
+        <Controller
+          control={control}
+          render={({ field, fieldState: { error: entityError } }) => (
+            <EntitiesInput
+              {...field}
+              error={entityError}
+              tags={watch('tags')}
+              label={t('collectionForm.automaticEntitiesInput.label')}
+            />
+          )}
+          name="entities"
+        />
+      </Box>
+      <Box mt={1} mb={1}>
+        <Controller
+          control={control}
+          render={({ field, fieldState: { error: tagError } }) => {
+            return (
+              <TagInput
+                {...field}
+                error={tagError}
+                entities={watch('entities')?.map(stringifyEntityRef)}
+                label={t('collectionForm.automaticTagsInput.label')}
+              />
+            );
+          }}
+          name="tags"
+        />
+      </Box>
+      <Box mt={1} mb={1}>
+        <Controller
+          control={control}
+          render={({ field, fieldState: { error: userError } }) => (
+            <EntitiesInput
+              {...field}
+              error={userError}
+              label={t('collectionForm.automaticUsersInput.label')}
+              kind={['User']}
+            />
+          )}
+          name="users"
+        />
+      </Box>
       <Box mt={3}>
         <Button
           color="primary"

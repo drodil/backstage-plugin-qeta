@@ -149,6 +149,7 @@ export class DatabaseQetaStore implements QetaStore {
     const helpersStore = new HelpersStore(client);
 
     postsStore.setAnswersStore(answersStore);
+    postsStore.setCollectionsStore(collectionsStore);
 
     return new DatabaseQetaStore(
       postsStore,
@@ -444,6 +445,9 @@ export class DatabaseQetaStore implements QetaStore {
     images?: number[];
     headerImage?: string;
     opts?: CollectionOptions;
+    tags?: string[];
+    entities?: string[];
+    users?: string[];
   }): Promise<Collection> {
     return this.collectionsStore.createCollection(
       options,
@@ -458,6 +462,9 @@ export class DatabaseQetaStore implements QetaStore {
     images?: number[];
     headerImage?: string;
     opts?: CollectionOptions;
+    tags?: string[];
+    entities?: string[];
+    users?: string[];
   }): Promise<MaybeCollection> {
     return this.collectionsStore.updateCollection(options);
   }

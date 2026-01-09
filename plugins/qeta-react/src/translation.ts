@@ -159,6 +159,20 @@ export const qetaTranslationRef = createTranslationRef({
         'Provide a detailed description of what topics or questions the collection will contain',
       tips_3:
         'Use markdown formatting to describe your collection with headings, lists, and links',
+      automaticRules: {
+        title: 'Automatic collection rules',
+        description:
+          'You can optionally define tags, entities and users that will automatically add matching posts to this collection. Posts that match ANY of the defined tags OR entities will be automatically added.',
+      },
+      automaticEntitiesInput: {
+        label: 'Automatic Entities',
+      },
+      automaticTagsInput: {
+        label: 'Automatic Tags',
+      },
+      automaticUsersInput: {
+        label: 'Automatic Users',
+      },
     },
     postForm: {
       errorPosting: 'Could not post {{type}}',

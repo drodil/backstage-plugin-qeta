@@ -1,4 +1,5 @@
 import {
+  filterTags,
   Collection,
   CollectionsQuery,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -12,6 +13,8 @@ import { compact } from 'lodash';
 import { BaseStore } from './BaseStore';
 import { AttachmentsStore } from './AttachmentsStore';
 import { PostsStore } from './PostsStore';
+import { TAGS } from '../../tagDb';
+import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
 
 export interface RawCollectionEntity {
   id: number;
@@ -32,6 +35,7 @@ export class CollectionsStore extends BaseStore {
     protected readonly db: Knex,
     private readonly postsStore: PostsStore,
     private readonly attachmentsStore: AttachmentsStore,
+    private readonly tagDatabase?: TagDatabase,
   ) {
     super(db);
   }
@@ -115,8 +119,18 @@ export class CollectionsStore extends BaseStore {
     headerImage?: string;
     opts?: CollectionOptions;
   }): Promise<Collection> {
-    const { user_ref, title, description, created, images, headerImage, opts } =
-      options as any;
+    const {
+      user_ref,
+      title,
+      description,
+      created,
+      images,
+      headerImage,
+      tags,
+      entities,
+      users,
+      opts,
+    } = options as any;
 
     const collections = await this.db
       .insert(
@@ -132,13 +146,20 @@ export class CollectionsStore extends BaseStore {
       .into('collections')
       .returning('*');
 
-    await this.updateAttachments(
-      'collectionId',
-      description ?? '',
-      images ?? [],
-      collections[0].id,
-      headerImage,
-    );
+    await Promise.all([
+      this.updateAttachments(
+        'collectionId',
+        description ?? '',
+        images ?? [],
+        collections[0].id,
+        headerImage,
+      ),
+      this.addCollectionTags(collections[0].id, tags),
+      this.addCollectionEntities(collections[0].id, entities),
+      this.addCollectionUsers(collections[0].id, users),
+    ]);
+
+    await this.syncCollectionToPosts(collections[0].id);
 
     return (
       await this.mapCollectionEntities([collections[0]], user_ref, opts)
@@ -154,8 +175,18 @@ export class CollectionsStore extends BaseStore {
     headerImage?: string;
     opts?: CollectionOptions;
   }): Promise<Collection | null> {
-    const { id, user_ref, title, description, images, headerImage, opts } =
-      options;
+    const {
+      id,
+      user_ref,
+      title,
+      description,
+      images,
+      headerImage,
+      tags,
+      entities,
+      users,
+      opts,
+    } = options as any;
 
     const rows = await this.db('collections')
       .where('id', '=', id)
@@ -170,13 +201,20 @@ export class CollectionsStore extends BaseStore {
       return null;
     }
 
-    await this.updateAttachments(
-      'collectionId',
-      description ?? '',
-      images ?? [],
-      id,
-      headerImage,
-    );
+    await Promise.all([
+      this.updateAttachments(
+        'collectionId',
+        description ?? '',
+        images ?? [],
+        id,
+        headerImage,
+      ),
+      this.addCollectionTags(id, tags, true),
+      this.addCollectionEntities(id, entities, true),
+      this.addCollectionUsers(id, users, true),
+    ]);
+
+    await this.syncCollectionToPosts(id);
 
     return (await this.mapCollectionEntities([rows[0]], user_ref, opts))[0];
   }
@@ -318,6 +356,167 @@ export class CollectionsStore extends BaseStore {
     return users.map(user => user.userRef);
   }
 
+  async syncCollectionToPosts(collectionId: number) {
+    const tags = await this.getCollectionTags([collectionId]);
+    const entities = await this.getCollectionEntities([collectionId]);
+    const users = await this.getCollectionUsers([collectionId]);
+
+    const collectionTags = tags.get(collectionId) || [];
+    const collectionEntities = entities.get(collectionId) || [];
+    const collectionUsers = users.get(collectionId) || [];
+
+    if (
+      collectionTags.length === 0 &&
+      collectionEntities.length === 0 &&
+      collectionUsers.length === 0
+    ) {
+      await this.db('collection_posts')
+        .where('collectionId', collectionId)
+        .where('automatic', true)
+        .delete();
+      return;
+    }
+
+    const posts = await this.db('posts')
+      .leftJoin('post_tags', 'posts.id', 'post_tags.postId')
+      .leftJoin('tags', 'post_tags.tagId', 'tags.id')
+      .leftJoin('post_entities', 'posts.id', 'post_entities.postId')
+      .leftJoin('entities', 'post_entities.entityId', 'entities.id')
+      .where(builder => {
+        if (collectionTags.length > 0) {
+          builder.orWhereIn('tags.tag', collectionTags);
+        }
+        if (collectionEntities.length > 0) {
+          builder.orWhereIn('entities.entity_ref', collectionEntities);
+        }
+        if (collectionUsers.length > 0) {
+          builder.orWhereIn('posts.author', collectionUsers);
+        }
+      })
+      .select('posts.id')
+      .distinct();
+
+    const postIds = posts.map(p => p.id);
+    if (postIds.length > 0) {
+      await Promise.all(
+        postIds.map(async postId => {
+          await this.db
+            .insert({
+              collectionId,
+              postId,
+              automatic: true,
+            })
+            .into('collection_posts')
+            .onConflict(['collectionId', 'postId'])
+            .ignore();
+        }),
+      );
+    }
+
+    const deleteQuery = this.db('collection_posts')
+      .where('collectionId', collectionId)
+      .where('automatic', true);
+
+    if (postIds.length > 0) {
+      deleteQuery.whereNotIn('postId', postIds);
+    }
+
+    await deleteQuery.delete();
+    const count = await this.db('collection_posts')
+      .where('collectionId', collectionId)
+      .count('* as CNT')
+      .first();
+    await this.db('collections')
+      .where('id', collectionId)
+      .update('postsCount', this.mapToInteger((count as any)?.CNT));
+  }
+
+  async syncPostToCollections(postId: number) {
+    const post = await this.postsStore.getPost('', postId);
+
+    if (!post) {
+      return;
+    }
+
+    const postTags = post.tags || [];
+    const postEntities = post.entities || [];
+    const postAuthor = post.author;
+
+    const collections = await this.db('collections')
+      .leftJoin(
+        'collection_tags',
+        'collections.id',
+        'collection_tags.collectionId',
+      )
+      .leftJoin('tags', 'collection_tags.tagId', 'tags.id')
+      .leftJoin(
+        'collection_entities',
+        'collections.id',
+        'collection_entities.collectionId',
+      )
+      .leftJoin('entities', 'collection_entities.entityId', 'entities.id')
+      .leftJoin(
+        'collection_users',
+        'collections.id',
+        'collection_users.collectionId',
+      )
+      .where(builder => {
+        if (postTags.length > 0) {
+          builder.orWhereIn('tags.tag', postTags);
+        }
+        if (postEntities.length > 0) {
+          builder.orWhereIn('entities.entity_ref', postEntities);
+        }
+        if (postAuthor) {
+          builder.orWhere('collection_users.userRef', postAuthor);
+        }
+      })
+      .select('collections.id')
+      .distinct();
+
+    const collectionIds = collections.map(c => c.id);
+
+    if (collectionIds.length > 0) {
+      await Promise.all(
+        collectionIds.map(async collectionId => {
+          await this.db
+            .insert({
+              collectionId,
+              postId,
+              automatic: true,
+            })
+            .into('collection_posts')
+            .onConflict(['collectionId', 'postId'])
+            .ignore();
+        }),
+      );
+    }
+
+    const deleteQuery = this.db('collection_posts')
+      .where('postId', postId)
+      .where('automatic', true);
+
+    if (collectionIds.length > 0) {
+      deleteQuery.whereNotIn('collectionId', collectionIds);
+    }
+
+    await deleteQuery.delete();
+
+    if (collectionIds.length > 0) {
+      await Promise.all(
+        collectionIds.map(async collectionId => {
+          const count = await this.db('collection_posts')
+            .where('collectionId', collectionId)
+            .count('* as CNT')
+            .first();
+          await this.db('collections')
+            .where('id', collectionId)
+            .update('postsCount', this.mapToInteger((count as any)?.CNT));
+        }),
+      );
+    }
+  }
+
   async followCollection(
     user_ref: string,
     collectionId: number,
@@ -375,40 +574,44 @@ export class CollectionsStore extends BaseStore {
       includeExperts = true,
     } = options ?? {};
 
-    const [posts, attachments, followers, experts] = await Promise.all([
-      includePosts && this.postsStore
-        ? this.postsStore.getPosts(
-            user_ref,
-            { includeEntities: true },
-            postFilters,
-            {
-              tagsFilter: options?.tagFilters,
-              includeComments: false,
-              includeAnswers: false,
-              includeAttachments: false,
-              includeVotes: false,
-              includeTotal: false,
-              includeExperts: includeExperts ?? false,
-              includeCollections: true,
-              collectionIds: collectionIds,
-            },
-          )
-        : { posts: [] },
-      this.attachmentsStore.getAttachments(collectionIds, 'collectionId'),
-      this.getFollowerCounts(collectionIds),
-      includeExperts
-        ? this.db('tag_experts')
-            .leftJoin('tags', 'tag_experts.tagId', 'tags.id')
-            .leftJoin('post_tags', 'post_tags.tagId', 'tags.id')
-            .leftJoin(
-              'collection_posts',
-              'collection_posts.postId',
-              'post_tags.postId',
+    const [posts, attachments, followers, experts, tags, entities, users] =
+      await Promise.all([
+        includePosts && this.postsStore
+          ? this.postsStore.getPosts(
+              user_ref,
+              { includeEntities: true },
+              postFilters,
+              {
+                tagsFilter: options?.tagFilters,
+                includeComments: false,
+                includeAnswers: false,
+                includeAttachments: false,
+                includeVotes: false,
+                includeTotal: false,
+                includeExperts: includeExperts ?? false,
+                includeCollections: true,
+                collectionIds: collectionIds,
+              },
             )
-            .whereIn('collection_posts.collectionId', collectionIds)
-            .select('collection_posts.collectionId', 'tag_experts.entityRef')
-        : undefined,
-    ]);
+          : { posts: [] },
+        this.attachmentsStore.getAttachments(collectionIds, 'collectionId'),
+        this.getFollowerCounts(collectionIds),
+        includeExperts
+          ? this.db('tag_experts')
+              .leftJoin('tags', 'tag_experts.tagId', 'tags.id')
+              .leftJoin('post_tags', 'post_tags.tagId', 'tags.id')
+              .leftJoin(
+                'collection_posts',
+                'collection_posts.postId',
+                'post_tags.postId',
+              )
+              .whereIn('collection_posts.collectionId', collectionIds)
+              .select('collection_posts.collectionId', 'tag_experts.entityRef')
+          : undefined,
+        this.getCollectionTags(collectionIds),
+        this.getCollectionEntities(collectionIds),
+        this.getCollectionUsers(collectionIds),
+      ]);
 
     const postsMap = new Map<number, any[]>();
     posts.posts?.forEach((p: any) => {
@@ -434,10 +637,10 @@ export class CollectionsStore extends BaseStore {
 
     return rows.map(val => {
       const collectionPosts = postsMap.get(val.id) || [];
-      const entities = compact([
+      const postEntities = compact([
         ...new Set(collectionPosts.map((p: any) => p.entities).flat()),
       ]);
-      const tags = compact([
+      const postTags = compact([
         ...new Set(collectionPosts.map((p: any) => p.tags).flat()),
       ]);
 
@@ -453,13 +656,60 @@ export class CollectionsStore extends BaseStore {
         questionsCount: this.mapToInteger(val.questionsCount),
         articlesCount: this.mapToInteger(val.articlesCount),
         linksCount: this.mapToInteger(val.linksCount),
-        entities: entities as string[],
-        tags: tags as string[],
+        entities: entities.get(val.id) || [],
+        tags: tags.get(val.id) || [],
+        users: users.get(val.id) || [],
+        postEntities: postEntities as string[],
+        postTags: postTags as string[],
         images: attachmentsMap.get(val.id) || [],
         followers: followersMap.get(val.id) || 0,
         experts: expertsMap.get(val.id),
       };
     });
+  }
+
+  async getCollectionTags(ids: number[]): Promise<Map<number, string[]>> {
+    const rows = await this.db('collection_tags')
+      .leftJoin('tags', 'collection_tags.tagId', 'tags.id')
+      .whereIn('collection_tags.collectionId', ids)
+      .select('collection_tags.collectionId', 'tags.tag');
+
+    const result = new Map<number, string[]>();
+    rows.forEach(row => {
+      const tags = result.get(row.collectionId) || [];
+      tags.push(row.tag);
+      result.set(row.collectionId, tags);
+    });
+    return result;
+  }
+
+  async getCollectionEntities(ids: number[]): Promise<Map<number, string[]>> {
+    const rows = await this.db('collection_entities')
+      .leftJoin('entities', 'collection_entities.entityId', 'entities.id')
+      .whereIn('collection_entities.collectionId', ids)
+      .select('collection_entities.collectionId', 'entities.entity_ref');
+
+    const result = new Map<number, string[]>();
+    rows.forEach(row => {
+      const entities = result.get(row.collectionId) || [];
+      entities.push(row.entity_ref);
+      result.set(row.collectionId, entities);
+    });
+    return result;
+  }
+
+  async getCollectionUsers(ids: number[]): Promise<Map<number, string[]>> {
+    const rows = await this.db('collection_users')
+      .whereIn('collectionId', ids)
+      .select('collectionId', 'userRef');
+
+    const result = new Map<number, string[]>();
+    rows.forEach(row => {
+      const users = result.get(row.collectionId) || [];
+      users.push(row.userRef);
+      result.set(row.collectionId, users);
+    });
+    return result;
   }
 
   private getCollectionsBaseQuery() {
@@ -498,5 +748,140 @@ export class CollectionsStore extends BaseStore {
         followerCount,
       )
       .groupBy('collections.id');
+  }
+
+  private async addCollectionTags(
+    id: number,
+    tagsInput?: string[],
+    removeOld?: boolean,
+  ) {
+    const tags = filterTags(tagsInput);
+    if (removeOld) {
+      await this.db('collection_tags').where('collectionId', '=', id).delete();
+    }
+
+    if (!tags || tags.length === 0) {
+      return;
+    }
+
+    const existingTags = await this.db('tags')
+      .whereIn('tag', tags)
+      .returning('id')
+      .select();
+    const newTags = tags.filter(t => !existingTags.some(e => e.tag === t));
+    const allTags: Record<string, string> = {
+      ...TAGS,
+      ...(await this.tagDatabase?.getTags()),
+    };
+
+    const tagIds = (
+      await Promise.all(
+        [...new Set(newTags)].map(async tag => {
+          const trimmed = tag.trim();
+          const description = trimmed in allTags ? allTags[trimmed] : undefined;
+
+          return this.db
+            .insert({ tag: trimmed, description })
+            .into('tags')
+            .returning('id')
+            .onConflict('tag')
+            .ignore();
+        }),
+      )
+    )
+      .flat()
+      .map(tag => tag.id)
+      .concat(existingTags.map(t => t.id));
+
+    await Promise.all(
+      tagIds.map(async tagId => {
+        await this.db
+          .insert({ collectionId: id, tagId })
+          .into('collection_tags')
+          .onConflict()
+          .ignore();
+      }),
+    );
+  }
+
+  private async addCollectionEntities(
+    id: number,
+    entitiesInput?: string[],
+    removeOld?: boolean,
+  ) {
+    if (removeOld) {
+      await this.db('collection_entities')
+        .where('collectionId', '=', id)
+        .delete();
+    }
+
+    const regex = /\w+:\w+\/\w+/;
+    const entities =
+      entitiesInput
+        ?.filter(t => regex.test(t))
+        .map(t => t.toLowerCase())
+        .filter(t => t.length > 0) ?? [];
+
+    if (!entities || entities.length === 0) {
+      return;
+    }
+
+    const existingEntities = await this.db('entities')
+      .whereIn('entity_ref', entities)
+      .returning('id')
+      .select();
+    const newEntities = entities.filter(
+      t => !existingEntities.some(e => e.entity_ref === t),
+    );
+
+    const entityIds = (
+      await Promise.all(
+        [...new Set(newEntities)].map(async entityRef =>
+          this.db
+            .insert({ entity_ref: entityRef })
+            .into('entities')
+            .returning('id')
+            .onConflict('entity_ref')
+            .ignore(),
+        ),
+      )
+    )
+      .flat()
+      .map(entity => entity.id)
+      .concat(existingEntities.map(c => c.id));
+
+    await Promise.all(
+      entityIds.map(async entityId => {
+        await this.db
+          .insert({ collectionId: id, entityId })
+          .into('collection_entities')
+          .onConflict()
+          .ignore();
+      }),
+    );
+  }
+
+  private async addCollectionUsers(
+    id: number,
+    usersInput?: string[],
+    removeOld?: boolean,
+  ) {
+    if (removeOld) {
+      await this.db('collection_users').where('collectionId', '=', id).delete();
+    }
+
+    const users = [...new Set(usersInput?.filter(u => u.length > 0) ?? [])];
+
+    if (users.length === 0) {
+      return;
+    }
+
+    await Promise.all(
+      users.map(async userRef => {
+        await this.db
+          .insert({ collectionId: id, userRef })
+          .into('collection_users');
+      }),
+    );
   }
 }

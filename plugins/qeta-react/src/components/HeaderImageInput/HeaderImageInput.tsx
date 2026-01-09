@@ -180,7 +180,7 @@ export const HeaderImageInput = (props: {
   }
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} style={{ marginBottom: '1rem' }}>
       <Grid item xs={12}>
         <TextField
           value={inputValue}

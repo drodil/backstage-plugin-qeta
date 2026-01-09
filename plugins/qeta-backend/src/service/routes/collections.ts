@@ -159,6 +159,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       created,
       images: request.body.images,
       headerImage: request.body.headerImage,
+      tags: request.body.tags,
+      entities: request.body.entities,
+      users: request.body.users,
       opts: { includePosts: false },
     });
 
@@ -264,6 +267,9 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       description: request.body.description,
       images: request.body.images,
       headerImage: request.body.headerImage,
+      tags: request.body.tags,
+      entities: request.body.entities,
+      users: request.body.users,
       opts: { postFilters, tagFilters, filters },
     });
 

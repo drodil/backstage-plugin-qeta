@@ -90,6 +90,9 @@ export interface CollectionContent {
   headerImage?: string;
   images?: number[];
   created?: string;
+  tags?: string[];
+  entities?: string[];
+  users?: string[];
 }
 
 export interface CollectionPostContent {
@@ -370,6 +373,9 @@ export const CollectionSchema: JSONSchemaType<CollectionContent> = {
     headerImage: { type: 'string', nullable: true },
     images: { type: 'array', items: { type: 'integer' }, nullable: true },
     created: { type: 'string', minLength: 1, nullable: true },
+    tags: { type: 'array', items: { type: 'string' }, nullable: true },
+    entities: { type: 'array', items: { type: 'string' }, nullable: true },
+    users: { type: 'array', items: { type: 'string' }, nullable: true },
   },
   required: ['title'],
   additionalProperties: false,

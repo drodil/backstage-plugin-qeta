@@ -10,18 +10,19 @@ export const TagsAndEntities = (props: {
 }) => {
   const { entity } = props;
 
-  if (
-    (!entity.tags || entity.tags.length === 0) &&
-    (!entity.entities || entity.entities.length === 0)
-  ) {
+  const tags = 'postTags' in entity ? entity.postTags : entity.tags;
+  const entities =
+    'postEntities' in entity ? entity.postEntities : entity.entities;
+
+  if ((!tags || tags.length === 0) && (!entities || entities.length === 0)) {
     return null;
   }
 
   return (
     <>
-      {entity.tags && entity.tags.map(tag => <TagChip key={tag} tag={tag} />)}
-      {entity.entities &&
-        entity.entities.map(component => (
+      {tags && tags.map(tag => <TagChip key={tag} tag={tag} />)}
+      {entities &&
+        entities.map(component => (
           <EntityChip entity={component} key={component} />
         ))}
     </>
