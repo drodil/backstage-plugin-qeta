@@ -86,8 +86,8 @@ const useStyles = makeStyles(theme => ({
     position: 'sticky',
     top: theme.spacing(2),
     alignSelf: 'flex-start',
-    maxHeight: 'calc(100vh - 100px)',
-    overflow: 'hidden',
+    maxHeight: 'calc(100dvh - 20px)',
+    overflowX: 'hidden',
     [theme.breakpoints.up('lg')]: {
       width: (props: StyleProps) => (props.leftCompact ? 80 : 210),
       minWidth: (props: StyleProps) => (props.leftCompact ? 80 : 210),
@@ -98,6 +98,11 @@ const useStyles = makeStyles(theme => ({
       position: 'static',
       maxHeight: 'none',
     },
+    '-ms-overflow-style': 'none',
+    'scrollbar-width': 'none',
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
   },
   rightSidebarColumn: {
     padding: 0,
@@ -106,8 +111,8 @@ const useStyles = makeStyles(theme => ({
     position: 'sticky',
     top: theme.spacing(2),
     alignSelf: 'flex-start',
-    maxHeight: 'calc(100vh - 100px)',
-    overflow: 'hidden',
+    maxHeight: 'calc(100dvh - 20px)',
+    overflowX: 'hidden',
     [theme.breakpoints.up('lg')]: {
       width: (props: StyleProps) => (props.rightCompact ? 72 : 320),
       minWidth: (props: StyleProps) => (props.rightCompact ? 72 : 320),
@@ -117,6 +122,11 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(1),
       position: 'static',
       maxHeight: 'none',
+    },
+    '-ms-overflow-style': 'none',
+    'scrollbar-width': 'none',
+    '&::-webkit-scrollbar': {
+      display: 'none',
     },
   },
   mainColumn: {

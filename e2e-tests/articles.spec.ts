@@ -146,6 +146,15 @@ test.describe.serial('Articles', () => {
     );
     await expect(voteCount).toHaveText('1');
 
+    await voteUpBtn.click();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-unselected',
+    );
+    await expect(voteCount).toHaveText('0');
+
     await voteDownBtn.click();
     await page.waitForLoadState('networkidle');
 

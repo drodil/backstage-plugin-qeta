@@ -51,66 +51,117 @@ export function useVoting(resp: PostResponse | AnswerResponse) {
   }, [lastSignal]);
 
   const deletePostVote = (id: number) => {
-    qetaApi.deletePostVote(id).then(response => {
-      setOwnVote(0);
-      analytics.captureEvent('vote', 'question', { value: 0 });
-      setEntity(response);
-    });
+    const prev = ownVote;
+    const prevScore = score;
+    setOwnVote(0);
+    setScore(prevScore - prev);
+    qetaApi
+      .deletePostVote(id)
+      .then(response => {
+        analytics.captureEvent('vote', 'question', { value: 0 });
+        setEntity(response);
+      })
+      .catch(() => {
+        setOwnVote(prev);
+        setScore(prevScore);
+      });
   };
 
   const deleteAnswerVote = (postId: number, id: number) => {
-    qetaApi.deleteAnswerVote(postId, id).then(response => {
-      setOwnVote(0);
-      analytics.captureEvent('vote', 'answer', { value: 0 });
-      setEntity(response);
-    });
+    const prev = ownVote;
+    const prevScore = score;
+    setOwnVote(0);
+    setScore(prevScore - prev);
+    qetaApi
+      .deleteAnswerVote(postId, id)
+      .then(response => {
+        analytics.captureEvent('vote', 'answer', { value: 0 });
+        setEntity(response);
+      })
+      .catch(() => {
+        setOwnVote(prev);
+        setScore(prevScore);
+      });
   };
 
   const voteUp = () => {
-    if (isPost) {
-      if (ownVote > 0) {
+    if (ownVote > 0) {
+      if (isPost) {
         deletePostVote(entity.id);
-        return;
+      } else if ('postId' in entity) {
+        deleteAnswerVote(entity.postId, entity.id);
       }
-      qetaApi.votePostUp(entity.id).then(response => {
-        setOwnVote(1);
-        analytics.captureEvent('vote', 'question', { value: 1 });
-        setEntity(response);
-      });
+      return;
+    }
+    const prev = ownVote;
+    const prevScore = score;
+    setOwnVote(1);
+    setScore(prevScore + -prev + 1);
+    if (isPost) {
+      qetaApi
+        .votePostUp(entity.id)
+        .then(response => {
+          analytics.captureEvent('vote', 'question', { value: 1 });
+          setEntity(response);
+        })
+        .catch(() => {
+          setOwnVote(prev);
+          setScore(prevScore);
+        });
     } else if ('postId' in entity) {
       if (ownVote > 0) {
         deleteAnswerVote(entity.postId, entity.id);
         return;
       }
-      qetaApi.voteAnswerUp(entity.postId, entity.id).then(response => {
-        setOwnVote(1);
-        analytics.captureEvent('vote', 'answer', { value: 1 });
-        setEntity(response);
-      });
+      qetaApi
+        .voteAnswerUp(entity.postId, entity.id)
+        .then(response => {
+          analytics.captureEvent('vote', 'answer', { value: 1 });
+          setEntity(response);
+        })
+        .catch(() => {
+          setOwnVote(prev);
+          setScore(prevScore);
+        });
     }
   };
 
   const voteDown = () => {
-    if (isPost) {
-      if (ownVote < 0) {
+    if (ownVote < 0) {
+      if (isPost) {
         deletePostVote(entity.id);
-        return;
-      }
-      qetaApi.votePostDown(entity.id).then(response => {
-        setOwnVote(-1);
-        analytics.captureEvent('vote', 'question', { value: -1 });
-        setEntity(response);
-      });
-    } else if ('postId' in entity) {
-      if (ownVote < 0) {
+      } else if ('postId' in entity) {
         deleteAnswerVote(entity.postId, entity.id);
-        return;
       }
-      qetaApi.voteAnswerDown(entity.postId, entity.id).then(response => {
-        setOwnVote(-1);
-        analytics.captureEvent('vote', 'answer', { value: -1 });
-        setEntity(response);
-      });
+      return;
+    }
+    const prev = ownVote;
+    const prevScore = score;
+
+    setOwnVote(-1);
+    setScore(prevScore - prev - 1);
+    if (isPost) {
+      qetaApi
+        .votePostDown(entity.id)
+        .then(response => {
+          analytics.captureEvent('vote', 'question', { value: -1 });
+          setEntity(response);
+        })
+        .catch(() => {
+          setOwnVote(prev);
+          setScore(prevScore);
+        });
+    } else if ('postId' in entity) {
+      qetaApi
+        .voteAnswerDown(entity.postId, entity.id)
+        .then(response => {
+          analytics.captureEvent('vote', 'answer', { value: -1 });
+          setEntity(response);
+        })
+        .catch(() => {
+          setOwnVote(prev);
+          setScore(prevScore);
+        });
     }
   };
 
@@ -142,17 +193,35 @@ export function useVoting(resp: PostResponse | AnswerResponse) {
       return;
     }
     if (correctAnswer) {
-      qetaApi.markAnswerIncorrect(entity.postId, entity.id).then(response => {
-        if (response) {
-          setCorrectAnswer(false);
-        }
-      });
-    } else {
-      qetaApi.markAnswerCorrect(entity.postId, entity.id).then(response => {
-        if (response) {
+      setCorrectAnswer(false);
+      qetaApi
+        .markAnswerIncorrect(entity.postId, entity.id)
+        .then(response => {
+          if (!response) {
+            setCorrectAnswer(true);
+          }
+          analytics.captureEvent('answer', 'correct', {
+            value: 0,
+          });
+        })
+        .catch(() => {
           setCorrectAnswer(true);
-        }
-      });
+        });
+    } else {
+      setCorrectAnswer(true);
+      qetaApi
+        .markAnswerCorrect(entity.postId, entity.id)
+        .then(response => {
+          if (!response) {
+            setCorrectAnswer(false);
+          }
+          analytics.captureEvent('answer', 'correct', {
+            value: 1,
+          });
+        })
+        .catch(() => {
+          setCorrectAnswer(false);
+        });
     }
   };
 

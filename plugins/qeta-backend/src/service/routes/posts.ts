@@ -382,7 +382,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     );
 
     await mapAdditionalFields(request, [post], options, { username });
-    signalPostStats(signals, post);
+    if (!anonymous) {
+      signalPostStats(signals, post);
+    }
 
     auditor?.createEvent({
       eventId: 'read-post',
@@ -1086,9 +1088,27 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   // PUT /posts/:id/click
   router.put('/posts/:id/click', async (request, response) => {
     const ret = await getPostAndCheckStatus(request, response);
-    if (!ret) return;
+    if (!ret) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return;
+    }
     const { postId, username } = ret;
     await database.clickPost(username, postId);
+
+    const resp = await database.getPost(username, postId, false, {
+      includeComments: false,
+      includeAnswers: false,
+      includeAttachments: false,
+      includeTags: false,
+      includeEntities: false,
+    });
+
+    if (!resp) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return;
+    }
+
+    signalPostStats(signals, resp);
     response.status(200).send({});
   });
 
@@ -1137,6 +1157,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       includeTags: false,
       includeEntities: false,
     });
+
     if (resp === null) {
       response.sendStatus(404);
       return;
@@ -1153,6 +1174,8 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     await mapAdditionalFields(request, [resp], options, { username });
     resp.ownVote = undefined;
+
+    signalPostStats(signals, resp);
 
     auditor?.createEvent({
       eventId: 'delete-vote',

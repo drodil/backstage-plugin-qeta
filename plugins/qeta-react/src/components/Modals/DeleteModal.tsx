@@ -172,6 +172,7 @@ export const DeleteModal = (props: {
       BackdropProps={{
         timeout: 500,
       }}
+      data-testid="delete-modal"
     >
       <ModalContent>
         {error && (

@@ -857,7 +857,7 @@ export const PostForm = (props: PostFormProps) => {
             color="primary"
             type="submit"
             variant="contained"
-            disabled={posting || isSubmitting}
+            disabled={loading || posting || isSubmitting}
             size="large"
           >
             {getSubmitButtonText()}
@@ -866,7 +866,7 @@ export const PostForm = (props: PostFormProps) => {
             <Button
               color="secondary"
               variant="outlined"
-              disabled={posting || isSubmitting}
+              disabled={loading || posting || isSubmitting}
               size="large"
               onClick={handleSubmit(data =>
                 postQuestion({ ...data, status: 'draft' }),
@@ -883,6 +883,7 @@ export const PostForm = (props: PostFormProps) => {
                 checked={autoSaveEnabled}
                 onChange={handleAutoSaveChange}
                 color="primary"
+                disabled={loading || posting || isSubmitting}
               />
             </Tooltip>
           }

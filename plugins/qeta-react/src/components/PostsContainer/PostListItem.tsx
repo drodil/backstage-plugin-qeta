@@ -78,7 +78,7 @@ const useStyles = makeStyles(theme => ({
   },
   contentClickable: {
     position: 'relative',
-    zIndex: 1,
+    zIndex: 10,
     pointerEvents: 'auto',
   },
   metaCol: {
@@ -316,7 +316,12 @@ export const PostListItem = (props: PostListItemProps) => {
             </Typography>
           </Box>
 
-          <Box display="flex" alignItems="center" style={{ gap: '8px' }}>
+          <Box
+            display="flex"
+            alignItems="center"
+            style={{ gap: '8px' }}
+            className={styles.contentClickable}
+          >
             {post.favorite && (
               <Tooltip title={t('common.favorite')}>
                 <Box className={styles.starContainer}>

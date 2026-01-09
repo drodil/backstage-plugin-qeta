@@ -244,6 +244,7 @@ test.describe.serial('Questions', () => {
     });
 
     await page.goto(`/qeta/questions/${questionId}`);
+
     await page.waitForLoadState('networkidle');
 
     const questionCard = page.locator('[data-testid="question-card"]');
@@ -266,6 +267,15 @@ test.describe.serial('Questions', () => {
     );
     await expect(voteCount).toHaveText('1');
 
+    await voteUpBtn.click();
+    await page.waitForLoadState('networkidle');
+
+    await expect(voteUpBtn).toHaveAttribute(
+      'data-testid',
+      'vote-up-btn-unselected',
+    );
+    await expect(voteCount).toHaveText('0');
+
     await voteDownBtn.click();
     await page.waitForLoadState('networkidle');
 
@@ -287,5 +297,69 @@ test.describe.serial('Questions', () => {
       'vote-down-btn-selected',
     );
     await expect(voteCount).toHaveText('-1');
+  });
+
+  test('comment on question', async ({ page, request }) => {
+    const { id: questionId } = await createQuestion(request, {
+      user: 'user:default/user1',
+    });
+
+    await page.goto(`/qeta/questions/${questionId}`);
+    await page.waitForLoadState('networkidle');
+
+    await page.getByRole('button', { name: 'Add a comment' }).click();
+    const content = faker.lorem.sentence();
+    const textarea = page.locator(
+      'form:has(button.qetaCommentBtn) textarea.mde-text',
+    );
+    await expect(textarea).toBeVisible();
+    await textarea.fill(content);
+    await page.locator('button.qetaCommentBtn').click();
+
+    await expect(page.getByText(content)).toBeVisible();
+  });
+
+  test('edit question', async ({ page, request }) => {
+    const { id: questionId, title } = await createQuestion(request, {
+      user: 'user:development/guest',
+    });
+
+    await page.goto(`/qeta/questions/${questionId}`);
+    await page.waitForLoadState('networkidle');
+
+    const editBtn = page.locator('button.qetaQuestionCardEditBtn');
+    await expect(editBtn).toBeVisible();
+    await editBtn.click();
+    await page.waitForLoadState('networkidle');
+
+    const newTitle = faker.lorem.sentence();
+    const titleInput = page.locator('input[name="title"]');
+    await expect(titleInput).toHaveValue(title);
+    await titleInput.fill(newTitle);
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    await expect(page.getByRole('heading', { name: newTitle })).toBeVisible();
+  });
+
+  test('delete question', async ({ page, request }) => {
+    const { id: questionId } = await createQuestion(request, {
+      user: 'user:development/guest',
+    });
+
+    await page.goto(`/qeta/questions/${questionId}`);
+    await page.waitForLoadState('networkidle');
+
+    const questionCard = page.locator('[data-testid="question-card"]');
+    await questionCard.getByRole('button', { name: 'Delete' }).click();
+
+    // Expect confirmation dialog
+    const dialog = page.getByTestId('delete-modal');
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('button', { name: 'Delete' }).click();
+
+    await page.waitForURL('http://localhost:3000/qeta/questions');
+
+    await expect(page).toHaveURL(/\/qeta\/questions/);
+    await expect(page.url()).not.toContain(`${questionId}`);
   });
 });

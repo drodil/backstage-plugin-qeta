@@ -51,7 +51,7 @@ test.describe.serial('Links', () => {
     await page.waitForTimeout(1000);
     await expect(page.getByText(title).first()).toBeVisible();
 
-    await page.getByRole('button', { name: /clear/i }).click();
+    await page.getByRole('button', { name: /clear/i }).first().click();
     await expect(searchInput).toHaveValue('');
 
     const partialContent = content.split(' ')[0];
@@ -99,5 +99,32 @@ test.describe.serial('Links', () => {
       );
       expect(updatedViews).toBe(initialViews + 1);
     }).toPass({ timeout: 10000 });
+  });
+
+  test('open link button functionality', async ({ page, context, request }) => {
+    const { title, url } = await createLink(request);
+
+    await page.goto('/qeta/links?orderBy=created&order=desc');
+    await page.waitForLoadState('networkidle');
+
+    const postRow = page
+      .locator(`a[aria-label="${title}"]`)
+      .first()
+      .locator('..');
+    const openLinkBtn = postRow
+      .getByRole('link', { name: /Open link/i })
+      .first();
+
+    await expect(openLinkBtn).toBeVisible();
+
+    await expect(openLinkBtn).toHaveAttribute('target', '_blank');
+    await expect(openLinkBtn).toHaveAttribute('rel', 'noopener noreferrer');
+
+    const initialUrl = page.url();
+
+    await openLinkBtn.click();
+
+    await page.waitForTimeout(1000);
+    expect(page.url()).toBe(initialUrl);
   });
 });
