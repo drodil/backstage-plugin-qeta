@@ -16,7 +16,7 @@ test.describe('Collections', () => {
     await page.locator('input[name="title"]').fill(title);
     await page.locator('.mde-text').fill(faker.lorem.sentence());
 
-    const usersInput = page.getByLabel('Automatic Users');
+    const usersInput = page.getByRole('textbox', { name: 'Automatic Users' });
     await expect(usersInput).toBeVisible();
     await usersInput.click();
 
@@ -39,7 +39,7 @@ test.describe('Collections', () => {
     await page.reload();
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByText(postTitle)).toBeVisible();
+    await expect(page.getByRole('link', { name: postTitle })).toBeVisible();
   });
 
   test('create automatic collection by tags', async ({ page, request }) => {
@@ -72,7 +72,7 @@ test.describe('Collections', () => {
     await page.reload();
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByText(postTitle)).toBeVisible();
+    await expect(page.getByRole('link', { name: postTitle })).toBeVisible();
   });
 
   test('create automatic collection by entities', async ({ page, request }) => {
@@ -83,7 +83,9 @@ test.describe('Collections', () => {
     await page.locator('input[name="title"]').fill(title);
     await page.locator('.mde-text').fill(faker.lorem.sentence());
 
-    const entitiesInput = page.getByLabel('Automatic Entities');
+    const entitiesInput = page.getByRole('textbox', {
+      name: 'Automatic Entities',
+    });
     await entitiesInput.click();
     await entitiesInput.fill('test component');
 
@@ -106,7 +108,7 @@ test.describe('Collections', () => {
     await page.reload();
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByText(postTitle)).toBeVisible();
+    await expect(page.getByRole('link', { name: postTitle })).toBeVisible();
   });
 
   test('create automatic collection with combined rules (OR logic)', async ({
@@ -122,7 +124,7 @@ test.describe('Collections', () => {
     await page.locator('input[name="title"]').fill(title);
     await page.locator('.mde-text').fill(faker.lorem.sentence());
 
-    const usersInput = page.getByLabel('Automatic Users');
+    const usersInput = page.getByRole('textbox', { name: 'Automatic Users' });
     await usersInput.click();
     await usersInput.fill('guest');
     const userOption = page.getByRole('option').first();
@@ -155,7 +157,7 @@ test.describe('Collections', () => {
     await page.reload();
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByText(postTitleUser)).toBeVisible();
-    await expect(page.getByText(postTitleTag)).toBeVisible();
+    await expect(page.getByRole('link', { name: postTitleUser })).toBeVisible();
+    await expect(page.getByRole('link', { name: postTitleTag })).toBeVisible();
   });
 });
