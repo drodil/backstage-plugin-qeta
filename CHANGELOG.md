@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.54.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.53.3...v3.54.0) (2026-01-09)
+
+
+### Features
+
+* add better tooltip for right side post lists ([644ff7d](https://github.com/drodil/backstage-plugin-qeta/commit/644ff7da9eea182f1a0f201b3f6acd84331b0a62))
+
+
+### Bug Fixes
+
+* make impact card smaller vertically ([7162f5b](https://github.com/drodil/backstage-plugin-qeta/commit/7162f5b9ce848ec6601cc8c87102963dec29d3b1))
+* make menu items take a bit less space vertically ([8715971](https://github.com/drodil/backstage-plugin-qeta/commit/8715971cc904b046599396443810e9ae8466b81d))
+
 ### [3.53.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.53.2...v3.53.3) (2026-01-09)
 
 
