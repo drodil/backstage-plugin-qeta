@@ -651,7 +651,7 @@ export class PostsStore extends BaseStore {
       headerImage,
     );
 
-    void this.collectionsStore?.syncPostToCollections(posts[0].id);
+    await this.collectionsStore?.syncPostToCollections(posts[0].id);
 
     return (await this.mapPostEntities([posts[0]], user_ref, opts))[0];
   }
@@ -729,7 +729,7 @@ export class PostsStore extends BaseStore {
       headerImage,
     );
 
-    void this.collectionsStore?.syncPostToCollections(id);
+    await this.collectionsStore?.syncPostToCollections(id);
 
     return await this.getPost(user_ref, id, false, opts);
   }

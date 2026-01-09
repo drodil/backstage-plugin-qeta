@@ -97,6 +97,11 @@ const filterEntitiesByPermissions = async (
     } else if (routeOpts.auth.isPrincipal(credentials, 'service')) {
       userKey = credentials.principal.subject;
     } else {
+      routeOpts.logger.warn(
+        `Could not determine principal for permission check. Credentials: ${JSON.stringify(
+          credentials,
+        )}`,
+      );
       return [];
     }
 
