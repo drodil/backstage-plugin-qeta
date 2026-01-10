@@ -1,6 +1,6 @@
 {
   "name": "@drodil/backstage-plugin-catalog-backend-module-qeta",
-  "version": "3.55.0",
+  "version": "3.55.1",
   "license": "MIT",
   "description": "The qeta backend module for the catalog plugin.",
   "keywords": [
