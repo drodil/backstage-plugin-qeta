@@ -37,7 +37,7 @@ import {
   validateDateRange,
   wrapAsync,
 } from './util';
-import { getEntities, getTags } from './routeUtil';
+import { getCachedData, getEntities, getTags } from './routeUtil';
 import { PostOptions } from '../../database/QetaStore';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
@@ -334,19 +334,30 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       await getPostFilters(request, opts);
 
     // Act
-    const posts = await database.getPosts(username, opts, filter, {
-      includeTotal: false,
-      includeAnswers: false,
-      includeAttachments: false,
-      includeEntities: false,
-      includeTags: false,
-      includeVotes: false,
-      includeExperts: false,
-      includeComments: false,
-      commentsFilter,
-      tagsFilter,
-      answersFilter,
-    });
+    const key = `qeta:posts:list:${type}:${username}:${JSON.stringify(opts)}`;
+    const ttl = 300 * 1000;
+
+    const posts = await getCachedData(
+      options.cache,
+      key,
+      ttl,
+      async () => {
+        return await database.getPosts(username, opts, filter, {
+          includeTotal: false,
+          includeAnswers: false,
+          includeAttachments: false,
+          includeEntities: false,
+          includeTags: false,
+          includeVotes: false,
+          includeExperts: false,
+          includeComments: false,
+          commentsFilter,
+          tagsFilter,
+          answersFilter,
+        });
+      },
+      options.logger,
+    );
 
     await mapAdditionalFields(request, posts.posts, options, {
       checkRights: opts.checkAccess ?? false,

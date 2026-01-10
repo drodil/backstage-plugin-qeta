@@ -1,5 +1,6 @@
 import { Config } from '@backstage/config';
 import { Request } from 'express';
+import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
 import {
   qetaCreateTagPermission,
   TagsResponse,
@@ -51,4 +52,48 @@ export const getEntities = (request: Request, config: Config): string[] => {
     entities = entities.slice(0, maxEntities);
   }
   return entities;
+};
+
+export const getCachedData = async <T>(
+  cache: CacheService | undefined,
+  key: string,
+  ttl: number,
+  fetchFn: () => Promise<T>,
+  logger?: LoggerService,
+): Promise<T> => {
+  if (!cache) {
+    return fetchFn();
+  }
+
+  const cached = await cache.get(key);
+  let data: T | undefined;
+  if (cached) {
+    try {
+      data = JSON.parse(cached as string);
+    } catch (_e) {
+      // NOOP
+    }
+  }
+
+  const refresh = async () => {
+    try {
+      const fresh = await fetchFn();
+      await cache.set(key, JSON.stringify(fresh), { ttl });
+      return fresh;
+    } catch (error) {
+      logger?.warn(`Failed to refresh cache for ${key}: ${error}`);
+      return undefined;
+    }
+  };
+
+  if (data) {
+    refresh();
+    return data;
+  }
+
+  const fresh = await refresh();
+  if (!fresh) {
+    throw new Error('Failed to fetch data');
+  }
+  return fresh;
 };

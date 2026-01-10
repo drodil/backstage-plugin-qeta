@@ -55,11 +55,30 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-start',
     padding: theme.spacing(1.5),
     borderRadius: theme.shape.borderRadius * 2,
-    width: 140,
-    height: 140,
+    width: '100%',
+    minHeight: 140,
+    height: '100%',
+    boxSizing: 'border-box',
+    border: '1px solid rgba(0, 0, 0, 0.12)',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
     textAlign: 'center',
     userSelect: 'none',
-    overflow: 'hidden',
+    position: 'relative',
+  },
+  count: {
+    position: 'absolute',
+    top: 18,
+    right: -12,
+    backgroundColor: theme.palette.common.white,
+    color: theme.palette.common.black,
+    borderRadius: '2px',
+    display: 'flex',
+    padding: '4px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
   },
   bronze: {
     background: 'linear-gradient(135deg, #cd7f32 0%, #a0522d 100%)',
@@ -229,11 +248,7 @@ export const BadgeChip = ({
       <Typography className={classes.description}>
         {badge.description}
       </Typography>
-      {count && count > 1 && (
-        <Typography variant="caption" style={{ marginTop: 'auto' }}>
-          x {count}
-        </Typography>
-      )}
+      {count && count > 1 && <Box className={classes.count}>x {count}</Box>}
     </Box>
   );
 };

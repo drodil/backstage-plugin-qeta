@@ -8,6 +8,7 @@ import {
   UsersQuerySchema,
 } from '../types';
 import { mapAdditionalFields } from '../util';
+import { getCachedData } from './routeUtil';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   filterTags,
@@ -108,7 +109,15 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
   router.get('/users/followed', async (request, response) => {
     const username = await permissionMgr.getUsername(request, false);
-    const users = await database.getFollowedUsers(username);
+    const key = `qeta:followed:users:${username}`;
+    const ttl = 24 * 60 * 60 * 1000;
+    const users = await getCachedData(
+      options.cache,
+      key,
+      ttl,
+      () => database.getFollowedUsers(username),
+      options.logger,
+    );
     response.json(users);
   });
 
@@ -127,6 +136,8 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
+    await options.cache?.delete(`qeta:followed:users:${username}`);
+
     response.status(204).send();
   });
 
@@ -144,6 +155,8 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         userRef,
       },
     });
+
+    await options.cache?.delete(`qeta:followed:users:${username}`);
 
     response.status(204).send();
   });
@@ -181,7 +194,15 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       qetaReadTagPermission,
       { allowServicePrincipal: true },
     );
-    const tags = await database.getUserTags(username, filter);
+    const key = `qeta:followed:tags:${username}`;
+    const ttl = 24 * 60 * 60 * 1000;
+    const tags = await getCachedData(
+      options.cache,
+      key,
+      ttl,
+      () => database.getUserTags(username, filter),
+      options.logger,
+    );
 
     response.json(tags);
   });
@@ -200,6 +221,8 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       },
     });
 
+    await options.cache?.delete(`qeta:followed:tags:${username}`);
+
     response.status(204).send();
   });
 
@@ -216,6 +239,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         tag,
       },
     });
+    await options.cache?.delete(`qeta:followed:tags:${username}`);
     response.status(204).send();
   });
 
@@ -584,8 +608,16 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
   router.get('/entities/followed', async (request, response) => {
     const username = await permissionMgr.getUsername(request, false);
-    const tags = await database.getUserEntities(username);
-    response.json(tags);
+    const key = `qeta:followed:entities:${username}`;
+    const ttl = 24 * 60 * 60 * 1000;
+    const entities = await getCachedData(
+      options.cache,
+      key,
+      ttl,
+      () => database.getUserEntities(username),
+      options.logger,
+    );
+    response.json(entities);
   });
 
   router.get('/entities/links', async (request, response) => {
@@ -614,6 +646,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         entityRef,
       },
     });
+    await options.cache?.delete(`qeta:followed:entities:${username}`);
     response.status(204).send();
   });
 
@@ -630,6 +663,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         entityRef,
       },
     });
+    await options.cache?.delete(`qeta:followed:entities:${username}`);
     response.status(204).send();
   });
 

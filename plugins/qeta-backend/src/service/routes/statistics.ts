@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { stringDateTime } from '../util';
+import { getCachedData } from './routeUtil';
 import {
   Statistic,
   StatisticResponse,
@@ -40,91 +41,129 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
 
   router.get('/statistics/user/impact', async (request, response) => {
     const userRef = await permissionMgr.getUsername(request);
-    const userImpact = await database.getTotalViews(userRef, undefined, true);
-    const userImpactWeek = await database.getTotalViews(userRef, 7, true);
-    return response
-      .status(200)
-      .json({ impact: userImpact, lastWeekImpact: userImpactWeek });
+    const key = `qeta:statistics:impact:${userRef}`;
+    const ttl = 300 * 1000;
+
+    const impact = await getCachedData(
+      options.cache,
+      key,
+      ttl,
+      async () => {
+        const userImpact = await database.getTotalViews(
+          userRef,
+          undefined,
+          true,
+        );
+        const userImpactWeek = await database.getTotalViews(userRef, 7, true);
+        return { impact: userImpact, lastWeekImpact: userImpactWeek };
+      },
+      options.logger,
+    );
+
+    return response.status(200).json(impact);
   });
 
   router.get('/statistics/global', async (_req, response) => {
-    const globalStats = await database.getGlobalStats();
-    let summary = await getSummary();
-    if (!summary) {
-      summary = {
-        totalAnswers: 0,
-        totalArticles: 0,
-        totalLinks: 0,
-        totalComments: 0,
-        totalQuestions: 0,
-        totalViews: 0,
-        totalVotes: 0,
-        totalTags: 0,
-        totalUsers: 0,
-      };
-    }
-    let todayStatsAdded = false;
-    const statistics = globalStats.map(g => {
-      const d = new Date(g.date);
-      if (d.toDateString() !== new Date().toDateString()) {
-        return g;
-      }
-      todayStatsAdded = true;
-      return {
-        date: d,
-        ...summary,
-      };
-    });
+    const key = 'qeta:statistics:global';
+    const ttl = 3600 * 1000;
 
-    if (!todayStatsAdded) {
-      statistics.push({ date: new Date(), ...summary });
-    }
+    const data = await getCachedData(
+      options.cache,
+      key,
+      ttl,
+      async () => {
+        const globalStats = await database.getGlobalStats();
+        let summary = await getSummary();
+        if (!summary) {
+          summary = {
+            totalAnswers: 0,
+            totalArticles: 0,
+            totalLinks: 0,
+            totalComments: 0,
+            totalQuestions: 0,
+            totalViews: 0,
+            totalVotes: 0,
+            totalTags: 0,
+            totalUsers: 0,
+          };
+        }
+        let todayStatsAdded = false;
+        const statistics = globalStats.map(g => {
+          const d = new Date(g.date);
+          if (d.toDateString() !== new Date().toDateString()) {
+            return g;
+          }
+          todayStatsAdded = true;
+          return {
+            date: d,
+            ...summary!,
+          };
+        });
 
-    return response.status(200).json({ statistics, summary });
+        if (!todayStatsAdded) {
+          statistics.push({ date: new Date(), ...summary! });
+        }
+        return { statistics, summary };
+      },
+      options.logger,
+    );
+    return response.json(data);
   });
 
   router.get('/statistics/user/:userRef(*)', async (req, response) => {
     const userRef = req.params.userRef;
-    const userStats = await database.getUserStats(userRef);
-    let summary = await database.getUser(userRef);
-    let todayStatsAdded = false;
-    const statistics = userStats.map(g => {
-      const d = new Date(g.date);
-      if (!summary || d.toDateString() !== new Date().toDateString()) {
-        return g;
-      }
-      todayStatsAdded = true;
-      return {
-        date: d,
-        ...summary,
-      };
-    });
+    const key = `qeta:statistics:user:${userRef}`;
+    const ttl = 3600 * 1000;
 
-    if (!todayStatsAdded) {
-      if (!summary) {
-        summary = {
-          userRef: userRef,
-          totalViews: 0,
-          totalQuestions: 0,
-          totalAnswers: 0,
-          totalComments: 0,
-          totalVotes: 0,
-          totalArticles: 0,
-          totalFollowers: 0,
-          totalLinks: 0,
-          reputation: 0,
-          answerScore: 0,
-          postScore: 0,
-          correctAnswers: 0,
-        };
-      }
+    const data = await getCachedData(
+      options.cache,
+      key,
+      ttl,
+      async () => {
+        const userStats = await database.getUserStats(userRef);
+        let summary = await database.getUser(userRef);
+        let todayStatsAdded = false;
+        const statistics = userStats.map(g => {
+          const d = new Date(g.date);
+          if (!summary || d.toDateString() !== new Date().toDateString()) {
+            return g;
+          }
+          todayStatsAdded = true;
+          return {
+            date: d,
+            ...summary,
+          };
+        });
 
-      if (userStats.length === 0) {
-        statistics.push({ date: new Date(), ...summary });
-      }
-    }
+        if (!todayStatsAdded) {
+          if (!summary) {
+            summary = {
+              userRef: userRef,
+              totalViews: 0,
+              totalQuestions: 0,
+              totalAnswers: 0,
+              totalComments: 0,
+              totalVotes: 0,
+              totalArticles: 0,
+              totalFollowers: 0,
+              totalLinks: 0,
+              reputation: 0,
+              answerScore: 0,
+              postScore: 0,
+              correctAnswers: 0,
+            };
+          }
 
-    return response.status(200).json({ statistics, summary });
+          if (userStats.length === 0) {
+            statistics.push({ date: new Date(), ...summary });
+          }
+        }
+        return { statistics, summary };
+      },
+      options.logger,
+    );
+
+    return response.status(200).json(data);
   });
 
   // GET /statistics/posts/top-upvoted-users?period=x&limit=x

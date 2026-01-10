@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { RouteOptions, SuggestionsQuerySchema } from '../types';
 import { QetaFilters } from '../util';
+import { getCachedData } from './routeUtil';
 import {
   Article,
   DraftPostSuggestion,
@@ -432,42 +433,16 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
     const key = `qeta:suggestions:${username}:${limit}`;
     const ttl = 3600 * 1000;
 
-    let suggestions: Suggestion[] | undefined;
-    if (options.cache) {
-      const cached = await options.cache.get(key);
-      if (cached) {
-        suggestions = JSON.parse(cached as string);
-      }
-    }
+    const suggestions = await getCachedData(
+      options.cache,
+      key,
+      ttl,
+      async () => {
+        return await getSuggestions(username, limit, filter, canReview);
+      },
+      options.logger,
+    );
 
-    const refreshCache = async () => {
-      try {
-        const freshSuggestions = await getSuggestions(
-          username,
-          limit,
-          filter,
-          canReview,
-        );
-        if (options.cache) {
-          await options.cache.set(key, JSON.stringify(freshSuggestions), {
-            ttl,
-          });
-        }
-        return freshSuggestions;
-      } catch (error) {
-        options.logger.debug(
-          `Failed to refresh suggestions cache for ${username}: ${error}`,
-        );
-        return [];
-      }
-    };
-
-    if (suggestions) {
-      response.json({ suggestions });
-      refreshCache();
-    } else {
-      const freshSuggestions = await refreshCache();
-      response.json({ suggestions: freshSuggestions });
-    }
+    response.json({ suggestions });
   });
 };

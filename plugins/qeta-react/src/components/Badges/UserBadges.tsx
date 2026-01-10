@@ -70,11 +70,11 @@ export const UserBadges = ({ entityRef }: { entityRef: string }) => {
           container
           spacing={3}
           style={{ padding: '1em' }}
-          justifyContent="center"
-          alignItems="center"
+          justifyContent="flex-start"
+          alignItems="stretch"
         >
           {displayBadges.map((item, index: number) => (
-            <Grid item key={index}>
+            <Grid item key={index} xs={6} sm={4} md={3} lg={2} xl={1}>
               <BadgeChip badge={item.badge} count={item.count} />
             </Grid>
           ))}
