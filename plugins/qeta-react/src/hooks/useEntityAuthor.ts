@@ -21,8 +21,13 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../translation.ts';
 
 const userCache: Map<string, UserEntity> = new Map();
-const dataLoaderFactory = (catalogApi: CatalogApi) =>
-  new DataLoader(
+let userLoader: DataLoader<string, UserEntity | null> | undefined;
+
+const getEntityAuthorLoader = (catalogApi: CatalogApi) => {
+  if (userLoader) {
+    return userLoader;
+  }
+  userLoader = new DataLoader<string, UserEntity | null>(
     async (entityRefs: readonly string[]) => {
       const { items } = await catalogApi.getEntitiesByRefs({
         fields: [
@@ -36,9 +41,11 @@ const dataLoaderFactory = (catalogApi: CatalogApi) =>
       });
 
       entityRefs.forEach((entityRef, index) => {
-        userCache.set(entityRef, items[index] as UserEntity);
+        if (items[index]) {
+          userCache.set(entityRef, items[index] as UserEntity);
+        }
       });
-      return items;
+      return items as (UserEntity | null)[];
     },
     {
       name: 'EntityAuthorLoader',
@@ -49,6 +56,8 @@ const dataLoaderFactory = (catalogApi: CatalogApi) =>
       },
     },
   );
+  return userLoader;
+};
 
 export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
   const catalogApi = useApi(catalogApiRef);
@@ -79,11 +88,11 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
       return;
     }
 
-    dataLoaderFactory(catalogApi)
+    getEntityAuthorLoader(catalogApi)
       .load(ref)
       .then(data => {
         if (data) {
-          setUser(data as UserEntity);
+          setUser(data);
         } else {
           setUser(null);
         }

@@ -61,7 +61,7 @@ export const FollowedCollectionsList = () => {
 
   return (
     <RightListContainer>
-      <RightList title={t('rightMenu.followedCollections')}>
+      <RightList title={t('rightMenu.followedCollections')} limit={5} randomize>
         {collections.collections.map(collection => {
           const href = collectionRoute({ id: collection.id.toString(10) });
           return (

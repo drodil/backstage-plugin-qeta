@@ -61,7 +61,7 @@ export const FollowedTagsList = () => {
 
   return (
     <RightListContainer>
-      <RightList title={t('rightMenu.followedTags')}>
+      <RightList title={t('rightMenu.followedTags')} limit={5} randomize>
         {tags.tags.map(tag => {
           const href = tagRoute({ tag: tag });
           return (

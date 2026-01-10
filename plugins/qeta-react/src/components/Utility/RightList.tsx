@@ -1,5 +1,15 @@
-import { ReactNode } from 'react';
-import { Box, List, ListSubheader, makeStyles } from '@material-ui/core';
+import { ReactNode, useState, Children, useMemo } from 'react';
+import {
+  Box,
+  Button,
+  List,
+  ListSubheader,
+  makeStyles,
+} from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { qetaTranslationRef } from '../../translation';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import ExpandLess from '@material-ui/icons/ExpandLess';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -20,6 +30,13 @@ const useStyles = makeStyles(theme => ({
       paddingRight: theme.spacing(1),
     },
   },
+  showMoreButton: {
+    marginLeft: theme.spacing(1),
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    fontSize: '0.8rem',
+  },
 }));
 
 export const RightListContainer = (props: { children: ReactNode }) => {
@@ -33,10 +50,27 @@ export const RightListContainer = (props: { children: ReactNode }) => {
 
 export const RightList = (props: {
   children: ReactNode;
-  title: string;
+  title?: string;
   icon?: ReactNode;
+  limit?: number;
+  randomize?: boolean;
 }) => {
   const styles = useStyles();
+  const { t } = useTranslationRef(qetaTranslationRef);
+  const [expanded, setExpanded] = useState(false);
+  const arrayChildren = useMemo(() => {
+    const children = Children.toArray(props.children);
+    if (props.randomize && props.limit && children.length > props.limit) {
+      return children.sort(() => 0.5 - Math.random());
+    }
+    return children;
+  }, [props.children, props.randomize, props.limit]);
+  const showButton = props.limit && arrayChildren.length > props.limit;
+  const displayChildren =
+    showButton && !expanded
+      ? arrayChildren.slice(0, props.limit)
+      : arrayChildren;
+
   return (
     <List
       component="nav"
@@ -55,7 +89,18 @@ export const RightList = (props: {
         </ListSubheader>
       }
     >
-      {props.children}
+      {displayChildren}
+      {showButton && (
+        <Button
+          onClick={() => setExpanded(!expanded)}
+          color="primary"
+          size="small"
+          className={styles.showMoreButton}
+          endIcon={expanded ? <ExpandLess /> : <ExpandMore />}
+        >
+          {expanded ? t('common.showLess') : t('common.showMore')}
+        </Button>
+      )}
     </List>
   );
 };

@@ -85,7 +85,7 @@ export const FollowedUsersList = () => {
 
   return (
     <RightListContainer>
-      <RightList title={t('rightMenu.followedUsers')}>
+      <RightList title={t('rightMenu.followedUsers')} limit={5} randomize>
         {users.users.map(user => (
           <FollowedUserItem key={user} entityRef={user} />
         ))}

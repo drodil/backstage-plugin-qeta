@@ -86,7 +86,7 @@ export const FollowedEntitiesList = () => {
 
   return (
     <RightListContainer>
-      <RightList title={t('rightMenu.followedEntities')}>
+      <RightList title={t('rightMenu.followedEntities')} limit={5} randomize>
         {entities.entities.map(entity => (
           <FollowedEntityItem key={entity} entityRef={entity} />
         ))}
