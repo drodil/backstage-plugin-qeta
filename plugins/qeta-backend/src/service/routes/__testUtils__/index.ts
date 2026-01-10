@@ -15,8 +15,8 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { createRouter } from '../../router';
 import { NotificationManager } from '../../NotificationManager';
+import { CacheService } from '@backstage/backend-plugin-api';
 
-// Mock the database storage engine
 export const globalMockEngine = {
   handleFile: jest.fn(),
   getAttachmentBuffer: jest.fn(),
@@ -317,6 +317,7 @@ export const buildApp = async (
   qetaStore: jest.Mocked<QetaStore>,
   permissionEvaluator: PermissionEvaluator,
   qetaConfig?: Record<string, string | object>,
+  cache?: CacheService,
 ) => {
   const config = ConfigReader.fromConfigs([
     { context: 'qeta', data: qetaConfig || {} },
@@ -349,12 +350,14 @@ export const buildApp = async (
     permissions: permissionEvaluator,
     permissionsRegistry: mockServices.permissionsRegistry.mock(),
     notificationMgr: mockNotificationMgr,
+    cache,
   });
   return express().use(router);
 };
 
 export const setupTestApp = async (
   qetaConfig?: Record<string, string | object>,
+  cache?: CacheService,
 ) => {
   const qetaStore = createMockQetaStore();
   const { permissionEvaluator, mockedAuthorize, mockedPermissionQuery } =
@@ -376,7 +379,7 @@ export const setupTestApp = async (
   qetaStore.getMostUpvotedPosts.mockResolvedValue(mostUpvotedQuestions);
   qetaStore.getMostUpvotedAnswers.mockResolvedValue(mostUpvotedAnswers);
 
-  const app = await buildApp(qetaStore, permissionEvaluator, qetaConfig);
+  const app = await buildApp(qetaStore, permissionEvaluator, qetaConfig, cache);
 
   // Setup default mock implementations
   mockedAuthorize.mockImplementation(async requests => {

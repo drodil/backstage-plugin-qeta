@@ -366,31 +366,12 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
     }));
   };
 
-  router.get('/suggestions', async (request, response) => {
-    const validateQuery = ajv.compile(SuggestionsQuerySchema);
-    if (!validateQuery(request.query)) {
-      response
-        .status(400)
-        .send({ errors: validateQuery.errors, type: 'query' });
-      return;
-    }
-    const username = await permissionMgr.getUsername(request, false);
-    let limit = Number(request.query.limit);
-    if (isNaN(limit)) {
-      limit = 5;
-    }
-
-    const filter = await permissionMgr.getAuthorizeConditions(
-      request,
-      qetaReadPostPermission,
-    );
-
-    // Check if user has review permissions
-    const canReviewResults = await permissionMgr.authorizeBoolean(request, [
-      { permission: qetaCreatePostReviewPermission },
-    ]);
-    const canReview = canReviewResults[0] ?? false;
-
+  const getSuggestions = async (
+    username: string,
+    limit: number,
+    filter?: PermissionCriteria<QetaFilters>,
+    canReview?: boolean,
+  ): Promise<Suggestion[]> => {
     const promises: Promise<Suggestion[]>[] = [
       getNotCorrectQuestions(username, filter),
       getNewTagQuestions(username, filter),
@@ -421,9 +402,72 @@ export const suggestionRoutes = (router: Router, options: RouteOptions) => {
       suggestionsRaw.push(...(await getRandomPosts(username, limit, filter)));
     }
 
-    const suggestions = suggestionsRaw
-      .sort(() => 0.5 - Math.random())
-      .slice(0, limit);
-    response.json({ suggestions });
+    return suggestionsRaw.sort(() => 0.5 - Math.random()).slice(0, limit);
+  };
+
+  router.get('/suggestions', async (request, response) => {
+    const validateQuery = ajv.compile(SuggestionsQuerySchema);
+    if (!validateQuery(request.query)) {
+      response
+        .status(400)
+        .send({ errors: validateQuery.errors, type: 'query' });
+      return;
+    }
+    const username = await permissionMgr.getUsername(request, false);
+    let limit = Number(request.query.limit);
+    if (isNaN(limit)) {
+      limit = 5;
+    }
+
+    const filter = await permissionMgr.getAuthorizeConditions(
+      request,
+      qetaReadPostPermission,
+    );
+
+    const canReviewResults = await permissionMgr.authorizeBoolean(request, [
+      { permission: qetaCreatePostReviewPermission },
+    ]);
+    const canReview = canReviewResults[0] ?? false;
+
+    const key = `qeta:suggestions:${username}:${limit}`;
+    const ttl = 3600 * 1000;
+
+    let suggestions: Suggestion[] | undefined;
+    if (options.cache) {
+      const cached = await options.cache.get(key);
+      if (cached) {
+        suggestions = JSON.parse(cached as string);
+      }
+    }
+
+    const refreshCache = async () => {
+      try {
+        const freshSuggestions = await getSuggestions(
+          username,
+          limit,
+          filter,
+          canReview,
+        );
+        if (options.cache) {
+          await options.cache.set(key, JSON.stringify(freshSuggestions), {
+            ttl,
+          });
+        }
+        return freshSuggestions;
+      } catch (error) {
+        options.logger.debug(
+          `Failed to refresh suggestions cache for ${username}: ${error}`,
+        );
+        return [];
+      }
+    };
+
+    if (suggestions) {
+      response.json({ suggestions });
+      refreshCache();
+    } else {
+      const freshSuggestions = await refreshCache();
+      response.json({ suggestions: freshSuggestions });
+    }
   });
 };
