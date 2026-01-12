@@ -44,6 +44,9 @@ export const useUserSettings = () => {
       const merged = merge({}, DEFAULT_SETTINGS, stored);
       setSettings(merged);
       settingsRef.current = merged;
+    } else {
+      setSettings(DEFAULT_SETTINGS);
+      settingsRef.current = DEFAULT_SETTINGS;
     }
 
     setIsLoaded(true);
@@ -59,9 +62,6 @@ export const useUserSettings = () => {
           const merged = merge({}, DEFAULT_SETTINGS, value);
           setSettings(merged);
           settingsRef.current = merged;
-        } else {
-          setSettings(DEFAULT_SETTINGS);
-          settingsRef.current = DEFAULT_SETTINGS;
         }
       },
     });

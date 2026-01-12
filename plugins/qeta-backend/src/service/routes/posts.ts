@@ -141,6 +141,10 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       return null;
     }
 
+    if (recordView === true) {
+      signalPostStats(options.signals, { ...post, views: post.views + 1 });
+    }
+
     return {
       post,
       username,
