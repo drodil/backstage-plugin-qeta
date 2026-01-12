@@ -20,6 +20,7 @@ backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('@backstage/plugin-permission-backend'));
 backend.add(import('@backstage/plugin-search-backend'));
 backend.add(import('@backstage/plugin-search-backend-module-pg'));
+backend.add(import('@backstage/plugin-user-settings-backend'));
 backend.add(import('@drodil/backstage-plugin-search-backend-module-qeta'));
 backend.add(import('@drodil/backstage-plugin-catalog-backend-module-qeta'));
 backend.add(import('@backstage/plugin-techdocs-backend'));

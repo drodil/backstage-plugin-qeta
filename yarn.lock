@@ -3241,6 +3241,63 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/plugin-user-settings-backend@backstage:^::backstage=1.46.2&npm=0.3.9, @backstage/plugin-user-settings-backend@npm:^0.3.9":
+  version: 0.3.9
+  resolution: "@backstage/plugin-user-settings-backend@npm:0.3.9"
+  dependencies:
+    "@backstage/backend-defaults": "npm:^0.14.0"
+    "@backstage/backend-plugin-api": "npm:^1.6.0"
+    "@backstage/errors": "npm:^1.2.7"
+    "@backstage/plugin-auth-node": "npm:^0.6.10"
+    "@backstage/plugin-signals-node": "npm:^0.1.27"
+    "@backstage/plugin-user-settings-common": "npm:^0.0.1"
+    "@backstage/types": "npm:^1.2.2"
+    express: "npm:^4.22.0"
+    express-promise-router: "npm:^4.1.0"
+    knex: "npm:^3.0.0"
+  checksum: 10c0/b06a50a529bc6faaeae25ae2cf504de83f4bb1308f5b00baeaec45be1eb6c94e638acd46ad66b9b6b36ac85a3a97d238adddb769bb87ed309e1a07bb4b429dd5
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-user-settings-common@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@backstage/plugin-user-settings-common@npm:0.0.1"
+  checksum: 10c0/b447a444f6feb0ec1dc7f3c2de9f6706138aec2d593b2f529295997bac47e33a7914321575b7d13774b9348289ab50ae23924b9f3efe65bf058e94889d07b6f8
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-user-settings@backstage:^::backstage=1.46.2&npm=0.8.30, @backstage/plugin-user-settings@npm:^0.8.30":
+  version: 0.8.30
+  resolution: "@backstage/plugin-user-settings@npm:0.8.30"
+  dependencies:
+    "@backstage/catalog-model": "npm:^1.7.6"
+    "@backstage/core-app-api": "npm:^1.19.3"
+    "@backstage/core-components": "npm:^0.18.4"
+    "@backstage/core-plugin-api": "npm:^1.12.1"
+    "@backstage/errors": "npm:^1.2.7"
+    "@backstage/frontend-plugin-api": "npm:^0.13.2"
+    "@backstage/plugin-catalog-react": "npm:^1.21.4"
+    "@backstage/plugin-signals-react": "npm:^0.0.18"
+    "@backstage/plugin-user-settings-common": "npm:^0.0.1"
+    "@backstage/theme": "npm:^0.7.1"
+    "@backstage/types": "npm:^1.2.2"
+    "@material-ui/core": "npm:^4.12.2"
+    "@material-ui/icons": "npm:^4.9.1"
+    "@material-ui/lab": "npm:4.0.0-alpha.61"
+    react-use: "npm:^17.2.4"
+    zen-observable: "npm:^0.10.0"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-router-dom: ^6.3.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10c0/f40d76004386a337b16dbdc69815dca8ab04c2587f23c1ad8277955d1f96612f080e78939edf1b2f9572f29c1397236f6b1a6b59a7152dcb7892954b8bb5f060
+  languageName: node
+  linkType: hard
+
 "@backstage/release-manifests@npm:^0.0.13":
   version: 0.0.13
   resolution: "@backstage/release-manifests@npm:0.0.13"
@@ -3780,6 +3837,7 @@ __metadata:
     "@backstage/plugin-signals-backend": "backstage:^"
     "@backstage/plugin-signals-node": "backstage:^"
     "@backstage/plugin-techdocs-backend": "backstage:^"
+    "@backstage/plugin-user-settings-backend": "backstage:^"
     "@backstage/types": "backstage:^"
     "@drodil/backstage-plugin-catalog-backend-module-qeta": "workspace:^"
     "@drodil/backstage-plugin-qeta-backend-module-openai": "workspace:^"
@@ -3932,6 +3990,7 @@ __metadata:
     "@backstage/plugin-signals-react": "backstage:^"
     "@backstage/plugin-techdocs": "backstage:^"
     "@backstage/plugin-techdocs-react": "backstage:^"
+    "@backstage/plugin-user-settings": "backstage:^"
     "@backstage/ui": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@drodil/backstage-plugin-qeta-react": "workspace:^"

@@ -1,5 +1,6 @@
 import { storageApiRef, useApi } from '@backstage/core-plugin-api';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { merge } from 'lodash';
 import { ViewType } from '../components/ViewToggle/ViewToggle';
 
 export type UserSettings = {
@@ -40,8 +41,9 @@ export const useUserSettings = () => {
     const stored = snapshot.value as UserSettings | undefined;
 
     if (stored) {
-      setSettings({ ...DEFAULT_SETTINGS, ...stored });
-      settingsRef.current = { ...DEFAULT_SETTINGS, ...stored };
+      const merged = merge({}, DEFAULT_SETTINGS, stored);
+      setSettings(merged);
+      settingsRef.current = merged;
     }
 
     setIsLoaded(true);
@@ -54,8 +56,9 @@ export const useUserSettings = () => {
 
         const value = newSnapshot.value;
         if (value) {
-          setSettings({ ...DEFAULT_SETTINGS, ...value });
-          settingsRef.current = { ...DEFAULT_SETTINGS, ...value };
+          const merged = merge({}, DEFAULT_SETTINGS, value);
+          setSettings(merged);
+          settingsRef.current = merged;
         } else {
           setSettings(DEFAULT_SETTINGS);
           settingsRef.current = DEFAULT_SETTINGS;
@@ -72,10 +75,26 @@ export const useUserSettings = () => {
     async (updates: Partial<UserSettings>) => {
       const bucket = storageApi.forBucket(BUCKET_KEY);
       const currentSettings = settingsRef.current;
-      const newSettings = {
-        ...currentSettings,
-        ...updates,
-      };
+
+      const newSettings = { ...currentSettings };
+      Object.keys(updates).forEach(key => {
+        const k = key as keyof UserSettings;
+        const value = updates[k];
+        if (value !== undefined) {
+          if (k === 'viewType' || k === 'filterPanelExpanded') {
+            newSettings[k] = value as any;
+          } else if (
+            value &&
+            typeof value === 'object' &&
+            !Array.isArray(value)
+          ) {
+            newSettings[k] = merge({}, currentSettings[k], value);
+          } else {
+            newSettings[k] = value as any;
+          }
+        }
+      });
+
       settingsRef.current = newSettings;
       setSettings(newSettings);
 
