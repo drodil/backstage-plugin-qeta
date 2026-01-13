@@ -1,12 +1,4 @@
-import {
-  ApiBlueprint,
-  createFrontendModule,
-  discoveryApiRef,
-  errorApiRef,
-  fetchApiRef,
-  identityApiRef,
-  storageApiRef,
-} from '@backstage/frontend-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 // NEW FRONTEND SYSTEM
 import { createApp } from '@backstage/frontend-defaults';
 import { createRoot } from 'react-dom/client';
@@ -28,8 +20,6 @@ import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 
 // eslint-disable-next-line @backstage/no-ui-css-imports-in-non-frontend
 import '@backstage/ui/css/styles.css';
-import { signalApiRef } from '@backstage/plugin-signals-react';
-import { UserSettingsStorage } from '@backstage/plugin-user-settings';
 
 const IntroElement = () => (
   <Box marginBottom={4}>
@@ -140,7 +130,8 @@ const module = createFrontendModule({
   ],
 });
 
-export const userSettingsApiModule = createFrontendModule({
+// Add to enable persistent settings
+/** export const userSettingsApiModule = createFrontendModule({
   pluginId: 'app',
   extensions: [
     ApiBlueprint.make({
@@ -172,6 +163,7 @@ export const userSettingsApiModule = createFrontendModule({
     }),
   ],
 });
+    */
 
 const app = createApp({
   features: [
@@ -183,7 +175,7 @@ const app = createApp({
     module,
     signalsPlugin,
     userSettingsPlugin,
-    userSettingsApiModule,
+    // userSettingsApiModule,
   ],
 });
 

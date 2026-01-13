@@ -89,8 +89,8 @@ const useStyles = makeStyles(theme => ({
     maxHeight: 'calc(100dvh - 20px)',
     overflowX: 'hidden',
     [theme.breakpoints.up('lg')]: {
-      width: (props: StyleProps) => (props.leftCompact ? 80 : 210),
-      minWidth: (props: StyleProps) => (props.leftCompact ? 80 : 210),
+      width: (props: StyleProps) => (props.leftCompact ? 80 : 180),
+      minWidth: (props: StyleProps) => (props.leftCompact ? 80 : 180),
     },
     [theme.breakpoints.down('md')]: {
       width: '100%',
@@ -114,8 +114,8 @@ const useStyles = makeStyles(theme => ({
     maxHeight: 'calc(100dvh - 20px)',
     overflowX: 'hidden',
     [theme.breakpoints.up('lg')]: {
-      width: (props: StyleProps) => (props.rightCompact ? 72 : 320),
-      minWidth: (props: StyleProps) => (props.rightCompact ? 72 : 320),
+      width: (props: StyleProps) => (props.rightCompact ? 72 : 250),
+      minWidth: (props: StyleProps) => (props.rightCompact ? 72 : 250),
     },
     [theme.breakpoints.down('md')]: {
       width: '100%',
