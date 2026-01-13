@@ -13,7 +13,11 @@ function isQetaFilter(filter: any): filter is QetaFilter {
 }
 
 export abstract class BaseStore {
-  constructor(protected readonly db: Knex) {}
+  private pgTrgmAvailable: boolean = false;
+
+  constructor(protected readonly db: Knex) {
+    this.initializePgTrgm();
+  }
 
   protected mapToInteger(val: string | number | undefined): number {
     return typeof val === 'string' ? Number.parseInt(val, 10) : val ?? 0;
@@ -31,7 +35,7 @@ export abstract class BaseStore {
     columns: string[],
     searchQuery: string,
   ) {
-    if (this.db.client.config.client === 'pg') {
+    if (this.db.client.config.client === 'pg' && this.pgTrgmAvailable) {
       const terms = searchQuery.trim().split(/\s+/);
 
       query.andWhere(builder => {
@@ -194,5 +198,21 @@ export abstract class BaseStore {
         );
       }
     });
+  }
+
+  private async initializePgTrgm() {
+    if (this.db.client.config.client === 'pg') {
+      try {
+        const result = await this.db.raw(`
+          SELECT EXISTS (
+            SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm'
+          ) as available
+        `);
+        this.pgTrgmAvailable = result.rows?.[0]?.available ?? false;
+      } catch (error) {
+        console.warn(`Failed to check for pg_trgm extension: ${error}`);
+        this.pgTrgmAvailable = false;
+      }
+    }
   }
 }
