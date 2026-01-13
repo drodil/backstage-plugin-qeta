@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.55.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.3...v3.55.4) (2026-01-13)
+
+
+### Bug Fixes
+
+* badge notification to use custom route ([d18cbd0](https://github.com/drodil/backstage-plugin-qeta/commit/d18cbd01949e2573c65c61c3d728526a12a8d749)), closes [#386](https://github.com/drodil/backstage-plugin-qeta/issues/386)
+* e2e tests ([57d8a65](https://github.com/drodil/backstage-plugin-qeta/commit/57d8a6560b39f6031b2ce36e3b9fb07d4235ccc7))
+* make backend work without pg_trgm extension ([deed50b](https://github.com/drodil/backstage-plugin-qeta/commit/deed50b67dc8fc566b3984244aa7f41fbd107b59))
+* move settings to context ([d25f5d9](https://github.com/drodil/backstage-plugin-qeta/commit/d25f5d944c1b283a104afb00ec82947259976095))
+
 ### [3.55.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.2...v3.55.3) (2026-01-12)
 
 
