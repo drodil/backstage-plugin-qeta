@@ -79,9 +79,9 @@ test.describe('Articles - Independent Tests', () => {
     await page.goto('/qeta/articles?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');
     const listButton = page.getByRole('button', { name: 'List View' });
-    if (await listButton.isVisible()) {
-      await listButton.click();
-    }
+    await expect(listButton).toBeVisible({ timeout: 10000 });
+    await listButton.click();
+    await page.waitForTimeout(500);
 
     const postRow = page
       .locator(`a[aria-label="${title}"]`)
@@ -89,7 +89,7 @@ test.describe('Articles - Independent Tests', () => {
       .locator('..');
 
     const viewsItem = postRow.locator('[title^="Viewed"]');
-    await expect(viewsItem).toBeVisible();
+    await expect(viewsItem).toBeVisible({ timeout: 10000 });
 
     const initialTitle = await viewsItem.getAttribute('title');
     const initialViews = parseInt(initialTitle?.replace(/\D/g, '') || '0', 10);
@@ -100,6 +100,12 @@ test.describe('Articles - Independent Tests', () => {
 
     await page.goto('/qeta/articles?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');
+
+    const listButtonAfter = page.getByRole('button', { name: 'List View' });
+    if (await listButtonAfter.isVisible()) {
+      await listButtonAfter.click();
+      await page.waitForTimeout(500);
+    }
 
     const updatedPostRow = page
       .locator(`a[aria-label="${title}"]`)

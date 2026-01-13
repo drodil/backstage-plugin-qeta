@@ -102,6 +102,9 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
 
   useEffect(() => {
     const bucket = storageApi.forBucket(BUCKET_KEY);
+
+    isUpdatingRef.current = false;
+
     const snapshot = bucket.snapshot(STORAGE_KEY);
     const stored = snapshot.value as UserSettings | undefined;
 
@@ -139,22 +142,40 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
   const updateSettings = useCallback(
     async (updates: Partial<UserSettings>) => {
       const bucket = storageApi.forBucket(BUCKET_KEY);
-      const currentSettings = settingsRef.current;
+
+      const snapshot = bucket.snapshot(STORAGE_KEY);
+      const storedSettings = snapshot.value as UserSettings | undefined;
+      const currentSettings = storedSettings
+        ? merge({}, DEFAULT_SETTINGS, storedSettings)
+        : settingsRef.current;
 
       const newSettings = { ...currentSettings };
       Object.keys(updates).forEach(key => {
         const k = key as keyof UserSettings;
         const value = updates[k];
-        if (value !== undefined) {
+        if (Object.hasOwn(updates, k)) {
           if (k === 'viewType' || k === 'filterPanelExpanded') {
-            newSettings[k] = value as any;
+            const currentValue = currentSettings[k] || {};
+            const updateValue = (value || {}) as Record<string, any>;
+            const merged = { ...currentValue };
+
+            Object.keys(updateValue).forEach(subKey => {
+              if (updateValue[subKey] === undefined) {
+                delete merged[subKey];
+              } else {
+                merged[subKey] = updateValue[subKey];
+              }
+            });
+
+            newSettings[k] = merged as any;
           } else if (
+            value !== undefined &&
             value &&
             typeof value === 'object' &&
             !Array.isArray(value)
           ) {
             newSettings[k] = merge({}, currentSettings[k], value);
-          } else {
+          } else if (value !== undefined) {
             newSettings[k] = value as any;
           }
         }
@@ -167,9 +188,8 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
       try {
         await bucket.set(STORAGE_KEY, newSettings);
       } finally {
-        setTimeout(() => {
-          isUpdatingRef.current = false;
-        }, 100);
+        await Promise.resolve();
+        isUpdatingRef.current = false;
       }
     },
     [storageApi],
@@ -193,9 +213,8 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
   );
 
   const resetSettings = useCallback(async () => {
-    const bucket = storageApi.forBucket(BUCKET_KEY);
-    await bucket.set(STORAGE_KEY, DEFAULT_SETTINGS);
-  }, [storageApi]);
+    await updateSettings(DEFAULT_SETTINGS);
+  }, [updateSettings]);
 
   const contextValue = useMemo(
     () => ({

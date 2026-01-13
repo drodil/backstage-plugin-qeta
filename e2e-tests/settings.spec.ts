@@ -5,6 +5,21 @@ test.describe('Settings', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await loginAsGuest(page);
+
+    // Reset all settings to ensure clean state before each test
+    await page.goto('/qeta/settings');
+    await page.waitForLoadState('networkidle');
+
+    const resetButton = page.getByTestId('reset-all-settings-button');
+    await resetButton.click();
+
+    // Wait for reset to complete by checking that a view type shows default state
+    const defaultButton = page.getByTestId('view-type-posts-question-default');
+    await expect(defaultButton).toHaveAttribute('data-selected', 'true', {
+      timeout: 3000,
+    });
+
+    await page.waitForTimeout(500);
   });
 
   test('change questions view type to grid and verify it persists', async ({
@@ -19,6 +34,9 @@ test.describe('Settings', () => {
     const gridButton = page.getByTestId('view-type-posts-question-grid');
     await gridButton.click();
 
+    await expect(gridButton).toHaveAttribute('data-selected', 'true', {
+      timeout: 2000,
+    });
     await page.waitForTimeout(500);
 
     await page.goto('/qeta/questions');
@@ -29,10 +47,15 @@ test.describe('Settings', () => {
 
     await page.goto('/qeta/settings');
     await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
 
     const gridButtonAfter = page.getByTestId('view-type-posts-question-grid');
-    const gridButtonClass = await gridButtonAfter.getAttribute('class');
-    expect(gridButtonClass).toContain('contained');
+    const listButtonAfter = page.getByTestId('view-type-posts-question-list');
+
+    await expect(gridButtonAfter).toHaveAttribute('data-selected', 'true', {
+      timeout: 10000,
+    });
+    await expect(listButtonAfter).toHaveAttribute('data-selected', 'false');
   });
 
   test('change questions view type to list and verify it persists', async ({
@@ -47,6 +70,9 @@ test.describe('Settings', () => {
     const listButton = page.getByTestId('view-type-posts-question-list');
     await listButton.click();
 
+    await expect(listButton).toHaveAttribute('data-selected', 'true', {
+      timeout: 2000,
+    });
     await page.waitForTimeout(500);
 
     await page.goto('/qeta/questions');
@@ -57,10 +83,15 @@ test.describe('Settings', () => {
 
     await page.goto('/qeta/settings');
     await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
 
     const listButtonAfter = page.getByTestId('view-type-posts-question-list');
-    const listButtonClass = await listButtonAfter.getAttribute('class');
-    expect(listButtonClass).toContain('contained');
+    const gridButtonAfter = page.getByTestId('view-type-posts-question-grid');
+
+    await expect(listButtonAfter).toHaveAttribute('data-selected', 'true', {
+      timeout: 10000,
+    });
+    await expect(gridButtonAfter).toHaveAttribute('data-selected', 'false');
   });
 
   test('change multiple view types and verify they all persist', async ({
@@ -84,16 +115,13 @@ test.describe('Settings', () => {
     const questionsGridButton = page.getByTestId(
       'view-type-posts-question-grid',
     );
-    const questionsGridClass = await questionsGridButton.getAttribute('class');
-    expect(questionsGridClass).toContain('contained');
+    await expect(questionsGridButton).toHaveAttribute('data-selected', 'true');
 
     const articlesListButton = page.getByTestId('view-type-posts-article-list');
-    const articlesListClass = await articlesListButton.getAttribute('class');
-    expect(articlesListClass).toContain('contained');
+    await expect(articlesListButton).toHaveAttribute('data-selected', 'true');
 
     const linksGridButton = page.getByTestId('view-type-posts-link-grid');
-    const linksGridClass = await linksGridButton.getAttribute('class');
-    expect(linksGridClass).toContain('contained');
+    await expect(linksGridButton).toHaveAttribute('data-selected', 'true');
   });
 
   test('toggle auto-save setting and verify it persists', async ({ page }) => {
@@ -130,19 +158,24 @@ test.describe('Settings', () => {
     const initialChecked = await paginationSwitch.isChecked();
 
     await paginationSwitch.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
 
     const newChecked = await paginationSwitch.isChecked();
     expect(newChecked).toBe(!initialChecked);
 
     await page.goto('/qeta/questions');
     await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
     await page.goto('/qeta/settings');
     await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
 
     const paginationSwitchAfter = page.getByTestId('pagination-switch');
-    const persistedChecked = await paginationSwitchAfter.isChecked();
-    expect(persistedChecked).toBe(newChecked);
+
+    await expect(async () => {
+      const persistedChecked = await paginationSwitchAfter.isChecked();
+      expect(persistedChecked).toBe(newChecked);
+    }).toPass({ timeout: 10000, intervals: [1000, 2000] });
 
     await paginationSwitchAfter.click();
     await page.waitForTimeout(500);
@@ -227,7 +260,6 @@ test.describe('Settings', () => {
     await page.waitForLoadState('networkidle');
 
     const defaultButton = page.getByTestId('view-type-posts-question-default');
-    const defaultButtonClass = await defaultButton.getAttribute('class');
-    expect(defaultButtonClass).toContain('contained');
+    await expect(defaultButton).toHaveAttribute('data-selected', 'true');
   });
 });

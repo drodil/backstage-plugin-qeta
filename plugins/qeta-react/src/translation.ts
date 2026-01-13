@@ -469,6 +469,9 @@ export const qetaTranslationRef = createTranslationRef({
           userAnswers: 'User page answers',
         },
       },
+      resetAllSettings: 'Reset All Settings',
+      resetAllSettingsDescription:
+        'Reset all user settings to their default values. This will clear all your preferences including view types, auto-save, pagination, and other settings.',
     },
     suggestionsCard: {
       title: 'Suggestions',

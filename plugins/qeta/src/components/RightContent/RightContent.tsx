@@ -43,9 +43,9 @@ import { PostRightContent } from './PostRightContent';
 
 const useStyles = makeStyles(theme => ({
   container: {
-    width: (props: { compact: boolean }) => (props.compact ? '72px' : '240px'),
+    width: (props: { compact: boolean }) => (props.compact ? '72px' : '220px'),
     padding: (props: { compact: boolean }) =>
-      props.compact ? theme.spacing(1) : theme.spacing(0, 0, 0, 2),
+      props.compact ? theme.spacing(1) : theme.spacing(0, 0, 0, 1),
     transition: 'width 0.2s ease-in-out',
     display: 'flex',
     flexDirection: 'column',
