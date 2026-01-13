@@ -1,6 +1,6 @@
 import { useQetaApi } from '../../hooks';
 import { BadgeChip } from './BadgeChip';
-import { Box, Typography, Grid } from '@material-ui/core';
+import { Box, Grid, Typography } from '@material-ui/core';
 import { Alert, Skeleton } from '@material-ui/lab';
 import { UserBadge } from '@drodil/backstage-plugin-qeta-common';
 
@@ -73,8 +73,8 @@ export const UserBadges = ({ entityRef }: { entityRef: string }) => {
           justifyContent="flex-start"
           alignItems="stretch"
         >
-          {displayBadges.map((item, index: number) => (
-            <Grid item key={index} xs={6} sm={4} md={3} lg={2} xl={1}>
+          {displayBadges.map(item => (
+            <Grid item key={item.badge.key} xs={6} sm={4} md={4} lg={3}>
               <BadgeChip badge={item.badge} count={item.count} />
             </Grid>
           ))}
