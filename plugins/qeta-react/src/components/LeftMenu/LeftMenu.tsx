@@ -91,7 +91,7 @@ export const useStyles = makeStyles(
         display: 'flex',
         alignItems: 'center',
         minHeight: 40,
-        maxWidth: '80%',
+        maxWidth: '75%',
         '&:hover': {
           backgroundColor: theme.palette.action.hover,
         },
