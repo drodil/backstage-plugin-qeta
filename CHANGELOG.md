@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.55.5](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.4...v3.55.5) (2026-01-14)
+
+
+### Bug Fixes
+
+* filter passing for containers ([aab8a9f](https://github.com/drodil/backstage-plugin-qeta/commit/aab8a9fbb50da4057d484535c22f9d1a9e646265))
+* spacing of main items ([7170c6c](https://github.com/drodil/backstage-plugin-qeta/commit/7170c6c85467b67f38818eef4450d7905f1e1df7))
+
 ### [3.55.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.3...v3.55.4) (2026-01-13)
 
 
