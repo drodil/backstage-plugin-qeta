@@ -33,6 +33,8 @@ export const EntitiesContainer = (props: {
             limit,
             offset,
             searchQuery: filters.searchQuery,
+            order: filters.order,
+            orderBy: filters.orderBy,
           })
           .then(res => ({ items: res.entities, total: res.total }));
       }}

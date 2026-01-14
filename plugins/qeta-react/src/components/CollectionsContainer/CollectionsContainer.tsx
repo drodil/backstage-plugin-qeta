@@ -32,6 +32,12 @@ export const CollectionsContainer = (props: {
             limit,
             offset,
             searchQuery: filters.searchQuery,
+            order: filters.order,
+            orderBy: filters.orderBy,
+            entities: filters.entities,
+            tags: filters.tags,
+            fromDate: filters.fromDate,
+            toDate: filters.toDate,
             owner,
           })
           .then(res => ({ items: res.collections, total: res.total }));
