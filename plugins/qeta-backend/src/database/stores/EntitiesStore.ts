@@ -26,7 +26,11 @@ export class EntitiesStore extends BaseStore {
     const totalQuery = query.clone();
 
     if (options?.orderBy) {
-      query.orderBy(options?.orderBy, options?.order || 'desc');
+      const orderBy =
+        options.orderBy === 'entityRef'
+          ? 'entities.entity_ref'
+          : options.orderBy;
+      query.orderBy(orderBy, options?.order || 'desc');
     }
 
     if (options?.limit) {

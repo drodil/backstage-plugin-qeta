@@ -1793,5 +1793,60 @@ describe.each(databases.eachSupportedId())(
         expect(collectionPosts?.posts?.length).toBe(1);
       });
     });
+
+    describe('getEntities', () => {
+      const insertEntity = async (entityRef: string) => {
+        const result = await knex('entities')
+          .insert({ entity_ref: entityRef })
+          .returning('id');
+        return result[0].id;
+      };
+
+      const insertPostEntity = async (postId: number, entityId: number) => {
+        await knex('post_entities').insert({ postId, entityId });
+      };
+
+      it('should support ordering by entityRef (maps to entity_ref)', async () => {
+        const entityAId = await insertEntity('component:default/a-entity');
+        const entityMId = await insertEntity('component:default/m-entity');
+        const entityZId = await insertEntity('component:default/z-entity');
+
+        const postId = await insertPost({
+          ...post,
+          title: 'post-with-entities',
+          type: 'question' as const,
+          status: 'active',
+        });
+
+        await insertPostEntity(postId, entityZId);
+        await insertPostEntity(postId, entityAId);
+        await insertPostEntity(postId, entityMId);
+
+        const result = await storage.getEntities({
+          orderBy: 'entityRef',
+          order: 'asc',
+          limit: 10,
+          offset: 0,
+        });
+
+        expect(result.total).toBeGreaterThanOrEqual(3);
+
+        const ordered = result.entities
+          .filter(e =>
+            [
+              'component:default/a-entity',
+              'component:default/m-entity',
+              'component:default/z-entity',
+            ].includes(e.entityRef),
+          )
+          .map(e => e.entityRef);
+
+        expect(ordered).toEqual([
+          'component:default/a-entity',
+          'component:default/m-entity',
+          'component:default/z-entity',
+        ]);
+      });
+    });
   },
 );
