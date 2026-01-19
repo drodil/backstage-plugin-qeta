@@ -270,8 +270,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
           .flatMap(e => e?.metadata?.tags)
           .filter((t): t is string => !!t)
           .map(tag => tag.toLocaleLowerCase())
-          .filter(filterTags)
-          .slice(0, 5);
+          .filter(filterTags);
         suggestedTags.push(...entityTags);
       } catch (_error) {
         // Just ignore
@@ -283,9 +282,8 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         const { tags } = await aiHandler.suggestTags(title, content);
         suggestedTags.unshift(...tags);
         return [...new Set(suggestedTags)]
-          .filter(filterTags)
           .map(tag => tag.toLocaleLowerCase())
-          .slice(0, 10);
+          .filter(filterTags);
       }
     } catch (_error) {
       // NOOP: Fallback to database suggestions
@@ -326,7 +324,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       }
     });
 
-    return [...new Set(suggestedTags)].filter(filterTags).slice(0, 10);
+    return [...new Set(suggestedTags)].filter(filterTags);
   };
 
   router.post('/tags/suggest', async (request, response) => {
@@ -350,7 +348,13 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
       const uniqueTags = [...new Set(allTags)];
 
-      response.json({ tags: uniqueTags });
+      const limit =
+        request.body.limit && request.body.limit > 0
+          ? request.body.limit
+          : uniqueTags.length;
+
+      const randomizedTags = uniqueTags.sort(() => Math.random() - 0.5);
+      response.json({ tags: randomizedTags.slice(0, limit) });
     } catch (error) {
       logger.error(`Failed to generate tag suggestions: ${error}`);
       response
@@ -597,7 +601,13 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         return !request.body.entities?.includes(ref);
       });
 
-      response.json({ entities: notSetEntities });
+      const limit =
+        request.body.limit && request.body.limit > 0
+          ? request.body.limit
+          : notSetEntities.length;
+
+      const randomizedEntities = notSetEntities.sort(() => Math.random() - 0.5);
+      response.json({ entities: randomizedEntities.slice(0, limit) });
     } catch (error) {
       logger.error(`Failed to generate entity suggestions: ${error}`);
       response

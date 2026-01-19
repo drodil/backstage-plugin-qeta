@@ -459,6 +459,7 @@ export interface DraftQuestion {
   content: string;
   tags?: string[];
   entities?: string[];
+  limit?: number;
 }
 
 export const DraftQuestionSchema: JSONSchemaType<DraftQuestion> = {
@@ -474,6 +475,11 @@ export const DraftQuestionSchema: JSONSchemaType<DraftQuestion> = {
     entities: {
       type: 'array',
       items: { type: 'string' },
+      nullable: true,
+    },
+    limit: {
+      type: 'number',
+      minimum: 1,
       nullable: true,
     },
   },

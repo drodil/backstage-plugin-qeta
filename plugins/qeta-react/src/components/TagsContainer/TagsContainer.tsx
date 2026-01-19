@@ -4,7 +4,7 @@ import { qetaTranslationRef } from '../../translation';
 import { Button } from '@material-ui/core';
 import Add from '@material-ui/icons/Add';
 import { useIsModerator } from '../../hooks/useIsModerator';
-import { TagFilters, CommonFilterPanelProps } from '../FilterPanel/FilterPanel';
+import { CommonFilterPanelProps, TagFilters } from '../FilterPanel/FilterPanel';
 import { TagGridItem } from './TagGridItem';
 import { TagListItem } from './TagListItem';
 import {
@@ -47,6 +47,8 @@ export const TagsContainer = (props: {
             limit,
             offset,
             searchQuery: filters.searchQuery,
+            order: filters.order,
+            orderBy: filters.orderBy,
           })
           .then(res => ({ items: res.tags, total: res.total }));
       }}

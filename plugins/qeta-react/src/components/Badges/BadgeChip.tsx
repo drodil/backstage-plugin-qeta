@@ -1,5 +1,5 @@
 import { Badge } from '@drodil/backstage-plugin-qeta-common';
-import { Box, Typography, makeStyles } from '@material-ui/core';
+import { Box, makeStyles, Typography } from '@material-ui/core';
 import Star from '@material-ui/icons/Star';
 import VerifiedUser from '@material-ui/icons/VerifiedUser';
 import Visibility from '@material-ui/icons/Visibility';
@@ -69,8 +69,8 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute',
     top: 18,
     right: -12,
-    backgroundColor: theme.palette.common.white,
-    color: theme.palette.common.black,
+    backgroundColor: 'white !important',
+    color: 'black !important',
     borderRadius: '2px',
     display: 'flex',
     padding: '4px',
@@ -82,19 +82,27 @@ const useStyles = makeStyles(theme => ({
   },
   bronze: {
     background: 'linear-gradient(135deg, #cd7f32 0%, #a0522d 100%)',
-    color: '#ffffff',
+    '& *': {
+      color: '#ffffff',
+    },
   },
   silver: {
     background: 'linear-gradient(135deg, #e8e8e8 0%, #a8a8a8 100%)',
-    color: '#333333',
+    '& *': {
+      color: '#333333',
+    },
   },
   gold: {
     background: 'linear-gradient(135deg, #ffd700 0%, #daa520 100%)',
-    color: '#333333',
+    '& *': {
+      color: '#333333',
+    },
   },
   diamond: {
     background: 'linear-gradient(135deg, #b9f2ff 0%, #7ec8e3 100%)',
-    color: '#1a365d',
+    '& *': {
+      color: '#333333',
+    },
   },
   icon: {
     fontSize: 28,

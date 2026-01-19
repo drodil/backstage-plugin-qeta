@@ -79,7 +79,7 @@ export const useStyles = makeStyles(
         paddingRight: theme.spacing(2),
       },
       menuItem: {
-        margin: (props: any) => (props.compact ? 0 : theme.spacing(0, 1.5)),
+        margin: (props: any) => (props.compact ? 0 : theme.spacing(0, 0)),
         justifyContent: (props: any) =>
           props.compact ? 'center' : 'flex-start',
         padding: (props: any) =>
@@ -91,7 +91,7 @@ export const useStyles = makeStyles(
         display: 'flex',
         alignItems: 'center',
         minHeight: 40,
-        maxWidth: '80%',
+        maxWidth: '75%',
         '&:hover': {
           backgroundColor: theme.palette.action.hover,
         },
@@ -101,17 +101,6 @@ export const useStyles = makeStyles(
         backgroundColor: 'transparent',
         fontWeight: 600,
         position: 'relative',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          left: 0,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          height: '60%',
-          width: '4px',
-          backgroundColor: theme.palette.primary.main,
-          borderRadius: '0 4px 4px 0',
-        },
         '&:hover': {
           backgroundColor: theme.palette.action.hover,
         },
@@ -126,7 +115,7 @@ export const useStyles = makeStyles(
         justifyContent: 'center',
       },
       sectionHeader: {
-        padding: theme.spacing(0.5, 2, 0.5, 2),
+        padding: theme.spacing(0.5, 2, 0.5, 1),
         marginTop: theme.spacing(2),
         color: theme.palette.text.secondary,
         fontWeight: 600,
@@ -408,7 +397,7 @@ export const LeftMenu = (props: {
               onClick={onToggle}
               size="small"
               className={isCompact ? '' : styles.toggleButton}
-              style={{ marginTop: 8, marginLeft: isCompact ? -10 : 18 }}
+              style={{ marginTop: 8, marginLeft: isCompact ? -10 : 5 }}
             >
               {isCompact ? <ChevronRightIcon /> : <MenuOpenIcon />}
             </IconButton>

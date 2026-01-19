@@ -180,6 +180,7 @@ export interface ContentSuggestionsQuery {
   title: string;
   content: string;
   entities?: string[];
+  limit?: number;
 }
 
 export interface EntitySuggestionsQuery extends ContentSuggestionsQuery {

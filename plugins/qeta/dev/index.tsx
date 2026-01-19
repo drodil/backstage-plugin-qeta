@@ -130,6 +130,41 @@ const module = createFrontendModule({
   ],
 });
 
+// Add to enable persistent settings
+/** export const userSettingsApiModule = createFrontendModule({
+  pluginId: 'app',
+  extensions: [
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: storageApiRef,
+          deps: {
+            fetchApi: fetchApiRef,
+            discoveryApi: discoveryApiRef,
+            errorApi: errorApiRef,
+            identityApi: identityApiRef,
+            signalApi: signalApiRef,
+          },
+          factory: ({
+            fetchApi,
+            discoveryApi,
+            errorApi,
+            identityApi,
+            signalApi,
+          }) =>
+            UserSettingsStorage.create({
+              fetchApi,
+              discoveryApi,
+              errorApi,
+              identityApi,
+              signalApi,
+            }),
+        }),
+    }),
+  ],
+});
+    */
+
 const app = createApp({
   features: [
     plugin,
@@ -140,6 +175,7 @@ const app = createApp({
     module,
     signalsPlugin,
     userSettingsPlugin,
+    // userSettingsApiModule,
   ],
 });
 

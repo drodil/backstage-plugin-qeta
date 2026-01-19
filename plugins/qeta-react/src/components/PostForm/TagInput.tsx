@@ -100,7 +100,7 @@ export const TagInput = forwardRef<
       if (title && content) {
         setLoadingSuggestions(true);
         qetaApi
-          .getTagSuggestions({ title, content, entities })
+          .getTagSuggestions({ title, content, entities, limit: 5 })
           .then(response => {
             setSuggestedTags(response.tags);
           })

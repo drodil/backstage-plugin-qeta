@@ -192,6 +192,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
               content,
               tags,
               entities: [value ?? []].flat().map(stringifyEntityRef),
+              limit: 5,
             })
             .then(response => {
               setSuggestedEntities(response.entities);

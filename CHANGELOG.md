@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.55.6](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.5...v3.55.6) (2026-01-15)
+
+
+### Bug Fixes
+
+* entities ordering by name ([a607405](https://github.com/drodil/backstage-plugin-qeta/commit/a6074050494354bab998383fa2a55e0f7fad9bb5))
+
+### [3.55.5](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.4...v3.55.5) (2026-01-14)
+
+
+### Bug Fixes
+
+* filter passing for containers ([aab8a9f](https://github.com/drodil/backstage-plugin-qeta/commit/aab8a9fbb50da4057d484535c22f9d1a9e646265))
+* spacing of main items ([7170c6c](https://github.com/drodil/backstage-plugin-qeta/commit/7170c6c85467b67f38818eef4450d7905f1e1df7))
+
+### [3.55.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.3...v3.55.4) (2026-01-13)
+
+
+### Bug Fixes
+
+* badge notification to use custom route ([d18cbd0](https://github.com/drodil/backstage-plugin-qeta/commit/d18cbd01949e2573c65c61c3d728526a12a8d749)), closes [#386](https://github.com/drodil/backstage-plugin-qeta/issues/386)
+* e2e tests ([57d8a65](https://github.com/drodil/backstage-plugin-qeta/commit/57d8a6560b39f6031b2ce36e3b9fb07d4235ccc7))
+* make backend work without pg_trgm extension ([deed50b](https://github.com/drodil/backstage-plugin-qeta/commit/deed50b67dc8fc566b3984244aa7f41fbd107b59))
+* move settings to context ([d25f5d9](https://github.com/drodil/backstage-plugin-qeta/commit/d25f5d944c1b283a104afb00ec82947259976095))
+
+### [3.55.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.2...v3.55.3) (2026-01-12)
+
+
+### Bug Fixes
+
+* limit the number of suggestions ([7a3aa39](https://github.com/drodil/backstage-plugin-qeta/commit/7a3aa39e217e15ac6e566db280934dba06a05bec))
+
+### [3.55.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.1...v3.55.2) (2026-01-12)
+
+
+### Bug Fixes
+
+* user settings saving with user-settings plugin ([720e977](https://github.com/drodil/backstage-plugin-qeta/commit/720e977f7d23bf8d25f8f858b94659ed2f904cb9))
+
 ### [3.55.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.0...v3.55.1) (2026-01-10)
 
 ## [3.55.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.54.0...v3.55.0) (2026-01-09)

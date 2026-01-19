@@ -21,7 +21,6 @@ import {
   POST_RESOURCE_TYPE,
   qetaCreatePostReviewPermission,
   qetaDeletePostReviewPermission,
-  qetaModeratePermission,
   qetaReadPostReviewPermission,
   TAG_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -56,9 +55,8 @@ export class DefaultQetaPermissionPolicy implements PermissionPolicy {
     const moderators =
       this.config?.getOptionalStringArray('qeta.moderators') ?? [];
     if (
-      isPermission(request.permission, qetaModeratePermission) &&
-      (moderators.includes(user.identity.userEntityRef) ||
-        user.identity.ownershipEntityRefs.some(ref => moderators.includes(ref)))
+      moderators.includes(user.identity.userEntityRef) ||
+      user.identity.ownershipEntityRefs.some(ref => moderators.includes(ref))
     ) {
       return { result: AuthorizeResult.ALLOW };
     }

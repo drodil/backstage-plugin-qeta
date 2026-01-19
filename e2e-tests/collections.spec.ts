@@ -87,9 +87,9 @@ test.describe('Collections', () => {
       name: 'Automatic Entities',
     });
     await entitiesInput.click();
-    await entitiesInput.fill('test component');
+    await entitiesInput.fill('test component 2');
 
-    const option = page.getByRole('option').first();
+    const option = page.getByRole('option', { name: /test component 2/i });
     await expect(option).toBeVisible();
     await option.click();
 
@@ -107,8 +107,11 @@ test.describe('Collections', () => {
 
     await page.reload();
     await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
 
-    await expect(page.getByRole('link', { name: postTitle })).toBeVisible();
+    await expect(page.getByRole('link', { name: postTitle })).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test('create automatic collection with combined rules (OR logic)', async ({

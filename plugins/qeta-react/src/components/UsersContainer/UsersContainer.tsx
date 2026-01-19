@@ -33,6 +33,8 @@ export const UsersContainer = (props: {
             limit,
             offset,
             searchQuery: filters.searchQuery,
+            order: filters.order,
+            orderBy: filters.orderBy,
           })
           .then(res => ({ items: res.users, total: res.total }));
       }}

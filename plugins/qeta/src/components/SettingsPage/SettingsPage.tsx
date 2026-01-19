@@ -7,6 +7,7 @@ import {
   makeStyles,
   Switch,
   Typography,
+  useTheme,
 } from '@material-ui/core';
 import { InfoCard } from '@backstage/core-components';
 import {
@@ -51,7 +52,15 @@ const useStyles = makeStyles(theme => ({
 
 export const SettingsPage = () => {
   const classes = useStyles();
-  const { settings, setSetting, isLoaded } = useUserSettings();
+  const theme = useTheme();
+  const {
+    settings,
+    setSetting,
+    getSetting,
+    resetSettings,
+    isLoaded,
+    updateSettings,
+  } = useUserSettings();
   const { t } = useTranslationRef(qetaTranslationRef);
   const { isAIEnabled } = useAI();
   const configApi = useApi(configApiRef);
@@ -121,13 +130,15 @@ export const SettingsPage = () => {
   ];
 
   const handleViewTypeChange = (key: string, value: ViewType | null) => {
-    const currentViewTypes = { ...settings.viewType };
     if (value === null) {
-      delete currentViewTypes[key];
+      updateSettings({
+        viewType: { ...getSetting('viewType'), [key]: undefined as any },
+      });
     } else {
-      currentViewTypes[key] = value;
+      updateSettings({
+        viewType: { ...getSetting('viewType'), [key]: value },
+      });
     }
-    setSetting('viewType', currentViewTypes);
   };
 
   const getViewType = (key: string): ViewType | null => {
@@ -268,6 +279,7 @@ export const SettingsPage = () => {
                       }
                       onClick={() => handleViewTypeChange(key, 'grid')}
                       data-testid={`view-type-${key}-grid`}
+                      data-selected={currentView === 'grid'}
                     >
                       {t('settingsPage.viewTypePreferences.grid', {})}
                     </Button>
@@ -277,6 +289,7 @@ export const SettingsPage = () => {
                       }
                       onClick={() => handleViewTypeChange(key, 'list')}
                       data-testid={`view-type-${key}-list`}
+                      data-selected={currentView === 'list'}
                     >
                       {t('settingsPage.viewTypePreferences.list', {})}
                     </Button>
@@ -284,6 +297,7 @@ export const SettingsPage = () => {
                       variant={currentView === null ? 'contained' : 'outlined'}
                       onClick={() => handleViewTypeChange(key, null)}
                       data-testid={`view-type-${key}-default`}
+                      data-selected={currentView === null}
                     >
                       {t('settingsPage.viewTypePreferences.default', {})}
                     </Button>
@@ -293,6 +307,25 @@ export const SettingsPage = () => {
             })}
           </Box>
         </div>
+
+        <Box mt={4} pt={3} borderTop={`1px solid ${theme.palette.divider}`}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => {
+              resetSettings();
+            }}
+            data-testid="reset-all-settings-button"
+          >
+            {t('settingsPage.resetAllSettings', {})}
+          </Button>
+          <Typography
+            className={classes.description}
+            style={{ marginTop: theme.spacing(1) }}
+          >
+            {t('settingsPage.resetAllSettingsDescription', {})}
+          </Typography>
+        </Box>
       </CardContent>
     </InfoCard>
   );

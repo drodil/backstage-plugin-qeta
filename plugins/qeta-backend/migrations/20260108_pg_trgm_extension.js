@@ -15,7 +15,7 @@ exports.up = async function up(knex) {
         `Original error: ${
           error instanceof Error ? error.message : String(error)
         }`;
-      throw new Error(message);
+      console.warn(message);
     }
 
     await knex.raw(

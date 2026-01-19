@@ -1651,6 +1651,81 @@ describe.each(databases.eachSupportedId())(
         expect(collectionPosts?.posts?.[0]?.id).toBe(post1.id);
       });
 
+      it('should sync existing posts when updating collection with tags and entities', async () => {
+        const post1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'Java Component Post',
+          content: 'content',
+          created: new Date(),
+          tags: ['java'],
+          entities: ['component:default/comp1'],
+        });
+
+        const post2 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'Python Component Post',
+          content: 'content',
+          created: new Date(),
+          tags: ['python'],
+          entities: ['component:default/comp1'],
+        });
+
+        const post3 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'Java Other Component Post',
+          content: 'content',
+          created: new Date(),
+          tags: ['java'],
+          entities: ['component:default/comp2'],
+        });
+
+        const post4 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'Unrelated Post',
+          content: 'content',
+          created: new Date(),
+          tags: ['ruby'],
+          entities: ['component:default/comp3'],
+        });
+
+        const collection = await storage.createCollection({
+          user_ref: 'user1',
+          title: 'Java and Component Collection',
+          created: new Date(),
+        });
+
+        let collectionPosts = await storage.getCollection(
+          'user1',
+          collection.id,
+        );
+        expect(collectionPosts?.posts?.length).toBe(0);
+
+        // Update collection with both tags and entities
+        await storage.updateCollection({
+          id: collection.id,
+          user_ref: 'user1',
+          title: 'Java and Component Collection',
+          tags: ['java', 'python'],
+          entities: ['component:default/comp1'],
+        });
+
+        collectionPosts = await storage.getCollection('user1', collection.id);
+        // Should include post1 (java + comp1), post2 (python + comp1), post3 (java + comp2)
+        // Should NOT include post4 (ruby + comp3)
+        expect(collectionPosts?.posts?.length).toBe(3);
+        const postIds = collectionPosts?.posts?.map(p => p.id).sort();
+        expect(postIds).toEqual([post1.id, post2.id, post3.id].sort());
+        expect(postIds).not.toContain(post4.id);
+
+        const postsResult = await storage.getPosts('user1', {
+          collectionId: collection.id,
+        });
+        expect(postsResult.posts.length).toBe(3);
+        const getPostsIds = postsResult.posts.map(p => p.id).sort();
+        expect(getPostsIds).toEqual([post1.id, post2.id, post3.id].sort());
+        expect(getPostsIds).not.toContain(post4.id);
+      });
+
       it('should remove post from collection if tags change', async () => {
         const collection = await storage.createCollection({
           user_ref: 'user1',
@@ -1716,6 +1791,61 @@ describe.each(databases.eachSupportedId())(
 
         collectionPosts = await storage.getCollection('user1', collection.id);
         expect(collectionPosts?.posts?.length).toBe(1);
+      });
+    });
+
+    describe('getEntities', () => {
+      const insertEntity = async (entityRef: string) => {
+        const result = await knex('entities')
+          .insert({ entity_ref: entityRef })
+          .returning('id');
+        return result[0].id;
+      };
+
+      const insertPostEntity = async (postId: number, entityId: number) => {
+        await knex('post_entities').insert({ postId, entityId });
+      };
+
+      it('should support ordering by entityRef (maps to entity_ref)', async () => {
+        const entityAId = await insertEntity('component:default/a-entity');
+        const entityMId = await insertEntity('component:default/m-entity');
+        const entityZId = await insertEntity('component:default/z-entity');
+
+        const postId = await insertPost({
+          ...post,
+          title: 'post-with-entities',
+          type: 'question' as const,
+          status: 'active',
+        });
+
+        await insertPostEntity(postId, entityZId);
+        await insertPostEntity(postId, entityAId);
+        await insertPostEntity(postId, entityMId);
+
+        const result = await storage.getEntities({
+          orderBy: 'entityRef',
+          order: 'asc',
+          limit: 10,
+          offset: 0,
+        });
+
+        expect(result.total).toBeGreaterThanOrEqual(3);
+
+        const ordered = result.entities
+          .filter(e =>
+            [
+              'component:default/a-entity',
+              'component:default/m-entity',
+              'component:default/z-entity',
+            ].includes(e.entityRef),
+          )
+          .map(e => e.entityRef);
+
+        expect(ordered).toEqual([
+          'component:default/a-entity',
+          'component:default/m-entity',
+          'component:default/z-entity',
+        ]);
       });
     });
   },
