@@ -8327,13 +8327,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/router@npm:1.23.2":
-  version: 1.23.2
-  resolution: "@remix-run/router@npm:1.23.2"
-  checksum: 10c0/7096b7f2086b2cd80c9e06873b71a8317e04858c01edc06a6fed187b660408a90f47c8e120e8af4c369cf1fa6b6a316a66b0917f42b6eb8a566e98b277c50449
-  languageName: node
-  linkType: hard
-
 "@remixicon/react@npm:^4.6.0":
   version: 4.7.0
   resolution: "@remixicon/react@npm:4.7.0"
@@ -8854,15 +8847,15 @@ __metadata:
   linkType: hard
 
 "@smithy/config-resolver@npm:^3.0.6, @smithy/config-resolver@npm:^3.0.8":
-  version: 3.0.8
-  resolution: "@smithy/config-resolver@npm:3.0.8"
+  version: 3.0.13
+  resolution: "@smithy/config-resolver@npm:3.0.13"
   dependencies:
-    "@smithy/node-config-provider": "npm:^3.1.7"
-    "@smithy/types": "npm:^3.4.2"
+    "@smithy/node-config-provider": "npm:^3.1.12"
+    "@smithy/types": "npm:^3.7.2"
     "@smithy/util-config-provider": "npm:^3.0.0"
-    "@smithy/util-middleware": "npm:^3.0.6"
+    "@smithy/util-middleware": "npm:^3.0.11"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/78d9451032ff9227f1bb70ccd7949cb35addd93c33c672da01f931071c0026ed950517fc80d52d75a51aa24f6caa45285e20a04e71a1d8189eb910e3e00daf18
+  checksum: 10c0/9dac64028019e7b64ddf0e884dd03ce53eb1e9f070aec28acfbc24d624cd5d5ba2830d1e63a448119b20711969b03d4dbca0c4d7650e976b28475a8d8b7d0d93
   languageName: node
   linkType: hard
 
@@ -9179,15 +9172,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/node-config-provider@npm:^3.1.5, @smithy/node-config-provider@npm:^3.1.7":
-  version: 3.1.7
-  resolution: "@smithy/node-config-provider@npm:3.1.7"
+"@smithy/node-config-provider@npm:^3.1.12, @smithy/node-config-provider@npm:^3.1.5, @smithy/node-config-provider@npm:^3.1.7":
+  version: 3.1.12
+  resolution: "@smithy/node-config-provider@npm:3.1.12"
   dependencies:
-    "@smithy/property-provider": "npm:^3.1.6"
-    "@smithy/shared-ini-file-loader": "npm:^3.1.7"
-    "@smithy/types": "npm:^3.4.2"
+    "@smithy/property-provider": "npm:^3.1.11"
+    "@smithy/shared-ini-file-loader": "npm:^3.1.12"
+    "@smithy/types": "npm:^3.7.2"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/26c6a73f271c3ec38c3498ab51972c46ab63371e3d9f2c6613fbfbbe66c52361a2a515c8b24c1b7c3f473c18d776e263476481ed211c446f59a62015433107d7
+  checksum: 10c0/e00b47e749233df6d98287176c8b6cf69287aaab593e5e97b365da8d2781a3478178cab1ad3c68c997efe41a9653960e5615c2cab368e677f05a3acc16e958e5
   languageName: node
   linkType: hard
 
@@ -9229,13 +9222,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/property-provider@npm:^3.1.4, @smithy/property-provider@npm:^3.1.6":
-  version: 3.1.6
-  resolution: "@smithy/property-provider@npm:3.1.6"
+"@smithy/property-provider@npm:^3.1.11, @smithy/property-provider@npm:^3.1.4, @smithy/property-provider@npm:^3.1.6":
+  version: 3.1.11
+  resolution: "@smithy/property-provider@npm:3.1.11"
   dependencies:
-    "@smithy/types": "npm:^3.4.2"
+    "@smithy/types": "npm:^3.7.2"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/af68a2be7ba48def574fe735ba9b04219a6c3d6565485f02392e26df260534d6e7efe552105c4b10ae35b63188b65add8dc944f9065a8775c9f1c1e8eed0160a
+  checksum: 10c0/7c8a9b567ff2ec33b021e718b9757c5492f0e6b4330793bb9726d4756312fb3e786fe636f26c56ddfcbea4f58dbf6c3452c0fd2ecce9193031151a4555602424
   languageName: node
   linkType: hard
 
@@ -9320,13 +9313,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/shared-ini-file-loader@npm:^3.1.5, @smithy/shared-ini-file-loader@npm:^3.1.7":
-  version: 3.1.7
-  resolution: "@smithy/shared-ini-file-loader@npm:3.1.7"
+"@smithy/shared-ini-file-loader@npm:^3.1.12, @smithy/shared-ini-file-loader@npm:^3.1.5, @smithy/shared-ini-file-loader@npm:^3.1.7":
+  version: 3.1.12
+  resolution: "@smithy/shared-ini-file-loader@npm:3.1.12"
   dependencies:
-    "@smithy/types": "npm:^3.4.2"
+    "@smithy/types": "npm:^3.7.2"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/ff19860af2c88e8b208fb0b696f72d9565e137ae36bb62ee56a018367edc1a17e5813bd986187021ee33386d168ddf75d604c650ca05d79ff3f948715384d4a9
+  checksum: 10c0/8dc647cc697977bb6fd9d6d0efa51a42b811c2da11d6a73f07a9713a73ad795458d68e5fef9d2e66b45310de9f55dbace6ebb1d12f2551fc6a75aa0ceadced5f
   languageName: node
   linkType: hard
 
@@ -9579,13 +9572,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/util-middleware@npm:^3.0.4, @smithy/util-middleware@npm:^3.0.6":
-  version: 3.0.6
-  resolution: "@smithy/util-middleware@npm:3.0.6"
+"@smithy/util-middleware@npm:^3.0.11, @smithy/util-middleware@npm:^3.0.4, @smithy/util-middleware@npm:^3.0.6":
+  version: 3.0.11
+  resolution: "@smithy/util-middleware@npm:3.0.11"
   dependencies:
-    "@smithy/types": "npm:^3.4.2"
+    "@smithy/types": "npm:^3.7.2"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/a697fe4787fcb59d8abed3c5f3cb775d3b5e64a87962513aed5af1643737a1b31afde2945591b60eac560ef24d1db7b23efd65758a056c54f0debc32dad4bf5b
+  checksum: 10c0/983a329b0f9abc62ddbcda7227acf2b1aa5c7c1bb06c5b1de78353cc565d3b1817607491be7d067753877a05ea4e3f648f84b8bd9600de6454713f1ac35e56ba
   languageName: node
   linkType: hard
 
@@ -14295,6 +14288,13 @@ __metadata:
   version: 0.7.2
   resolution: "cookie@npm:0.7.2"
   checksum: 10c0/9596e8ccdbf1a3a88ae02cf5ee80c1c50959423e1022e4e60b91dd87c622af1da309253d8abdb258fb5e3eacb4f08e579dc58b4897b8087574eee0fd35dfa5d2
+  languageName: node
+  linkType: hard
+
+"cookie@npm:^1.0.1":
+  version: 1.1.1
+  resolution: "cookie@npm:1.1.1"
+  checksum: 10c0/79c4ddc0fcad9c4f045f826f42edf54bcc921a29586a4558b0898277fa89fb47be95bc384c2253f493af7b29500c830da28341274527328f18eba9f58afa112c
   languageName: node
   linkType: hard
 
@@ -26866,14 +26866,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:^6.30.2":
-  version: 6.30.3
-  resolution: "react-router@npm:6.30.3"
+"react-router@npm:^7.12.0":
+  version: 7.12.0
+  resolution: "react-router@npm:7.12.0"
   dependencies:
-    "@remix-run/router": "npm:1.23.2"
+    cookie: "npm:^1.0.1"
+    set-cookie-parser: "npm:^2.6.0"
   peerDependencies:
-    react: ">=16.8"
-  checksum: 10c0/a0a74bf5a933cf0abd47e0eac1d3a505cd66b866e3ee8f20d8016885d3b4361ba3ba72dee026248c6125e631b191ba6ad109184c892281cea6cb747c71bf5940
+    react: ">=18"
+    react-dom: ">=18"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+  checksum: 10c0/abde366f716cb3961a5a390c278375c0591bace5773e1b4420001f0a913b4dd53d490e7dea866acebcac2c0fa07378aa83702769d449449027406ed517a8ea00
   languageName: node
   linkType: hard
 
@@ -27919,7 +27924,7 @@ __metadata:
     prettier: "npm:^2.4.1"
     react: "npm:^18.0.0"
     react-dom: "npm:^18.0.0"
-    react-router: "npm:^6.30.2"
+    react-router: "npm:^7.12.0"
     react-router-dom: "npm:^6.3.0"
     standard-version: "npm:^9.5.0"
     typescript: "npm:~5.8.0"
@@ -28288,10 +28293,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"set-cookie-parser@npm:^2.4.6":
-  version: 2.7.0
-  resolution: "set-cookie-parser@npm:2.7.0"
-  checksum: 10c0/5ccb2d0389bda27631d57e44644319f0b77200e7c8bd1515824eb83dbd2d351864a29581f7e7f977a5aeb83c3ec9976e69b706a80ac654152fd26353011ffef4
+"set-cookie-parser@npm:^2.4.6, set-cookie-parser@npm:^2.6.0":
+  version: 2.7.2
+  resolution: "set-cookie-parser@npm:2.7.2"
+  checksum: 10c0/4381a9eb7ee951dfe393fe7aacf76b9a3b4e93a684d2162ab35594fa4053cc82a4d7d7582bf397718012c9adcf839b8cd8f57c6c42901ea9effe33c752da4a45
   languageName: node
   linkType: hard
 
