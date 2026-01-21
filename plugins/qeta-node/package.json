@@ -61,6 +61,6 @@
     "@backstage/plugin-permission-common": "backstage:^",
     "@backstage/plugin-permission-node": "backstage:^",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",
-    "zod": "^3.22.4"
+    "zod": "^3.25.1"
   }
 }
