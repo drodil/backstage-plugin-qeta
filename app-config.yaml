@@ -1,6 +1,10 @@
 app:
   title: Q&A Dev App
   baseUrl: http://localhost:3000
+  extensions:
+    - entity-content:qeta/entity-posts-content:
+        config:
+          relations: ['partOf']
 
 backend:
   baseUrl: http://localhost:7007

@@ -1,5 +1,14 @@
 # Contains entities used for local development
 apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: test-system
+  description: Test system
+spec:
+  lifecycle: experimental
+  owner: user:development/guest
+---
+apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: test-component
@@ -8,6 +17,7 @@ spec:
   type: repository
   lifecycle: experimental
   owner: user:development/guest
+  system: system:default/test-system
 ---
 apiVersion: backstage.io/v1alpha1
 kind: User
@@ -89,7 +99,7 @@ spec:
   owner: user:development/guest
   type: website
   lifecycle: experimental
-
+  system: system:default/test-system
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component

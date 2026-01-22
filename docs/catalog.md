@@ -3,26 +3,36 @@
 You can integrate list of questions ans question post form to the catalog page. Create a new component to
 packages/app/src/components/catalog/EntityPage/content/QetaContent.tsx:
 
-```ts
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { Container } from '@material-ui/core';
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import React from 'react';
-import { PostsContainer } from '@drodil/backstage-plugin-qeta-react';
+## New frontend system
+
+For new frontend system, the Q&A tab is automatically added to the entity page.
+
+You can configure the content with following parameters in app-config.yaml:
+
+```yaml
+app:
+  extensions:
+    - entity-content:qeta/entity-posts-content:
+        config:
+          showFilters: false
+          showTitle: true
+          showAskButton: true
+          showWriteButton: true
+          showLinkButton: true
+          showNoQuestionsBtn: true
+          initialPageSize: 50
+          type: question # if you just want to show questions
+          view: list # grid | list
+          relations: ['partOf'] # Show also posts from entities related with these relations in the entity page
+```
+
+## Old frontend system
+
+```tsx
+import { EntityPostsContent } from '@drodil/backstage-plugin-qeta';
 
 export const QetaContent = () => {
-  const { entity } = useEntity();
-
-  return (
-    <Container>
-      <PostsContainer
-        entity={stringifyEntityRef(entity)}
-        showTitle={true}
-        showAskButton={true}
-        type="question" // Can be 'question' or 'article' or none
-      />
-    </Container>
-  );
+  return <EntityPostsContent view="list" relations={['partOf']} />;
 };
 ```
 
@@ -32,31 +42,6 @@ This can then be added to the specific component pages as a new tab, for example
 <EntityLayout.Route path="/qeta" title="Q&A">
   <QetaContent />
 </EntityLayout.Route>
-```
-
-You can also render the posts in a grid:
-
-```ts
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { Container } from '@material-ui/core';
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import React from 'react';
-import { PostsGrid } from '@drodil/backstage-plugin-qeta-react';
-
-export const QetaContent = () => {
-  const { entity } = useEntity();
-
-  return (
-    <Container>
-      <PostsGrid
-        entity={stringifyEntityRef(entity)}
-        showTitle={true}
-        showAskButton={true}
-        type="question" // Can be 'question' or 'article' or none
-      />
-    </Container>
-  );
-};
 ```
 
 ## Catalog module

@@ -164,6 +164,7 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
       initialPageSize: z => z.number().optional(),
       type: z => z.enum(['question', 'article', 'link']).optional(),
       view: z => z.enum(['list', 'grid']).optional(),
+      relations: z => z.array(z.string()).optional(),
     },
   },
   inputs: {

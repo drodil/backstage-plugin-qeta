@@ -22,6 +22,7 @@ import { NoPostsCard } from './NoPostsCard';
 export type PostsContainerProps = {
   type?: PostType;
   tags?: string[];
+  tagsRelation?: 'and' | 'or';
   author?: string;
   showFilters?: boolean;
   showTitle?: boolean;
@@ -34,6 +35,8 @@ export type PostsContainerProps = {
   collectionId?: number;
   initialPageSize?: number;
   entity?: string;
+  entities?: string[];
+  entitiesRelation?: 'and' | 'or';
   filterPanelProps?: CommonFilterPanelProps;
   showTypeLabel?: boolean;
   allowRanking?: boolean;
@@ -57,8 +60,11 @@ export const PostsContainer = (props: PostsContainerProps) => {
   const {
     type,
     tags,
+    tagsRelation,
     author,
     entity,
+    entities,
+    entitiesRelation,
     showFilters,
     showTitle,
     title,
@@ -157,7 +163,10 @@ export const PostsContainer = (props: PostsContainerProps) => {
           orderBy: orderBy ?? 'created',
           type: type,
           tags: tags,
+          tagsRelation: tagsRelation,
           entity: entity,
+          entities: entities,
+          entitiesRelation: entitiesRelation,
           author: author,
           noAnswers: 'false',
           noVotes: 'false',
@@ -185,7 +194,11 @@ export const PostsContainer = (props: PostsContainerProps) => {
               ...(getFiltersWithDateRange(otherFilters) as any),
               type: type,
               tags: tags ?? filters.tags,
-              entities: entity ? [entity] : filters.entities,
+              entities: entity
+                ? [entity, ...(filters.entities ?? [])]
+                : filters.entities,
+              entitiesRelation,
+              tagsRelation,
               author: author ?? filters.author,
               favorite: favorite,
               collectionId: collectionId,
