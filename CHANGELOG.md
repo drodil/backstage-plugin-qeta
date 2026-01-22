@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.56.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.8...v3.56.0) (2026-01-22)
+
+
+### Features
+
+* allow showing related entities content in entity page ([53ff8ae](https://github.com/drodil/backstage-plugin-qeta/commit/53ff8aefbdda3d75a8417586a50b48ba1232ed8b))
+
 ### [3.55.8](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.7...v3.55.8) (2026-01-21)
 
 ### [3.55.7](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.6...v3.55.7) (2026-01-19)
