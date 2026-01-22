@@ -80,7 +80,7 @@
     "file-type": "16.5.4",
     "hpagent": "^1.2.0",
     "knex": "^3.0.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "mime-types": "^3.0.1",
     "multiparty": "^4.2.3",
     "sanitize-html": "^2.13.0",
