@@ -132,3 +132,70 @@ Badge levels determine the visual styling:
 - `diamond` - Diamond/cyan gradient
 
 See `BadgeChip.tsx` in `@drodil/backstage-plugin-qeta-react` for available icon names.
+
+## AI Handler Extension
+
+For details and the OpenAI reference implementation, see [AI Integration Documentation](ai.md).
+
+## Tag Database Extension
+
+You can provide custom tag descriptions by implementing the `TagDatabase` interface. This allows you to define custom tags with descriptions that are integrated into the plugin.
+
+### Creating a Custom Tag Database
+
+```typescript
+import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
+
+export class CustomTagDatabase implements TagDatabase {
+  /**
+   * Get custom tag descriptions.
+   * The format is { 'tag name': 'tag description' }.
+   */
+  async getTags(): Promise<Record<string, string>> {
+    return {
+      kubernetes: 'Questions about Kubernetes orchestration',
+      'ci-cd': 'Continuous Integration and Continuous Deployment topics',
+      security: 'Security-related questions and best practices',
+    };
+  }
+}
+```
+
+### Registering the Tag Database
+
+Register your tag database using the `qetaTagDatabaseExtensionPoint`:
+
+```typescript
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { qetaTagDatabaseExtensionPoint } from '@drodil/backstage-plugin-qeta-node';
+import { CustomTagDatabase } from './CustomTagDatabase';
+
+export const qetaCustomTagsModule = createBackendModule({
+  pluginId: 'qeta',
+  moduleId: 'custom-tags',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        tags: qetaTagDatabaseExtensionPoint,
+      },
+      async init({ tags }) {
+        tags.setTagDatabase(new CustomTagDatabase());
+      },
+    });
+  },
+});
+```
+
+Then add the module to your backend in `packages/backend/src/index.ts`:
+
+```typescript
+import { qetaCustomTagsModule } from './modules/qetaCustomTags';
+
+backend.add(qetaCustomTagsModule);
+```
+
+## Notification Receivers Extension
+
+You can customize who receives notifications by implementing the `NotificationReceiversHandler` interface. This allows you to control notification routing based on your organization's requirements.
+
+For more details, see [Notifications Documentation](notifications.md).

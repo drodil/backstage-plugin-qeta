@@ -59,3 +59,143 @@ instructions from the Backstage repository:
 At the moment, it's not possible to configure the notifications in the Backstage instance. There
 is however a PR open to introduce user specific notifications in the future. See the PR here:
 https://github.com/backstage/backstage/pull/23716
+
+## Customizing Notification Recipients
+
+You can customize who receives notifications by implementing the `NotificationReceiversHandler` interface. This allows you to control notification routing based on your organization's requirements.
+
+### Creating a Custom Notification Receivers Handler
+
+```typescript
+import { NotificationReceiversHandler } from '@drodil/backstage-plugin-qeta-node';
+import { Post, Answer, Collection } from '@drodil/backstage-plugin-qeta-common';
+
+export class CustomNotificationReceiversHandler
+  implements NotificationReceiversHandler
+{
+  /**
+   * Called when a new post (question or article) is created
+   * Return array of user/group entity refs who should receive notifications
+   */
+  async onNewPost(post: Post): Promise<string[]> {
+    const recipients: string[] = [];
+    // Add custom logic, e.g., notify all team leads
+    if (post.tags?.includes('critical')) {
+      recipients.push('user:default/team-lead');
+    }
+    return recipients;
+  }
+
+  /**
+   * Called when a post receives a comment
+   */
+  async onNewPostComment(post: Post): Promise<string[]> {
+    return [];
+  }
+
+  /**
+   * Called when a post is deleted
+   */
+  async onPostDelete(post: Post): Promise<string[]> {
+    return [];
+  }
+
+  /**
+   * Called when a collection is deleted
+   */
+  async onCollectionDelete(collection: Collection): Promise<string[]> {
+    return [];
+  }
+
+  /**
+   * Called when an answer is deleted
+   */
+  async onAnswerDelete(post: Post, answer: Answer): Promise<string[]> {
+    return [];
+  }
+
+  /**
+   * Called when a post is edited
+   */
+  async onPostEdit(post: Post): Promise<string[]> {
+    return [];
+  }
+
+  /**
+   * Called when a new answer is created
+   */
+  async onNewAnswer(post: Post, answer: Answer): Promise<string[]> {
+    return [];
+  }
+
+  /**
+   * Called when an answer receives a comment
+   */
+  async onAnswerComment(post: Post, answer: Answer): Promise<string[]> {
+    return [];
+  }
+
+  /**
+   * Called when an answer is marked as correct
+   */
+  async onCorrectAnswer(post: Post, answer: Answer): Promise<string[]> {
+    return [];
+  }
+
+  /**
+   * Called when a user is mentioned in a post or answer
+   */
+  async onMention(post: Post | Answer): Promise<string[]> {
+    return [];
+  }
+
+  /**
+   * Called when a new collection is created
+   */
+  async onNewCollection(collection: Collection): Promise<string[]> {
+    return [];
+  }
+
+  /**
+   * Called when a new post is added to a collection
+   */
+  async onNewPostToCollection(collection: Collection): Promise<string[]> {
+    return [];
+  }
+}
+```
+
+### Registering the Handler
+
+Register your notification receivers handler using the `qetaNotificationReceiversExtensionPoint`:
+
+```typescript
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { qetaNotificationReceiversExtensionPoint } from '@drodil/backstage-plugin-qeta-node';
+import { CustomNotificationReceiversHandler } from './CustomNotificationReceiversHandler';
+
+export const qetaCustomNotificationsModule = createBackendModule({
+  pluginId: 'qeta',
+  moduleId: 'custom-notifications',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        notifications: qetaNotificationReceiversExtensionPoint,
+      },
+      async init({ notifications }) {
+        notifications.setHandler(new CustomNotificationReceiversHandler());
+      },
+    });
+  },
+});
+```
+
+Then add the module to your backend in `packages/backend/src/index.ts`:
+
+```typescript
+import { qetaCustomNotificationsModule } from './modules/qetaCustomNotifications';
+
+backend.add(qetaCustomNotificationsModule);
+```
+
+**Note:** The notification recipients returned by your custom handler are **additional** recipients. The plugin will still send notifications to the default recipients (post authors, entity owners, tag followers, etc.) based on the notification type. Your handler extends this list with custom recipients based on your business logic.
