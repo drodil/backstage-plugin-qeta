@@ -289,6 +289,8 @@ export const createMockQetaStore = (): jest.Mocked<QetaStore> => {
     deleteAnswerVote: jest.fn(),
     getComment: jest.fn(),
     getUsersForCollection: jest.fn(),
+    syncPostToCollections: jest.fn(),
+    syncCollectionToPosts: jest.fn(),
   } as unknown as jest.Mocked<QetaStore>;
 };
 
@@ -378,6 +380,8 @@ export const setupTestApp = async (
   qetaStore.deletePost.mockResolvedValue(true);
   qetaStore.getMostUpvotedPosts.mockResolvedValue(mostUpvotedQuestions);
   qetaStore.getMostUpvotedAnswers.mockResolvedValue(mostUpvotedAnswers);
+  qetaStore.syncPostToCollections.mockResolvedValue([]);
+  qetaStore.syncCollectionToPosts.mockResolvedValue([]);
 
   const app = await buildApp(qetaStore, permissionEvaluator, qetaConfig, cache);
 

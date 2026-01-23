@@ -163,6 +163,9 @@ export class CollectionsStore extends BaseStore {
       this.addCollectionUsers(collections[0].id, users),
     ]);
 
+    // Automatically sync posts to this collection based on tags, entities, and users
+    await this.syncCollectionToPosts(collections[0].id);
+
     return (
       await this.mapCollectionEntities([collections[0]], user_ref, opts)
     )[0];
