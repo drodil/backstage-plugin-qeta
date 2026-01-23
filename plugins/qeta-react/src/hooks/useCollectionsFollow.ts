@@ -1,61 +1,34 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../api';
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
-
-let followedCollections: Collection[] | undefined = undefined;
+import { useFollow } from './useFollow';
 
 export const useCollectionsFollow = () => {
-  const [collections, setCollections] = useState<Collection[]>(
-    followedCollections ?? [],
-  );
-  const [loading, setLoading] = useState(followedCollections === undefined);
   const qetaApi = useApi(qetaApiRef);
 
-  useEffect(() => {
-    if (followedCollections === undefined) {
-      qetaApi.getFollowedCollections().then(res => {
-        followedCollections = res.collections;
-        setCollections(followedCollections);
-        setLoading(false);
-      });
-    } else {
-      setCollections(followedCollections);
-    }
-  }, [qetaApi]);
+  const { items, follow, unfollow, isFollowing, loading } =
+    useFollow<Collection>('collections', {
+      fetchFollowed: useCallback(
+        () => qetaApi.getFollowedCollections().then(res => res.collections),
+        [qetaApi],
+      ),
+      followItem: useCallback(
+        (collection: Collection) => qetaApi.followCollection(collection.id),
+        [qetaApi],
+      ),
+      unfollowItem: useCallback(
+        (collection: Collection) => qetaApi.unfollowCollection(collection.id),
+        [qetaApi],
+      ),
+      isEqual: (a, b) => a.id === b.id,
+    });
 
-  const followCollection = useCallback(
-    (collection: Collection) => {
-      qetaApi.followCollection(collection.id).then(() => {
-        setCollections(prev => [...prev, collection]);
-        followedCollections?.push(collection);
-      });
-    },
-    [qetaApi],
-  );
-
-  const unfollowCollection = useCallback(
-    (collection: Collection) => {
-      qetaApi.unfollowCollection(collection.id).then(() => {
-        setCollections(prev => prev.filter(t => t.id !== collection.id));
-        followedCollections = followedCollections?.filter(
-          t => t.id !== collection.id,
-        );
-      });
-    },
-    [qetaApi],
-  );
-
-  const isFollowingCollection = useCallback(
-    (collection: Collection) =>
-      Boolean(collections.find(t => t.id === collection.id)),
-    [collections],
-  );
   return {
-    collections,
-    followCollection,
-    unfollowCollection,
-    isFollowingCollection,
+    collections: items,
+    followCollection: follow,
+    unfollowCollection: unfollow,
+    isFollowingCollection: isFollowing,
     loading,
   };
 };

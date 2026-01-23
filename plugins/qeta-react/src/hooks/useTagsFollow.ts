@@ -1,55 +1,35 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../api';
-
-let followedTags: string[] | undefined = undefined;
+import { useFollow } from './useFollow';
 
 export const useTagsFollow = () => {
-  const [tags, setTags] = useState<string[]>(followedTags ?? []);
-  const [loading, setLoading] = useState(followedTags === undefined);
   const qetaApi = useApi(qetaApiRef);
 
-  useEffect(() => {
-    if (followedTags === undefined) {
-      qetaApi.getFollowedTags().then(res => {
-        followedTags = res.tags;
-        setTags(res.tags);
-        setLoading(false);
-      });
-    } else {
-      setTags(followedTags);
-    }
-  }, [qetaApi]);
-
-  const followTag = useCallback(
-    (tag: string) => {
-      qetaApi.followTag(tag).then(() => {
-        setTags(prev => [...prev, tag]);
-        followedTags?.push(tag);
-      });
+  const { items, follow, unfollow, isFollowing, loading } = useFollow<string>(
+    'tags',
+    {
+      fetchFollowed: useCallback(
+        () => qetaApi.getFollowedTags().then(res => res.tags),
+        [qetaApi],
+      ),
+      followItem: useCallback(
+        (tag: string) => qetaApi.followTag(tag),
+        [qetaApi],
+      ),
+      unfollowItem: useCallback(
+        (tag: string) => qetaApi.unfollowTag(tag),
+        [qetaApi],
+      ),
+      isEqual: (a, b) => a === b,
     },
-    [qetaApi],
   );
 
-  const unfollowTag = useCallback(
-    (tag: string) => {
-      qetaApi.unfollowTag(tag).then(() => {
-        setTags(prev => prev.filter(t => t !== tag));
-        followedTags = followedTags?.filter(t => t !== tag);
-      });
-    },
-    [qetaApi],
-  );
-
-  const isFollowingTag = useCallback(
-    (tag: string) => tags.includes(tag),
-    [tags],
-  );
   return {
-    tags,
-    followTag,
-    unfollowTag,
-    isFollowingTag,
+    tags: items,
+    followTag: follow,
+    unfollowTag: unfollow,
+    isFollowingTag: isFollowing,
     loading,
   };
 };

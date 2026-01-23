@@ -1,49 +1,35 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../api';
-
-let followedEntities: string[] | undefined = undefined;
+import { useFollow } from './useFollow';
 
 export const useEntityFollow = () => {
-  const [entities, setEntities] = useState<string[]>(followedEntities ?? []);
-  const [loading, setLoading] = useState(followedEntities === undefined);
   const qetaApi = useApi(qetaApiRef);
 
-  useEffect(() => {
-    if (followedEntities === undefined) {
-      qetaApi.getFollowedEntities().then(res => {
-        followedEntities = res.entityRefs;
-        setEntities(res.entityRefs);
-        setLoading(false);
-      });
-    } else {
-      setEntities(followedEntities);
-    }
-  }, [qetaApi]);
-
-  const followEntity = useCallback(
-    (entityRef: string) => {
-      qetaApi.followEntity(entityRef).then(() => {
-        setEntities(prev => [...prev, entityRef]);
-        followedEntities?.push(entityRef);
-      });
+  const { items, follow, unfollow, isFollowing, loading } = useFollow<string>(
+    'entities',
+    {
+      fetchFollowed: useCallback(
+        () => qetaApi.getFollowedEntities().then(res => res.entityRefs),
+        [qetaApi],
+      ),
+      followItem: useCallback(
+        (entityRef: string) => qetaApi.followEntity(entityRef),
+        [qetaApi],
+      ),
+      unfollowItem: useCallback(
+        (entityRef: string) => qetaApi.unfollowEntity(entityRef),
+        [qetaApi],
+      ),
+      isEqual: (a, b) => a === b,
     },
-    [qetaApi],
   );
 
-  const unfollowEntity = useCallback(
-    (entityRef: string) => {
-      qetaApi.unfollowEntity(entityRef).then(() => {
-        setEntities(prev => prev.filter(t => t !== entityRef));
-        followedEntities = followedEntities?.filter(t => t !== entityRef);
-      });
-    },
-    [qetaApi],
-  );
-
-  const isFollowingEntity = useCallback(
-    (entityRef: string) => entities.includes(entityRef),
-    [entities],
-  );
-  return { entities, followEntity, unfollowEntity, isFollowingEntity, loading };
+  return {
+    entities: items,
+    followEntity: follow,
+    unfollowEntity: unfollow,
+    isFollowingEntity: isFollowing,
+    loading,
+  };
 };

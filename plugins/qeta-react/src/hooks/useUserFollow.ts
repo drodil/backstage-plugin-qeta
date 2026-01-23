@@ -1,55 +1,35 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../api';
-
-let followedUsers: string[] | undefined = undefined;
+import { useFollow } from './useFollow';
 
 export const useUserFollow = () => {
-  const [users, setUsers] = useState<string[]>(followedUsers ?? []);
-  const [loading, setLoading] = useState(followedUsers === undefined);
   const qetaApi = useApi(qetaApiRef);
 
-  useEffect(() => {
-    if (followedUsers === undefined) {
-      qetaApi.getFollowedUsers().then(res => {
-        followedUsers = res.followedUserRefs;
-        setUsers(res.followedUserRefs);
-        setLoading(false);
-      });
-    } else {
-      setUsers(followedUsers);
-    }
-  }, [qetaApi]);
-
-  const followUser = useCallback(
-    (user: string) => {
-      qetaApi.followUser(user).then(() => {
-        setUsers(prev => [...prev, user]);
-        followedUsers?.push(user);
-      });
+  const { items, follow, unfollow, isFollowing, loading } = useFollow<string>(
+    'users',
+    {
+      fetchFollowed: useCallback(
+        () => qetaApi.getFollowedUsers().then(res => res.followedUserRefs),
+        [qetaApi],
+      ),
+      followItem: useCallback(
+        (user: string) => qetaApi.followUser(user),
+        [qetaApi],
+      ),
+      unfollowItem: useCallback(
+        (user: string) => qetaApi.unfollowUser(user),
+        [qetaApi],
+      ),
+      isEqual: (a, b) => a === b,
     },
-    [qetaApi],
   );
 
-  const unfollowUser = useCallback(
-    (user: string) => {
-      qetaApi.unfollowUser(user).then(() => {
-        setUsers(prev => prev.filter(t => t !== user));
-        followedUsers = followedUsers?.filter(t => t !== user);
-      });
-    },
-    [qetaApi],
-  );
-
-  const isFollowingUser = useCallback(
-    (user: string) => users.includes(user),
-    [users],
-  );
   return {
-    users,
-    followUser,
-    unfollowUser,
-    isFollowingUser,
+    users: items,
+    followUser: follow,
+    unfollowUser: unfollow,
+    isFollowingUser: isFollowing,
     loading,
   };
 };

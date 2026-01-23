@@ -1,6 +1,7 @@
 export * from './useQetaApi';
 export * from './useVoting';
 export * from './useListItemStyles';
+export * from './useFollow';
 export * from './useTagsFollow';
 export * from './useEntityFollow';
 export * from './useEntityAuthor';
