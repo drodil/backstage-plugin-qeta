@@ -146,6 +146,17 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
+    const etag = `"${uuid}-${attachment.created.getTime()}"`;
+    const lastModified = attachment.created.toUTCString();
+
+    const ifNoneMatch = request.headers['if-none-match'];
+    const ifModifiedSince = request.headers['if-modified-since'];
+
+    if (ifNoneMatch === etag || ifModifiedSince === lastModified) {
+      response.status(304).end();
+      return;
+    }
+
     const engine = getStorageEngine(attachment.locationType, options);
     const imageBuffer = await engine.getAttachmentBuffer(attachment);
 
@@ -163,9 +174,10 @@ export const attachmentsRoutes = (router: Router, options: RouteOptions) => {
 
     response.writeHead(200, {
       'Content-Type': attachment.mimeType,
-      'Content-Length': imageBuffer ? imageBuffer.byteLength : '',
-      'Cache-Control': 'public, max-age=31536000',
-      'Last-Modified': attachment.created.toUTCString(),
+      'Content-Length': imageBuffer.byteLength,
+      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Last-Modified': lastModified,
+      ETag: etag,
     });
 
     response.end(imageBuffer);
