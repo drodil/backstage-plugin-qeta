@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.56.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.56.0...v3.56.1) (2026-01-23)
+
+
+### Bug Fixes
+
+* batch url metadata requests ([196b64e](https://github.com/drodil/backstage-plugin-qeta/commit/196b64e764eaa8a3e7dfb031c98830709fa1c252))
+* multiple requests to followed entities endpoint ([508ea19](https://github.com/drodil/backstage-plugin-qeta/commit/508ea19a592684b3622e3caab035ed48e7a73b9a))
+* tests for async collection handling ([f1af759](https://github.com/drodil/backstage-plugin-qeta/commit/f1af7592f4b82d24c4148e3423297179faf481f3))
+* unnecessary posts loading in collections page ([e5b63f2](https://github.com/drodil/backstage-plugin-qeta/commit/e5b63f25d54b68297af63d1f8d54b6da7eeb267f))
+
 ## [3.56.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.55.8...v3.56.0) (2026-01-22)
 
 
