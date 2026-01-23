@@ -60,6 +60,36 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   ) ?? { months: 6 };
   const reviewThresholdMs = durationToMilliseconds(postsOlderThan);
 
+  const notifyAutomaticCollectionAdditions = async (
+    postId: number,
+    username: string,
+  ) => {
+    const affectedCollectionIds = await database.syncPostToCollections(postId);
+    if (affectedCollectionIds.length === 0) {
+      return;
+    }
+
+    const [{ collections }, followersByCollection] = await Promise.all([
+      database.getCollections(
+        username,
+        { ids: affectedCollectionIds, limit: affectedCollectionIds.length },
+        {},
+      ),
+      database.getUsersForCollections(affectedCollectionIds),
+    ]);
+
+    await Promise.all(
+      collections.map(async collection => {
+        const followers = followersByCollection.get(collection.id) || [];
+        await notificationMgr.onNewPostToCollection(
+          username,
+          collection,
+          followers,
+        );
+      }),
+    );
+  };
+
   const getPostFilters = async (request: Request, opts: PostOptions) => {
     return await Promise.all([
       permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
@@ -755,6 +785,8 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       if (mentions.length > 0) {
         await notificationMgr.onMention(username, post, mentions, sent);
       }
+
+      await notifyAutomaticCollectionAdditions(post.id, username);
     });
 
     events?.publish({
@@ -886,6 +918,8 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       if (newMentions.length > 0) {
         await notificationMgr.onMention(username, post, newMentions, sent);
       }
+
+      await notifyAutomaticCollectionAdditions(post.id, username);
     });
 
     events?.publish({

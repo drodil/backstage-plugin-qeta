@@ -26,6 +26,30 @@ addFormats(ajv);
 
 export const collectionsRoutes = (router: Router, options: RouteOptions) => {
   const { database, events, notificationMgr, auditor, permissionMgr } = options;
+
+  const notifyAutomaticPostAdditions = async (
+    collectionId: number,
+    username: string,
+  ) => {
+    const affectedPostIds = await database.syncCollectionToPosts(collectionId);
+    if (affectedPostIds.length === 0) {
+      return;
+    }
+
+    const [collection, followers] = await Promise.all([
+      database.getCollection(username, collectionId),
+      database.getUsersForCollection(collectionId),
+    ]);
+
+    if (collection) {
+      await notificationMgr.onNewPostToCollection(
+        username,
+        collection,
+        followers,
+      );
+    }
+  };
+
   // GET /collections
   router.get(`/collections`, async (request, response) => {
     // Validation
@@ -181,6 +205,8 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
         collection,
         followingUsers.flat(),
       );
+
+      await notifyAutomaticPostAdditions(collection.id, username);
     });
 
     events?.publish({
@@ -277,6 +303,10 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       response.sendStatus(401);
       return;
     }
+
+    wrapAsync(async () => {
+      await notifyAutomaticPostAdditions(collection.id, username);
+    });
 
     events?.publish({
       topic: 'qeta',

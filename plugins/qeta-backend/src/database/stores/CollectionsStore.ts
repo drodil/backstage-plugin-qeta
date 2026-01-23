@@ -1,7 +1,7 @@
 import {
-  filterTags,
   Collection,
   CollectionsQuery,
+  filterTags,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   CollectionOptions,
@@ -61,6 +61,10 @@ export class CollectionsStore extends BaseStore {
 
     if (options.owner) {
       query.where('collections.owner', '=', options.owner);
+    }
+
+    if (options.ids && options.ids.length > 0) {
+      query.whereIn('collections.id', options.ids);
     }
 
     const totalQuery = query.clone();
@@ -159,8 +163,6 @@ export class CollectionsStore extends BaseStore {
       this.addCollectionUsers(collections[0].id, users),
     ]);
 
-    await this.syncCollectionToPosts(collections[0].id);
-
     return (
       await this.mapCollectionEntities([collections[0]], user_ref, opts)
     )[0];
@@ -213,8 +215,6 @@ export class CollectionsStore extends BaseStore {
       this.addCollectionEntities(id, entities, true),
       this.addCollectionUsers(id, users, true),
     ]);
-
-    await this.syncCollectionToPosts(id);
 
     return (await this.mapCollectionEntities([rows[0]], user_ref, opts))[0];
   }
@@ -356,7 +356,28 @@ export class CollectionsStore extends BaseStore {
     return users.map(user => user.userRef);
   }
 
-  async syncCollectionToPosts(collectionId: number) {
+  async getUsersForCollections(
+    collectionIds: number[],
+  ): Promise<Map<number, string[]>> {
+    if (collectionIds.length === 0) {
+      return new Map();
+    }
+
+    const users = await this.db('user_collections')
+      .whereIn('collectionId', collectionIds)
+      .select('collectionId', 'userRef');
+
+    const usersByCollection = new Map<number, string[]>();
+    for (const user of users) {
+      const existing = usersByCollection.get(user.collectionId) || [];
+      existing.push(user.userRef);
+      usersByCollection.set(user.collectionId, existing);
+    }
+
+    return usersByCollection;
+  }
+
+  async syncCollectionToPosts(collectionId: number): Promise<number[]> {
     const tags = await this.getCollectionTags([collectionId]);
     const entities = await this.getCollectionEntities([collectionId]);
     const users = await this.getCollectionUsers([collectionId]);
@@ -374,8 +395,15 @@ export class CollectionsStore extends BaseStore {
         .where('collectionId', collectionId)
         .where('automatic', true)
         .delete();
-      return;
+      return [];
     }
+
+    // Get existing automatic posts before adding new ones
+    const existingPosts = await this.db('collection_posts')
+      .where('collectionId', collectionId)
+      .where('automatic', true)
+      .select('postId');
+    const existingPostIds = new Set(existingPosts.map(p => p.postId));
 
     const posts = await this.db('posts')
       .leftJoin('post_tags', 'posts.id', 'post_tags.postId')
@@ -397,20 +425,21 @@ export class CollectionsStore extends BaseStore {
       .distinct();
 
     const postIds = posts.map(p => p.id);
+
+    const newPostIds = postIds.filter(postId => !existingPostIds.has(postId));
+
     if (postIds.length > 0) {
-      await Promise.all(
-        postIds.map(async postId => {
-          await this.db
-            .insert({
-              collectionId,
-              postId,
-              automatic: true,
-            })
-            .into('collection_posts')
-            .onConflict(['collectionId', 'postId'])
-            .ignore();
-        }),
-      );
+      await this.db
+        .insert(
+          postIds.map(postId => ({
+            collectionId,
+            postId,
+            automatic: true,
+          })),
+        )
+        .into('collection_posts')
+        .onConflict(['collectionId', 'postId'])
+        .ignore();
     }
 
     const deleteQuery = this.db('collection_posts')
@@ -429,18 +458,29 @@ export class CollectionsStore extends BaseStore {
     await this.db('collections')
       .where('id', collectionId)
       .update('postsCount', this.mapToInteger((count as any)?.CNT));
+
+    return newPostIds;
   }
 
-  async syncPostToCollections(postId: number) {
+  async syncPostToCollections(postId: number): Promise<number[]> {
     const post = await this.postsStore.getPost('', postId);
 
     if (!post) {
-      return;
+      return [];
     }
 
     const postTags = post.tags || [];
     const postEntities = post.entities || [];
     const postAuthor = post.author;
+
+    // Get existing automatic collections before adding new ones
+    const existingCollections = await this.db('collection_posts')
+      .where('postId', postId)
+      .where('automatic', true)
+      .select('collectionId');
+    const existingCollectionIds = new Set(
+      existingCollections.map(c => c.collectionId),
+    );
 
     const collections = await this.db('collections')
       .leftJoin(
@@ -476,20 +516,22 @@ export class CollectionsStore extends BaseStore {
 
     const collectionIds = collections.map(c => c.id);
 
+    const newCollectionIds = collectionIds.filter(
+      collectionId => !existingCollectionIds.has(collectionId),
+    );
+
     if (collectionIds.length > 0) {
-      await Promise.all(
-        collectionIds.map(async collectionId => {
-          await this.db
-            .insert({
-              collectionId,
-              postId,
-              automatic: true,
-            })
-            .into('collection_posts')
-            .onConflict(['collectionId', 'postId'])
-            .ignore();
-        }),
-      );
+      await this.db
+        .insert(
+          collectionIds.map(collectionId => ({
+            collectionId,
+            postId,
+            automatic: true,
+          })),
+        )
+        .into('collection_posts')
+        .onConflict(['collectionId', 'postId'])
+        .ignore();
     }
 
     const deleteQuery = this.db('collection_posts')
@@ -515,6 +557,8 @@ export class CollectionsStore extends BaseStore {
         }),
       );
     }
+
+    return newCollectionIds;
   }
 
   async followCollection(
@@ -554,6 +598,50 @@ export class CollectionsStore extends BaseStore {
     const result = new Map<number, number>();
     followers.forEach((f: any) => {
       result.set(f.collectionId, this.mapToInteger(f.count));
+    });
+    return result;
+  }
+
+  async getCollectionTags(ids: number[]): Promise<Map<number, string[]>> {
+    const rows = await this.db('collection_tags')
+      .leftJoin('tags', 'collection_tags.tagId', 'tags.id')
+      .whereIn('collection_tags.collectionId', ids)
+      .select('collection_tags.collectionId', 'tags.tag');
+
+    const result = new Map<number, string[]>();
+    rows.forEach(row => {
+      const tags = result.get(row.collectionId) || [];
+      tags.push(row.tag);
+      result.set(row.collectionId, tags);
+    });
+    return result;
+  }
+
+  async getCollectionEntities(ids: number[]): Promise<Map<number, string[]>> {
+    const rows = await this.db('collection_entities')
+      .leftJoin('entities', 'collection_entities.entityId', 'entities.id')
+      .whereIn('collection_entities.collectionId', ids)
+      .select('collection_entities.collectionId', 'entities.entity_ref');
+
+    const result = new Map<number, string[]>();
+    rows.forEach(row => {
+      const entities = result.get(row.collectionId) || [];
+      entities.push(row.entity_ref);
+      result.set(row.collectionId, entities);
+    });
+    return result;
+  }
+
+  async getCollectionUsers(ids: number[]): Promise<Map<number, string[]>> {
+    const rows = await this.db('collection_users')
+      .whereIn('collectionId', ids)
+      .select('collectionId', 'userRef');
+
+    const result = new Map<number, string[]>();
+    rows.forEach(row => {
+      const users = result.get(row.collectionId) || [];
+      users.push(row.userRef);
+      result.set(row.collectionId, users);
     });
     return result;
   }
@@ -668,50 +756,6 @@ export class CollectionsStore extends BaseStore {
         experts: expertsMap.get(val.id),
       };
     });
-  }
-
-  async getCollectionTags(ids: number[]): Promise<Map<number, string[]>> {
-    const rows = await this.db('collection_tags')
-      .leftJoin('tags', 'collection_tags.tagId', 'tags.id')
-      .whereIn('collection_tags.collectionId', ids)
-      .select('collection_tags.collectionId', 'tags.tag');
-
-    const result = new Map<number, string[]>();
-    rows.forEach(row => {
-      const tags = result.get(row.collectionId) || [];
-      tags.push(row.tag);
-      result.set(row.collectionId, tags);
-    });
-    return result;
-  }
-
-  async getCollectionEntities(ids: number[]): Promise<Map<number, string[]>> {
-    const rows = await this.db('collection_entities')
-      .leftJoin('entities', 'collection_entities.entityId', 'entities.id')
-      .whereIn('collection_entities.collectionId', ids)
-      .select('collection_entities.collectionId', 'entities.entity_ref');
-
-    const result = new Map<number, string[]>();
-    rows.forEach(row => {
-      const entities = result.get(row.collectionId) || [];
-      entities.push(row.entity_ref);
-      result.set(row.collectionId, entities);
-    });
-    return result;
-  }
-
-  async getCollectionUsers(ids: number[]): Promise<Map<number, string[]>> {
-    const rows = await this.db('collection_users')
-      .whereIn('collectionId', ids)
-      .select('collectionId', 'userRef');
-
-    const result = new Map<number, string[]>();
-    rows.forEach(row => {
-      const users = result.get(row.collectionId) || [];
-      users.push(row.userRef);
-      result.set(row.collectionId, users);
-    });
-    return result;
   }
 
   private getCollectionsBaseQuery() {

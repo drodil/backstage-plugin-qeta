@@ -22,38 +22,39 @@ import {
   Posts,
   QetaStore,
   Templates,
+  TimelineFilters,
   UserResponse,
   UsersResponse,
-  TimelineFilters,
 } from './QetaStore';
-import { Badge, UserBadge } from '@drodil/backstage-plugin-qeta-common';
 import {
   AIResponse,
   AnswersQuery,
   Attachment,
+  Badge,
   Collection,
   Comment as QetaComment,
   EntitiesQuery,
   EntityLinks,
   GlobalStat,
   Post,
+  PostsQuery,
   PostStatus,
   PostType,
-  PostsQuery,
   Statistic,
   StatisticsRequestParameters,
   TagResponse,
   TagsQuery,
   TagsResponse,
   Template,
+  TimelineOptions,
+  TimelineResponse,
+  UserBadge,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UsersQuery,
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
-  TimelineOptions,
-  TimelineResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -93,14 +94,6 @@ export class DatabaseQetaStore implements QetaStore {
     private readonly badgesStore: BadgesStore,
     private readonly helpersStore: HelpersStore,
   ) {}
-
-  async getTimeline(
-    user_ref: string,
-    options: TimelineOptions,
-    filters?: TimelineFilters,
-  ): Promise<TimelineResponse> {
-    return this.helpersStore.getTimeline(user_ref, options, filters);
-  }
 
   static async create({
     database,
@@ -149,7 +142,6 @@ export class DatabaseQetaStore implements QetaStore {
     const helpersStore = new HelpersStore(client);
 
     postsStore.setAnswersStore(answersStore);
-    postsStore.setCollectionsStore(collectionsStore);
 
     return new DatabaseQetaStore(
       postsStore,
@@ -165,6 +157,14 @@ export class DatabaseQetaStore implements QetaStore {
       badgesStore,
       helpersStore,
     );
+  }
+
+  async getTimeline(
+    user_ref: string,
+    options: TimelineOptions,
+    filters?: TimelineFilters,
+  ): Promise<TimelineResponse> {
+    return this.helpersStore.getTimeline(user_ref, options, filters);
   }
 
   async getPosts(
@@ -503,6 +503,12 @@ export class DatabaseQetaStore implements QetaStore {
 
   async getUsersForCollection(collectionId: number): Promise<string[]> {
     return this.collectionsStore.getUsersForCollection(collectionId);
+  }
+
+  async getUsersForCollections(
+    collectionIds: number[],
+  ): Promise<Map<number, string[]>> {
+    return this.collectionsStore.getUsersForCollections(collectionIds);
   }
 
   async followCollection(
@@ -913,5 +919,13 @@ export class DatabaseQetaStore implements QetaStore {
     opts?: CommentOptions & { postId?: number; answerId?: number },
   ): Promise<QetaComment | null> {
     return this.commentsStore.getComment(commentId, opts);
+  }
+
+  async syncPostToCollections(postId: number): Promise<number[]> {
+    return this.collectionsStore.syncPostToCollections(postId);
+  }
+
+  async syncCollectionToPosts(collectionId: number): Promise<number[]> {
+    return this.collectionsStore.syncCollectionToPosts(collectionId);
   }
 }

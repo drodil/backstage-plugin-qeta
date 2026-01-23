@@ -21,15 +21,15 @@ import {
   TagsQuery,
   TagsResponse,
   Template,
+  TimelineOptions,
+  TimelineResponse,
+  UserBadge,
   UserCollectionsResponse,
   UserEntitiesResponse,
   UsersQuery,
   UserStat,
-  UserBadge,
   UserTagsResponse,
   UserUsersResponse,
-  TimelineOptions,
-  TimelineResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -484,6 +484,9 @@ export interface QetaStore {
     options?: CollectionOptions,
   ): Promise<UserCollectionsResponse>;
   getUsersForCollection(collectionId: number): Promise<string[]>;
+  getUsersForCollections(
+    collectionIds: number[],
+  ): Promise<Map<number, string[]>>;
 
   followCollection(user_ref: string, collectionId: number): Promise<boolean>;
   unfollowCollection(user_ref: string, collectionId: number): Promise<boolean>;
@@ -590,6 +593,9 @@ export interface QetaStore {
     postId: number,
     options?: CollectionOptions,
   ): Promise<MaybeCollection>;
+
+  syncPostToCollections(postId: number): Promise<number[]>;
+  syncCollectionToPosts(collectionId: number): Promise<number[]>;
 
   getTemplates(): Promise<Templates>;
   getTemplate(id: number): Promise<MaybeTemplate>;

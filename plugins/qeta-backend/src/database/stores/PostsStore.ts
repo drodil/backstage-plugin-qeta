@@ -14,7 +14,6 @@ import { QetaFilters } from '../../service/util';
 import { Knex } from 'knex';
 import { AnswersStore } from './AnswersStore';
 import { CommentsStore } from './CommentsStore';
-import { CollectionsStore } from './CollectionsStore';
 import { TagsStore } from './TagsStore';
 import { EntitiesStore } from './EntitiesStore';
 import { AttachmentsStore } from './AttachmentsStore';
@@ -65,7 +64,6 @@ export interface RawPostAIAnswer {
 
 export class PostsStore extends BaseStore {
   private answersStore?: AnswersStore;
-  private collectionsStore?: CollectionsStore;
 
   constructor(
     protected readonly db: Knex,
@@ -80,10 +78,6 @@ export class PostsStore extends BaseStore {
 
   setAnswersStore(answersStore: AnswersStore) {
     this.answersStore = answersStore;
-  }
-
-  setCollectionsStore(collectionsStore: CollectionsStore) {
-    this.collectionsStore = collectionsStore;
   }
 
   async getAIAnswer(postId: number): Promise<AIResponse | null> {
@@ -651,8 +645,6 @@ export class PostsStore extends BaseStore {
       headerImage,
     );
 
-    await this.collectionsStore?.syncPostToCollections(posts[0].id);
-
     return (await this.mapPostEntities([posts[0]], user_ref, opts))[0];
   }
 
@@ -728,8 +720,6 @@ export class PostsStore extends BaseStore {
       id,
       headerImage,
     );
-
-    await this.collectionsStore?.syncPostToCollections(id);
 
     return await this.getPost(user_ref, id, false, opts);
   }
