@@ -146,6 +146,8 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       filters,
       postFilters,
       tagFilters,
+      includePosts: opts.includePosts,
+      includeExperts: opts.includeExperts,
     });
 
     await mapAdditionalFields(request, collections.collections, options, {

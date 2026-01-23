@@ -39,6 +39,7 @@ export const CollectionsContainer = (props: {
             fromDate: filters.fromDate,
             toDate: filters.toDate,
             owner,
+            includePosts: false,
           })
           .then(res => ({ items: res.collections, total: res.total }));
       }}
