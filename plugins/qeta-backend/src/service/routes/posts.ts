@@ -20,6 +20,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import addFormats from 'ajv-formats';
 import {
+  BatchURLMetadataSchema,
   CommentSchema,
   DeleteMetadataSchema,
   PostQuerySchema,
@@ -1446,5 +1447,49 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     const metadata = await extractMetadata(url, options.logger);
     await cache?.set(cacheKey, metadata, { ttl: { weeks: 2 } });
     response.json(metadata);
+  });
+
+  // POST /url/batch
+  router.post(`/url/batch`, async (request, response) => {
+    const validateQuery = ajv.compile(BatchURLMetadataSchema);
+    if (!validateQuery(request.body)) {
+      response.status(400).send({ errors: validateQuery.errors, type: 'body' });
+      return;
+    }
+
+    const urls = request.body.urls;
+    const metadata: Record<string, any> = {};
+
+    // Process each URL
+    await Promise.all(
+      urls.map(async urlString => {
+        try {
+          const url = new URL(urlString);
+          if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+            metadata[urlString] = {};
+            return;
+          }
+          if (url.hostname === 'localhost') {
+            metadata[urlString] = {};
+            return;
+          }
+
+          const cacheKey = `url:metadata:${url.toString()}`;
+          const cached = await cache?.get(cacheKey);
+          if (cached) {
+            metadata[urlString] = cached;
+            return;
+          }
+
+          const urlMetadata = await extractMetadata(url, options.logger);
+          await cache?.set(cacheKey, urlMetadata, { ttl: { weeks: 2 } });
+          metadata[urlString] = urlMetadata;
+        } catch {
+          metadata[urlString] = {};
+        }
+      }),
+    );
+
+    response.json({ metadata });
   });
 };

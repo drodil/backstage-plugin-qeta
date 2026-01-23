@@ -523,6 +523,24 @@ export const URLMetadataSchema: JSONSchemaType<URLMetadataQuery> = {
   additionalProperties: false,
 };
 
+export interface BatchURLMetadataQuery {
+  urls: string[];
+}
+
+export const BatchURLMetadataSchema: JSONSchemaType<BatchURLMetadataQuery> = {
+  type: 'object',
+  properties: {
+    urls: {
+      type: 'array',
+      items: { type: 'string', minLength: 7 }, // http://
+      minItems: 1,
+      maxItems: 50, // Limit to prevent abuse
+    },
+  },
+  required: ['urls'],
+  additionalProperties: false,
+};
+
 export interface PostReviewBody {
   status: 'valid' | 'obsolete';
   comment?: string;

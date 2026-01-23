@@ -1,4 +1,7 @@
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { ErrorObject } from 'ajv';
+import { RequestOptions } from './api';
+import { Entity, EntityLink } from '@backstage/catalog-model';
 
 export interface TimelineOptions {
   limit?: number;
@@ -25,9 +28,6 @@ export interface TimelineResponse {
   items: TimelineItem[];
   total?: number;
 }
-import { ErrorObject } from 'ajv';
-import { RequestOptions } from './api';
-import { Entity, EntityLink } from '@backstage/catalog-model';
 
 export interface StatisticResponse {
   ranking: Statistic[];
@@ -583,6 +583,14 @@ export interface URLMetadataResponse {
   content?: string;
   image?: string;
   favicon?: string;
+}
+
+export interface BatchURLMetadataRequest {
+  urls: string[];
+}
+
+export interface BatchURLMetadataResponse {
+  metadata: Record<string, URLMetadataResponse>;
 }
 
 export interface EntityLinks {

@@ -7,6 +7,8 @@ import {
   AnswersResponse,
   AttachmentResponseBody,
   Badge,
+  BatchURLMetadataRequest,
+  BatchURLMetadataResponse,
   CollectionRequest,
   CollectionResponse,
   CollectionsResponse,
@@ -605,6 +607,10 @@ export interface QetaApi {
   ): Promise<EntitySuggestionsResponse>;
 
   fetchURLMetadata(request: URLMetadataRequest): Promise<URLMetadataResponse>;
+
+  fetchBatchURLMetadata(
+    request: BatchURLMetadataRequest,
+  ): Promise<BatchURLMetadataResponse>;
 
   getEntityLinks(options?: RequestOptions): Promise<EntityLinks[]>;
 

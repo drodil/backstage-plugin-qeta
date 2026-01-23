@@ -24,6 +24,8 @@ import {
   AnswersResponseBody,
   AttachmentResponseBody,
   Badge,
+  BatchURLMetadataRequest,
+  BatchURLMetadataResponse,
   CollectionRequest,
   CollectionResponse,
   CollectionResponseBody,
@@ -1576,6 +1578,20 @@ export class QetaClient implements QetaApi {
     });
 
     return (await response.json()) as URLMetadataResponse;
+  }
+
+  async fetchBatchURLMetadata(
+    request: BatchURLMetadataRequest,
+  ): Promise<BatchURLMetadataResponse> {
+    const response = await this.fetch('/url/batch', {
+      reqInit: {
+        method: 'POST',
+        body: JSON.stringify(request),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    });
+
+    return (await response.json()) as BatchURLMetadataResponse;
   }
 
   async getEntityLinks(options?: RequestOptions): Promise<EntityLinks[]> {

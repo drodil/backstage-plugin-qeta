@@ -8,7 +8,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import {
   Box,
@@ -26,7 +26,6 @@ import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { qetaApiRef } from '../../api';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import LinkIcon from '@material-ui/icons/Link';
 import StarIcon from '@material-ui/icons/Star';
@@ -37,6 +36,7 @@ import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
 import { FaviconItem } from '../FaviconItem';
 import { getPostDisplayDate } from '../../utils/utils';
 import { RankingButtons } from '../Buttons';
+import { useFavicon } from '../../hooks';
 
 export interface PostsGridItemProps {
   post: PostResponse;
@@ -196,9 +196,12 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
   const [correctAnswer, setCorrectAnswer] = useState(post.correctAnswer);
   const [answersCount, setAnswersCount] = useState(post.answersCount);
   const [commentsCount, setCommentsCount] = useState(post.commentsCount);
-  const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useStyles();
+
+  const favicon = useFavicon(
+    post.type === 'link' && !post.headerImage ? post.url : undefined,
+  );
 
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${post.id}`);
 
@@ -211,16 +214,6 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
       setCommentsCount(lastSignal.commentsCount);
     }
   }, [lastSignal]);
-
-  const [favicon, setFavicon] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (post.type === 'link' && !post.headerImage && post.url) {
-      qetaApi.fetchURLMetadata({ url: post.url }).then(res => {
-        if (res.favicon) setFavicon(res.favicon);
-      });
-    }
-  }, [post.type, post.headerImage, post.url, qetaApi]);
 
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);

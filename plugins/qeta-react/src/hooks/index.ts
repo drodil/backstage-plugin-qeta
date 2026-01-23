@@ -14,3 +14,4 @@ export * from './useCanReview';
 export * from './useGridPageSize';
 export * from './useQetaEntities';
 export * from './useUserSettings';
+export * from './useFavicon';

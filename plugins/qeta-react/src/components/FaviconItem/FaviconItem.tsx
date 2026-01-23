@@ -2,27 +2,16 @@ import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import { qetaApiRef } from '../../api.ts';
 import { useApi } from '@backstage/core-plugin-api';
 import LinkIcon from '@material-ui/icons/Link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useFavicon } from '../../hooks';
 
 export const FaviconItem = (props: { entity: PostResponse }) => {
   const { entity } = props;
   const { url } = entity;
   const qetaApi = useApi(qetaApiRef);
   const [error, setError] = useState(false);
-  const [favicon, setFavicon] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
-    if (!url) return;
-
-    qetaApi.fetchURLMetadata({ url }).then(response => {
-      if (response.favicon) {
-        setError(false);
-        setFavicon(response.favicon);
-      } else {
-        setError(true);
-      }
-    });
-  });
+  const favicon = useFavicon(url);
 
   return (
     <a
