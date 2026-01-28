@@ -7,7 +7,7 @@
     "backstage.io",
     "node"
   ],
-  "version": "3.56.1",
+  "version": "3.57.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "prepublishOnly": "yarn tsc && yarn build",
