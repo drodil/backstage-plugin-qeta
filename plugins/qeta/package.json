@@ -79,7 +79,7 @@
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "4.0.0-alpha.61",
     "dompurify": "^3.2.4",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "luxon": "^3.5.0",
     "react-use": "^17.4.0",
     "unified": "^11.0.5"

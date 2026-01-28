@@ -68,7 +68,7 @@
     "github-slugger": "^2.0.0",
     "i18next": "^23.16.2",
     "infinite-scroll-hook": "^1.0.2",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "numeral": "^2.0.6",
     "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.46.2",
