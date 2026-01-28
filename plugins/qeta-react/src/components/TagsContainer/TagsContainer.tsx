@@ -49,6 +49,7 @@ export const TagsContainer = (props: {
             searchQuery: filters.searchQuery,
             order: filters.order,
             orderBy: filters.orderBy,
+            checkAccess: true,
           })
           .then(res => ({ items: res.tags, total: res.total }));
       }}
