@@ -1,18 +1,13 @@
 import { useTagsFollow } from '../../hooks';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import {
-  Box,
-  ListItem,
-  ListItemText,
-  makeStyles,
-  Tooltip,
-} from '@material-ui/core';
+import { Box, ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import LocalOfferOutlined from '@material-ui/icons/LocalOfferOutlined';
 import { Link } from 'react-router-dom';
 import { tagRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { TagTooltip } from '../Tooltips';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -65,24 +60,30 @@ export const FollowedTagsList = () => {
         {tags.tags.map(tag => {
           const href = tagRoute({ tag: tag });
           return (
-            <ListItem
+            <TagTooltip
               key={tag}
-              dense
-              button
-              className={classes.listItem}
-              component={Link}
-              to={href}
+              tag={tag}
+              interactive={false}
+              enterDelay={400}
+              enterNextDelay={400}
+              placement="left"
             >
-              <Box className={classes.iconBox}>
-                <LocalOfferOutlined fontSize="small" />
-              </Box>
-              <Tooltip title={tag} arrow>
+              <ListItem
+                dense
+                button
+                className={classes.listItem}
+                component={Link}
+                to={href}
+              >
+                <Box className={classes.iconBox}>
+                  <LocalOfferOutlined fontSize="small" />
+                </Box>
                 <ListItemText
                   primary={`${tag}`}
                   classes={{ primary: classes.listItemText }}
                 />
-              </Tooltip>
-            </ListItem>
+              </ListItem>
+            </TagTooltip>
           );
         })}
       </RightList>

@@ -2,17 +2,12 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import {
-  Box,
-  ListItem,
-  ListItemText,
-  makeStyles,
-  Tooltip,
-} from '@material-ui/core';
+import { Box, ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import PlaylistPlayOutlined from '@material-ui/icons/PlaylistPlayOutlined';
 import { Link } from 'react-router-dom';
 import { collectionRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { CollectionTooltip } from '../Tooltips';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -65,24 +60,30 @@ export const FollowedCollectionsList = () => {
         {collections.collections.map(collection => {
           const href = collectionRoute({ id: collection.id.toString(10) });
           return (
-            <ListItem
+            <CollectionTooltip
               key={collection.id}
-              dense
-              button
-              className={classes.listItem}
-              component={Link}
-              to={href}
+              collectionId={collection.id}
+              interactive={false}
+              enterDelay={400}
+              enterNextDelay={400}
+              placement="left"
             >
-              <Box className={classes.iconBox}>
-                <PlaylistPlayOutlined fontSize="small" />
-              </Box>
-              <Tooltip title={collection.title} arrow>
+              <ListItem
+                dense
+                button
+                className={classes.listItem}
+                component={Link}
+                to={href}
+              >
+                <Box className={classes.iconBox}>
+                  <PlaylistPlayOutlined fontSize="small" />
+                </Box>
                 <ListItemText
                   primary={collection.title}
                   classes={{ primary: classes.listItemText }}
                 />
-              </Tooltip>
-            </ListItem>
+              </ListItem>
+            </CollectionTooltip>
           );
         })}
       </RightList>

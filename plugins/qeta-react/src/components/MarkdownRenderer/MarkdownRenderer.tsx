@@ -1,4 +1,10 @@
-import { Children, createElement, PropsWithChildren, useEffect } from 'react';
+import {
+  Children,
+  createElement,
+  lazy,
+  PropsWithChildren,
+  useEffect,
+} from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { MarkdownHooks } from 'react-markdown';
 import {
@@ -20,13 +26,16 @@ import LinkIcon from '@material-ui/icons/Link';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { qetaTranslationRef } from '../../translation.ts';
+import { qetaTranslationRef } from '../../translation';
 import { Variant } from '@material-ui/core/styles/createTypography';
 import GithubSlugger from 'github-slugger';
 import { HtmlElementNode } from '@jsdevtools/rehype-toc/lib/types';
 import { find } from 'unist-util-find';
-import { TagChip } from '../TagsAndEntities/TagChip';
 import { useQetaContext } from '../QetaContext';
+
+const TagChip = lazy(() =>
+  import('../TagsAndEntities/TagChip').then(m => ({ default: m.TagChip })),
+);
 
 const slugger = new GithubSlugger();
 

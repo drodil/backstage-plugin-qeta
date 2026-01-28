@@ -18,7 +18,7 @@ import {
   UserResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { qetaTranslationRef } from '../translation.ts';
+import { qetaTranslationRef } from '../translation';
 
 const userCache: Map<string, UserEntity> = new Map();
 let userLoader: DataLoader<string, UserEntity | null> | undefined;
@@ -68,9 +68,9 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
   const [user, setUser] = useState<UserEntity | null>(null);
   const [initials, setInitials] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
-  const ref = stringifyEntityRef(
-    parseEntityRef(entityRef, { defaultKind: 'user' }),
-  );
+  const ref = entityRef
+    ? stringifyEntityRef(parseEntityRef(entityRef, { defaultKind: 'user' }))
+    : 'user:default/guest';
 
   const {
     primaryTitle: userName,
@@ -79,7 +79,7 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
   } = useEntityPresentation(ref, { defaultKind: 'user' });
 
   useEffect(() => {
-    if (anonymous) {
+    if (anonymous || !entityRef) {
       return;
     }
 
@@ -100,7 +100,7 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
       .catch(() => {
         setUser(null);
       });
-  }, [catalogApi, ref, anonymous]);
+  }, [catalogApi, ref, anonymous, entityRef]);
 
   useEffect(() => {
     identityApi.getBackstageIdentity().then(res => {

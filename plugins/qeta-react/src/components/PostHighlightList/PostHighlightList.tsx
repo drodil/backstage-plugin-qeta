@@ -3,40 +3,19 @@ import {
   Post,
   PostsQuery,
   PostType,
-  removeMarkdownFormatting,
   selectByPostType,
-  truncate,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useQetaApi, useUserInfo } from '../../hooks';
-import { useTooltipStyles } from '../../hooks/useTooltipStyles';
+import { useQetaApi } from '../../hooks';
 import { Link } from 'react-router-dom';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import {
-  Avatar,
-  Box,
-  Grid,
-  ListItem,
-  ListItemText,
-  makeStyles,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import { Box, ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { qetaTranslationRef } from '../../translation.ts';
+import { qetaTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import {
-  articleRouteRef,
-  linkRouteRef,
-  questionRouteRef,
-} from '../../routes.ts';
+import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import numeral from 'numeral';
-import QuestionAnswerOutlined from '@material-ui/icons/QuestionAnswerOutlined';
-import ChatBubbleOutline from '@material-ui/icons/ChatBubbleOutline';
-import VisibilityOutlined from '@material-ui/icons/VisibilityOutlined';
-import ThumbUpOutlined from '@material-ui/icons/ThumbUpOutlined';
-import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
-import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
+import { PostTooltip } from '../Tooltips';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -91,134 +70,6 @@ function formatShortNumber(num: number): string {
   return num >= 1000 ? numeral(num).format('0.0 a') : num.toString();
 }
 
-const PostTooltip = (props: { post: Post }) => {
-  const { post } = props;
-  const { t } = useTranslationRef(qetaTranslationRef);
-  const { name, initials, user } = useUserInfo(
-    post.author,
-    post.anonymous ?? false,
-  );
-
-  return (
-    <Grid container style={{ padding: '0.5em' }} spacing={1}>
-      <Grid item xs={12}>
-        <Typography
-          variant="subtitle1"
-          style={{
-            fontWeight: 600,
-            marginBottom: '0.5em',
-          }}
-        >
-          {post.title}
-        </Typography>
-      </Grid>
-
-      <Grid item xs={12}>
-        <Box
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            marginBottom: '0.5em',
-          }}
-        >
-          <Avatar
-            src={user?.spec?.profile?.picture}
-            alt={name}
-            variant="rounded"
-            style={{ width: '20px', height: '20px', marginRight: '0.5em' }}
-          >
-            {initials}
-          </Avatar>
-          <Typography variant="body2" style={{ marginRight: '0.5em' }}>
-            {name}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="textSecondary"
-            style={{ marginTop: '0.5em' }}
-          >
-            <RelativeTimeWithTooltip value={post.created} />
-          </Typography>
-        </Box>
-      </Grid>
-
-      {post.tags && post.tags.length > 0 && (
-        <Grid item xs={12}>
-          <Typography variant="caption" color="textSecondary">
-            {post.tags.map(tag => `#${tag}`).join(' ')}
-          </Typography>
-        </Grid>
-      )}
-
-      {post.content && (
-        <Grid item xs={12}>
-          <Typography variant="body2" color="textSecondary">
-            {truncate(removeMarkdownFormatting(post.content), 150)}
-          </Typography>
-        </Grid>
-      )}
-
-      <Grid item xs={12}>
-        <Box
-          display="flex"
-          alignItems="center"
-          flexWrap="wrap"
-          style={{ gap: '1em' }}
-        >
-          <Box display="flex" alignItems="center">
-            <ThumbUpOutlined
-              style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-            />
-            <Typography variant="caption">
-              {post.score} {t('common.votes', {})}
-            </Typography>
-          </Box>
-
-          <Box display="flex" alignItems="center">
-            <VisibilityOutlined
-              style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-            />
-            <Typography variant="caption">
-              {post.views} {t('common.views', {})}
-            </Typography>
-          </Box>
-
-          {post.type === 'question' && (
-            <Box display="flex" alignItems="center">
-              <QuestionAnswerOutlined
-                style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-              />
-              <Typography variant="caption">
-                {post.answersCount} {t('common.answers', {})}
-              </Typography>
-            </Box>
-          )}
-
-          <Box display="flex" alignItems="center">
-            <ChatBubbleOutline
-              style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-            />
-            <Typography variant="caption">
-              {post.commentsCount} {t('common.comments', {})}
-            </Typography>
-          </Box>
-
-          {post.correctAnswer && (
-            <Box display="flex" alignItems="center" color="success.main">
-              <CheckCircleOutline
-                style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-              />
-              <Typography variant="caption">
-                {t('questionPage.correctAnswer', {})}
-              </Typography>
-            </Box>
-          )}
-        </Box>
-      </Grid>
-    </Grid>
-  );
-};
-
 export const PostHighlightListContent = (props: {
   loading?: boolean;
   error?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -231,7 +82,6 @@ export const PostHighlightListContent = (props: {
   const { loading, error, posts, title, icon, noPostsLabel, disableLoading } =
     props;
   const classes = useStyles();
-  const tooltipClasses = useTooltipStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
@@ -284,14 +134,13 @@ export const PostHighlightListContent = (props: {
             }
             return (
               <Fragment key={q.id}>
-                <Tooltip
+                <PostTooltip
+                  post={q}
                   arrow
-                  title={<PostTooltip post={q} />}
                   enterDelay={400}
-                  classes={{
-                    tooltip: tooltipClasses.tooltip,
-                    arrow: tooltipClasses.tooltipArrow,
-                  }}
+                  enterNextDelay={400}
+                  placement="left"
+                  interactive={false}
                 >
                   <ListItem
                     dense
@@ -307,7 +156,7 @@ export const PostHighlightListContent = (props: {
                       classes={{ primary: classes.listItemText }}
                     />
                   </ListItem>
-                </Tooltip>
+                </PostTooltip>
               </Fragment>
             );
           })}

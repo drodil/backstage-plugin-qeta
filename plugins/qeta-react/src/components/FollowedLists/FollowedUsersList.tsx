@@ -1,18 +1,13 @@
 import { useUserFollow } from '../../hooks';
 import { useUserInfo } from '../../hooks/useEntityAuthor';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import {
-  Avatar,
-  ListItem,
-  ListItemText,
-  makeStyles,
-  Tooltip,
-} from '@material-ui/core';
+import { Avatar, ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { Link } from 'react-router-dom';
 import { userRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { UserTooltip } from '../Tooltips';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -51,27 +46,33 @@ const FollowedUserItem = ({ entityRef }: { entityRef: string }) => {
   const href = `${userRoute()}/${entityRef}`;
 
   return (
-    <ListItem
-      dense
-      button
-      className={classes.listItem}
-      component={Link}
-      to={href}
+    <UserTooltip
+      entityRef={entityRef}
+      interactive={false}
+      enterDelay={400}
+      enterNextDelay={400}
+      placement="left"
     >
-      <Avatar
-        src={user?.spec?.profile?.picture}
-        alt={name}
-        className={classes.avatar}
+      <ListItem
+        dense
+        button
+        className={classes.listItem}
+        component={Link}
+        to={href}
       >
-        {initials}
-      </Avatar>
-      <Tooltip title={name ?? entityRef} arrow>
+        <Avatar
+          src={user?.spec?.profile?.picture}
+          alt={name}
+          className={classes.avatar}
+        >
+          {initials}
+        </Avatar>
         <ListItemText
           primary={name ?? entityRef}
           classes={{ primary: classes.listItemText }}
         />
-      </Tooltip>
-    </ListItem>
+      </ListItem>
+    </UserTooltip>
   );
 };
 

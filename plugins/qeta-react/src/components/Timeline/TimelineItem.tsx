@@ -19,6 +19,7 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { UserLink } from '../Links';
+import { PostTooltip, CollectionTooltip } from '../Tooltips';
 
 import { useUserInfo } from '../../hooks';
 
@@ -162,7 +163,38 @@ export const TimelineItemCard = ({ item }: { item: TimelineItem }) => {
               <UserLink entityRef={item.author} />
             </span>
             <span className={classes.action}>{action}</span>
-            <span className={classes.link}>{title}</span>
+            {item.type === 'collection' ? (
+              <CollectionTooltip
+                collectionId={item.id}
+                enterDelay={400}
+                enterNextDelay={400}
+                interactive={false}
+              >
+                <RouterLink
+                  to={link}
+                  className={`${classes.link} ${classes.contentClickable}`}
+                  style={{ color: 'inherit', textDecoration: 'none' }}
+                  id={item.id.toString()}
+                >
+                  {title}
+                </RouterLink>
+              </CollectionTooltip>
+            ) : (
+              <PostTooltip
+                id={(item.type === 'post' ? item.id : item.postId).toString()}
+                enterDelay={400}
+                enterNextDelay={400}
+                interactive={false}
+              >
+                <RouterLink
+                  to={link}
+                  className={`${classes.link} ${classes.contentClickable}`}
+                  style={{ color: 'inherit', textDecoration: 'none' }}
+                >
+                  {title}
+                </RouterLink>
+              </PostTooltip>
+            )}
             <span className={classes.time}>
               <RelativeTimeWithTooltip value={item.date} />
             </span>

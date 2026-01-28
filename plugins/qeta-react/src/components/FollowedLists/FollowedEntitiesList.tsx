@@ -1,18 +1,13 @@
 import { useEntityFollow } from '../../hooks';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import {
-  Box,
-  ListItem,
-  ListItemText,
-  makeStyles,
-  Tooltip,
-} from '@material-ui/core';
+import { Box, ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { Link } from 'react-router-dom';
 import { entityRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
+import { EntityTooltip } from '../Tooltips';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -56,23 +51,29 @@ const FollowedEntityItem = ({ entityRef }: { entityRef: string }) => {
   const href = entityRoute({ entityRef: entityRef });
 
   return (
-    <ListItem
-      dense
-      button
-      className={classes.listItem}
-      component={Link}
-      to={href}
+    <EntityTooltip
+      entity={entityRef}
+      interactive={false}
+      enterDelay={400}
+      enterNextDelay={400}
+      placement="left"
     >
-      <Box className={classes.iconBox}>
-        {Icon ? <Icon fontSize="small" /> : null}
-      </Box>
-      <Tooltip title={primaryTitle ?? entityRef} arrow>
+      <ListItem
+        dense
+        button
+        className={classes.listItem}
+        component={Link}
+        to={href}
+      >
+        <Box className={classes.iconBox}>
+          {Icon ? <Icon fontSize="small" /> : null}
+        </Box>
         <ListItemText
           primary={primaryTitle ?? entityRef}
           classes={{ primary: classes.listItemText }}
         />
-      </Tooltip>
-    </ListItem>
+      </ListItem>
+    </EntityTooltip>
   );
 };
 
