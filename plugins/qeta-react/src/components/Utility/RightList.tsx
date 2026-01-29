@@ -39,10 +39,16 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const RightListContainer = (props: { children: ReactNode }) => {
+export const RightListContainer = (props: {
+  children: ReactNode;
+  className?: string;
+}) => {
   const styles = useStyles();
   return (
-    <Box display={{ md: 'none', lg: 'block' }} className={styles.container}>
+    <Box
+      display={{ md: 'none', lg: 'block' }}
+      className={`${styles.container} ${props.className ?? ''}`}
+    >
       {props.children}
     </Box>
   );
@@ -54,6 +60,7 @@ export const RightList = (props: {
   icon?: ReactNode;
   limit?: number;
   randomize?: boolean;
+  titleClassName?: string;
 }) => {
   const styles = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -82,7 +89,7 @@ export const RightList = (props: {
           component="div"
           id="nested-list-subheader"
           color="primary"
-          className={styles.subheader}
+          className={`${styles.subheader} ${props.titleClassName ?? ''}`}
         >
           {props.title}
           {props.icon}

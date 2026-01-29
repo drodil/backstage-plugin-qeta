@@ -514,6 +514,19 @@ export const qetaTranslationRef = createTranslationRef({
       needsReview4: 'Can you verify "{{title}}" is still valid?',
       needsReview5: '"{{title}}" is due for a review',
     },
+    getStartedCard: {
+      title: 'Welcome to Q&A',
+      description:
+        "Qeta is your knowledge-sharing platform. Ask questions, write articles, share useful links, and help build your organization's knowledge base.",
+      featureTags: 'Organize content with tags and collections',
+      featureEntities: 'Link questions to catalog components and services',
+      featureNotifications: 'Get notified about answers and mentions',
+      featureReputation: 'Earn reputation by helping others',
+      askQuestion: 'Ask Question',
+      browseQuestions: 'Questions',
+      articles: 'Articles',
+      links: 'Links',
+    },
     homePage: {
       title: 'Home',
     },

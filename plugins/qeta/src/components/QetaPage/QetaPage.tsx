@@ -111,8 +111,15 @@ const useStyles = makeStyles(theme => ({
     position: 'sticky',
     top: theme.spacing(2),
     alignSelf: 'flex-start',
-    maxHeight: 'calc(100dvh - 20px)',
+    maxHeight: 'calc(100vh - 150px)',
+    overflowY: 'auto',
     overflowX: 'hidden',
+    // Hide scrollbar but keep scrolling functionality
+    scrollbarWidth: 'none', // Firefox
+    '-ms-overflow-style': 'none', // IE/Edge
+    '&::-webkit-scrollbar': {
+      display: 'none', // Chrome/Safari/Edge
+    },
     [theme.breakpoints.up('lg')]: {
       width: (props: StyleProps) => (props.rightCompact ? 72 : 240),
       minWidth: (props: StyleProps) => (props.rightCompact ? 72 : 240),
@@ -122,11 +129,7 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(1),
       position: 'static',
       maxHeight: 'none',
-    },
-    '-ms-overflow-style': 'none',
-    'scrollbar-width': 'none',
-    '&::-webkit-scrollbar': {
-      display: 'none',
+      overflowY: 'visible',
     },
   },
   mainColumn: {

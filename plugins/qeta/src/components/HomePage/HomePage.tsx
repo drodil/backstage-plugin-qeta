@@ -4,6 +4,7 @@ import {
   CreateLinkButton,
   qetaTranslationRef,
   SuggestionsCard,
+  GetStartedCard,
   WriteArticleButton,
   Timeline,
 } from '@drodil/backstage-plugin-qeta-react';
@@ -25,6 +26,9 @@ export const HomePage = () => {
         <CreateLinkButton />
       </ContentHeader>
       <Grid container>
+        <Grid item xs={12}>
+          <GetStartedCard />
+        </Grid>
         <Grid item xs={12}>
           <SuggestionsCard />
         </Grid>

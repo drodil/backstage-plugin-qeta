@@ -7,8 +7,26 @@ import {
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Post } from '@drodil/backstage-plugin-qeta-common';
 import { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles(theme => ({
+  similarQuestionsContainer: {
+    borderLeft: `3px solid ${theme.palette.warning.main}`,
+    backgroundColor:
+      theme.palette.type === 'dark'
+        ? 'rgba(255, 167, 38, 0.08)'
+        : 'rgba(255, 167, 38, 0.05)',
+    borderRadius: theme.shape.borderRadius,
+    padding: `${theme.spacing(1)}px 2px ${theme.spacing(1)}px`,
+  },
+  similarQuestionsTitle: {
+    color: theme.palette.warning.main,
+    fontWeight: 600,
+  },
+}));
 
 export const SimilarQuestions = () => {
+  const classes = useStyles();
   const { draftQuestion } = useQetaContext();
   const { t } = useTranslationRef(qetaTranslationRef);
   const [debouncedDraftQuestion, setDebouncedDraftQuestion] =
@@ -69,6 +87,8 @@ export const SimilarQuestions = () => {
       posts={displayQuestions}
       loading={loading}
       disableLoading
+      containerClassName={classes.similarQuestionsContainer}
+      titleClassName={classes.similarQuestionsTitle}
     />
   );
 };

@@ -78,9 +78,20 @@ export const PostHighlightListContent = (props: {
   icon?: ReactNode;
   noPostsLabel?: string;
   disableLoading?: boolean;
+  containerClassName?: string;
+  titleClassName?: string;
 }) => {
-  const { loading, error, posts, title, icon, noPostsLabel, disableLoading } =
-    props;
+  const {
+    loading,
+    error,
+    posts,
+    title,
+    icon,
+    noPostsLabel,
+    disableLoading,
+    containerClassName,
+    titleClassName,
+  } = props;
   const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
   const questionRoute = useRouteRef(questionRouteRef);
@@ -88,8 +99,8 @@ export const PostHighlightListContent = (props: {
   const linkRoute = useRouteRef(linkRouteRef);
 
   return (
-    <RightListContainer>
-      <RightList title={title} icon={icon}>
+    <RightListContainer className={containerClassName}>
+      <RightList title={title} icon={icon} titleClassName={titleClassName}>
         {loading &&
           !disableLoading &&
           Array.from({ length: 5 }).map((_, i) => (
