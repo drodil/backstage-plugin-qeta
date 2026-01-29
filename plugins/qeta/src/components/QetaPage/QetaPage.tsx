@@ -121,8 +121,8 @@ const useStyles = makeStyles(theme => ({
       display: 'none', // Chrome/Safari/Edge
     },
     [theme.breakpoints.up('lg')]: {
-      width: (props: StyleProps) => (props.rightCompact ? 72 : 240),
-      minWidth: (props: StyleProps) => (props.rightCompact ? 72 : 240),
+      width: (props: StyleProps) => (props.rightCompact ? 72 : 250),
+      minWidth: (props: StyleProps) => (props.rightCompact ? 72 : 250),
     },
     [theme.breakpoints.down('md')]: {
       width: '100%',

@@ -5,7 +5,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - /var/lib/postgresql/data
+      - qeta_postgres_data:/var/lib/postgresql
     command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c max_connections=200
     ports:
       - '5432:5432'
+
+volumes:
+  qeta_postgres_data:

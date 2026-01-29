@@ -143,6 +143,7 @@ export interface Post extends PostAnswerEntity {
   commentsCount: number;
   correctAnswer: boolean;
   favorite: boolean;
+  following?: boolean;
   healthScore?: number;
   needsReview?: boolean;
   tags?: string[];
@@ -596,4 +597,19 @@ export interface BatchURLMetadataResponse {
 export interface EntityLinks {
   entityRef: string;
   links: EntityLink[];
+}
+
+export interface PostLink {
+  target: Post;
+  source: Post;
+}
+
+export interface CommunityStats {
+  period: string;
+  posts: number;
+  answers: number;
+  comments: number;
+  votes: number;
+  activeUsers: number;
+  views: number;
 }

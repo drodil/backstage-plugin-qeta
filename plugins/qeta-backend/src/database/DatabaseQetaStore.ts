@@ -55,6 +55,7 @@ import {
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
+  CommunityStats,
 } from '@drodil/backstage-plugin-qeta-common';
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -71,6 +72,7 @@ import { TemplatesStore } from './stores/TemplatesStore';
 import { AttachmentsStore } from './stores/AttachmentsStore';
 import { BadgesStore } from './stores/BadgesStore';
 import { HelpersStore } from './stores/HelpersStore';
+import { Config } from '@backstage/config';
 
 const migrationsDir = resolvePackagePath(
   '@drodil/backstage-plugin-qeta-backend',
@@ -99,10 +101,12 @@ export class DatabaseQetaStore implements QetaStore {
     database,
     skipMigrations,
     tagDatabase,
+    config,
   }: {
     database: DatabaseService;
     skipMigrations?: boolean;
     tagDatabase?: TagDatabase;
+    config: Config;
   }): Promise<DatabaseQetaStore> {
     const client = await database.getClient();
 
@@ -112,7 +116,7 @@ export class DatabaseQetaStore implements QetaStore {
       });
     }
 
-    const commentsStore = new CommentsStore(client);
+    const commentsStore = new CommentsStore(client, config);
     const tagsStore = new TagsStore(client, tagDatabase);
     const entitiesStore = new EntitiesStore(client);
     const usersStore = new UsersStore(client);
@@ -125,12 +129,14 @@ export class DatabaseQetaStore implements QetaStore {
       entitiesStore,
       attachmentsStore,
       tagDatabase,
+      config,
     );
     const answersStore = new AnswersStore(
       client,
       commentsStore,
       postsStore,
       attachmentsStore,
+      config,
     );
     const collectionsStore = new CollectionsStore(
       client,
@@ -143,7 +149,7 @@ export class DatabaseQetaStore implements QetaStore {
 
     postsStore.setAnswersStore(answersStore);
 
-    return new DatabaseQetaStore(
+    const store = new DatabaseQetaStore(
       postsStore,
       answersStore,
       commentsStore,
@@ -157,6 +163,24 @@ export class DatabaseQetaStore implements QetaStore {
       badgesStore,
       helpersStore,
     );
+
+    // Do this only once on first run
+    const linksCount = await client('post_links').count('* as CNT').first();
+    if (store.mapToInteger((linksCount as any)?.CNT) === 0) {
+      void store.backfillLinks(); // Let this run in background
+    }
+
+    return store;
+  }
+
+  private mapToInteger(val: any): number {
+    return typeof val === 'string' ? Number.parseInt(val, 10) : val;
+  }
+
+  async backfillLinks() {
+    await this.postsStore.backfillLinks();
+    await this.answersStore.backfillLinks();
+    await this.commentsStore.backfillLinks();
   }
 
   async getTimeline(
@@ -689,8 +713,39 @@ export class DatabaseQetaStore implements QetaStore {
     return this.statsStore.getGlobalStats();
   }
 
+  async getCommunityActivity(period: string): Promise<CommunityStats> {
+    return this.statsStore.getCommunityActivity(period);
+  }
+
   async getUserStats(user_ref: string): Promise<UserStat[]> {
     return this.statsStore.getUserStats(user_ref);
+  }
+
+  async followPost(user_ref: string, postId: number): Promise<boolean> {
+    return this.postsStore.followPost(user_ref, postId);
+  }
+
+  async unfollowPost(user_ref: string, postId: number): Promise<boolean> {
+    return this.postsStore.unfollowPost(user_ref, postId);
+  }
+
+  async getPostFollowers(postId: number): Promise<string[]> {
+    return this.postsStore.getPostFollowers(postId);
+  }
+
+  async getMostRecentViewedPosts(
+    user_ref: string,
+    limit: number,
+  ): Promise<Post[]> {
+    return this.postsStore.getMostRecentViewedPosts(user_ref, limit);
+  }
+
+  async hasUserInteracted(user_ref: string, postId: number): Promise<boolean> {
+    return this.postsStore.hasUserInteracted(user_ref, postId);
+  }
+
+  async getLinkedPosts(postId: number, user_ref: string): Promise<Post[]> {
+    return this.postsStore.getLinkedPosts(postId, user_ref);
   }
 
   async getTemplates(): Promise<Templates> {

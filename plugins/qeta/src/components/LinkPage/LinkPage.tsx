@@ -16,6 +16,7 @@ import {
   useQetaApi,
   FaviconItem,
   qetaApiRef,
+  FollowPostButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -122,6 +123,7 @@ export const LinkPage = () => {
         titleIcon={post.url ? <FaviconItem entity={post} /> : undefined}
         description={getDescription(post)}
       >
+        <FollowPostButton post={post} />
         <CreateLinkButton />
         <AddToCollectionButton post={post} />
       </ContentHeader>

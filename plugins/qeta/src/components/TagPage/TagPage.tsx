@@ -78,14 +78,10 @@ export const TagPage = () => {
     <>
       {tag ? (
         <ContentHeader
-          title={
-            <span style={{ display: 'flex', alignItems: 'center' }}>
-              {tag}
-              <TagFollowButton tag={tag} />
-            </span>
-          }
+          title={tag}
           titleIcon={<LocalOfferOutlined fontSize="large" />}
         >
+          <TagFollowButton tag={tag} />
           <AskQuestionButton tags={[tag]} />
           <WriteArticleButton tags={[tag]} />
           <CreateLinkButton tags={[tag]} />

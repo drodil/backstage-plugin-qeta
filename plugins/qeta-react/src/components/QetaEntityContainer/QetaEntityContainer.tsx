@@ -179,7 +179,7 @@ export function QetaEntityContainer<
           </Collapse>
         )}
 
-        {loading && (items.length === 0 || settings.usePagination) && (
+        {loading && (items?.length === 0 || settings.usePagination) && (
           <LoadingGrid />
         )}
 
@@ -189,9 +189,9 @@ export function QetaEntityContainer<
           </WarningPanel>
         )}
 
-        {!loading && !error && items.length === 0 && emptyState}
+        {!loading && !error && items?.length === 0 && emptyState}
 
-        {items.length > 0 && (!loading || !settings.usePagination) && (
+        {items?.length > 0 && (!loading || !settings.usePagination) && (
           <>
             {view === 'grid' && renderGridItem && (
               <Grid container spacing={3} direction="row" alignItems="stretch">

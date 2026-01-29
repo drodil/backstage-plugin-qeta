@@ -180,11 +180,16 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     }
 
     wrapAsync(async () => {
+      const hasInteracted = await database.hasUserInteracted(username, post.id);
+      if (!hasInteracted) {
+        await database.followPost(username, post.id);
+      }
       const followingUsers = await Promise.all([
         database.getUsersForTags(post.tags),
         database.getUsersForEntities(post.entities),
         database.getFollowingUsers(username),
         database.getUsersWhoFavoritedPost(post.id),
+        database.getPostFollowers(post.id),
       ]);
       const sent = await notificationMgr.onNewAnswer(
         username,
@@ -383,11 +388,20 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
           return;
         }
 
+        const hasInteracted = await database.hasUserInteracted(
+          username,
+          post.id,
+        );
+        if (!hasInteracted) {
+          await database.followPost(username, post.id);
+        }
+
         const followingUsers = await Promise.all([
           database.getUsersForTags(post.tags),
           database.getUsersForEntities(post.entities),
           database.getFollowingUsers(username),
           database.getUsersWhoFavoritedPost(post.id),
+          database.getPostFollowers(post.id),
         ]);
         const sent = await notificationMgr.onAnswerComment(
           username,

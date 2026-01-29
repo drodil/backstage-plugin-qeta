@@ -4,6 +4,7 @@ import {
   Statistic,
   StatisticsRequestParameters,
   UserStat,
+  CommunityStats,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Knex } from 'knex';
 import { BaseStore } from './BaseStore';
@@ -308,5 +309,68 @@ export class StatsStore extends BaseStore {
       .where('userRef', user_ref)
       .select('*')
       .orderBy('date', 'desc');
+  }
+  async getCommunityActivity(period: string): Promise<CommunityStats> {
+    // Parse period string like "7d", "30d", "90d", "1y" to milliseconds
+    let periodMs: number;
+    if (period.endsWith('d')) {
+      periodMs = parseInt(period.slice(0, -1), 10) * 24 * 60 * 60 * 1000;
+    } else if (period.endsWith('y')) {
+      periodMs = parseInt(period.slice(0, -1), 10) * 365 * 24 * 60 * 60 * 1000;
+    } else {
+      periodMs = parseInt(period, 10);
+    }
+    const periodDate = new Date(Date.now() - periodMs);
+
+    const [posts, answers, comments, votes, views, users] = await Promise.all([
+      this.db('posts')
+        .count('id as CNT')
+        .where('created', '>=', periodDate)
+        .first(),
+      this.db('answers')
+        .count('id as CNT')
+        .where('created', '>=', periodDate)
+        .first(),
+      this.db('comments')
+        .count('id as CNT')
+        .where('created', '>=', periodDate)
+        .first(),
+      this.db('post_votes')
+        .count('postId as CNT')
+        .where('timestamp', '>=', periodDate)
+        .first(),
+      this.db('post_views')
+        .count('postId as CNT')
+        .where('timestamp', '>=', periodDate)
+        .first(),
+      this.db.raw(
+        `
+        SELECT COUNT(DISTINCT "user") as "CNT" FROM (
+          SELECT author as "user" FROM posts WHERE created >= ?
+          UNION
+          SELECT author as "user" FROM answers WHERE created >= ?
+          UNION
+          SELECT author as "user" FROM comments WHERE created >= ?
+          UNION
+          SELECT author as "user" FROM post_votes WHERE timestamp >= ?
+          UNION
+          SELECT author as "user" FROM post_views WHERE timestamp >= ?
+        ) as active_users
+      `,
+        [periodDate, periodDate, periodDate, periodDate, periodDate],
+      ),
+    ]);
+
+    return {
+      period,
+      posts: this.mapToInteger(posts?.CNT),
+      answers: this.mapToInteger(answers?.CNT),
+      comments: this.mapToInteger(comments?.CNT),
+      votes: this.mapToInteger(votes?.CNT),
+      views: this.mapToInteger(views?.CNT),
+      activeUsers: this.mapToInteger(
+        users.rows ? users.rows[0].CNT : users[0]?.CNT,
+      ),
+    };
   }
 }

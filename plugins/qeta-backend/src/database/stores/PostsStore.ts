@@ -21,6 +21,7 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TAGS } from '../../tagDb';
 import { BaseStore } from './BaseStore';
 import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
+import { Config } from '@backstage/config';
 
 import { eng, removeStopwords } from 'stopword';
 
@@ -39,6 +40,7 @@ export interface RawPostEntity {
   correctAnswers: number | string;
   commentsCount: number | string;
   favorite: number | string;
+  following: number | string;
   trend: number | string;
   anonymous: boolean;
   type: 'question' | 'article' | 'link';
@@ -72,6 +74,7 @@ export class PostsStore extends BaseStore {
     private readonly entitiesStore: EntitiesStore,
     private readonly attachmentsStore: AttachmentsStore,
     private readonly tagDatabase?: TagDatabase,
+    private readonly config?: Config,
   ) {
     super(db);
   }
@@ -298,19 +301,19 @@ export class PostsStore extends BaseStore {
       query.select('collection_posts.rank');
     }
     if (options.orderBy === 'rank') {
+      const groupBy: (string | any)[] = ['posts.id', 'collection_posts.rank'];
       if (this.db.client.config.client === 'pg') {
-        query.groupBy(
-          'posts.id',
-          'collection_posts.rank',
-          this.db.raw('user_favorite."postId"'),
-        );
+        groupBy.push(this.db.raw('user_favorite."postId"'));
+        groupBy.push(this.db.raw('post_followers."postId"'));
       } else {
-        query.groupBy(
-          'posts.id',
-          'collection_posts.rank',
-          'user_favorite.postId',
-        );
+        groupBy.push('user_favorite.postId');
+        groupBy.push('post_followers.postId');
       }
+      query.groupBy(groupBy);
+    }
+
+    if (options.following) {
+      query.whereNotNull('post_followers.postId');
     }
 
     if (options.noAnswers) {
@@ -635,6 +638,7 @@ export class PostsStore extends BaseStore {
     await Promise.all([
       this.addTags(posts[0].id, tags),
       this.addEntities(posts[0].id, entities),
+      this.followPost(user_ref, posts[0].id),
     ]);
 
     await this.updateAttachments(
@@ -644,6 +648,8 @@ export class PostsStore extends BaseStore {
       posts[0].id,
       headerImage,
     );
+
+    await this.updatePostLinks(posts[0].id, content);
 
     return (await this.mapPostEntities([posts[0]], user_ref, opts))[0];
   }
@@ -720,6 +726,11 @@ export class PostsStore extends BaseStore {
       id,
       headerImage,
     );
+
+    await this.updatePostLinks(id, content ?? '');
+    if (content !== undefined) {
+      await this.updatePostLinks(id, content);
+    }
 
     return await this.getPost(user_ref, id, false, opts);
   }
@@ -801,6 +812,148 @@ export class PostsStore extends BaseStore {
       .into('user_favorite');
     await this.db('posts').where('id', postId).increment('favoritesCount', 1);
     return true;
+  }
+
+  async followPost(user_ref: string, postId: number): Promise<boolean> {
+    await this.db
+      .insert({
+        user: user_ref,
+        postId,
+        created: new Date(),
+      })
+      .into('post_followers')
+      .onConflict(['postId', 'user'])
+      .ignore();
+    return true;
+  }
+
+  async unfollowPost(user_ref: string, postId: number): Promise<boolean> {
+    const rows = await this.db('post_followers')
+      .where('user', user_ref)
+      .where('postId', postId)
+      .delete();
+    return rows > 0;
+  }
+
+  async getPostFollowers(postId: number): Promise<string[]> {
+    const users = await this.db('post_followers')
+      .where('postId', postId)
+      .select('user');
+    return users.map(user => user.user);
+  }
+
+  async getMostRecentViewedPosts(
+    user_ref: string,
+    limit: number,
+  ): Promise<Post[]> {
+    const rows = await this.db('post_views')
+      .join('posts', 'post_views.postId', 'posts.id')
+      .where('post_views.author', user_ref)
+      .groupBy('posts.id')
+      .orderByRaw('MAX(post_views.timestamp) DESC')
+      .select('posts.*')
+      .whereIn('posts.status', ['active', 'obsolete'])
+      .limit(limit);
+
+    return this.mapPostEntities(rows as unknown as RawPostEntity[], user_ref, {
+      includeVotes: true,
+      includeAnswers: false,
+      includeTags: true,
+      includeEntities: true,
+    });
+  }
+
+  async hasUserInteracted(user_ref: string, postId: number): Promise<boolean> {
+    const answers = await this.db('answers')
+      .where('postId', postId)
+      .where('author', user_ref)
+      .count('id as CNT')
+      .first();
+
+    if (answers && this.mapToInteger(answers.CNT) > 0) {
+      return true;
+    }
+
+    const comments = await this.db('comments')
+      .leftJoin('answers', 'comments.answerId', 'answers.id')
+      .where('comments.author', user_ref)
+      .andWhere(builder => {
+        builder
+          .where('comments.postId', postId)
+          .orWhere('answers.postId', postId);
+      })
+      .count('comments.id as CNT')
+      .first();
+
+    if (comments && this.mapToInteger(comments.CNT) > 0) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async getLinkedPosts(postId: number, user_ref: string): Promise<Post[]> {
+    const rows = await this.db
+      .select('posts.*')
+      .from('posts')
+      .join('post_links', function joinLinkedPosts() {
+        this.on('posts.id', '=', 'post_links.linkedPostId')
+          .andOnVal('post_links.postId', '=', postId)
+          .orOn('posts.id', '=', 'post_links.postId')
+          .andOnVal('post_links.linkedPostId', '=', postId);
+      })
+      .whereNot('posts.id', postId)
+      .whereIn('posts.status', ['active', 'obsolete'])
+      .distinct('posts.id');
+
+    return this.mapPostEntities(rows as unknown as RawPostEntity[], user_ref, {
+      includeVotes: true,
+      includeAnswers: false,
+      includeTags: true,
+      includeEntities: true,
+    });
+  }
+
+  async backfillLinks() {
+    const route = this.config?.getOptionalString('qeta.route') ?? 'qeta';
+    const posts = await this.db('posts')
+      .select('id', 'content')
+      .where('content', 'like', `%/${route}/%`);
+    for (const post of posts) {
+      await this.updatePostLinks(post.id, post.content);
+    }
+  }
+
+  private async updatePostLinks(postId: number, content: string) {
+    const ids = new Set<number>();
+    const route = this.config?.getOptionalString('qeta.route') ?? 'qeta';
+    const escapedRoute = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const idRegex = new RegExp(
+      `\\/${escapedRoute}\\/(?:questions|articles|links)\\/(\\d+)`,
+      'g',
+    );
+    for (const match of content.matchAll(idRegex)) {
+      const id = parseInt(match[1], 10);
+      if (!isNaN(id) && id !== postId) {
+        ids.add(id);
+      }
+    }
+
+    if (ids.size > 0) {
+      await this.db('post_links')
+        .where('postId', postId)
+        .whereNull('viaAnswerId')
+        .whereNull('viaCommentId')
+        .delete();
+      const inserts = Array.from(ids).map(linkedPostId => ({
+        postId,
+        linkedPostId,
+      }));
+      await this.db('post_links')
+        .insert(inserts)
+        .onConflict(['postId', 'linkedPostId'])
+        .ignore();
+    }
   }
 
   async unfavoritePost(user_ref: string, postId: number): Promise<boolean> {
@@ -961,6 +1114,7 @@ export class PostsStore extends BaseStore {
         correctAnswer: this.mapToBoolean(val.correctAnswers),
         commentsCount: this.mapToInteger(val.commentsCount),
         favorite: this.mapToInteger(val.favorite) > 0,
+        following: this.mapToInteger(val.following) > 0,
         tags: tagsMap.get(val.id),
         answers: answersMap.get(val.id),
         votes: postVotes.map(v => ({
@@ -1021,12 +1175,24 @@ export class PostsStore extends BaseStore {
           user,
         );
       })
+      .leftJoin('post_followers', function joinPostFollowers() {
+        this.on('posts.id', '=', 'post_followers.postId').andOnVal(
+          'post_followers.user',
+          '=',
+          user,
+        );
+      })
       .select(
         'posts.*',
         this.db.raw(
           `CASE WHEN user_favorite.${
             this.db.client.config.client === 'pg' ? '"postId"' : 'postId'
           } IS NOT NULL THEN 1 ELSE 0 END as favorite`,
+        ),
+        this.db.raw(
+          `CASE WHEN post_followers.${
+            this.db.client.config.client === 'pg' ? '"postId"' : 'postId'
+          } IS NOT NULL THEN 1 ELSE 0 END as following`,
         ),
       );
 

@@ -18,6 +18,7 @@ import { AttachmentsStore } from './AttachmentsStore';
 import { QetaFilters } from '../../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { BaseStore } from './BaseStore';
+import { Config } from '@backstage/config';
 
 export interface RawAnswerEntity {
   id: number;
@@ -53,6 +54,7 @@ export class AnswersStore extends BaseStore {
       getPosts(user_ref: string, options: PostsQuery): Promise<Posts>;
     },
     private readonly attachmentsStore: AttachmentsStore,
+    private readonly config: Config,
   ) {
     super(db);
   }
@@ -202,6 +204,16 @@ export class AnswersStore extends BaseStore {
       await this.updateAttachments('answerId', answer, images, answers[0].id);
     }
 
+    const hasInteracted = await (this.postsStore as any).hasUserInteracted(
+      user_ref,
+      questionId,
+    );
+    if (!hasInteracted) {
+      await (this.postsStore as any).followPost(user_ref, questionId);
+    }
+
+    await this.updateAnswerLinks(questionId, answer, answers[0].id);
+
     return this.getAnswer(answers[0].id, user_ref, options);
   }
 
@@ -228,6 +240,8 @@ export class AnswersStore extends BaseStore {
     if (images) {
       await this.updateAttachments('answerId', answer, images, answerId);
     }
+
+    await this.updateAnswerLinks(questionId, answer, answerId);
 
     return this.getAnswer(answerId, user_ref, options);
   }
@@ -448,5 +462,51 @@ export class AnswersStore extends BaseStore {
         experts: expertsMap.get(val.id),
       };
     });
+  }
+
+  async backfillLinks() {
+    const route = this.config?.getOptionalString('qeta.route') ?? 'qeta';
+    const answers = await this.db('answers')
+      .select('id', 'postId', 'content')
+      .where('content', 'like', `%/${route}/%`);
+    for (const answer of answers) {
+      await this.updateAnswerLinks(answer.postId, answer.content, answer.id);
+    }
+  }
+
+  private async updateAnswerLinks(
+    postId: number,
+    content?: string,
+    answerId?: number,
+  ) {
+    if (!content || !answerId) {
+      return;
+    }
+    const ids = new Set<number>();
+    const route = this.config.getOptionalString('qeta.route') ?? 'qeta';
+    const escapedRoute = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const idRegex = new RegExp(
+      `\\/${escapedRoute}\\/(?:questions|articles|links)\\/(\\d+)`,
+      'g',
+    );
+    for (const match of content.matchAll(idRegex)) {
+      const id = parseInt(match[1], 10);
+      if (!isNaN(id) && id !== postId) {
+        ids.add(id);
+      }
+    }
+
+    if (ids.size > 0) {
+      await this.db('post_links').where('viaAnswerId', answerId).delete();
+      const inserts = Array.from(ids).map(linkedPostId => ({
+        postId,
+        linkedPostId,
+        viaAnswerId: answerId,
+      }));
+      await this.db('post_links')
+        .insert(inserts)
+        .onConflict(['postId', 'linkedPostId'])
+        .ignore();
+    }
   }
 }

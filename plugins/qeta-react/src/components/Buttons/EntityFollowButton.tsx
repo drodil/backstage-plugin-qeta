@@ -1,5 +1,5 @@
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import NotificationsActive from '@material-ui/icons/NotificationsActive';
+import NotificationsNone from '@material-ui/icons/NotificationsNone';
 import { useEntityFollow } from '../../hooks';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -18,7 +18,7 @@ export const EntityFollowButton = (props: { entityRef: string }) => {
       <IconButton
         disableRipple
         size="small"
-        color={entities.isFollowingEntity(entityRef) ? 'secondary' : 'primary'}
+        color={entities.isFollowingEntity(entityRef) ? 'secondary' : 'default'}
         onClick={() => {
           if (entities.isFollowingEntity(entityRef)) {
             entities.unfollowEntity(entityRef);
@@ -28,9 +28,9 @@ export const EntityFollowButton = (props: { entityRef: string }) => {
         }}
       >
         {entities.isFollowingEntity(entityRef) ? (
-          <VisibilityOff />
+          <NotificationsActive />
         ) : (
-          <Visibility />
+          <NotificationsNone />
         )}
       </IconButton>
     </Tooltip>

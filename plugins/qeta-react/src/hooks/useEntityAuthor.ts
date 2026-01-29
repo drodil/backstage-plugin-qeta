@@ -23,7 +23,7 @@ import { qetaTranslationRef } from '../translation';
 const userCache: Map<string, UserEntity> = new Map();
 let userLoader: DataLoader<string, UserEntity | null> | undefined;
 
-const getEntityAuthorLoader = (catalogApi: CatalogApi) => {
+export const getEntityAuthorLoader = (catalogApi: CatalogApi) => {
   if (userLoader) {
     return userLoader;
   }

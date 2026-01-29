@@ -61,9 +61,6 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
         defaultKind="Component"
         hideIcon
       />
-      <span style={{ marginLeft: '0.5em', display: 'flex' }}>
-        <EntityFollowButton entityRef={resp.entityRef} />
-      </span>
     </div>
   );
 
@@ -78,6 +75,7 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
         titleIcon={<CategoryOutlined fontSize="large" />}
         description={description}
       >
+        <EntityFollowButton entityRef={resp.entityRef} />
         <AskQuestionButton entity={resp.entityRef} />
         <WriteArticleButton entity={resp.entityRef} />
         <CreateLinkButton entity={resp.entityRef} />

@@ -11,6 +11,7 @@ import {
   qetaTranslationRef,
   useQetaApi,
   WriteArticleButton,
+  FollowPostButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Container } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -67,6 +68,7 @@ export const ArticlePage = () => {
         title={post.title}
         titleIcon={<LibraryBooksOutlined fontSize="large" />}
       >
+        <FollowPostButton post={post} />
         <WriteArticleButton />
         <AddToCollectionButton post={post} />
       </ContentHeader>

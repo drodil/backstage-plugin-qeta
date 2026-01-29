@@ -107,15 +107,6 @@ export const UserPage = () => {
           >
             {name}
           </Typography>
-          {!loadingUser &&
-            !userError &&
-            currentUser?.userEntityRef !== identity && (
-              <UserFollowButton
-                userRef={identity}
-                style={{ marginLeft: '1rem', transform: 'scale(1.2)' }}
-                aria-label={t('userPage.followUser', { name })}
-              />
-            )}
         </Box>
         {(secondaryTitle || user?.spec?.profile?.email) && (
           <Typography variant="h6" color="textSecondary">
@@ -129,6 +120,14 @@ export const UserPage = () => {
   return (
     <>
       <ContentHeader titleComponent={title}>
+        {!loadingUser &&
+          !userError &&
+          currentUser?.userEntityRef !== identity && (
+            <UserFollowButton
+              userRef={identity}
+              aria-label={t('userPage.followUser', { name })}
+            />
+          )}
         <AskQuestionButton />
         <WriteArticleButton />
         <CreateLinkButton />

@@ -43,13 +43,16 @@ import { PostRightContent } from './PostRightContent';
 
 const useStyles = makeStyles(theme => ({
   container: {
-    width: (props: { compact: boolean }) => (props.compact ? '72px' : '230px'),
+    width: (props: { compact: boolean }) => (props.compact ? '72px' : '245px'),
     padding: (props: { compact: boolean }) =>
       props.compact ? theme.spacing(1) : theme.spacing(0, 0, 0, 1),
     transition: 'width 0.2s ease-in-out',
     display: 'flex',
     flexDirection: 'column',
     overflowX: 'hidden',
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+    },
   },
   toggleButton: {
     marginBottom: theme.spacing(1),

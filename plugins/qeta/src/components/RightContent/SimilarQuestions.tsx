@@ -35,7 +35,7 @@ export const SimilarQuestions = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedDraftQuestion(draftQuestion);
-    }, 1500);
+    }, 500);
 
     return () => {
       clearTimeout(handler);

@@ -15,6 +15,8 @@ import { Box } from '@material-ui/core';
 import Whatshot from '@material-ui/icons/Whatshot';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
+import { LinkedPosts } from './LinkedPosts';
+
 export const PostRightContent = (props?: { id?: string }) => {
   const { id: paramId } = useParams();
   const id = props?.id || paramId;
@@ -42,6 +44,7 @@ export const PostRightContent = (props?: { id?: string }) => {
           <Box mb={2}>
             <ContentHealthCard post={post} />
           </Box>
+          <LinkedPosts postId={post.id} />
           <SimilarPosts post={post} />
           <PostHighlightList
             type="hot"

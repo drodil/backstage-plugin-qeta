@@ -110,6 +110,12 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     return response.json(data);
   });
 
+  router.get('/statistics/activity', async (req, response) => {
+    const period = (req.query.period as string) || '3600'; // Default 1 hour
+    const activity = await database.getCommunityActivity(period);
+    return response.json(activity);
+  });
+
   router.get('/statistics/user/:userRef(*)', async (req, response) => {
     const userRef = req.params.userRef;
     const key = `qeta:statistics:user:${userRef}`;

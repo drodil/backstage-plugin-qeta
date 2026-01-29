@@ -16,6 +16,21 @@ import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import numeral from 'numeral';
 import { PostTooltip } from '../Tooltips';
+import HistoryIcon from '@material-ui/icons/History';
+import WhatshotIcon from '@material-ui/icons/Whatshot';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
+import PersonIcon from '@material-ui/icons/Person';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+
+const typeIconMap: Record<string, React.ReactNode> = {
+  recent: <HistoryIcon fontSize="small" />,
+  hot: <WhatshotIcon fontSize="small" />,
+  followed: <BookmarkIcon fontSize="small" />,
+  own: <PersonIcon fontSize="small" />,
+  unanswered: <HelpOutlineIcon fontSize="small" />,
+  incorrect: <ErrorOutlineIcon fontSize="small" />,
+};
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -80,6 +95,7 @@ export const PostHighlightListContent = (props: {
   disableLoading?: boolean;
   containerClassName?: string;
   titleClassName?: string;
+  hideIfEmpty?: boolean;
 }) => {
   const {
     loading,
@@ -91,12 +107,19 @@ export const PostHighlightListContent = (props: {
     disableLoading,
     containerClassName,
     titleClassName,
+    hideIfEmpty,
   } = props;
   const classes = useStyles();
+
   const { t } = useTranslationRef(qetaTranslationRef);
   const questionRoute = useRouteRef(questionRouteRef);
   const articleRoute = useRouteRef(articleRouteRef);
   const linkRoute = useRouteRef(linkRouteRef);
+
+  // Hide the component if empty and hideIfEmpty is true
+  if (hideIfEmpty && !loading && !error && posts.length === 0) {
+    return null;
+  }
 
   return (
     <RightListContainer className={containerClassName}>
@@ -182,6 +205,7 @@ export const PostHighlightList = (props: {
   icon?: ReactNode;
   options?: PostsQuery;
   postType?: PostType;
+  hideIfEmpty?: boolean;
 }) => {
   const {
     value: response,
@@ -212,8 +236,9 @@ export const PostHighlightList = (props: {
       loading={loading}
       error={error}
       title={props.title}
-      icon={props.icon}
+      icon={props.icon ?? typeIconMap[props.type]}
       noPostsLabel={props.noQuestionsLabel}
+      hideIfEmpty={props.hideIfEmpty}
     />
   );
 };

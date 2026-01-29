@@ -18,6 +18,7 @@ import {
   EntitySuggestionsResponse,
   GlobalStat,
   ImpactResponse,
+  Post,
   PostRequest,
   PostResponse,
   PostReview,
@@ -45,6 +46,7 @@ import {
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
+  CommunityStats,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export interface PaginatedQuery {
@@ -62,6 +64,7 @@ export interface PostsQuery extends PaginatedQuery {
   entitiesRelation?: 'and' | 'or';
   author?: string | string[];
   excludeAuthors?: string[];
+  following?: boolean;
   noCorrectAnswer?: boolean;
   noAnswers?: boolean;
   hasAnswers?: boolean;
@@ -618,4 +621,25 @@ export interface QetaApi {
     options?: TimelineOptions,
     requestOptions?: RequestOptions,
   ): Promise<TimelineResponse>;
+
+  getCommunityActivity(
+    period: string,
+    requestOptions?: RequestOptions,
+  ): Promise<CommunityStats>;
+
+  getMostRecentViewedPosts(
+    limit: number,
+    requestOptions?: RequestOptions,
+  ): Promise<Post[]>;
+
+  followPost(id: number, requestOptions?: RequestOptions): Promise<void>;
+
+  unfollowPost(id: number, requestOptions?: RequestOptions): Promise<void>;
+
+  getPostFollowers(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<string[]>;
+
+  getLinkedPosts(id: number, requestOptions?: RequestOptions): Promise<Post[]>;
 }

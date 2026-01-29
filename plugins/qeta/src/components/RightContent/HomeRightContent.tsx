@@ -1,9 +1,4 @@
 import {
-  FollowedCollectionsList,
-  FollowedEntitiesList,
-  FollowedTagsList,
-  FollowedUsersList,
-  ImpactCard,
   PostHighlightList,
   qetaTranslationRef,
   useIdentityApi,
@@ -16,7 +11,27 @@ export const HomeRightContent = () => {
 
   return (
     <>
-      <ImpactCard />
+      <PostHighlightList
+        type="recent"
+        title={t('highlights.recent.title')}
+        noQuestionsLabel={t('highlights.recent.noQuestionsLabel')}
+        options={{ limit: 5 }}
+        hideIfEmpty
+      />
+      <PostHighlightList
+        type="followed"
+        title={t('highlights.followed.title')}
+        noQuestionsLabel={t('highlights.followed.noQuestionsLabel')}
+        options={{ following: true, limit: 5 }}
+        hideIfEmpty
+      />
+      <PostHighlightList
+        type="hot"
+        title={t('highlights.hot.title')}
+        noQuestionsLabel={t('highlights.hot.noQuestionsLabel')}
+        options={{ orderBy: 'trend', limit: 5 }}
+        hideIfEmpty
+      />
       {user && (
         <PostHighlightList
           type="own"
@@ -24,6 +39,7 @@ export const HomeRightContent = () => {
           noQuestionsLabel={t('highlights.own.noQuestionsLabel')}
           postType="question"
           options={{ author: user.userEntityRef, limit: 5 }}
+          hideIfEmpty
         />
       )}
       <PostHighlightList
@@ -32,11 +48,8 @@ export const HomeRightContent = () => {
         noQuestionsLabel={t('highlights.unanswered.noQuestionsLabel')}
         postType="question"
         options={{ noAnswers: true, limit: 5 }}
+        hideIfEmpty
       />
-      <FollowedTagsList />
-      <FollowedUsersList />
-      <FollowedEntitiesList />
-      <FollowedCollectionsList />
     </>
   );
 };

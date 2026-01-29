@@ -73,6 +73,10 @@ export const Timeline = (props: TimelineProps) => {
     return <ErrorPanel error={error} />;
   }
 
+  if (items.length === 0) {
+    return null;
+  }
+
   return (
     <Box>
       <Typography variant="h5" gutterBottom>

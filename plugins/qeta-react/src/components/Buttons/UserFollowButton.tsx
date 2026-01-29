@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import NotificationsActive from '@material-ui/icons/NotificationsActive';
+import NotificationsNone from '@material-ui/icons/NotificationsNone';
 import { useUserFollow } from '../../hooks';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -22,7 +22,7 @@ export const UserFollowButton = (props: {
       <IconButton
         disableRipple
         size="small"
-        color={users.isFollowingUser(userRef) ? 'secondary' : 'primary'}
+        color={users.isFollowingUser(userRef) ? 'secondary' : 'default'}
         onClick={() => {
           if (users.isFollowingUser(userRef)) {
             users.unfollowUser(userRef);
@@ -32,7 +32,11 @@ export const UserFollowButton = (props: {
         }}
         style={style}
       >
-        {users.isFollowingUser(userRef) ? <VisibilityOff /> : <Visibility />}
+        {users.isFollowingUser(userRef) ? (
+          <NotificationsActive />
+        ) : (
+          <NotificationsNone />
+        )}
       </IconButton>
     </Tooltip>
   );

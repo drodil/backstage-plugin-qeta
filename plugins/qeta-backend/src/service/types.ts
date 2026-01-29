@@ -203,6 +203,7 @@ export const PostsQuerySchema: JSONSchemaType<PostsQuery> = {
     },
     ids: { type: 'array', items: { type: 'integer' }, nullable: true },
     checkAccess: { type: 'boolean', nullable: true },
+    following: { type: 'boolean', nullable: true },
   },
   required: [],
   additionalProperties: false,

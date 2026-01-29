@@ -50,19 +50,18 @@ export const CollectionPage = () => {
   }
 
   const title = (
-    <Typography variant="h5" component="h2" style={{ display: 'flex' }}>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
       <PlaylistPlayIcon fontSize="large" style={{ marginRight: '8px' }} />
-      {collection.title}
-      <CollectionFollowButton
-        collection={collection}
-        style={{ marginLeft: '0.5em' }}
-      />
-    </Typography>
+      <Typography variant="h5" component="h2">
+        {collection.title}
+      </Typography>
+    </div>
   );
 
   return (
     <>
       <ContentHeader titleComponent={title}>
+        <CollectionFollowButton collection={collection} />
         {collection.canEdit && (
           <Button
             variant="contained"

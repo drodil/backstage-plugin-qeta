@@ -362,6 +362,17 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       optionOverride.orderBy = 'trend';
     } else if (type === 'own') {
       optionOverride.author = username;
+    } else if (type === 'followed') {
+      optionOverride.following = true;
+    } else if (type === 'recent') {
+      const limit = Number(request.query.limit) || 5;
+      const posts = await database.getMostRecentViewedPosts(username, limit);
+      await mapAdditionalFields(request, posts, options, {
+        checkRights: false,
+        username,
+      });
+      response.json({ posts, total: posts.length });
+      return;
     }
     const opts = { ...request.query, ...optionOverride };
 
@@ -442,6 +453,57 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     response.json(post);
   });
 
+  // GET /posts/:id/follow
+  router.get('/posts/:id/followers', async (request, response) => {
+    const postId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(postId)) {
+      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
+      return;
+    }
+    const followers = await database.getPostFollowers(postId);
+    response.json(followers);
+  });
+
+  // POST /posts/:id/follow
+  router.post('/posts/:id/follow', async (request, response) => {
+    const username = await permissionMgr.getUsername(request, true);
+    const postId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(postId)) {
+      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
+      return;
+    }
+    await database.followPost(username, postId);
+    response.status(204).send();
+  });
+
+  // DELETE /posts/:id/follow
+  router.delete('/posts/:id/follow', async (request, response) => {
+    const username = await permissionMgr.getUsername(request, true);
+    const postId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(postId)) {
+      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
+      return;
+    }
+    await database.unfollowPost(username, postId);
+    response.status(204).send();
+  });
+
+  // GET /posts/:id/linked
+  router.get('/posts/:id/linked', async (request, response) => {
+    const username = await permissionMgr.getUsername(request, true);
+    const postId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(postId)) {
+      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
+      return;
+    }
+    const posts = await database.getLinkedPosts(postId, username);
+    await mapAdditionalFields(request, posts, options, {
+      checkRights: false,
+      username,
+    });
+    response.json(posts);
+  });
+
   // POST /posts/:id/comments
   router.post(`/posts/:id/comments`, async (request, response) => {
     const ret = await getPostAndCheckStatus(request, response, false, true);
@@ -495,11 +557,20 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       if (!updatedPost || updatedPost.status !== 'active') {
         return;
       }
+      const hasInteracted = await database.hasUserInteracted(
+        username,
+        updatedPost.id,
+      );
+      if (!hasInteracted) {
+        await database.followPost(username, updatedPost.id);
+      }
+
       const followingUsers = await Promise.all([
         database.getUsersForTags(updatedPost.tags),
         database.getUsersForEntities(updatedPost.entities),
         database.getFollowingUsers(username),
         database.getUsersWhoFavoritedPost(updatedPost.id),
+        database.getPostFollowers(updatedPost.id),
       ]);
 
       const sent = await notificationMgr.onNewPostComment(
@@ -771,6 +842,8 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       if (!post || post.status !== 'active') {
         return;
       }
+      await database.followPost(username, post.id);
+
       const followingUsers = await Promise.all([
         database.getUsersForTags(tags),
         database.getUsersForEntities(entities),
@@ -905,6 +978,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       const followingUsers = await Promise.all([
         database.getUsersForTags(newTags),
         database.getUsersForEntities(newEntities),
+        database.getPostFollowers(post.id),
       ]);
 
       const sent = await notificationMgr.onPostEdit(

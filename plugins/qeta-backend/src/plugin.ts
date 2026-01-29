@@ -153,6 +153,7 @@ export const qetaPlugin = createBackendPlugin({
         const qetaStore = await DatabaseQetaStore.create({
           database,
           tagDatabase: tagsExtension.tagDatabase,
+          config,
         });
         const permissionEnabled =
           (config.getOptionalBoolean('permission.enabled') ?? false) &&

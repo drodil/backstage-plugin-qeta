@@ -291,6 +291,13 @@ export const createMockQetaStore = (): jest.Mocked<QetaStore> => {
     getUsersForCollection: jest.fn(),
     syncPostToCollections: jest.fn(),
     syncCollectionToPosts: jest.fn(),
+    hasUserInteracted: jest.fn(),
+    followPost: jest.fn(),
+    unfollowPost: jest.fn(),
+    getPostFollowers: jest.fn(),
+    getMostRecentViewedPosts: jest.fn(),
+    getLinkedPosts: jest.fn(),
+    backfillLinks: jest.fn(),
   } as unknown as jest.Mocked<QetaStore>;
 };
 
@@ -382,6 +389,13 @@ export const setupTestApp = async (
   qetaStore.getMostUpvotedAnswers.mockResolvedValue(mostUpvotedAnswers);
   qetaStore.syncPostToCollections.mockResolvedValue([]);
   qetaStore.syncCollectionToPosts.mockResolvedValue([]);
+  qetaStore.hasUserInteracted.mockResolvedValue(false);
+  qetaStore.followPost.mockResolvedValue(true);
+  qetaStore.unfollowPost.mockResolvedValue(true);
+  qetaStore.getPostFollowers.mockResolvedValue([]);
+  qetaStore.getMostRecentViewedPosts.mockResolvedValue([]);
+  qetaStore.getLinkedPosts.mockResolvedValue([]);
+  qetaStore.backfillLinks.mockResolvedValue();
 
   const app = await buildApp(qetaStore, permissionEvaluator, qetaConfig, cache);
 

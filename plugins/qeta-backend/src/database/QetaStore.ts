@@ -30,6 +30,7 @@ import {
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
+  CommunityStats,
 } from '@drodil/backstage-plugin-qeta-common';
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -676,6 +677,17 @@ export interface QetaStore {
     options: TimelineOptions,
     filters?: TimelineFilters,
   ): Promise<TimelineResponse>;
+
+  getCommunityActivity(period: string): Promise<CommunityStats>;
+
+  followPost(user_ref: string, postId: number): Promise<boolean>;
+  unfollowPost(user_ref: string, postId: number): Promise<boolean>;
+  getPostFollowers(postId: number): Promise<string[]>;
+
+  getMostRecentViewedPosts(user_ref: string, limit: number): Promise<Post[]>;
+  getLinkedPosts(postId: number, user_ref: string): Promise<Post[]>;
+  hasUserInteracted(user_ref: string, postId: number): Promise<boolean>;
+  backfillLinks(): Promise<void>;
 }
 
 export interface TimelineFilters {

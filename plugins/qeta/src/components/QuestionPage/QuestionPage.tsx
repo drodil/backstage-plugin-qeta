@@ -17,6 +17,7 @@ import {
   RelativeTimeWithTooltip,
   UpdatedByLink,
   useQetaApi,
+  FollowPostButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import Comment from '@material-ui/icons/Comment';
 import {
@@ -201,6 +202,7 @@ export const QuestionPage = () => {
         description={getDescription(question)}
         titleIcon={<HelpOutline fontSize="large" />}
       >
+        <FollowPostButton post={question} />
         <AskQuestionButton />
         <ContentHeaderButton
           onClick={() => {

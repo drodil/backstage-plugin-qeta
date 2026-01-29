@@ -1,5 +1,5 @@
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import NotificationsActive from '@material-ui/icons/NotificationsActive';
+import NotificationsNone from '@material-ui/icons/NotificationsNone';
 import { useTagsFollow } from '../../hooks';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -17,7 +17,7 @@ export const TagFollowButton = (props: { tag: string }) => {
       <IconButton
         disableRipple
         size="small"
-        color={tags.isFollowingTag(tag) ? 'secondary' : 'primary'}
+        color={tags.isFollowingTag(tag) ? 'secondary' : 'default'}
         onClick={() => {
           if (tags.isFollowingTag(tag)) {
             tags.unfollowTag(tag);
@@ -26,7 +26,11 @@ export const TagFollowButton = (props: { tag: string }) => {
           }
         }}
       >
-        {tags.isFollowingTag(tag) ? <VisibilityOff /> : <Visibility />}
+        {tags.isFollowingTag(tag) ? (
+          <NotificationsActive />
+        ) : (
+          <NotificationsNone />
+        )}
       </IconButton>
     </Tooltip>
   );

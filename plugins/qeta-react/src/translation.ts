@@ -32,6 +32,7 @@ export const qetaTranslationRef = createTranslationRef({
     },
     common: {
       post: 'post',
+      posts: 'Posts',
       experts: 'Experts',
       error: 'Error',
       tagExpert: 'This user is an expert in this area',
@@ -311,6 +312,12 @@ export const qetaTranslationRef = createTranslationRef({
     createCollectionButton: {
       title: 'Create a collection',
     },
+    followPostButton: {
+      follow:
+        'By following this post, you will receive notifications when it is updated',
+      unfollow:
+        'By unfollowing this post, you will no longer receive notifications when it is updated',
+    },
     commentList: {
       save: 'Save',
       editLink: 'edit',
@@ -514,25 +521,36 @@ export const qetaTranslationRef = createTranslationRef({
       needsReview4: 'Can you verify "{{title}}" is still valid?',
       needsReview5: '"{{title}}" is due for a review',
     },
-    getStartedCard: {
-      title: 'Welcome to Q&A',
-      description:
-        "Qeta is your knowledge-sharing platform. Ask questions, write articles, share useful links, and help build your organization's knowledge base.",
-      featureTags: 'Organize content with tags and collections',
-      featureEntities: 'Link questions to catalog components and services',
-      featureNotifications: 'Get notified about answers and mentions',
-      featureReputation: 'Earn reputation by helping others',
-      askQuestion: 'Ask Question',
-      browseQuestions: 'Questions',
-      articles: 'Articles',
-      links: 'Links',
+    communityActivity: {
+      title: 'Community Activity',
+      newPosts: 'New Posts',
+      newAnswers: 'New Answers',
+      newComments: 'New Comments',
+      newVotes: 'New Votes',
+      activeUsers: 'Active Users',
+      views: 'Views',
+      period: {
+        '1d': 'Last 24h',
+        '3d': 'Last 3 days',
+        '7d': 'Last 7 days',
+        '14d': 'Last 14 days',
+        '30d': 'Last 30 days',
+        '90d': 'Last 90 days',
+        '1y': 'Last year',
+      },
     },
     homePage: {
       title: 'Home',
+      followedItems: 'Following',
+      noFollowedItems: 'You are not following anything yet',
+      tags: 'Tags',
+      entities: 'Entities',
+      users: 'Users',
+      collections: 'Collections',
     },
     impactCard: {
       title: 'Your impact',
-      views: 'views',
+      views: 'views on your posts',
       error: 'Failed to load impact data',
       contributions: 'Your contributions helped {{lastWeek}} people this week',
       totalContributions: 'Contributions',
@@ -559,11 +577,21 @@ export const qetaTranslationRef = createTranslationRef({
       followedUsers: 'Followed users',
       similarQuestions: 'Similar questions',
       similarPosts: 'Similar posts',
+      linkedPosts: 'Linked posts',
+      recentlyViewed: 'Recently viewed',
       expand: 'Expand sidebar',
       collapse: 'Collapse sidebar',
     },
     highlights: {
       loadError: 'Failed to load questions',
+      hot: {
+        title: 'Hot Posts',
+        noQuestionsLabel: 'No hot posts',
+      },
+      recent: {
+        title: 'Recently Viewed',
+        noQuestionsLabel: 'No recently viewed posts',
+      },
       own: {
         title: 'Your latest questions',
         noQuestionsLabel: 'No questions',
@@ -587,6 +615,10 @@ export const qetaTranslationRef = createTranslationRef({
       incorrect: {
         title: 'Questions without correct answer',
         noQuestionsLabel: 'No questions without correct answers',
+      },
+      followed: {
+        title: 'Followed posts',
+        noQuestionsLabel: 'No followed posts',
       },
     },
     questionsPage: {

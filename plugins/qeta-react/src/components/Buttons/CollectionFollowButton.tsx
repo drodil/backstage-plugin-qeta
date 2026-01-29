@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react';
 import { IconButton, Tooltip } from '@material-ui/core';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import NotificationsActive from '@material-ui/icons/NotificationsActive';
+import NotificationsNone from '@material-ui/icons/NotificationsNone';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
@@ -24,7 +24,7 @@ export const CollectionFollowButton = (props: {
         color={
           collections.isFollowingCollection(collection)
             ? 'secondary'
-            : 'primary'
+            : 'default'
         }
         onClick={() => {
           if (collections.isFollowingCollection(collection)) {
@@ -36,9 +36,9 @@ export const CollectionFollowButton = (props: {
         style={style}
       >
         {collections.isFollowingCollection(collection) ? (
-          <VisibilityOff />
+          <NotificationsActive />
         ) : (
-          <Visibility />
+          <NotificationsNone />
         )}
       </IconButton>
     </Tooltip>

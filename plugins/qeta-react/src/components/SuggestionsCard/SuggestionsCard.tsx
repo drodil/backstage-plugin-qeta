@@ -65,6 +65,12 @@ const useStyles = makeStyles(theme => ({
   timestamp: {
     color: theme.palette.text.secondary,
   },
+  primaryText: {
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: 'block',
+  },
   emptyState: {
     padding: theme.spacing(3),
     textAlign: 'center',
@@ -104,6 +110,7 @@ const SuggestionListItem = (props: {
         primary={props.children}
         secondary={props.timestamp}
         className={classes.listItemText}
+        classes={{ primary: classes.primaryText }}
       />
     </ListItem>
   );

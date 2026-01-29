@@ -17,6 +17,9 @@ const useStyles = makeStyles(theme => ({
     marginBottom: '1em',
   },
   subheader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(0.5),
     color: theme.palette.text.hint,
     padding: '0px 0px 0.5rem 0.5rem',
     whiteSpace: 'nowrap',
@@ -91,8 +94,8 @@ export const RightList = (props: {
           color="primary"
           className={`${styles.subheader} ${props.titleClassName ?? ''}`}
         >
-          {props.title}
           {props.icon}
+          {props.title}
         </ListSubheader>
       }
     >

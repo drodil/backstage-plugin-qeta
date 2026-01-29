@@ -26,6 +26,11 @@ async function createStore(databaseId: TestDatabaseId) {
     knex,
     storage: await DatabaseQetaStore.create({
       database: databaseManager,
+      config: {
+        getOptionalConfig: () => undefined,
+        getOptionalString: () => undefined,
+        getOptionalBoolean: () => undefined,
+      } as any,
     }),
   };
 }

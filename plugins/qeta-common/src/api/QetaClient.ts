@@ -66,6 +66,7 @@ import {
   UserStat,
   UserTagsResponse,
   UserUsersResponse,
+  CommunityStats,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CustomErrorBase } from '@backstage/errors';
 import omitBy from 'lodash/omitBy';
@@ -1664,5 +1665,82 @@ export class QetaClient implements QetaApi {
     }
     const cleaned = omitBy(params, v => !Boolean(v));
     return qs.stringify(cleaned);
+  }
+
+  async getCommunityActivity(
+    period: string,
+    requestOptions?: RequestOptions,
+  ): Promise<CommunityStats> {
+    const response = await this.fetch('/statistics/activity', {
+      requestOptions,
+      queryParams: { period },
+    });
+    if (!response.ok) {
+      throw new QetaError('Failed to fetch community activity', []);
+    }
+    return (await response.json()) as CommunityStats;
+  }
+
+  async getMostRecentViewedPosts(
+    limit: number,
+    requestOptions?: RequestOptions,
+  ): Promise<Post[]> {
+    const response = await this.fetch('/posts/recent', {
+      requestOptions,
+      queryParams: { limit },
+    });
+    if (!response.ok) {
+      return [];
+    }
+    return (await response.json()) as Post[];
+  }
+
+  async followPost(id: number, requestOptions?: RequestOptions): Promise<void> {
+    const response = await this.fetch(`/posts/${id}/follow`, {
+      requestOptions,
+      reqInit: { method: 'POST' },
+    });
+    if (!response.ok) {
+      throw new QetaError('Failed to follow post', []);
+    }
+  }
+
+  async unfollowPost(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<void> {
+    const response = await this.fetch(`/posts/${id}/follow`, {
+      requestOptions,
+      reqInit: { method: 'DELETE' },
+    });
+    if (!response.ok) {
+      throw new QetaError('Failed to unfollow post', []);
+    }
+  }
+
+  async getPostFollowers(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<string[]> {
+    const response = await this.fetch(`/posts/${id}/followers`, {
+      requestOptions,
+    });
+    if (!response.ok) {
+      return [];
+    }
+    return (await response.json()) as string[];
+  }
+
+  async getLinkedPosts(
+    id: number,
+    requestOptions?: RequestOptions,
+  ): Promise<Post[]> {
+    const response = await this.fetch(`/posts/${id}/linked`, {
+      requestOptions,
+    });
+    if (!response.ok) {
+      return [];
+    }
+    return (await response.json()) as Post[];
   }
 }
