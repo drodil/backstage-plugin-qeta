@@ -124,11 +124,7 @@ const useStyles = makeStyles(
         '& code': {
           fontFamily: 'Courier New,Courier,monospace',
           fontStyle: 'normal',
-          display: 'block',
-          width: '100%',
           overflowX: 'auto',
-          borderRadius: 4,
-          padding: '0.2em 0.4em',
         },
         '& em': {
           fontStyle: 'italic !important',
