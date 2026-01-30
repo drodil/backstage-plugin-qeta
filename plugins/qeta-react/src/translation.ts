@@ -1007,6 +1007,7 @@ export const qetaTranslationRef = createTranslationRef({
       answerScore: 'Answer score',
       postScore: 'Post score',
       correctAnswers: 'Correct answers',
+      lastSeen: 'Last seen',
     },
     collectionButton: {
       follow: 'Follow',

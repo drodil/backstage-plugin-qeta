@@ -63,6 +63,7 @@ export interface UserStat extends Stat {
   answerScore: number;
   postScore: number;
   correctAnswers: number;
+  lastSeen?: Date;
 }
 
 export interface Badge {
@@ -440,6 +441,7 @@ export interface UserResponse {
   answerScore: number;
   postScore: number;
   correctAnswers: number;
+  lastSeen?: Date;
 }
 
 export interface UsersResponse {

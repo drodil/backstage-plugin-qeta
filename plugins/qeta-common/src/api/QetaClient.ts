@@ -1260,6 +1260,7 @@ export class QetaClient implements QetaApi {
           totalViews: 0,
           totalVotes: 0,
           totalUsers: 0,
+          activeUsers: 0,
           date: new Date(),
         },
       };

@@ -434,7 +434,7 @@ const StatsLineChart = (props: {
 
 export const StatsChart = (props: {
   data: Stat[];
-  summary?: Record<string, number>;
+  summary?: Record<string, number | Date | string>;
   loading?: boolean;
   error?: string;
 }) => {
@@ -504,7 +504,9 @@ export const StatsChart = (props: {
                 variant="h4"
                 style={{ color: stat.color, fontWeight: 'bold' }}
               >
-                {value !== undefined ? value : '-'}
+                {value instanceof Date
+                  ? value.toLocaleDateString()
+                  : value ?? '-'}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 {stat.name}

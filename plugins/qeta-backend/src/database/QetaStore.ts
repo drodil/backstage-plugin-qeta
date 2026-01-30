@@ -97,6 +97,7 @@ export interface UserResponse {
   answerScore: number;
   postScore: number;
   correctAnswers: number;
+  lastSeen?: Date;
 }
 
 export interface UsersResponse {

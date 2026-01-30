@@ -12,6 +12,8 @@ import {
   UserFollowButton,
   useUserInfo,
   WriteArticleButton,
+  useQetaApi,
+  RelativeTimeWithTooltip,
 } from '@drodil/backstage-plugin-qeta-react';
 import { UserStatsContent } from './UserStatsContent';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
@@ -63,6 +65,10 @@ export const UserPage = () => {
     loading: loadingUser,
     error: userError,
   } = useIdentityApi(api => api.getBackstageIdentity(), []);
+  const { value: userStats, loading: loadingUserStats } = useQetaApi(
+    api => api.getUserStats(identity),
+    [identity],
+  );
 
   const handleChange = (_event: ChangeEvent<{}>, newValue: string) => {
     setSearchParams({});
@@ -111,6 +117,12 @@ export const UserPage = () => {
         {(secondaryTitle || user?.spec?.profile?.email) && (
           <Typography variant="h6" color="textSecondary">
             {secondaryTitle || user?.spec?.profile?.email}
+          </Typography>
+        )}
+        {userStats?.summary?.lastSeen && (
+          <Typography variant="body2" color="textSecondary">
+            {t('stats.lastSeen')}:{' '}
+            <RelativeTimeWithTooltip value={userStats.summary.lastSeen} />
           </Typography>
         )}
       </Box>
@@ -198,7 +210,11 @@ export const UserPage = () => {
           </TabList>
         </Box>
         <TabPanel value="statistics" className={classes.tabPanel}>
-          <UserStatsContent userRef={identity ?? ''} />
+          <UserStatsContent
+            userRef={identity ?? ''}
+            stats={userStats}
+            loading={loadingUserStats}
+          />
         </TabPanel>
         <TabPanel value="questions" className={classes.tabPanel}>
           <PostsContainer

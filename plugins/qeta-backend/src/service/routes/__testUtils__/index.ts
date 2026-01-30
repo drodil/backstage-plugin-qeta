@@ -149,6 +149,7 @@ export const globalStats = [
     totalLinks: 15,
     totalTags: 20,
     totalUsers: 30,
+    activeUsers: 20,
   },
 ];
 
@@ -252,6 +253,7 @@ export const createMockQetaStore = (): jest.Mocked<QetaStore> => {
     getTagExperts: jest.fn(),
     getTotalViews: jest.fn(),
     getGlobalStats: jest.fn(),
+    getCommunityActivity: jest.fn(),
     getCount: jest.fn(),
     getUsersCount: jest.fn(),
     getUserStats: jest.fn(),

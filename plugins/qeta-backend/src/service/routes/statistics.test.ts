@@ -171,6 +171,15 @@ describe('Statistics Routes', () => {
       qetaStore.getGlobalStats.mockResolvedValue(globalStats);
       qetaStore.getCount.mockResolvedValue(50);
       qetaStore.getUsersCount.mockResolvedValue(30);
+      qetaStore.getCommunityActivity.mockResolvedValue({
+        period: '1d',
+        posts: 0,
+        answers: 0,
+        comments: 0,
+        votes: 0,
+        views: 0,
+        activeUsers: 0,
+      });
 
       const response = await request(app).get('/statistics/global');
 

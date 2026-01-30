@@ -107,6 +107,28 @@ export class UsersStore extends BaseStore {
     if (rows.length === 0) {
       return null;
     }
+
+    const lastSeenRes = await this.db.raw(
+      `
+      SELECT MAX("timestamp") as "lastSeen" FROM (
+        SELECT created as "timestamp" FROM posts WHERE author = ?
+        UNION ALL
+        SELECT created as "timestamp" FROM answers WHERE author = ?
+        UNION ALL
+        SELECT created as "timestamp" FROM comments WHERE author = ?
+        UNION ALL
+        SELECT timestamp as "timestamp" FROM post_votes WHERE author = ?
+        UNION ALL
+        SELECT timestamp as "timestamp" FROM post_views WHERE author = ?
+      ) as activity
+      `,
+      [user_ref, user_ref, user_ref, user_ref, user_ref],
+    );
+
+    const lastSeen = lastSeenRes.rows
+      ? lastSeenRes.rows[0].lastSeen
+      : lastSeenRes[0]?.lastSeen;
+
     const val = rows[0] as any;
     return {
       userRef: val.author,
@@ -122,6 +144,7 @@ export class UsersStore extends BaseStore {
       answerScore: this.mapToInteger(val.answerScore),
       postScore: this.mapToInteger(val.postScore),
       correctAnswers: this.mapToInteger(val.correctAnswers),
+      lastSeen: lastSeen ? new Date(lastSeen) : undefined,
     };
   }
 
