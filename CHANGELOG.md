@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.58.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.57.0...v3.58.0) (2026-01-30)
+
+
+### Features
+
+* feature dump ([4aee42c](https://github.com/drodil/backstage-plugin-qeta/commit/4aee42c5032582b0b98aed5e438a7c133bb04cc8)), closes [#396](https://github.com/drodil/backstage-plugin-qeta/issues/396) [#395](https://github.com/drodil/backstage-plugin-qeta/issues/395) [#394](https://github.com/drodil/backstage-plugin-qeta/issues/394) [#393](https://github.com/drodil/backstage-plugin-qeta/issues/393) [#392](https://github.com/drodil/backstage-plugin-qeta/issues/392)
+* show active users in global stats ([e817f7d](https://github.com/drodil/backstage-plugin-qeta/commit/e817f7d264208f8d9b2612e34f6f0f7bd53816b5))
+* show last seen on user page ([fedf811](https://github.com/drodil/backstage-plugin-qeta/commit/fedf8114d7f44ed2d65ca2001725479c8b4bbcf3))
+
+
+### Bug Fixes
+
+* validate post link ids and types ([4c370a8](https://github.com/drodil/backstage-plugin-qeta/commit/4c370a814eb8ca7d7cf3651529949bfb0f07c459))
+
 ## [3.57.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.56.1...v3.57.0) (2026-01-28)
 
 
