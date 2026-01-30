@@ -39,7 +39,7 @@ import {
 import LocalOfferOutlined from '@material-ui/icons/LocalOfferOutlined';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CategoryIcon from '@material-ui/icons/Category';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import NotificationsActive from '@material-ui/icons/NotificationsActive';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -335,7 +335,7 @@ export const FollowedItemsCard = () => {
       <CardHeader
         title={t('homePage.followedItems')}
         className={classes.header}
-        avatar={<PeopleAltIcon />}
+        avatar={<NotificationsActive />}
         titleTypographyProps={{ variant: 'h5' }}
       />
       <CardContent className={classes.content}>{renderContent()}</CardContent>
