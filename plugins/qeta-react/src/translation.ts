@@ -998,6 +998,7 @@ export const qetaTranslationRef = createTranslationRef({
       totalComments: 'Total comments',
       totalVotes: 'Total votes',
       totalUsers: 'Total users',
+      activeUsers: 'Active users',
       totalTags: 'Total tags',
       totalArticles: 'Total articles',
       totalLinks: 'Total links',

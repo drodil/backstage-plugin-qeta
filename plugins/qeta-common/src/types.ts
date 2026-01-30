@@ -54,6 +54,7 @@ export interface Stat {
 export interface GlobalStat extends Stat {
   totalTags: number;
   totalUsers: number;
+  activeUsers: number;
 }
 
 export interface UserStat extends Stat {

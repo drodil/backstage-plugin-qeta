@@ -217,6 +217,39 @@ export class StatsStore extends BaseStore {
   async saveGlobalStats(date: Date): Promise<void> {
     const globalStats = await this.db('global_stats_view').select('*').first();
 
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const activeUsers = await this.db.raw(
+      `
+      SELECT COUNT(DISTINCT "user") as "CNT" FROM (
+        SELECT author as "user" FROM posts WHERE created BETWEEN ? AND ?
+        UNION
+        SELECT author as "user" FROM answers WHERE created BETWEEN ? AND ?
+        UNION
+        SELECT author as "user" FROM comments WHERE created BETWEEN ? AND ?
+        UNION
+        SELECT author as "user" FROM post_votes WHERE timestamp BETWEEN ? AND ?
+        UNION
+        SELECT author as "user" FROM post_views WHERE timestamp BETWEEN ? AND ?
+      ) as active_users
+    `,
+      [
+        startOfDay,
+        endOfDay,
+        startOfDay,
+        endOfDay,
+        startOfDay,
+        endOfDay,
+        startOfDay,
+        endOfDay,
+        startOfDay,
+        endOfDay,
+      ],
+    );
+
     await this.db
       .insert({
         date: date,
@@ -228,6 +261,9 @@ export class StatsStore extends BaseStore {
         totalVotes: globalStats.totalVotes || 0,
         totalTags: globalStats.totalTags || 0,
         totalComments: globalStats.totalComments || 0,
+        activeUsers: this.mapToInteger(
+          activeUsers.rows ? activeUsers.rows[0].CNT : activeUsers[0]?.CNT,
+        ),
       })
       .into('global_stats')
       .onConflict('date')

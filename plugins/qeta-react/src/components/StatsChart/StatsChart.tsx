@@ -108,7 +108,8 @@ type StatType = {
     | 'reputation'
     | 'answerScore'
     | 'postScore'
-    | 'correctAnswers';
+    | 'correctAnswers'
+    | 'activeUsers';
   name: string;
   color: string;
   enabled: boolean;
@@ -164,6 +165,14 @@ const getDefaultStats = (isDark: boolean, t: any): StatType[] => [
     enabled: true,
     globalStat: true,
     userStat: true,
+  },
+  {
+    dataKey: 'activeUsers',
+    name: t('stats.activeUsers'),
+    color: isDark ? '#a78bfa' : '#6d28d9', // purple-400 / purple-800
+    enabled: true,
+    globalStat: true,
+    userStat: false,
   },
   {
     dataKey: 'totalUsers',
