@@ -1,4 +1,4 @@
-import { getCreated, mapAdditionalFields } from '../util';
+import { extractPostIds, getCreated, mapAdditionalFields } from '../util';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import Ajv from 'ajv';
 import { Request, Router } from 'express';
@@ -589,6 +589,15 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
           true,
         );
       }
+      const links: Array<{ id: number; type: string }> = Array.from(
+        extractPostIds(request.body.content, config),
+      );
+      database.updateCommentLinks(
+        updatedPost.id,
+        links,
+        undefined,
+        updatedPost.comments![updatedPost.comments!.length - 1].id,
+      );
     });
 
     events?.publish({
@@ -681,6 +690,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     });
 
     await mapAdditionalFields(request, [updatedPost], options, { username });
+
+    wrapAsync(async () => {
+      const links: Array<{ id: number; type: string }> = Array.from(
+        extractPostIds(request.body.content, config),
+      );
+      database.updateCommentLinks(postId, links, undefined, commentId);
+    });
 
     // Response
     response.json(updatedPost);
@@ -842,7 +858,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       if (!post || post.status !== 'active') {
         return;
       }
-      await database.followPost(username, post.id);
+      database.followPost(username, post.id);
 
       const followingUsers = await Promise.all([
         database.getUsersForTags(tags),
@@ -857,10 +873,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       );
       const mentions = findEntityMentions(request.body.content);
       if (mentions.length > 0) {
-        await notificationMgr.onMention(username, post, mentions, sent);
+        notificationMgr.onMention(username, post, mentions, sent);
       }
 
-      await notifyAutomaticCollectionAdditions(post.id, username);
+      notifyAutomaticCollectionAdditions(post.id, username);
+      const links: Array<{ id: number; type: string }> = Array.from(
+        extractPostIds(request.body.content, config),
+      );
+      database.updatePostLinks(post.id, links);
     });
 
     events?.publish({
@@ -991,10 +1011,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       const newMentions = mentions.filter(m => !originalMentions.includes(m));
 
       if (newMentions.length > 0) {
-        await notificationMgr.onMention(username, post, newMentions, sent);
+        notificationMgr.onMention(username, post, newMentions, sent);
       }
 
-      await notifyAutomaticCollectionAdditions(post.id, username);
+      notifyAutomaticCollectionAdditions(post.id, username);
+      const links: Array<{ id: number; type: string }> = Array.from(
+        extractPostIds(request.body.content, config),
+      );
+      database.updatePostLinks(post.id, links);
     });
 
     events?.publish({

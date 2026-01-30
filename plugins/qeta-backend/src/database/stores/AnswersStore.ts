@@ -15,7 +15,7 @@ import {
 import { Knex } from 'knex';
 import { CommentsStore } from './CommentsStore';
 import { AttachmentsStore } from './AttachmentsStore';
-import { QetaFilters } from '../../service/util';
+import { extractPostIds, QetaFilters } from '../../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { BaseStore } from './BaseStore';
 import { Config } from '@backstage/config';
@@ -212,8 +212,6 @@ export class AnswersStore extends BaseStore {
       await (this.postsStore as any).followPost(user_ref, questionId);
     }
 
-    await this.updateAnswerLinks(questionId, answer, answers[0].id);
-
     return this.getAnswer(answers[0].id, user_ref, options);
   }
 
@@ -240,8 +238,6 @@ export class AnswersStore extends BaseStore {
     if (images) {
       await this.updateAttachments('answerId', answer, images, answerId);
     }
-
-    await this.updateAnswerLinks(questionId, answer, answerId);
 
     return this.getAnswer(answerId, user_ref, options);
   }
@@ -470,43 +466,50 @@ export class AnswersStore extends BaseStore {
       .select('id', 'postId', 'content')
       .where('content', 'like', `%/${route}/%`);
     for (const answer of answers) {
-      await this.updateAnswerLinks(answer.postId, answer.content, answer.id);
+      const links = Array.from(extractPostIds(answer.content, this.config));
+      await this.updateAnswerLinks(answer.postId, links, answer.id);
     }
   }
 
-  private async updateAnswerLinks(
+  async updateAnswerLinks(
     postId: number,
-    content?: string,
-    answerId?: number,
+    links: Array<{ id: number; type: string }>,
+    answerId: number,
   ) {
-    if (!content || !answerId) {
-      return;
-    }
-    const ids = new Set<number>();
-    const route = this.config.getOptionalString('qeta.route') ?? 'qeta';
-    const escapedRoute = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const idRegex = new RegExp(
-      `\\/${escapedRoute}\\/(?:questions|articles|links)\\/(\\d+)`,
-      'g',
-    );
-    for (const match of content.matchAll(idRegex)) {
-      const id = parseInt(match[1], 10);
-      if (!isNaN(id) && id !== postId) {
-        ids.add(id);
-      }
-    }
+    if (links.length > 0) {
+      const existingKeyValues = await this.db('posts')
+        .whereIn(
+          'id',
+          links.map(i => i.id),
+        )
+        .select('id', 'type');
 
-    if (ids.size > 0) {
+      const existingIds = new Set(
+        existingKeyValues
+          .filter(e => {
+            const match = links.find(i => i.id === e.id);
+            return match && match.type === e.type;
+          })
+          .map(e => e.id),
+      );
+
+      existingIds.delete(postId);
+
       await this.db('post_links').where('viaAnswerId', answerId).delete();
-      const inserts = Array.from(ids).map(linkedPostId => ({
-        postId,
-        linkedPostId,
-        viaAnswerId: answerId,
-      }));
-      await this.db('post_links')
-        .insert(inserts)
-        .onConflict(['postId', 'linkedPostId'])
-        .ignore();
+
+      if (existingIds.size > 0) {
+        const inserts = Array.from(existingIds).map(linkedPostId => ({
+          postId,
+          linkedPostId,
+          viaAnswerId: answerId,
+        }));
+        await this.db('post_links')
+          .insert(inserts)
+          .onConflict(['postId', 'linkedPostId'])
+          .ignore();
+      }
+    } else {
+      await this.db('post_links').where('viaAnswerId', answerId).delete();
     }
   }
 }

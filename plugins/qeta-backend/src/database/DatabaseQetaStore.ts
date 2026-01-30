@@ -983,4 +983,33 @@ export class DatabaseQetaStore implements QetaStore {
   async syncCollectionToPosts(collectionId: number): Promise<number[]> {
     return this.collectionsStore.syncCollectionToPosts(collectionId);
   }
+
+  async updatePostLinks(
+    postId: number,
+    links: Array<{ id: number; type: string }>,
+  ): Promise<void> {
+    return this.postsStore.updatePostLinks(postId, links);
+  }
+
+  async updateAnswerLinks(
+    postId: number,
+    links: Array<{ id: number; type: string }>,
+    answerId: number,
+  ): Promise<void> {
+    return this.answersStore.updateAnswerLinks(postId, links, answerId);
+  }
+
+  async updateCommentLinks(
+    postId: number | undefined,
+    links: Array<{ id: number; type: string }>,
+    answerId: number | undefined,
+    commentId: number,
+  ): Promise<void> {
+    return this.commentsStore.updateCommentLinks(
+      postId,
+      links,
+      answerId,
+      commentId,
+    );
+  }
 }

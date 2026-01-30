@@ -908,4 +908,131 @@ describe('Posts Routes', () => {
       expect(response.status).toEqual(404);
     });
   });
+
+  describe('Link Update Functionality', () => {
+    beforeEach(() => {
+      qetaStore.updatePostLinks.mockResolvedValue();
+      qetaStore.updateCommentLinks.mockResolvedValue();
+    });
+
+    describe('POST /posts - link extraction', () => {
+      it('calls updatePostLinks with post content after creating post', async () => {
+        const contentWithLinks =
+          'Check /qeta/questions/123 and /qeta/articles/456';
+        qetaStore.createPost.mockResolvedValue({
+          ...question,
+          content: contentWithLinks,
+        });
+        mockSystemDate(question.created);
+
+        await request(app).post('/posts').send({
+          title: 'title',
+          content: contentWithLinks,
+          type: 'question',
+        });
+
+        // Wait for async operation
+        await new Promise(resolve => setImmediate(resolve));
+
+        expect(qetaStore.updatePostLinks).toHaveBeenCalledWith(question.id, [
+          { id: 123, type: 'question' },
+          { id: 456, type: 'article' },
+        ]);
+      });
+
+      it('handles posts without links gracefully', async () => {
+        const contentWithoutLinks = 'This is plain text without any links';
+        qetaStore.createPost.mockResolvedValue({
+          ...question,
+          content: contentWithoutLinks,
+        });
+        mockSystemDate(question.created);
+
+        await request(app).post('/posts').send({
+          title: 'title',
+          content: contentWithoutLinks,
+          type: 'question',
+        });
+
+        await new Promise(resolve => setImmediate(resolve));
+
+        expect(qetaStore.updatePostLinks).toHaveBeenCalledWith(question.id, []);
+      });
+    });
+
+    describe('POST /posts/:id - link extraction on update', () => {
+      it('calls updatePostLinks with updated content', async () => {
+        const updatedContent = 'Updated with /qeta/questions/789';
+        const originalPost = { ...question, author: 'user:default/mock' };
+        qetaStore.getPost.mockResolvedValue(originalPost);
+        qetaStore.updatePost.mockResolvedValue({
+          ...originalPost,
+          content: updatedContent,
+        });
+        qetaStore.getTags.mockResolvedValue({ tags: [], total: 0 });
+
+        await request(app).post('/posts/1').send({
+          title: 'title',
+          content: updatedContent,
+          type: 'question',
+        });
+
+        await new Promise(resolve => setImmediate(resolve));
+
+        expect(qetaStore.updatePostLinks).toHaveBeenCalledWith(question.id, [
+          { id: 789, type: 'question' },
+        ]);
+      });
+    });
+
+    describe('POST /posts/:id/comments - link extraction', () => {
+      it('calls updateCommentLinks after posting comment', async () => {
+        const commentContent = 'See /qeta/articles/999';
+        qetaStore.getPost.mockResolvedValue(question);
+        qetaStore.commentPost.mockResolvedValue({
+          ...questionWithComment,
+          comments: [{ ...comment, id: 23, content: commentContent }],
+        });
+        mockSystemDate(answer.created);
+
+        await request(app).post('/posts/1/comments').send({
+          content: commentContent,
+        });
+
+        await new Promise(resolve => setImmediate(resolve));
+
+        expect(qetaStore.updateCommentLinks).toHaveBeenCalledWith(
+          question.id,
+          [{ id: 999, type: 'article' }],
+          undefined,
+          23,
+        );
+      });
+    });
+
+    describe('POST /posts/:id/comments/:commentId - link extraction on update', () => {
+      it('calls updateCommentLinks after updating comment', async () => {
+        const updatedCommentContent = 'Updated: /qeta/links/111';
+        qetaStore.getPost.mockResolvedValue(question);
+        qetaStore.getComment.mockResolvedValue(comment);
+        qetaStore.updatePostComment.mockResolvedValue({
+          ...questionWithComment,
+          comments: [{ ...comment, content: updatedCommentContent }],
+        });
+
+        await request(app).post('/posts/1/comments/23').send({
+          content: updatedCommentContent,
+        });
+
+        await new Promise(resolve => setImmediate(resolve));
+
+        expect(qetaStore.updateCommentLinks).toHaveBeenCalledWith(
+          question.id,
+          [{ id: 111, type: 'link' }],
+          undefined,
+          23,
+        );
+      });
+    });
+  });
 });

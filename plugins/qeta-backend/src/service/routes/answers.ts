@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import { getCreated, mapAdditionalFields } from '../util';
+import { extractPostIds, getCreated, mapAdditionalFields } from '../util';
 import {
   AnswersQuerySchema,
   CommentSchema,
@@ -36,8 +36,15 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const answersRoutes = (router: Router, options: RouteOptions) => {
-  const { database, events, signals, notificationMgr, auditor, permissionMgr } =
-    options;
+  const {
+    database,
+    events,
+    config,
+    signals,
+    notificationMgr,
+    auditor,
+    permissionMgr,
+  } = options;
 
   router.get(`/answers`, async (request, response) => {
     // Validation
@@ -182,7 +189,7 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
     wrapAsync(async () => {
       const hasInteracted = await database.hasUserInteracted(username, post.id);
       if (!hasInteracted) {
-        await database.followPost(username, post.id);
+        database.followPost(username, post.id);
       }
       const followingUsers = await Promise.all([
         database.getUsersForTags(post.tags),
@@ -199,8 +206,12 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       );
       const mentions = findEntityMentions(answer.content);
       if (mentions.length > 0) {
-        await notificationMgr.onMention(username, answer, mentions, sent);
+        notificationMgr.onMention(username, answer, mentions, sent);
       }
+      const links: Array<{ id: number; type: string }> = Array.from(
+        extractPostIds(request.body.answer, config),
+      );
+      database.updateAnswerLinks(post.id, links, answer.id);
     });
 
     events?.publish({
@@ -314,6 +325,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
 
     await mapAdditionalFields(request, [answer], options, { username });
 
+    wrapAsync(async () => {
+      const links: Array<{ id: number; type: string }> = Array.from(
+        extractPostIds(request.body.answer, config),
+      );
+      database.updateAnswerLinks(postId, links, answerId);
+    });
+
     // Response
     response.json(answer);
   });
@@ -420,6 +438,15 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
             true,
           );
         }
+        const links: Array<{ id: number; type: string }> = Array.from(
+          extractPostIds(request.body.content, config),
+        );
+        await database.updateCommentLinks(
+          post.id,
+          links,
+          answer.id,
+          answer.comments![answer.comments!.length - 1].id,
+        );
       });
 
       events?.publish({
@@ -524,6 +551,13 @@ export const answersRoutes = (router: Router, options: RouteOptions) => {
       });
 
       await mapAdditionalFields(request, [answer], options, { username });
+
+      wrapAsync(async () => {
+        const links: Array<{ id: number; type: string }> = Array.from(
+          extractPostIds(request.body.content, config),
+        );
+        database.updateCommentLinks(post.id, links, answerId, commentId);
+      });
 
       // Response
       response.json(answer);

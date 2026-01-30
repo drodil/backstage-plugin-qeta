@@ -300,6 +300,9 @@ export const createMockQetaStore = (): jest.Mocked<QetaStore> => {
     getMostRecentViewedPosts: jest.fn(),
     getLinkedPosts: jest.fn(),
     backfillLinks: jest.fn(),
+    updatePostLinks: jest.fn(),
+    updateAnswerLinks: jest.fn(),
+    updateCommentLinks: jest.fn(),
   } as unknown as jest.Mocked<QetaStore>;
 };
 

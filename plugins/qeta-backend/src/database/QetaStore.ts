@@ -689,6 +689,22 @@ export interface QetaStore {
   getLinkedPosts(postId: number, user_ref: string): Promise<Post[]>;
   hasUserInteracted(user_ref: string, postId: number): Promise<boolean>;
   backfillLinks(): Promise<void>;
+  updatePostLinks(
+    postId: number,
+    links: Array<{ id: number; type: string }>,
+  ): Promise<void>;
+
+  updateAnswerLinks(
+    postId: number,
+    links: Array<{ id: number; type: string }>,
+    answerId: number,
+  ): Promise<void>;
+  updateCommentLinks(
+    postId: number | undefined,
+    links: Array<{ id: number; type: string }>,
+    answerId: number | undefined,
+    commentId: number,
+  ): Promise<void>;
 }
 
 export interface TimelineFilters {

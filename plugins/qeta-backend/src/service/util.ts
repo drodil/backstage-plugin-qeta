@@ -486,6 +486,41 @@ const mapPostAnswers = async (
   );
 };
 
+export const extractPostIds = (
+  content: string,
+  config?: Config,
+): Set<{ id: number; type: string }> => {
+  const ids = new Set<{ id: number; type: string }>();
+  const route = config?.getOptionalString('qeta.route') ?? 'qeta';
+  const escapedRoute = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const idRegex = new RegExp(
+    `\\/${escapedRoute}\\/(questions|articles|links)\\/(\\d+)`,
+    'g',
+  );
+  for (const match of content.matchAll(idRegex)) {
+    let type = 'link';
+    if (match[1] === 'questions') {
+      type = 'question';
+    } else if (match[1] === 'articles') {
+      type = 'article';
+    }
+    const id = parseInt(match[2], 10);
+    if (!isNaN(id)) {
+      let exists = false;
+      for (const item of ids) {
+        if (item.id === id && item.type === type) {
+          exists = true;
+          break;
+        }
+      }
+      if (!exists) {
+        ids.add({ id, type });
+      }
+    }
+  }
+  return ids;
+};
+
 const mapPostAdditionalFields = async (
   request: Request<unknown>,
   resource: PostResponse,

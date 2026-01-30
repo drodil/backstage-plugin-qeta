@@ -5,7 +5,7 @@ import {
 import { CommentOptions, MaybeComment } from '../QetaStore';
 import { Knex } from 'knex';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
-import { QetaFilters } from '../../service/util';
+import { extractPostIds, QetaFilters } from '../../service/util';
 import { BaseStore } from './BaseStore';
 import { Config } from '@backstage/config';
 
@@ -32,7 +32,7 @@ export class CommentsStore extends BaseStore {
     content: string,
     created: Date,
   ): Promise<void> {
-    const ret = await this.db
+    await this.db
       .insert({
         author: user_ref,
         content,
@@ -42,7 +42,6 @@ export class CommentsStore extends BaseStore {
       .into('comments')
       .returning('id');
     await this.db('posts').where('id', post_id).increment('commentsCount', 1);
-    await this.updateCommentLinks(post_id, content, undefined, ret[0].id);
   }
 
   async updatePostComment(
@@ -55,7 +54,6 @@ export class CommentsStore extends BaseStore {
       .where('id', '=', id)
       .where('postId', '=', post_id);
     await query.update({ content, updatedBy: user_ref, updated: new Date() });
-    await this.updateCommentLinks(post_id, content, undefined, id);
   }
 
   async deletePostComment(
@@ -80,7 +78,7 @@ export class CommentsStore extends BaseStore {
     content: string,
     created: Date,
   ): Promise<void> {
-    const ret = await this.db
+    await this.db
       .insert({
         author: user_ref,
         content,
@@ -89,7 +87,6 @@ export class CommentsStore extends BaseStore {
       })
       .into('comments')
       .returning('id');
-    await this.updateCommentLinks(undefined, content, answer_id, ret[0].id);
   }
 
   async updateAnswerComment(
@@ -102,7 +99,6 @@ export class CommentsStore extends BaseStore {
       .where('id', '=', id)
       .where('answerId', '=', answer_id);
     await query.update({ content, updatedBy: user_ref, updated: new Date() });
-    await this.updateCommentLinks(undefined, content, answer_id, id);
   }
 
   async deleteAnswerComment(
@@ -234,41 +230,45 @@ export class CommentsStore extends BaseStore {
       .select('id', 'postId', 'answerId', 'content')
       .where('content', 'like', `%/${route}/%`);
     for (const comment of comments) {
+      const links = Array.from(extractPostIds(comment.content, this.config));
       await this.updateCommentLinks(
         comment.postId,
-        comment.content,
+        links,
         comment.answerId,
         comment.id,
       );
     }
   }
 
-  private async updateCommentLinks(
-    postId?: number,
-    content?: string,
-    answerId?: number,
-    commentId?: number,
+  async updateCommentLinks(
+    postId: number | undefined,
+    links: Array<{ id: number; type: string }>,
+    answerId: number | undefined,
+    commentId: number,
   ) {
-    if (!content || !commentId) {
-      return;
-    }
-    const ids = new Set<number>();
-    const route = this.config.getOptionalString('qeta.route') ?? 'qeta';
-    const escapedRoute = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const idRegex = new RegExp(
-      `\\/${escapedRoute}\\/(?:questions|articles|links)\\/(\\d+)`,
-      'g',
-    );
-    for (const match of content.matchAll(idRegex)) {
-      const id = parseInt(match[1], 10);
-      if (!isNaN(id) && id !== postId) {
-        ids.add(id);
-      }
-    }
+    if (links.length > 0) {
+      const existingKeyValues = await this.db('posts')
+        .whereIn(
+          'id',
+          links.map(i => i.id),
+        )
+        .select('id', 'type');
 
-    if (ids.size > 0) {
+      const existingIds = new Set(
+        existingKeyValues
+          .filter(e => {
+            const match = links.find(i => i.id === e.id);
+            return match && match.type === e.type;
+          })
+          .map(e => e.id),
+      );
+
+      if (postId) {
+        existingIds.delete(postId);
+      }
+
       await this.db('post_links').where('viaCommentId', commentId).delete();
-      // If postId is undefined, we need to find it from answer
+
       let actualPostId = postId;
       if (!actualPostId && answerId) {
         const answer = await this.db('answers')
@@ -280,8 +280,8 @@ export class CommentsStore extends BaseStore {
         }
       }
 
-      if (actualPostId) {
-        const inserts = Array.from(ids).map(linkedPostId => ({
+      if (actualPostId && existingIds.size > 0) {
+        const inserts = Array.from(existingIds).map(linkedPostId => ({
           postId: actualPostId,
           linkedPostId,
           viaCommentId: commentId,
@@ -291,6 +291,8 @@ export class CommentsStore extends BaseStore {
           .onConflict(['postId', 'linkedPostId'])
           .ignore();
       }
+    } else {
+      await this.db('post_links').where('viaCommentId', commentId).delete();
     }
   }
 }

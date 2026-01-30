@@ -610,4 +610,116 @@ describe('Answers Routes', () => {
       expect(response.body).toEqual({ answers: [], total: 0 });
     });
   });
+
+  describe('Link Update Functionality', () => {
+    beforeEach(() => {
+      qetaStore.updateAnswerLinks.mockResolvedValue();
+      qetaStore.updateCommentLinks.mockResolvedValue();
+    });
+
+    describe('POST /posts/:id/answers - link extraction', () => {
+      it('calls updateAnswerLinks after creating answer', async () => {
+        const contentWithLinks =
+          'See /qeta/questions/100 and /qeta/articles/200';
+        qetaStore.getPost.mockResolvedValue(question);
+        qetaStore.answerPost.mockResolvedValue({
+          ...answer,
+          content: contentWithLinks,
+        });
+        mockSystemDate(answer.created);
+
+        await request(app).post('/posts/1/answers').send({
+          answer: contentWithLinks,
+        });
+
+        await new Promise(resolve => setImmediate(resolve));
+
+        expect(qetaStore.updateAnswerLinks).toHaveBeenCalledWith(
+          question.id,
+          [
+            { id: 100, type: 'question' },
+            { id: 200, type: 'article' },
+          ],
+          answer.id,
+        );
+      });
+    });
+
+    describe('POST /posts/:id/answers/:answerId - link extraction on update', () => {
+      it('calls updateAnswerLinks after updating answer', async () => {
+        const updatedContent = 'Updated: /qeta/links/300';
+        const originalAnswer = { ...answer, author: 'user:default/mock' };
+        qetaStore.getPost.mockResolvedValue(question);
+        qetaStore.getAnswer.mockResolvedValue(originalAnswer);
+        qetaStore.updateAnswer.mockResolvedValue({
+          ...originalAnswer,
+          content: updatedContent,
+        });
+
+        await request(app)
+          .post('/posts/1/answers/1')
+          .send({ answer: updatedContent });
+
+        await new Promise(resolve => setImmediate(resolve));
+
+        expect(qetaStore.updateAnswerLinks).toHaveBeenCalledWith(
+          question.id,
+          [{ id: 300, type: 'link' }],
+          answer.id,
+        );
+      });
+    });
+
+    describe('POST /posts/:id/answers/:answerId/comments - link extraction', () => {
+      it('calls updateCommentLinks after posting answer comment', async () => {
+        const commentContent = 'Check /qeta/questions/400';
+        qetaStore.getPost.mockResolvedValue(question);
+        qetaStore.getAnswer.mockResolvedValue(answer);
+        qetaStore.commentAnswer.mockResolvedValue({
+          ...answerWithComment,
+          comments: [{ ...comment, id: 23, content: commentContent }],
+        });
+        mockSystemDate(answer.created);
+
+        await request(app).post('/posts/1/answers/1/comments').send({
+          content: commentContent,
+        });
+
+        await new Promise(resolve => setImmediate(resolve));
+
+        expect(qetaStore.updateCommentLinks).toHaveBeenCalledWith(
+          question.id,
+          [{ id: 400, type: 'question' }],
+          answer.id,
+          23,
+        );
+      });
+    });
+
+    describe('POST /posts/:id/answers/:answerId/comments/:commentId - link extraction on update', () => {
+      it('calls updateCommentLinks after updating answer comment', async () => {
+        const updatedCommentContent = 'Updated: /qeta/articles/500';
+        qetaStore.getPost.mockResolvedValue(question);
+        qetaStore.getAnswer.mockResolvedValue(answer);
+        qetaStore.getComment.mockResolvedValue(comment);
+        qetaStore.updateAnswerComment.mockResolvedValue({
+          ...answerWithComment,
+          comments: [{ ...comment, content: updatedCommentContent }],
+        });
+
+        await request(app).post('/posts/1/answers/1/comments/23').send({
+          content: updatedCommentContent,
+        });
+
+        await new Promise(resolve => setImmediate(resolve));
+
+        expect(qetaStore.updateCommentLinks).toHaveBeenCalledWith(
+          question.id,
+          [{ id: 500, type: 'article' }],
+          answer.id,
+          23,
+        );
+      });
+    });
+  });
 });

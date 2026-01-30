@@ -10,7 +10,7 @@ import {
   PostType,
 } from '@drodil/backstage-plugin-qeta-common';
 import { MaybePost, PostOptions, Posts } from '../QetaStore';
-import { QetaFilters } from '../../service/util';
+import { extractPostIds, QetaFilters } from '../../service/util';
 import { Knex } from 'knex';
 import { AnswersStore } from './AnswersStore';
 import { CommentsStore } from './CommentsStore';
@@ -649,8 +649,6 @@ export class PostsStore extends BaseStore {
       headerImage,
     );
 
-    await this.updatePostLinks(posts[0].id, content);
-
     return (await this.mapPostEntities([posts[0]], user_ref, opts))[0];
   }
 
@@ -726,11 +724,6 @@ export class PostsStore extends BaseStore {
       id,
       headerImage,
     );
-
-    await this.updatePostLinks(id, content ?? '');
-    if (content !== undefined) {
-      await this.updatePostLinks(id, content);
-    }
 
     return await this.getPost(user_ref, id, false, opts);
   }
@@ -920,39 +913,56 @@ export class PostsStore extends BaseStore {
       .select('id', 'content')
       .where('content', 'like', `%/${route}/%`);
     for (const post of posts) {
-      await this.updatePostLinks(post.id, post.content);
+      const links = Array.from(extractPostIds(post.content, this.config));
+      await this.updatePostLinks(post.id, links);
     }
   }
 
-  private async updatePostLinks(postId: number, content: string) {
-    const ids = new Set<number>();
-    const route = this.config?.getOptionalString('qeta.route') ?? 'qeta';
-    const escapedRoute = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const idRegex = new RegExp(
-      `\\/${escapedRoute}\\/(?:questions|articles|links)\\/(\\d+)`,
-      'g',
-    );
-    for (const match of content.matchAll(idRegex)) {
-      const id = parseInt(match[1], 10);
-      if (!isNaN(id) && id !== postId) {
-        ids.add(id);
-      }
-    }
+  async updatePostLinks(
+    postId: number,
+    links: Array<{ id: number; type: string }>,
+  ) {
+    if (links.length > 0) {
+      const existingKeyValues = await this.db('posts')
+        .whereIn(
+          'id',
+          links.map(i => i.id),
+        )
+        .select('id', 'type');
 
-    if (ids.size > 0) {
+      const existingIds = new Set(
+        existingKeyValues
+          .filter(e => {
+            const match = links.find(i => i.id === e.id);
+            return match && match.type === e.type;
+          })
+          .map(e => e.id),
+      );
+
+      existingIds.delete(postId);
+
       await this.db('post_links')
         .where('postId', postId)
         .whereNull('viaAnswerId')
         .whereNull('viaCommentId')
         .delete();
-      const inserts = Array.from(ids).map(linkedPostId => ({
-        postId,
-        linkedPostId,
-      }));
+
+      if (existingIds.size > 0) {
+        const inserts = Array.from(existingIds).map(linkedPostId => ({
+          postId,
+          linkedPostId,
+        }));
+        await this.db('post_links')
+          .insert(inserts)
+          .onConflict(['postId', 'linkedPostId'])
+          .ignore();
+      }
+    } else {
       await this.db('post_links')
-        .insert(inserts)
-        .onConflict(['postId', 'linkedPostId'])
-        .ignore();
+        .where('postId', postId)
+        .whereNull('viaAnswerId')
+        .whereNull('viaCommentId')
+        .delete();
     }
   }
 
