@@ -29,11 +29,11 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
   private readonly api: QetaApi;
   private readonly qetaRoute: string;
 
-  private constructor(_config: Config, options: QetaCollatorFactoryOptions) {
+  private constructor(config: Config, options: QetaCollatorFactoryOptions) {
     this.logger = options.logger;
     this.auth = options.auth;
     this.api = new QetaClient({ discoveryApi: options.discovery });
-    this.qetaRoute = _config.getOptionalString('qeta.route') ?? 'qeta';
+    this.qetaRoute = config.getOptionalString('qeta.route') ?? 'qeta';
   }
 
   static fromConfig(config: Config, options: QetaCollatorFactoryOptions) {
