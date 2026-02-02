@@ -27,11 +27,13 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
   private readonly logger: LoggerService;
   private readonly auth?: AuthService;
   private readonly api: QetaApi;
+  private readonly qetaRoute: string;
 
-  private constructor(_config: Config, options: QetaCollatorFactoryOptions) {
+  private constructor(config: Config, options: QetaCollatorFactoryOptions) {
     this.logger = options.logger;
     this.auth = options.auth;
     this.api = new QetaClient({ discoveryApi: options.discovery });
+    this.qetaRoute = config.getOptionalString('qeta.route') ?? 'qeta';
   }
 
   static fromConfig(config: Config, options: QetaCollatorFactoryOptions) {
@@ -115,9 +117,9 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
           }`,
           location: selectByPostType(
             post.type,
-            `/qeta/questions/${post.id}`,
-            `/qeta/articles/${post.id}`,
-            `/qeta/links/${post.id}`,
+            `/${this.qetaRoute}/questions/${post.id}`,
+            `/${this.qetaRoute}/articles/${post.id}`,
+            `/${this.qetaRoute}/links/${post.id}`,
           ),
           docType: 'qeta_post',
           author: post.author,
@@ -181,7 +183,7 @@ export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
         yield {
           title: collection.title,
           text: collection.description ?? '',
-          location: `/qeta/collections/${collection.id}`,
+          location: `/${this.qetaRoute}/collections/${collection.id}`,
           docType: 'qeta_collection',
           postsCount: collection.postsCount,
           owner: collection.owner,

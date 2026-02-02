@@ -35,3 +35,17 @@ export const searchPage = (
   </Page>
 );
 ```
+
+## Custom Routes
+
+If you have mounted the Qeta plugin to a custom route in your application, you must configure the `qeta.route` setting to ensure that search results link to the correct location:
+
+```yaml
+# app-config.yaml
+qeta:
+  route: 'custom-route' # Use your custom route instead of the default 'qeta'
+```
+
+This ensures that indexed search results will generate URLs like `/custom-route/questions/123` instead of the default `/qeta/questions/123`.
+
+**Note:** This configuration must match the route where you mounted the Qeta plugin in your frontend application.
