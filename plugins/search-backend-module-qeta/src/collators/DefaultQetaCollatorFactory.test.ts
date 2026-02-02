@@ -161,5 +161,25 @@ describe('DefaultQetaCollatorFactory', () => {
       expect(documents).toHaveLength(totalDocuments);
       expect(lastRequest.headers.get('authorization')).toEqual('Bearer 1234');
     });
+
+    it('uses custom route from config', async () => {
+      const customConfig = new ConfigReader({
+        qeta: {
+          route: 'custom-route',
+        },
+      });
+
+      factory = DefaultQetaCollatorFactory.fromConfig(customConfig, options);
+      collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+
+      expect(documents).toHaveLength(2);
+      // Check post location uses custom route
+      expect(documents[0].location).toBe('/custom-route/questions/1');
+      // Check collection location uses custom route
+      expect(documents[1].location).toBe('/custom-route/collections/1');
+    });
   });
 });
