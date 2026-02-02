@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.58.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.58.1...v3.58.2) (2026-02-02)
+
+
+### Bug Fixes
+
+* search collator respects qeta.route config for custom routes ([efe8d0c](https://github.com/drodil/backstage-plugin-qeta/commit/efe8d0ca9dd689ee8777dd74c3a0d6fb5c618139))
+
 ### [3.58.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.58.0...v3.58.1) (2026-02-02)
 
 
