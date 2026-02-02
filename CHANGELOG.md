@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.58.1](https://github.com/drodil/backstage-plugin-qeta/compare/v3.58.0...v3.58.1) (2026-02-02)
+
+
+### Bug Fixes
+
+* adjust inline code formatting in MarkdownRenderer [#397](https://github.com/drodil/backstage-plugin-qeta/issues/397) ([5a6b014](https://github.com/drodil/backstage-plugin-qeta/commit/5a6b014735b986c777d2c919b0ce1398b36dd069))
+
 ## [3.58.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.57.0...v3.58.0) (2026-01-30)
 
 
