@@ -174,7 +174,10 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
           if (key === 'viewType') {
             const current = currentSettings.viewType || {};
             const update = value as Record<string, ViewType>;
-            processedUpdates.viewType = cleanSettingsRecord({ ...current, ...update });
+            processedUpdates.viewType = cleanSettingsRecord({
+              ...current,
+              ...update,
+            });
           } else if (key === 'filterPanelExpanded') {
             const current = currentSettings.filterPanelExpanded || {};
             const update = value as Record<string, boolean>;
@@ -183,7 +186,8 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
               ...update,
             });
           } else {
-            processedUpdates[key] = value as typeof processedUpdates[typeof key];
+            processedUpdates[key] =
+              value as (typeof processedUpdates)[typeof key];
           }
         });
 
