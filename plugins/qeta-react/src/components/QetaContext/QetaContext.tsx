@@ -139,6 +139,16 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
     };
   }, [storageApi]);
 
+  function cleanSettingsRecord<T>(obj: Record<string, T>): Record<string, T> {
+    const cleaned: Record<string, T> = {};
+    Object.entries(obj).forEach(([key, val]) => {
+      if (val !== undefined) {
+        cleaned[key] = val;
+      }
+    });
+    return cleaned;
+  }
+
   const updateSettings = useCallback(
     async (updates: Partial<UserSettings>, replace = false) => {
       const bucket = storageApi.forBucket(BUCKET_KEY);
@@ -154,16 +164,6 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
       if (replace) {
         newSettings = { ...updates } as UserSettings;
       } else {
-        function cleanRecord<T>(obj: Record<string, T>): Record<string, T> {
-          const cleaned: Record<string, T> = {};
-          Object.entries(obj).forEach(([key, val]) => {
-            if (val !== undefined) {
-              cleaned[key] = val;
-            }
-          });
-          return cleaned;
-        }
-
         const processedUpdates: Partial<UserSettings> = {};
         (Object.keys(updates) as Array<keyof UserSettings>).forEach(key => {
           const value = updates[key];
@@ -174,11 +174,11 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
           if (key === 'viewType') {
             const current = currentSettings.viewType || {};
             const update = value as Record<string, ViewType>;
-            processedUpdates.viewType = cleanRecord({ ...current, ...update });
+            processedUpdates.viewType = cleanSettingsRecord({ ...current, ...update });
           } else if (key === 'filterPanelExpanded') {
             const current = currentSettings.filterPanelExpanded || {};
             const update = value as Record<string, boolean>;
-            processedUpdates.filterPanelExpanded = cleanRecord({
+            processedUpdates.filterPanelExpanded = cleanSettingsRecord({
               ...current,
               ...update,
             });
