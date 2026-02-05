@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.58.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.58.2...v3.58.3) (2026-02-05)
+
+
+### Bug Fixes
+
+* lint error in qeta context ([5fbe035](https://github.com/drodil/backstage-plugin-qeta/commit/5fbe035292a6ea5ec6161a597a20f41c89833c6a))
+* prettier ([3c42179](https://github.com/drodil/backstage-plugin-qeta/commit/3c421792428abf4fa74159b549f2e6d75911242d))
+* reset settings + right panel on small screens ([e0d35c3](https://github.com/drodil/backstage-plugin-qeta/commit/e0d35c319ff126efa2a99ea2a8a49cf0557c2032))
+
 ### [3.58.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.58.1...v3.58.2) (2026-02-02)
 
 
