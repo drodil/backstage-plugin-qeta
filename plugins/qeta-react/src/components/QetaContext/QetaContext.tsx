@@ -140,7 +140,7 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
   }, [storageApi]);
 
   const updateSettings = useCallback(
-    async (updates: Partial<UserSettings>) => {
+    async (updates: Partial<UserSettings>, replace = false) => {
       const bucket = storageApi.forBucket(BUCKET_KEY);
 
       const snapshot = bucket.snapshot(STORAGE_KEY);
@@ -149,37 +149,46 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
         ? merge({}, DEFAULT_SETTINGS, storedSettings)
         : settingsRef.current;
 
-      const newSettings = { ...currentSettings };
-      Object.keys(updates).forEach(key => {
-        const k = key as keyof UserSettings;
-        const value = updates[k];
-        if (Object.hasOwn(updates, k)) {
-          if (k === 'viewType' || k === 'filterPanelExpanded') {
-            const currentValue = currentSettings[k] || {};
-            const updateValue = (value || {}) as Record<string, any>;
-            const merged = { ...currentValue };
+      let newSettings: UserSettings;
 
-            Object.keys(updateValue).forEach(subKey => {
-              if (updateValue[subKey] === undefined) {
-                delete merged[subKey];
-              } else {
-                merged[subKey] = updateValue[subKey];
-              }
-            });
-
-            newSettings[k] = merged as any;
-          } else if (
-            value !== undefined &&
-            value &&
-            typeof value === 'object' &&
-            !Array.isArray(value)
-          ) {
-            newSettings[k] = merge({}, currentSettings[k], value);
-          } else if (value !== undefined) {
-            newSettings[k] = value as any;
-          }
+      if (replace) {
+        newSettings = { ...updates } as UserSettings;
+      } else {
+        function cleanRecord<T>(obj: Record<string, T>): Record<string, T> {
+          const cleaned: Record<string, T> = {};
+          Object.entries(obj).forEach(([key, val]) => {
+            if (val !== undefined) {
+              cleaned[key] = val;
+            }
+          });
+          return cleaned;
         }
-      });
+
+        const processedUpdates: Partial<UserSettings> = {};
+        (Object.keys(updates) as Array<keyof UserSettings>).forEach(key => {
+          const value = updates[key];
+          if (value === undefined) {
+            return;
+          }
+
+          if (key === 'viewType') {
+            const current = currentSettings.viewType || {};
+            const update = value as Record<string, ViewType>;
+            processedUpdates.viewType = cleanRecord({ ...current, ...update });
+          } else if (key === 'filterPanelExpanded') {
+            const current = currentSettings.filterPanelExpanded || {};
+            const update = value as Record<string, boolean>;
+            processedUpdates.filterPanelExpanded = cleanRecord({
+              ...current,
+              ...update,
+            });
+          } else {
+            processedUpdates[key] = value as typeof processedUpdates[typeof key];
+          }
+        });
+
+        newSettings = { ...currentSettings, ...processedUpdates };
+      }
 
       settingsRef.current = newSettings;
       setSettings(newSettings);
@@ -213,7 +222,7 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
   );
 
   const resetSettings = useCallback(async () => {
-    await updateSettings(DEFAULT_SETTINGS);
+    await updateSettings(DEFAULT_SETTINGS, true);
   }, [updateSettings]);
 
   const contextValue = useMemo(

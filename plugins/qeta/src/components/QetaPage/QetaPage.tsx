@@ -125,11 +125,7 @@ const useStyles = makeStyles(theme => ({
       minWidth: (props: StyleProps) => (props.rightCompact ? 72 : 250),
     },
     [theme.breakpoints.down('md')]: {
-      width: '100%',
-      marginTop: theme.spacing(1),
-      position: 'static',
-      maxHeight: 'none',
-      overflowY: 'visible',
+      display: 'none',
     },
   },
   mainColumn: {
