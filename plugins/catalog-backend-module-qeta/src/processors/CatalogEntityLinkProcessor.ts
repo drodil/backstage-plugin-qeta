@@ -85,7 +85,7 @@ export class CatalogEntityLinkProcessor implements CatalogProcessor {
     });
     const links = await this.client.getEntityLinks({ token });
     await this.cache.set('qeta-entity-links', JSON.stringify(links), {
-      ttl: 60 * 60, // cache for 1 hour
+      ttl: { hours: 1 }, // cache for 1 hour
     });
     return links;
   }
