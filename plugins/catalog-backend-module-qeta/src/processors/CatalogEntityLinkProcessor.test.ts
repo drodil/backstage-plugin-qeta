@@ -212,7 +212,7 @@ describe('CatalogEntityLinkProcessor', () => {
       expect(mockCache.set).toHaveBeenCalledWith(
         'qeta-entity-links',
         JSON.stringify(entityLinks),
-        { ttl: 60 * 60 },
+        { ttl: { hours: 1 } },
       );
     });
 
