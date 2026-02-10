@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.58.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.58.3...v3.58.4) (2026-02-10)
+
+
+### Bug Fixes
+
+* entity link processor caching ([24c7c6d](https://github.com/drodil/backstage-plugin-qeta/commit/24c7c6d34ea33d7696a38a934bc6935aa318975a))
+* tests for processor ([6dbee23](https://github.com/drodil/backstage-plugin-qeta/commit/6dbee23afd6e888903add82ba22c56de8c5b9756))
+
 ### [3.58.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.58.2...v3.58.3) (2026-02-05)
 
 
