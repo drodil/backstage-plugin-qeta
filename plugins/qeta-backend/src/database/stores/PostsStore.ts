@@ -24,7 +24,7 @@ import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
 import { Config } from '@backstage/config';
 
 import { eng, removeStopwords } from 'stopword';
-import { parseEntityRef } from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 
 export interface RawPostEntity {
   id: number;
@@ -1297,16 +1297,15 @@ export class PostsStore extends BaseStore {
 
     const entities =
       entitiesInput
-        ?.filter(t => {
+        ?.map(t => {
           try {
-            parseEntityRef(t);
-            return true;
+            const compound = parseEntityRef(t);
+            return stringifyEntityRef(compound).toLowerCase();
           } catch {
-            return false;
+            return null;
           }
         })
-        .map(t => t.toLowerCase())
-        .filter(t => t.length > 0) ?? [];
+        .filter(t => t && t.length > 0) ?? [];
 
     if (!entities || entities.length === 0) {
       return;
