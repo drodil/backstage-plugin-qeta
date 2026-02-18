@@ -24,6 +24,7 @@ import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
 import { Config } from '@backstage/config';
 
 import { eng, removeStopwords } from 'stopword';
+import { parseEntityRef } from '@backstage/catalog-model';
 
 export interface RawPostEntity {
   id: number;
@@ -1294,10 +1295,16 @@ export class PostsStore extends BaseStore {
       await this.db(tableName).where(columnName, '=', id).delete();
     }
 
-    const regex = /\w+:\w+\/\w+/;
     const entities =
       entitiesInput
-        ?.filter(t => regex.test(t))
+        ?.filter(t => {
+          try {
+            parseEntityRef(t);
+            return true;
+          } catch {
+            return false;
+          }
+        })
         .map(t => t.toLowerCase())
         .filter(t => t.length > 0) ?? [];
 
