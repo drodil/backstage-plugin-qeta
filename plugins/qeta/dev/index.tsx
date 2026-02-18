@@ -5,11 +5,12 @@ import { createRoot } from 'react-dom/client';
 import notificationPlugin from '@backstage/plugin-notifications/alpha';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 
-import plugin, {
+import plugin from '../src/alpha';
+import {
   QetaMarkdownRehypePluginBlueprint,
   QetaPageHeaderElementBlueprint,
   QetaPageIntroElementBlueprint,
-} from '../src/alpha';
+} from '@drodil/backstage-plugin-qeta-react/alpha';
 import { Box } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import searchPlugin from '@backstage/plugin-search/alpha';

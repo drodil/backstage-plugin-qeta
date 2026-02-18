@@ -20,10 +20,20 @@
     "type": "git",
     "url": "https://github.com/drodil/backstage-plugin-qeta.git"
   },
-  "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.tsx",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.tsx"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "backstage": {
     "role": "web-library",
@@ -53,6 +63,7 @@
     "@backstage/config": "backstage:^",
     "@backstage/core-components": "backstage:^",
     "@backstage/core-plugin-api": "backstage:^",
+    "@backstage/frontend-plugin-api": "backstage:^",
     "@backstage/plugin-catalog-react": "backstage:^",
     "@backstage/plugin-permission-common": "backstage:^",
     "@backstage/plugin-permission-react": "backstage:^",
@@ -81,6 +92,7 @@
     "recharts": "^2.13.0",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.0",
+    "unified": "^11.0.5",
     "unist-util-find": "^3.0.0"
   },
   "peerDependencies": {

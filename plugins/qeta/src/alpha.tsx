@@ -1,39 +1,59 @@
 import {
   ApiBlueprint,
   coreExtensionData,
-  createExtensionBlueprint,
-  createExtensionDataRef,
   createExtensionInput,
   createFrontendPlugin,
   NavItemBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
+import { compatWrapper, convertLegacyRouteRef, convertLegacyRouteRefs, } from '@backstage/core-compat-api';
 import { qetaApiRef, qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
-import {
-  configApiRef,
-  discoveryApiRef,
-  fetchApiRef,
-} from '@backstage/core-plugin-api';
-import {
-  getSupportedEntityKinds,
-  QetaClient,
-} from '@drodil/backstage-plugin-qeta-common';
+import { configApiRef, createApiRef, discoveryApiRef, fetchApiRef, } from '@backstage/core-plugin-api';
+import { getSupportedEntityKinds, QetaClient, } from '@drodil/backstage-plugin-qeta-common';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
-import {
-  SearchFilterResultTypeBlueprint,
-  SearchResultListItemBlueprint,
-} from '@backstage/plugin-search-react/alpha';
+import { SearchFilterResultTypeBlueprint, SearchResultListItemBlueprint, } from '@backstage/plugin-search-react/alpha';
 import { TechDocsAddonLocations } from '@backstage/plugin-techdocs-react';
 import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsAskQuestionAddon } from './components/TechDocsAskQuestionAddon';
 import { Pluggable } from 'unified';
+import { markdownPlugin } from '@drodil/backstage-plugin-qeta-react/alpha';
+
+interface QetaMarkdownPluginsApi {
+  getRehypePlugins(): Pluggable[];
+  getRemarkPlugins(): Pluggable[];
+}
+
+export const qetaMarkdownPluginsApiRef = createApiRef<QetaMarkdownPluginsApi>({
+  id: 'plugin.qeta.addons',
+});
+
+export const qetaMarkdownPluginsApiExtension = ApiBlueprint.makeWithOverrides({
+  name: 'addons',
+  inputs: {
+    rehypePlugins: createExtensionInput([markdownPlugin]),
+    remarkPlugins: createExtensionInput([markdownPlugin]),
+  },
+  factory(originalFactory, { inputs }) {
+    const rehypePlugins = inputs.rehypePlugins.map(output =>
+      output.get(markdownPlugin),
+    );
+    const remarkPlugins = inputs.remarkPlugins.map(output =>
+      output.get(markdownPlugin),
+    );
+    return originalFactory(defineParams =>
+      defineParams({
+        api: qetaMarkdownPluginsApiRef,
+        deps: {},
+        factory: () => ({
+          getRehypePlugins: () => rehypePlugins,
+          getRemarkPlugins: () => remarkPlugins,
+        }),
+      }),
+    );
+  },
+});
 
 const qetaApi = ApiBlueprint.make({
   params: defineParams =>
@@ -47,52 +67,6 @@ const qetaApi = ApiBlueprint.make({
         return new QetaClient({ discoveryApi, fetchApi });
       },
     }),
-});
-
-export const QetaPageIntroElementBlueprint = createExtensionBlueprint({
-  kind: 'intro-element',
-  attachTo: { id: 'page:qeta', input: 'introElement' },
-  output: [coreExtensionData.reactElement],
-  factory(params: { element: JSX.Element }) {
-    return [coreExtensionData.reactElement(params.element)];
-  },
-});
-
-export const QetaPageHeaderElementBlueprint = createExtensionBlueprint({
-  kind: 'header-element',
-  attachTo: { id: 'page:qeta', input: 'headerElements' },
-  output: [coreExtensionData.reactElement],
-  factory(params: { element: JSX.Element }) {
-    return [coreExtensionData.reactElement(params.element)];
-  },
-});
-
-export const markdownPlugin = createExtensionDataRef<Pluggable>().with({
-  id: 'qeta.markdown-plugin',
-});
-
-export const QetaMarkdownRehypePluginBlueprint = createExtensionBlueprint({
-  kind: 'markdown-plugin',
-  attachTo: [
-    { id: 'page:qeta', input: 'rehypePlugins' },
-    { id: 'entity-posts-content', input: 'rehypePlugins' },
-  ],
-  output: [markdownPlugin],
-  factory(params: { plugin: Pluggable }) {
-    return [markdownPlugin(params.plugin)];
-  },
-});
-
-export const QetaMarkdownRemarkPluginBlueprint = createExtensionBlueprint({
-  kind: 'markdown-plugin',
-  attachTo: [
-    { id: 'page:qeta', input: 'remarkPlugins' },
-    { id: 'entity-posts-content', input: 'remarkPlugins' },
-  ],
-  output: [markdownPlugin],
-  factory(params: { plugin: Pluggable }) {
-    return [markdownPlugin(params.plugin)];
-  },
 });
 
 const qetaPage = PageBlueprint.makeWithOverrides({
@@ -114,24 +88,17 @@ const qetaPage = PageBlueprint.makeWithOverrides({
       singleton: false,
       optional: true,
     }),
-    rehypePlugins: createExtensionInput([markdownPlugin], {
-      singleton: false,
-      optional: true,
-    }),
-    remarkPlugins: createExtensionInput([markdownPlugin], {
-      singleton: false,
-      optional: true,
-    }),
   },
-  factory: (originalFactory, { config, inputs }) => {
+  factory: (originalFactory, { config, inputs, apis }) => {
     const introElement = inputs.introElement?.get(
       coreExtensionData.reactElement,
     );
     const headerElements = inputs.headerElements.map(e =>
       e.get(coreExtensionData.reactElement),
     );
-    const remarkPlugins = inputs.remarkPlugins.map(e => e.get(markdownPlugin));
-    const rehypePlugins = inputs.rehypePlugins.map(e => e.get(markdownPlugin));
+    const pluginsApi = apis.get(qetaMarkdownPluginsApiRef);
+    const remarkPlugins = pluginsApi?.getRemarkPlugins();
+    const rehypePlugins = pluginsApi?.getRehypePlugins();
     return originalFactory({
       path: config.path ?? '/qeta',
       routeRef: convertLegacyRouteRef(qetaRouteRef),
@@ -167,17 +134,8 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
       relations: z => z.array(z.string()).optional(),
     },
   },
-  inputs: {
-    rehypePlugins: createExtensionInput([markdownPlugin], {
-      singleton: false,
-      optional: true,
-    }),
-    remarkPlugins: createExtensionInput([markdownPlugin], {
-      singleton: false,
-      optional: true,
-    }),
-  },
-  factory: (originalFactory, { config, apis, inputs }) => {
+  inputs: {},
+  factory: (originalFactory, { config, apis }) => {
     return originalFactory({
       path: config.path ?? '/qeta',
       title: config.title ?? 'Q&A',
@@ -188,12 +146,9 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
         return supportedKinds?.includes(entityKind);
       },
       loader: async () => {
-        const remarkPlugins = inputs.remarkPlugins.map(e =>
-          e.get(markdownPlugin),
-        );
-        const rehypePlugins = inputs.rehypePlugins.map(e =>
-          e.get(markdownPlugin),
-        );
+        const pluginsApi = apis.get(qetaMarkdownPluginsApiRef);
+        const remarkPlugins = pluginsApi?.getRemarkPlugins();
+        const rehypePlugins = pluginsApi?.getRehypePlugins();
         return import(
           './components/EntityPostsContent/EntityPostsContent.tsx'
         ).then(m =>
@@ -265,7 +220,20 @@ export default createFrontendPlugin({
     qetaSearchResultItem,
     qetaPostSearchFilterType,
     techDocsAskQuestionAddon,
+    qetaMarkdownPluginsApiExtension,
   ],
 });
 
 export { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
+
+// TODO: To be removed in favor of direct imports from `@drodil/backstage-plugin-qeta-react/alpha` in the next major release, after the deprecation period has ended.
+export {
+  /** @deprecated Use blueprints from `@drodil/backstage-plugin-qeta-react/alpha` instead. */
+  QetaMarkdownRehypePluginBlueprint,
+  /** @deprecated Use blueprints from `@drodil/backstage-plugin-qeta-react/alpha` instead. */
+  QetaPageIntroElementBlueprint,
+  /** @deprecated Use blueprints from `@drodil/backstage-plugin-qeta-react/alpha` instead. */
+  QetaPageHeaderElementBlueprint,
+  /** @deprecated Use blueprints from `@drodil/backstage-plugin-qeta-react/alpha` instead. */
+  QetaMarkdownRemarkPluginBlueprint,
+} from '@drodil/backstage-plugin-qeta-react/alpha';
