@@ -6,14 +6,29 @@ import {
   NavItemBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { compatWrapper, convertLegacyRouteRef, convertLegacyRouteRefs, } from '@backstage/core-compat-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+  convertLegacyRouteRefs,
+} from '@backstage/core-compat-api';
 import { qetaApiRef, qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
-import { configApiRef, createApiRef, discoveryApiRef, fetchApiRef, } from '@backstage/core-plugin-api';
-import { getSupportedEntityKinds, QetaClient, } from '@drodil/backstage-plugin-qeta-common';
+import {
+  configApiRef,
+  createApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
+import {
+  getSupportedEntityKinds,
+  QetaClient,
+} from '@drodil/backstage-plugin-qeta-common';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
-import { SearchFilterResultTypeBlueprint, SearchResultListItemBlueprint, } from '@backstage/plugin-search-react/alpha';
+import {
+  SearchFilterResultTypeBlueprint,
+  SearchResultListItemBlueprint,
+} from '@backstage/plugin-search-react/alpha';
 import { TechDocsAddonLocations } from '@backstage/plugin-techdocs-react';
 import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsAskQuestionAddon } from './components/TechDocsAskQuestionAddon';
