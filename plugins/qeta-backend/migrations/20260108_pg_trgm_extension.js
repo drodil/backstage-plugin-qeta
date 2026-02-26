@@ -70,7 +70,10 @@ exports.down = async function down(knex) {
     await knex.raw('DROP INDEX IF EXISTS answers_content_trgm_idx');
     await knex.raw('DROP INDEX IF EXISTS comments_content_trgm_idx');
     await knex.raw('DROP INDEX IF EXISTS collections_title_trgm_idx');
-    await knex.raw('DROP EXTENSION IF EXISTS pg_trgm');
+
+    console.warn(
+      `The "pg_trgm" extension is not dropped by this migration to avoid affecting other parts of the database that might be using it.\nIf you want to drop the extension, you can do so manually with the following SQL command:\nDROP EXTENSION IF EXISTS pg_trgm;`,
+    );
 
     // Restore
     await knex.schema.raw(
