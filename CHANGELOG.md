@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.58.8](https://github.com/drodil/backstage-plugin-qeta/compare/v3.58.7...v3.58.8) (2026-02-26)
+
+
+### Bug Fixes
+
+* do not remove trgm on down ([42f3166](https://github.com/drodil/backstage-plugin-qeta/commit/42f3166f0692809329e0f7f2a67a5cc52edbb5cc))
+* optional trgm indexes ([8e46be2](https://github.com/drodil/backstage-plugin-qeta/commit/8e46be2aa087513935fd2da0df8177b331f6581c))
+
 ### [3.58.7](https://github.com/drodil/backstage-plugin-qeta/compare/v3.58.6...v3.58.7) (2026-02-18)
 
 
