@@ -4,6 +4,8 @@ import {
   Comment as QetaComment,
   filterTags,
   Post,
+  PostRevision,
+  PostRevisionsResponse,
   PostReview,
   PostsQuery,
   PostStatus,
@@ -82,6 +84,82 @@ export class PostsStore extends BaseStore {
 
   setAnswersStore(answersStore: AnswersStore) {
     this.answersStore = answersStore;
+  }
+
+  /**
+   * Check if revision tracking is enabled for a given post type.
+   * Reads from `qeta.history.enabled` and `qeta.history.enabledContent`.
+   */
+  private isRevisionEnabledForType(postType: PostType): boolean {
+    const enabled =
+      this.config?.getOptionalBoolean('qeta.history.enabled') ?? false;
+    if (!enabled) {
+      return false;
+    }
+    const enabledContent = this.config?.getOptionalStringArray(
+      'qeta.history.enabledContent',
+    ) ?? ['article'];
+    return enabledContent.includes(postType);
+  }
+
+  /**
+   * Determine whether the proposed update to a post represents a meaningful
+   * content change that should trigger a new revision snapshot.
+   * Returns `true` if title, content, url, headerImage, tags, or entities
+   * differ from the current persisted values.
+   */
+  private async hasPostChanges(
+    postId: number,
+    currentPost: Pick<
+      RawPostEntity,
+      'title' | 'content' | 'url' | 'headerImage'
+    >,
+    options: {
+      title: string;
+      content: string;
+      url?: string;
+      headerImage?: string;
+      tags?: string[];
+      entities?: string[];
+    },
+  ): Promise<boolean> {
+    const { title, content, url, headerImage, tags, entities } = options;
+
+    const hasContentChanges =
+      title !== currentPost.title ||
+      content !== currentPost.content ||
+      (url !== undefined && url !== currentPost.url) ||
+      (headerImage !== undefined && headerImage !== currentPost.headerImage);
+
+    if (hasContentChanges) {
+      return true;
+    }
+
+    if (tags !== undefined) {
+      const currentTags = await this.getCurrentTags(postId);
+      const sortedNew = [...(filterTags(tags) ?? [])].sort();
+      const sortedOld = [...currentTags].sort();
+      if (
+        sortedNew.length !== sortedOld.length ||
+        sortedNew.some((tag, i) => tag !== sortedOld[i])
+      ) {
+        return true;
+      }
+    }
+
+    if (entities !== undefined) {
+      const currentEntities = await this.getCurrentEntities(postId);
+      const sortedNew = [...entities].sort();
+      const sortedOld = [...currentEntities].sort();
+      if (
+        sortedNew.length !== sortedOld.length ||
+        sortedNew.some((entity, i) => entity !== sortedOld[i])
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   async getAIAnswer(postId: number): Promise<AIResponse | null> {
@@ -686,7 +764,15 @@ export class PostsStore extends BaseStore {
 
     // Check if this is a transition from draft to active
     const currentPost = await this.db('posts')
-      .select('status', 'published')
+      .select(
+        'status',
+        'published',
+        'type',
+        'title',
+        'content',
+        'url',
+        'headerImage',
+      )
       .where('id', '=', id)
       .first();
 
@@ -696,27 +782,57 @@ export class PostsStore extends BaseStore {
       status === 'active' &&
       !currentPost.published;
 
-    const query = this.db('posts').where('posts.id', '=', id);
-    const rows = await query.update({
-      title,
-      content,
-      headerImage,
-      author,
-      url,
-      updatedBy: setUpdatedBy ? user_ref : undefined,
-      updated: setUpdatedBy ? new Date() : undefined,
-      status,
-      published: shouldSetPublished ? new Date() : undefined,
+    // Wrap revision + post update + tags/entities in a transaction so
+    // they succeed or fail atomically.
+    const rows = await this.db.transaction(async trx => {
+      // Save revision before updating a post (only if content actually changed and type is enabled)
+      if (
+        currentPost &&
+        this.isRevisionEnabledForType(currentPost.type) &&
+        currentPost.status !== 'draft'
+      ) {
+        const shouldSaveRevision = await this.hasPostChanges(id, currentPost, {
+          title: title!,
+          content: content!,
+          url,
+          headerImage,
+          tags,
+          entities,
+        });
+        if (shouldSaveRevision) {
+          await this.saveRevision(id, user_ref, trx);
+        }
+      }
+
+      const updatedRows = await trx('posts')
+        .where('posts.id', '=', id)
+        .update({
+          title,
+          content,
+          headerImage,
+          author,
+          url,
+          updatedBy: setUpdatedBy ? user_ref : undefined,
+          updated: setUpdatedBy ? new Date() : undefined,
+          status,
+          published: shouldSetPublished ? new Date() : undefined,
+        });
+
+      if (!updatedRows) {
+        return 0;
+      }
+
+      await Promise.all([
+        this.addTags(id, tags, true, 'post_tags', 'postId', trx),
+        this.addEntities(id, entities, true, 'post_entities', 'postId', trx),
+      ]);
+
+      return updatedRows;
     });
 
     if (!rows) {
       return null;
     }
-
-    await Promise.all([
-      this.addTags(id, tags, true),
-      this.addEntities(id, entities, true),
-    ]);
 
     await this.updateAttachments(
       'postId',
@@ -1229,22 +1345,256 @@ export class PostsStore extends BaseStore {
     await this.db('posts').where('id', postId).increment('views', 1);
   }
 
+  /**
+   * Check if attachment saving in revisions is enabled.
+   */
+  private isSaveAttachmentsEnabled(): boolean {
+    return (
+      this.config?.getOptionalBoolean('qeta.history.saveAttachments') ?? false
+    );
+  }
+
+  private async getCurrentTags(postId: number): Promise<string[]> {
+    const rows = await this.db('post_tags')
+      .join('tags', 'post_tags.tagId', 'tags.id')
+      .where('post_tags.postId', '=', postId)
+      .select('tags.tag');
+    return rows.map((r: { tag: string }) => r.tag);
+  }
+
+  private async getCurrentEntities(postId: number): Promise<string[]> {
+    const rows = await this.db('post_entities')
+      .join('entities', 'post_entities.entityId', 'entities.id')
+      .where('post_entities.postId', '=', postId)
+      .select('entities.entity_ref');
+    return rows.map((r: { entity_ref: string }) => r.entity_ref);
+  }
+
+  /**
+   * Save a snapshot of the current post state into post_revisions.
+   */
+  private async saveRevision(
+    postId: number,
+    userRef: string,
+    trx?: Knex.Transaction,
+  ): Promise<void> {
+    const db = trx || this.db;
+
+    const post = await db('posts')
+      .select('title', 'content', 'url', 'headerImage')
+      .where('id', '=', postId)
+      .first();
+
+    if (!post) {
+      return;
+    }
+
+    const tagRows = await db('post_tags')
+      .join('tags', 'post_tags.tagId', 'tags.id')
+      .where('post_tags.postId', '=', postId)
+      .select('tags.tag');
+    const tags = tagRows.map((r: { tag: string }) => r.tag);
+
+    const entityRows = await db('post_entities')
+      .join('entities', 'post_entities.entityId', 'entities.id')
+      .where('post_entities.postId', '=', postId)
+      .select('entities.entity_ref');
+    const entities = entityRows.map(
+      (r: { entity_ref: string }) => r.entity_ref,
+    );
+
+    let attachments: string[] | undefined;
+    if (this.isSaveAttachmentsEnabled()) {
+      const attachmentRows = await db('attachments')
+        .where('postId', '=', postId)
+        .select('uuid');
+      attachments = attachmentRows.map((r: { uuid: string }) => r.uuid);
+    }
+
+    await db('post_revisions').insert({
+      postId,
+      title: post.title,
+      content: post.content,
+      url: post.url ?? null,
+      headerImage: post.headerImage ?? null,
+      tags: JSON.stringify(tags),
+      entities: JSON.stringify(entities),
+      attachments: attachments ? JSON.stringify(attachments) : null,
+      created: new Date(),
+      createdBy: userRef,
+    });
+  }
+
+  async getPostRevisions(params: {
+    postId: number;
+    limit?: number;
+    offset?: number;
+  }): Promise<PostRevisionsResponse> {
+    const { postId, limit = 20, offset = 0 } = params;
+
+    const totalResult = await this.db('post_revisions')
+      .where('postId', '=', postId)
+      .count('* as count')
+      .first();
+    const total = this.mapToInteger((totalResult as any)?.count);
+
+    const rows = await this.db('post_revisions')
+      .where('postId', '=', postId)
+      .orderBy('created', 'desc')
+      .limit(limit)
+      .offset(offset);
+
+    const revisions: PostRevision[] = rows.map((row: any) => ({
+      id: row.id,
+      postId: row.postId,
+      title: row.title,
+      content: row.content,
+      url: row.url ?? null,
+      headerImage: row.headerImage ?? null,
+      tags: row.tags ? JSON.parse(row.tags) : [],
+      entities: row.entities ? JSON.parse(row.entities) : [],
+      attachments: row.attachments ? JSON.parse(row.attachments) : undefined,
+      created: row.created,
+      createdBy: row.createdBy,
+    }));
+
+    return { revisions, total };
+  }
+
+  async getPostRevision(params: {
+    postId: number;
+    revisionId: number;
+  }): Promise<PostRevision | undefined> {
+    const { postId, revisionId } = params;
+
+    const row = await this.db('post_revisions')
+      .where('id', '=', revisionId)
+      .andWhere('postId', '=', postId)
+      .first();
+
+    if (!row) {
+      return undefined;
+    }
+
+    return {
+      id: row.id,
+      postId: row.postId,
+      title: row.title,
+      content: row.content,
+      url: row.url ?? null,
+      headerImage: row.headerImage ?? null,
+      tags: row.tags ? JSON.parse(row.tags) : [],
+      entities: row.entities ? JSON.parse(row.entities) : [],
+      attachments: row.attachments ? JSON.parse(row.attachments) : undefined,
+      created: row.created,
+      createdBy: row.createdBy,
+    };
+  }
+
+  async restorePostRevision(params: {
+    postId: number;
+    revisionId: number;
+    userRef: string;
+  }): Promise<Post | undefined> {
+    const { postId, revisionId, userRef } = params;
+
+    const restored = await this.db.transaction(async trx => {
+      const revision = await trx('post_revisions')
+        .where('id', '=', revisionId)
+        .andWhere('postId', '=', postId)
+        .first();
+
+      if (!revision) {
+        return false;
+      }
+
+      const currentPost = await trx('posts').where('id', '=', postId).first();
+
+      if (!currentPost || !this.isRevisionEnabledForType(currentPost.type)) {
+        return false;
+      }
+
+      // Save current state as a revision before restoring
+      await this.saveRevision(postId, userRef, trx);
+
+      // Restore from the revision
+      await trx('posts').where('id', '=', postId).update({
+        title: revision.title,
+        content: revision.content,
+        url: revision.url,
+        headerImage: revision.headerImage,
+        updatedBy: userRef,
+        updated: new Date(),
+      });
+
+      // Restore tags (use trx for transaction safety)
+      const tags: string[] = revision.tags ? JSON.parse(revision.tags) : [];
+      await this.addTags(postId, tags, true, 'post_tags', 'postId', trx);
+
+      // Restore entities (use trx for transaction safety)
+      const entities: string[] = revision.entities
+        ? JSON.parse(revision.entities)
+        : [];
+      await this.addEntities(
+        postId,
+        entities,
+        true,
+        'post_entities',
+        'postId',
+        trx,
+      );
+
+      // Restore attachments if saved in the revision
+      if (this.isSaveAttachmentsEnabled() && revision.attachments) {
+        const attachmentUuids: string[] = JSON.parse(revision.attachments);
+        if (attachmentUuids.length > 0) {
+          // Re-link orphaned attachments back to this post
+          await trx('attachments')
+            .whereIn('uuid', attachmentUuids)
+            .update({ postId });
+        }
+      }
+
+      return true;
+    });
+
+    if (!restored) {
+      return undefined;
+    }
+
+    // Read the updated post after the transaction has committed
+    // to ensure we see the latest data
+    return (await this.getPost(userRef, postId, false)) ?? undefined;
+  }
+
+  async cleanOldRevisions(params: { retentionDays: number }): Promise<number> {
+    const { retentionDays } = params;
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+
+    return await this.db('post_revisions')
+      .where('created', '<', cutoffDate)
+      .delete();
+  }
+
   private async addTags(
     id: number,
     tagsInput?: string[],
     removeOld?: boolean,
     tableName: string = 'post_tags',
     columnName: string = 'postId',
+    dbHandle?: Knex,
   ) {
+    const db = dbHandle || this.db;
     const tags = filterTags(tagsInput);
     if (removeOld) {
-      await this.db(tableName).where(columnName, '=', id).delete();
+      await db(tableName).where(columnName, '=', id).delete();
     }
 
     if (!tags || tags.length === 0) {
       return;
     }
-    const existingTags = await this.db('tags')
+    const existingTags = await db('tags')
       .whereIn('tag', tags)
       .returning('id')
       .select();
@@ -1260,7 +1610,7 @@ export class PostsStore extends BaseStore {
           const trimmed = tag.trim();
           const description = trimmed in allTags ? allTags[trimmed] : undefined;
 
-          return this.db
+          return db
             .insert({ tag: trimmed, description })
             .into('tags')
             .returning('id')
@@ -1275,7 +1625,7 @@ export class PostsStore extends BaseStore {
 
     await Promise.all(
       tagIds.map(async tagId => {
-        await this.db
+        await db
           .insert({ [columnName]: id, tagId })
           .into(tableName)
           .onConflict()
@@ -1290,9 +1640,11 @@ export class PostsStore extends BaseStore {
     removeOld?: boolean,
     tableName: string = 'post_entities',
     columnName: string = 'postId',
+    dbHandle?: Knex,
   ) {
+    const db = dbHandle || this.db;
     if (removeOld) {
-      await this.db(tableName).where(columnName, '=', id).delete();
+      await db(tableName).where(columnName, '=', id).delete();
     }
 
     const entities =
@@ -1311,7 +1663,7 @@ export class PostsStore extends BaseStore {
       return;
     }
 
-    const existingEntities = await this.db('entities')
+    const existingEntities = await db('entities')
       .whereIn('entity_ref', entities)
       .returning('id')
       .select();
@@ -1322,7 +1674,7 @@ export class PostsStore extends BaseStore {
     const entityIds = (
       await Promise.all(
         [...new Set(newEntities)].map(async entityRef =>
-          this.db
+          db
             .insert({ entity_ref: entityRef })
             .into('entities')
             .returning('id')
@@ -1337,7 +1689,7 @@ export class PostsStore extends BaseStore {
 
     await Promise.all(
       entityIds.map(async entityId => {
-        await this.db
+        await db
           .insert({ [columnName]: id, entityId })
           .into(tableName)
           .onConflict()

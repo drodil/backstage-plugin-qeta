@@ -10,6 +10,7 @@ import { notificationService } from '@backstage/plugin-notifications-node';
 import { StatsCollector } from './service/StatsCollector';
 import { TagsUpdater } from './service/TagsUpdater';
 import { AttachmentCleaner } from './service/AttachmentCleaner';
+import { HistoryCleaner } from './service/HistoryCleaner';
 import { BadgeManager } from './service/BadgeManager';
 import { NotificationManager } from './service/NotificationManager';
 import { CatalogClient } from '@backstage/catalog-client';
@@ -230,6 +231,13 @@ export const qetaPlugin = createBackendPlugin({
           qetaStore,
           discovery,
           auth,
+        );
+
+        await HistoryCleaner.initHistoryCleaner(
+          config,
+          scheduler,
+          logger,
+          qetaStore,
         );
       },
     });

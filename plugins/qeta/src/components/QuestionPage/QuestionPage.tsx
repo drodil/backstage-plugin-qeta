@@ -12,6 +12,7 @@ import {
   DeletedBanner,
   DraftBanner,
   ObsoleteBanner,
+  PostHistoryButton,
   qetaTranslationRef,
   QuestionCard,
   RelativeTimeWithTooltip,
@@ -67,6 +68,7 @@ export const QuestionPage = () => {
     value: question,
     loading,
     error,
+    retry,
   } = useQetaApi(api => api.getPost(id), [id]);
 
   useEffect(() => {
@@ -202,6 +204,7 @@ export const QuestionPage = () => {
         description={getDescription(question)}
         titleIcon={<HelpOutline fontSize="large" />}
       >
+        <PostHistoryButton post={question} onRestore={retry} />
         <FollowPostButton post={question} />
         <AskQuestionButton />
         <ContentHeaderButton
