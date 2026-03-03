@@ -303,6 +303,10 @@ export const createMockQetaStore = (): jest.Mocked<QetaStore> => {
     updatePostLinks: jest.fn(),
     updateAnswerLinks: jest.fn(),
     updateCommentLinks: jest.fn(),
+    getPostRevisions: jest.fn(),
+    getPostRevision: jest.fn(),
+    restorePostRevision: jest.fn(),
+    cleanOldRevisions: jest.fn(),
   } as unknown as jest.Mocked<QetaStore>;
 };
 

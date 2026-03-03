@@ -8,6 +8,7 @@ import {
   AIAnswerCard,
   ArticleContent,
   ContentHeader,
+  PostHistoryButton,
   qetaTranslationRef,
   useQetaApi,
   WriteArticleButton,
@@ -30,6 +31,7 @@ export const ArticlePage = () => {
     value: post,
     loading,
     error,
+    retry,
   } = useQetaApi(api => api.getPost(id), [id]);
 
   useEffect(() => {
@@ -68,6 +70,7 @@ export const ArticlePage = () => {
         title={post.title}
         titleIcon={<LibraryBooksOutlined fontSize="large" />}
       >
+        <PostHistoryButton post={post} onRestore={retry} />
         <FollowPostButton post={post} />
         <WriteArticleButton />
         <AddToCollectionButton post={post} />

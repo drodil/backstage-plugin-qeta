@@ -56,6 +56,8 @@ import {
   UserTagsResponse,
   UserUsersResponse,
   CommunityStats,
+  PostRevision,
+  PostRevisionsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { QetaFilters } from '../service/util';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -1011,5 +1013,32 @@ export class DatabaseQetaStore implements QetaStore {
       answerId,
       commentId,
     );
+  }
+
+  async getPostRevisions(params: {
+    postId: number;
+    limit?: number;
+    offset?: number;
+  }): Promise<PostRevisionsResponse> {
+    return this.postsStore.getPostRevisions(params);
+  }
+
+  async getPostRevision(params: {
+    postId: number;
+    revisionId: number;
+  }): Promise<PostRevision | undefined> {
+    return this.postsStore.getPostRevision(params);
+  }
+
+  async restorePostRevision(params: {
+    postId: number;
+    revisionId: number;
+    userRef: string;
+  }): Promise<Post | undefined> {
+    return this.postsStore.restorePostRevision(params);
+  }
+
+  async cleanOldRevisions(params: { retentionDays: number }): Promise<number> {
+    return this.postsStore.cleanOldRevisions(params);
   }
 }

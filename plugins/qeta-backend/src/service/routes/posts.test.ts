@@ -1035,4 +1035,404 @@ describe('Posts Routes', () => {
       });
     });
   });
+
+  describe('Article Revisions', () => {
+    // History is disabled by default, so tests that expect revisions to work
+    // need an app with history.enabled: true
+    let historyApp: express.Express;
+    let historyStore: jest.Mocked<QetaStore>;
+    let historyMockedAuthorize: any;
+
+    beforeEach(async () => {
+      const setup = await setupTestApp({
+        qeta: {
+          history: {
+            enabled: true,
+          },
+        },
+      });
+      historyApp = setup.app;
+      historyStore = setup.qetaStore;
+      historyMockedAuthorize = setup.mockedAuthorize;
+    });
+
+    const article = {
+      ...question,
+      type: 'article' as const,
+      id: 10,
+    };
+
+    const revision = {
+      id: 1,
+      postId: 10,
+      title: 'Old title',
+      content: 'Old content',
+      url: null,
+      headerImage: null,
+      tags: ['tag1'],
+      entities: [],
+      created: new Date('2022-01-01T00:00:00Z'),
+      createdBy: 'user:default/mock',
+    };
+
+    const revision2 = {
+      id: 2,
+      postId: 10,
+      title: 'Even older title',
+      content: 'Even older content',
+      url: 'https://example.com',
+      headerImage: 'img-old',
+      tags: ['tag1', 'tag2'],
+      entities: ['component:default/svc1'],
+      created: new Date('2021-06-15T00:00:00Z'),
+      createdBy: 'user:default/alice',
+    };
+
+    describe('GET /posts/:id/revisions', () => {
+      it('returns list of revisions for an article', async () => {
+        historyStore.getPost.mockResolvedValue(article);
+        historyStore.getPostRevisions.mockResolvedValue({
+          revisions: [revision],
+          total: 1,
+        });
+
+        const response = await request(historyApp).get('/posts/10/revisions');
+        expect(response.status).toEqual(200);
+        expect(response.body.total).toEqual(1);
+        expect(response.body.revisions).toHaveLength(1);
+        expect(response.body.revisions[0].title).toEqual('Old title');
+      });
+
+      it('returns 404 for non-existent post', async () => {
+        historyStore.getPost.mockResolvedValue(null);
+        const response = await request(historyApp).get('/posts/999/revisions');
+        expect(response.status).toEqual(404);
+      });
+
+      it('returns 400 for non-enabled content type (question by default)', async () => {
+        historyStore.getPost.mockResolvedValue(question);
+        const response = await request(historyApp).get('/posts/1/revisions');
+        expect(response.status).toEqual(400);
+      });
+
+      it('returns 400 for invalid id', async () => {
+        const response = await request(historyApp).get('/posts/abc/revisions');
+        expect(response.status).toEqual(400);
+      });
+
+      it('passes limit and offset query params to store', async () => {
+        historyStore.getPost.mockResolvedValue(article);
+        historyStore.getPostRevisions.mockResolvedValue({
+          revisions: [revision],
+          total: 5,
+        });
+
+        const response = await request(historyApp).get(
+          '/posts/10/revisions?limit=10&offset=2',
+        );
+        expect(response.status).toEqual(200);
+        expect(historyStore.getPostRevisions).toHaveBeenCalledWith({
+          postId: 10,
+          limit: 10,
+          offset: 2,
+        });
+      });
+
+      it('uses default limit=20 and offset=0 when not specified', async () => {
+        historyStore.getPost.mockResolvedValue(article);
+        historyStore.getPostRevisions.mockResolvedValue({
+          revisions: [],
+          total: 0,
+        });
+
+        await request(historyApp).get('/posts/10/revisions');
+        expect(historyStore.getPostRevisions).toHaveBeenCalledWith({
+          postId: 10,
+          limit: 20,
+          offset: 0,
+        });
+      });
+
+      it('preserves all metadata fields in revision response', async () => {
+        historyStore.getPost.mockResolvedValue(article);
+        historyStore.getPostRevisions.mockResolvedValue({
+          revisions: [revision2],
+          total: 1,
+        });
+
+        const response = await request(historyApp).get('/posts/10/revisions');
+        expect(response.status).toEqual(200);
+        const rev = response.body.revisions[0];
+        expect(rev.title).toEqual('Even older title');
+        expect(rev.content).toEqual('Even older content');
+        expect(rev.url).toEqual('https://example.com');
+        expect(rev.headerImage).toEqual('img-old');
+        expect(rev.tags).toEqual(['tag1', 'tag2']);
+        expect(rev.entities).toEqual(['component:default/svc1']);
+        expect(rev.createdBy).toEqual('user:default/alice');
+      });
+    });
+
+    describe('GET /posts/:id/revisions/:revisionId', () => {
+      it('returns a single revision', async () => {
+        historyStore.getPost.mockResolvedValue(article);
+        historyStore.getPostRevision.mockResolvedValue(revision);
+
+        const response = await request(historyApp).get('/posts/10/revisions/1');
+        expect(response.status).toEqual(200);
+        expect(response.body.title).toEqual('Old title');
+      });
+
+      it('returns 404 when revision not found', async () => {
+        historyStore.getPost.mockResolvedValue(article);
+        historyStore.getPostRevision.mockResolvedValue(undefined);
+
+        const response = await request(historyApp).get(
+          '/posts/10/revisions/999',
+        );
+        expect(response.status).toEqual(404);
+      });
+
+      it('returns 400 for non-enabled content type (question by default)', async () => {
+        historyStore.getPost.mockResolvedValue(question);
+        const response = await request(historyApp).get('/posts/1/revisions/1');
+        expect(response.status).toEqual(400);
+      });
+
+      it('returns all metadata fields for single revision', async () => {
+        historyStore.getPost.mockResolvedValue(article);
+        historyStore.getPostRevision.mockResolvedValue(revision2);
+
+        const response = await request(historyApp).get('/posts/10/revisions/2');
+        expect(response.status).toEqual(200);
+        expect(response.body.url).toEqual('https://example.com');
+        expect(response.body.headerImage).toEqual('img-old');
+        expect(response.body.tags).toEqual(['tag1', 'tag2']);
+        expect(response.body.entities).toEqual(['component:default/svc1']);
+      });
+
+      it('returns 400 for invalid revisionId', async () => {
+        historyStore.getPost.mockResolvedValue(article);
+        const response = await request(historyApp).get(
+          '/posts/10/revisions/abc',
+        );
+        expect(response.status).toEqual(400);
+      });
+    });
+
+    describe('POST /posts/:id/revisions/:revisionId/restore', () => {
+      it('restores a revision successfully', async () => {
+        const restoredArticle = {
+          ...article,
+          title: 'Old title',
+          content: 'Old content',
+        };
+        historyStore.getPost.mockResolvedValue(article);
+        historyStore.restorePostRevision.mockResolvedValue(restoredArticle);
+
+        const response = await request(historyApp).post(
+          '/posts/10/revisions/1/restore',
+        );
+        expect(response.status).toEqual(200);
+        expect(response.body.title).toEqual('Old title');
+        expect(historyStore.restorePostRevision).toHaveBeenCalledWith({
+          postId: 10,
+          revisionId: 1,
+          userRef: 'user:default/mock',
+        });
+      });
+
+      it('passes the authenticated user as userRef for restore', async () => {
+        const restoredArticle = { ...article, title: 'Old title' };
+        historyStore.getPost.mockResolvedValue(article);
+        historyStore.restorePostRevision.mockResolvedValue(restoredArticle);
+
+        await request(historyApp).post('/posts/10/revisions/1/restore');
+        expect(historyStore.restorePostRevision).toHaveBeenCalledWith(
+          expect.objectContaining({
+            userRef: 'user:default/mock',
+          }),
+        );
+      });
+
+      it('returns 404 when revision not found', async () => {
+        historyStore.getPost.mockResolvedValue(article);
+        historyStore.restorePostRevision.mockResolvedValue(undefined);
+
+        const response = await request(historyApp).post(
+          '/posts/10/revisions/999/restore',
+        );
+        expect(response.status).toEqual(404);
+      });
+
+      it('returns 400 for non-enabled content type (question by default)', async () => {
+        historyStore.getPost.mockResolvedValue(question);
+        const response = await request(historyApp).post(
+          '/posts/1/revisions/1/restore',
+        );
+        expect(response.status).toEqual(400);
+      });
+
+      it('returns 403 when permission is denied', async () => {
+        historyStore.getPost.mockResolvedValue(article);
+        historyMockedAuthorize.mockImplementation(async (requests: any) => {
+          return requests.map(() => ({
+            result: AuthorizeResult.DENY,
+          }));
+        });
+
+        const response = await request(historyApp).post(
+          '/posts/10/revisions/1/restore',
+        );
+        expect(response.status).toEqual(403);
+      });
+
+      it('returns 400 for invalid revisionId in restore', async () => {
+        historyStore.getPost.mockResolvedValue(article);
+        const response = await request(historyApp).post(
+          '/posts/10/revisions/abc/restore',
+        );
+        expect(response.status).toEqual(400);
+      });
+
+      it('returns 404 for non-existent post on restore', async () => {
+        historyStore.getPost.mockResolvedValue(null);
+        const response = await request(historyApp).post(
+          '/posts/999/revisions/1/restore',
+        );
+        expect(response.status).toEqual(404);
+      });
+    });
+  });
+
+  describe('Article Revisions with enabledContent config', () => {
+    const questionPost = {
+      ...question,
+      id: 20,
+    };
+
+    const linkPost = {
+      ...question,
+      type: 'link' as const,
+      id: 30,
+    };
+
+    const revisionData = {
+      id: 1,
+      postId: 20,
+      title: 'Old title',
+      content: 'Old content',
+      url: null,
+      headerImage: null,
+      tags: [],
+      entities: [],
+      created: new Date('2022-01-01T00:00:00Z'),
+      createdBy: 'user:default/mock',
+    };
+
+    describe('when enabledContent includes question', () => {
+      let configApp: express.Express;
+      let configStore: jest.Mocked<QetaStore>;
+
+      beforeEach(async () => {
+        const setup = await setupTestApp({
+          qeta: {
+            history: {
+              enabled: true,
+              enabledContent: ['article', 'question'],
+            },
+          },
+        });
+        configApp = setup.app;
+        configStore = setup.qetaStore;
+      });
+
+      it('allows listing revisions for a question', async () => {
+        configStore.getPost.mockResolvedValue(questionPost);
+        configStore.getPostRevisions.mockResolvedValue({
+          revisions: [revisionData],
+          total: 1,
+        });
+
+        const response = await request(configApp).get('/posts/20/revisions');
+        expect(response.status).toEqual(200);
+        expect(response.body.total).toEqual(1);
+      });
+
+      it('still rejects link type when not in enabledContent', async () => {
+        configStore.getPost.mockResolvedValue(linkPost);
+
+        const response = await request(configApp).get('/posts/30/revisions');
+        expect(response.status).toEqual(400);
+      });
+
+      it('allows restoring a question revision', async () => {
+        const restoredPost = { ...questionPost, title: 'Old title' };
+        configStore.getPost.mockResolvedValue(questionPost);
+        configStore.restorePostRevision.mockResolvedValue(restoredPost);
+
+        const response = await request(configApp).post(
+          '/posts/20/revisions/1/restore',
+        );
+        expect(response.status).toEqual(200);
+      });
+    });
+
+    describe('when enabledContent includes all types', () => {
+      let configApp: express.Express;
+      let configStore: jest.Mocked<QetaStore>;
+
+      beforeEach(async () => {
+        const setup = await setupTestApp({
+          qeta: {
+            history: {
+              enabled: true,
+              enabledContent: ['article', 'question', 'link'],
+            },
+          },
+        });
+        configApp = setup.app;
+        configStore = setup.qetaStore;
+      });
+
+      it('allows listing revisions for a link', async () => {
+        configStore.getPost.mockResolvedValue(linkPost);
+        configStore.getPostRevisions.mockResolvedValue({
+          revisions: [],
+          total: 0,
+        });
+
+        const response = await request(configApp).get('/posts/30/revisions');
+        expect(response.status).toEqual(200);
+      });
+    });
+
+    describe('when history is disabled (default)', () => {
+      it('returns 400 for article revisions when history is disabled by default', async () => {
+        const articlePost = {
+          ...question,
+          type: 'article' as const,
+          id: 10,
+        };
+        qetaStore.getPost.mockResolvedValue(articlePost);
+
+        const response = await request(app).get('/posts/10/revisions');
+        expect(response.status).toEqual(400);
+      });
+
+      it('returns 400 for restore when history is disabled by default', async () => {
+        const articlePost = {
+          ...question,
+          type: 'article' as const,
+          id: 10,
+        };
+        qetaStore.getPost.mockResolvedValue(articlePost);
+
+        const response = await request(app).post(
+          '/posts/10/revisions/1/restore',
+        );
+        expect(response.status).toEqual(400);
+      });
+    });
+  });
 });

@@ -24,6 +24,8 @@ export * from './EntitiesContainer';
 export * from './UsersContainer';
 
 export * from './ArticleContent';
+export * from './PostHistory';
+export * from './PostHistoryButton';
 export * from './CollectionForm';
 export * from './CollectionsContainer';
 
