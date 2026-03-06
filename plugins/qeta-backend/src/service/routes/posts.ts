@@ -61,6 +61,17 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   ) ?? { months: 6 };
   const reviewThresholdMs = durationToMilliseconds(postsOlderThan);
 
+  const isRevisionEnabledForType = (postType: string): boolean => {
+    const enabled = config.getOptionalBoolean('qeta.history.enabled') ?? false;
+    if (!enabled) {
+      return false;
+    }
+    const enabledContent = config.getOptionalStringArray(
+      'qeta.history.enabledContent',
+    ) ?? ['article'];
+    return enabledContent.includes(postType);
+  };
+
   const notifyAutomaticCollectionAdditions = async (
     postId: number,
     username: string,
@@ -1590,4 +1601,165 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     response.json({ metadata });
   });
+
+  // GET /posts/:id/revisions
+  router.get('/posts/:id/revisions', async (request, response) => {
+    const postId = Number.parseInt(request.params.id, 10);
+    if (Number.isNaN(postId)) {
+      response.status(400).send({ errors: 'Invalid post id', type: 'body' });
+      return;
+    }
+
+    const username = await permissionMgr.getUsername(request, true);
+    const post = await database.getPost(username, postId, false);
+    if (!post) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return;
+    }
+
+    if (!isRevisionEnabledForType(post.type)) {
+      response.status(400).send({
+        errors: 'Revisions are not enabled for this content type',
+        type: 'body',
+      });
+      return;
+    }
+
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaReadPostPermission, resource: post }],
+      { throwOnDeny: true },
+    );
+
+    const parsedLimit = Number.parseInt(request.query.limit as string, 10);
+    const parsedOffset = Number.parseInt(request.query.offset as string, 10);
+    const limit =
+      Number.isFinite(parsedLimit) && parsedLimit >= 0
+        ? Math.min(parsedLimit, 100)
+        : 20;
+    const offset =
+      Number.isFinite(parsedOffset) && parsedOffset >= 0 ? parsedOffset : 0;
+
+    const result = await database.getPostRevisions({
+      postId,
+      limit,
+      offset,
+    });
+
+    response.json(result);
+  });
+
+  // GET /posts/:id/revisions/:revisionId
+  router.get('/posts/:id/revisions/:revisionId', async (request, response) => {
+    const postId = Number.parseInt(request.params.id, 10);
+    const revisionId = Number.parseInt(request.params.revisionId, 10);
+    if (Number.isNaN(postId) || Number.isNaN(revisionId)) {
+      response.status(400).send({ errors: 'Invalid id', type: 'body' });
+      return;
+    }
+
+    const username = await permissionMgr.getUsername(request, true);
+    const post = await database.getPost(username, postId, false);
+    if (!post) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return;
+    }
+
+    if (!isRevisionEnabledForType(post.type)) {
+      response.status(400).send({
+        errors: 'Revisions are not enabled for this content type',
+        type: 'body',
+      });
+      return;
+    }
+
+    await permissionMgr.authorize(
+      request,
+      [{ permission: qetaReadPostPermission, resource: post }],
+      { throwOnDeny: true },
+    );
+
+    const revision = await database.getPostRevision({
+      postId,
+      revisionId,
+    });
+
+    if (!revision) {
+      response
+        .status(404)
+        .send({ errors: 'Revision not found', type: 'query' });
+      return;
+    }
+
+    response.json(revision);
+  });
+
+  // POST /posts/:id/revisions/:revisionId/restore
+  router.post(
+    '/posts/:id/revisions/:revisionId/restore',
+    async (request, response) => {
+      const postId = Number.parseInt(request.params.id, 10);
+      const revisionId = Number.parseInt(request.params.revisionId, 10);
+      if (Number.isNaN(postId) || Number.isNaN(revisionId)) {
+        response.status(400).send({ errors: 'Invalid id', type: 'body' });
+        return;
+      }
+
+      const username = await permissionMgr.getUsername(request, true);
+      const post = await database.getPost(username, postId, false);
+      if (!post) {
+        response.status(404).send({ errors: 'Post not found', type: 'query' });
+        return;
+      }
+
+      if (!isRevisionEnabledForType(post.type)) {
+        response.status(400).send({
+          errors: 'Revisions are not enabled for this content type',
+          type: 'body',
+        });
+        return;
+      }
+
+      await permissionMgr.authorize(
+        request,
+        [{ permission: qetaEditPostPermission, resource: post }],
+        { throwOnDeny: true },
+      );
+
+      const restoredPost = await database.restorePostRevision({
+        postId,
+        revisionId,
+        userRef: username,
+      });
+
+      if (!restoredPost) {
+        response
+          .status(404)
+          .send({ errors: 'Revision not found', type: 'query' });
+        return;
+      }
+
+      events?.publish({
+        topic: 'qeta',
+        eventPayload: {
+          post: restoredPost,
+          author: username,
+        },
+        metadata: { action: 'restore_revision' },
+      });
+
+      auditor?.createEvent({
+        eventId: 'restore-revision',
+        severityLevel: 'medium',
+        request,
+        meta: {
+          postId,
+          revisionId,
+          post: entityToJsonObject(restoredPost),
+        },
+      });
+
+      response.json(restoredPost);
+    },
+  );
 };
