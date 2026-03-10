@@ -37,13 +37,13 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "backstage:^",
     "@backstage/config": "backstage:^",
+    "@backstage/types": "backstage:^",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",
     "@drodil/backstage-plugin-qeta-node": "workspace:^",
     "openai": "^4.68.4"
   },
   "devDependencies": {
-    "@backstage/cli": "backstage:^",
-    "@backstage/types": "backstage:^"
+    "@backstage/cli": "backstage:^"
   },
   "files": [
     "dist",

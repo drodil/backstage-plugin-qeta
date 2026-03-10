@@ -6,12 +6,35 @@
   ],
   "workspaces": {
     "plugins/*": {
-      "entry": [
-        "src/index.{ts,tsx}",
-        "src/routes.ts",
-        "dev/index.{ts,tsx}",
-        "src/run.ts"
-      ],
+      "entry": ["src/index.{ts,tsx}"],
+      "jest": {
+        "entry": ["src/setupTests.ts", "**/*.test.{ts,tsx}"]
+      },
+      "ignore": [".eslintrc.js", "knexfile.js"]
+    },
+    "plugins/qeta": {
+      "entry": ["configSchema.d.ts", "dev/index.tsx"],
+      "jest": {
+        "entry": ["src/setupTests.ts", "**/*.test.{ts,tsx}"]
+      },
+      "ignore": [".eslintrc.js", "knexfile.js"]
+    },
+    "plugins/qeta-backend": {
+      "entry": ["configSchema.d.ts", "dev/index.ts"],
+      "jest": {
+        "entry": ["src/setupTests.ts", "**/*.test.{ts,tsx}"]
+      },
+      "ignore": [".eslintrc.js", "knexfile.js"]
+    },
+    "plugins/qeta-backend-module-openai": {
+      "entry": ["configSchema.d.ts"],
+      "jest": {
+        "entry": ["src/setupTests.ts", "**/*.test.{ts,tsx}"]
+      },
+      "ignore": [".eslintrc.js", "knexfile.js"]
+    },
+    "plugins/search-backend-module-qeta": {
+      "entry": ["configSchema.d.ts"],
       "jest": {
         "entry": ["src/setupTests.ts", "**/*.test.{ts,tsx}"]
       },
@@ -23,7 +46,6 @@
     "react-dom",
     "react-router",
     "react-router-dom",
-    "commander",
-    "@backstage/types"
+    "commander"
   ]
 }
