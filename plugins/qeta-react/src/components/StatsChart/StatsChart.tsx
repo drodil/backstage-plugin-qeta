@@ -506,7 +506,7 @@ export const StatsChart = (props: {
               >
                 {value instanceof Date
                   ? value.toLocaleDateString()
-                  : value ?? '-'}
+                  : (value ?? '-')}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 {stat.name}

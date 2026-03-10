@@ -189,7 +189,7 @@ export class PermissionManager {
     const createPermission = isCreatePermission(permission);
 
     if (isPermission(permission, qetaCreateTagPermission)) {
-      return this.config.getOptionalBoolean('qeta.tags.allowCreation') ?? true
+      return (this.config.getOptionalBoolean('qeta.tags.allowCreation') ?? true)
         ? { result: AuthorizeResult.ALLOW }
         : { result: AuthorizeResult.DENY };
     }

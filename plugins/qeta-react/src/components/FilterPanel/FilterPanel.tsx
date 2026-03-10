@@ -175,8 +175,9 @@ export interface CommonFilterPanelProps {
   mode?: 'posts' | 'collections' | 'tags' | 'entities' | 'users';
 }
 
-export interface FilterPanelProps<T extends Filters>
-  extends CommonFilterPanelProps {
+export interface FilterPanelProps<
+  T extends Filters,
+> extends CommonFilterPanelProps {
   onChange: (changes: Change<T> | Change<T>[]) => void;
   filters: T;
 }

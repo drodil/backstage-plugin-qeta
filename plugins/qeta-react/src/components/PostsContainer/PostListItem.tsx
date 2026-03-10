@@ -247,8 +247,8 @@ export const PostListItem = (props: PostListItemProps) => {
   const answerClassName = correctAnswer
     ? styles.metaItemActive
     : answersCount === 0
-    ? styles.metaItemWarning
-    : '';
+      ? styles.metaItemWarning
+      : '';
   /* eslint-enable no-nested-ternary */
 
   return (

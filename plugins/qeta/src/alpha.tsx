@@ -3,6 +3,7 @@ import {
   coreExtensionData,
   createExtensionInput,
   createFrontendPlugin,
+  FrontendPlugin,
   NavItemBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
@@ -164,16 +165,15 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
         const pluginsApi = apis.get(qetaMarkdownPluginsApiRef);
         const remarkPlugins = pluginsApi?.getRemarkPlugins();
         const rehypePlugins = pluginsApi?.getRehypePlugins();
-        return import(
-          './components/EntityPostsContent/EntityPostsContent.tsx'
-        ).then(m =>
-          compatWrapper(
-            <m.EntityPostsContent
-              {...config}
-              remarkPlugins={remarkPlugins}
-              rehypePlugins={rehypePlugins}
-            />,
-          ),
+        return import('./components/EntityPostsContent/EntityPostsContent.tsx').then(
+          m =>
+            compatWrapper(
+              <m.EntityPostsContent
+                {...config}
+                remarkPlugins={remarkPlugins}
+                rehypePlugins={rehypePlugins}
+              />,
+            ),
         );
       },
     });
@@ -221,7 +221,7 @@ const techDocsAskQuestionAddon = AddonBlueprint.make({
  *
  * @alpha
  */
-export default createFrontendPlugin({
+const qetaPlugin: FrontendPlugin = createFrontendPlugin({
   pluginId: 'qeta',
   info: { packageJson: () => import('../package.json') },
   routes: convertLegacyRouteRefs({
@@ -238,6 +238,8 @@ export default createFrontendPlugin({
     qetaMarkdownPluginsApiExtension,
   ],
 });
+
+export default qetaPlugin;
 
 export { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
 

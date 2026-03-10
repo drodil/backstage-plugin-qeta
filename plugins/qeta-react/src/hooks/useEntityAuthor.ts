@@ -151,13 +151,13 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
 export const useEntityAuthor = (
   entity: PostResponse | AnswerResponse | CollectionResponse | UserResponse,
 ) => {
-  const anonymous = 'anonymous' in entity ? entity.anonymous ?? false : false;
+  const anonymous = 'anonymous' in entity ? (entity.anonymous ?? false) : false;
   const author =
     // eslint-disable-next-line no-nested-ternary
     'author' in entity
       ? entity.author
       : 'userRef' in entity
-      ? entity.userRef
-      : entity.owner;
+        ? entity.userRef
+        : entity.owner;
   return useUserInfo(author, anonymous);
 };

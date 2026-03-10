@@ -75,7 +75,7 @@ export const AnswersContainer = (props: AnswersContainerProps) => {
       )}
       defaultView="list"
       filterPanelProps={
-        showFilters ?? true
+        (showFilters ?? true)
           ? {
               answerFilters: true,
             }

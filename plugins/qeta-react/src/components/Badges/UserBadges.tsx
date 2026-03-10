@@ -40,17 +40,20 @@ export const UserBadges = ({ entityRef }: { entityRef: string }) => {
 
   const sortedBadges = badges ? sortBadgesByLevel(badges) : [];
 
-  const groupedBadges = sortedBadges.reduce((acc, userBadge) => {
-    const key = userBadge.badge.id;
-    if (!acc[key]) {
-      acc[key] = {
-        badge: userBadge.badge,
-        count: 0,
-      };
-    }
-    acc[key].count += 1;
-    return acc;
-  }, {} as Record<string, { badge: UserBadge['badge']; count: number }>);
+  const groupedBadges = sortedBadges.reduce(
+    (acc, userBadge) => {
+      const key = userBadge.badge.id;
+      if (!acc[key]) {
+        acc[key] = {
+          badge: userBadge.badge,
+          count: 0,
+        };
+      }
+      acc[key].count += 1;
+      return acc;
+    },
+    {} as Record<string, { badge: UserBadge['badge']; count: number }>,
+  );
 
   const displayBadges = Object.values(groupedBadges).sort((a, b) => {
     const levelA = LEVEL_ORDER[a.badge.level] ?? 99;

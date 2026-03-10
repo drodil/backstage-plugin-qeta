@@ -63,7 +63,6 @@
   "dependencies": {
     "@backstage/catalog-client": "backstage:^",
     "@backstage/catalog-model": "backstage:^",
-    "@backstage/config": "backstage:^",
     "@backstage/core-components": "backstage:^",
     "@backstage/core-plugin-api": "backstage:^",
     "@backstage/frontend-plugin-api": "backstage:^",
@@ -80,7 +79,6 @@
     "dompurify": "^3.2.4",
     "file-type": "16.5.4",
     "github-slugger": "^2.0.0",
-    "i18next": "^23.16.2",
     "infinite-scroll-hook": "^1.0.2",
     "lodash": "^4.17.23",
     "numeral": "^2.0.6",

@@ -43,9 +43,7 @@ class QetaAIExtensionPointImpl implements QetaAIExtensionPoint {
   }
 }
 
-class QetaTagsDatabaseExtensionPointImpl
-  implements QetaTagDatabaseExtensionPoint
-{
+class QetaTagsDatabaseExtensionPointImpl implements QetaTagDatabaseExtensionPoint {
   #tagDatabase?: TagDatabase;
 
   get tagDatabase() {
@@ -57,9 +55,7 @@ class QetaTagsDatabaseExtensionPointImpl
   }
 }
 
-class QetaNotificationReceiversExtensionPointImpl
-  implements QetaNotificationReceiversExtensionPoint
-{
+class QetaNotificationReceiversExtensionPointImpl implements QetaNotificationReceiversExtensionPoint {
   #notificationReceivers?: NotificationReceiversHandler;
 
   get handler() {
@@ -71,9 +67,7 @@ class QetaNotificationReceiversExtensionPointImpl
   }
 }
 
-class QetaBadgeEvaluatorExtensionPointImpl
-  implements QetaBadgeEvaluatorExtensionPoint
-{
+class QetaBadgeEvaluatorExtensionPointImpl implements QetaBadgeEvaluatorExtensionPoint {
   #evaluators: BadgeEvaluator[] = [];
 
   get evaluators() {

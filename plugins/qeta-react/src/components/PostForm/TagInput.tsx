@@ -144,13 +144,16 @@ export const TagInput = forwardRef<
         ].sort((a, b) => a.localeCompare(b));
         setAvailableTags(uniqueTags);
         setTagDescriptions(
-          data.tags.reduce((acc, tag) => {
-            if (!tag.description) {
+          data.tags.reduce(
+            (acc, tag) => {
+              if (!tag.description) {
+                return acc;
+              }
+              acc[tag.tag] = tag.description;
               return acc;
-            }
-            acc[tag.tag] = tag.description;
-            return acc;
-          }, {} as Record<string, string>),
+            },
+            {} as Record<string, string>,
+          ),
         );
       });
   }, [qetaApi, allowCreation, allowedTags]);

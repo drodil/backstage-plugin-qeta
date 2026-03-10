@@ -68,7 +68,6 @@
     "@backstage/frontend-plugin-api": "backstage:^",
     "@backstage/plugin-catalog-react": "backstage:^",
     "@backstage/plugin-home-react": "backstage:^",
-    "@backstage/plugin-permission-react": "backstage:^",
     "@backstage/plugin-search-common": "backstage:^",
     "@backstage/plugin-search-react": "backstage:^",
     "@backstage/plugin-signals-react": "backstage:^",
@@ -95,10 +94,8 @@
   },
   "devDependencies": {
     "@backstage/cli": "backstage:^",
-    "@backstage/dev-utils": "backstage:^",
     "@backstage/frontend-defaults": "backstage:^",
     "@backstage/plugin-catalog": "backstage:^",
-    "@backstage/plugin-home": "backstage:^",
     "@backstage/plugin-notifications": "backstage:^",
     "@backstage/plugin-search": "backstage:^",
     "@backstage/plugin-search-react": "backstage:^",

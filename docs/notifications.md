@@ -70,9 +70,7 @@ You can customize who receives notifications by implementing the `NotificationRe
 import { NotificationReceiversHandler } from '@drodil/backstage-plugin-qeta-node';
 import { Post, Answer, Collection } from '@drodil/backstage-plugin-qeta-common';
 
-export class CustomNotificationReceiversHandler
-  implements NotificationReceiversHandler
-{
+export class CustomNotificationReceiversHandler implements NotificationReceiversHandler {
   /**
    * Called when a new post (question or article) is created
    * Return array of user/group entity refs who should receive notifications

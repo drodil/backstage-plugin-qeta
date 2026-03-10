@@ -97,7 +97,7 @@ qeta:
     # maxSizeImage: 2500000
     # allowedFilesTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/gif']
 #  history:
-#    enabled: false # default
+#    enabled: true # default
 #    retentionDays: 180 # default
 #    saveAttachments: false # default
 #    enabledContent:

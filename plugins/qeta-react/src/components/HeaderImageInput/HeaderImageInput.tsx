@@ -109,13 +109,16 @@ export const HeaderImageInput = (props: {
     'qeta.storage.allowedMimeTypes',
   ) || ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
 
-  const acceptObj = allowedMimeTypes.reduce((acc, type) => {
-    if (!type.includes('image/')) {
+  const acceptObj = allowedMimeTypes.reduce(
+    (acc, type) => {
+      if (!type.includes('image/')) {
+        return acc;
+      }
+      acc[type] = [];
       return acc;
-    }
-    acc[type] = [];
-    return acc;
-  }, {} as Record<string, string[]>);
+    },
+    {} as Record<string, string[]>,
+  );
 
   const handleClearUrl = () => {
     setInputValue('');

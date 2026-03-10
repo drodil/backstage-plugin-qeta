@@ -20,7 +20,7 @@ export abstract class BaseStore {
   }
 
   protected mapToInteger(val: string | number | undefined): number {
-    return typeof val === 'string' ? Number.parseInt(val, 10) : val ?? 0;
+    return typeof val === 'string' ? Number.parseInt(val, 10) : (val ?? 0);
   }
 
   protected mapToBoolean(val: string | number | boolean | undefined): boolean {

@@ -54,7 +54,6 @@
   ],
   "dependencies": {
     "@backstage/backend-plugin-api": "backstage:^",
-    "@backstage/catalog-client": "backstage:^",
     "@backstage/catalog-model": "backstage:^",
     "@backstage/config": "backstage:^",
     "@backstage/plugin-auth-node": "backstage:^",

@@ -73,7 +73,6 @@
     "ajv-formats": "^2.1.1",
     "body-parser": "^1.20.3",
     "cheerio": "^1.0.0-rc.12",
-    "dataloader": "^2.2.3",
     "date-fns": "^2.30.0",
     "express": "^4.20.0",
     "express-promise-router": "^4.1.0",
@@ -85,8 +84,7 @@
     "multiparty": "^4.2.3",
     "sanitize-html": "^2.13.0",
     "stopword": "^3.1.5",
-    "uuid": "^9.0.1",
-    "zod": "^3.25.1"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "backstage:^",
@@ -94,7 +92,6 @@
     "@backstage/plugin-auth-backend": "backstage:^",
     "@backstage/plugin-auth-backend-module-guest-provider": "backstage:^",
     "@backstage/plugin-catalog-backend": "backstage:^",
-    "@backstage/plugin-catalog-node": "backstage:^",
     "@backstage/plugin-events-backend": "backstage:^",
     "@backstage/plugin-notifications-backend": "backstage:^",
     "@backstage/plugin-permission-backend": "backstage:^",

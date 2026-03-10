@@ -175,7 +175,7 @@ export const PostsContainer = (props: PostsContainerProps) => {
           collectionId: collectionId,
         }}
         filterPanelProps={
-          showFilters ?? true
+          (showFilters ?? true)
             ? {
                 mode: 'posts',
                 type: type as PostType,

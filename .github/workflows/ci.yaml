@@ -30,6 +30,7 @@ jobs:
       - run: yarn dedupe --check
       - run: yarn prettier:check
       - run: yarn fix --check
+      - run: yarn knip:check:deps
       - run: yarn tsc
       - run: yarn build
 

@@ -22,7 +22,10 @@ export interface RawCommentEntity {
 }
 
 export class CommentsStore extends BaseStore {
-  constructor(protected readonly db: Knex, private readonly config: Config) {
+  constructor(
+    protected readonly db: Knex,
+    private readonly config: Config,
+  ) {
     super(db);
   }
 

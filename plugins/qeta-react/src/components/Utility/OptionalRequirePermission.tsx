@@ -12,7 +12,7 @@ export const OptionalRequirePermission = (props: RequirePermissionProps) => {
     if (isPermission(props.permission, qetaCreateTagPermission)) {
       return (
         <>
-          {config.getOptionalBoolean('qeta.tags.allowCreation') ?? true
+          {(config.getOptionalBoolean('qeta.tags.allowCreation') ?? true)
             ? props.children
             : null}
         </>

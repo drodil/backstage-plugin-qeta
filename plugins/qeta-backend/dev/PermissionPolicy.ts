@@ -41,7 +41,10 @@ export class PermissionPolicy implements PermissionPolicy {
   // @ts-ignore
   private catalogApi: CatalogApi;
 
-  constructor(private readonly auth: AuthService, discovery: DiscoveryService) {
+  constructor(
+    private readonly auth: AuthService,
+    discovery: DiscoveryService,
+  ) {
     this.catalogApi = new CatalogClient({
       discoveryApi: discovery,
     });
