@@ -153,34 +153,3 @@ export const createAnswer = async (
 
   return await response.json();
 };
-
-export const createCollection = async (
-  request: APIRequestContext,
-  options?: { title?: string; description?: string; user?: string },
-) => {
-  const {
-    user = 'user:default/guest',
-    title = faker.lorem.sentence(),
-    description = faker.lorem.sentence(),
-  } = options || {};
-
-  const collection = {
-    title,
-    description,
-    user,
-  };
-
-  const response = await request.post(
-    'http://localhost:7007/api/qeta/collections',
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: AUTH_HEADER,
-        'x-user-id': user,
-      },
-      data: collection,
-    },
-  );
-
-  return await response.json();
-};

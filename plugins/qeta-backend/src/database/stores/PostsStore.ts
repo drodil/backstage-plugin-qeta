@@ -61,12 +61,6 @@ export interface RawPostVoteEntity {
   timestamp: Date;
 }
 
-export interface RawPostAIAnswer {
-  id: number;
-  answer: string;
-  created: Date;
-}
-
 export class PostsStore extends BaseStore {
   private answersStore?: AnswersStore;
 

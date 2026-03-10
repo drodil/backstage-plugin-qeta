@@ -8,7 +8,7 @@ import {
   PostAnswerSchema,
   RouteOptions,
 } from '../types';
-import { Request, Router } from 'express';
+import { Request, Response, Router } from 'express';
 import {
   AnswersQuery,
   findEntityMentions,
@@ -23,7 +23,6 @@ import {
   qetaReadCommentPermission,
   qetaReadPostPermission,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Response } from 'express-serve-static-core';
 import {
   entityToJsonObject,
   signalAnswerStats,

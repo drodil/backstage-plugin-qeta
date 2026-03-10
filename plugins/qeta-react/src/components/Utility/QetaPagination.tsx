@@ -11,8 +11,6 @@ import {
 } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
 
-export type QetaPaginationClassKeys = 'root' | 'pageSizeSelect' | 'pagination';
-
 const useStyles = makeStyles(
   () => ({
     root: {

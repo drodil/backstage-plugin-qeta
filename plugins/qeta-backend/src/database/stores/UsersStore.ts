@@ -6,12 +6,6 @@ import {
 import { Knex } from 'knex';
 import { BaseStore } from './BaseStore';
 
-export interface RawUserImpact {
-  userRef: string;
-  impact: number;
-  date: Date;
-}
-
 export class UsersStore extends BaseStore {
   constructor(protected readonly db: Knex) {
     super(db);

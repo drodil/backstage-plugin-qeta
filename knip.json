@@ -1,44 +1,46 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignore": [
-    "{plugins}/*/{fixtures,templates,migrations}/**",
-    "node_modules/**"
-  ],
+  "ignoreFiles": ["tools/**"],
+  "ignoreBinaries": ["build"],
+  "ignoreExportsUsedInFile": true,
+  "exclude": ["duplicates"],
   "workspaces": {
     "plugins/*": {
       "entry": ["src/index.{ts,tsx}"],
+      "project": ["src/**/*.{ts,tsx}"],
       "jest": {
         "entry": ["src/setupTests.ts", "**/*.test.{ts,tsx}"]
       },
-      "ignore": [".eslintrc.js", "knexfile.js"]
+      "ignore": [".eslintrc.js"]
     },
     "plugins/qeta": {
       "entry": ["configSchema.d.ts", "dev/index.tsx"],
       "jest": {
         "entry": ["src/setupTests.ts", "**/*.test.{ts,tsx}"]
       },
-      "ignore": [".eslintrc.js", "knexfile.js"]
+      "ignore": [".eslintrc.js"]
     },
     "plugins/qeta-backend": {
-      "entry": ["configSchema.d.ts", "dev/index.ts"],
+      "entry": ["configSchema.d.ts", "dev/index.ts", "migrations/**/*.js"],
+      "project": ["src/**/*.{ts,tsx}", "dev/**/*.ts", "migrations/**/*.js"],
       "jest": {
         "entry": ["src/setupTests.ts", "**/*.test.{ts,tsx}"]
       },
-      "ignore": [".eslintrc.js", "knexfile.js"]
+      "ignore": [".eslintrc.js"]
     },
     "plugins/qeta-backend-module-openai": {
       "entry": ["configSchema.d.ts"],
       "jest": {
         "entry": ["src/setupTests.ts", "**/*.test.{ts,tsx}"]
       },
-      "ignore": [".eslintrc.js", "knexfile.js"]
+      "ignore": [".eslintrc.js"]
     },
     "plugins/search-backend-module-qeta": {
       "entry": ["configSchema.d.ts"],
       "jest": {
         "entry": ["src/setupTests.ts", "**/*.test.{ts,tsx}"]
       },
-      "ignore": [".eslintrc.js", "knexfile.js"]
+      "ignore": [".eslintrc.js"]
     }
   },
   "ignoreDependencies": [

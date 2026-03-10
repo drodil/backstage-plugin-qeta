@@ -30,13 +30,6 @@ import { AuthorBoxes } from '../AuthorBox/AuthorBoxes.tsx';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
 import { qetaApiRef } from '../../api.ts';
 
-export type LinkCardClassKeys =
-  | 'root'
-  | 'contentContainer'
-  | 'markdownContainer'
-  | 'buttons'
-  | 'metadata';
-
 const useStyles = makeStyles(
   theme => ({
     root: {},

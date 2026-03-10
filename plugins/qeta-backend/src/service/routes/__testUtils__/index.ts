@@ -99,44 +99,6 @@ export const template = {
   status: 'active',
 };
 
-export const tag = {
-  id: 1,
-  name: 'test-tag',
-  description: 'Test Tag Description',
-  author: 'user:default/mock',
-  created: new Date('2022-01-01T00:00:00Z'),
-  followers: 0,
-  questionsCount: 0,
-  articlesCount: 0,
-  linksCount: 0,
-  status: 'active',
-};
-
-export const entity = {
-  id: 1,
-  name: 'test-entity',
-  description: 'Test Entity Description',
-  author: 'user:default/mock',
-  created: new Date('2022-01-01T00:00:00Z'),
-  followers: 0,
-  questionsCount: 0,
-  articlesCount: 0,
-  linksCount: 0,
-  status: 'active',
-};
-
-export const user = {
-  userRef: 'user:default/mock',
-  totalViews: 100,
-  totalQuestions: 5,
-  totalAnswers: 10,
-  totalComments: 2,
-  totalVotes: 20,
-  totalArticles: 1,
-  totalLinks: 2,
-  totalFollowers: 3,
-};
-
 export const globalStats = [
   {
     date: new Date('2022-01-01'),
@@ -150,20 +112,6 @@ export const globalStats = [
     totalTags: 20,
     totalUsers: 30,
     activeUsers: 20,
-  },
-];
-
-export const userStats = [
-  {
-    date: new Date('2022-01-01'),
-    totalViews: 100,
-    totalQuestions: 5,
-    totalAnswers: 10,
-    totalComments: 2,
-    totalVotes: 20,
-    totalArticles: 1,
-    totalFollowers: 3,
-    totalLinks: 2,
   },
 ];
 

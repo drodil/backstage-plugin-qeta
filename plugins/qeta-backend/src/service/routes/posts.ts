@@ -1,7 +1,7 @@
 import { extractPostIds, getCreated, mapAdditionalFields } from '../util';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import Ajv from 'ajv';
-import { Request, Router } from 'express';
+import { Request, Response, Router } from 'express';
 import {
   findEntityMentions,
   PostsQuery,
@@ -30,7 +30,6 @@ import {
   RouteOptions,
   URLMetadataSchema,
 } from '../types';
-import { Response } from 'express-serve-static-core';
 import {
   entityToJsonObject,
   extractMetadata,

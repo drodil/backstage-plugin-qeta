@@ -1,5 +1,4 @@
 import {
-  Badge,
   QetaIdEntity,
   UserResponse,
   isQuestion,
@@ -497,7 +496,7 @@ export class OratorEvaluator implements BadgeEvaluator {
   }
 }
 
-export class FavoriteQuestionEvaluator implements BadgeEvaluator {
+class FavoriteQuestionEvaluator implements BadgeEvaluator {
   public readonly key = 'favorite-question';
   public readonly name = 'Favorite Question';
   public readonly description = 'Received more than 200 votes on a question';
@@ -515,7 +514,7 @@ export class FavoriteQuestionEvaluator implements BadgeEvaluator {
   }
 }
 
-export class PopularQuestionEvaluator implements BadgeEvaluator {
+class PopularQuestionEvaluator implements BadgeEvaluator {
   public readonly key = 'popular-question';
   public readonly name = 'Popular Question';
   public readonly description = 'Question has somewhat more than 500 views';
@@ -533,7 +532,7 @@ export class PopularQuestionEvaluator implements BadgeEvaluator {
   }
 }
 
-export class ViralQuestionEvaluator implements BadgeEvaluator {
+class ViralQuestionEvaluator implements BadgeEvaluator {
   public readonly key = 'viral-question';
   public readonly name = 'Viral Question';
   public readonly description = 'Question has somewhat more than 5000 views';
@@ -551,7 +550,7 @@ export class ViralQuestionEvaluator implements BadgeEvaluator {
   }
 }
 
-export class FavoriteArticleEvaluator implements BadgeEvaluator {
+class FavoriteArticleEvaluator implements BadgeEvaluator {
   public readonly key = 'favorite-article';
   public readonly name = 'Favorite Article';
   public readonly description = 'Received more than 200 votes on an article';
@@ -569,7 +568,7 @@ export class FavoriteArticleEvaluator implements BadgeEvaluator {
   }
 }
 
-export class FavoriteLinkEvaluator implements BadgeEvaluator {
+class FavoriteLinkEvaluator implements BadgeEvaluator {
   public readonly key = 'favorite-link';
   public readonly name = 'Favorite Link';
   public readonly description = 'Received more than 200 votes on a link';
@@ -587,7 +586,7 @@ export class FavoriteLinkEvaluator implements BadgeEvaluator {
   }
 }
 
-export class FavoriteAnswerEvaluator implements BadgeEvaluator {
+class FavoriteAnswerEvaluator implements BadgeEvaluator {
   public readonly key = 'favorite-answer';
   public readonly name = 'Favorite Answer';
   public readonly description = 'Received more than 200 votes on an answer';
@@ -1052,12 +1051,18 @@ export const BADGE_EVALUATORS: BadgeEvaluator[] = [
   new GoodQuestionEvaluator(),
   new GreatQuestionEvaluator(),
   new FamousQuestionEvaluator(),
+  new FavoriteQuestionEvaluator(),
+  new PopularQuestionEvaluator(),
+  new ViralQuestionEvaluator(),
   new GoodAnswerEvaluator(),
   new GreatAnswerEvaluator(),
+  new FavoriteAnswerEvaluator(),
   new GoodArticleEvaluator(),
   new GreatArticleEvaluator(),
+  new FavoriteArticleEvaluator(),
   new GoodLinkEvaluator(),
   new GreatLinkEvaluator(),
+  new FavoriteLinkEvaluator(),
   new InquisitiveEvaluator(),
   new CuriousMindEvaluator(),
   new HelperEvaluator(),
@@ -1110,5 +1115,3 @@ export const BADGE_EVALUATORS: BadgeEvaluator[] = [
   new PaparazziEvaluator(),
   new TagHoarderEvaluator(),
 ];
-
-export const SYSTEM_BADGES: Omit<Badge, 'id'>[] = BADGE_EVALUATORS;

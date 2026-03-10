@@ -26,7 +26,7 @@
     "lint": "backstage-cli repo lint --since origin/main",
     "lint:all": "backstage-cli repo lint",
     "lint-staged": "lint-staged",
-    "knip": "knip",
+    "knip": "knip --cache",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "commitlint": "commitlint",
