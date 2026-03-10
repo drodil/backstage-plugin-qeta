@@ -107,4 +107,13 @@ The allowed configuration values are:
 
 - `contentHealth.postsOlderThan`, [HumanDuration](https://github.com/backstage/backstage/blob/master/packages/types/src/index.ts#L43) object (e.g. `{ months: 6 }`). Posts older than this duration will be marked as needing review if they haven't been updated recently. Default is `{ months: 6 }`.
 
+## Post History
+
+- `history.enabled`, boolean, enable or disable revision tracking entirely. Default is `false`.
+- `history.retentionDays`, number, how many days to keep post revisions before the cleanup job deletes them. Default is `180`.
+- `history.enabledContent`, string array, list of content types that should have revision tracking. Possible values: `article`, `question`, `link`. Default is `['article']`.
+- `history.saveAttachments`, boolean, when `true`, attachment UUIDs linked to the post are saved in revision snapshots and re-linked on restore. Default is `false`.
+
+The cleanup job runs daily at 3:00 AM (not configurable). See [Post History](history.md) for full documentation of the revision tracking feature.
+
 Additionally, there are more config values for the [OpenAI module](ai.md).

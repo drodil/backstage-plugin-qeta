@@ -96,6 +96,14 @@ qeta:
     useRelativeUrls: false
     # maxSizeImage: 2500000
     # allowedFilesTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/gif']
+#  history:
+#    enabled: false # default
+#    retentionDays: 180 # default
+#    saveAttachments: false # default
+#    enabledContent:
+#      - article # default
+#      - link
+#      - question
   allowAnonymous: true
   allowMetadataInput: true
   #allowGlobalEdits: true

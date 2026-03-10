@@ -122,5 +122,26 @@ export interface Config {
      * @visibility frontend
      */
     aiBotName?: string;
+    /**
+     * Post history / revision tracking configuration
+     *
+     * @visibility frontend
+     */
+    history?: {
+      /**
+       * Enable or disable revision tracking. Default: false
+       *
+       * @visibility frontend
+       */
+      enabled?: boolean;
+      /**
+       * Content types that should have revision tracking enabled.
+       * Possible values: 'article', 'question', 'link'
+       * Default: ['article']
+       *
+       * @visibility frontend
+       */
+      enabledContent?: string[];
+    };
   };
 }

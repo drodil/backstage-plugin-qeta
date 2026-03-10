@@ -67,6 +67,8 @@ import {
   UserTagsResponse,
   UserUsersResponse,
   CommunityStats,
+  PostRevision,
+  PostRevisionsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { CustomErrorBase } from '@backstage/errors';
 import omitBy from 'lodash/omitBy';
@@ -1743,5 +1745,53 @@ export class QetaClient implements QetaApi {
       return [];
     }
     return (await response.json()) as Post[];
+  }
+
+  async getPostRevisions(
+    postId: number,
+    options?: { limit?: number; offset?: number },
+    requestOptions?: RequestOptions,
+  ): Promise<PostRevisionsResponse> {
+    const response = await this.fetch(`/posts/${postId}/revisions`, {
+      requestOptions,
+      queryParams: options,
+    });
+    if (!response.ok) {
+      throw new QetaError('Failed to fetch post revisions', []);
+    }
+    return (await response.json()) as PostRevisionsResponse;
+  }
+
+  async getPostRevision(
+    postId: number,
+    revisionId: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostRevision> {
+    const response = await this.fetch(
+      `/posts/${postId}/revisions/${revisionId}`,
+      { requestOptions },
+    );
+    if (!response.ok) {
+      throw new QetaError('Failed to fetch post revision', []);
+    }
+    return (await response.json()) as PostRevision;
+  }
+
+  async restorePostRevision(
+    postId: number,
+    revisionId: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse> {
+    const response = await this.fetch(
+      `/posts/${postId}/revisions/${revisionId}/restore`,
+      {
+        requestOptions,
+        reqInit: { method: 'POST' },
+      },
+    );
+    if (!response.ok) {
+      throw new QetaError('Failed to restore post revision', []);
+    }
+    return (await response.json()) as PostResponse;
   }
 }

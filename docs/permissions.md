@@ -58,7 +58,7 @@ The Q&A permissions are exported from `@drodil/backstage-plugin-qeta-common` pac
 - qetaModeratePermission - Allows moderation of Q&A
 - qetaReadPostPermission - Allows or denies reading of posts
 - qetaCreatePostPermission - Allows or denies creating of posts
-- qetaEditPostPermission - Allows or denies editing of posts and marking correct answers
+- qetaEditPostPermission - Allows or denies editing of posts, marking correct answers, and restoring article revisions
 - qetaDeletePostPermission - Allows or denies deleting of posts
 - qetaReadAnswerPermission - Allows or denies reading of answers
 - qetaCreateAnswerPermission - Allows or denies answering questions

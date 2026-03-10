@@ -202,5 +202,39 @@ export interface Config {
        */
       postsOlderThan?: HumanDuration;
     };
+    /**
+     * Post history / revision tracking configuration
+     */
+    history?: {
+      /**
+       * Enable or disable revision tracking. Default: false
+       *
+       * @visibility frontend
+       */
+      enabled?: boolean;
+      /**
+       * Number of days to keep post revisions, defaults to 180
+       *
+       * @visibility backend
+       */
+      retentionDays?: number;
+      /**
+       * Content types that should have revision tracking enabled.
+       * Possible values: 'article', 'question', 'link'
+       * Default: ['article']
+       *
+       * @visibility frontend
+       */
+      enabledContent?: string[];
+      /**
+       * When true, attachment UUIDs linked to the post are saved
+       * in revision snapshots. On restore the attachments are re-linked
+       * to the post so images are preserved even if the content was
+       * edited in between.  Default: false
+       *
+       * @visibility backend
+       */
+      saveAttachments?: boolean;
+    };
   };
 }

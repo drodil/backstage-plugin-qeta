@@ -10,6 +10,7 @@ import {
   DeletedBanner,
   DraftBanner,
   LinkCard,
+  PostHistoryButton,
   qetaTranslationRef,
   RelativeTimeWithTooltip,
   UpdatedByLink,
@@ -45,6 +46,7 @@ export const LinkPage = () => {
     value: post,
     loading,
     error,
+    retry,
   } = useQetaApi(api => api.getPost(id), [id]);
 
   useEffect(() => {
@@ -123,6 +125,7 @@ export const LinkPage = () => {
         titleIcon={post.url ? <FaviconItem entity={post} /> : undefined}
         description={getDescription(post)}
       >
+        <PostHistoryButton post={post} onRestore={retry} />
         <FollowPostButton post={post} />
         <CreateLinkButton />
         <AddToCollectionButton post={post} />

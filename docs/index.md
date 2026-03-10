@@ -21,3 +21,4 @@
 | **[Signals](signals.md)**             | Real-time updates with Signals plugin.       |
 | **[Notifications](notifications.md)** | Sending notifications to users.              |
 | **[Translations](translations.md)**   | Adding translations and localization.        |
+| **[Post History](history.md)**        | Revision tracking and restore for posts.     |

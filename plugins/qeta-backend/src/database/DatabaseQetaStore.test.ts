@@ -29,7 +29,17 @@ async function createStore(databaseId: TestDatabaseId) {
       config: {
         getOptionalConfig: () => undefined,
         getOptionalString: () => undefined,
-        getOptionalBoolean: () => undefined,
+        getOptionalBoolean: (key: string) => {
+          if (key === 'qeta.history.enabled') return true;
+          return undefined;
+        },
+        getOptionalStringArray: (key: string) => {
+          if (key === 'qeta.history.enabledContent') {
+            return undefined;
+          }
+          return undefined;
+        },
+        getOptionalNumber: () => undefined,
       } as any,
     }),
   };
@@ -110,6 +120,7 @@ describe.each(databases.eachSupportedId())(
       await knex('user_tags').del();
       await knex('post_entities').del();
       await knex('entities').del();
+      await knex('post_revisions').del();
     });
 
     describe('posts and answers database', () => {
@@ -1578,6 +1589,495 @@ describe.each(databases.eachSupportedId())(
           'component:default/m-entity',
           'component:default/z-entity',
         ]);
+      });
+    });
+
+    describe('article revisions', () => {
+      const createArticle = async (
+        userRef: string,
+        title: string,
+        content: string,
+        tags?: string[],
+        entities?: string[],
+      ) => {
+        const created = await storage.createPost({
+          user_ref: userRef,
+          title,
+          content,
+          created: new Date(),
+          type: 'article',
+          tags,
+          entities,
+        });
+        // Ensure the article is active so revisions are tracked. Posts created
+        // without an explicit status are active by default, but this guard keeps
+        // the test robust if that behavior ever changes.
+        if (created.status === 'draft') {
+          await storage.updatePost({
+            id: created.id,
+            user_ref: userRef,
+            title,
+            content,
+            status: 'active',
+          });
+        }
+        return created;
+      };
+
+      it('should create a revision when article content changes', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'Original Title',
+          'Original Content',
+          ['tag1'],
+        );
+
+        // Update the article with new content
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'Updated Title',
+          content: 'Updated Content',
+          tags: ['tag1', 'tag2'],
+        });
+
+        // Check that a revision was created with the OLD values
+        const revisions = await storage.getPostRevisions({
+          postId: article.id,
+        });
+
+        expect(revisions.total).toEqual(1);
+        expect(revisions.revisions).toHaveLength(1);
+        expect(revisions.revisions[0].title).toEqual('Original Title');
+        expect(revisions.revisions[0].content).toEqual('Original Content');
+        expect(revisions.revisions[0].createdBy).toEqual('user:default/alice');
+        expect(revisions.revisions[0].postId).toEqual(article.id);
+      });
+
+      it('should NOT create a revision when nothing changes', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'Same Title',
+          'Same Content',
+        );
+
+        // Update with exact same content
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'Same Title',
+          content: 'Same Content',
+        });
+
+        const revisions = await storage.getPostRevisions({
+          postId: article.id,
+        });
+
+        expect(revisions.total).toEqual(0);
+        expect(revisions.revisions).toHaveLength(0);
+      });
+
+      it('should NOT create a revision for question posts', async () => {
+        const question = await storage.createPost({
+          user_ref: 'user:default/alice',
+          title: 'Question Title',
+          content: 'Question Content',
+          created: new Date(),
+          type: 'question',
+        });
+
+        await storage.updatePost({
+          id: question.id,
+          user_ref: 'user:default/alice',
+          title: 'Updated Question',
+          content: 'Updated Content',
+        });
+
+        const revisions = await storage.getPostRevisions({
+          postId: question.id,
+        });
+
+        expect(revisions.total).toEqual(0);
+      });
+
+      it('should record the editing user as createdBy on the revision', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'Title',
+          'Content',
+        );
+
+        // A different user edits the article
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/bob',
+          title: 'Bob Updated Title',
+          content: 'Bob Updated Content',
+        });
+
+        const revisions = await storage.getPostRevisions({
+          postId: article.id,
+        });
+
+        expect(revisions.total).toEqual(1);
+        // The revision's createdBy should be the user who triggered the edit
+        expect(revisions.revisions[0].createdBy).toEqual('user:default/bob');
+      });
+
+      it('should save tags and entities in the revision snapshot', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'Tagged Article',
+          'Content with tags',
+          ['java', 'backend'],
+          ['component:default/my-service'],
+        );
+
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'New Title',
+          content: 'New content',
+          tags: ['python'],
+          entities: ['component:default/other-service'],
+        });
+
+        const revisions = await storage.getPostRevisions({
+          postId: article.id,
+        });
+
+        expect(revisions.total).toEqual(1);
+        const rev = revisions.revisions[0];
+        expect(rev.tags).toContain('java');
+        expect(rev.tags).toContain('backend');
+        expect(rev.entities).toContain('component:default/my-service');
+      });
+
+      it('should support getArticleRevision for single revision lookup', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'V1 Title',
+          'V1 Content',
+        );
+
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'V2 Title',
+          content: 'V2 Content',
+        });
+
+        const list = await storage.getPostRevisions({
+          postId: article.id,
+        });
+        const revisionId = list.revisions[0].id;
+
+        const single = await storage.getPostRevision({
+          postId: article.id,
+          revisionId,
+        });
+
+        expect(single).toBeDefined();
+        expect(single!.title).toEqual('V1 Title');
+        expect(single!.content).toEqual('V1 Content');
+      });
+
+      it('should return undefined for non-existent revision', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'Title',
+          'Content',
+        );
+
+        const single = await storage.getPostRevision({
+          postId: article.id,
+          revisionId: 99999,
+        });
+
+        expect(single).toBeUndefined();
+      });
+
+      it('should restore article to a previous revision', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'V1 Title',
+          'V1 Content',
+          ['v1-tag'],
+        );
+
+        // Edit to V2
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'V2 Title',
+          content: 'V2 Content',
+          tags: ['v2-tag'],
+        });
+
+        // Get the revision (should be V1)
+        const revisions = await storage.getPostRevisions({
+          postId: article.id,
+        });
+        expect(revisions.total).toEqual(1);
+        const v1RevisionId = revisions.revisions[0].id;
+
+        // Restore V1
+        const restored = await storage.restorePostRevision({
+          postId: article.id,
+          revisionId: v1RevisionId,
+          userRef: 'user:default/bob',
+        });
+
+        expect(restored).toBeDefined();
+        expect(restored!.title).toEqual('V1 Title');
+        expect(restored!.content).toEqual('V1 Content');
+        expect(restored!.updatedBy).toEqual('user:default/bob');
+        expect(restored!.tags).toContain('v1-tag');
+      });
+
+      it('should save current state as revision before restoring', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'V1 Title',
+          'V1 Content',
+        );
+
+        // Edit to V2
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'V2 Title',
+          content: 'V2 Content',
+        });
+
+        const revsBefore = await storage.getPostRevisions({
+          postId: article.id,
+        });
+        expect(revsBefore.total).toEqual(1); // V1 snapshot
+
+        // Restore V1
+        await storage.restorePostRevision({
+          postId: article.id,
+          revisionId: revsBefore.revisions[0].id,
+          userRef: 'user:default/bob',
+        });
+
+        // Now we should have 2 revisions: V2 snapshot (newest) + V1 snapshot (oldest)
+        const revsAfter = await storage.getPostRevisions({
+          postId: article.id,
+        });
+        expect(revsAfter.total).toEqual(2);
+
+        // The newest revision should be V2 (saved before restore)
+        expect(revsAfter.revisions[0].title).toEqual('V2 Title');
+        expect(revsAfter.revisions[0].content).toEqual('V2 Content');
+        expect(revsAfter.revisions[0].createdBy).toEqual('user:default/bob');
+      });
+
+      it('should support pagination with limit and offset', async () => {
+        const article = await createArticle('user:default/alice', 'V1', 'C1');
+
+        // Create 3 revisions by editing 3 times
+        for (let i = 2; i <= 4; i++) {
+          await storage.updatePost({
+            id: article.id,
+            user_ref: 'user:default/alice',
+            title: `V${i}`,
+            content: `C${i}`,
+          });
+        }
+
+        const all = await storage.getPostRevisions({
+          postId: article.id,
+        });
+        expect(all.total).toEqual(3);
+
+        // Get first page (limit 2)
+        const page1 = await storage.getPostRevisions({
+          postId: article.id,
+          limit: 2,
+          offset: 0,
+        });
+        expect(page1.revisions).toHaveLength(2);
+        expect(page1.total).toEqual(3);
+
+        // Get second page
+        const page2 = await storage.getPostRevisions({
+          postId: article.id,
+          limit: 2,
+          offset: 2,
+        });
+        expect(page2.revisions).toHaveLength(1);
+        expect(page2.total).toEqual(3);
+      });
+
+      it('should return revisions in newest-first order', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'V1',
+          'Content V1',
+        );
+
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'V2',
+          content: 'Content V2',
+        });
+
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'V3',
+          content: 'Content V3',
+        });
+
+        const revisions = await storage.getPostRevisions({
+          postId: article.id,
+        });
+
+        expect(revisions.total).toEqual(2);
+        // Newest first: V2 snapshot before V1 snapshot
+        // V2 was created when V3 was applied, V1 was created when V2 was applied
+        // So revision[0] should be V2 (more recent) and revision[1] should be V1
+        expect(revisions.revisions[0].title).toEqual('V2');
+        expect(revisions.revisions[1].title).toEqual('V1');
+      });
+
+      it('should clean old revisions based on retention days', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'Title',
+          'Content',
+        );
+
+        // Create a revision by updating
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'New Title',
+          content: 'New Content',
+        });
+
+        // Verify revision exists
+        let revisions = await storage.getPostRevisions({
+          postId: article.id,
+        });
+        expect(revisions.total).toEqual(1);
+
+        // Manually backdate the revision to simulate old age
+        await knex('post_revisions')
+          .where('postId', article.id)
+          .update({
+            created: new Date('2020-01-01T00:00:00Z'),
+          });
+
+        // Clean with 1 day retention (should delete the old revision)
+        const deleted = await storage.cleanOldRevisions({
+          retentionDays: 1,
+        });
+        expect(deleted).toEqual(1);
+
+        // Verify it was cleaned
+        revisions = await storage.getPostRevisions({
+          postId: article.id,
+        });
+        expect(revisions.total).toEqual(0);
+      });
+
+      it('should not clean recent revisions', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'Title',
+          'Content',
+        );
+
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'New Title',
+          content: 'New Content',
+        });
+
+        // Clean with 365 day retention (revision is brand new, should survive)
+        const deleted = await storage.cleanOldRevisions({
+          retentionDays: 365,
+        });
+        expect(deleted).toEqual(0);
+
+        const revisions = await storage.getPostRevisions({
+          postId: article.id,
+        });
+        expect(revisions.total).toEqual(1);
+      });
+
+      it('should cascade delete revisions when post is deleted', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'Title',
+          'Content',
+        );
+
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'New Title',
+          content: 'New Content',
+        });
+
+        const revisions = await storage.getPostRevisions({
+          postId: article.id,
+        });
+        expect(revisions.total).toEqual(1);
+
+        // Permanently delete the post
+        await storage.deletePost(article.id, true);
+
+        // Revisions should be gone due to CASCADE
+        const remainingRevisions = await knex('post_revisions')
+          .where('postId', article.id)
+          .select();
+        expect(remainingRevisions).toHaveLength(0);
+      });
+
+      it('should preserve all metadata fields in revision snapshot', async () => {
+        const article = await createArticle(
+          'user:default/alice',
+          'Title With Metadata',
+          'Content with metadata',
+          ['tag-a', 'tag-b'],
+          ['component:default/svc1', 'component:default/svc2'],
+        );
+
+        // Update the article URL and headerImage too
+        await knex('posts').where('id', article.id).update({
+          url: 'https://example.com/article',
+          headerImage: 'img-123',
+        });
+
+        await storage.updatePost({
+          id: article.id,
+          user_ref: 'user:default/alice',
+          title: 'New Title',
+          content: 'New Content',
+          url: 'https://example.com/new',
+          headerImage: 'img-456',
+        });
+
+        const revisions = await storage.getPostRevisions({
+          postId: article.id,
+        });
+
+        expect(revisions.total).toEqual(1);
+        const rev = revisions.revisions[0];
+        expect(rev.title).toEqual('Title With Metadata');
+        expect(rev.content).toEqual('Content with metadata');
+        expect(rev.url).toEqual('https://example.com/article');
+        expect(rev.headerImage).toEqual('img-123');
+        expect(rev.tags).toContain('tag-a');
+        expect(rev.tags).toContain('tag-b');
+        expect(rev.entities).toContain('component:default/svc1');
+        expect(rev.entities).toContain('component:default/svc2');
       });
     });
   },

@@ -47,6 +47,8 @@ import {
   UserTagsResponse,
   UserUsersResponse,
   CommunityStats,
+  PostRevision,
+  PostRevisionsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 
 export interface PaginatedQuery {
@@ -642,4 +644,22 @@ export interface QetaApi {
   ): Promise<string[]>;
 
   getLinkedPosts(id: number, requestOptions?: RequestOptions): Promise<Post[]>;
+
+  getPostRevisions(
+    postId: number,
+    options?: { limit?: number; offset?: number },
+    requestOptions?: RequestOptions,
+  ): Promise<PostRevisionsResponse>;
+
+  getPostRevision(
+    postId: number,
+    revisionId: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostRevision>;
+
+  restorePostRevision(
+    postId: number,
+    revisionId: number,
+    requestOptions?: RequestOptions,
+  ): Promise<PostResponse>;
 }

@@ -616,3 +616,22 @@ export interface CommunityStats {
   activeUsers: number;
   views: number;
 }
+
+export interface PostRevision {
+  id: number;
+  postId: number;
+  title: string;
+  content: string;
+  url?: string | null;
+  headerImage?: string | null;
+  tags?: string[];
+  entities?: string[];
+  attachments?: string[];
+  created: Date;
+  createdBy: string;
+}
+
+export interface PostRevisionsResponse {
+  revisions: PostRevision[];
+  total: number;
+}

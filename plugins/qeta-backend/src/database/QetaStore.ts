@@ -11,6 +11,8 @@ import {
   EntityLinks,
   GlobalStat,
   Post,
+  PostRevision,
+  PostRevisionsResponse,
   PostReview,
   PostsQuery,
   PostStatus,
@@ -705,6 +707,39 @@ export interface QetaStore {
     answerId: number | undefined,
     commentId: number,
   ): Promise<void>;
+
+  /**
+   * Get paginated list of post revisions
+   */
+  getPostRevisions(params: {
+    postId: number;
+    limit?: number;
+    offset?: number;
+  }): Promise<PostRevisionsResponse>;
+
+  /**
+   * Get a specific post revision
+   */
+  getPostRevision(params: {
+    postId: number;
+    revisionId: number;
+  }): Promise<PostRevision | undefined>;
+
+  /**
+   * Restore a post to a previous revision.
+   * Saves the current state as a revision before restoring.
+   */
+  restorePostRevision(params: {
+    postId: number;
+    revisionId: number;
+    userRef: string;
+  }): Promise<Post | undefined>;
+
+  /**
+   * Delete revisions older than retentionDays
+   * @returns number of deleted rows
+   */
+  cleanOldRevisions(params: { retentionDays: number }): Promise<number>;
 }
 
 export interface TimelineFilters {
