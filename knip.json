@@ -2,7 +2,6 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignore": [
     "{plugins}/*/{fixtures,templates,migrations}/**",
-    "**/configSchema.d.ts",
     "node_modules/**"
   ],
   "workspaces": {
@@ -16,15 +15,15 @@
       "jest": {
         "entry": ["src/setupTests.ts", "**/*.test.{ts,tsx}"]
       },
-      "ignore": [".eslintrc.js", "config.d.ts", "knexfile.js"]
+      "ignore": [".eslintrc.js", "knexfile.js"]
     }
   },
   "ignoreDependencies": [
-    "lint-staged",
     "react",
     "react-dom",
     "react-router",
     "react-router-dom",
-    "commander"
+    "commander",
+    "@backstage/types"
   ]
 }

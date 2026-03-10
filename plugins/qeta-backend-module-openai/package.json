@@ -42,7 +42,8 @@
     "openai": "^4.68.4"
   },
   "devDependencies": {
-    "@backstage/cli": "backstage:^"
+    "@backstage/cli": "backstage:^",
+    "@backstage/types": "backstage:^"
   },
   "files": [
     "dist",
