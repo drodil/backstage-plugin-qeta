@@ -75,7 +75,7 @@
     "date-fns": "^2.30.0",
     "express": "^4.20.0",
     "express-promise-router": "^4.1.0",
-    "file-type": "16.5.4",
+    "file-type": "21.3.1",
     "hpagent": "^1.2.0",
     "knex": "^3.0.0",
     "lodash": "^4.17.23",
