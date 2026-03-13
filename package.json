@@ -6,7 +6,7 @@
     "node": "22 || 24"
   },
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "husky",
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
     "docker:dev": "yarn docker:up && yarn dev",
     "docker:up": "docker compose up -d",
