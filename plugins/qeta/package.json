@@ -96,6 +96,7 @@
     "@backstage/cli": "backstage:^",
     "@backstage/frontend-defaults": "backstage:^",
     "@backstage/plugin-catalog": "backstage:^",
+    "@backstage/plugin-home": "backstage:^",
     "@backstage/plugin-notifications": "backstage:^",
     "@backstage/plugin-search": "backstage:^",
     "@backstage/plugin-search-react": "backstage:^",

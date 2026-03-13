@@ -5,16 +5,18 @@ import type { PluggableList } from 'unified';
 export const Content = (props: {
   rowsPerPage?: number;
   quickFilter?: 'latest' | 'favorites' | 'most_viewed';
-  postType?: PostType;
+  postType?: PostType | 'all';
   remarkPlugins?: PluggableList;
   rehypePlugins?: PluggableList;
 }) => {
+  const postType = props.postType === 'all' ? undefined : props.postType;
+
   return (
     <QetaProvider
       remarkPlugins={props.remarkPlugins}
       rehypePlugins={props.rehypePlugins}
     >
-      <PostsTable hideTitle {...props} />
+      <PostsTable hideTitle {...props} postType={postType} />
     </QetaProvider>
   );
 };

@@ -7,34 +7,20 @@ import {
   NavItemBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
+import { compatWrapper, convertLegacyRouteRef, convertLegacyRouteRefs, } from '@backstage/core-compat-api';
 import { qetaApiRef, qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
-import {
-  configApiRef,
-  createApiRef,
-  discoveryApiRef,
-  fetchApiRef,
-} from '@backstage/core-plugin-api';
-import {
-  getSupportedEntityKinds,
-  QetaClient,
-} from '@drodil/backstage-plugin-qeta-common';
+import { configApiRef, createApiRef, discoveryApiRef, fetchApiRef, } from '@backstage/core-plugin-api';
+import { getSupportedEntityKinds, QetaClient, } from '@drodil/backstage-plugin-qeta-common';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
-import {
-  SearchFilterResultTypeBlueprint,
-  SearchResultListItemBlueprint,
-} from '@backstage/plugin-search-react/alpha';
+import { SearchFilterResultTypeBlueprint, SearchResultListItemBlueprint, } from '@backstage/plugin-search-react/alpha';
 import { TechDocsAddonLocations } from '@backstage/plugin-techdocs-react';
 import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsAskQuestionAddon } from './components/TechDocsAskQuestionAddon';
 import { Pluggable } from 'unified';
 import { markdownPlugin } from '@drodil/backstage-plugin-qeta-react/alpha';
+import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 
 interface QetaMarkdownPluginsApi {
   getRehypePlugins(): Pluggable[];
@@ -216,6 +202,47 @@ const techDocsAskQuestionAddon = AddonBlueprint.make({
   },
 });
 
+const homePageTable = HomePageWidgetBlueprint.make({
+  name: 'home-posts-table',
+  params: {
+    title: 'Q&A posts',
+    description: 'Shows latest Q&A posts',
+    components: () =>
+      import('../src/components/PostsTableCard').then(m => ({
+        Content: m.Content,
+      })),
+    settings: {
+      schema: {
+        title: 'Post settings',
+        type: 'object',
+        properties: {
+          rowsPerPage: {
+            title: 'Rows per page',
+            type: 'number',
+          },
+          postType: {
+            title: 'Post type',
+            type: 'string',
+            enum: ['all', 'question', 'article', 'link'],
+          },
+        },
+      },
+    },
+  },
+});
+
+const homeTimeline = HomePageWidgetBlueprint.make({
+  name: 'home-posts-timeline',
+  params: {
+    title: 'Q&A timeline',
+    description: 'Shows Q&A latest events',
+    components: () =>
+      import('../src/components/HomeTimeline').then(m => ({
+        Content: m.HomeTimeline,
+      })),
+  },
+});
+
 /**
  * Backstage frontend plugin.
  *
@@ -236,6 +263,8 @@ const qetaPlugin: FrontendPlugin = createFrontendPlugin({
     qetaPostSearchFilterType,
     techDocsAskQuestionAddon,
     qetaMarkdownPluginsApiExtension,
+    homePageTable,
+    homeTimeline,
   ],
 });
 

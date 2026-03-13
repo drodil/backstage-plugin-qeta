@@ -18,6 +18,7 @@ import rehypeMermaid from 'rehype-mermaid';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import signalsPlugin from '@backstage/plugin-signals/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
+import homePlugin from '@backstage/plugin-home/alpha';
 
 // eslint-disable-next-line @backstage/no-ui-css-imports-in-non-frontend
 import '@backstage/ui/css/styles.css';
@@ -91,6 +92,7 @@ const module = createFrontendModule({
 const app = createApp({
   features: [
     plugin,
+    homePlugin,
     notificationPlugin,
     catalogPlugin,
     searchPlugin,
