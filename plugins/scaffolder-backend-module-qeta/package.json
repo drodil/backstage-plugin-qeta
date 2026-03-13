@@ -7,7 +7,7 @@
     "scaffolder",
     "backstage.io"
   ],
-  "version": "3.59.1",
+  "version": "3.59.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "prepublishOnly": "yarn tsc && yarn build",
