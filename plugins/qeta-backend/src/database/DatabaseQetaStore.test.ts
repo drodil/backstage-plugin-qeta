@@ -273,6 +273,46 @@ describe.each(databases.eachSupportedId())(
         expect(ret2.posts.at(1)?.id).toEqual(q1.id);
       });
 
+      it('should not return duplicate posts when filtering with "or" tag relation and post has multiple matching tags', async () => {
+        const q1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'title with both tags',
+          content: 'content',
+          created: new Date(),
+          tags: ['tag_1', 'tag_2'],
+        });
+
+        const ret = await storage.getPosts('user1', {
+          tags: ['tag_1', 'tag_2'],
+          tagsRelation: 'or',
+          type: 'question',
+        });
+
+        expect(ret.posts.length).toEqual(1);
+        expect(ret.posts.at(0)?.id).toEqual(q1.id);
+        expect(ret.total).toEqual(1);
+      });
+
+      it('should not return duplicate posts when filtering with "or" entity relation and post has multiple matching entities', async () => {
+        const q1 = await storage.createPost({
+          user_ref: 'user1',
+          title: 'title with both entities',
+          content: 'content',
+          created: new Date(),
+          entities: ['component:default/comp1', 'component:default/comp2'],
+        });
+
+        const ret = await storage.getPosts('user1', {
+          entities: ['component:default/comp1', 'component:default/comp2'],
+          entitiesRelation: 'or',
+          type: 'question',
+        });
+
+        expect(ret.posts.length).toEqual(1);
+        expect(ret.posts.at(0)?.id).toEqual(q1.id);
+        expect(ret.total).toEqual(1);
+      });
+
       it('should mark post as favorite', async () => {
         const q1 = await storage.createPost({
           user_ref: 'user1',

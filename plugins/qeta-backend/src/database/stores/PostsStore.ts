@@ -311,9 +311,13 @@ export class PostsStore extends BaseStore {
     if (options.tags) {
       const tags = filterTags(options.tags);
       if (options.tagsRelation === 'or') {
-        query.innerJoin('post_tags', 'posts.id', 'post_tags.postId');
-        query.innerJoin('tags', 'post_tags.tagId', 'tags.id');
-        query.whereIn('tags.tag', tags);
+        query.whereIn('posts.id', (subquery: Knex.QueryBuilder) => {
+          subquery
+            .select('post_tags.postId')
+            .from('post_tags')
+            .join('tags', 'post_tags.tagId', 'tags.id')
+            .whereIn('tags.tag', tags ?? []);
+        });
       } else {
         tags?.forEach((t: string, i: number) => {
           query.innerJoin(`post_tags AS qt${i}`, 'posts.id', `qt${i}.postId`);
@@ -328,10 +332,13 @@ export class PostsStore extends BaseStore {
         ? options.entities
         : [options.entities];
       if (options.entitiesRelation === 'or') {
-        query
-          .innerJoin('post_entities', 'posts.id', 'post_entities.postId')
-          .innerJoin('entities', 'post_entities.entityId', 'entities.id')
-          .whereIn('entities.entity_ref', entityValues);
+        query.whereIn('posts.id', (subquery: Knex.QueryBuilder) => {
+          subquery
+            .select('post_entities.postId')
+            .from('post_entities')
+            .join('entities', 'post_entities.entityId', 'entities.id')
+            .whereIn('entities.entity_ref', entityValues);
+        });
       } else {
         entityValues.forEach((t: string, i: number) => {
           query.innerJoin(
