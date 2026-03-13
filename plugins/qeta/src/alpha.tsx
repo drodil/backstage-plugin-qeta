@@ -3,7 +3,6 @@ import {
   coreExtensionData,
   createExtensionInput,
   createFrontendPlugin,
-  FrontendPlugin,
   NavItemBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
@@ -263,7 +262,7 @@ const homeTimeline = HomePageWidgetBlueprint.make({
  *
  * @alpha
  */
-const qetaPlugin: FrontendPlugin = createFrontendPlugin({
+const qetaPlugin = createFrontendPlugin({
   pluginId: 'qeta',
   info: { packageJson: () => import('../package.json') },
   routes: convertLegacyRouteRefs({
