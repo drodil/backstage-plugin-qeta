@@ -77,7 +77,7 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "dataloader": "^2.2.2",
     "dompurify": "^3.2.4",
-    "file-type": "16.5.4",
+    "file-type": "21.3.1",
     "github-slugger": "^2.0.0",
     "infinite-scroll-hook": "^1.0.2",
     "lodash": "^4.17.23",
