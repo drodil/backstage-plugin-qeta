@@ -2,7 +2,7 @@ import {
   createConditionFactory,
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import {
   Answer,
   AnswerFilter,
