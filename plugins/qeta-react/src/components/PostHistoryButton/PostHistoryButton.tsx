@@ -28,12 +28,12 @@ export const PostHistoryButton = (props: {
   }, [onRestore]);
 
   const isActive = post.status === 'active';
-  const enabled = historyEnabled && isActive;
+
+  if (!historyEnabled) {
+    return null;
+  }
 
   const getTooltipTitle = () => {
-    if (!historyEnabled) {
-      return t('postHistory.disabledTooltip');
-    }
     if (!isActive) {
       return t('postHistory.notActiveTooltip');
     }
@@ -48,7 +48,7 @@ export const PostHistoryButton = (props: {
             variant="outlined"
             size="small"
             startIcon={<HistoryIcon />}
-            disabled={!enabled}
+            disabled={!isActive}
             onClick={() => setHistoryOpen(true)}
           >
             {t('postHistory.buttonLabel')}
