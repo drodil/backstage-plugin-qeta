@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.59.3](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.2...v3.59.3) (2026-04-14)
+
+
+### Bug Fixes
+
+* do not show history button if it is disabled ([3e95ba6](https://github.com/drodil/backstage-plugin-qeta/commit/3e95ba69c6b1d0ed875fd62aceae856e53a51797)), closes [#414](https://github.com/drodil/backstage-plugin-qeta/issues/414)
+* duplicate one-time badge awards ([e6ede10](https://github.com/drodil/backstage-plugin-qeta/commit/e6ede109ac86ab3333c50114469d0d990c0e2a17))
+* remove not supported double order ([60868ac](https://github.com/drodil/backstage-plugin-qeta/commit/60868acf287a7311a6a7c1650f794969232b5f35))
+
 ### [3.59.2](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.1...v3.59.2) (2026-03-13)
 
 
