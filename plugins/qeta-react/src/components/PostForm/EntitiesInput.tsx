@@ -161,10 +161,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
           const entities = await catalogApi.getEntities({
             filter: { kind: entityKinds },
             fields: CATALOG_FIELDS,
-            order: [
-              { field: 'kind', order: 'asc' },
-              { field: 'metadata.title', order: 'asc' },
-            ],
+            order: { field: 'kind', order: 'asc' },
           });
           setLoading(false);
           setAvailableEntities(entities ? entities.items : null);
