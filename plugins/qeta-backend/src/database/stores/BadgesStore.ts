@@ -51,12 +51,17 @@ export class BadgesStore extends BaseStore {
       return null;
     }
 
+    // One-time badges must never be keyed by entity — ignore any uniqueKey the
+    // caller may have supplied so we always enforce a single award per user.
+    const effectiveUniqueKey =
+      badge.type === 'one-time' ? undefined : uniqueKey;
+
     let existing;
-    if (uniqueKey) {
+    if (effectiveUniqueKey) {
       existing = await this.db('user_badges')
         .where('userRef', userRef)
         .where('badgeId', badge.id)
-        .where('uniqueKey', uniqueKey)
+        .where('uniqueKey', effectiveUniqueKey)
         .first();
     } else {
       existing = await this.db('user_badges')
@@ -84,7 +89,7 @@ export class BadgesStore extends BaseStore {
         userRef,
         badgeId: badge.id,
         created,
-        uniqueKey,
+        uniqueKey: effectiveUniqueKey,
       })
       .returning('id');
 
@@ -94,7 +99,7 @@ export class BadgesStore extends BaseStore {
         userRef,
         badge,
         created,
-        uniqueKey,
+        uniqueKey: effectiveUniqueKey,
       },
       isNew: true,
     };
