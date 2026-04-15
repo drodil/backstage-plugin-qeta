@@ -223,6 +223,8 @@ export class CommentsStore extends BaseStore {
       created: val.created,
       updated: val.updated,
       updatedBy: val.updatedBy,
+      postId: val.postId,
+      answerId: val.answerId,
       status: val.status as AnswerCommentStatus,
     };
   }
