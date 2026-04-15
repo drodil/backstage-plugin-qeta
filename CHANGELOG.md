@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.59.6](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.5...v3.59.6) (2026-04-15)
+
+
+### Bug Fixes
+
+* **qeta-backend:** add postId and answerId to Comment for permission validation ([d7d5ad2](https://github.com/drodil/backstage-plugin-qeta/commit/d7d5ad2668fae039d0cefc4c1a67bc8596e9ace3))
+
 ### [3.59.5](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.4...v3.59.5) (2026-04-15)
 
 ### [3.59.4](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.3...v3.59.4) (2026-04-15)
