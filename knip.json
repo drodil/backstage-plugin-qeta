@@ -48,6 +48,7 @@
     "react-dom",
     "react-router",
     "react-router-dom",
-    "commander"
+    "commander",
+    "@backstage/cli-defaults"
   ]
 }
