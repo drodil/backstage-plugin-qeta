@@ -2,7 +2,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { CatalogEntityLinkProcessor } from './processors/CatalogEntityLinkProcessor.ts';
 
 export const catalogModuleQeta = createBackendModule({
