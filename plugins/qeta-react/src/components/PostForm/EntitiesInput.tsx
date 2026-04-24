@@ -15,6 +15,7 @@ import {
   forwardRef,
   HTMLAttributes,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -109,6 +110,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
     const [availableEntities, setAvailableEntities] = useState<Entity[] | null>(
       [],
     );
+    const [hasLoadedEntities, setHasLoadedEntities] = useState(false);
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const { t } = useTranslationRef(qetaTranslationRef);
@@ -128,13 +130,24 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
       return configApi.getOptionalNumber('qeta.entities.max') ?? 3;
     }, [configApi, maximum]);
 
+    useEffect(() => {
+      setAvailableEntities([]);
+      setHasLoadedEntities(false);
+    }, [singleValue, useOnlyUsedEntities, entityKinds]);
+
     const handleOpen = useCallback(() => {
       setOpen(true);
+
+      if (loading || hasLoadedEntities) {
+        return;
+      }
+
       (async () => {
         setLoading(true);
         if (singleValue) {
           const entity = await catalogApi.getEntityByRef(singleValue);
           setLoading(false);
+          setHasLoadedEntities(true);
           setAvailableEntities(entity ? [entity] : null);
           return;
         }
@@ -154,6 +167,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
                 )
               : null,
           );
+          setHasLoadedEntities(true);
           return;
         }
 
@@ -164,13 +178,23 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
             order: { field: 'kind', order: 'asc' },
           });
           setLoading(false);
+          setHasLoadedEntities(true);
           setAvailableEntities(entities ? entities.items : null);
           return;
         }
         setLoading(false);
+        setHasLoadedEntities(true);
         setAvailableEntities(null);
       })();
-    }, [singleValue, useOnlyUsedEntities, entityKinds, catalogApi, qetaApi]);
+    }, [
+      singleValue,
+      useOnlyUsedEntities,
+      entityKinds,
+      catalogApi,
+      qetaApi,
+      hasLoadedEntities,
+      loading,
+    ]);
 
     const usedValue = useMemo(() => {
       if (!value) {
