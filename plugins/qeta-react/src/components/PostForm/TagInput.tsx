@@ -14,6 +14,7 @@ import {
   HTMLAttributes,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { qetaApiRef } from '../../api';
@@ -21,6 +22,7 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   filterTags,
   qetaCreateTagPermission,
+  type TagsQuery,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -29,6 +31,128 @@ import { AutocompleteListboxComponent } from './AutocompleteListComponent';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { useDebounce } from 'react-use';
+
+const TAG_SEARCH_LIMIT = 25;
+
+type CreateTagOption = {
+  inputValue: string;
+  label: string;
+};
+
+type TagAutocompleteOption = string | CreateTagOption;
+
+const isCreateTagOption = (
+  option: TagAutocompleteOption,
+): option is CreateTagOption => typeof option !== 'string';
+
+const getTagOptionValue = (option: TagAutocompleteOption) =>
+  isCreateTagOption(option) ? option.inputValue : option;
+
+const getTagOptionLabel = (option: TagAutocompleteOption) =>
+  isCreateTagOption(option) ? option.label : option;
+
+const normalizeTagInput = (input: string) => filterTags([input])[0];
+
+const getTagSearchRequest = (term: string): TagsQuery => ({
+  limit: TAG_SEARCH_LIMIT,
+  orderBy: 'postsCount',
+  order: 'desc',
+  ...(term ? { searchQuery: term } : {}),
+});
+
+const getMatchingAllowedTags = (allowedTags: string[], term: string) => {
+  const normalizedTerm = term.trim().toLocaleLowerCase();
+
+  if (!normalizedTerm) {
+    return allowedTags;
+  }
+
+  return allowedTags.filter(tag =>
+    tag.toLocaleLowerCase().includes(normalizedTerm),
+  );
+};
+
+const mergeTags = (...groups: string[][]) => {
+  const seen = new Set<string>();
+  const merged: string[] = [];
+
+  for (const tag of groups.flat()) {
+    if (!seen.has(tag)) {
+      seen.add(tag);
+      merged.push(tag);
+    }
+  }
+
+  return merged;
+};
+
+const getTagDescriptions = (
+  tags: Array<{ tag: string; description?: string }>,
+) =>
+  tags.reduce(
+    (acc, tag) => {
+      if (!tag.description) {
+        return acc;
+      }
+      acc[tag.tag] = tag.description;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
+
+const getFilteredTagOptions = ({
+  allowCreation,
+  getCreateOptionLabel,
+  inputValue,
+  maximumTags,
+  options,
+  selectedTags,
+}: {
+  allowCreation: boolean;
+  getCreateOptionLabel: (tag: string) => string;
+  inputValue: string;
+  maximumTags: number;
+  options: string[];
+  selectedTags: string[];
+}): TagAutocompleteOption[] => {
+  const trimmedInput = inputValue.trim();
+  const normalizedInput = trimmedInput.toLocaleLowerCase();
+  const filteredOptions = options.filter(option => {
+    if (!normalizedInput) {
+      return true;
+    }
+
+    return option.toLocaleLowerCase().includes(normalizedInput);
+  });
+
+  if (!allowCreation || !trimmedInput || selectedTags.length >= maximumTags) {
+    return filteredOptions;
+  }
+
+  const normalizedTag = normalizeTagInput(trimmedInput);
+  if (!normalizedTag) {
+    return filteredOptions;
+  }
+
+  const tagAlreadyExists = options.some(
+    option => option.toLocaleLowerCase() === normalizedTag,
+  );
+  const tagAlreadySelected = selectedTags.some(
+    tag => tag.toLocaleLowerCase() === normalizedTag,
+  );
+
+  if (tagAlreadyExists || tagAlreadySelected) {
+    return filteredOptions;
+  }
+
+  return [
+    ...filteredOptions,
+    {
+      inputValue: trimmedInput,
+      label: getCreateOptionLabel(trimmedInput),
+    },
+  ];
+};
 
 export const TagInput = forwardRef<
   any,
@@ -68,7 +192,12 @@ export const TagInput = forwardRef<
   );
   const [loading, setLoading] = useState(true);
   const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
-  const [, setLoadingSuggestions] = useState(false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const searchCache = useRef<
+    Map<string, { tags: string[]; descriptions: Record<string, string> }>
+  >(new Map());
+  const activeRequest = useRef(0);
 
   useEffect(() => {
     if (allowCreate !== undefined) {
@@ -120,6 +249,7 @@ export const TagInput = forwardRef<
     () => config.getOptionalStringArray('qeta.tags.allowedTags') ?? [],
     [config],
   );
+  const selectedTags = useMemo(() => value ?? [], [value]);
   const maximumTags = useMemo(
     () => config.getOptionalNumber('qeta.tags.max') ?? 5,
     [config],
@@ -129,36 +259,75 @@ export const TagInput = forwardRef<
   const [tagDescriptions, setTagDescriptions] = useState<
     Record<string, string>
   >({});
-  useEffect(() => {
-    qetaApi
-      .getTags()
-      .catch(_ => setAvailableTags([]))
-      .then(data => {
+
+  const loadTags = useMemo(
+    () => async (term: string) => {
+      const trimmed = term.trim();
+      const cacheKey = trimmed.toLocaleLowerCase();
+      const matchingAllowedTags = getMatchingAllowedTags(allowedTags, trimmed);
+      const cached = searchCache.current.get(cacheKey);
+
+      if (cached) {
         setLoading(false);
-        if (!data) {
+        setAvailableTags(prev =>
+          mergeTags(prev, cached.tags, matchingAllowedTags),
+        );
+        setTagDescriptions(prev => ({
+          ...prev,
+          ...cached.descriptions,
+        }));
+        return;
+      }
+
+      const requestId = activeRequest.current + 1;
+      activeRequest.current = requestId;
+      setLoading(true);
+
+      try {
+        const data = await qetaApi.getTags(getTagSearchRequest(trimmed));
+        const remoteTags = data.tags.map(tag => tag.tag);
+        const descriptions = getTagDescriptions(data.tags);
+        const nextTags = mergeTags(remoteTags, matchingAllowedTags);
+
+        if (activeRequest.current !== requestId) {
           return;
         }
 
-        const uniqueTags = [
-          ...new Set([...allowedTags, ...data.tags.map(tag => tag.tag)]),
-        ].sort((a, b) => a.localeCompare(b));
-        setAvailableTags(uniqueTags);
-        setTagDescriptions(
-          data.tags.reduce(
-            (acc, tag) => {
-              if (!tag.description) {
-                return acc;
-              }
-              acc[tag.tag] = tag.description;
-              return acc;
-            },
-            {} as Record<string, string>,
-          ),
-        );
-      });
-  }, [qetaApi, allowCreation, allowedTags]);
+        searchCache.current.set(cacheKey, {
+          tags: remoteTags,
+          descriptions,
+        });
+        setAvailableTags(prev => mergeTags(prev, nextTags));
+        setTagDescriptions(prev => ({ ...prev, ...descriptions }));
+      } catch {
+        if (activeRequest.current === requestId) {
+          setAvailableTags(prev => mergeTags(prev, matchingAllowedTags));
+        }
+      } finally {
+        if (activeRequest.current === requestId) {
+          setLoading(false);
+        }
+      }
+    },
+    [allowedTags, qetaApi],
+  );
 
-  if (!allowCreation && availableTags.length === 0) {
+  useEffect(() => {
+    searchCache.current.clear();
+    activeRequest.current += 1;
+    setLoading(true);
+    loadTags('');
+  }, [loadTags]);
+
+  useDebounce(
+    () => {
+      loadTags(inputValue);
+    },
+    300,
+    [inputValue, loadTags],
+  );
+
+  if (allowCreation === false && !loading && availableTags.length === 0) {
     return null;
   }
 
@@ -189,14 +358,37 @@ export const TagInput = forwardRef<
         multiple
         id="tags-select"
         className="qetaTagInput"
-        value={value || []}
+        value={selectedTags as TagAutocompleteOption[]}
         loading={loading}
         autoHighlight
         autoComplete
         loadingText={t('common.loading')}
-        options={availableTags ?? []}
+        options={availableTags as TagAutocompleteOption[]}
         freeSolo={allowCreation}
         handleHomeEndKeys
+        getOptionLabel={getTagOptionLabel}
+        filterOptions={(options, state) =>
+          getFilteredTagOptions({
+            allowCreation: allowCreation === true,
+            getCreateOptionLabel: tag =>
+              t('tagsInput.createOption' as never, { tag } as never) as string,
+            inputValue: state.inputValue,
+            maximumTags,
+            options: options.filter(
+              (option): option is string => typeof option === 'string',
+            ),
+            selectedTags,
+          })
+        }
+        inputValue={inputValue}
+        onInputChange={(_event, nextValue, reason) => {
+          if (reason === 'reset') {
+            setInputValue('');
+            return;
+          }
+
+          setInputValue(nextValue);
+        }}
         ListboxComponent={
           AutocompleteListboxComponent as ComponentType<
             HTMLAttributes<HTMLElement>
@@ -205,6 +397,10 @@ export const TagInput = forwardRef<
         disableListWrap
         style={style}
         renderOption={option => {
+          if (isCreateTagOption(option)) {
+            return option.label;
+          }
+
           if (tagDescriptions[option]) {
             return (
               <span key={option}>
@@ -221,11 +417,12 @@ export const TagInput = forwardRef<
           return option;
         }}
         onChange={(_e, newValue) => {
-          const tags = filterTags(newValue);
+          const nextValues = newValue.map(getTagOptionValue);
+          const tags = filterTags(nextValues);
           if (
             tags &&
             tags.length <= maximumTags &&
-            tags.length === newValue.length
+            tags.length === nextValues.length
           ) {
             onChange(tags);
           }
@@ -237,7 +434,7 @@ export const TagInput = forwardRef<
             margin="normal"
             label={label ?? t('tagsInput.label')}
             placeholder={t('tagsInput.placeholder')}
-            helperText={error !== undefined ? error.message : getHelperText()}
+            helperText={error ? error.message : getHelperText()}
             FormHelperTextProps={{
               style: { marginLeft: '0.2em' },
             }}
@@ -271,7 +468,9 @@ export const TagInput = forwardRef<
                 onClick={() => handleSuggestedTagClick(tag)}
                 style={{ margin: '0 4px 4px 0' }}
                 disabled={
-                  value?.includes(tag) || (value?.length ?? 0) >= maximumTags
+                  value?.includes(tag) ||
+                  (value?.length ?? 0) >= maximumTags ||
+                  loadingSuggestions
                 }
               />
             ))}
