@@ -64,7 +64,7 @@ export const getResourceUrl = (
   if (isTag(resource)) {
     return `${baseUrl}/tags/${resource.tag}`;
   } else if (isCollection(resource)) {
-    return `${baseUrl}/collection/${resource.id}`;
+    return `${baseUrl}/collections/${resource.id}`;
   } else if (isAnswer(resource)) {
     return `${baseUrl}/questions/${resource.postId}#answer_${resource.id}`;
   } else if (isPost(resource)) {
