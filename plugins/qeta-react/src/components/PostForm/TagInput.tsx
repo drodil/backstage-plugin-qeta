@@ -366,6 +366,7 @@ export const TagInput = forwardRef<
         options={availableTags as TagAutocompleteOption[]}
         freeSolo={allowCreation}
         handleHomeEndKeys
+        limitTags={maximumTags}
         getOptionLabel={getTagOptionLabel}
         filterOptions={(options, state) =>
           getFilteredTagOptions({

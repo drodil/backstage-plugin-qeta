@@ -578,6 +578,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
           value={usedValue}
           disabled={disabled}
           loading={loading}
+          limitTags={max}
           loadingText={t('common.loading')}
           groupBy={entityKinds.length > 1 ? option => option.kind : undefined}
           renderGroup={renderGroup}

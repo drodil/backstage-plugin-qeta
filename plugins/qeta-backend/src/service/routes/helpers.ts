@@ -27,7 +27,6 @@ import {
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { eng, removeStopwords } from 'stopword';
-import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -79,7 +78,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       });
       const users = await catalog.queryEntities(
         {
-          filter: { kind: 'User' },
+          query: { kind: 'User' },
           fields: ['kind', 'metadata.name', 'metadata.namespace'],
           fullTextFilter: {
             term: String(request.query.searchQuery),
@@ -260,8 +259,8 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
           {
             entityRefs: entities,
             fields: ['metadata.tags'],
-            filter: {
-              'metadata.tags': CATALOG_FILTER_EXISTS,
+            query: {
+              'metadata.tags': { $exists: true },
             },
           },
           { token },
@@ -524,8 +523,8 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       });
       const entities = await catalog.queryEntities(
         {
-          filter: {
-            kind: supportedKinds,
+          query: {
+            kind: { $in: supportedKinds },
           },
           fields: ['kind', 'metadata.name', 'metadata.namespace'],
           fullTextFilter: {
@@ -588,9 +587,15 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       });
       const entities = await catalog.queryEntities(
         {
-          filter: {
-            'metadata.tags': allTags,
-            kind: supportedKinds,
+          query: {
+            $all: [
+              { kind: { $in: supportedKinds } },
+              {
+                $any: allTags.map(tag => ({
+                  'metadata.tags': { $contains: tag },
+                })),
+              },
+            ],
           },
         },
         { token },

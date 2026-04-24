@@ -179,7 +179,7 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
       return NO_SUGGESTIONS;
     }
     const entities = await catalogApi.queryEntities({
-      filter: { kind: enabledMentionKinds },
+      query: { kind: { $in: enabledMentionKinds } },
       limit: 5,
       fields: [
         'metadata.name',

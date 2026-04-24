@@ -259,9 +259,9 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   useEffect(() => {
     identityApi.getBackstageIdentity().then(identity => {
       catalogApi
-        .getEntities({
-          filter: {
-            'spec.owner': identity.ownershipEntityRefs,
+        .queryEntities({
+          query: {
+            'spec.owner': { $in: identity.ownershipEntityRefs },
           },
           fields: ['kind', 'metadata.name', 'metadata.namespace'],
         })

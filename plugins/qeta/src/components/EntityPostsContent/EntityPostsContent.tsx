@@ -8,6 +8,7 @@ import {
 import { Content } from '@backstage/core-components';
 import { isUserEntity, stringifyEntityRef } from '@backstage/catalog-model';
 import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
+import type { FilterPredicate } from '@backstage/filter-predicates';
 import { Container } from '@material-ui/core';
 import { PluggableList } from 'unified';
 import { useApi } from '@backstage/core-plugin-api';
@@ -43,12 +44,15 @@ export const EntityPostsContent = (props: EntityPostsContentProps) => {
       setLoading(false);
       return;
     }
-    const filters = props.relations.map(relation => {
-      return { [`relations.${relation}`]: stringifyEntityRef(entity) };
-    });
+    const filters: FilterPredicate[] = props.relations.map(
+      relation =>
+        ({
+          [`relations.${relation}`]: stringifyEntityRef(entity),
+        }) as FilterPredicate,
+    );
     catalog
-      .getEntities({
-        filter: filters,
+      .queryEntities({
+        query: { $any: filters },
         fields: ['kind', 'metadata.name', 'metadata.namespace'],
       })
       .then(entities => {

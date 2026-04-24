@@ -81,9 +81,9 @@ export class PermissionPolicy implements PermissionPolicy {
     // in the permissions.
     /*
     const ownedEntities = (
-      await this.catalogApi.getEntities(
+      await this.catalogApi.queryEntities(
         {
-          filter: { 'spec.owner': user.identity.ownershipEntityRefs },
+          query: { 'spec.owner': { $in: user.identity.ownershipEntityRefs } },
           fields: ['kind', 'metadata.name', 'metadata.namespace'],
         },
         { token },
