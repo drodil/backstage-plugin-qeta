@@ -328,7 +328,6 @@ export class TagsStore extends BaseStore {
 
     return this.db('tags')
       .leftJoin('post_tags', 'tags.id', 'post_tags.tagId')
-      .orderBy('postsCount', 'desc')
       .select(
         'id',
         'tag',

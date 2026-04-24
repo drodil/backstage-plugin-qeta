@@ -524,6 +524,50 @@ describe.each(databases.eachSupportedId())(
         expect(tags2).toEqual({ tags: [], count: 0 });
       });
 
+      it('should order tags by the requested field', async () => {
+        await storage.createPost({
+          user_ref: 'user',
+          title: 'Tag A 1',
+          content: 'content',
+          created: new Date(),
+          tags: ['tag-a'],
+        });
+        await storage.createPost({
+          user_ref: 'user',
+          title: 'Tag A 2',
+          content: 'content',
+          created: new Date(),
+          tags: ['tag-a'],
+        });
+        await storage.createPost({
+          user_ref: 'user',
+          title: 'Tag B 1',
+          content: 'content',
+          created: new Date(),
+          tags: ['tag-b'],
+        });
+
+        await storage.followTag('user:default/alice', 'tag-b');
+        await storage.followTag('user:default/bob', 'tag-b');
+
+        const orderedByFollowers = await storage.getTags({
+          orderBy: 'followerCount',
+          order: 'desc',
+        });
+        expect(orderedByFollowers.tags.map(tag => tag.tag).slice(0, 2)).toEqual(
+          ['tag-b', 'tag-a'],
+        );
+
+        const orderedByPosts = await storage.getTags({
+          orderBy: 'postsCount',
+          order: 'desc',
+        });
+        expect(orderedByPosts.tags.map(tag => tag.tag).slice(0, 2)).toEqual([
+          'tag-a',
+          'tag-b',
+        ]);
+      });
+
       it('should allow following and unfollowing entity', async () => {
         const followed = await storage.followEntity('user', 'component');
         expect(followed).toBeTruthy();
