@@ -83,6 +83,10 @@ export class AnswersStore extends BaseStore {
       query.where('answers.postId', '=', options.questionId);
     }
 
+    if (options.ids && options.ids.length > 0) {
+      query.whereIn('answers.id', options.ids);
+    }
+
     if (options.noVotes) {
       query.whereNull('answer_votes.answerId');
     }
