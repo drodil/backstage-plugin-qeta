@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.59.8](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.7...v3.59.8) (2026-05-22)
+
+
+### Bug Fixes
+
+* **qeta-backend:** filter answers by ids when provided in options ([785b651](https://github.com/drodil/backstage-plugin-qeta/commit/785b6510abe0f95e4bd4334e536ec54fa28128d0))
+
 ### [3.59.7](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.6...v3.59.7) (2026-04-24)
 
 
