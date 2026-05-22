@@ -90,7 +90,6 @@
     "@backstage/cli": "backstage:^",
     "@backstage/plugin-auth-backend": "backstage:^",
     "@backstage/plugin-auth-backend-module-guest-provider": "backstage:^",
-    "@backstage/plugin-auth-node": "backstage:^",
     "@backstage/plugin-catalog-backend": "backstage:^",
     "@backstage/plugin-events-backend": "backstage:^",
     "@backstage/plugin-notifications-backend": "backstage:^",

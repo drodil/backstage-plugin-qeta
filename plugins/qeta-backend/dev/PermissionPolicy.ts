@@ -2,7 +2,6 @@
  * SPDX-FileCopyrightText: Copyright 2024 OP Financial Group (https://op.fi). All Rights Reserved.
  * SPDX-License-Identifier: LicenseRef-OpAllRightsReserved
  */
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   isPermission,
@@ -10,7 +9,10 @@ import {
   isUpdatePermission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { PolicyQuery } from '@backstage/plugin-permission-node';
+import {
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
 import {
   ANSWER_RESOURCE_TYPE,
   COLLECTION_RESOUCE_TYPE,
@@ -52,7 +54,7 @@ export class PermissionPolicy implements PermissionPolicy {
 
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     // Check that we are asking Q&A permissions
     if (!isQetaPermission(request.permission)) {
@@ -66,7 +68,7 @@ export class PermissionPolicy implements PermissionPolicy {
 
     // Moderator access using permission framework instead of config value
     if (isPermission(request.permission, qetaModeratePermission)) {
-      if (user.identity.userEntityRef === 'user:development/guest') {
+      if (user.info.userEntityRef === 'user:development/guest') {
         // return { result: AuthorizeResult.ALLOW };
       }
     }
@@ -287,7 +289,7 @@ export class PermissionPolicy implements PermissionPolicy {
           anyOf: [
             // Can edit and delete own questions
             postAuthorConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
             // Each owned component should have it's own condition factory as the rule requires that the
             // question has ALL of the entityRefs attached passed in this array
@@ -296,7 +298,7 @@ export class PermissionPolicy implements PermissionPolicy {
             }),
             // If user is expert of the post tags
             postTagExpertConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
           ],
         });
@@ -307,14 +309,14 @@ export class PermissionPolicy implements PermissionPolicy {
         return createAnswerConditionalDecision(request.permission, {
           anyOf: [
             answerAuthorConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
             // answerQuestionEntitiesConditionFactory({
             //  entityRefs: ['component:default/test-component'],
             // }),
             // Is expert of tag in question tags
             answerTagExpertConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
           ],
         });
@@ -325,7 +327,7 @@ export class PermissionPolicy implements PermissionPolicy {
         return createCommentConditionalDecision(request.permission, {
           allOf: [
             commentAuthorConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
           ],
         });
@@ -336,11 +338,11 @@ export class PermissionPolicy implements PermissionPolicy {
           anyOf: [
             // Allow deleting and updating only own collections
             collectionOwnerConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
             // Or if user is expert of the tag used in collection
             collectionTagExpertConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
           ],
         });

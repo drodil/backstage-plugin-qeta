@@ -3,7 +3,6 @@ import {
   coreExtensionData,
   createExtensionInput,
   createFrontendPlugin,
-  NavItemBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -117,6 +116,8 @@ const qetaPage = PageBlueprint.makeWithOverrides({
     const rehypePlugins = pluginsApi?.getRehypePlugins();
     return originalFactory({
       path: config.path ?? '/qeta',
+      title: config.title ?? 'Q&A',
+      icon: <ContactSupportIcon />,
       routeRef: convertLegacyRouteRef(qetaRouteRef),
       loader: () =>
         import('./components/QetaPage').then(m =>
@@ -177,14 +178,6 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
         );
       },
     });
-  },
-});
-
-const qetaNavItem = NavItemBlueprint.make({
-  params: {
-    title: 'Q&A',
-    routeRef: convertLegacyRouteRef(qetaRouteRef),
-    icon: ContactSupportIcon,
   },
 });
 
@@ -272,7 +265,6 @@ const qetaPlugin = createFrontendPlugin({
     qetaApi,
     qetaPage,
     EntityPostsContent,
-    qetaNavItem,
     qetaSearchResultItem,
     qetaPostSearchFilterType,
     techDocsAskQuestionAddon,

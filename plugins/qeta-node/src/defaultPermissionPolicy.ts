@@ -2,7 +2,6 @@
  * SPDX-FileCopyrightText: Copyright 2024 OP Financial Group (https://op.fi). All Rights Reserved.
  * SPDX-License-Identifier: LicenseRef-OpAllRightsReserved
  */
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   isPermission,
@@ -13,6 +12,7 @@ import {
 import {
   PermissionPolicy,
   PolicyQuery,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import {
   ANSWER_RESOURCE_TYPE,
@@ -30,21 +30,23 @@ import {
   collectionOwnerConditionFactory,
   collectionTagExpertConditionFactory,
   commentAuthorConditionFactory,
+  postAuthorConditionFactory,
+  postTagExpertConditionFactory,
+} from './permissionRules';
+import { Config } from '@backstage/config';
+import {
   createAnswerConditionalDecision,
   createCollectionConditionalDecision,
   createCommentConditionalDecision,
   createPostConditionalDecision,
-  postAuthorConditionFactory,
-  postTagExpertConditionFactory,
-} from '@drodil/backstage-plugin-qeta-node';
-import { Config } from '@backstage/config';
+} from './conditionExports.ts';
 
 export class DefaultQetaPermissionPolicy implements PermissionPolicy {
   constructor(private readonly config?: Config) {}
 
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     // We cannot do anything without a user
     if (!user) {
@@ -55,8 +57,8 @@ export class DefaultQetaPermissionPolicy implements PermissionPolicy {
     const moderators =
       this.config?.getOptionalStringArray('qeta.moderators') ?? [];
     if (
-      moderators.includes(user.identity.userEntityRef) ||
-      user.identity.ownershipEntityRefs.some(ref => moderators.includes(ref))
+      moderators.includes(user.info.userEntityRef) ||
+      user.info.ownershipEntityRefs.some(ref => moderators.includes(ref))
     ) {
       return { result: AuthorizeResult.ALLOW };
     }
@@ -85,11 +87,11 @@ export class DefaultQetaPermissionPolicy implements PermissionPolicy {
           anyOf: [
             // Can edit and delete own questions
             postAuthorConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
             // Can edit and delete if tag expert
             postTagExpertConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
           ],
         });
@@ -99,10 +101,10 @@ export class DefaultQetaPermissionPolicy implements PermissionPolicy {
         return createAnswerConditionalDecision(request.permission, {
           anyOf: [
             answerAuthorConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
             answerTagExpertConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
           ],
         });
@@ -113,7 +115,7 @@ export class DefaultQetaPermissionPolicy implements PermissionPolicy {
         return createCommentConditionalDecision(request.permission, {
           allOf: [
             commentAuthorConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
           ],
         });
@@ -124,11 +126,11 @@ export class DefaultQetaPermissionPolicy implements PermissionPolicy {
           anyOf: [
             // Allow deleting and updating only own collections
             collectionOwnerConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
             // Allow deleting and updating if tag expert
             collectionTagExpertConditionFactory({
-              userRef: user.identity.userEntityRef,
+              userRef: user.info.userEntityRef,
             }),
           ],
         });

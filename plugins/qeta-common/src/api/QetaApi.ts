@@ -1,4 +1,4 @@
-import {
+import type {
   AIResponse,
   AIStatusResponse,
   AnswerRequest,
@@ -49,7 +49,7 @@ import {
   CommunityStats,
   PostRevision,
   PostRevisionsResponse,
-} from '@drodil/backstage-plugin-qeta-common';
+} from '../types';
 
 export interface PaginatedQuery {
   limit?: number;

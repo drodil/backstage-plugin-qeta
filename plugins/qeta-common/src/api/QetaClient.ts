@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import {
+import type {
   AIQuery,
   AnswersQuery,
   CollectionsQuery,
@@ -13,7 +13,7 @@ import {
   TagsQuery,
   UsersQuery,
 } from './QetaApi';
-import {
+import type {
   AIResponse,
   AIStatusResponse,
   Answer,
@@ -31,7 +31,6 @@ import {
   CollectionResponseBody,
   CollectionsResponse,
   CollectionsResponseBody,
-  ContentSuggestionsQuery,
   EntitiesResponse,
   EntityLinks,
   EntityResponse,
@@ -69,7 +68,7 @@ import {
   CommunityStats,
   PostRevision,
   PostRevisionsResponse,
-} from '@drodil/backstage-plugin-qeta-common';
+} from '../types';
 import { CustomErrorBase } from '@backstage/errors';
 import omitBy from 'lodash/omitBy';
 import crossFetch from 'cross-fetch';
@@ -503,10 +502,7 @@ export class QetaClient implements QetaApi {
   }
 
   async suggest(
-    options: ContentSuggestionsQuery & {
-      tags?: string[];
-      entities?: string[];
-    },
+    options: Parameters<QetaApi['suggest']>[0],
     requestOptions?: RequestOptions,
   ): Promise<PostsResponse> {
     const response = await this.fetch('/posts/suggest', {
@@ -1541,7 +1537,7 @@ export class QetaClient implements QetaApi {
   }
 
   async getTagSuggestions(
-    options: ContentSuggestionsQuery,
+    options: Parameters<QetaApi['getTagSuggestions']>[0],
     requestOptions?: RequestOptions,
   ): Promise<TagSuggestionsResponse> {
     const response = await this.fetch('/tags/suggest', {
