@@ -76,7 +76,7 @@
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "4.0.0-alpha.61",
     "dataloader": "^2.2.2",
-    "dompurify": "^3.2.4",
+    "dompurify": "^3.4.0",
     "file-type": "16.5.4",
     "github-slugger": "^2.0.0",
     "infinite-scroll-hook": "^1.0.2",

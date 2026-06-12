@@ -83,7 +83,7 @@
     "multiparty": "^4.2.3",
     "sanitize-html": "^2.13.0",
     "stopword": "^3.1.5",
-    "uuid": "^9.0.1"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "backstage:^",
