@@ -44,7 +44,7 @@ export abstract class BaseStore {
           .join(` || ' ' || `);
 
         terms.forEach(term => {
-          builder.andWhereRaw(`(${coalescedColumns}) %> ?`, [term]);
+          builder.andWhereRaw(`(${coalescedColumns}) %> ?::text`, [term]);
         });
 
         const concatenatedColumns = `LOWER(CONCAT(${columns.join(',')}))`;
@@ -208,7 +208,27 @@ export abstract class BaseStore {
             SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm'
           ) as available
         `);
-        this.pgTrgmAvailable = result.rows?.[0]?.available ?? false;
+        const extensionAvailable = result.rows?.[0]?.available ?? false;
+        if (!extensionAvailable) {
+          this.pgTrgmAvailable = false;
+          return;
+        }
+
+        // The extension being installed does not guarantee that the
+        // word-similarity operators (e.g. `%>`) are available, since they
+        // were only added in pg_trgm 1.3+. Verify the operator actually
+        // works before relying on it in queries.
+        try {
+          await this.db.raw(`SELECT 'a'::text %> 'a'::text`);
+          this.pgTrgmAvailable = true;
+        } catch (operatorError) {
+          console.warn(
+            `pg_trgm extension is installed but the "%>" operator is unavailable ` +
+              `(the extension may need to be updated, e.g. "ALTER EXTENSION pg_trgm UPDATE"). ` +
+              `Falling back to LIKE-based search: ${operatorError}`,
+          );
+          this.pgTrgmAvailable = false;
+        }
       } catch (error) {
         console.warn(`Failed to check for pg_trgm extension: ${error}`);
         this.pgTrgmAvailable = false;
