@@ -106,19 +106,19 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
         allowServicePrincipal: true,
       }),
-      opts.includeTags
+      opts.includeTags !== false
         ? permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
             allowServicePrincipal: true,
           })
         : undefined,
-      opts.includeComments
+      opts.includeComments !== false
         ? permissionMgr.getAuthorizeConditions(
             request,
             qetaReadCommentPermission,
             { allowServicePrincipal: true },
           )
         : undefined,
-      opts.includeAnswers
+      opts.includeAnswers !== false
         ? permissionMgr.getAuthorizeConditions(
             request,
             qetaReadAnswerPermission,

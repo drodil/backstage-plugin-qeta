@@ -33,12 +33,17 @@ import {
   isTag,
 } from '../database/QetaStore.ts';
 import {
+  ANSWER_RESOURCE_TYPE,
+  COLLECTION_RESOUCE_TYPE,
+  COMMENT_RESOURCE_TYPE,
+  POST_RESOURCE_TYPE,
+  qetaCreatePostReviewPermission,
   qetaCreateTagPermission,
+  qetaDeletePostReviewPermission,
   QetaIdEntity,
   qetaModeratePermission,
   qetaReadPostReviewPermission,
-  qetaCreatePostReviewPermission,
-  qetaDeletePostReviewPermission,
+  TAG_RESOURCE_TYPE,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Config } from '@backstage/config';
 import { QetaFilters, transformConditions } from './util.ts';
@@ -465,15 +470,44 @@ export class PermissionManager {
       return undefined;
     }
 
-    const decision = await this.authorizeConditional(
-      request,
-      permission,
-      options,
-    );
+    let decision: PolicyDecision;
+    try {
+      decision = await this.authorizeConditional(request, permission, options);
+    } catch (error) {
+      const denyFilter = this.getDenyFilterFromPermission(permission);
+      if (denyFilter) {
+        return denyFilter;
+      }
+      throw error;
+    }
+
     if (decision.result === AuthorizeResult.CONDITIONAL) {
       return transformConditions(decision.conditions);
     }
     return undefined;
+  }
+
+  private getDenyFilterFromPermission(
+    permission: Permission,
+  ): PermissionCriteria<QetaFilters> | undefined {
+    if (!isResourcePermission(permission)) {
+      return undefined;
+    }
+
+    switch (permission.resourceType) {
+      case TAG_RESOURCE_TYPE:
+        return { property: 'tags.tag', values: [] };
+      case COMMENT_RESOURCE_TYPE:
+        return { property: 'comments.id', values: [] };
+      case ANSWER_RESOURCE_TYPE:
+        return { property: 'answers.id', values: [] };
+      case POST_RESOURCE_TYPE:
+        return { property: 'posts.id', values: [] };
+      case COLLECTION_RESOUCE_TYPE:
+        return { property: 'collections.id', values: [] };
+      default:
+        return undefined;
+    }
   }
 
   private getResourceRef(resource: QetaIdEntity) {

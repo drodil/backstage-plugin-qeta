@@ -4,7 +4,7 @@ app:
   extensions:
     - entity-content:qeta/entity-posts-content:
         config:
-          relations: ['partOf']
+          relations: [ 'partOf' ]
 
 backend:
   baseUrl: http://localhost:7007
@@ -34,10 +34,10 @@ backend:
     store: memory
   cors:
     origin: http://localhost:3000
-    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+    methods: [ GET, HEAD, PATCH, POST, PUT, DELETE ]
     credentials: true
   csp:
-    connect-src: ["'self'", 'http:', 'https:']
+    connect-src: [ "'self'", 'http:', 'https:' ]
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
     # Default Helmet Content-Security-Policy values can be removed by setting the key to false
   reading:
@@ -62,7 +62,7 @@ techdocs:
 auth:
   environment: development
   providers:
-    guest: {}
+    guest: { }
 
 permission:
   enabled: true
@@ -96,14 +96,14 @@ qeta:
     useRelativeUrls: false
     # maxSizeImage: 2500000
     # allowedFilesTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/gif']
-#  history:
-#    enabled: true # default
-#    retentionDays: 180 # default
-#    saveAttachments: false # default
-#    enabledContent:
-#      - article # default
-#      - link
-#      - question
+  #  history:
+  #    enabled: true # default
+  #    retentionDays: 180 # default
+  #    saveAttachments: false # default
+  #    enabledContent:
+  #      - article # default
+  #      - link
+  #      - question
   allowAnonymous: true
   allowMetadataInput: true
   #allowGlobalEdits: true
@@ -113,8 +113,8 @@ qeta:
   tags:
     #allowCreation: false
     #allowedTags:
-      #- test
-      #- another_tag
+    #- test
+    #- another_tag
     max: 6
   moderators:
     - 'user:development/guest'

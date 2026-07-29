@@ -2,6 +2,11 @@ import request from 'supertest';
 import express from 'express';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
+  qetaReadAnswerPermission,
+  qetaReadCommentPermission,
+  qetaReadTagPermission,
+} from '@drodil/backstage-plugin-qeta-common';
+import {
   answer,
   comment,
   mockSystemDate,
@@ -15,12 +20,14 @@ describe('Posts Routes', () => {
   let app: express.Express;
   let qetaStore: jest.Mocked<QetaStore>;
   let mockedAuthorize: any;
+  let mockedPermissionQuery: any;
 
   beforeEach(async () => {
     const setup = await setupTestApp();
     app = setup.app;
     qetaStore = setup.qetaStore;
     mockedAuthorize = setup.mockedAuthorize;
+    mockedPermissionQuery = setup.mockedPermissionQuery;
   });
 
   describe('GET /posts', () => {
@@ -32,6 +39,36 @@ describe('Posts Routes', () => {
       const response = await request(app).get('/posts');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ posts: [], total: 0 });
+    });
+
+    it('filters out tags in list view when tag read permission is fully denied', async () => {
+      qetaStore.getPosts.mockImplementation(async (_u, _opts, _f, options) => ({
+        posts: [options?.tagsFilter ? { ...question, tags: [] } : question],
+        total: 1,
+      }));
+      mockedPermissionQuery.mockImplementation(async (requests: any[]) => {
+        return requests.map((req: any) =>
+          req.permission.name === qetaReadTagPermission.name
+            ? { result: AuthorizeResult.DENY }
+            : { result: AuthorizeResult.ALLOW },
+        );
+      });
+
+      const response = await request(app).get('/posts');
+
+      expect(response.status).toEqual(200);
+      expect(qetaStore.getPosts).toHaveBeenCalledWith(
+        'user:default/mock',
+        expect.anything(),
+        undefined,
+        expect.objectContaining({
+          tagsFilter: {
+            property: 'tags.tag',
+            values: [],
+          },
+        }),
+      );
+      expect(response.body.posts[0].tags).toEqual([]);
     });
 
     it('returns 400 error when date range is invalid', async () => {
@@ -125,6 +162,90 @@ describe('Posts Routes', () => {
       mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
       const response = await request(app).get('/posts/1');
       expect(response.status).toEqual(403);
+    });
+
+    it('returns post without tags when tag read permission is fully denied', async () => {
+      qetaStore.getPost.mockImplementation(
+        async (_u, _id, _record, options) => {
+          return options?.tagsFilter ? { ...question, tags: [] } : question;
+        },
+      );
+      mockedPermissionQuery.mockImplementation(async (requests: any[]) => {
+        return requests.map((req: any) =>
+          req.permission.name === qetaReadTagPermission.name
+            ? { result: AuthorizeResult.DENY }
+            : { result: AuthorizeResult.ALLOW },
+        );
+      });
+
+      const response = await request(app).get('/posts/1');
+
+      expect(response.status).toEqual(200);
+      expect(qetaStore.getPost).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+        true,
+        expect.objectContaining({
+          tagsFilter: {
+            property: 'tags.tag',
+            values: [],
+          },
+        }),
+      );
+      expect(response.body.tags).toEqual([]);
+    });
+
+    it('returns post without comments and answers when those read permissions are fully denied', async () => {
+      qetaStore.getPost.mockImplementation(
+        async (_u, _id, _record, options) => {
+          const post = {
+            ...question,
+            comments: [comment],
+            answers: [answer],
+          } as any;
+
+          if (options?.commentsFilter) {
+            post.comments = [];
+          }
+          if (options?.answersFilter) {
+            post.answers = [];
+          }
+
+          return post;
+        },
+      );
+      mockedPermissionQuery.mockImplementation(async (requests: any[]) => {
+        return requests.map((req: any) => {
+          if (req.permission.name === qetaReadCommentPermission.name) {
+            return { result: AuthorizeResult.DENY };
+          }
+          if (req.permission.name === qetaReadAnswerPermission.name) {
+            return { result: AuthorizeResult.DENY };
+          }
+          return { result: AuthorizeResult.ALLOW };
+        });
+      });
+
+      const response = await request(app).get('/posts/1');
+
+      expect(response.status).toEqual(200);
+      expect(qetaStore.getPost).toHaveBeenCalledWith(
+        'user:default/mock',
+        1,
+        true,
+        expect.objectContaining({
+          commentsFilter: {
+            property: 'comments.id',
+            values: [],
+          },
+          answersFilter: {
+            property: 'answers.id',
+            values: [],
+          },
+        }),
+      );
+      expect(response.body.comments).toEqual([]);
+      expect(response.body.answers).toEqual([]);
     });
   });
 
