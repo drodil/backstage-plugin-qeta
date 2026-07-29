@@ -33,7 +33,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { Link } from 'react-router-dom';
 
-import { useListItemStyles } from '../../hooks';
+import { useListItemStyles, useQetaConfig } from '../../hooks';
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -96,6 +96,7 @@ export const TagListItem = (props: {
   const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useStyles();
   const listItemClasses = useListItemStyles();
+  const { disabled } = useQetaConfig();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -150,24 +151,30 @@ export const TagListItem = (props: {
         </Box>
 
         <Box className={classes.statsWrapper}>
-          <Tooltip title={t('common.questions')} arrow>
-            <div className={classes.statItem}>
-              <QuestionAnswerIcon fontSize="small" />
-              <Typography variant="body2">{tag.questionsCount}</Typography>
-            </div>
-          </Tooltip>
-          <Tooltip title={t('common.articles')} arrow>
-            <div className={classes.statItem}>
-              <DescriptionIcon fontSize="small" />
-              <Typography variant="body2">{tag.articlesCount}</Typography>
-            </div>
-          </Tooltip>
-          <Tooltip title={t('common.links')} arrow>
-            <div className={classes.statItem}>
-              <LinkIcon fontSize="small" />
-              <Typography variant="body2">{tag.linksCount}</Typography>
-            </div>
-          </Tooltip>
+          {!disabled.questions && (
+            <Tooltip title={t('common.questions')} arrow>
+              <div className={classes.statItem}>
+                <QuestionAnswerIcon fontSize="small" />
+                <Typography variant="body2">{tag.questionsCount}</Typography>
+              </div>
+            </Tooltip>
+          )}
+          {!disabled.articles && (
+            <Tooltip title={t('common.articles')} arrow>
+              <div className={classes.statItem}>
+                <DescriptionIcon fontSize="small" />
+                <Typography variant="body2">{tag.articlesCount}</Typography>
+              </div>
+            </Tooltip>
+          )}
+          {!disabled.links && (
+            <Tooltip title={t('common.links')} arrow>
+              <div className={classes.statItem}>
+                <LinkIcon fontSize="small" />
+                <Typography variant="body2">{tag.linksCount}</Typography>
+              </div>
+            </Tooltip>
+          )}
           <Tooltip title={t('common.followersPlain')} arrow>
             <div className={classes.statItem}>
               <PeopleIcon fontSize="small" />

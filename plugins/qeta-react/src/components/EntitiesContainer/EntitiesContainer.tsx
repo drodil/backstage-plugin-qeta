@@ -9,6 +9,7 @@ import {
 } from '../FilterPanel/FilterPanel';
 import { qetaTranslationRef } from '../../translation';
 import { ViewType } from '../ViewToggle/ViewToggle';
+import { useQetaConfig } from '../../hooks';
 
 export const EntitiesContainer = (props: {
   filterPanelProps?: CommonFilterPanelProps;
@@ -16,6 +17,11 @@ export const EntitiesContainer = (props: {
 }) => {
   const { filterPanelProps, defaultView } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
+
+  if (disabled.entities) {
+    return null;
+  }
 
   return (
     <QetaEntityContainer<EntityResponse, EntityFilters>

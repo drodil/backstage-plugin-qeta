@@ -833,6 +833,7 @@ export const PostForm = (props: PostFormProps) => {
                   multiple={false}
                   kind={['User']}
                   required
+                  skipDisabledEntitiesCheck
                   {...field}
                   error={authorError}
                 />

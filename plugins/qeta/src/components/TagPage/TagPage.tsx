@@ -11,6 +11,7 @@ import {
   qetaTranslationRef,
   TagFollowButton,
   TagsContainer,
+  useQetaConfig,
   useIsModerator,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
@@ -29,6 +30,7 @@ import { Button, Typography } from '@material-ui/core';
 export const TagPage = () => {
   const { tag } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
   const [resp, setResp] = useState<undefined | TagResponse>();
   const { isModerator } = useIsModerator();
 
@@ -73,6 +75,10 @@ export const TagPage = () => {
   const handleDeleteModalClose = () => {
     setDeleteModalOpen(false);
   };
+
+  if (disabled.tags) {
+    return null;
+  }
 
   return (
     <>

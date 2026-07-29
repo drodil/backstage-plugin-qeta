@@ -16,14 +16,24 @@ qeta:
     onDelete:
       question: ['group:default/qeta-moderators']
   entities:
+    disabled: false
     kinds: ['Component']
     max: 3
   tags:
+    disabled: false
     allowCreation: true
     allowedTags:
       - test
       - tag2
     max: 5
+  questions:
+    disabled: false
+  articles:
+    disabled: false
+  links:
+    disabled: false
+  collections:
+    disabled: false
   mentions:
     supportedKinds:
       - User
@@ -70,16 +80,25 @@ The allowed configuration values are:
 
 ## Entities
 
+- `entities.disabled`, boolean, disable entity pages, pickers, and related API responses. Default is `false`.
 - `entities.kinds`, string array, what kind of catalog entities can be attached to a post. Default is ['Component']
 - `entities.max`, integer, maximum number of entities to attach to a post. Default is `3`
 - `entities.min`, integer, minimum number of entities that has to be attached to a post. Default is `0`.
 
 ## Tags
 
+- `tags.disabled`, boolean, disable tags pages, pickers, and related API responses. Default is `false`.
 - `tags.allowCreation`, boolean, determines whether it's possible to add new tags when creating a post. Only affects if permissions are not enabled. Moderators can always add tags from the UI even if this is false. Default is `true`
 - `tags.allowedTags`, string array, list of allowed tags to be attached to posts. Only used if `tags.allowCreation` is set to `false`.
 - `tags.max`, integer, maximum number of tags to be attached to a post. Default is `5`.
 - `tags.min`, integer, minimum number of tags that has to be attached to a post. Default is `0`.
+
+## Content sections
+
+- `questions.disabled`, boolean, disable questions in UI and API. Default is `false`.
+- `articles.disabled`, boolean, disable articles in UI and API. Default is `false`.
+- `links.disabled`, boolean, disable links in UI and API. Default is `false`.
+- `collections.disabled`, boolean, disable collections in UI and API. Default is `false`.
 
 ## Storage
 

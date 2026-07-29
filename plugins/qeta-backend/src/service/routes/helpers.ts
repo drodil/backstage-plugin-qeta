@@ -23,6 +23,7 @@ import {
   qetaReadPostPermission,
   qetaReadTagPermission,
   TagsQuery,
+  UserResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
@@ -45,6 +46,24 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   } = options;
 
   const supportedKinds = getSupportedEntityKinds(config);
+  const questionsDisabled =
+    config.getOptionalBoolean('qeta.questions.disabled') ?? false;
+  const articlesDisabled =
+    config.getOptionalBoolean('qeta.articles.disabled') ?? false;
+  const linksDisabled =
+    config.getOptionalBoolean('qeta.links.disabled') ?? false;
+  const tagsDisabled = config.getOptionalBoolean('qeta.tags.disabled') ?? false;
+  const entitiesDisabled =
+    config.getOptionalBoolean('qeta.entities.disabled') ?? false;
+
+  const mapDisabledUserTotals = (user: UserResponse): UserResponse => {
+    return {
+      ...user,
+      ...(questionsDisabled ? { totalQuestions: 0, totalAnswers: 0 } : {}),
+      ...(articlesDisabled ? { totalArticles: 0 } : {}),
+      ...(linksDisabled ? { totalLinks: 0 } : {}),
+    };
+  };
 
   const validateEntityRef = (entityRef: string, kind?: string) => {
     try {
@@ -103,7 +122,10 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const users = await database.getUsers({ entityRefs, ...request.query });
-    response.json(users);
+    response.json({
+      ...users,
+      users: users.users.map(mapDisabledUserTotals),
+    });
   });
 
   router.get('/users/followed', async (request, response) => {
@@ -162,6 +184,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
 
   // GET /tags
   router.get('/tags', async (request, response) => {
+    if (tagsDisabled) {
+      response.json({ tags: [], total: 0 });
+      return;
+    }
+
     const validateQuery = ajv.compile(TagsQuerySchema);
     if (!validateQuery(request.query)) {
       response
@@ -187,6 +214,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/tags/followed', async (request, response) => {
+    if (tagsDisabled) {
+      response.json({ tags: [], count: 0 });
+      return;
+    }
+
     const username = await permissionMgr.getUsername(request, false);
     const filter = await permissionMgr.getAuthorizeConditions(
       request,
@@ -207,6 +239,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.put('/tags/follow/:tag', async (request, response) => {
+    if (tagsDisabled) {
+      response.status(403).send({ errors: 'Tags are disabled', type: 'body' });
+      return;
+    }
+
     const { tag } = request.params;
     const username = await permissionMgr.getUsername(request, false);
     await database.followTag(username, tag);
@@ -226,6 +263,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.delete('/tags/follow/:tag', async (request, response) => {
+    if (tagsDisabled) {
+      response.status(403).send({ errors: 'Tags are disabled', type: 'body' });
+      return;
+    }
+
     const { tag } = request.params;
     const username = await permissionMgr.getUsername(request, false);
     await database.unfollowTag(username, tag);
@@ -327,6 +369,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   };
 
   router.post('/tags/suggest', async (request, response) => {
+    if (tagsDisabled) {
+      response.json({ tags: [] });
+      return;
+    }
+
     const validateRequestBody = ajv.compile(DraftQuestionSchema);
     if (!validateRequestBody(request.body)) {
       response.status(400).send({ errors: validateRequestBody.errors });
@@ -363,6 +410,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/tags/:tag', async (request, response) => {
+    if (tagsDisabled) {
+      response.sendStatus(404);
+      return;
+    }
+
     const tag = await database.getTag(request.params.tag);
     if (!tag) {
       response.sendStatus(404);
@@ -384,6 +436,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.post('/tags/:tag', async (request, response) => {
+    if (tagsDisabled) {
+      response.status(403).send({ errors: 'Tags are disabled', type: 'body' });
+      return;
+    }
+
     const tagId = Number.parseInt(request.params.tag, 10);
     if (Number.isNaN(tagId)) {
       response.status(400).send({ errors: 'Invalid tag id', type: 'body' });
@@ -426,6 +483,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.put('/tags', async (request, response) => {
+    if (tagsDisabled) {
+      response.status(403).send({ errors: 'Tags are disabled', type: 'body' });
+      return;
+    }
+
     await permissionMgr.authorize(
       request,
       [{ permission: qetaCreateTagPermission }],
@@ -476,6 +538,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.delete('/tags/:tag', async (request, response) => {
+    if (tagsDisabled) {
+      response.status(403).send({ errors: 'Tags are disabled', type: 'body' });
+      return;
+    }
+
     const tagId = Number.parseInt(request.params.tag, 10);
     const validateRequestBody = ajv.compile(DeleteMetadataSchema);
     if (Number.isNaN(tagId) || !validateRequestBody(request.body)) {
@@ -507,6 +574,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/entities', async (request, response) => {
+    if (entitiesDisabled) {
+      response.json({ entities: [], total: 0 });
+      return;
+    }
+
     const validateQuery = ajv.compile(EntitiesQuerySchema);
     if (!validateQuery(request.query)) {
       response
@@ -558,6 +630,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.post('/entities/suggest', async (request, response) => {
+    if (entitiesDisabled) {
+      response.json({ entities: [] });
+      return;
+    }
+
     const validateRequestBody = ajv.compile(DraftQuestionSchema);
     if (!validateRequestBody(request.body)) {
       response.status(400).send({ errors: validateRequestBody.errors });
@@ -622,6 +699,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/entities/followed', async (request, response) => {
+    if (entitiesDisabled) {
+      response.json({ entityRefs: [], count: 0 });
+      return;
+    }
+
     const username = await permissionMgr.getUsername(request, false);
     const key = `qeta:followed:entities:${username}`;
     const ttl = 24 * 60 * 60 * 1000;
@@ -636,6 +718,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/entities/links', async (request, response) => {
+    if (entitiesDisabled) {
+      response.json([]);
+      return;
+    }
+
     const credentials = await httpAuth.credentials(request, {
       allow: ['service'],
     });
@@ -649,6 +736,13 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.put('/entities/follow/:entityRef(*)', async (request, response) => {
+    if (entitiesDisabled) {
+      response
+        .status(403)
+        .send({ errors: 'Entities are disabled', type: 'body' });
+      return;
+    }
+
     const { entityRef } = request.params;
     validateEntityRef(entityRef);
     const username = await permissionMgr.getUsername(request, false);
@@ -666,6 +760,13 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.delete('/entities/follow/:entityRef(*)', async (request, response) => {
+    if (entitiesDisabled) {
+      response
+        .status(403)
+        .send({ errors: 'Entities are disabled', type: 'body' });
+      return;
+    }
+
     const { entityRef } = request.params;
     validateEntityRef(entityRef);
     const username = await permissionMgr.getUsername(request, false);
@@ -683,6 +784,11 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/entities/:entityRef(*)', async (request, response) => {
+    if (entitiesDisabled) {
+      response.sendStatus(404);
+      return;
+    }
+
     validateEntityRef(request.params.entityRef);
     const entity = await database.getEntity(request.params.entityRef);
     if (entity === null) {

@@ -23,6 +23,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Link } from 'react-router-dom';
 
 import { useListItemStyles } from '../../hooks';
+import { useQetaConfig } from '../../hooks/useQetaConfig';
 
 const useStyles = makeStyles(theme => ({
   content: {
@@ -59,6 +60,7 @@ export const UserListItem = (props: { user: UserResponse }) => {
   const { user } = props;
   const classes = useStyles();
   const listItemClasses = useListItemStyles();
+  const { disabled } = useQetaConfig();
   const userRoute = useRouteRef(userRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const {
@@ -99,30 +101,38 @@ export const UserListItem = (props: { user: UserResponse }) => {
             <Typography variant="body2">{user.reputation}</Typography>
           </div>
         </Tooltip>
-        <Tooltip title={t('common.questions')} arrow>
-          <div className={classes.statItem}>
-            <QuestionAnswerIcon fontSize="small" />
-            <Typography variant="body2">{user.totalQuestions}</Typography>
-          </div>
-        </Tooltip>
-        <Tooltip title={t('common.answers')} arrow>
-          <div className={classes.statItem}>
-            <CheckCircleIcon fontSize="small" />
-            <Typography variant="body2">{user.totalAnswers}</Typography>
-          </div>
-        </Tooltip>
-        <Tooltip title={t('common.articles')} arrow>
-          <div className={classes.statItem}>
-            <DescriptionIcon fontSize="small" />
-            <Typography variant="body2">{user.totalArticles}</Typography>
-          </div>
-        </Tooltip>
-        <Tooltip title={t('common.links')} arrow>
-          <div className={classes.statItem}>
-            <LinkIcon fontSize="small" />
-            <Typography variant="body2">{user.totalLinks}</Typography>
-          </div>
-        </Tooltip>
+        {!disabled.questions && (
+          <Tooltip title={t('common.questions')} arrow>
+            <div className={classes.statItem}>
+              <QuestionAnswerIcon fontSize="small" />
+              <Typography variant="body2">{user.totalQuestions}</Typography>
+            </div>
+          </Tooltip>
+        )}
+        {!disabled.questions && (
+          <Tooltip title={t('common.answers')} arrow>
+            <div className={classes.statItem}>
+              <CheckCircleIcon fontSize="small" />
+              <Typography variant="body2">{user.totalAnswers}</Typography>
+            </div>
+          </Tooltip>
+        )}
+        {!disabled.articles && (
+          <Tooltip title={t('common.articles')} arrow>
+            <div className={classes.statItem}>
+              <DescriptionIcon fontSize="small" />
+              <Typography variant="body2">{user.totalArticles}</Typography>
+            </div>
+          </Tooltip>
+        )}
+        {!disabled.links && (
+          <Tooltip title={t('common.links')} arrow>
+            <div className={classes.statItem}>
+              <LinkIcon fontSize="small" />
+              <Typography variant="body2">{user.totalLinks}</Typography>
+            </div>
+          </Tooltip>
+        )}
         <Tooltip title={t('common.votes')} arrow>
           <div className={classes.statItem}>
             <ThumbUpIcon fontSize="small" />

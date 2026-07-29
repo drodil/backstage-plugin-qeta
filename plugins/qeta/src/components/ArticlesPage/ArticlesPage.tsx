@@ -4,6 +4,7 @@ import {
   ContentHeader,
   PostsContainer,
   qetaTranslationRef,
+  useQetaConfig,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
@@ -17,10 +18,16 @@ export const ArticlesPage = () => {
   const [entityRef, setEntityRef] = useState<string | undefined>(undefined);
   const [tags, setTags] = useState<string[] | undefined>(undefined);
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
+
   useEffect(() => {
     setEntityRef(searchParams.get('entity') ?? undefined);
     setTags(filterTags(searchParams.get('tags')));
   }, [searchParams, setEntityRef]);
+
+  if (disabled.articles) {
+    return null;
+  }
 
   return (
     <>

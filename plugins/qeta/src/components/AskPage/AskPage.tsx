@@ -10,6 +10,7 @@ import {
   SelectTemplateList,
   useAI,
   useQetaApi,
+  useQetaConfig,
   useQetaContext,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useParams, useSearchParams } from 'react-router-dom';
@@ -21,6 +22,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const AskPage = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
+  const { disabled } = useQetaConfig();
   const { isNewQuestionsEnabled } = useAI();
   const { value, loading } = useQetaApi(api => api.getTemplates());
   const [draft, setDraft] = useState<
@@ -55,6 +57,10 @@ export const AskPage = () => {
     });
   } else {
     title = t('askPage.title.newQuestion');
+  }
+
+  if (disabled.questions) {
+    return null;
   }
 
   if (loading) {

@@ -71,6 +71,20 @@ describe('Collections Routes', () => {
       );
       expect(response.body.collections[0].tags).toEqual([]);
     });
+
+    it('returns empty list when collections are disabled', async () => {
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        {
+          qeta: { collections: { disabled: true } },
+        },
+      );
+
+      const response = await request(disabledApp).get('/collections');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ collections: [], total: 0 });
+      expect(disabledStore.getCollections).not.toHaveBeenCalled();
+    });
   });
 
   describe('POST /collections/query', () => {
@@ -105,6 +119,26 @@ describe('Collections Routes', () => {
         ...collection,
         created: '2022-01-01T00:00:00.000Z',
       });
+    });
+
+    it('returns 403 when collections are disabled', async () => {
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        {
+          qeta: { collections: { disabled: true } },
+        },
+      );
+
+      const response = await request(disabledApp).post('/collections').send({
+        title: 'Test Collection',
+        description: 'Test Description',
+      });
+
+      expect(response.status).toEqual(403);
+      expect(response.body).toEqual({
+        errors: 'Collections are disabled',
+        type: 'body',
+      });
+      expect(disabledStore.createCollection).not.toHaveBeenCalled();
     });
   });
 

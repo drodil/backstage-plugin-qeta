@@ -40,6 +40,7 @@ import LocalOfferOutlined from '@material-ui/icons/LocalOfferOutlined';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CategoryIcon from '@material-ui/icons/Category';
 import NotificationsActive from '@material-ui/icons/NotificationsActive';
+import { useQetaConfig } from '../../hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -142,6 +143,7 @@ const EntityItem = ({ entityRef }: { entityRef: string }) => {
 export const FollowedItemsCard = () => {
   const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
 
   const { tags, loading: tagsLoading } = useTagsFollow();
   const { entities, loading: entitiesLoading } = useEntityFollow();
@@ -156,10 +158,10 @@ export const FollowedItemsCard = () => {
     tagsLoading || entitiesLoading || usersLoading || collectionsLoading;
 
   const hasAnyItems =
-    tags.length > 0 ||
-    entities.length > 0 ||
+    (!disabled.tags && tags.length > 0) ||
+    (!disabled.entities && entities.length > 0) ||
     users.length > 0 ||
-    collections.length > 0;
+    (!disabled.collections && collections.length > 0);
 
   const renderContent = () => {
     if (isLoading) {
@@ -201,7 +203,7 @@ export const FollowedItemsCard = () => {
 
     return (
       <>
-        {tags.length > 0 && (
+        {!disabled.tags && tags.length > 0 && (
           <>
             <Typography className={classes.sectionTitle}>
               {t('homePage.tags')}
@@ -233,7 +235,7 @@ export const FollowedItemsCard = () => {
           </>
         )}
 
-        {entities.length > 0 && (
+        {!disabled.entities && entities.length > 0 && (
           <>
             <Typography className={classes.sectionTitle}>
               {t('homePage.entities')}
@@ -295,7 +297,7 @@ export const FollowedItemsCard = () => {
           </>
         )}
 
-        {collections.length > 0 && (
+        {!disabled.collections && collections.length > 0 && (
           <>
             <Typography className={classes.sectionTitle}>
               {t('homePage.collections')}

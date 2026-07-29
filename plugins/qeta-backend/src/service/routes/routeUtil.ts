@@ -12,6 +12,10 @@ export const getTags = async (
   options: RouteOptions,
   existingTags: TagsResponse,
 ) => {
+  if (options.config.getOptionalBoolean('qeta.tags.disabled') ?? false) {
+    return [];
+  }
+
   if (!request.body.tags) {
     return [];
   }
@@ -43,6 +47,10 @@ export const getTags = async (
 };
 
 export const getEntities = (request: Request, config: Config): string[] => {
+  if (config.getOptionalBoolean('qeta.entities.disabled') ?? false) {
+    return [];
+  }
+
   if (!request.body.entities) {
     return [];
   }

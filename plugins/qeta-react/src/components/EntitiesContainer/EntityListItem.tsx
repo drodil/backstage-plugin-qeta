@@ -21,7 +21,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { Link } from 'react-router-dom';
 
-import { useListItemStyles } from '../../hooks';
+import { useListItemStyles, useQetaConfig } from '../../hooks';
 
 const useStyles = makeStyles(theme => ({
   content: {
@@ -59,6 +59,7 @@ export const EntityListItem = (props: { entity: EntityResponse }) => {
   const listItemClasses = useListItemStyles();
   const entityRoute = useRouteRef(entityRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
   const compound = parseEntityRef(entity.entityRef);
   const { primaryTitle, Icon, secondaryTitle } =
     useEntityPresentation(compound);
@@ -81,24 +82,30 @@ export const EntityListItem = (props: { entity: EntityResponse }) => {
       </Box>
 
       <Box className={classes.statsWrapper}>
-        <Tooltip title={t('stats.questions', {})} arrow>
-          <div className={classes.statItem}>
-            <QuestionAnswerIcon fontSize="small" />
-            <Typography variant="body2">{entity.questionsCount}</Typography>
-          </div>
-        </Tooltip>
-        <Tooltip title={t('stats.articles', {})} arrow>
-          <div className={classes.statItem}>
-            <DescriptionIcon fontSize="small" />
-            <Typography variant="body2">{entity.articlesCount}</Typography>
-          </div>
-        </Tooltip>
-        <Tooltip title={t('stats.links', {})} arrow>
-          <div className={classes.statItem}>
-            <LinkIcon fontSize="small" />
-            <Typography variant="body2">{entity.linksCount}</Typography>
-          </div>
-        </Tooltip>
+        {!disabled.questions && (
+          <Tooltip title={t('stats.questions', {})} arrow>
+            <div className={classes.statItem}>
+              <QuestionAnswerIcon fontSize="small" />
+              <Typography variant="body2">{entity.questionsCount}</Typography>
+            </div>
+          </Tooltip>
+        )}
+        {!disabled.articles && (
+          <Tooltip title={t('stats.articles', {})} arrow>
+            <div className={classes.statItem}>
+              <DescriptionIcon fontSize="small" />
+              <Typography variant="body2">{entity.articlesCount}</Typography>
+            </div>
+          </Tooltip>
+        )}
+        {!disabled.links && (
+          <Tooltip title={t('stats.links', {})} arrow>
+            <div className={classes.statItem}>
+              <LinkIcon fontSize="small" />
+              <Typography variant="body2">{entity.linksCount}</Typography>
+            </div>
+          </Tooltip>
+        )}
         <Tooltip title={t('stats.followers', {})} arrow>
           <div className={classes.statItem}>
             <PeopleIcon fontSize="small" />

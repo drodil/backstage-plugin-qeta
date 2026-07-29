@@ -38,6 +38,7 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { getPostDisplayDate } from '../../utils/utils';
+import { useQetaConfig } from '../../hooks';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -322,13 +323,42 @@ const suggestionTypeMap: Record<SuggestionType, any> = {
 export const SuggestionsCard = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useStyles();
+  const { disabled } = useQetaConfig();
   const {
     value: response,
     loading,
     retry,
   } = useQetaApi<SuggestionsResponse>(api => api.getSuggestions(), []);
 
-  const suggestions = response?.suggestions ?? [];
+  const suggestions = (response?.suggestions ?? []).filter(suggestion => {
+    switch (suggestion.type) {
+      case 'newQuestion':
+      case 'noCorrectAnswer':
+        return !disabled.questions;
+      case 'newArticle':
+        return !disabled.articles;
+      case 'newLink':
+        return !disabled.links;
+      case 'draftPost':
+      case 'randomPost':
+      case 'needsReview': {
+        const post = (suggestion as { post?: { type?: string } }).post;
+        return post
+          ? !(
+              (post.type === 'question' && disabled.questions) ||
+              (post.type === 'article' && disabled.articles) ||
+              (post.type === 'link' && disabled.links)
+            )
+          : true;
+      }
+      default:
+        return true;
+    }
+  });
+
+  if (disabled.questions && disabled.articles && disabled.links) {
+    return null;
+  }
 
   const handleRefresh = () => {
     retry();

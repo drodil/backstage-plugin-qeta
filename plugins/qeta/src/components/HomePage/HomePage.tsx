@@ -9,6 +9,7 @@ import {
   Timeline,
   CommunityActivityCard,
   FollowedItemsCard,
+  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Box, makeStyles } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -62,6 +63,12 @@ const useStyles = makeStyles(theme => ({
 export const HomePage = () => {
   const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
+
+  const showSuggestions =
+    !disabled.questions || !disabled.articles || !disabled.links;
+  const showFollowed =
+    !disabled.tags || !disabled.entities || !disabled.collections;
 
   return (
     <>
@@ -74,14 +81,20 @@ export const HomePage = () => {
         <CreateLinkButton />
       </ContentHeader>
 
-      <Box className={classes.flexRow}>
-        <Box className={classes.suggestionColumn}>
-          <SuggestionsCard />
+      {(showSuggestions || showFollowed) && (
+        <Box className={classes.flexRow}>
+          {showSuggestions && (
+            <Box className={classes.suggestionColumn}>
+              <SuggestionsCard />
+            </Box>
+          )}
+          {showFollowed && (
+            <Box className={classes.followedColumn}>
+              <FollowedItemsCard />
+            </Box>
+          )}
         </Box>
-        <Box className={classes.followedColumn}>
-          <FollowedItemsCard />
-        </Box>
-      </Box>
+      )}
 
       <Box className={classes.flexRow}>
         <Box className={classes.equalColumn}>

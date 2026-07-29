@@ -25,6 +25,12 @@ export interface Config {
      */
     entities?: {
       /**
+       * Disable entity pages and entity pickers.
+       *
+       * @visibility frontend
+       */
+      disabled?: boolean;
+      /**
        * Determine what kind of entities can be attached to posts.
        * For example [System, Component, API, Location, Template]. Default is [Component, System].
        *
@@ -50,6 +56,12 @@ export interface Config {
      * @visibility frontend
      */
     tags?: {
+      /**
+       * Disable tags pages and tag pickers.
+       *
+       * @visibility frontend
+       */
+      disabled?: boolean;
       /**
        * Allow creation of new tags. Default: true
        *
@@ -101,6 +113,58 @@ export interface Config {
      * @visibility frontend
      */
     moderators?: string[];
+    /**
+     * Questions specific configuration.
+     *
+     * @visibility frontend
+     */
+    questions?: {
+      /**
+       * Disable questions in the UI.
+       *
+       * @visibility frontend
+       */
+      disabled?: boolean;
+    };
+    /**
+     * Articles specific configuration.
+     *
+     * @visibility frontend
+     */
+    articles?: {
+      /**
+       * Disable articles in the UI.
+       *
+       * @visibility frontend
+       */
+      disabled?: boolean;
+    };
+    /**
+     * Links specific configuration.
+     *
+     * @visibility frontend
+     */
+    links?: {
+      /**
+       * Disable links in the UI.
+       *
+       * @visibility frontend
+       */
+      disabled?: boolean;
+    };
+    /**
+     * Collections specific configuration.
+     *
+     * @visibility frontend
+     */
+    collections?: {
+      /**
+       * Disable collections in the UI.
+       *
+       * @visibility frontend
+       */
+      disabled?: boolean;
+    };
     /**
      * If desire to disable image upload.
      * @visibility frontend

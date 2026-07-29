@@ -18,6 +18,7 @@ import {
   FaviconItem,
   qetaApiRef,
   FollowPostButton,
+  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -38,6 +39,7 @@ export const LinkPage = () => {
   const { id } = useParams();
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
   const dStyles = useDescriptionStyles();
   const [score, setScore] = useState(0);
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${id}`);
@@ -60,6 +62,10 @@ export const LinkPage = () => {
       setScore(lastSignal.score);
     }
   }, [lastSignal]);
+
+  if (disabled.links) {
+    return null;
+  }
 
   if (loading) {
     return <Skeleton variant="rect" height={200} />;

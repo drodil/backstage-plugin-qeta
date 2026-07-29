@@ -5,7 +5,7 @@ import {
   PostType,
   selectByPostType,
 } from '@drodil/backstage-plugin-qeta-common';
-import { useQetaApi } from '../../hooks';
+import { useQetaApi, useQetaConfig } from '../../hooks';
 import { Link } from 'react-router-dom';
 import { RightList, RightListContainer } from '../Utility/RightList';
 import { Box, ListItem, ListItemText, makeStyles } from '@material-ui/core';
@@ -207,6 +207,8 @@ export const PostHighlightList = (props: {
   postType?: PostType;
   hideIfEmpty?: boolean;
 }) => {
+  const { isPostTypeDisabled } = useQetaConfig();
+
   const {
     value: response,
     loading,
@@ -227,6 +229,10 @@ export const PostHighlightList = (props: {
       }),
     [],
   );
+
+  if (props.postType && isPostTypeDisabled(props.postType)) {
+    return null;
+  }
 
   const posts = response?.posts ?? [];
 

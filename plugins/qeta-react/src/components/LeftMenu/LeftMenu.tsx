@@ -47,6 +47,7 @@ import {
   usersRouteRef,
 } from '../../routes';
 import { useCanReview, useIdentityApi, useIsModerator } from '../../hooks';
+import { useQetaConfig } from '../../hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 
@@ -173,6 +174,7 @@ export const LeftMenu = (props: {
   const navigate = useNavigate();
   const { isModerator } = useIsModerator();
   const { canReview } = useCanReview();
+  const { disabled } = useQetaConfig();
   const app = useApp();
   const { compact = false, onToggle } = props;
   const {
@@ -251,41 +253,49 @@ export const LeftMenu = (props: {
         </ListItemIcon>
       </CustomMenuItem>
 
-      <li style={{ listStyle: 'none' }}>
-        <Typography className={styles.sectionHeader}>
-          {t('leftMenu.content')}
-        </Typography>
-      </li>
+      {(!disabled.questions || !disabled.articles || !disabled.links) && (
+        <li style={{ listStyle: 'none' }}>
+          <Typography className={styles.sectionHeader}>
+            {t('leftMenu.content')}
+          </Typography>
+        </li>
+      )}
 
-      <CustomMenuItem
-        route={questionsRoute()}
-        hasSubRoutes
-        label={t('leftMenu.questions')}
-      >
-        <ListItemIcon className={styles.menuIcon}>
-          <HelpOutline fontSize="small" />
-        </ListItemIcon>
-      </CustomMenuItem>
+      {!disabled.questions && (
+        <CustomMenuItem
+          route={questionsRoute()}
+          hasSubRoutes
+          label={t('leftMenu.questions')}
+        >
+          <ListItemIcon className={styles.menuIcon}>
+            <HelpOutline fontSize="small" />
+          </ListItemIcon>
+        </CustomMenuItem>
+      )}
 
-      <CustomMenuItem
-        route={articlesRoute()}
-        hasSubRoutes
-        label={t('leftMenu.articles')}
-      >
-        <ListItemIcon className={styles.menuIcon}>
-          <LibraryBooksOutlined fontSize="small" />
-        </ListItemIcon>
-      </CustomMenuItem>
+      {!disabled.articles && (
+        <CustomMenuItem
+          route={articlesRoute()}
+          hasSubRoutes
+          label={t('leftMenu.articles')}
+        >
+          <ListItemIcon className={styles.menuIcon}>
+            <LibraryBooksOutlined fontSize="small" />
+          </ListItemIcon>
+        </CustomMenuItem>
+      )}
 
-      <CustomMenuItem
-        route={linksRoute()}
-        hasSubRoutes
-        label={t('leftMenu.links')}
-      >
-        <ListItemIcon className={styles.menuIcon}>
-          <LinkIcon fontSize="small" />
-        </ListItemIcon>
-      </CustomMenuItem>
+      {!disabled.links && (
+        <CustomMenuItem
+          route={linksRoute()}
+          hasSubRoutes
+          label={t('leftMenu.links')}
+        >
+          <ListItemIcon className={styles.menuIcon}>
+            <LinkIcon fontSize="small" />
+          </ListItemIcon>
+        </CustomMenuItem>
+      )}
 
       <CustomMenuItem
         route={favoritesRoute()}
@@ -296,41 +306,49 @@ export const LeftMenu = (props: {
         </ListItemIcon>
       </CustomMenuItem>
 
-      <CustomMenuItem
-        route={entitiesRoute()}
-        hasSubRoutes
-        label={t('leftMenu.entities')}
-      >
-        <ListItemIcon className={styles.menuIcon}>
-          <EntityIcon fontSize="small" />
-        </ListItemIcon>
-      </CustomMenuItem>
+      {!disabled.entities && (
+        <CustomMenuItem
+          route={entitiesRoute()}
+          hasSubRoutes
+          label={t('leftMenu.entities')}
+        >
+          <ListItemIcon className={styles.menuIcon}>
+            <EntityIcon fontSize="small" />
+          </ListItemIcon>
+        </CustomMenuItem>
+      )}
 
-      <CustomMenuItem
-        route={tagsRoute()}
-        hasSubRoutes
-        label={t('leftMenu.tags')}
-      >
-        <ListItemIcon className={styles.menuIcon}>
-          <LocalOfferOutlined fontSize="small" />
-        </ListItemIcon>
-      </CustomMenuItem>
+      {!disabled.tags && (
+        <CustomMenuItem
+          route={tagsRoute()}
+          hasSubRoutes
+          label={t('leftMenu.tags')}
+        >
+          <ListItemIcon className={styles.menuIcon}>
+            <LocalOfferOutlined fontSize="small" />
+          </ListItemIcon>
+        </CustomMenuItem>
+      )}
 
-      <li style={{ listStyle: 'none' }}>
-        <Typography className={styles.sectionHeader}>
-          {t('leftMenu.community')}
-        </Typography>
-      </li>
+      {!disabled.collections && (
+        <li style={{ listStyle: 'none' }}>
+          <Typography className={styles.sectionHeader}>
+            {t('leftMenu.community')}
+          </Typography>
+        </li>
+      )}
 
-      <CustomMenuItem
-        route={collectionsRoute()}
-        hasSubRoutes
-        label={t('leftMenu.collections')}
-      >
-        <ListItemIcon className={styles.menuIcon}>
-          <PlaylistPlayOutlined fontSize="small" />
-        </ListItemIcon>
-      </CustomMenuItem>
+      {!disabled.collections && (
+        <CustomMenuItem
+          route={collectionsRoute()}
+          hasSubRoutes
+          label={t('leftMenu.collections')}
+        >
+          <ListItemIcon className={styles.menuIcon}>
+            <PlaylistPlayOutlined fontSize="small" />
+          </ListItemIcon>
+        </CustomMenuItem>
+      )}
 
       <CustomMenuItem route={usersRoute()} label={t('leftMenu.users')}>
         <ListItemIcon className={styles.menuIcon}>

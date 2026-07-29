@@ -1,6 +1,6 @@
 import { getCreated, mapAdditionalFields } from '../util';
 import Ajv from 'ajv';
-import { Router } from 'express';
+import { Response, Router } from 'express';
 import {
   CollectionsQuery,
   qetaCreateCollectionPermission,
@@ -25,7 +25,16 @@ const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
 
 export const collectionsRoutes = (router: Router, options: RouteOptions) => {
-  const { database, events, notificationMgr, auditor, permissionMgr } = options;
+  const { database, events, notificationMgr, auditor, permissionMgr, config } =
+    options;
+  const collectionsDisabled =
+    config.getOptionalBoolean('qeta.collections.disabled') ?? false;
+
+  const rejectDisabledCollections = (response: Response) => {
+    response
+      .status(403)
+      .send({ errors: 'Collections are disabled', type: 'body' });
+  };
 
   const notifyAutomaticPostAdditions = async (
     collectionId: number,
@@ -52,6 +61,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
   // GET /collections
   router.get(`/collections`, async (request, response) => {
+    if (collectionsDisabled) {
+      response.json({ collections: [], total: 0 });
+      return;
+    }
+
     // Validation
     const username = await permissionMgr.getUsername(request, true);
     const validateQuery = ajv.compile(CollectionsQuerySchema);
@@ -106,6 +120,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.post(`/collections/query`, async (request, response) => {
+    if (collectionsDisabled) {
+      response.json({ collections: [], total: 0 });
+      return;
+    }
+
     // Validation
     const username = await permissionMgr.getUsername(request, true);
     const validateQuery = ajv.compile(CollectionsQuerySchema);
@@ -160,6 +179,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
   // POST /collections
   router.post(`/collections`, async (request, response) => {
+    if (collectionsDisabled) {
+      rejectDisabledCollections(response);
+      return;
+    }
+
     // Validation
     const validateRequestBody = ajv.compile(CollectionSchema);
     if (!validateRequestBody(request.body)) {
@@ -235,6 +259,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
   // POST /collections/:id
   router.post(`/collections/:id`, async (request, response) => {
+    if (collectionsDisabled) {
+      rejectDisabledCollections(response);
+      return;
+    }
+
     // Validation
     const validateRequestBody = ajv.compile(CollectionSchema);
     if (!validateRequestBody(request.body)) {
@@ -337,6 +366,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
   // DELETE /collections/:id
   router.delete('/collections/:id', async (request, response) => {
+    if (collectionsDisabled) {
+      rejectDisabledCollections(response);
+      return;
+    }
+
     // Validation
     const collectionId = Number.parseInt(request.params.id, 10);
     const validateRequestBody = ajv.compile(DeleteMetadataSchema);
@@ -400,6 +434,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/collections/followed', async (request, response) => {
+    if (collectionsDisabled) {
+      response.json({ collections: [], count: 0 });
+      return;
+    }
+
     const username = await permissionMgr.getUsername(request, false);
     const [postFilters, filters, tagFilters] = await Promise.all([
       permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
@@ -424,6 +463,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.put('/collections/follow/:id', async (request, response) => {
+    if (collectionsDisabled) {
+      rejectDisabledCollections(response);
+      return;
+    }
+
     const { id } = request.params;
     const collectionId = Number.parseInt(id, 10);
     if (Number.isNaN(collectionId)) {
@@ -457,6 +501,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.delete('/collections/follow/:id', async (request, response) => {
+    if (collectionsDisabled) {
+      rejectDisabledCollections(response);
+      return;
+    }
+
     const { id } = request.params;
     const collectionId = Number.parseInt(id, 10);
     if (Number.isNaN(collectionId)) {
@@ -491,6 +540,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
   // GET /collections/:id
   router.get(`/collections/:id`, async (request, response) => {
+    if (collectionsDisabled) {
+      response.sendStatus(404);
+      return;
+    }
+
     // Validation
     // Act
     const username = await permissionMgr.getUsername(request);
@@ -543,6 +597,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
   // POST /collections/:id
   router.post(`/collections/:id/posts`, async (request, response) => {
+    if (collectionsDisabled) {
+      rejectDisabledCollections(response);
+      return;
+    }
+
     // Validation
     const validateRequestBody = ajv.compile(CollectionPostSchema);
     if (!validateRequestBody(request.body)) {
@@ -645,6 +704,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
 
   // DELETE /collections/:id/posts
   router.delete(`/collections/:id/posts`, async (request, response) => {
+    if (collectionsDisabled) {
+      rejectDisabledCollections(response);
+      return;
+    }
+
     // Validation
     const validateRequestBody = ajv.compile(CollectionPostSchema);
     if (!validateRequestBody(request.body)) {
@@ -733,6 +797,11 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.post('/collections/:id/rank/', async (request, response) => {
+    if (collectionsDisabled) {
+      rejectDisabledCollections(response);
+      return;
+    }
+
     const validateRequestBody = ajv.compile(CollectionRankPostSchema);
     if (!validateRequestBody(request.body)) {
       response

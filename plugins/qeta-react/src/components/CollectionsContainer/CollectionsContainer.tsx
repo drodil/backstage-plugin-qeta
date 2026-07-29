@@ -6,6 +6,7 @@ import { CollectionsGridItem } from './CollectionsGridItem';
 import { CollectionListItem } from './CollectionListItem';
 import { QetaEntityContainer } from '../QetaEntityContainer/QetaEntityContainer';
 import { ViewType } from '../ViewToggle/ViewToggle';
+import { useQetaConfig } from '../../hooks';
 
 export const CollectionsContainer = (props: {
   filterPanelProps?: CommonFilterPanelProps;
@@ -15,6 +16,11 @@ export const CollectionsContainer = (props: {
 }) => {
   const { filterPanelProps, defaultView, owner, prefix } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
+
+  if (disabled.collections) {
+    return null;
+  }
 
   return (
     <QetaEntityContainer<CollectionResponse, any>

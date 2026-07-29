@@ -6,6 +6,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { ContentHeaderButton } from './ContentHeaderButton';
+import { useQetaConfig } from '../../hooks';
 
 export const CreateLinkButton = (props: {
   entity?: string;
@@ -15,6 +16,11 @@ export const CreateLinkButton = (props: {
   const { entity, entityPage, tags } = props;
   const linkRoute = useRouteRef(createLinkRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
+
+  if (disabled.links) {
+    return null;
+  }
 
   const params = new URLSearchParams();
   if (entity) {

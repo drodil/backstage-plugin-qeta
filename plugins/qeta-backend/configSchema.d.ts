@@ -73,6 +73,12 @@ export interface Config {
      */
     entities?: {
       /**
+       * Disable entities in the API.
+       *
+       * @visibility backend
+       */
+      disabled?: boolean;
+      /**
        * Maximum entities to attach to questions.
        *
        * @visibility frontend
@@ -85,6 +91,12 @@ export interface Config {
      * @visibility backend
      */
     tags?: {
+      /**
+       * Disable tags in the API.
+       *
+       * @visibility backend
+       */
+      disabled?: boolean;
       /**
        * Allow creation of new tags. Default: true
        *
@@ -130,6 +142,58 @@ export interface Config {
      * @visibility frontend
      */
     moderators?: string[];
+    /**
+     * Questions specific configuration.
+     *
+     * @visibility backend
+     */
+    questions?: {
+      /**
+       * Disable questions in the API.
+       *
+       * @visibility backend
+       */
+      disabled?: boolean;
+    };
+    /**
+     * Articles specific configuration.
+     *
+     * @visibility backend
+     */
+    articles?: {
+      /**
+       * Disable articles in the API.
+       *
+       * @visibility backend
+       */
+      disabled?: boolean;
+    };
+    /**
+     * Links specific configuration.
+     *
+     * @visibility backend
+     */
+    links?: {
+      /**
+       * Disable links in the API.
+       *
+       * @visibility backend
+       */
+      disabled?: boolean;
+    };
+    /**
+     * Collections specific configuration.
+     *
+     * @visibility backend
+     */
+    collections?: {
+      /**
+       * Disable collections in the API.
+       *
+       * @visibility backend
+       */
+      disabled?: boolean;
+    };
     /**
      * Configuration about images attachments storage
      *

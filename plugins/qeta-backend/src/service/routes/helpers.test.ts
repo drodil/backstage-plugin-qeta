@@ -26,6 +26,49 @@ describe('Helpers Routes', () => {
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({ users: [], total: 0 });
       });
+
+      it('zeros disabled content counters in user rows', async () => {
+        const { app: disabledApp, qetaStore: disabledStore } =
+          await setupTestApp({
+            qeta: {
+              questions: { disabled: true },
+              articles: { disabled: true },
+              links: { disabled: true },
+            },
+          });
+        disabledStore.getUsers.mockResolvedValue({
+          users: [
+            {
+              userRef: 'user:default/test',
+              totalViews: 10,
+              totalQuestions: 3,
+              totalAnswers: 4,
+              totalComments: 5,
+              totalVotes: 6,
+              totalArticles: 7,
+              totalLinks: 8,
+              reputation: 9,
+              totalFollowers: 1,
+              postScore: 2,
+              answerScore: 3,
+              correctAnswers: 1,
+            },
+          ],
+          total: 1,
+        });
+
+        const response = await request(disabledApp).get('/users');
+
+        expect(response.status).toEqual(200);
+        expect(response.body.users[0]).toEqual(
+          expect.objectContaining({
+            totalQuestions: 0,
+            totalAnswers: 0,
+            totalArticles: 0,
+            totalLinks: 0,
+          }),
+        );
+      });
     });
 
     describe('GET /users/followed', () => {
@@ -80,6 +123,19 @@ describe('Helpers Routes', () => {
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({ tags: [], total: 0 });
       });
+
+      it('returns empty response when tags are disabled', async () => {
+        const { app: disabledApp, qetaStore: disabledStore } =
+          await setupTestApp({
+            qeta: { tags: { disabled: true } },
+          });
+
+        const response = await request(disabledApp).get('/tags');
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({ tags: [], total: 0 });
+        expect(disabledStore.getTags).not.toHaveBeenCalled();
+      });
     });
 
     describe('GET /tags/followed', () => {
@@ -100,6 +156,20 @@ describe('Helpers Routes', () => {
         const response = await request(app).put('/tags/follow/test-tag');
 
         expect(response.status).toEqual(204);
+      });
+
+      it('returns 403 when tags are disabled', async () => {
+        const { app: disabledApp, qetaStore: disabledStore } =
+          await setupTestApp({
+            qeta: { tags: { disabled: true } },
+          });
+
+        const response = await request(disabledApp).put(
+          '/tags/follow/test-tag',
+        );
+
+        expect(response.status).toEqual(403);
+        expect(disabledStore.followTag).not.toHaveBeenCalled();
       });
     });
 
@@ -238,6 +308,19 @@ describe('Helpers Routes', () => {
 
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({ entities: [], total: 0 });
+      });
+
+      it('returns empty response when entities are disabled', async () => {
+        const { app: disabledApp, qetaStore: disabledStore } =
+          await setupTestApp({
+            qeta: { entities: { disabled: true } },
+          });
+
+        const response = await request(disabledApp).get('/entities');
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({ entities: [], total: 0 });
+        expect(disabledStore.getEntities).not.toHaveBeenCalled();
       });
     });
 

@@ -1,5 +1,5 @@
 import numeral from 'numeral';
-import { useIdentityApi, useQetaApi } from '../../hooks';
+import { useIdentityApi, useQetaApi, useQetaConfig } from '../../hooks';
 import {
   Box,
   Card,
@@ -114,6 +114,7 @@ const useStyles = makeStyles(theme => ({
 export const ImpactCard = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useStyles();
+  const { disabled } = useQetaConfig();
   const { value: user, loading: userLoading } = useIdentityApi(
     api => api.getBackstageIdentity(),
     [],
@@ -180,36 +181,51 @@ export const ImpactCard = () => {
       return num >= 1000 ? numeral(num).format('0.0a') : num;
     };
 
+    const totalContributions = [
+      !disabled.questions ? stats.summary.totalQuestions : 0,
+      !disabled.questions ? stats.summary.totalAnswers : 0,
+      !disabled.articles ? stats.summary.totalArticles : 0,
+      !disabled.links ? stats.summary.totalLinks : 0,
+    ].reduce((sum, value) => sum + value, 0);
+
     const statItems = [
       {
         icon: TrendingUp,
-        value:
-          stats.summary.totalQuestions +
-          stats.summary.totalAnswers +
-          stats.summary.totalArticles +
-          stats.summary.totalLinks,
+        value: totalContributions,
         label: t('impactCard.totalContributions'),
       },
-      {
-        icon: HelpOutline,
-        value: stats.summary.totalQuestions,
-        label: t('impactCard.questions'),
-      },
-      {
-        icon: QuestionAnswer,
-        value: stats.summary.totalAnswers,
-        label: t('impactCard.answers'),
-      },
-      {
-        icon: DescriptionIcon,
-        value: stats.summary.totalArticles,
-        label: t('impactCard.articles'),
-      },
-      {
-        icon: LinkIcon,
-        value: stats.summary.totalLinks,
-        label: t('impactCard.links'),
-      },
+      ...(!disabled.questions
+        ? [
+            {
+              icon: HelpOutline,
+              value: stats.summary.totalQuestions,
+              label: t('impactCard.questions'),
+            },
+            {
+              icon: QuestionAnswer,
+              value: stats.summary.totalAnswers,
+              label: t('impactCard.answers'),
+            },
+          ]
+        : []),
+      ...(!disabled.articles
+        ? [
+            {
+              icon: DescriptionIcon,
+              value: stats.summary.totalArticles,
+              label: t('impactCard.articles'),
+            },
+          ]
+        : []),
+      ...(!disabled.links
+        ? [
+            {
+              icon: LinkIcon,
+              value: stats.summary.totalLinks,
+              label: t('impactCard.links'),
+            },
+          ]
+        : []),
       {
         icon: ThumbUp,
         value: stats.summary.totalVotes,

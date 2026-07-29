@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   Grid,
+  GridSize,
   makeStyles,
   Tooltip,
   Typography,
@@ -23,6 +24,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
 import { ClickableLink } from '../Utility/ClickableLink';
+import { useQetaConfig } from '../../hooks';
 
 const useStyles = makeStyles(theme => ({
   statsGrid: {
@@ -47,11 +49,20 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
   const localClasses = useStyles();
   const entityRoute = useRouteRef(entityRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
   const compound = parseEntityRef(entity.entityRef);
   const { primaryTitle, Icon, secondaryTitle } =
     useEntityPresentation(compound);
 
   const href = entityRoute({ entityRef: entity.entityRef });
+
+  const enabledStatsCount = [
+    !disabled.questions,
+    !disabled.articles,
+    !disabled.links,
+    true,
+  ].filter(Boolean).length;
+  const statXs = Math.floor(12 / enabledStatsCount) as GridSize;
 
   return (
     <Card className={classes.card}>
@@ -83,55 +94,61 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
           className={`${classes.cardContent} ${localClasses.flexColumn}`}
         >
           <Grid container spacing={1} className={localClasses.statsGrid}>
-            <Grid item xs={3}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                className={localClasses.statItem}
-              >
-                <QuestionAnswerIcon fontSize="small" color="disabled" />
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
-                  {entity.questionsCount}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                  {t('stats.questions', {})}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={3}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                className={localClasses.statItem}
-              >
-                <DescriptionIcon fontSize="small" color="disabled" />
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
-                  {entity.articlesCount}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                  {t('stats.articles', {})}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={3}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                className={localClasses.statItem}
-              >
-                <LinkIcon fontSize="small" color="disabled" />
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
-                  {entity.linksCount}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                  {t('stats.links', {})}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={3}>
+            {!disabled.questions && (
+              <Grid item xs={statXs}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  className={localClasses.statItem}
+                >
+                  <QuestionAnswerIcon fontSize="small" color="disabled" />
+                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+                    {entity.questionsCount}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {t('stats.questions', {})}
+                  </Typography>
+                </Box>
+              </Grid>
+            )}
+            {!disabled.articles && (
+              <Grid item xs={statXs}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  className={localClasses.statItem}
+                >
+                  <DescriptionIcon fontSize="small" color="disabled" />
+                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+                    {entity.articlesCount}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {t('stats.articles', {})}
+                  </Typography>
+                </Box>
+              </Grid>
+            )}
+            {!disabled.links && (
+              <Grid item xs={statXs}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  className={localClasses.statItem}
+                >
+                  <LinkIcon fontSize="small" color="disabled" />
+                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+                    {entity.linksCount}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {t('stats.links', {})}
+                  </Typography>
+                </Box>
+              </Grid>
+            )}
+            <Grid item xs={statXs}>
               <Box
                 display="flex"
                 flexDirection="column"

@@ -16,3 +16,4 @@ export * from './useQetaEntities';
 export * from './useUserSettings';
 export * from './useFavicon';
 export * from './useHistoryEnabled';
+export * from './useQetaConfig';
