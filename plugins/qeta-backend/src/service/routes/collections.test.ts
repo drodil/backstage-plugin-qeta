@@ -1,5 +1,7 @@
 import request from 'supertest';
 import express from 'express';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { qetaReadTagPermission } from '@drodil/backstage-plugin-qeta-common';
 import {
   setupTestApp,
   question,
@@ -11,11 +13,13 @@ import { QetaStore } from '../../database/QetaStore';
 describe('Collections Routes', () => {
   let app: express.Express;
   let qetaStore: jest.Mocked<QetaStore>;
+  let mockedPermissionQuery: any;
 
   beforeEach(async () => {
     const setup = await setupTestApp();
     app = setup.app;
     qetaStore = setup.qetaStore;
+    mockedPermissionQuery = setup.mockedPermissionQuery;
   });
 
   describe('GET /collections', () => {
@@ -29,6 +33,43 @@ describe('Collections Routes', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ collections: [], total: 0 });
+    });
+
+    it('returns collections when tag read permission is fully denied', async () => {
+      qetaStore.getCollections.mockImplementation(
+        async (_u, _opts, options) => {
+          return {
+            collections: [
+              options?.tagFilters
+                ? { ...collection, tags: [] }
+                : { ...collection, tags: ['tag-a'] },
+            ],
+            total: 1,
+          };
+        },
+      );
+      mockedPermissionQuery.mockImplementation(async (requests: any[]) => {
+        return requests.map((req: any) =>
+          req.permission.name === qetaReadTagPermission.name
+            ? { result: AuthorizeResult.DENY }
+            : { result: AuthorizeResult.ALLOW },
+        );
+      });
+
+      const response = await request(app).get('/collections');
+
+      expect(response.status).toEqual(200);
+      expect(qetaStore.getCollections).toHaveBeenCalledWith(
+        'user:default/mock',
+        expect.anything(),
+        expect.objectContaining({
+          tagFilters: {
+            property: 'tags.tag',
+            values: [],
+          },
+        }),
+      );
+      expect(response.body.collections[0].tags).toEqual([]);
     });
   });
 

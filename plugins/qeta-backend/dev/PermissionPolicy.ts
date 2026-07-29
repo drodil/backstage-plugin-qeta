@@ -103,6 +103,11 @@ export class PermissionPolicy implements PermissionPolicy {
       request.permission.attributes.action === 'create' ||
       request.permission.attributes.action === 'read'
     ) {
+      // See: https://github.com/drodil/backstage-plugin-qeta/issues/425
+      // if (isPermission(request.permission, qetaReadTagPermission)) {
+      // return { result: AuthorizeResult.DENY };
+      // }
+
       // Testing so that only own posts can be seen
       /**
        if (
