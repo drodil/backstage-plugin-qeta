@@ -194,7 +194,6 @@ export const PostForm = (props: PostFormProps) => {
     watch,
     formState: { errors, isSubmitting, isValid, isDirty },
   } = useForm<QuestionFormValues>({
-    values,
     defaultValues: getDefaultValues(props),
   });
 
@@ -422,8 +421,10 @@ export const PostForm = (props: PostFormProps) => {
   }, [authorValue, identity]);
 
   useEffect(() => {
-    reset(values);
-  }, [values, reset]);
+    if (!isDirty) {
+      reset(values);
+    }
+  }, [values, reset, isDirty]);
 
   const onImageUpload = useCallback(
     (imageId: number) => {

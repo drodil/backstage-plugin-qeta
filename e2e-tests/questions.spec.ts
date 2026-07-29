@@ -12,6 +12,33 @@ test.describe.serial('Questions - Form Flow', () => {
     await loginAsGuest(page);
   });
 
+  test('keeps typed title while async initialization resolves', async ({
+    page,
+  }) => {
+    let catalogCalls = 0;
+    await page.route('**/api/catalog/**', async route => {
+      catalogCalls += 1;
+      // Delay catalog responses to force async value updates after user typing.
+      await page.waitForTimeout(1200);
+      await route.continue();
+    });
+
+    await page.goto('/qeta/questions/ask');
+
+    const typedTitle = `${faker.lorem.sentence()} ${faker.string.uuid()}`;
+    const titleInput = page.locator('input[name="title"]');
+    await expect(titleInput).toBeVisible();
+    await titleInput.type(typedTitle, { delay: 5 });
+    await expect(titleInput).toHaveValue(typedTitle);
+
+    await expect
+      .poll(() => catalogCalls, { timeout: 10000 })
+      .toBeGreaterThanOrEqual(1);
+
+    await page.waitForTimeout(1500);
+    await expect(titleInput).toHaveValue(typedTitle);
+  });
+
   test('post a new question', async ({ page }) => {
     await page.goto('/qeta/questions/ask');
     await page.waitForLoadState('networkidle');
