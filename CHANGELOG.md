@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.60.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.10...v3.60.0) (2026-07-29)
+
+
+### Features
+
+* allow disabling post types, collections, tags and entities ([23bd154](https://github.com/drodil/backstage-plugin-qeta/commit/23bd1545ed49dc7f1a3e4f1eb375b2cb76c79d83)), closes [#412](https://github.com/drodil/backstage-plugin-qeta/issues/412)
+
+
+### Bug Fixes
+
+* post visibility when tags are denied ([362508a](https://github.com/drodil/backstage-plugin-qeta/commit/362508af29395ac444aba0554667881bb756bb4c)), closes [#425](https://github.com/drodil/backstage-plugin-qeta/issues/425)
+* race condition in post form input ([22f7c34](https://github.com/drodil/backstage-plugin-qeta/commit/22f7c34c5791f8bce2b08e3f0dccf38a1c6bc2cc)), closes [#429](https://github.com/drodil/backstage-plugin-qeta/issues/429)
+
 ### [3.59.10](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.9...v3.59.10) (2026-07-29)
 
 
