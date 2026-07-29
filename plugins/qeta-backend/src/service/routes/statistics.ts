@@ -10,6 +10,26 @@ import { RouteOptions } from '../types';
 
 export const statisticRoutes = (router: Router, options: RouteOptions) => {
   const { database, permissionMgr } = options;
+  const questionsDisabled =
+    options.config.getOptionalBoolean('qeta.questions.disabled') ?? false;
+  const articlesDisabled =
+    options.config.getOptionalBoolean('qeta.articles.disabled') ?? false;
+  const linksDisabled =
+    options.config.getOptionalBoolean('qeta.links.disabled') ?? false;
+  const tagsDisabled =
+    options.config.getOptionalBoolean('qeta.tags.disabled') ?? false;
+
+  const applyDisabledStatFields = <T extends object>(stat: T): T => {
+    return {
+      ...stat,
+      ...(questionsDisabled
+        ? { totalQuestions: 0, totalAnswers: 0, correctAnswers: 0 }
+        : {}),
+      ...(articlesDisabled ? { totalArticles: 0 } : {}),
+      ...(linksDisabled ? { totalLinks: 0 } : {}),
+      ...(tagsDisabled ? { totalTags: 0 } : {}),
+    } as T;
+  };
 
   const getSummary = async (user_ref?: string) => {
     const results = await Promise.all([
@@ -27,7 +47,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       database.getCount('posts', { author: user_ref, type: 'link' }),
       !user_ref ? database.getCommunityActivity('1d') : undefined,
     ]);
-    return {
+    return applyDisabledStatFields({
       totalQuestions: results[0],
       totalAnswers: results[1],
       totalViews: results[2],
@@ -38,7 +58,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       totalTags: results[8],
       totalLinks: results[9],
       activeUsers: results[10]?.activeUsers ?? 0,
-    };
+    });
   };
 
   router.get('/statistics/user/impact', async (request, response) => {
@@ -94,17 +114,19 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
         const statistics = globalStats.map(g => {
           const d = new Date(g.date);
           if (d.toDateString() !== new Date().toDateString()) {
-            return g;
+            return applyDisabledStatFields(g);
           }
           todayStatsAdded = true;
-          return {
+          return applyDisabledStatFields({
             date: d,
             ...summary!,
-          };
+          });
         });
 
         if (!todayStatsAdded) {
-          statistics.push({ date: new Date(), ...summary! });
+          statistics.push(
+            applyDisabledStatFields({ date: new Date(), ...summary! }),
+          );
         }
         return { statistics, summary };
       },
@@ -116,6 +138,9 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   router.get('/statistics/activity', async (req, response) => {
     const period = (req.query.period as string) || '3600'; // Default 1 hour
     const activity = await database.getCommunityActivity(period);
+    if (questionsDisabled) {
+      activity.answers = 0;
+    }
     return response.json(activity);
   });
 
@@ -135,13 +160,13 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
         const statistics = userStats.map(g => {
           const d = new Date(g.date);
           if (!summary || d.toDateString() !== new Date().toDateString()) {
-            return g;
+            return applyDisabledStatFields(g);
           }
           todayStatsAdded = true;
-          return {
+          return applyDisabledStatFields({
             date: d,
             ...summary,
-          };
+          });
         });
 
         if (!todayStatsAdded) {
@@ -164,10 +189,15 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
           }
 
           if (userStats.length === 0) {
-            statistics.push({ date: new Date(), ...summary });
+            statistics.push(
+              applyDisabledStatFields({ date: new Date(), ...summary }),
+            );
           }
         }
-        return { statistics, summary };
+        return {
+          statistics,
+          summary: summary ? applyDisabledStatFields(summary) : summary,
+        };
       },
       options.logger,
     );

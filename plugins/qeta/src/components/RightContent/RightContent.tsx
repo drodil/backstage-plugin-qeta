@@ -19,6 +19,7 @@ import {
   tagRouteRef,
   tagsRouteRef,
   userRouteRef,
+  useQetaConfig,
   usersRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Box, IconButton, makeStyles, Tooltip } from '@material-ui/core';
@@ -71,6 +72,7 @@ export const RightContent = (props: {
   onToggle?: () => void;
 }) => {
   const { compact = false, onToggle } = props;
+  const { disabled } = useQetaConfig();
   const classes = useStyles({ compact });
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -220,27 +222,27 @@ export const RightContent = (props: {
       articleMatch?.params.id ||
       linkMatch?.params.id;
     content = <PostRightContent id={id} />;
-  } else if (isQuestions) {
+  } else if (isQuestions && !disabled.questions) {
     content = <QuestionsRightContent tags={tags} entityRef={entityRef} />;
-  } else if (isArticles) {
+  } else if (isArticles && !disabled.articles) {
     content = <ArticlesRightContent tags={tags} entityRef={entityRef} />;
-  } else if (isLinks) {
+  } else if (isLinks && !disabled.links) {
     content = <LinksRightContent tags={tags} entityRef={entityRef} />;
   } else if (isFavorite) {
     content = <FavoriteRightContent />;
   } else if (isUsers) {
     content = <UsersRightContent />;
-  } else if (tagMatch) {
+  } else if (tagMatch && !disabled.tags) {
     content = <TagRightContent tags={tags} />;
   } else if (userMatch && userRef) {
     content = null;
-  } else if (isTags) {
+  } else if (isTags && !disabled.tags) {
     content = <TagsRightContent />;
-  } else if (isEntities) {
+  } else if (isEntities && !disabled.entities) {
     content = <EntitiesRightContent />;
-  } else if (entityMatch && entityRef) {
+  } else if (entityMatch && entityRef && !disabled.entities) {
     content = <EntityRightContent entityRef={entityRef} />;
-  } else if (isCollections) {
+  } else if (isCollections && !disabled.collections) {
     content = <CollectionsRightContent />;
   }
 

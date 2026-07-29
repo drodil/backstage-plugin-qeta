@@ -7,6 +7,7 @@ import {
   qetaTranslationRef,
   useQetaApi,
   PostsContainer,
+  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Skeleton } from '@material-ui/lab';
 import { WarningPanel } from '@backstage/core-components';
@@ -25,6 +26,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 export const CollectionPage = () => {
   const { id } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
   const navigate = useNavigate();
   const editCollectionRoute = useRouteRef(collectionEditRouteRef);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -36,6 +38,10 @@ export const CollectionPage = () => {
     loading,
     error,
   } = useQetaApi(api => api.getCollection(id), [id]);
+
+  if (disabled.collections) {
+    return null;
+  }
 
   if (loading) {
     return <Skeleton variant="rect" height={200} />;

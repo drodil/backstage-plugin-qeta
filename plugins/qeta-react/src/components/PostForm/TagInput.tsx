@@ -31,6 +31,7 @@ import { AutocompleteListboxComponent } from './AutocompleteListComponent';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { useDebounce } from 'react-use';
+import { useQetaConfig } from '../../hooks';
 
 const TAG_SEARCH_LIMIT = 25;
 
@@ -198,6 +199,7 @@ export const TagInput = forwardRef<
     Map<string, { tags: string[]; descriptions: Record<string, string> }>
   >(new Map());
   const activeRequest = useRef(0);
+  const qetaConfig = useQetaConfig();
 
   useEffect(() => {
     if (allowCreate !== undefined) {
@@ -326,6 +328,10 @@ export const TagInput = forwardRef<
     300,
     [inputValue, loadTags],
   );
+
+  if (qetaConfig.disabled.tags) {
+    return null;
+  }
 
   if (allowCreation === false && !loading && availableTags.length === 0) {
     return null;

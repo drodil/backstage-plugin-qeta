@@ -15,6 +15,7 @@ import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission'
 import { CreateTagModal } from './CreateTagModal';
 import { QetaEntityContainer } from '../QetaEntityContainer/QetaEntityContainer';
 import { ViewType } from '../ViewToggle/ViewToggle';
+import { useQetaConfig } from '../../hooks';
 
 export const TagsContainer = (props: {
   filterPanelProps?: CommonFilterPanelProps;
@@ -22,6 +23,7 @@ export const TagsContainer = (props: {
 }) => {
   const { filterPanelProps, defaultView } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
   const { isModerator } = useIsModerator();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const handleCreateModalOpen = () => setCreateModalOpen(true);
@@ -30,6 +32,10 @@ export const TagsContainer = (props: {
     setCreateModalOpen(false);
     retry();
   };
+
+  if (disabled.tags) {
+    return null;
+  }
 
   return (
     <QetaEntityContainer<TagResponse, TagFilters>

@@ -132,6 +132,7 @@ describe('EntitiesInput', () => {
   const mockConfigApi = {
     getOptionalStringArray: jest.fn().mockReturnValue(undefined),
     getOptionalNumber: jest.fn().mockReturnValue(undefined),
+    getOptionalBoolean: jest.fn().mockReturnValue(false),
   };
 
   beforeEach(() => {
@@ -174,6 +175,7 @@ describe('EntitiesInput', () => {
     jest.clearAllMocks();
     mockConfigApi.getOptionalStringArray.mockReturnValue(undefined);
     mockConfigApi.getOptionalNumber.mockReturnValue(undefined);
+    mockConfigApi.getOptionalBoolean.mockReturnValue(false);
 
     mockQetaApi.getEntities.mockResolvedValue({
       entities: [{ entityRef: 'component:default/test-service' }],

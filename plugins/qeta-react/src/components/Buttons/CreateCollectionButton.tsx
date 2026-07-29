@@ -6,10 +6,16 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { ContentHeaderButton } from './ContentHeaderButton';
+import { useQetaConfig } from '../../hooks';
 
 export const CreateCollectionButton = () => {
   const createRoute = useRouteRef(collectionCreateRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
+
+  if (disabled.collections) {
+    return null;
+  }
 
   return (
     <OptionalRequirePermission

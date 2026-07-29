@@ -10,6 +10,7 @@ import {
   ContentHeader,
   PostHistoryButton,
   qetaTranslationRef,
+  useQetaConfig,
   useQetaApi,
   WriteArticleButton,
   FollowPostButton,
@@ -22,6 +23,7 @@ import LibraryBooksOutlined from '@material-ui/icons/LibraryBooksOutlined';
 export const ArticlePage = () => {
   const { id } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
 
   const [views, setViews] = useState(0);
 
@@ -45,6 +47,10 @@ export const ArticlePage = () => {
       setViews(lastSignal.views);
     }
   }, [lastSignal]);
+
+  if (disabled.articles) {
+    return null;
+  }
 
   if (loading) {
     return <Skeleton variant="rect" height={200} />;

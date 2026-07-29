@@ -8,6 +8,7 @@ import { entityRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { EntityTooltip } from '../Tooltips';
+import { useQetaConfig } from '../../hooks';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -80,8 +81,9 @@ const FollowedEntityItem = ({ entityRef }: { entityRef: string }) => {
 export const FollowedEntitiesList = () => {
   const entities = useEntityFollow();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
 
-  if (entities.entities.length === 0 || entities.loading) {
+  if (disabled.entities || entities.entities.length === 0 || entities.loading) {
     return null;
   }
 

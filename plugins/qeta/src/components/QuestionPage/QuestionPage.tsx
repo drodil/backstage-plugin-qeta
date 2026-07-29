@@ -16,6 +16,7 @@ import {
   qetaTranslationRef,
   QuestionCard,
   RelativeTimeWithTooltip,
+  useQetaConfig,
   UpdatedByLink,
   useQetaApi,
   FollowPostButton,
@@ -54,6 +55,7 @@ const useDescriptionStyles = makeStyles(
 export const QuestionPage = () => {
   const { id } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
   const [answers, setAnswers] = useState<AnswerResponse[]>([]);
   const [newAnswers, setNewAnswers] = useState<AnswerResponse[]>([]);
   const [answerSort, setAnswerSort] = useState<string>('default');
@@ -165,6 +167,10 @@ export const QuestionPage = () => {
       </span>
     );
   };
+
+  if (disabled.questions) {
+    return null;
+  }
 
   if (loading) {
     return (

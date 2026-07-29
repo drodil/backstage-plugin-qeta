@@ -3,6 +3,7 @@ import { ContentHeader, InfoCard } from '@backstage/core-components';
 import {
   CollectionForm,
   qetaTranslationRef,
+  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Grid } from '@material-ui/core';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -10,6 +11,11 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const CollectionCreatePage = () => {
   const { id } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
+
+  if (disabled.collections) {
+    return null;
+  }
 
   let title;
   if (id) {

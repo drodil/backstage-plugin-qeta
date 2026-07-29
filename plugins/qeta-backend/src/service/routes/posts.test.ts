@@ -127,6 +127,47 @@ describe('Posts Routes', () => {
         'must match format "date"',
       );
     });
+
+    it('returns empty list when questions are disabled and question type is requested', async () => {
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        {
+          qeta: { questions: { disabled: true } },
+        },
+      );
+
+      const response = await request(disabledApp).get('/posts?type=question');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ posts: [], total: 0 });
+      expect(disabledStore.getPosts).not.toHaveBeenCalled();
+    });
+
+    it('returns posts with empty tags and entities when tags and entities are disabled', async () => {
+      const postWithTagsAndEntities = {
+        ...question,
+        tags: ['java'],
+        entities: ['component:default/comp1'],
+      };
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        {
+          qeta: {
+            tags: { disabled: true },
+            entities: { disabled: true },
+          },
+        },
+      );
+      disabledStore.getPosts.mockResolvedValue({
+        posts: [postWithTagsAndEntities],
+        total: 1,
+      });
+
+      const response = await request(disabledApp).get('/posts');
+
+      expect(response.status).toEqual(200);
+      expect(response.body.posts).toHaveLength(1);
+      expect(response.body.posts[0].tags).toEqual([]);
+      expect(response.body.posts[0].entities).toEqual([]);
+    });
   });
 
   describe('GET /posts/:id', () => {
@@ -288,6 +329,37 @@ describe('Posts Routes', () => {
       });
     });
 
+    it('uses empty tags and entities when both are disabled in config', async () => {
+      const { app: appWithConfig, qetaStore: storeWithConfig } =
+        await setupTestApp({
+          qeta: {
+            tags: { disabled: true },
+            entities: { disabled: true },
+          },
+        });
+      storeWithConfig.createPost.mockResolvedValue(question);
+      mockSystemDate(question.created);
+
+      const response = await request(appWithConfig)
+        .post('/posts')
+        .send({
+          title: 'title',
+          content: 'content',
+          tags: ['java'],
+          entities: ['component:default/comp1'],
+          type: 'question',
+          status: 'active',
+        });
+
+      expect(response.status).toEqual(201);
+      expect(storeWithConfig.createPost).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tags: [],
+          entities: [],
+        }),
+      );
+    });
+
     it('allows user and created to be specified if allowMetadataInput is true', async () => {
       const { app: appWithConfig, qetaStore: newQetaStore } =
         await setupTestApp({
@@ -356,6 +428,27 @@ describe('Posts Routes', () => {
           tags: ['java'],
         });
       expect(response.status).toEqual(403);
+    });
+
+    it('returns 403 when creating article and articles are disabled', async () => {
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        {
+          qeta: { articles: { disabled: true } },
+        },
+      );
+
+      const response = await request(disabledApp).post('/posts').send({
+        title: 'title',
+        content: 'content',
+        type: 'article',
+      });
+
+      expect(response.status).toEqual(403);
+      expect(response.body).toEqual({
+        errors: 'Post type is disabled',
+        type: 'body',
+      });
+      expect(disabledStore.createPost).not.toHaveBeenCalled();
     });
   });
 

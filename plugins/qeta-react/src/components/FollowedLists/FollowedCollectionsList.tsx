@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { collectionRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { CollectionTooltip } from '../Tooltips';
+import { useQetaConfig } from '../../hooks';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -49,8 +50,13 @@ export const FollowedCollectionsList = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useStyles();
   const collectionRoute = useRouteRef(collectionRouteRef);
+  const { disabled } = useQetaConfig();
 
-  if (collections.collections.length === 0 || collections.loading) {
+  if (
+    disabled.collections ||
+    collections.collections.length === 0 ||
+    collections.loading
+  ) {
     return null;
   }
 

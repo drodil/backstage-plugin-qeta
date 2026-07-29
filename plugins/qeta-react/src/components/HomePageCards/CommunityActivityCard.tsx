@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { qetaTranslationRef } from '../../translation';
-import { useQetaApi } from '../../hooks';
+import { useQetaApi, useQetaConfig } from '../../hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   Box,
@@ -64,6 +64,7 @@ const useStyles = makeStyles(theme => ({
 export const CommunityActivityCard = () => {
   const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
   const [period, setPeriod] = useState('7d');
 
   const { value: stats, loading } = useQetaApi(
@@ -98,16 +99,24 @@ export const CommunityActivityCard = () => {
     }
 
     const statItems = [
-      {
-        icon: PostAddIcon,
-        value: stats.posts,
-        label: t('communityActivity.newPosts'),
-      },
-      {
-        icon: QuestionAnswerIcon,
-        value: stats.answers,
-        label: t('communityActivity.newAnswers'),
-      },
+      ...(!disabled.questions || !disabled.articles || !disabled.links
+        ? [
+            {
+              icon: PostAddIcon,
+              value: stats.posts,
+              label: t('communityActivity.newPosts'),
+            },
+          ]
+        : []),
+      ...(!disabled.questions
+        ? [
+            {
+              icon: QuestionAnswerIcon,
+              value: stats.answers,
+              label: t('communityActivity.newAnswers'),
+            },
+          ]
+        : []),
       {
         icon: VisibilityIcon,
         value: stats.views,

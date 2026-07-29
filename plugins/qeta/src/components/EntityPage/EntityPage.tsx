@@ -10,6 +10,7 @@ import {
   PostsContainer,
   qetaTranslationRef,
   useQetaApi,
+  useQetaConfig,
   WriteArticleButton,
   ContentHeaderCard,
   ContentHeader,
@@ -28,6 +29,7 @@ import { Entity } from '@backstage/catalog-model';
 
 const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
   const [entity, setEntity] = useState<Entity | undefined>(undefined);
   const { Icon } = useEntityPresentation(entityRef);
   const catalogApi = useApi(catalogApiRef);
@@ -41,6 +43,10 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
     loading,
     error,
   } = useQetaApi(api => api.getEntity(entityRef), [entityRef]);
+
+  if (disabled.entities) {
+    return null;
+  }
 
   if (loading) {
     return <Skeleton variant="rect" height={200} />;
@@ -122,6 +128,11 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
 export const EntityPage = () => {
   const { entityRef } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
+
+  if (disabled.entities) {
+    return null;
+  }
 
   if (entityRef) {
     return <SingleEntityPage entityRef={entityRef} />;

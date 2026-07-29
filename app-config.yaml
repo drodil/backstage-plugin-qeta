@@ -109,8 +109,10 @@ qeta:
   #allowGlobalEdits: true
   #permissions: true
   entities:
+    disabled: false
     max: 5
   tags:
+    disabled: false
     #allowCreation: false
     #allowedTags:
     #- test
@@ -118,6 +120,12 @@ qeta:
     max: 6
   moderators:
     - 'user:development/guest'
+  articles:
+    disabled: false
+  links:
+    disabled: false
+  collections:
+    disabled: false
   mentions:
     supportedKinds:
       - User

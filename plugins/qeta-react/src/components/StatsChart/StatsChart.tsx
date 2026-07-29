@@ -26,6 +26,7 @@ import { useTheme } from '@material-ui/core/styles';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
+import { useQetaConfig } from '../../hooks/useQetaConfig';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { isGlobalStat, isUserStat } from './util';
@@ -243,6 +244,7 @@ const getDefaultStats = (isDark: boolean, t: any): StatType[] => [
 const useChartState = (data: Stat[]) => {
   const styles = useStyles();
   const isDark = useIsDarkTheme();
+  const { disabled } = useQetaConfig();
   const { t } = useTranslationRef(qetaTranslationRef);
   const globalStats = data && data.length > 0 ? isGlobalStat(data[0]) : false;
   const isUserStats = data && data.length > 0 ? isUserStat(data[0]) : false;
@@ -251,7 +253,27 @@ const useChartState = (data: Stat[]) => {
       if (globalStats && !stat.globalStat) {
         return false;
       }
-      return !(isUserStats && !stat.userStat);
+      if (isUserStats && !stat.userStat) {
+        return false;
+      }
+      if (
+        disabled.questions &&
+        ['totalQuestions', 'totalAnswers', 'correctAnswers'].includes(
+          stat.dataKey,
+        )
+      ) {
+        return false;
+      }
+      if (disabled.articles && stat.dataKey === 'totalArticles') {
+        return false;
+      }
+      if (disabled.links && stat.dataKey === 'totalLinks') {
+        return false;
+      }
+      if (disabled.tags && stat.dataKey === 'totalTags') {
+        return false;
+      }
+      return true;
     }),
   );
 

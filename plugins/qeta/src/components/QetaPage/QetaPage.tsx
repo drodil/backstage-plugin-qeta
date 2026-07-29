@@ -38,6 +38,7 @@ import {
   userRouteRef,
   usersRouteRef,
   writeRouteRef,
+  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { QuestionsPage } from '../QuestionsPage/QuestionsPage';
 import { HomePage } from '../HomePage/HomePage';
@@ -153,6 +154,7 @@ export const QetaPage = (props?: Props) => {
   } = props ?? {};
   const { leftCompact, rightCompact, toggleLeft, toggleRight } =
     useSidebarSettings();
+  const { disabled } = useQetaConfig();
   const location = useLocation();
 
   // Hide right sidebar on review and moderator pages
@@ -199,75 +201,108 @@ export const QetaPage = (props?: Props) => {
               <Grid item xs className={classes.mainColumn}>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
-                  <Route
-                    path={questionsRouteRef.path}
-                    element={<QuestionsPage />}
-                  />
-                  <Route path={askRouteRef.path} element={<AskPage />} />
-                  <Route
-                    path={articlesRouteRef.path}
-                    element={<ArticlesPage />}
-                  />
-                  <Route path={writeRouteRef.path} element={<WritePage />} />
-                  <Route path={linksRouteRef.path} element={<LinksPage />} />
-                  <Route
-                    path={createLinkRouteRef.path}
-                    element={<CreateLinkPage />}
-                  />
+                  {!disabled.questions && (
+                    <>
+                      <Route
+                        path={questionsRouteRef.path}
+                        element={<QuestionsPage />}
+                      />
+                      <Route path={askRouteRef.path} element={<AskPage />} />
+                      <Route
+                        path={editQuestionRouteRef.path}
+                        element={<AskPage />}
+                      />
+                      <Route
+                        path={questionRouteRef.path}
+                        element={<QuestionPage />}
+                      />
+                    </>
+                  )}
+                  {!disabled.articles && (
+                    <>
+                      <Route
+                        path={articlesRouteRef.path}
+                        element={<ArticlesPage />}
+                      />
+                      <Route
+                        path={writeRouteRef.path}
+                        element={<WritePage />}
+                      />
+                      <Route
+                        path={editArticleRouteRef.path}
+                        element={<WritePage />}
+                      />
+                      <Route
+                        path={articleRouteRef.path}
+                        element={<ArticlePage />}
+                      />
+                    </>
+                  )}
+                  {!disabled.links && (
+                    <>
+                      <Route
+                        path={linksRouteRef.path}
+                        element={<LinksPage />}
+                      />
+                      <Route
+                        path={createLinkRouteRef.path}
+                        element={<CreateLinkPage />}
+                      />
+                      <Route
+                        path={editLinkRouteRef.path}
+                        element={<CreateLinkPage />}
+                      />
+                      <Route path={linkRouteRef.path} element={<LinkPage />} />
+                    </>
+                  )}
                   <Route
                     path={favoriteQuestionsRouteRef.path}
                     element={<FavoritePage />}
                   />
-                  <Route
-                    path={editQuestionRouteRef.path}
-                    element={<AskPage />}
-                  />
-                  <Route
-                    path={editArticleRouteRef.path}
-                    element={<WritePage />}
-                  />
-                  <Route
-                    path={editLinkRouteRef.path}
-                    element={<CreateLinkPage />}
-                  />
-                  <Route
-                    path={questionRouteRef.path}
-                    element={<QuestionPage />}
-                  />
-                  <Route path={linkRouteRef.path} element={<LinkPage />} />
-                  <Route
-                    path={articleRouteRef.path}
-                    element={<ArticlePage />}
-                  />
-                  <Route path={tagsRouteRef.path} element={<TagPage />} />
-                  <Route path={tagRouteRef.path} element={<TagPage />} />
+                  {!disabled.tags && (
+                    <>
+                      <Route path={tagsRouteRef.path} element={<TagPage />} />
+                      <Route path={tagRouteRef.path} element={<TagPage />} />
+                    </>
+                  )}
                   <Route path={usersRouteRef.path} element={<UsersPage />} />
                   <Route path={userRouteRef.path} element={<UserPage />} />
                   <Route
                     path={statisticsRouteRef.path}
                     element={<StatisticsPage />}
                   />
-                  <Route
-                    path={collectionsRouteRef.path}
-                    element={<CollectionsPage />}
-                  />
-                  <Route
-                    path={collectionCreateRouteRef.path}
-                    element={<CollectionCreatePage />}
-                  />
-                  <Route
-                    path={collectionEditRouteRef.path}
-                    element={<CollectionCreatePage />}
-                  />
-                  <Route
-                    path={collectionRouteRef.path}
-                    element={<CollectionPage />}
-                  />
-                  <Route
-                    path={entitiesRouteRef.path}
-                    element={<EntityPage />}
-                  />
-                  <Route path={entityRouteRef.path} element={<EntityPage />} />
+                  {!disabled.collections && (
+                    <>
+                      <Route
+                        path={collectionsRouteRef.path}
+                        element={<CollectionsPage />}
+                      />
+                      <Route
+                        path={collectionCreateRouteRef.path}
+                        element={<CollectionCreatePage />}
+                      />
+                      <Route
+                        path={collectionEditRouteRef.path}
+                        element={<CollectionCreatePage />}
+                      />
+                      <Route
+                        path={collectionRouteRef.path}
+                        element={<CollectionPage />}
+                      />
+                    </>
+                  )}
+                  {!disabled.entities && (
+                    <>
+                      <Route
+                        path={entitiesRouteRef.path}
+                        element={<EntityPage />}
+                      />
+                      <Route
+                        path={entityRouteRef.path}
+                        element={<EntityPage />}
+                      />
+                    </>
+                  )}
                   <Route
                     path={moderatorRouteRef.path}
                     element={<ModeratorPage />}

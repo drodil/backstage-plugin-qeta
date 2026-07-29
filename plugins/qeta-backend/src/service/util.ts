@@ -531,6 +531,23 @@ const mapPostAdditionalFields = async (
   routeOpts?: RouteOptions,
   permissions?: Map<string, boolean>,
 ) => {
+  const tagsDisabled =
+    routeOpts?.config.getOptionalBoolean('qeta.tags.disabled') ?? false;
+  const entitiesDisabled =
+    routeOpts?.config.getOptionalBoolean('qeta.entities.disabled') ?? false;
+  let filteredEntitiesPromise: Promise<string[] | undefined>;
+  if (entitiesDisabled) {
+    filteredEntitiesPromise = Promise.resolve([]);
+  } else if (routeOpts) {
+    filteredEntitiesPromise = filterEntitiesByPermissions(
+      resource.entities,
+      routeOpts,
+      credentials,
+    );
+  } else {
+    filteredEntitiesPromise = Promise.resolve(resource.entities);
+  }
+
   resource.ownVote = resource.votes?.find(v => v.author === username)?.score;
   resource.own = resource.author === username;
 
@@ -578,14 +595,13 @@ const mapPostAdditionalFields = async (
         checkRights,
         permissions,
       ),
-      routeOpts
-        ? filterEntitiesByPermissions(resource.entities, routeOpts, credentials)
-        : resource.entities,
+      filteredEntitiesPromise,
     ]);
   resource.canEdit = canEdit;
   resource.canDelete = canDelete;
   resource.answers = answers;
   resource.comments = comments;
+  resource.tags = tagsDisabled ? [] : resource.tags;
   resource.entities = filteredEntities;
   return resource;
 };

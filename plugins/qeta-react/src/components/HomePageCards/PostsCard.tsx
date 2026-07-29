@@ -1,6 +1,6 @@
 import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { PostListItem } from '../PostsContainer';
-import { useQetaApi } from '../../hooks';
+import { useQetaApi, useQetaConfig } from '../../hooks';
 import { Card, CardHeader, Divider, Grid } from '@material-ui/core';
 
 export const PostsCard = (props: {
@@ -8,6 +8,8 @@ export const PostsCard = (props: {
   options?: PostsQuery;
   postType?: PostType;
 }) => {
+  const { isPostTypeDisabled } = useQetaConfig();
+
   const { value: response } = useQetaApi(
     api =>
       api.getPosts({
@@ -23,6 +25,10 @@ export const PostsCard = (props: {
       }),
     [],
   );
+
+  if (props.postType && isPostTypeDisabled(props.postType)) {
+    return null;
+  }
 
   const posts = response?.posts ?? [];
   if (posts.length === 0) {

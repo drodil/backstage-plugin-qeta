@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { tagRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { TagTooltip } from '../Tooltips';
+import { useQetaConfig } from '../../hooks';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -49,8 +50,9 @@ export const FollowedTagsList = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useStyles();
   const tagRoute = useRouteRef(tagRouteRef);
+  const { disabled } = useQetaConfig();
 
-  if (tags.tags.length === 0 || tags.loading) {
+  if (disabled.tags || tags.tags.length === 0 || tags.loading) {
     return null;
   }
 

@@ -164,6 +164,28 @@ describe('Statistics Routes', () => {
         lastWeekImpact: 25,
       });
     });
+
+    it('zeros answers in activity when questions are disabled', async () => {
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        {
+          qeta: { questions: { disabled: true } },
+        },
+      );
+      disabledStore.getCommunityActivity.mockResolvedValue({
+        period: '7d',
+        posts: 5,
+        answers: 6,
+        comments: 7,
+        votes: 8,
+        views: 9,
+        activeUsers: 10,
+      });
+
+      const response = await request(disabledApp).get('/statistics/activity');
+
+      expect(response.status).toEqual(200);
+      expect(response.body.answers).toEqual(0);
+    });
   });
 
   describe('GET /statistics/global', () => {
@@ -186,6 +208,44 @@ describe('Statistics Routes', () => {
       expect(response.status).toEqual(200);
       expect(response.body.statistics).toBeDefined();
       expect(response.body.summary).toBeDefined();
+    });
+
+    it('zeros disabled summary fields in global statistics', async () => {
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        {
+          qeta: {
+            questions: { disabled: true },
+            articles: { disabled: true },
+            links: { disabled: true },
+            tags: { disabled: true },
+          },
+        },
+      );
+      disabledStore.getGlobalStats.mockResolvedValue(globalStats);
+      disabledStore.getCount.mockResolvedValue(50);
+      disabledStore.getUsersCount.mockResolvedValue(30);
+      disabledStore.getCommunityActivity.mockResolvedValue({
+        period: '1d',
+        posts: 0,
+        answers: 0,
+        comments: 0,
+        votes: 0,
+        views: 0,
+        activeUsers: 0,
+      });
+
+      const response = await request(disabledApp).get('/statistics/global');
+
+      expect(response.status).toEqual(200);
+      expect(response.body.summary).toEqual(
+        expect.objectContaining({
+          totalQuestions: 0,
+          totalAnswers: 0,
+          totalArticles: 0,
+          totalLinks: 0,
+          totalTags: 0,
+        }),
+      );
     });
   });
 
@@ -231,6 +291,75 @@ describe('Statistics Routes', () => {
       expect(response.status).toEqual(200);
       expect(response.body.statistics).toBeDefined();
       expect(response.body.summary).toBeDefined();
+    });
+
+    it('zeros disabled summary fields in user statistics', async () => {
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        {
+          qeta: {
+            questions: { disabled: true },
+            articles: { disabled: true },
+            links: { disabled: true },
+          },
+        },
+      );
+
+      disabledStore.getUserStats.mockResolvedValue([
+        {
+          date: new Date('2022-01-01'),
+          totalViews: 10,
+          totalQuestions: 4,
+          totalAnswers: 5,
+          totalComments: 6,
+          totalVotes: 7,
+          totalArticles: 8,
+          totalFollowers: 9,
+          totalLinks: 10,
+          reputation: 11,
+          answerScore: 12,
+          postScore: 13,
+          correctAnswers: 3,
+        },
+      ]);
+      disabledStore.getUser.mockResolvedValue({
+        userRef: 'user:default/test',
+        totalViews: 10,
+        totalQuestions: 4,
+        totalAnswers: 5,
+        totalComments: 6,
+        totalVotes: 7,
+        totalArticles: 8,
+        totalLinks: 10,
+        totalFollowers: 9,
+        reputation: 11,
+        answerScore: 12,
+        postScore: 13,
+        correctAnswers: 3,
+      });
+
+      const response = await request(disabledApp).get(
+        '/statistics/user/user:default/test',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body.summary).toEqual(
+        expect.objectContaining({
+          totalQuestions: 0,
+          totalAnswers: 0,
+          totalArticles: 0,
+          totalLinks: 0,
+          correctAnswers: 0,
+        }),
+      );
+      expect(response.body.statistics[0]).toEqual(
+        expect.objectContaining({
+          totalQuestions: 0,
+          totalAnswers: 0,
+          totalArticles: 0,
+          totalLinks: 0,
+          correctAnswers: 0,
+        }),
+      );
     });
   });
 

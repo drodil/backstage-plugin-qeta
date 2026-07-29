@@ -4,6 +4,7 @@ import {
   ContentHeader,
   PostForm,
   qetaTranslationRef,
+  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { InfoCard } from '@backstage/core-components';
@@ -17,6 +18,12 @@ export const CreateLinkPage = () => {
   const entityPage = searchParams.get('entityPage') === 'true';
   const tags = filterTags(searchParams.get('tags'));
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
+
+  if (disabled.links) {
+    return null;
+  }
+
   let title;
   if (id) {
     title = t('createLinkPage.title.existingLink');

@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import {
   AnswersContainer,
@@ -14,6 +14,7 @@ import {
   WriteArticleButton,
   useQetaApi,
   RelativeTimeWithTooltip,
+  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { UserStatsContent } from './UserStatsContent';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
@@ -60,6 +61,7 @@ export const UserPage = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const [_searchParams, setSearchParams] = useSearchParams();
   const classes = useStyles();
+  const { disabled } = useQetaConfig();
   const {
     value: currentUser,
     loading: loadingUser,
@@ -74,6 +76,23 @@ export const UserPage = () => {
     setSearchParams({});
     setTab(newValue);
   };
+
+  const availableTabs = useMemo(() => {
+    return [
+      'statistics',
+      !disabled.questions ? 'questions' : null,
+      !disabled.articles ? 'articles' : null,
+      !disabled.links ? 'links' : null,
+      !disabled.collections ? 'collections' : null,
+      !disabled.questions ? 'answers' : null,
+    ].filter((v): v is string => Boolean(v));
+  }, [disabled]);
+
+  useEffect(() => {
+    if (!availableTabs.includes(tab)) {
+      setTab(availableTabs[0]);
+    }
+  }, [availableTabs, tab]);
 
   const TabLabel = ({
     icon,
@@ -129,6 +148,79 @@ export const UserPage = () => {
     </Box>
   );
 
+  const tabItems = [
+    <Tab
+      key="statistics"
+      value="statistics"
+      label={
+        <TabLabel
+          icon={<AssessmentIcon className={classes.tabIcon} />}
+          label={t('userPage.statistics', {})}
+        />
+      }
+    />,
+    !disabled.questions ? (
+      <Tab
+        key="questions"
+        value="questions"
+        label={
+          <TabLabel
+            icon={<HelpOutlineIcon className={classes.tabIcon} />}
+            label={t('userPage.questions', {})}
+          />
+        }
+      />
+    ) : null,
+    !disabled.articles ? (
+      <Tab
+        key="articles"
+        value="articles"
+        label={
+          <TabLabel
+            icon={<CollectionsBookmarkIcon className={classes.tabIcon} />}
+            label={t('userPage.articles', {})}
+          />
+        }
+      />
+    ) : null,
+    !disabled.links ? (
+      <Tab
+        key="links"
+        value="links"
+        label={
+          <TabLabel
+            icon={<LinkIcon className={classes.tabIcon} />}
+            label={t('userPage.links', {})}
+          />
+        }
+      />
+    ) : null,
+    !disabled.collections ? (
+      <Tab
+        key="collections"
+        value="collections"
+        label={
+          <TabLabel
+            icon={<CollectionsIcon className={classes.tabIcon} />}
+            label={t('userPage.collections', {})}
+          />
+        }
+      />
+    ) : null,
+    !disabled.questions ? (
+      <Tab
+        key="answers"
+        value="answers"
+        label={
+          <TabLabel
+            icon={<QuestionAnswerIcon className={classes.tabIcon} />}
+            label={t('userPage.answers', {})}
+          />
+        }
+      />
+    ) : null,
+  ].filter((item): item is React.ReactElement => item !== null);
+
   return (
     <>
       <ContentHeader titleComponent={title}>
@@ -153,60 +245,7 @@ export const UserPage = () => {
             variant="scrollable"
             scrollButtons="auto"
           >
-            <Tab
-              value="statistics"
-              label={
-                <TabLabel
-                  icon={<AssessmentIcon className={classes.tabIcon} />}
-                  label={t('userPage.statistics', {})}
-                />
-              }
-            />
-            <Tab
-              value="questions"
-              label={
-                <TabLabel
-                  icon={<HelpOutlineIcon className={classes.tabIcon} />}
-                  label={t('userPage.questions', {})}
-                />
-              }
-            />
-            <Tab
-              value="articles"
-              label={
-                <TabLabel
-                  icon={<CollectionsBookmarkIcon className={classes.tabIcon} />}
-                  label={t('userPage.articles', {})}
-                />
-              }
-            />
-            <Tab
-              value="links"
-              label={
-                <TabLabel
-                  icon={<LinkIcon className={classes.tabIcon} />}
-                  label={t('userPage.links', {})}
-                />
-              }
-            />
-            <Tab
-              value="collections"
-              label={
-                <TabLabel
-                  icon={<CollectionsIcon className={classes.tabIcon} />}
-                  label={t('userPage.collections', {})}
-                />
-              }
-            />
-            <Tab
-              value="answers"
-              label={
-                <TabLabel
-                  icon={<QuestionAnswerIcon className={classes.tabIcon} />}
-                  label={t('userPage.answers', {})}
-                />
-              }
-            />
+            {tabItems}
           </TabList>
         </Box>
         <TabPanel value="statistics" className={classes.tabPanel}>
@@ -216,43 +255,53 @@ export const UserPage = () => {
             loading={loadingUserStats}
           />
         </TabPanel>
-        <TabPanel value="questions" className={classes.tabPanel}>
-          <PostsContainer
-            author={identity ?? ''}
-            showNoQuestionsBtn={false}
-            type="question"
-            prefix="user-questions"
-          />
-        </TabPanel>
-        <TabPanel value="articles" className={classes.tabPanel}>
-          <PostsContainer
-            author={identity ?? ''}
-            type="article"
-            showNoQuestionsBtn={false}
-            prefix="user-articles"
-          />
-        </TabPanel>
-        <TabPanel value="links" className={classes.tabPanel}>
-          <PostsContainer
-            author={identity ?? ''}
-            type="link"
-            showNoQuestionsBtn={false}
-            prefix="user-links"
-          />
-        </TabPanel>
-        <TabPanel value="collections" className={classes.tabPanel}>
-          <CollectionsContainer
-            owner={identity ?? ''}
-            prefix="user-collections"
-          />
-        </TabPanel>
-        <TabPanel value="answers" className={classes.tabPanel}>
-          <AnswersContainer
-            author={identity ?? ''}
-            title={t('userPage.answers', {})}
-            prefix="user-answers"
-          />
-        </TabPanel>
+        {!disabled.questions && (
+          <TabPanel value="questions" className={classes.tabPanel}>
+            <PostsContainer
+              author={identity ?? ''}
+              showNoQuestionsBtn={false}
+              type="question"
+              prefix="user-questions"
+            />
+          </TabPanel>
+        )}
+        {!disabled.articles && (
+          <TabPanel value="articles" className={classes.tabPanel}>
+            <PostsContainer
+              author={identity ?? ''}
+              type="article"
+              showNoQuestionsBtn={false}
+              prefix="user-articles"
+            />
+          </TabPanel>
+        )}
+        {!disabled.links && (
+          <TabPanel value="links" className={classes.tabPanel}>
+            <PostsContainer
+              author={identity ?? ''}
+              type="link"
+              showNoQuestionsBtn={false}
+              prefix="user-links"
+            />
+          </TabPanel>
+        )}
+        {!disabled.collections && (
+          <TabPanel value="collections" className={classes.tabPanel}>
+            <CollectionsContainer
+              owner={identity ?? ''}
+              prefix="user-collections"
+            />
+          </TabPanel>
+        )}
+        {!disabled.questions && (
+          <TabPanel value="answers" className={classes.tabPanel}>
+            <AnswersContainer
+              author={identity ?? ''}
+              title={t('userPage.answers', {})}
+              prefix="user-answers"
+            />
+          </TabPanel>
+        )}
       </TabContext>
     </>
   );

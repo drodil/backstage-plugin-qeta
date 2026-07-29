@@ -5,6 +5,7 @@ import { Request, Response, Router } from 'express';
 import {
   findEntityMentions,
   PostsQuery,
+  PostType,
   qetaCreateCommentPermission,
   qetaCreatePostPermission,
   qetaCreatePostReviewPermission,
@@ -71,6 +72,46 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     return enabledContent.includes(postType);
   };
 
+  const questionsDisabled =
+    config.getOptionalBoolean('qeta.questions.disabled') ?? false;
+  const articlesDisabled =
+    config.getOptionalBoolean('qeta.articles.disabled') ?? false;
+  const linksDisabled =
+    config.getOptionalBoolean('qeta.links.disabled') ?? false;
+  const tagsDisabled = config.getOptionalBoolean('qeta.tags.disabled') ?? false;
+  const entitiesDisabled =
+    config.getOptionalBoolean('qeta.entities.disabled') ?? false;
+  const hasDisabledPostTypes =
+    questionsDisabled || articlesDisabled || linksDisabled;
+
+  const isPostTypeDisabled = (postType?: PostType): boolean => {
+    if (!postType) {
+      return false;
+    }
+
+    if (postType === 'question') {
+      return questionsDisabled;
+    }
+    if (postType === 'article') {
+      return articlesDisabled;
+    }
+    if (postType === 'link') {
+      return linksDisabled;
+    }
+
+    return false;
+  };
+
+  const filterDisabledPosts = <T extends { type: PostType }>(
+    posts: T[],
+  ): T[] => {
+    if (!hasDisabledPostTypes) {
+      return posts;
+    }
+
+    return posts.filter(post => !isPostTypeDisabled(post.type));
+  };
+
   const notifyAutomaticCollectionAdditions = async (
     postId: number,
     username: string,
@@ -106,7 +147,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
         allowServicePrincipal: true,
       }),
-      opts.includeTags !== false
+      opts.includeTags !== false && !tagsDisabled
         ? permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
             allowServicePrincipal: true,
           })
@@ -118,7 +159,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
             { allowServicePrincipal: true },
           )
         : undefined,
-      opts.includeAnswers !== false
+      opts.includeAnswers !== false && !questionsDisabled
         ? permissionMgr.getAuthorizeConditions(
             request,
             qetaReadAnswerPermission,
@@ -145,15 +186,23 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const [tagsFilter, commentsFilter, answersFilter] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
-        allowServicePrincipal: allowServiceToken,
-      }),
+      !tagsDisabled
+        ? permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+            allowServicePrincipal: allowServiceToken,
+          })
+        : undefined,
       permissionMgr.getAuthorizeConditions(request, qetaReadCommentPermission, {
         allowServicePrincipal: allowServiceToken,
       }),
-      permissionMgr.getAuthorizeConditions(request, qetaReadAnswerPermission, {
-        allowServicePrincipal: allowServiceToken,
-      }),
+      !questionsDisabled
+        ? permissionMgr.getAuthorizeConditions(
+            request,
+            qetaReadAnswerPermission,
+            {
+              allowServicePrincipal: allowServiceToken,
+            },
+          )
+        : undefined,
     ]);
 
     const post = await database.getPost(username, postId, recordView, {
@@ -162,9 +211,17 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       answersFilter,
       includeHealth: true,
       reviewThresholdMs,
+      includeTags: !tagsDisabled,
+      includeEntities: !entitiesDisabled,
+      includeAnswers: !questionsDisabled,
     });
 
     if (!post) {
+      response.status(404).send({ errors: 'Post not found', type: 'query' });
+      return null;
+    }
+
+    if (isPostTypeDisabled(post.type)) {
       response.status(404).send({ errors: 'Post not found', type: 'query' });
       return null;
     }
@@ -219,6 +276,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     const opts = request.query as PostsQuery;
 
+    if (isPostTypeDisabled(opts.type)) {
+      response.json({ posts: [], total: 0 });
+      return;
+    }
+
     if (opts.reviewNeeded) {
       opts.obsolete = false;
       opts.includeHealth = true;
@@ -249,11 +311,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       reviewNeeded: opts.reviewNeeded,
     });
 
-    await mapAdditionalFields(request, posts.posts, options, {
+    const visiblePosts = filterDisabledPosts(posts.posts);
+    await mapAdditionalFields(request, visiblePosts, options, {
       checkRights: opts.checkAccess ?? false,
       username,
     });
-    response.json(posts);
+    response.json({
+      ...posts,
+      posts: visiblePosts,
+      total: visiblePosts.length,
+    });
   });
 
   router.post(`/posts/query`, async (request, response) => {
@@ -276,6 +343,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
 
     const opts = request.body;
 
+    if (isPostTypeDisabled(opts.type)) {
+      response.json({ posts: [], total: 0 });
+      return;
+    }
+
     if (
       opts.status === 'deleted' &&
       !(await permissionMgr.isModerator(request))
@@ -305,11 +377,16 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       reviewThresholdMs,
       reviewNeeded: opts.reviewNeeded,
     });
-    await mapAdditionalFields(request, posts.posts, options, {
+    const visiblePosts = filterDisabledPosts(posts.posts);
+    await mapAdditionalFields(request, visiblePosts, options, {
       checkRights: opts.checkAccess ?? false,
       username,
     });
-    response.json(posts);
+    response.json({
+      ...posts,
+      posts: visiblePosts,
+      total: visiblePosts.length,
+    });
   });
 
   // POST /posts/suggest
@@ -377,14 +454,20 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     } else if (type === 'recent') {
       const limit = Number(request.query.limit) || 5;
       const posts = await database.getMostRecentViewedPosts(username, limit);
-      await mapAdditionalFields(request, posts, options, {
+      const visiblePosts = filterDisabledPosts(posts);
+      await mapAdditionalFields(request, visiblePosts, options, {
         checkRights: false,
         username,
       });
-      response.json({ posts, total: posts.length });
+      response.json({ posts: visiblePosts, total: visiblePosts.length });
       return;
     }
     const opts = { ...request.query, ...optionOverride };
+
+    if (isPostTypeDisabled(opts.type)) {
+      response.json({ posts: [], total: 0 });
+      return;
+    }
 
     const [filter, tagsFilter, commentsFilter, answersFilter] =
       await getPostFilters(request, opts);
@@ -415,11 +498,17 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       options.logger,
     );
 
-    await mapAdditionalFields(request, posts.posts, options, {
+    const visiblePosts = filterDisabledPosts(posts.posts);
+
+    await mapAdditionalFields(request, visiblePosts, options, {
       checkRights: opts.checkAccess ?? false,
       username,
     });
-    response.json(posts);
+    response.json({
+      ...posts,
+      posts: visiblePosts,
+      total: visiblePosts.length,
+    });
   });
 
   // GET /posts/:id
@@ -814,6 +903,14 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
         .json({ errors: validateRequestBody.errors, type: 'body' });
       return;
     }
+
+    if (isPostTypeDisabled(request.body.type)) {
+      response
+        .status(403)
+        .json({ errors: 'Post type is disabled', type: 'body' });
+      return;
+    }
+
     await permissionMgr.authorize(
       request,
       [{ permission: qetaCreatePostPermission }],

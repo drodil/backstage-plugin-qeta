@@ -18,6 +18,7 @@ import { PostListItem } from './PostListItem';
 import { PostResponse, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { getFiltersWithDateRange } from '../../utils';
 import { NoPostsCard } from './NoPostsCard';
+import { useQetaConfig } from '../../hooks';
 
 export type PostsContainerProps = {
   type?: PostType;
@@ -83,6 +84,11 @@ export const PostsContainer = (props: PostsContainerProps) => {
   } = props;
 
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { isPostTypeDisabled } = useQetaConfig();
+
+  if (type && isPostTypeDisabled(type)) {
+    return null;
+  }
 
   const itemType = capitalize(t(`common.${type ?? 'post'}` as any, {}));
   let shownTitle: React.ReactNode = title;

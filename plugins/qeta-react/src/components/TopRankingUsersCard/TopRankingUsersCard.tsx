@@ -19,7 +19,7 @@ import {
 import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
 import { TrophyIcon } from './TrophyIcon';
 import { UserLink } from '../Links';
-import { useQetaApi } from '../../hooks';
+import { useQetaApi, useQetaConfig } from '../../hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 
@@ -257,6 +257,7 @@ export const TopRankingUsers = (props: {
 }) => {
   const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
   const {
     value: topStatistics,
     loading,
@@ -294,6 +295,10 @@ export const TopRankingUsers = (props: {
       unit: 'votes',
     },
   ];
+
+  if (disabled.questions) {
+    return null;
+  }
 
   if ((error || topStatistics === undefined) && !loading) {
     return (

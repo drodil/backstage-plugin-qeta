@@ -6,6 +6,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { ContentHeaderButton } from './ContentHeaderButton';
+import { useQetaConfig } from '../../hooks';
 
 export const WriteArticleButton = (props: {
   entity?: string;
@@ -15,6 +16,11 @@ export const WriteArticleButton = (props: {
   const { entity, entityPage, tags } = props;
   const writeRoute = useRouteRef(writeRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
+
+  if (disabled.articles) {
+    return null;
+  }
 
   const params = new URLSearchParams();
   if (entity) {

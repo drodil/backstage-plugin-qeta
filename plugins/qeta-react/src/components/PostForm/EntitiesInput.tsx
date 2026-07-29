@@ -39,6 +39,7 @@ import type {
 } from '@drodil/backstage-plugin-qeta-common';
 import { getSupportedEntityKinds } from '@drodil/backstage-plugin-qeta-common';
 import { useDebounce } from 'react-use';
+import { useQetaConfig } from '../../hooks';
 
 type CommonEntitiesInputProps = {
   singleValue?: string;
@@ -58,6 +59,7 @@ type CommonEntitiesInputProps = {
   title?: string;
   content?: string;
   tags?: string[];
+  skipDisabledEntitiesCheck?: boolean;
 };
 type SingleEntitiesInputValue = CommonEntitiesInputProps & {
   multiple: false;
@@ -314,6 +316,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
       title,
       content,
       tags,
+      skipDisabledEntitiesCheck = false,
     } = props;
 
     const configApi = useApi(configApiRef);
@@ -328,6 +331,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
     const [inputValue, setInputValue] = useState('');
     const searchCache = useRef<Map<string, Entity[]>>(new Map());
     const activeRequest = useRef(0);
+    const qetaConfig = useQetaConfig();
 
     const explicitEntityKindsKey = useMemo(
       () => getEntityKindsKey(kind ?? []),
@@ -567,6 +571,10 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
         onChange(nextValues);
       }
     };
+
+    if (qetaConfig.disabled.entities && !skipDisabledEntitiesCheck) {
+      return null;
+    }
 
     return (
       <Box>
