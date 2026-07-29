@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.59.10](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.9...v3.59.10) (2026-07-29)
+
+
+### Bug Fixes
+
+* fixed issue in the search backend caused by deprecation of TaskScheduleDefinitionConfig ([3dc7402](https://github.com/drodil/backstage-plugin-qeta/commit/3dc7402c64bacd67050c8206537284e8b716aba7)), closes [#430](https://github.com/drodil/backstage-plugin-qeta/issues/430)
+* **qeta-backend:** resolve pg_trgm word-similarity operator error in search queries ([d80e6dd](https://github.com/drodil/backstage-plugin-qeta/commit/d80e6ddf5ad551b2d04d6c73d945b83fc42e2ed0))
+
 ### [3.59.9](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.8...v3.59.9) (2026-05-27)
 
 ### [3.59.8](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.7...v3.59.8) (2026-05-22)
