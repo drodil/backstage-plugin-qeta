@@ -1,0 +1,77 @@
+@layer components {
+  .root :global(.MuiTabbedCard-root) {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .root :global(.MuiCardHeader-root) {
+    padding: var(--bui-space-4) var(--bui-space-6);
+    border-bottom: 1px solid var(--bui-border-1);
+  }
+
+  .root :global(.MuiTabs-root) {
+    background-color: var(--bui-bg-neutral-1);
+    border-bottom: 1px solid var(--bui-border-1);
+  }
+
+  .loadingBox {
+    padding: var(--bui-space-6);
+  }
+
+  .trophyIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bui-bg-neutral-1);
+    color: var(--bui-fg-primary);
+    border-radius: var(--bui-radius-full);
+    box-sizing: border-box;
+    padding: var(--bui-space-2);
+    height: 48px;
+    width: 48px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .trophyIcon:hover {
+    transform: scale(1.05);
+  }
+
+  .votesText {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bui-bg-neutral-1);
+    padding: var(--bui-space-1) var(--bui-space-4);
+    border-radius: var(--bui-radius-full);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .rankingCard {
+    padding: var(--bui-space-4);
+  }
+
+  .rankingCardDescription {
+    color: var(--bui-fg-secondary);
+    margin-bottom: var(--bui-space-4);
+  }
+
+  .position {
+    font-weight: 800;
+    color: var(--bui-fg-secondary);
+    min-width: 30px;
+    text-align: right;
+  }
+
+  .topPosition {
+    color: var(--bui-ring);
+    font-size: 1.1rem;
+  }
+
+  .divider {
+    margin: var(--bui-space-4) 0;
+    opacity: 0.5;
+    border: 0;
+    border-bottom: 1px solid var(--bui-border-1);
+  }
+}

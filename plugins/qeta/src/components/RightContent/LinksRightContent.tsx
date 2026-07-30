@@ -5,7 +5,7 @@ import {
   qetaTranslationRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import Whatshot from '@material-ui/icons/Whatshot';
+import { RiFireLine } from '@remixicon/react';
 
 export const LinksRightContent = (props: {
   tags?: string[];
@@ -21,7 +21,7 @@ export const LinksRightContent = (props: {
         type="hot"
         title={t('highlights.hotLinks.title')}
         noQuestionsLabel={t('highlights.hotLinks.noLinksLabel')}
-        icon={<Whatshot fontSize="small" />}
+        icon={<RiFireLine size={16} />}
         postType="link"
         options={{
           tags: tags,

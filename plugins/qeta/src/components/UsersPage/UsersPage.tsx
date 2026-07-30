@@ -3,7 +3,7 @@ import {
   qetaTranslationRef,
   UsersContainer,
 } from '@drodil/backstage-plugin-qeta-react';
-import PeopleOutline from '@material-ui/icons/PeopleOutline';
+import { RiTeamLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const UsersPage = () => {
@@ -13,7 +13,7 @@ export const UsersPage = () => {
     <>
       <ContentHeader
         title={t('usersPage.title')}
-        titleIcon={<PeopleOutline fontSize="large" />}
+        titleIcon={<RiTeamLine size={24} />}
       />
       <UsersContainer />
     </>

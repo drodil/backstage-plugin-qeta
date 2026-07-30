@@ -9,21 +9,22 @@ import {
   isTag,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
-  Backdrop,
+  Alert,
   Button,
-  Modal,
-  TextField,
-  Typography,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import Delete from '@material-ui/icons/Delete';
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Flex,
+  TextAreaField,
+} from '@backstage/ui';
+import { RiDeleteBinLine } from '@remixicon/react';
 import { useState } from 'react';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { ModalContent } from '../Utility/ModalContent';
 import {
   articlesRouteRef,
   collectionsRouteRef,
@@ -161,57 +162,53 @@ export const DeleteModal = (props: {
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      className="qetaDeleteModal"
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{
-        timeout: 500,
+    <Dialog
+      isOpen={open}
+      isDismissable
+      onOpenChange={isOpenState => {
+        if (!isOpenState) onClose();
       }}
+      className="qetaDeleteModal"
       data-testid="delete-modal"
     >
-      <ModalContent>
-        {error && (
-          <Alert severity="error">{t('deleteModal.errorDeleting')}</Alert>
-        )}
-        <Typography
-          id="modal-modal-title"
-          className="qetaDeleteModalTitle"
-          variant="h6"
-          component="h2"
-        >
-          {title}
-        </Typography>
-        <TextField
-          variant="outlined"
-          multiline
-          style={{ marginTop: 16 }}
-          minRows={4}
-          label={t('deleteModal.reason')}
-          id="reason"
-          fullWidth
-          value={reason}
-          InputLabelProps={{ shrink: true }}
-          onChange={e => {
-            setReason(e.target.value);
-          }}
-        />
+      <DialogHeader className="qetaDeleteModalTitle">{title}</DialogHeader>
+      <DialogBody>
+        <Flex direction="column" gap="4">
+          {error && (
+            <Alert
+              status="danger"
+              icon
+              description={t('deleteModal.errorDeleting')}
+            />
+          )}
+          <TextAreaField
+            label={t('deleteModal.reason')}
+            id="reason"
+            rows={4}
+            value={reason}
+            onChange={value => setReason(value)}
+          />
+        </Flex>
+      </DialogBody>
+      <DialogFooter>
         <Button
           onClick={handleDelete}
           className="qetaDeleteModalDeleteBtn"
-          startIcon={<Delete />}
-          color="secondary"
+          iconStart={<RiDeleteBinLine />}
+          variant="primary"
+          destructive
         >
           {t('deleteModal.deleteButton')}
         </Button>
-        <Button onClick={onClose} className="qetaDeleteModalCancelBtn">
+        <Button
+          onClick={onClose}
+          className="qetaDeleteModalCancelBtn"
+          variant="secondary"
+          slot="close"
+        >
           {t('deleteModal.cancelButton')}
         </Button>
-      </ModalContent>
-    </Modal>
+      </DialogFooter>
+    </Dialog>
   );
 };

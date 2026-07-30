@@ -1,0 +1,5 @@
+@layer components {
+  .card {
+    margin-top: var(--bui-space-8);
+  }
+}

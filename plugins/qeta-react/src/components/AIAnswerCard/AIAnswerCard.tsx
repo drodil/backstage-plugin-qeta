@@ -8,34 +8,30 @@ import { CSSProperties, useCallback, useState } from 'react';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useAI } from '../../hooks';
 import { useUserSettings } from '../../hooks/useUserSettings';
-import FlareIcon from '@material-ui/icons/Flare';
 import useDebounce from 'react-use/lib/useDebounce';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import RefreshIcon from '@material-ui/icons/Refresh';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import {
+  Box,
+  ButtonIcon,
   Card,
-  CardContent,
+  CardBody,
   CardHeader,
-  Collapse,
-  IconButton,
-  makeStyles,
+  Flex,
+  Skeleton,
+  Text,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+  TooltipTrigger,
+} from '@backstage/ui';
+import {
+  RiArrowDownSLine,
+  RiArrowUpSLine,
+  RiRefreshLine,
+  RiSparklingLine,
+} from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    marginTop: '1em',
-    backgroundColor: theme.palette.background.default,
-    border: `3px solid ${theme.palette.status.ok}`,
-  },
-}));
+import styles from './AIAnswerCard.module.css';
 
 export type AIAnswerCardProps = {
   question?: Post;
@@ -54,7 +50,6 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const config = useApi(configApiRef);
   const botName = config.getOptionalString('qeta.aiBotName') ?? 'AI';
-  const styles = useStyles();
   const { settings, setSetting } = useUserSettings();
   const [expanded, setExpanded] = useState(settings.aiAnswerExpanded);
 
@@ -144,61 +139,75 @@ export const AIAnswerCard = (props: AIAnswerCardProps) => {
 
   return (
     <Card style={style} className={styles.root}>
-      <CardHeader
-        avatar={<FlareIcon />}
-        style={!expanded ? { paddingBottom: '1em' } : {}}
-        title={
-          <Typography variant="h5">
-            {article
-              ? t('aiAnswerCard.summary', { name: botName })
-              : t('aiAnswerCard.answer', { name: botName })}
-          </Typography>
-        }
-        action={
-          <>
+      <CardHeader className={!expanded ? styles.headerCollapsed : undefined}>
+        <Flex align="center" justify="between" gap="2">
+          <Flex align="center" gap="2">
+            <RiSparklingLine size={20} />
+            <Box>
+              <Text as="div" variant="title-small">
+                {article
+                  ? t('aiAnswerCard.summary', { name: botName })
+                  : t('aiAnswerCard.answer', { name: botName })}
+              </Text>
+              <Text as="div" variant="body-small" color="secondary">
+                {answer ? (
+                  <RelativeTimeWithTooltip
+                    value={answer.created ?? new Date()}
+                  />
+                ) : (
+                  t('aiAnswerCard.loading')
+                )}
+              </Text>
+            </Box>
+          </Flex>
+          <Flex align="center" gap="1">
             {canEdit && isEnabled() && (
-              <Tooltip title={t('aiAnswerCard.regenerate')}>
-                <IconButton
-                  onClick={() => {
+              <TooltipTrigger>
+                <ButtonIcon
+                  aria-label={t('aiAnswerCard.regenerate')}
+                  variant="tertiary"
+                  size="small"
+                  onPress={() => {
                     setAnswer(undefined);
                     fetchAnswer({ regenerate: true });
                   }}
-                >
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
+                  icon={<RiRefreshLine size={16} />}
+                />
+                <Tooltip>{t('aiAnswerCard.regenerate')}</Tooltip>
+              </TooltipTrigger>
             )}
-            <Tooltip
-              title={expanded ? t('aiAnswerCard.hide') : t('aiAnswerCard.show')}
-            >
-              <IconButton
-                onClick={() => {
+            <TooltipTrigger>
+              <ButtonIcon
+                aria-label={
+                  expanded ? t('aiAnswerCard.hide') : t('aiAnswerCard.show')
+                }
+                variant="tertiary"
+                size="small"
+                onPress={() => {
                   setExpanded(!expanded);
                   setSetting('aiAnswerExpanded', !expanded);
                 }}
-                aria-expanded={expanded}
-              >
-                {expanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-              </IconButton>
-            </Tooltip>
-          </>
-        }
-        subheader={
-          answer ? (
-            <RelativeTimeWithTooltip value={answer.created ?? new Date()} />
-          ) : (
-            <>{t('aiAnswerCard.loading')}</>
-          )
-        }
-      />
-      <Collapse in={expanded} timeout={0} unmountOnExit mountOnEnter>
-        <CardContent>
-          {answer === undefined && (
-            <Skeleton variant="rect" height={200} animation="wave" />
-          )}
+                icon={
+                  expanded ? (
+                    <RiArrowUpSLine size={16} />
+                  ) : (
+                    <RiArrowDownSLine size={16} />
+                  )
+                }
+              />
+              <Tooltip>
+                {expanded ? t('aiAnswerCard.hide') : t('aiAnswerCard.show')}
+              </Tooltip>
+            </TooltipTrigger>
+          </Flex>
+        </Flex>
+      </CardHeader>
+      {expanded && (
+        <CardBody>
+          {answer === undefined && <Skeleton width="100%" height={200} />}
           {answer && <MarkdownRenderer content={answer.answer} />}
-        </CardContent>
-      </Collapse>
+        </CardBody>
+      )}
     </Card>
   );
 };

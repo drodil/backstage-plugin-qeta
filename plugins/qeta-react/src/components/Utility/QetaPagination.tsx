@@ -1,30 +1,8 @@
 import { ChangeEvent } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import {
-  FormControl,
-  Grid,
-  makeStyles,
-  MenuItem,
-  Select,
-  Tooltip,
-} from '@material-ui/core';
-import { Pagination } from '@material-ui/lab';
-
-const useStyles = makeStyles(
-  () => ({
-    root: {
-      marginTop: '2em',
-      marginBottom: '2em',
-    },
-    pageSizeSelect: {
-      marginRight: '1em',
-      maxHeight: '42px',
-    },
-    pagination: {},
-  }),
-  { name: 'QetaPagination' },
-);
+import { Box, Button, Text, Tooltip, TooltipTrigger } from '@backstage/ui';
+import styles from './QetaPagination.module.css';
 
 export const QetaPagination = (props: {
   pageSize: number;
@@ -37,41 +15,72 @@ export const QetaPagination = (props: {
   const { handlePageChange, handlePageSizeChange, page, pageCount, tooltip } =
     props;
   const { t } = useTranslationRef(qetaTranslationRef);
-  const styles = useStyles();
+
+  const onPageSizeSelect = (value: number) => {
+    const syntheticEvent = {
+      target: { value },
+    } as ChangeEvent<{ value: unknown }>;
+    handlePageSizeChange(syntheticEvent);
+  };
+
+  const onPageSelect = (nextPage: number) => {
+    const bounded = Math.max(1, Math.min(pageCount, nextPage));
+    const syntheticEvent = {} as ChangeEvent<unknown>;
+    handlePageChange(syntheticEvent, bounded);
+  };
+
   return (
-    <Grid
-      container
-      className={styles.root}
-      spacing={0}
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Tooltip title={tooltip ?? t('pagination.defaultTooltip', {})} arrow>
-        <FormControl variant="outlined">
-          <Select
-            value={props.pageSize}
-            onChange={handlePageSizeChange}
-            variant="outlined"
+    <Box className={styles.root}>
+      <TooltipTrigger>
+        <div className={styles.pageSizeWrapper}>
+          <select
             className={styles.pageSizeSelect}
+            value={props.pageSize}
+            onChange={e => onPageSizeSelect(Number(e.target.value))}
           >
-            <MenuItem value={5}>5</MenuItem>
-            <MenuItem value={10}>10</MenuItem>
-            <MenuItem value={25}>25</MenuItem>
-            <MenuItem value={50}>50</MenuItem>
-            <MenuItem value={100}>100</MenuItem>
-          </Select>
-        </FormControl>
-      </Tooltip>
-      <Pagination
-        page={page}
-        onChange={handlePageChange}
-        count={pageCount}
-        size="large"
-        variant="outlined"
-        className={styles.pagination}
-        showFirstButton
-        showLastButton
-      />
-    </Grid>
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
+        <Tooltip>{tooltip ?? t('pagination.defaultTooltip', {})}</Tooltip>
+      </TooltipTrigger>
+
+      <div className={styles.controls}>
+        <Button
+          variant="secondary"
+          isDisabled={page <= 1}
+          onClick={() => onPageSelect(1)}
+        >
+          «
+        </Button>
+        <Button
+          variant="secondary"
+          isDisabled={page <= 1}
+          onClick={() => onPageSelect(page - 1)}
+        >
+          ‹
+        </Button>
+        <Text variant="body-small" className={styles.pageLabel}>
+          {page} / {Math.max(pageCount, 1)}
+        </Text>
+        <Button
+          variant="secondary"
+          isDisabled={page >= pageCount}
+          onClick={() => onPageSelect(page + 1)}
+        >
+          ›
+        </Button>
+        <Button
+          variant="secondary"
+          isDisabled={page >= pageCount}
+          onClick={() => onPageSelect(pageCount)}
+        >
+          »
+        </Button>
+      </div>
+    </Box>
   );
 };

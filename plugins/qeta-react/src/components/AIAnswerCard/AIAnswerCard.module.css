@@ -1,0 +1,11 @@
+@layer components {
+  .root {
+    margin-top: var(--bui-space-4);
+    background-color: var(--bui-bg-app);
+    border: 2px solid var(--bui-fg-success);
+  }
+
+  .headerCollapsed {
+    padding-bottom: var(--bui-space-4);
+  }
+}

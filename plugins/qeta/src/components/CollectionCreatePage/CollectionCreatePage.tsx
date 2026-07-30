@@ -5,7 +5,7 @@ import {
   qetaTranslationRef,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const CollectionCreatePage = () => {
@@ -26,13 +26,13 @@ export const CollectionCreatePage = () => {
   return (
     <>
       <ContentHeader title={title} />
-      <Grid container spacing={3} direction="column">
-        <Grid item>
+      <Grid.Root columns={{ sm: '12' }} gap="6">
+        <Grid.Item colSpan={{ sm: '12' }}>
           <InfoCard>
             <CollectionForm id={id} />
           </InfoCard>
-        </Grid>
-      </Grid>
+        </Grid.Item>
+      </Grid.Root>
     </>
   );
 };

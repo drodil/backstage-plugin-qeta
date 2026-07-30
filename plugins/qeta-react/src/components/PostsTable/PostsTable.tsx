@@ -1,25 +1,14 @@
-import { ChangeEvent, useState } from 'react';
-import { LinkButton, Progress, WarningPanel } from '@backstage/core-components';
+import { useState } from 'react';
+import { LinkButton, WarningPanel } from '@backstage/core-components';
 import { PostsTableRow } from './PostsTableRow';
 import { useQetaApi } from '../../hooks';
-import {
-  Button,
-  ButtonGroup,
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Typography,
-} from '@material-ui/core';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import { Box, Button, Flex, TablePagination, Text } from '@backstage/ui';
+import { RiRefreshLine } from '@remixicon/react';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
+import styles from './PostsTable.module.css';
 
 type QuickFilterType = 'latest' | 'favorites' | 'most_viewed';
 
@@ -88,15 +77,6 @@ export const PostsTable = (props: {
     }
   };
 
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage + 1);
-  };
-
-  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
-    setQuestionsPerPage(parseInt(event.target.value, 10));
-    setPage(1);
-  };
-
   if (loading) {
     return <LoadingGrid />;
   }
@@ -109,71 +89,67 @@ export const PostsTable = (props: {
     );
   }
 
+  const offset = (page - 1) * questionsPerPage;
+
   return (
     <>
-      <Grid
-        container
-        justifyContent="space-between"
-        alignItems="center"
-        style={{ marginBottom: '1em' }}
-        className="qetaPostsTableGrid"
+      <Flex
+        align="center"
+        justify="between"
+        className={`${styles.header} qetaPostsTableGrid`}
       >
-        <Grid item>
+        <Box>
           {props.hideTitle === true ? null : (
-            <Typography variant="h5">{t('pluginName')}</Typography>
+            <Text variant="title-medium">{t('pluginName')}</Text>
           )}
-        </Grid>
-        <Grid item>
-          <ButtonGroup>
+        </Box>
+        <Flex align="center" gap="2">
+          <Flex align="center" gap="1" className={styles.quickFilters}>
             <Button
-              color={quickFilter === 'latest' ? 'primary' : undefined}
+              variant={quickFilter === 'latest' ? 'primary' : 'secondary'}
+              size="small"
               onClick={() => handleQuickFilterChange('latest')}
             >
               {t('postsTable.latest')}
             </Button>
             <Button
-              color={quickFilter === 'favorites' ? 'primary' : undefined}
+              variant={quickFilter === 'favorites' ? 'primary' : 'secondary'}
+              size="small"
               onClick={() => handleQuickFilterChange('favorites')}
             >
               {t('postsTable.favorites')}
             </Button>
             <Button
-              color={quickFilter === 'most_viewed' ? 'primary' : undefined}
+              variant={quickFilter === 'most_viewed' ? 'primary' : 'secondary'}
+              size="small"
               onClick={() => handleQuickFilterChange('most_viewed')}
             >
               {t('postsTable.mostViewed')}
             </Button>
-          </ButtonGroup>
+          </Flex>
           <LinkButton
             to="#"
             variant="text"
             onClick={() => setRefresh(refresh + 1)}
           >
-            <RefreshIcon />
+            <RiRefreshLine size={16} />
           </LinkButton>
-        </Grid>
-      </Grid>
-      <TableContainer>
-        <Table className="qetaQuestionsTable">
-          <TableHead>
-            <TableRow>
-              <TableCell>{t('postsTable.cells.title')}</TableCell>
-              <TableCell>{t('postsTable.cells.author')}</TableCell>
+        </Flex>
+      </Flex>
+      <Box className={styles.tableContainer}>
+        <table className={`${styles.table} qetaQuestionsTable`}>
+          <thead>
+            <tr>
+              <th>{t('postsTable.cells.title')}</th>
+              <th>{t('postsTable.cells.author')}</th>
               {props.postType === undefined && (
-                <TableCell>{t('postsTable.cells.type')}</TableCell>
+                <th>{t('postsTable.cells.type')}</th>
               )}
-              <TableCell>{t('postsTable.cells.asked')}</TableCell>
-              <TableCell>{t('postsTable.cells.updated')}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell>
-                  <Progress />
-                </TableCell>
-              </TableRow>
-            ) : null}
+              <th>{t('postsTable.cells.asked')}</th>
+              <th>{t('postsTable.cells.updated')}</th>
+            </tr>
+          </thead>
+          <tbody>
             {response.posts.map(q => (
               <PostsTableRow
                 key={q.id}
@@ -181,18 +157,23 @@ export const PostsTable = (props: {
                 showIcon={props.postType === undefined}
               />
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 20, 30, 40, 50]}
-          component="div"
-          count={response.total}
-          rowsPerPage={questionsPerPage}
-          page={page - 1}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          pageSize={questionsPerPage}
+          pageSizeOptions={[5, 10, 20, 30, 40, 50]}
+          offset={offset}
+          totalCount={response.total}
+          hasPreviousPage={page > 1}
+          hasNextPage={offset + questionsPerPage < response.total}
+          onPreviousPage={() => setPage(p => Math.max(1, p - 1))}
+          onNextPage={() => setPage(p => p + 1)}
+          onPageSizeChange={size => {
+            setQuestionsPerPage(size);
+            setPage(1);
+          }}
         />
-      </TableContainer>
+      </Box>
     </>
   );
 };

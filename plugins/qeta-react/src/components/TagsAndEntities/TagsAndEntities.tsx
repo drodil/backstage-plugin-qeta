@@ -4,7 +4,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { EntityChip } from './EntityChip';
 import { TagChip } from './TagChip';
-import { Chip } from '@material-ui/core';
+import { Tag } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 
@@ -45,12 +45,7 @@ export const TagsAndEntities = (props: {
           <EntityChip entity={component} key={component} />
         ))}
       {moreCount > 0 && (
-        <Chip
-          label={t('common.more', { count: moreCount } as any)}
-          size="small"
-          variant="outlined"
-          color="primary"
-        />
+        <Tag size="small">{t('common.more', { count: moreCount } as any)}</Tag>
       )}
     </>
   );

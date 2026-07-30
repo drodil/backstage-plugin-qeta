@@ -16,7 +16,7 @@ import {
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags, Template } from '@drodil/backstage-plugin-qeta-common';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Grid } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const AskPage = () => {
@@ -110,8 +110,8 @@ export const AskPage = () => {
   return (
     <>
       <ContentHeader title={title} />
-      <Grid container spacing={3} direction="column">
-        <Grid item style={{ width: '100%' }}>
+      <Grid.Root columns={{ sm: '12' }} gap="6">
+        <Grid.Item colSpan={{ sm: '12' }}>
           <InfoCard>
             <PostForm
               id={id}
@@ -127,8 +127,8 @@ export const AskPage = () => {
             />
             <AIAnswerCard draft={draft} />
           </InfoCard>
-        </Grid>
-      </Grid>
+        </Grid.Item>
+      </Grid.Root>
     </>
   );
 };

@@ -9,10 +9,9 @@ import { Content } from '@backstage/core-components';
 import { isUserEntity, stringifyEntityRef } from '@backstage/catalog-model';
 import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
 import type { FilterPredicate } from '@backstage/filter-predicates';
-import { Container } from '@material-ui/core';
+import { Container, Skeleton } from '@backstage/ui';
 import { PluggableList } from 'unified';
 import { useApi } from '@backstage/core-plugin-api';
-import { Skeleton } from '@material-ui/lab';
 
 export type EntityPostsContentProps = PostsContainerProps & {
   remarkPlugins?: PluggableList;
@@ -69,7 +68,7 @@ export const EntityPostsContent = (props: EntityPostsContentProps) => {
   }, [catalog, entity, props.relations]);
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Skeleton width="100%" height={200} />;
   }
 
   return (

@@ -1,0 +1,95 @@
+@layer components {
+  .leftMenu {
+    top: 0;
+    width: 220px;
+    padding-top: 0;
+    padding-bottom: var(--bui-space-4);
+    transition: width 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .leftMenuCompact {
+    width: 70px;
+    overflow-x: hidden;
+  }
+
+  .leftMenuCompact .sectionHeader {
+    display: none;
+  }
+
+  .inPopup {
+    margin-right: 0;
+    padding: var(--bui-space-2);
+    width: auto;
+  }
+
+  .outsidePopup {
+    padding-right: var(--bui-space-4);
+  }
+
+  .menuItemLink {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    max-width: 75%;
+    border-radius: var(--bui-radius-2);
+    transition: all 0.2s ease-in-out;
+    margin-bottom: var(--bui-space-1);
+  }
+
+  .menuItemLink:hover {
+    background-color: var(--bui-bg-neutral-1-hover);
+  }
+
+  .menuItemLinkCompact {
+    max-width: none;
+  }
+
+  .selectedMenuItem {
+    color: var(--bui-ring);
+  }
+
+  .selectedMenuItem :global(svg) {
+    color: var(--bui-ring);
+  }
+
+  .sectionHeader {
+    padding: 0 var(--bui-space-3) var(--bui-space-2) 0;
+    margin-top: var(--bui-space-4);
+    color: var(--bui-fg-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .toggleRow {
+    display: flex;
+    margin-top: auto;
+  }
+
+  .toggleRowCompact {
+    justify-content: center;
+  }
+
+  .toggleRowExpanded {
+    justify-content: flex-start;
+  }
+
+  .toggleButton {
+    margin-top: 8px;
+  }
+
+  .label {
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.2s;
+  }
+
+  .labelHidden {
+    display: none;
+  }
+}

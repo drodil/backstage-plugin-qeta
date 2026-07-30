@@ -1,0 +1,6 @@
+@layer components {
+  .container {
+    min-width: 220px;
+    margin-left: var(--bui-space-2);
+  }
+}

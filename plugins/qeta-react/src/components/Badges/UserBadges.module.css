@@ -1,0 +1,9 @@
+@layer components {
+  .title {
+    margin-bottom: var(--bui-space-2);
+  }
+
+  .grid {
+    padding: var(--bui-space-4);
+  }
+}

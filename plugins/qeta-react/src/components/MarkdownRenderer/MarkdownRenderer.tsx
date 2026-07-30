@@ -1,17 +1,11 @@
-import {
-  Children,
-  createElement,
-  lazy,
-  PropsWithChildren,
-  useEffect,
-} from 'react';
+import { Children, lazy, PropsWithChildren, useEffect } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { MarkdownHooks } from 'react-markdown';
 import {
   a11yDark,
   a11yLight,
 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
+import { ButtonIcon, Text, Tooltip, TooltipTrigger } from '@backstage/ui';
 import {
   findEntityMentions,
   findTagMentions,
@@ -21,17 +15,15 @@ import rehypeSlug from 'rehype-slug';
 import rehypeToc, { HeadingNode, TextNode } from '@jsdevtools/rehype-toc';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
-import { BackstageOverrides } from '@backstage/core-components';
-import LinkIcon from '@material-ui/icons/Link';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import { RiFileCopyLine, RiLinksLine } from '@remixicon/react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
-import { Variant } from '@material-ui/core/styles/createTypography';
 import GithubSlugger from 'github-slugger';
 import { HtmlElementNode } from '@jsdevtools/rehype-toc/lib/types';
 import { find } from 'unist-util-find';
 import { useQetaContext } from '../QetaContext';
+import styles from './MarkdownRenderer.module.css';
 
 const TagChip = lazy(() =>
   import('../TagsAndEntities/TagChip').then(m => ({ default: m.TagChip })),
@@ -39,181 +31,19 @@ const TagChip = lazy(() =>
 
 const slugger = new GithubSlugger();
 
-export type QetaMarkdownContentClassKey =
-  | 'markdown'
-  | 'header'
-  | 'tocHeader'
-  | 'toc'
-  | 'tocList'
-  | 'tocListItem'
-  | 'tocLink';
+type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
-const useStyles = makeStyles(
-  theme => {
-    const overrides = theme.overrides as BackstageOverrides;
-    return {
-      markdown: {
-        lineHeight: 1.75,
-        '& p': {
-          ...theme.typography?.body1,
-          margin: '0 0 1em 0',
-          wordBreak: 'break-word',
-        },
-        '& h1': {
-          ...theme.typography?.h1,
-          marginBottom: 2,
-          marginTop: '1.5em',
-        },
-        '& h2': {
-          ...theme.typography?.h2,
-          marginBottom: 2,
-          marginTop: '1.2em',
-        },
-        '& h3': {
-          ...theme.typography?.h3,
-          marginBottom: 2,
-          marginTop: '1em',
-        },
-        '& h4': {
-          ...theme.typography?.h4,
-          marginBottom: 2,
-          marginTop: '0.8em',
-        },
-        '& h5': {
-          ...theme.typography?.h5,
-          marginBottom: 2,
-          marginTop: '0.7em',
-        },
-        '& h6': {
-          ...theme.typography?.h6,
-          marginBottom: 2,
-          marginTop: '0.6em',
-        },
-        '& table': {
-          borderCollapse: 'collapse',
-          border: `1px solid ${theme.palette.border}`,
-        },
-        '& th, & td': {
-          border: `1px solid ${theme.palette.border}`,
-          padding: theme.spacing(1),
-        },
-        '& td': {
-          wordBreak: 'break-word',
-          overflow: 'hidden',
-          verticalAlign: 'middle',
-          lineHeight: '1',
-          margin: 0,
-          padding: theme.spacing(3, 2, 3, 2.5),
-          borderBottom: 0,
-        },
-        '& th': {
-          backgroundColor: theme.palette.background.paper,
-        },
-        '& tr': {
-          backgroundColor: theme.palette.background.paper,
-        },
-        '& tr:nth-child(odd)': {
-          backgroundColor: theme.palette.background.default,
-        },
-        '& a': {
-          color: theme.palette.link,
-        },
-        '& img': {
-          maxWidth: '100%',
-        },
-        '& code': {
-          fontFamily: 'Courier New,Courier,monospace',
-          fontStyle: 'normal',
-          overflowX: 'auto',
-        },
-        '& em': {
-          fontStyle: 'italic !important',
-        },
-        '& ol': {
-          listStyle: 'decimal',
-          marginLeft: '2em',
-          marginBottom: '1em',
-          marginTop: '1em',
-        },
-        '& ul': {
-          listStyle: 'disc',
-          marginLeft: '2em',
-          marginBottom: '1em',
-          marginTop: '1em',
-        },
-        '& blockquote': {
-          backgroundColor: theme.palette.background.paper,
-          border: `1px solid ${theme.palette.divider}`,
-          padding: '1em 1.5em',
-          margin: '1.5em 0',
-          color: theme.palette.text.secondary,
-          borderLeft: `4px solid ${theme.palette.divider}`,
-        },
-        '& li': {
-          marginTop: '0.5em',
-        },
-        '& *:first-child': {
-          marginTop: 0,
-        },
-        '& *:last-child': {
-          marginBottom: 0,
-        },
-        '& path': {
-          stroke: `${theme.palette.text.primary} !important`,
-        },
-        ...(overrides?.BackstageMarkdownContent ?? {}),
-      },
-      codeBlockContainer: {
-        position: 'relative',
-        '& .copyCodeButton': {
-          opacity: 0,
-          pointerEvents: 'none',
-          transition: 'opacity 0.2s',
-        },
-        '&:hover .copyCodeButton': {
-          opacity: 1,
-          pointerEvents: 'auto',
-        },
-      },
-      header: {
-        '& .anchor-link': {
-          display: 'none',
-          marginLeft: '0.5em',
-        },
-        '&:hover .anchor-link': {
-          display: 'inline-block',
-        },
-      },
-      tocHeader: {
-        marginTop: '0.5em',
-        marginBottom: 0,
-      },
-      toc: {
-        marginTop: '0.5em',
-        marginLeft: '0.2em',
-        paddingBottom: '1em',
-        borderBottom: `1px solid ${theme.palette.divider}`,
-      },
-      tocList: {
-        marginLeft: '0 !important',
-        marginTop: '0.5em !important',
-        paddingInlineStart: '1em',
-        counterReset: 'item',
-      },
-      tocListItem: {
-        display: 'block',
-        '&:before': {
-          content: 'counters(item, ".") " "',
-          counterIncrement: 'item',
-        },
-      },
-      tocLink: {
-        color: theme.palette.link,
-      },
-    };
-  },
-  { name: 'QetaMarkdownContent' },
-);
+const headingVariants: Record<
+  HeadingTag,
+  'title-large' | 'title-medium' | 'title-small' | 'title-x-small'
+> = {
+  h1: 'title-large',
+  h2: 'title-large',
+  h3: 'title-medium',
+  h4: 'title-medium',
+  h5: 'title-small',
+  h6: 'title-x-small',
+};
 
 const flatten = (text: string, child: any): string => {
   if (!child) return text;
@@ -232,7 +62,6 @@ export const MarkdownRenderer = (props: {
   const { content, className: mainClassName, showToc, useBlankLinks } = props;
   const darkTheme = useIsDarkTheme();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   slugger.reset();
 
@@ -263,30 +92,30 @@ export const MarkdownRenderer = (props: {
     const childrenArray = Children.toArray(children);
     const text = childrenArray.reduce(flatten, '');
     const slug = slugger.slug(text);
+    const tag = node.tagName as HeadingTag;
     const link = (
-      <Tooltip title={t('link.aria')}>
-        <IconButton
+      <TooltipTrigger>
+        <ButtonIcon
           aria-label={t('link.aria')}
-          onClick={() => copyToClipboard(slug)}
+          onPress={() => copyToClipboard(slug)}
           size="small"
+          variant="tertiary"
           className="anchor-link"
-        >
-          <LinkIcon />
-        </IconButton>
-      </Tooltip>
+          icon={<RiLinksLine size={16} />}
+        />
+        <Tooltip>{t('link.aria')}</Tooltip>
+      </TooltipTrigger>
     );
     return (
-      <>
-        {createElement(
-          Typography,
-          {
-            variant: node.tagName as Variant,
-            id: slug,
-            className: classes.header,
-          },
-          [children, link],
-        )}
-      </>
+      <Text
+        as={tag}
+        variant={headingVariants[tag]}
+        id={slug}
+        className={styles.header}
+      >
+        {children}
+        {link}
+      </Text>
     );
   };
 
@@ -310,10 +139,10 @@ export const MarkdownRenderer = (props: {
       rehypeToc,
       {
         cssClasses: {
-          toc: classes.toc,
-          list: classes.tocList,
-          listItem: classes.tocListItem,
-          link: classes.tocLink,
+          toc: styles.toc,
+          list: styles.tocList,
+          listItem: styles.tocListItem,
+          link: styles.tocLink,
         },
         customizeTOC: (toc: HtmlElementNode) => {
           const listItems = find(toc, { tagName: 'li' });
@@ -339,7 +168,7 @@ export const MarkdownRenderer = (props: {
   }
 
   return (
-    <div className={`${classes.markdown} ${mainClassName ?? ''}`.trim()}>
+    <div className={`${styles.markdown} ${mainClassName ?? ''}`.trim()}>
       <MarkdownHooks
         remarkPlugins={[gfm, ...(extensions.remarkPlugins ?? [])]}
         rehypePlugins={[...rehypePlugins, ...(extensions.rehypePlugins ?? [])]}
@@ -400,7 +229,7 @@ export const MarkdownRenderer = (props: {
             const match = /language-(\w+)/.exec(className || '');
             const codeString = String(children).replace(/\n$/, '');
             return match ? (
-              <div className={classes.codeBlockContainer}>
+              <div className={styles.codeBlockContainer}>
                 <SyntaxHighlighter
                   {...rest}
                   PreTag="div"
@@ -410,22 +239,17 @@ export const MarkdownRenderer = (props: {
                 >
                   {codeString}
                 </SyntaxHighlighter>
-                <Tooltip title={t('code.aria')}>
-                  <IconButton
+                <TooltipTrigger>
+                  <ButtonIcon
                     aria-label={t('code.aria')}
                     size="small"
+                    variant="tertiary"
                     className="copyCodeButton"
-                    style={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      zIndex: 2,
-                    }}
-                    onClick={() => copyCodeToClipboard(codeString)}
-                  >
-                    <FileCopyIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
+                    icon={<RiFileCopyLine size={16} />}
+                    onPress={() => copyCodeToClipboard(codeString)}
+                  />
+                  <Tooltip>{t('code.aria')}</Tooltip>
+                </TooltipTrigger>
               </div>
             ) : (
               <code {...rest} className={className}>

@@ -1,11 +1,11 @@
 import { useQetaApi } from '../../hooks';
 import { BadgeChip } from './BadgeChip';
-import { Box, Grid, Typography } from '@material-ui/core';
-import { Alert, Skeleton } from '@material-ui/lab';
+import { Alert, Box, Grid, Skeleton, Text } from '@backstage/ui';
 import { UserBadge } from '@drodil/backstage-plugin-qeta-common';
 
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
+import styles from './UserBadges.module.css';
 
 const LEVEL_ORDER: Record<string, number> = {
   diamond: 0,
@@ -31,11 +31,11 @@ export const UserBadges = ({ entityRef }: { entityRef: string }) => {
   } = useQetaApi(api => api.getUserBadges(entityRef), [entityRef]);
 
   if (loading) {
-    return <Skeleton variant="rect" height={100} />;
+    return <Skeleton width="100%" height={100} />;
   }
 
   if (error) {
-    return <Alert severity="error">{t('userBadges.error')}</Alert>;
+    return <Alert status="danger" icon description={t('userBadges.error')} />;
   }
 
   const sortedBadges = badges ? sortBadgesByLevel(badges) : [];
@@ -63,25 +63,22 @@ export const UserBadges = ({ entityRef }: { entityRef: string }) => {
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
+      <Text variant="title-small" as="div" className={styles.title}>
         {t('userBadges.title')}
-      </Typography>
+      </Text>
       {displayBadges.length === 0 ? (
-        <Typography variant="body2">{t('userBadges.noBadges')}</Typography>
+        <Text variant="body-medium">{t('userBadges.noBadges')}</Text>
       ) : (
-        <Grid
-          container
-          spacing={3}
-          style={{ padding: '1em' }}
-          justifyContent="flex-start"
-          alignItems="stretch"
-        >
+        <Grid.Root columns={{ initial: '12' }} gap="6" className={styles.grid}>
           {displayBadges.map(item => (
-            <Grid item key={item.badge.key} xs={6} sm={4} md={4} lg={3}>
+            <Grid.Item
+              key={item.badge.key}
+              colSpan={{ initial: '6', sm: '4', lg: '3' }}
+            >
               <BadgeChip badge={item.badge} count={item.count} />
-            </Grid>
+            </Grid.Item>
           ))}
-        </Grid>
+        </Grid.Root>
       )}
     </Box>
   );

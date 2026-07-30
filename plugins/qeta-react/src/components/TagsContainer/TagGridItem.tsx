@@ -5,58 +5,41 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { TagFollowButton } from '../Buttons/TagFollowButton';
 import {
-  Avatar,
   Box,
+  ButtonIcon,
   Card,
-  CardContent,
+  Flex,
   Grid,
-  GridSize,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
   Menu,
   MenuItem,
+  MenuTrigger,
+  Text,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
+  TooltipTrigger,
+} from '@backstage/ui';
+import type { Columns } from '@backstage/ui';
 import { useState } from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
 import { EditTagModal } from './EditTagModal';
 import DOMPurify from 'dompurify';
 import { DeleteModal } from '../Modals';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import LocalOfferIcon from '@material-ui/icons/LocalOffer';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import PeopleIcon from '@material-ui/icons/People';
-import LinkIcon from '@material-ui/icons/Link';
-import DescriptionIcon from '@material-ui/icons/Description';
+import {
+  RiDeleteBinLine,
+  RiEditLine,
+  RiFileTextLine,
+  RiGroupLine,
+  RiLink,
+  RiMore2Line,
+  RiPriceTag3Line,
+  RiQuestionLine,
+} from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
-import { useTooltipStyles } from '../../hooks/useTooltipStyles.ts';
 import { ClickableLink } from '../Utility/ClickableLink';
 import { useQetaConfig } from '../../hooks';
-
-const useStyles = makeStyles(theme => ({
-  statsGrid: {
-    marginTop: 'auto',
-  },
-  statItem: {
-    padding: theme.spacing(1),
-    borderRadius: theme.shape.borderRadius,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-  },
-  flexColumn: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-}));
+import styles from './TagGridItem.module.css';
 
 export const TagGridItem = (props: {
   tag: TagResponse;
@@ -67,8 +50,6 @@ export const TagGridItem = (props: {
   const tagRoute = useRouteRef(tagRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const classes = useGridItemStyles();
-  const localClasses = useStyles();
-  const tooltipStyles = useTooltipStyles();
   const { disabled } = useQetaConfig();
 
   const enabledStatsCount = [
@@ -77,24 +58,10 @@ export const TagGridItem = (props: {
     !disabled.links,
     true,
   ].filter(Boolean).length;
-  const statXs = Math.floor(12 / enabledStatsCount) as GridSize;
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setAnchorEl(event.currentTarget);
-  };
-  const handleMenuClose = (
-    _event: {},
-    _reason: 'backdropClick' | 'escapeKeyDown',
-  ) => {
-    setAnchorEl(null);
-  };
+  const statColSpan = String(Math.floor(12 / enabledStatsCount)) as Columns;
 
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const handleEditModalOpen = (event: React.MouseEvent<HTMLElement>) => {
-    handleMenuClose(event as any, 'backdropClick');
+  const handleEditModalOpen = () => {
     setEditModalOpen(true);
   };
   const handleEditModalClose = () => {
@@ -103,8 +70,7 @@ export const TagGridItem = (props: {
   };
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const handleDeleteModalOpen = (event: React.MouseEvent<HTMLElement>) => {
-    handleMenuClose(event as any, 'backdropClick');
+  const handleDeleteModalOpen = () => {
     setDeleteModalOpen(true);
   };
   const handleDeleteModalClose = () => {
@@ -118,182 +84,145 @@ export const TagGridItem = (props: {
     <>
       <Card className={classes.card}>
         <ClickableLink href={href} ariaLabel={tag.tag}>
-          <Box
-            className={classes.cardHeader}
-            display="flex"
-            alignItems="center"
-          >
-            <Avatar
-              variant="rounded"
-              className="avatar"
-              style={{ marginRight: 16 }}
-            >
-              <LocalOfferIcon />
-            </Avatar>
-            <Box flex={1} minWidth={0}>
-              <Tooltip title={tag.tag} arrow>
-                <Typography variant="h6" noWrap>
+          <Flex align="center" className={classes.cardHeader}>
+            <div className={styles.iconAvatar}>
+              <RiPriceTag3Line size={20} />
+            </div>
+            <Box grow={1} minWidth="0">
+              <TooltipTrigger>
+                <Text variant="title-medium" truncate as="div">
                   {tag.tag}
-                </Typography>
-              </Tooltip>
+                </Text>
+                <Tooltip>{tag.tag}</Tooltip>
+              </TooltipTrigger>
             </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              flexShrink={0}
+            <Flex
+              align="center"
+              shrink={0}
               onClick={e => {
                 e.preventDefault();
                 e.stopPropagation();
               }}
             >
               <TagFollowButton tag={tag.tag} />
-              {tag.canEdit || tag.canDelete ? (
-                <>
-                  <IconButton aria-label="settings" onClick={handleMenuClick}>
-                    <MoreVertIcon />
-                  </IconButton>
-                  <Menu
-                    id="tag-menu"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleMenuClose}
-                    getContentAnchorEl={null}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
-                  >
+              {(tag.canEdit || tag.canDelete) && (
+                <MenuTrigger>
+                  <ButtonIcon
+                    aria-label="settings"
+                    icon={<RiMore2Line />}
+                    variant="tertiary"
+                    size="small"
+                  />
+                  <Menu>
                     {tag.canEdit && (
                       <MenuItem
-                        onClick={e => {
-                          e.stopPropagation();
-                          handleEditModalOpen(e);
-                        }}
+                        iconStart={<RiEditLine size={16} />}
+                        onAction={handleEditModalOpen}
                       >
-                        <ListItemIcon style={{ minWidth: '32px' }}>
-                          <EditIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary={t('tagButton.edit')} />
+                        {t('tagButton.edit')}
                       </MenuItem>
                     )}
                     {tag.canDelete && (
                       <MenuItem
-                        onClick={e => {
-                          e.stopPropagation();
-                          handleDeleteModalOpen(e);
-                        }}
+                        iconStart={<RiDeleteBinLine size={16} />}
+                        color="danger"
+                        onAction={handleDeleteModalOpen}
                       >
-                        <ListItemIcon style={{ minWidth: '32px' }}>
-                          <DeleteIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary={t('tagButton.delete')} />
+                        {t('tagButton.delete')}
                       </MenuItem>
                     )}
                   </Menu>
-                </>
-              ) : null}
-            </Box>
-          </Box>
-          <CardContent
-            className={`${classes.cardContent} ${localClasses.flexColumn}`}
-          >
+                </MenuTrigger>
+              )}
+            </Flex>
+          </Flex>
+          <div className={`${classes.cardContent} ${styles.flexColumn}`}>
             {tag.description && (
-              <Box mb={2}>
-                <Tooltip
-                  title={tag.description}
-                  arrow
-                  classes={{
-                    tooltip: tooltipStyles.tooltip,
-                    arrow: tooltipStyles.tooltipArrow,
-                  }}
-                >
-                  <Typography className={classes.description} variant="body2">
+              <Box mb="2">
+                <TooltipTrigger>
+                  <Text
+                    className={classes.description}
+                    variant="body-small"
+                    as="div"
+                  >
                     {DOMPurify.sanitize(
                       truncate(removeMarkdownFormatting(tag.description), 80),
                     )}
-                  </Typography>
-                </Tooltip>
+                  </Text>
+                  <Tooltip>{tag.description}</Tooltip>
+                </TooltipTrigger>
               </Box>
             )}
 
-            <Grid container spacing={1} className={localClasses.statsGrid}>
+            <Grid.Root
+              columns={{ sm: '12' }}
+              gap="2"
+              className={styles.statsGrid}
+            >
               {!disabled.questions && (
-                <Grid item xs={statXs}>
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    className={localClasses.statItem}
-                  >
-                    <QuestionAnswerIcon fontSize="small" color="disabled" />
-                    <Typography variant="body2" style={{ fontWeight: 600 }}>
+                <Grid.Item
+                  colSpan={{ sm: statColSpan }}
+                  className={styles.statItem}
+                >
+                  <Flex direction="column" align="center" gap="0.5">
+                    <RiQuestionLine size={16} />
+                    <Text variant="body-small" weight="bold">
                       {tag.questionsCount}
-                    </Typography>
-                    <Typography variant="caption" color="textSecondary">
+                    </Text>
+                    <Text variant="body-x-small" color="secondary">
                       {t('common.questions')}
-                    </Typography>
-                  </Box>
-                </Grid>
+                    </Text>
+                  </Flex>
+                </Grid.Item>
               )}
               {!disabled.articles && (
-                <Grid item xs={statXs}>
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    className={localClasses.statItem}
-                  >
-                    <DescriptionIcon fontSize="small" color="disabled" />
-                    <Typography variant="body2" style={{ fontWeight: 600 }}>
+                <Grid.Item
+                  colSpan={{ sm: statColSpan }}
+                  className={styles.statItem}
+                >
+                  <Flex direction="column" align="center" gap="0.5">
+                    <RiFileTextLine size={16} />
+                    <Text variant="body-small" weight="bold">
                       {tag.articlesCount}
-                    </Typography>
-                    <Typography variant="caption" color="textSecondary">
+                    </Text>
+                    <Text variant="body-x-small" color="secondary">
                       {t('common.articles')}
-                    </Typography>
-                  </Box>
-                </Grid>
+                    </Text>
+                  </Flex>
+                </Grid.Item>
               )}
               {!disabled.links && (
-                <Grid item xs={statXs}>
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    className={localClasses.statItem}
-                  >
-                    <LinkIcon fontSize="small" color="disabled" />
-                    <Typography variant="body2" style={{ fontWeight: 600 }}>
-                      {tag.linksCount}
-                    </Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      {t('common.links')}
-                    </Typography>
-                  </Box>
-                </Grid>
-              )}
-              <Grid item xs={statXs}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  className={localClasses.statItem}
+                <Grid.Item
+                  colSpan={{ sm: statColSpan }}
+                  className={styles.statItem}
                 >
-                  <PeopleIcon fontSize="small" color="disabled" />
-                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+                  <Flex direction="column" align="center" gap="0.5">
+                    <RiLink size={16} />
+                    <Text variant="body-small" weight="bold">
+                      {tag.linksCount}
+                    </Text>
+                    <Text variant="body-x-small" color="secondary">
+                      {t('common.links')}
+                    </Text>
+                  </Flex>
+                </Grid.Item>
+              )}
+              <Grid.Item
+                colSpan={{ sm: statColSpan }}
+                className={styles.statItem}
+              >
+                <Flex direction="column" align="center" gap="0.5">
+                  <RiGroupLine size={16} />
+                  <Text variant="body-small" weight="bold">
                     {tag.followerCount}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
+                  </Text>
+                  <Text variant="body-x-small" color="secondary">
                     {t('common.followersPlain')}
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
-          </CardContent>
+                  </Text>
+                </Flex>
+              </Grid.Item>
+            </Grid.Root>
+          </div>
         </ClickableLink>
       </Card>
       <EditTagModal

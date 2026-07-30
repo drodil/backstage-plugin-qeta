@@ -1,0 +1,13 @@
+@layer components {
+  .root {
+    padding: var(--bui-space-2);
+  }
+
+  .link {
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--bui-space-1);
+  }
+}

@@ -1,0 +1,14 @@
+@layer components {
+  .container {
+    border-left: 3px solid var(--bui-border-info);
+    background-color: var(--bui-bg-info);
+    border-radius: var(--bui-radius-2);
+    padding: var(--bui-space-2) 2px var(--bui-space-2);
+    margin-bottom: var(--bui-space-4);
+  }
+
+  .title {
+    color: var(--bui-fg-info);
+    font-weight: 600;
+  }
+}

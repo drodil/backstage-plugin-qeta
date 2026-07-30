@@ -15,10 +15,9 @@ import {
   WriteArticleButton,
   FollowPostButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Container } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Skeleton } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import LibraryBooksOutlined from '@material-ui/icons/LibraryBooksOutlined';
+import { RiBookOpenLine } from '@remixicon/react';
 
 export const ArticlePage = () => {
   const { id } = useParams();
@@ -53,7 +52,7 @@ export const ArticlePage = () => {
   }
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Skeleton width="100%" height={200} />;
   }
 
   if (error || post === undefined) {
@@ -74,20 +73,20 @@ export const ArticlePage = () => {
     <>
       <ContentHeader
         title={post.title}
-        titleIcon={<LibraryBooksOutlined fontSize="large" />}
+        titleIcon={<RiBookOpenLine size={24} />}
       >
         <PostHistoryButton post={post} onRestore={retry} />
         <FollowPostButton post={post} />
         <WriteArticleButton />
         <AddToCollectionButton post={post} />
       </ContentHeader>
-      <Container maxWidth={false}>
+      <Box>
         <AIAnswerCard
           article={post as Article}
           style={{ marginBottom: '2em' }}
         />
         <ArticleContent post={post} views={views} />
-      </Container>
+      </Box>
     </>
   );
 };

@@ -1,69 +1,7 @@
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  CircularProgress,
-  IconButton,
-  InputBase,
-  makeStyles,
-  Paper,
-  Theme,
-  Tooltip,
-} from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import CloseIcon from '@material-ui/icons/Close';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { SearchField } from '@backstage/ui';
 import debounce from 'lodash/debounce';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { qetaTranslationRef } from '../../translation';
-
-export type QetaSearchBarClassKeys =
-  | 'root'
-  | 'input'
-  | 'iconButton'
-  | 'divider'
-  | 'searchIcon'
-  | 'loadingIcon';
-
-const useStyles = makeStyles(
-  (theme: Theme) => ({
-    root: {
-      padding: '2px 4px',
-      display: 'flex',
-      alignItems: 'center',
-      minWidth: 300,
-      boxShadow: 'none',
-      border: `1px solid ${theme.palette.divider}`,
-      borderRadius: theme.shape.borderRadius,
-      transition: 'all 0.2s ease-in-out',
-      '&:hover': {
-        borderColor: theme.palette.primary.main,
-      },
-      '&:focus-within': {
-        borderColor: theme.palette.primary.main,
-        boxShadow: `0 0 0 2px ${theme.palette.primary.light}`,
-      },
-    },
-    input: {
-      marginLeft: theme.spacing(1),
-      flex: 1,
-    },
-    iconButton: {
-      padding: 5,
-      '&:hover': {
-        backgroundColor: theme.palette.action.hover,
-      },
-    },
-    divider: {
-      height: 28,
-      margin: 4,
-    },
-    searchIcon: {
-      color: theme.palette.text.secondary,
-    },
-    loadingIcon: {
-      color: theme.palette.primary.main,
-    },
-  }),
-  { name: 'QetaSearchBar' },
-);
+import styles from './SearchBar.module.css';
 
 export const SearchBar = (props: {
   label: string;
@@ -80,8 +18,6 @@ export const SearchBar = (props: {
     debounceTime = 150,
   } = props;
   const [searchQuery, setSearchQuery] = useState('');
-  const classes = useStyles();
-  const { t } = useTranslationRef(qetaTranslationRef);
 
   const debouncedSearch = useCallback(
     (query: string) => {
@@ -113,56 +49,14 @@ export const SearchBar = (props: {
     onSearch('');
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      handleClear();
-    }
-  };
-
   return (
-    <Paper
-      component="form"
-      className={classes.root}
-      onSubmit={e => e.preventDefault()}
-    >
-      <Tooltip title={t('common.search')}>
-        <IconButton
-          type="button"
-          aria-label="search"
-          className={classes.iconButton}
-        >
-          {loading ? (
-            <CircularProgress size={24} className={classes.loadingIcon} />
-          ) : (
-            <SearchIcon className={classes.searchIcon} />
-          )}
-        </IconButton>
-      </Tooltip>
-      <InputBase
-        className={classes.input}
-        placeholder={label}
-        value={searchQuery}
-        name="search"
-        onKeyDown={handleKeyDown}
-        inputProps={{
-          'aria-label': label,
-          onChange: (
-            event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-          ) => handleSearch(event.target.value),
-        }}
-      />
-      {searchQuery && (
-        <Tooltip title={t('common.clear')}>
-          <IconButton
-            type="button"
-            aria-label="clear"
-            className={classes.iconButton}
-            onClick={handleClear}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Paper>
+    <SearchField
+      aria-label={label}
+      placeholder={label}
+      value={searchQuery}
+      onChange={handleSearch}
+      onClear={handleClear}
+      icon={loading ? <div className={styles.spinner} /> : undefined}
+    />
   );
 };

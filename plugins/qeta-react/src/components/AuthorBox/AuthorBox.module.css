@@ -1,0 +1,35 @@
+@layer components {
+  .authorBox {
+    text-align: right;
+    margin-left: var(--bui-space-4);
+    max-width: 200px;
+  }
+
+  .authorBoxCompact {
+    white-space: nowrap;
+  }
+
+  .timeRow {
+    width: 100%;
+  }
+
+  .authorInfo {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    color: var(--bui-fg-primary);
+    width: 100%;
+  }
+
+  .authorLink {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    color: var(--bui-fg-primary);
+  }
+
+  .expertIcon {
+    margin-left: var(--bui-space-1);
+    vertical-align: middle;
+  }
+}

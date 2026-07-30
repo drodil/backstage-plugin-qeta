@@ -9,7 +9,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import { RiQuestionLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const QuestionsPage = () => {
@@ -33,7 +33,7 @@ export const QuestionsPage = () => {
     <>
       <ContentHeader
         title={t('questionsPage.title')}
-        titleIcon={<HelpOutline fontSize="large" />}
+        titleIcon={<RiQuestionLine size={28} />}
       >
         <AskQuestionButton entity={entityRef} tags={tags} />
       </ContentHeader>

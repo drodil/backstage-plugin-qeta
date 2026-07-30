@@ -1,0 +1,39 @@
+@layer components {
+  .root {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-1);
+  }
+
+  .rowContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-1);
+    min-width: 0;
+  }
+
+  .listRow {
+    border-bottom: 1px solid var(--bui-border-1);
+  }
+
+  .rowActions {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-2);
+  }
+
+  .revisionContent {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .revisionMeta {
+    margin-bottom: var(--bui-space-2);
+  }
+
+  .emptyState {
+    padding: var(--bui-space-8);
+    text-align: center;
+  }
+}

@@ -20,10 +20,12 @@ import {
   useEntityPresentation,
   catalogApiRef,
 } from '@backstage/plugin-catalog-react';
-import CategoryOutlined from '@material-ui/icons/CategoryOutlined';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import PeopleIcon from '@material-ui/icons/People';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Flex, Skeleton } from '@backstage/ui';
+import {
+  RiGroupLine,
+  RiQuestionAnswerLine,
+  RiShapesLine,
+} from '@remixicon/react';
 import { WarningPanel } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 
@@ -49,7 +51,7 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
   }
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Skeleton width="100%" height={200} />;
   }
 
   if (error || !resp) {
@@ -61,13 +63,13 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
   }
 
   const title = (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
+    <Flex align="center">
       <EntityRefLink
         entityRef={resp.entityRef}
         defaultKind="Component"
         hideIcon
       />
-    </div>
+    </Flex>
   );
 
   const description = `${entity?.kind} ${
@@ -78,7 +80,7 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
     <>
       <ContentHeader
         title={title}
-        titleIcon={<CategoryOutlined fontSize="large" />}
+        titleIcon={<RiShapesLine size={28} />}
         description={description}
       >
         <EntityFollowButton entityRef={resp.entityRef} />
@@ -91,11 +93,11 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
           description={entity?.metadata?.description}
           imageIcon={
             Icon ? (
-              <div style={{ fontSize: '80px', display: 'flex' }}>
+              <Box style={{ fontSize: '80px', display: 'flex' }}>
                 <Icon fontSize="inherit" />
-              </div>
+              </Box>
             ) : (
-              <CategoryOutlined style={{ fontSize: 80 }} />
+              <RiShapesLine size={80} />
             )
           }
           stats={[
@@ -105,12 +107,12 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
                 itemType: 'post',
               }),
               value: resp.postsCount,
-              icon: <QuestionAnswerIcon fontSize="small" />,
+              icon: <RiQuestionAnswerLine size={16} />,
             },
             {
               label: t('common.followersLabel', { count: resp.followerCount }),
               value: resp.followerCount,
-              icon: <PeopleIcon fontSize="small" />,
+              icon: <RiGroupLine size={16} />,
             },
           ]}
         />
@@ -142,7 +144,7 @@ export const EntityPage = () => {
     <>
       <ContentHeader
         title={t('entitiesPage.defaultTitle')}
-        titleIcon={<CategoryOutlined fontSize="large" />}
+        titleIcon={<RiShapesLine size={28} />}
       >
         <AskQuestionButton />
         <WriteArticleButton />

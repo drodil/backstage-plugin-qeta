@@ -1,17 +1,9 @@
-import { Autocomplete } from '@material-ui/lab';
+import { Box, Tag, TagGroup, TextField } from '@backstage/ui';
 import {
-  Box,
-  Chip,
-  CircularProgress,
-  TextField,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
-import {
-  ComponentType,
   CSSProperties,
+  FocusEvent,
+  KeyboardEvent,
   forwardRef,
-  HTMLAttributes,
   useEffect,
   useMemo,
   useRef,
@@ -27,11 +19,11 @@ import {
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { FieldError } from 'react-hook-form';
-import { AutocompleteListboxComponent } from './AutocompleteListComponent';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { useDebounce } from 'react-use';
 import { useQetaConfig } from '../../hooks';
+import styles from './TagInput.module.css';
 
 const TAG_SEARCH_LIMIT = 25;
 
@@ -192,9 +184,11 @@ export const TagInput = forwardRef<
     allowCreate,
   );
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
   const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
   const searchCache = useRef<
     Map<string, { tags: string[]; descriptions: Record<string, string> }>
   >(new Map());
@@ -329,6 +323,20 @@ export const TagInput = forwardRef<
     [inputValue, loadTags],
   );
 
+  const filteredOptions = useMemo(
+    () =>
+      getFilteredTagOptions({
+        allowCreation: allowCreation === true,
+        getCreateOptionLabel: tag =>
+          t('tagsInput.createOption' as never, { tag } as never) as string,
+        inputValue,
+        maximumTags,
+        options: availableTags,
+        selectedTags,
+      }),
+    [allowCreation, availableTags, inputValue, maximumTags, selectedTags, t],
+  );
+
   if (qetaConfig.disabled.tags) {
     return null;
   }
@@ -352,138 +360,137 @@ export const TagInput = forwardRef<
     return `${baseText}. ${t('tagsInput.allowAddHelperText')}`;
   };
 
+  const selectOption = (option: TagAutocompleteOption) => {
+    const nextValues = [...selectedTags, getTagOptionValue(option)];
+    const tags = filterTags(nextValues);
+    if (
+      tags &&
+      tags.length <= maximumTags &&
+      tags.length === nextValues.length
+    ) {
+      onChange(tags);
+    }
+    setInputValue('');
+  };
+
+  const handleRemoveTags = (keys: Iterable<string | number>) => {
+    const removed = new Set(Array.from(keys).map(String));
+    onChange(selectedTags.filter(tag => !removed.has(tag)));
+  };
+
   const handleSuggestedTagClick = (tag: string) => {
     if (value && value.length < maximumTags && !value.includes(tag)) {
       onChange([...value, tag]);
     }
   };
 
+  const handleFieldBlur = (event: FocusEvent<HTMLInputElement>) => {
+    if (!containerRef.current?.contains(event.relatedTarget)) {
+      setOpen(false);
+    }
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      setOpen(false);
+      return;
+    }
+
+    if (event.key === 'Backspace' && !inputValue && selectedTags.length > 0) {
+      onChange(selectedTags.slice(0, -1));
+      return;
+    }
+
+    if (event.key === 'Enter' && filteredOptions.length > 0) {
+      event.preventDefault();
+      selectOption(filteredOptions[0]);
+    }
+  };
+
+  const tagItems = selectedTags.map(tag => ({ id: tag }));
+
   return (
-    <Box>
-      <Autocomplete
-        multiple
-        id="tags-select"
-        className="qetaTagInput"
-        value={selectedTags as TagAutocompleteOption[]}
-        loading={loading}
-        autoHighlight
-        autoComplete
-        loadingText={t('common.loading')}
-        options={availableTags as TagAutocompleteOption[]}
-        freeSolo={allowCreation}
-        handleHomeEndKeys
-        limitTags={maximumTags}
-        getOptionLabel={getTagOptionLabel}
-        filterOptions={(options, state) =>
-          getFilteredTagOptions({
-            allowCreation: allowCreation === true,
-            getCreateOptionLabel: tag =>
-              t('tagsInput.createOption' as never, { tag } as never) as string,
-            inputValue: state.inputValue,
-            maximumTags,
-            options: options.filter(
-              (option): option is string => typeof option === 'string',
-            ),
-            selectedTags,
-          })
-        }
-        inputValue={inputValue}
-        onInputChange={(_event, nextValue, reason) => {
-          if (reason === 'reset') {
-            setInputValue('');
-            return;
-          }
-
-          setInputValue(nextValue);
-        }}
-        ListboxComponent={
-          AutocompleteListboxComponent as ComponentType<
-            HTMLAttributes<HTMLElement>
+    <Box className={styles.root}>
+      <div ref={containerRef} className={styles.container}>
+        {selectedTags.length > 0 && (
+          <TagGroup
+            className={styles.chips}
+            items={tagItems}
+            onRemove={handleRemoveTags}
           >
-        }
-        disableListWrap
-        style={style}
-        renderOption={option => {
-          if (isCreateTagOption(option)) {
-            return option.label;
-          }
-
-          if (tagDescriptions[option]) {
-            return (
-              <span key={option}>
-                <Tooltip
-                  arrow
-                  placement="right"
-                  title={<Typography>{tagDescriptions[option]}</Typography>}
-                >
-                  <span>{option}</span>
-                </Tooltip>
-              </span>
-            );
-          }
-          return option;
-        }}
-        onChange={(_e, newValue) => {
-          const nextValues = newValue.map(getTagOptionValue);
-          const tags = filterTags(nextValues);
-          if (
-            tags &&
-            tags.length <= maximumTags &&
-            tags.length === nextValues.length
-          ) {
-            onChange(tags);
-          }
-        }}
-        renderInput={params => (
+            {item => <Tag>{item.id}</Tag>}
+          </TagGroup>
+        )}
+        <div className={styles.fieldWrapper}>
           <TextField
-            {...params}
-            variant="outlined"
-            margin="normal"
+            className="qetaTagInput"
             label={label ?? t('tagsInput.label')}
             placeholder={t('tagsInput.placeholder')}
-            helperText={error ? error.message : getHelperText()}
-            FormHelperTextProps={{
-              style: { marginLeft: '0.2em' },
-            }}
+            description={error ? error.message : getHelperText()}
+            isInvalid={error !== undefined}
             name={name}
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <>
-                  {loading ? (
-                    <CircularProgress color="inherit" size={20} />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </>
-              ),
-            }}
-            error={error !== undefined}
+            style={style}
+            value={inputValue}
+            onChange={setInputValue}
+            onFocus={() => setOpen(true)}
+            onBlur={handleFieldBlur}
+            onKeyDown={handleKeyDown}
           />
-        )}
-      />
+          {open && (
+            <div className={styles.dropdown}>
+              {loading && (
+                <div className={styles.statusText}>{t('common.loading')}</div>
+              )}
+              {!loading &&
+                filteredOptions.map(option => {
+                  const key = isCreateTagOption(option)
+                    ? `create-${option.inputValue}`
+                    : option;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      className={styles.option}
+                      onMouseDown={event => event.preventDefault()}
+                      onClick={() => selectOption(option)}
+                      title={
+                        isCreateTagOption(option)
+                          ? undefined
+                          : tagDescriptions[option]
+                      }
+                    >
+                      {getTagOptionLabel(option)}
+                    </button>
+                  );
+                })}
+            </div>
+          )}
+        </div>
+      </div>
       {suggestedTags?.length > 0 && (
-        <Box style={{ marginLeft: '4px' }}>
-          <Typography variant="caption" color="textSecondary">
+        <Box className={styles.suggestedSection}>
+          <span className={styles.suggestedLabel}>
             {t('tagsInput.suggestedTags')}
-          </Typography>
-          <Box mt={0.5}>
-            {suggestedTags.map(tag => (
-              <Chip
-                key={tag}
-                label={tag}
-                size="small"
-                onClick={() => handleSuggestedTagClick(tag)}
-                style={{ margin: '0 4px 4px 0' }}
-                disabled={
-                  value?.includes(tag) ||
+          </span>
+          <TagGroup
+            className={styles.suggestedChips}
+            items={suggestedTags.map(tag => ({ id: tag }))}
+          >
+            {item => (
+              <Tag
+                isDisabled={
+                  value?.includes(item.id) ||
                   (value?.length ?? 0) >= maximumTags ||
                   loadingSuggestions
                 }
-              />
-            ))}
-          </Box>
+                onAction={() => handleSuggestedTagClick(item.id)}
+              >
+                {item.id}
+              </Tag>
+            )}
+          </TagGroup>
         </Box>
-      )}{' '}
+      )}
     </Box>
   );
 });

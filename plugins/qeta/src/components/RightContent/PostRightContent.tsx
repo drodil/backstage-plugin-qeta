@@ -11,8 +11,8 @@ import {
 import { DefaultRightContent } from './DefaultRightContent';
 import { ContentHealthCard } from '../ContentHealthCard';
 import { SimilarPosts } from './SimilarPosts';
-import { Box } from '@material-ui/core';
-import Whatshot from '@material-ui/icons/Whatshot';
+import { Box } from '@backstage/ui';
+import { RiFireLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { LinkedPosts } from './LinkedPosts';
@@ -41,7 +41,7 @@ export const PostRightContent = (props?: { id?: string }) => {
     <>
       {post && (
         <>
-          <Box mb={2}>
+          <Box mb="4">
             <ContentHealthCard post={post} />
           </Box>
           <LinkedPosts postId={post.id} />
@@ -50,7 +50,7 @@ export const PostRightContent = (props?: { id?: string }) => {
             type="hot"
             title={title}
             noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
-            icon={<Whatshot fontSize="small" />}
+            icon={<RiFireLine size={16} />}
             postType={post.type}
             options={{
               tags: post.tags,

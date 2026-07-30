@@ -1,0 +1,48 @@
+@layer components {
+  .card {
+    height: 100%;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .body > *:not(:last-child) {
+    border-bottom: 1px solid var(--bui-border-1);
+  }
+
+  .link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .itemContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-1);
+    min-width: 0;
+  }
+  .listRow {
+    padding: var(--bui-space-2);
+  }
+
+  .listRow:hover {
+    background-color: var(--bui-bg-neutral-1-hover);
+  }
+
+  .primaryText {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .emptyState {
+    padding: var(--bui-space-6) 0;
+    text-align: center;
+    color: var(--bui-fg-secondary);
+    gap: var(--bui-space-2);
+  }
+}

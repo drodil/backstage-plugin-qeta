@@ -1,54 +1,18 @@
-import { useTagsFollow } from '../../hooks';
+import { useTagsFollow, useQetaConfig } from '../../hooks';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import { Box, ListItem, ListItemText, makeStyles } from '@material-ui/core';
+import { List, ListRow } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
-import LocalOfferOutlined from '@material-ui/icons/LocalOfferOutlined';
+import { RiPriceTag3Line } from '@remixicon/react';
 import { Link } from 'react-router-dom';
 import { tagRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { TagTooltip } from '../Tooltips';
-import { useQetaConfig } from '../../hooks';
-
-const useStyles = makeStyles(theme => ({
-  listItem: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 4px',
-    minHeight: 28,
-    cursor: 'pointer',
-    transition: 'background 0.2s',
-    textDecoration: 'none',
-    color: 'inherit',
-    '&:hover': {
-      background: theme.palette.action.hover,
-    },
-  },
-  listItemText: {
-    color: theme.palette.text.primary,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    flex: 1,
-  },
-  iconBox: {
-    minWidth: 28,
-    maxWidth: 28,
-    height: 24,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 4,
-    marginRight: theme.spacing(1),
-    marginLeft: theme.spacing(0.5),
-    color: theme.palette.text.secondary,
-  },
-}));
+import styles from './FollowedTagsList.module.css';
 
 export const FollowedTagsList = () => {
   const tags = useTagsFollow();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const classes = useStyles();
   const tagRoute = useRouteRef(tagRouteRef);
   const { disabled } = useQetaConfig();
 
@@ -70,21 +34,13 @@ export const FollowedTagsList = () => {
               enterNextDelay={400}
               placement="left"
             >
-              <ListItem
-                dense
-                button
-                className={classes.listItem}
-                component={Link}
-                to={href}
-              >
-                <Box className={classes.iconBox}>
-                  <LocalOfferOutlined fontSize="small" />
-                </Box>
-                <ListItemText
-                  primary={`${tag}`}
-                  classes={{ primary: classes.listItemText }}
-                />
-              </ListItem>
+              <Link to={href} className={styles.link}>
+                <List>
+                  <ListRow icon={<RiPriceTag3Line size={16} />}>
+                    {`${tag}`}
+                  </ListRow>
+                </List>
+              </Link>
             </TagTooltip>
           );
         })}

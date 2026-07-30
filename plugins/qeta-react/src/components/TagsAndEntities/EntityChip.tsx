@@ -1,10 +1,10 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { CSSProperties } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
-import { Link } from 'react-router-dom';
-import { Chip } from '@material-ui/core';
+import { Tag } from '@backstage/ui';
 import { EntityTooltip } from '../Tooltips';
 
 export const EntityChip = (props: {
@@ -12,31 +12,30 @@ export const EntityChip = (props: {
   style?: CSSProperties;
   useHref?: boolean;
 }) => {
-  const { entity } = props;
+  const { entity, useHref } = props;
   const entityRoute = useRouteRef(entityRouteRef);
+  const navigate = useNavigate();
   const { primaryTitle, Icon } = useEntityPresentation(entity);
   const entityRef =
     typeof entity === 'string' ? entity : stringifyEntityRef(entity);
   const href = entityRoute({ entityRef });
 
   return (
-    <EntityTooltip entity={entity} arrow enterDelay={400} interactive>
-      <Chip
-        label={primaryTitle}
+    <EntityTooltip entity={entity} enterDelay={400} interactive>
+      <Tag
         size="small"
         style={props.style}
         icon={Icon ? <Icon fontSize="small" /> : undefined}
-        variant="outlined"
         className="qetaEntityChip"
-        component={props.useHref ? 'a' : Link}
-        to={props.useHref ? undefined : href}
-        href={props.useHref ? href : undefined}
-        target={props.useHref ? '_blank' : undefined}
+        href={useHref ? href : undefined}
+        target={useHref ? '_blank' : undefined}
+        onPress={useHref ? undefined : () => navigate(href)}
         onClick={(e: React.MouseEvent) => {
           e.stopPropagation();
         }}
-        clickable
-      />
+      >
+        {primaryTitle}
+      </Tag>
     </EntityTooltip>
   );
 };

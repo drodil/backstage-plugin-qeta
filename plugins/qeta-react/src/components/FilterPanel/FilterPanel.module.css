@@ -1,0 +1,28 @@
+@layer components {
+  .root {
+    padding: var(--bui-space-6);
+    margin-top: 0;
+    margin-bottom: var(--bui-space-8);
+    border: 1px solid var(--bui-border-1);
+    border-radius: var(--bui-radius-1);
+    background-color: var(--bui-bg-surface-1);
+  }
+
+  .label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    margin-bottom: var(--bui-space-3);
+    color: var(--bui-fg-secondary);
+  }
+
+  .orderByGroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 var(--bui-space-4);
+  }
+
+  .divider {
+    margin: var(--bui-space-6) 0;
+    border-top: 1px solid var(--bui-border-1);
+  }
+}

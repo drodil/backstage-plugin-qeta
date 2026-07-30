@@ -1,4 +1,4 @@
-import LinkIcon from '@material-ui/icons/Link';
+import { RiLinkM } from '@remixicon/react';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { createLinkRouteRef } from '../../routes';
@@ -43,7 +43,7 @@ export const CreateLinkButton = (props: {
           entity || tags ? `${linkRoute()}?${params.toString()}` : linkRoute()
         }
         color="primary"
-        icon={<LinkIcon />}
+        icon={<RiLinkM />}
       >
         {t('createLinkButton.title')}
       </ContentHeaderButton>

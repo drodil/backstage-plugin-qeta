@@ -523,7 +523,7 @@ export const qetaTranslationRef = createTranslationRef({
       needsReview5: '"{{title}}" is due for a review',
     },
     communityActivity: {
-      title: 'Community Activity',
+      title: 'Activity',
       newPosts: 'New Posts',
       newAnswers: 'New Answers',
       newComments: 'New Comments',

@@ -1,0 +1,38 @@
+@layer components {
+  .card {
+    height: 100%;
+  }
+
+  .select {
+    min-width: 90px;
+  }
+
+  .statBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--bui-space-3);
+    border-radius: var(--bui-radius-2);
+    background: var(--bui-bg-neutral-1);
+    text-align: center;
+  }
+
+  .statIcon {
+    margin-bottom: var(--bui-space-1);
+    color: var(--bui-fg-info);
+    opacity: 0.8;
+  }
+
+  .statValue {
+    display: block;
+    font-weight: var(--bui-font-weight-bold);
+    font-size: 1.3rem;
+    color: var(--bui-fg-info);
+    line-height: 1.2;
+  }
+
+  .statLabel {
+    display: block;
+    margin-top: var(--bui-space-1);
+  }
+}

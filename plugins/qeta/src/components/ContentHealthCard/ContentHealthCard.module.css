@@ -1,0 +1,60 @@
+@layer components {
+  .card {
+    margin-bottom: var(--bui-space-4);
+  }
+
+  .scoreContainer {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-4);
+    margin-bottom: var(--bui-space-2);
+  }
+
+  .scoreLabel {
+    flex-grow: 1;
+  }
+
+  .progressTrack {
+    flex-grow: 2;
+    height: 10px;
+    border-radius: var(--bui-radius-full);
+    background-color: var(--bui-border-1);
+    overflow: hidden;
+  }
+
+  .progressFill {
+    height: 100%;
+    border-radius: var(--bui-radius-full);
+  }
+
+  .progressFillHigh {
+    background-color: var(--bui-fg-success);
+  }
+
+  .progressFillMedium {
+    background-color: var(--bui-fg-warning);
+  }
+
+  .progressFillLow {
+    background-color: var(--bui-fg-danger);
+  }
+
+  .actions {
+    margin-top: var(--bui-space-4);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--bui-space-2);
+  }
+
+  .obsoleteAlert {
+    margin-top: var(--bui-space-2);
+  }
+
+  .divider {
+    margin-top: var(--bui-space-4);
+    margin-bottom: var(--bui-space-2);
+    height: 1px;
+    border: none;
+    background-color: var(--bui-border-1);
+  }
+}

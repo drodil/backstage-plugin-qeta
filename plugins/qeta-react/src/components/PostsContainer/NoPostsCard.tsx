@@ -1,17 +1,16 @@
 import { LinkButton } from '@backstage/core-components';
-import HelpOutline from '@material-ui/icons/HelpOutline';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef, createLinkRouteRef, writeRouteRef } from '../../routes';
 import {
   PostType,
   selectByPostType,
 } from '@drodil/backstage-plugin-qeta-common';
-import CreateIcon from '@material-ui/icons/Create';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityQueryParameter } from '../../hooks/useEntityQueryParameter';
-import { Card, CardContent, Grid, Typography } from '@material-ui/core';
-import LinkIcon from '@material-ui/icons/Link';
+import { Card, CardBody, Flex, Text } from '@backstage/ui';
+import { RiEditLine, RiLinkM, RiQuestionLine } from '@remixicon/react';
+import styles from './NoPostsCard.module.css';
 
 export const NoPostsCard = (props: {
   showNoPostsBtn?: boolean;
@@ -47,44 +46,35 @@ export const NoPostsCard = (props: {
 
   const itemType = t(`common.${type ?? 'post'}`, {});
   return (
-    <Card style={{ marginTop: '2em' }}>
-      <CardContent>
-        <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          direction="column"
-        >
-          <Grid item>
-            <Typography variant="h6">
-              {t('postsContainer.noItems', {
-                itemType,
-              })}
-            </Typography>
-          </Grid>
+    <Card className={styles.card}>
+      <CardBody>
+        <Flex direction="column" align="center" justify="center" gap="4">
+          <Text variant="title-small">
+            {t('postsContainer.noItems', {
+              itemType,
+            })}
+          </Text>
           {showNoPostsBtn && (
-            <Grid item>
-              <LinkButton
-                to={
-                  queryParams.size > 0
-                    ? `${route()}?${queryParams.toString()}`
-                    : `${route()}`
-                }
-                startIcon={selectByPostType(
-                  type ?? 'question',
-                  <HelpOutline />,
-                  <CreateIcon />,
-                  <LinkIcon />,
-                )}
-                color="primary"
-                variant="outlined"
-              >
-                {t('postsContainer.createButton')}
-              </LinkButton>
-            </Grid>
+            <LinkButton
+              to={
+                queryParams.size > 0
+                  ? `${route()}?${queryParams.toString()}`
+                  : `${route()}`
+              }
+              startIcon={selectByPostType(
+                type ?? 'question',
+                <RiQuestionLine />,
+                <RiEditLine />,
+                <RiLinkM />,
+              )}
+              color="primary"
+              variant="outlined"
+            >
+              {t('postsContainer.createButton')}
+            </LinkButton>
           )}
-        </Grid>
-      </CardContent>
+        </Flex>
+      </CardBody>
     </Card>
   );
 };

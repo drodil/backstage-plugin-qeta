@@ -1,14 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
+import { CalendarDate, parseDate } from '@internationalized/date';
 import { formatDate } from '../../utils/utils';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import {
-  Grid,
-  makeStyles,
-  MenuItem,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import { Box, DatePicker, Flex, Select, Text } from '@backstage/ui';
+import styles from './DateRangeFilter.module.css';
 
 export interface DateRangeFilterProps {
   value?: string;
@@ -20,24 +16,16 @@ type DateRangeValidation = {
   message?: string;
 };
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {},
-    textInput: {
-      width: '100%',
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-      '& input[type="date"]': {
-        colorScheme: theme.palette.type === 'dark' ? 'dark' : 'light',
-      },
-    },
-  }),
-  { name: 'QetaDateRangeFilter' },
-);
+const toDateValue = (value: string): CalendarDate | undefined => {
+  try {
+    return parseDate(value);
+  } catch {
+    return undefined;
+  }
+};
 
 export const DateRangeFilter = (props: DateRangeFilterProps) => {
   const { value, onChange } = props;
-  const styles = useStyles();
   const [dateRangeOption, setDateRangeOption] = useState<string | undefined>(
     value,
   );
@@ -51,7 +39,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
 
   useEffect(() => {
     setDateRangeOption(value || '');
-    if (value && value.indexOf('--') >= 0) {
+    if (value?.includes('--')) {
       setDateRangeOption('custom');
       setFromDate(value.split('--')[0] || '');
       setToDate(value.split('--')[1] || '');
@@ -76,80 +64,58 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
   );
 
   return (
-    <Grid container className={styles.root} spacing={1}>
+    <Box className={styles.root}>
       {validation.message && (
-        <Grid item xs={12}>
-          <Typography color="error" variant="body2">
-            {validation.message}
-          </Typography>
-        </Grid>
+        <Text as="div" variant="body-small" className={styles.error}>
+          {validation.message}
+        </Text>
       )}
-      <Grid item xs={12}>
-        <TextField
-          select
-          className={styles.textInput}
-          value={dateRangeOption || 'date-range'}
-          onChange={e => {
-            if (e.target.value !== 'custom') {
-              onChange(e.target.value === 'date-range' ? '' : e.target.value);
-            } else {
-              handleCustom();
-            }
-            setDateRangeOption(e.target.value);
-          }}
-          variant="outlined"
-          defaultValue="date-range"
-          fullWidth
-        >
-          <MenuItem value="date-range">{t('datePicker.range.label')}</MenuItem>
-          <MenuItem value="7-days">{t('datePicker.range.last7days')}</MenuItem>
-          <MenuItem value="30-days">
-            {t('datePicker.range.last30days')}
-          </MenuItem>
-          <MenuItem value="custom">{t('datePicker.range.custom')}</MenuItem>
-        </TextField>
-      </Grid>
+      <Select
+        className={styles.select}
+        value={dateRangeOption || 'date-range'}
+        onChange={key => {
+          const selected = String(key);
+          if (selected === 'custom') {
+            handleCustom();
+          } else {
+            onChange(selected === 'date-range' ? '' : selected);
+          }
+          setDateRangeOption(selected);
+        }}
+        options={[
+          { id: 'date-range', label: t('datePicker.range.label') },
+          { id: '7-days', label: t('datePicker.range.last7days') },
+          { id: '30-days', label: t('datePicker.range.last30days') },
+          { id: 'custom', label: t('datePicker.range.custom') },
+        ]}
+      />
       {dateRangeOption === 'custom' && (
-        <>
-          <Grid item xs={6}>
-            <TextField
-              className={styles.textInput}
-              variant="outlined"
-              label={t('datePicker.from')}
-              id="from-date"
-              type="date"
-              value={fromDate}
-              InputLabelProps={{ shrink: true }}
-              error={!validation.isValid}
-              onChange={e => {
-                handleCustom(e.target.value);
-              }}
-              inputProps={{
-                max: toDate || localDate,
-              }}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              className={styles.textInput}
-              variant="outlined"
-              label={t('datePicker.to')}
-              id="to-date"
-              type="date"
-              value={toDate}
-              InputLabelProps={{ shrink: true }}
-              error={!validation.isValid}
-              onChange={e => {
-                handleCustom(undefined, e.target.value);
-              }}
-              inputProps={{
-                min: fromDate,
-                max: localDate,
-              }}
-            />
-          </Grid>
-        </>
+        <Flex gap="2" className={styles.dateRange}>
+          <DatePicker
+            label={t('datePicker.from')}
+            value={toDateValue(fromDate) ?? null}
+            isInvalid={!validation.isValid}
+            maxValue={toDateValue(toDate || localDate)}
+            onChange={date => {
+              if (date) {
+                handleCustom(date.toString());
+              }
+            }}
+          />
+          <DatePicker
+            label={t('datePicker.to')}
+            value={toDateValue(toDate) ?? null}
+            isInvalid={!validation.isValid}
+            minValue={toDateValue(fromDate)}
+            maxValue={toDateValue(localDate)}
+            onChange={date => {
+              if (date) {
+                handleCustom(undefined, date.toString());
+              }
+            }}
+          />
+        </Flex>
       )}
-    </Grid>
+    </Box>
   );
 };

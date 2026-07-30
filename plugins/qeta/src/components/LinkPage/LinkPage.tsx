@@ -20,27 +20,15 @@ import {
   FollowPostButton,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Skeleton } from '@material-ui/lab';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { Box, makeStyles } from '@material-ui/core';
+import { Flex, Skeleton, Text } from '@backstage/ui';
 import { useApi } from '@backstage/core-plugin-api';
-
-const useDescriptionStyles = makeStyles(
-  () => ({
-    root: {},
-    box: {
-      display: 'inline',
-    },
-  }),
-  { name: 'QetaDescription' },
-);
 
 export const LinkPage = () => {
   const { id } = useParams();
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
-  const dStyles = useDescriptionStyles();
   const [score, setScore] = useState(0);
   const { lastSignal } = useSignal<QetaSignal>(`qeta:post_${id}`);
 
@@ -68,7 +56,7 @@ export const LinkPage = () => {
   }
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Skeleton width="100%" height={200} />;
   }
 
   if (error || post === undefined) {
@@ -85,24 +73,24 @@ export const LinkPage = () => {
 
   const getDescription = (q: PostResponse) => {
     return (
-      <span className={dStyles.root}>
-        <Box fontWeight="fontWeightMedium" className={dStyles.box}>
+      <Flex align="center" gap="1" style={{ flexWrap: 'wrap' }}>
+        <Text as="span" variant="body-small">
           {t('authorBox.postedAtTime')}{' '}
           <RelativeTimeWithTooltip value={q.created} />
-          {' · '}
-        </Box>
+        </Text>
         {q.updated && (
-          <Box fontWeight="fontWeightMedium" className={dStyles.box}>
+          <Text as="span" variant="body-small">
+            {' · '}
             {t('authorBox.updatedAtTime')}{' '}
             <RelativeTimeWithTooltip value={q.updated} />{' '}
             {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
-            {' · '}
-          </Box>
+          </Text>
         )}
-        <Box fontWeight="fontWeightMedium" className={dStyles.box}>
+        <Text as="span" variant="body-small">
+          {' · '}
           {t('common.clicksCount', { count: score })}
-        </Box>
-      </span>
+        </Text>
+      </Flex>
     );
   };
 

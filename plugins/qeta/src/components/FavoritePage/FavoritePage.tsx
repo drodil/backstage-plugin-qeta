@@ -6,7 +6,7 @@ import {
   qetaTranslationRef,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import StarBorder from '@material-ui/icons/StarBorder';
+import { RiStarLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const FavoritePage = () => {
@@ -16,7 +16,7 @@ export const FavoritePage = () => {
     <>
       <ContentHeader
         title={t('favoritePage.title')}
-        titleIcon={<StarBorder fontSize="large" />}
+        titleIcon={<RiStarLine size={28} />}
       >
         <AskQuestionButton />
         <WriteArticleButton />

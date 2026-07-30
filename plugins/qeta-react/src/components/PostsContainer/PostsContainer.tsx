@@ -11,7 +11,7 @@ import { ViewType } from '../ViewToggle/ViewToggle';
 import { capitalize } from 'lodash';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Box, Flex, Text } from '@backstage/ui';
 import { QetaEntityContainer } from '../QetaEntityContainer/QetaEntityContainer';
 import { PostsGridItem } from './PostsGridItem';
 import { PostListItem } from './PostListItem';
@@ -117,20 +117,20 @@ export const PostsContainer = (props: PostsContainerProps) => {
     showAskButton ||
     showWriteButton ||
     showLinkButton) && (
-    <Box mb={3}>
-      <Grid container alignItems="center" justifyContent="space-between">
-        <Grid item>
+    <Box style={{ marginBottom: 'var(--bui-space-6)' }}>
+      <Flex align="center" justify="between">
+        <Box>
           {showTitle && (
-            <Typography
-              variant="h5"
+            <Text
+              variant="title-medium"
               className="qetaPostsContainerTitle"
               style={{ fontWeight: 500, paddingBottom: 2 }}
             >
               {shownTitle} {link} {btn}
-            </Typography>
+            </Text>
           )}
-        </Grid>
-        <Grid item>
+        </Box>
+        <Box>
           {showAskButton && (
             <AskQuestionButton
               entity={entity}
@@ -152,8 +152,8 @@ export const PostsContainer = (props: PostsContainerProps) => {
               tags={tags}
             />
           )}
-        </Grid>
-      </Grid>
+        </Box>
+      </Flex>
     </Box>
   );
 
@@ -233,14 +233,14 @@ export const PostsContainer = (props: PostsContainerProps) => {
           />
         )}
         title={total => (
-          <Typography
-            variant="h6"
-            component="h2"
+          <Text
+            as="h2"
+            variant="title-small"
             className="qetaPostsContainerQuestionCount"
             style={{ fontWeight: 500, paddingBottom: 2 }}
           >
             {t('common.posts', { count: total, itemType })}
-          </Typography>
+          </Text>
         )}
         searchPlaceholder={t('postsContainer.search.label', {
           itemType: itemType.toLowerCase(),

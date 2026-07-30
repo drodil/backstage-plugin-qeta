@@ -1,7 +1,9 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   CollectionFollowButton,
   ContentHeader,
+  ContentHeaderButton,
+  ContentHeaderCard,
   DeleteModal,
   collectionEditRouteRef,
   qetaTranslationRef,
@@ -9,18 +11,17 @@ import {
   PostsContainer,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Skeleton } from '@material-ui/lab';
 import { WarningPanel } from '@backstage/core-components';
-import { Button, Grid, Typography } from '@material-ui/core';
+import { Grid, Skeleton } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useState } from 'react';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import PeopleIcon from '@material-ui/icons/People';
-import { useNavigate } from 'react-router-dom';
-import { ContentHeaderCard } from '@drodil/backstage-plugin-qeta-react';
+import {
+  RiDeleteBinLine,
+  RiEditLine,
+  RiGroupLine,
+  RiPlayListLine,
+  RiQuestionAnswerLine,
+} from '@remixicon/react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
 export const CollectionPage = () => {
@@ -44,7 +45,7 @@ export const CollectionPage = () => {
   }
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Skeleton width="100%" height={200} />;
   }
 
   if (error || collection === undefined) {
@@ -55,24 +56,16 @@ export const CollectionPage = () => {
     );
   }
 
-  const title = (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <PlaylistPlayIcon fontSize="large" style={{ marginRight: '8px' }} />
-      <Typography variant="h5" component="h2">
-        {collection.title}
-      </Typography>
-    </div>
-  );
-
   return (
     <>
-      <ContentHeader titleComponent={title}>
+      <ContentHeader
+        title={collection.title}
+        titleIcon={<RiPlayListLine size={24} />}
+      >
         <CollectionFollowButton collection={collection} />
         {collection.canEdit && (
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<EditIcon />}
+          <ContentHeaderButton
+            icon={<RiEditLine />}
             onClick={() =>
               editCollectionRoute &&
               navigate(
@@ -83,25 +76,24 @@ export const CollectionPage = () => {
             }
           >
             {t('templateList.editButton', {})}
-          </Button>
+          </ContentHeaderButton>
         )}
         {collection.canDelete && (
-          <Button
-            variant="outlined"
+          <ContentHeaderButton
+            icon={<RiDeleteBinLine />}
             color="secondary"
-            startIcon={<DeleteIcon />}
             onClick={handleDeleteModalOpen}
           >
             {t('templateList.deleteButton', {})}
-          </Button>
+          </ContentHeaderButton>
         )}
       </ContentHeader>
-      <Grid container>
-        <Grid item xs={12}>
+      <Grid.Root columns={{ sm: '12' }} gap="6">
+        <Grid.Item colSpan={{ sm: '12' }}>
           <ContentHeaderCard
             description={collection.description}
             image={collection.headerImage}
-            imageIcon={<PlaylistPlayIcon style={{ fontSize: 80 }} />}
+            imageIcon={<RiPlayListLine size={80} />}
             tagsAndEntities={{ entity: collection }}
             stats={[
               {
@@ -110,19 +102,19 @@ export const CollectionPage = () => {
                   itemType: 'post',
                 }),
                 value: collection.postsCount,
-                icon: <QuestionAnswerIcon fontSize="small" />,
+                icon: <RiQuestionAnswerLine size={16} />,
               },
               {
                 label: t('common.followersLabel', {
                   count: collection.followers,
                 }),
                 value: collection.followers,
-                icon: <PeopleIcon fontSize="small" />,
+                icon: <RiGroupLine size={16} />,
               },
             ]}
           />
-        </Grid>
-        <Grid item xs={12}>
+        </Grid.Item>
+        <Grid.Item colSpan={{ sm: '12' }}>
           <PostsContainer
             collectionId={collection.id}
             orderBy="rank"
@@ -130,8 +122,8 @@ export const CollectionPage = () => {
             defaultView="grid"
             prefix="collection-posts"
           />
-        </Grid>
-      </Grid>
+        </Grid.Item>
+      </Grid.Root>
       {collection.canDelete && (
         <DeleteModal
           open={deleteModalOpen}

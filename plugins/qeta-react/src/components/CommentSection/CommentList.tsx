@@ -2,10 +2,9 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Box, Divider } from '@material-ui/core';
+import { Box } from '@backstage/ui';
 import { CommentListItem } from './CommentListItem.tsx';
-
-export type QetaCommentListClassKey = 'content' | 'root' | 'box';
+import styles from './CommentList.module.css';
 
 export const CommentList = (props: {
   onCommentAction: (question: PostResponse, answer?: AnswerResponse) => void;
@@ -24,7 +23,7 @@ export const CommentList = (props: {
       {entity.comments?.map((c, i) => {
         return (
           <div key={c.id}>
-            {i > 0 && <Divider />}
+            {i > 0 && <div className={styles.divider} />}
             <CommentListItem
               comment={c}
               onCommentAction={onCommentAction}

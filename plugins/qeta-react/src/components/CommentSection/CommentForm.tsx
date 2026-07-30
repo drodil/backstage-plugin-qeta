@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/no-autofocus */
-/* eslint-disable jsx-a11y/no-autofocus */
 import { useState } from 'react';
-import { Button } from '@material-ui/core';
+import { Button, Flex } from '@backstage/ui';
 import { Controller, useForm } from 'react-hook-form';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor.tsx';
 import { useConfirmNavigationIfEdited } from '../../utils';
@@ -51,39 +50,30 @@ export const CommentForm = (props: {
         )}
         name="content"
       />
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          marginTop: '0.5rem',
-        }}
-      >
+      <Flex justify="end" gap="2" mt="2">
         {onDiscard && (
           <Button
-            variant="text"
+            variant="tertiary"
             size="small"
-            color="primary"
             onClick={() => {
               setEdited(false);
               onDiscard();
               reset();
             }}
-            style={{ marginRight: '0.5rem' }}
           >
             {t('common.cancel')}
           </Button>
         )}
         <Button
-          variant="contained"
+          variant="primary"
           size="small"
           className="qetaCommentBtn"
           type="submit"
-          color="primary"
-          disabled={disabled}
+          isDisabled={disabled}
         >
           {saveButtonTitle}
         </Button>
-      </div>
+      </Flex>
     </form>
   );
 };

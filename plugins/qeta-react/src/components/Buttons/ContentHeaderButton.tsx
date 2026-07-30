@@ -1,43 +1,63 @@
-import { ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { LinkButton } from '@backstage/core-components';
-import { useTheme, useMediaQuery, Button } from '@material-ui/core';
+import { Button, useBreakpoint } from '@backstage/ui';
 
 interface ContentHeaderButtonProps {
   to?: string;
   onClick?: () => void;
-  icon: ReactNode;
+  icon: ReactElement;
   children: ReactNode;
   color?: 'primary' | 'secondary' | 'default';
   disabled?: boolean;
 }
 
+const toButtonVariant = (
+  color: 'primary' | 'secondary' | 'default',
+): 'primary' | 'secondary' | 'tertiary' => {
+  if (color === 'secondary') {
+    return 'secondary';
+  }
+  if (color === 'default') {
+    return 'tertiary';
+  }
+  return 'primary';
+};
+
 export const ContentHeaderButton = (props: ContentHeaderButtonProps) => {
   const { to, onClick, icon, children, color = 'primary', disabled } = props;
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const { down } = useBreakpoint();
+  const isSmallScreen = down('md');
 
-  const commonProps = {
-    size: 'small' as const,
-    variant: 'contained' as const,
-    color,
-    startIcon: isSmallScreen ? undefined : icon,
-    style: {
-      minWidth: isSmallScreen ? '0' : undefined,
-      padding: isSmallScreen ? '6px' : undefined,
-    },
-    disabled,
+  const style = {
+    minWidth: isSmallScreen ? '0' : undefined,
+    padding: isSmallScreen ? '6px' : undefined,
   };
 
   if (to) {
     return (
-      <LinkButton {...commonProps} to={to}>
+      <LinkButton
+        size="small"
+        variant="contained"
+        color={color}
+        startIcon={isSmallScreen ? undefined : icon}
+        style={style}
+        disabled={disabled}
+        to={to}
+      >
         {isSmallScreen ? icon : children}
       </LinkButton>
     );
   }
 
   return (
-    <Button {...commonProps} onClick={onClick}>
+    <Button
+      size="small"
+      variant={toButtonVariant(color)}
+      iconStart={isSmallScreen ? undefined : icon}
+      isDisabled={disabled}
+      onClick={onClick}
+      style={style}
+    >
       {isSmallScreen ? icon : children}
     </Button>
   );

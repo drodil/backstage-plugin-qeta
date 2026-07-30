@@ -10,8 +10,7 @@ import {
   QetaMarkdownRehypePluginBlueprint,
   QetaPageIntroElementBlueprint,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import { Alert, Box } from '@backstage/ui';
 import searchPlugin from '@backstage/plugin-search/alpha';
 import rehypeMermaid from 'rehype-mermaid';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
@@ -23,12 +22,12 @@ import homePlugin from '@backstage/plugin-home/alpha';
 import '@backstage/ui/css/styles.css';
 
 const IntroElement = () => (
-  <Box marginBottom={4}>
-    <Alert severity="info">
-      <AlertTitle>Introduction Element</AlertTitle>
-      This component lives in introElement area. This component is displayed as
-      Alert, but can contain any ReactNode component.
-    </Alert>
+  <Box style={{ marginBottom: 'var(--bui-space-8)' }}>
+    <Alert
+      status="info"
+      title="Introduction Element"
+      description="This component lives in introElement area. This component is displayed as Alert, but can contain any ReactNode component."
+    />
   </Box>
 );
 

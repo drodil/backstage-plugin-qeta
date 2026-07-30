@@ -5,7 +5,7 @@ import {
   qetaTranslationRef,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
-import PlaylistPlayOutlined from '@material-ui/icons/PlaylistPlayOutlined';
+import { RiPlayListLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const CollectionsPage = () => {
@@ -20,7 +20,7 @@ export const CollectionsPage = () => {
     <>
       <ContentHeader
         title={t('collectionsPage.title')}
-        titleIcon={<PlaylistPlayOutlined fontSize="large" />}
+        titleIcon={<RiPlayListLine size={24} />}
       >
         <CreateCollectionButton />
       </ContentHeader>

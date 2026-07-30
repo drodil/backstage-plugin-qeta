@@ -1,0 +1,75 @@
+@layer components {
+  .card {
+    height: 100%;
+  }
+
+  .loadingContainer {
+    width: 100%;
+  }
+
+  .loadingHero {
+    margin-bottom: var(--bui-space-4);
+  }
+
+  .heroSection {
+    padding: var(--bui-space-2) 0;
+    margin-bottom: var(--bui-space-3);
+  }
+
+  .viewsValue {
+    font-size: 2rem;
+    font-weight: var(--bui-font-weight-bold);
+    line-height: 1;
+  }
+
+  .viewsLabel {
+    margin-left: var(--bui-space-1);
+  }
+
+  .reputationBox {
+    background: var(--bui-bg-neutral-1);
+    padding: var(--bui-space-2) var(--bui-space-3);
+    border-radius: var(--bui-radius-full);
+  }
+
+  .reputationIcon {
+    color: #ffd700;
+  }
+
+  .reputationValue {
+    font-weight: var(--bui-font-weight-bold);
+    user-select: none;
+  }
+
+  .contributionsText {
+    display: block;
+    margin-bottom: var(--bui-space-2);
+  }
+
+  .statGrid {
+    margin-top: var(--bui-space-1);
+  }
+
+  .statItem {
+    display: flex;
+    align-items: center;
+    padding: var(--bui-space-1) 0;
+  }
+
+  .statIcon {
+    color: var(--bui-fg-secondary);
+    margin-right: var(--bui-space-2);
+    flex-shrink: 0;
+  }
+
+  .statValue {
+    font-weight: var(--bui-font-weight-bold);
+    margin-right: var(--bui-space-1);
+    min-width: 0.8rem;
+  }
+
+  .statLabel {
+    display: block;
+    font-size: var(--bui-font-size-1);
+  }
+}

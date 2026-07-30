@@ -8,8 +8,7 @@ import {
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import LinkIcon from '@material-ui/icons/Link';
-import { Typography } from '@material-ui/core';
+import { RiLinksLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const LinksPage = () => {
@@ -32,15 +31,8 @@ export const LinksPage = () => {
   return (
     <>
       <ContentHeader
-        titleComponent={
-          <Typography
-            variant="h4"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <LinkIcon fontSize="large" style={{ marginRight: '8px' }} />
-            {t('linksPage.title')}
-          </Typography>
-        }
+        title={t('linksPage.title')}
+        titleIcon={<RiLinksLine size={28} />}
       >
         <CreateLinkButton entity={entityRef} tags={tags} />
       </ContentHeader>

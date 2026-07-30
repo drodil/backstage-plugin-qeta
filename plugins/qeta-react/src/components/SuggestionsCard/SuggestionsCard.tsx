@@ -1,6 +1,5 @@
-import { useQetaApi } from '../../hooks';
-import { ReactNode, useMemo } from 'react';
-import { Skeleton } from '@material-ui/lab';
+import { useQetaApi, useQetaConfig } from '../../hooks';
+import { ReactElement, ReactNode, useMemo } from 'react';
 import {
   DraftPostSuggestion,
   NeedsReviewSuggestion,
@@ -12,77 +11,34 @@ import {
   SuggestionsResponse,
   SuggestionType,
 } from '@drodil/backstage-plugin-qeta-common';
-import AssistantIcon from '@material-ui/icons/Assistant';
-import HelpOutlinedIcon from '@material-ui/icons/HelpOutlined';
-import CheckIcon from '@material-ui/icons/Check';
-import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
-import LinkIcon from '@material-ui/icons/Link';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import RateReviewIcon from '@material-ui/icons/RateReview';
+import {
+  RiSparklingLine,
+  RiQuestionLine,
+  RiCheckLine,
+  RiBook2Line,
+  RiLinkM,
+  RiRefreshLine,
+  RiEditLine,
+} from '@remixicon/react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import {
+  ButtonIcon,
   Card,
+  CardBody,
   CardHeader,
-  Divider,
-  IconButton,
+  Flex,
   List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+  ListRow,
+  Skeleton,
+  Text,
+} from '@backstage/ui';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { getPostDisplayDate } from '../../utils/utils';
-import { useQetaConfig } from '../../hooks';
-
-const useStyles = makeStyles(theme => ({
-  card: {
-    height: '100%',
-  },
-  header: {
-    paddingBottom: theme.spacing(1),
-  },
-  listItem: {
-    '&:hover': {
-      backgroundColor: theme.palette.action.hover,
-    },
-    transition: 'background-color 0.2s ease',
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-  },
-  listItemText: {
-    marginTop: theme.spacing(0.5),
-    paddingLeft: theme.spacing(2),
-  },
-  listItemIcon: {
-    minWidth: theme.spacing(5),
-    paddingLeft: theme.spacing(1),
-  },
-  timestamp: {
-    color: theme.palette.text.secondary,
-  },
-  primaryText: {
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    display: 'block',
-  },
-  emptyState: {
-    padding: theme.spacing(3),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  },
-  loadingContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: theme.spacing(3),
-  },
-}));
+import styles from './SuggestionsCard.module.css';
 
 const getRandomVariant = (key: string) => {
   return `${key}${Math.floor(Math.random() * 5) + 1}`;
@@ -91,29 +47,24 @@ const getRandomVariant = (key: string) => {
 const SuggestionListItem = (props: {
   children: ReactNode;
   href: string;
-  icon?: ReactNode;
+  icon?: ReactElement;
   timestamp?: ReactNode;
 }) => {
-  const classes = useStyles();
   return (
-    <ListItem
-      button
-      component={RouterLink}
-      to={props.href}
-      className={classes.listItem}
-    >
-      {props.icon && (
-        <ListItemIcon className={classes.listItemIcon}>
-          {props.icon}
-        </ListItemIcon>
-      )}
-      <ListItemText
-        primary={props.children}
-        secondary={props.timestamp}
-        className={classes.listItemText}
-        classes={{ primary: classes.primaryText }}
-      />
-    </ListItem>
+    <RouterLink to={props.href} className={styles.link}>
+      <List>
+        <ListRow icon={props.icon} className={styles.listRow}>
+          <div className={styles.itemContent}>
+            <Text className={styles.primaryText}>{props.children}</Text>
+            {props.timestamp && (
+              <Text variant="body-x-small" color="secondary">
+                {props.timestamp}
+              </Text>
+            )}
+          </div>
+        </ListRow>
+      </List>
+    </RouterLink>
   );
 };
 
@@ -130,7 +81,7 @@ const NoCorrectAnswerSuggestionItem = (props: {
   return (
     <SuggestionListItem
       href={questionRoute({ id: suggestion.question.id.toString(10) })}
-      icon={<CheckIcon />}
+      icon={<RiCheckLine size={16} />}
       timestamp={
         <RelativeTimeWithTooltip value={suggestion.question.created} />
       }
@@ -155,7 +106,7 @@ const NewQuestionSuggestionItem = (props: {
   return (
     <SuggestionListItem
       href={questionRoute({ id: suggestion.question.id.toString(10) })}
-      icon={<HelpOutlinedIcon />}
+      icon={<RiQuestionLine size={16} />}
       timestamp={
         <RelativeTimeWithTooltip value={suggestion.question.created} />
       }
@@ -188,7 +139,7 @@ const DraftPostSuggestionItem = (props: {
   return (
     <SuggestionListItem
       href={route({ id: suggestion.post.id.toString(10) })}
-      icon={<HelpOutlinedIcon />}
+      icon={<RiQuestionLine size={16} />}
       timestamp={<RelativeTimeWithTooltip value={suggestion.post.created} />}
     >
       {t(variant as any, {
@@ -211,7 +162,7 @@ const NewArticleSuggestionItem = (props: {
   return (
     <SuggestionListItem
       href={articleRoute({ id: suggestion.article.id.toString(10) })}
-      icon={<CollectionsBookmarkIcon />}
+      icon={<RiBook2Line size={16} />}
       timestamp={
         <RelativeTimeWithTooltip
           value={getPostDisplayDate(suggestion.article)}
@@ -236,7 +187,7 @@ const NewLinkSuggestionItem = (props: { suggestion: NewLinkSuggestion }) => {
   return (
     <SuggestionListItem
       href={linkRoute({ id: suggestion.link.id.toString(10) })}
-      icon={<LinkIcon />}
+      icon={<RiLinkM size={16} />}
       timestamp={
         <RelativeTimeWithTooltip value={getPostDisplayDate(suggestion.link)} />
       }
@@ -269,7 +220,7 @@ const RandomPostSuggestionItem = (props: {
   return (
     <SuggestionListItem
       href={route({ id: suggestion.post.id.toString(10) })}
-      icon={<HelpOutlinedIcon />}
+      icon={<RiQuestionLine size={16} />}
       timestamp={<RelativeTimeWithTooltip value={suggestion.post.created} />}
     >
       {t(variant as any, {
@@ -300,7 +251,7 @@ const NeedsReviewSuggestionItem = (props: {
   return (
     <SuggestionListItem
       href={route({ id: suggestion.post.id.toString(10) })}
-      icon={<RateReviewIcon />}
+      icon={<RiEditLine size={16} />}
       timestamp={<RelativeTimeWithTooltip value={suggestion.post.created} />}
     >
       {t(variant as any, {
@@ -322,7 +273,6 @@ const suggestionTypeMap: Record<SuggestionType, any> = {
 
 export const SuggestionsCard = () => {
   const { t } = useTranslationRef(qetaTranslationRef);
-  const classes = useStyles();
   const { disabled } = useQetaConfig();
   const {
     value: response,
@@ -367,64 +317,62 @@ export const SuggestionsCard = () => {
   const renderContent = () => {
     if (loading) {
       return (
-        <List>
+        <>
           {Array.from(new Array(5)).map((_, index) => (
-            <ListItem key={index} className={classes.listItem}>
-              <ListItemIcon className={classes.listItemIcon}>
-                <Skeleton variant="circle" width={24} height={24} />
-              </ListItemIcon>
-              <ListItemText
-                primary={<Skeleton variant="text" width="80%" />}
-                secondary={<Skeleton variant="text" width="40%" />}
-                className={classes.listItemText}
-              />
-            </ListItem>
+            <List key={index}>
+              <ListRow icon={<Skeleton rounded width={24} height={24} />}>
+                <div className={styles.itemContent}>
+                  <Skeleton width="80%" height={16} />
+                  <Skeleton width="40%" height={12} />
+                </div>
+              </ListRow>
+            </List>
           ))}
-        </List>
+        </>
       );
     }
 
     if (suggestions.length === 0) {
       return (
-        <div className={classes.emptyState}>
-          <AssistantIcon style={{ fontSize: 40 }} />
-          <Typography variant="body1">
+        <Flex direction="column" align="center" className={styles.emptyState}>
+          <RiSparklingLine size={40} />
+          <Text variant="body-medium">
             {t('suggestionsCard.noSuggestions')}
-          </Typography>
-        </div>
+          </Text>
+        </Flex>
       );
     }
 
     return (
-      <List>
-        {suggestions.map((suggestion, index) => {
+      <>
+        {suggestions.map(suggestion => {
           const SuggestionComponent = suggestionTypeMap[suggestion.type];
           return (
-            <div key={suggestion.id}>
-              <SuggestionComponent suggestion={suggestion} />
-              {index < suggestions.length - 1 && <Divider />}
-            </div>
+            <SuggestionComponent key={suggestion.id} suggestion={suggestion} />
           );
         })}
-      </List>
+      </>
     );
   };
 
   return (
-    <Card className={classes.card}>
-      <CardHeader
-        className={classes.header}
-        title={t('suggestionsCard.title')}
-        avatar={<AssistantIcon />}
-        titleTypographyProps={{ variant: 'h5' }}
-        action={
-          <IconButton onClick={handleRefresh} disabled={loading}>
-            <RefreshIcon />
-          </IconButton>
-        }
-      />
-      <Divider />
-      {renderContent()}
+    <Card className={styles.card}>
+      <CardHeader>
+        <Flex align="center" justify="between">
+          <Flex align="center" gap="2">
+            <RiSparklingLine size={20} />
+            <Text variant="title-small">{t('suggestionsCard.title')}</Text>
+          </Flex>
+          <ButtonIcon
+            aria-label={t('suggestionsCard.title')}
+            icon={<RiRefreshLine size={16} />}
+            variant="tertiary"
+            isDisabled={loading}
+            onPress={handleRefresh}
+          />
+        </Flex>
+      </CardHeader>
+      <CardBody className={styles.body}>{renderContent()}</CardBody>
     </Card>
   );
 };

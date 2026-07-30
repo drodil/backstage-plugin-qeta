@@ -16,14 +16,7 @@ import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
+import { Box, Button, Card, CardBody, Text } from '@backstage/ui';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -60,7 +53,6 @@ export const AnswerForm = (props: {
     api => api.getBackstageIdentity(),
     [],
   );
-  const theme = useTheme();
   const [error, setError] = useState(false);
   const [posting, setPosting] = useState(false);
   const catalogApi = useApi(catalogApiRef);
@@ -209,15 +201,17 @@ export const AnswerForm = (props: {
       permission={qetaCreateAnswerPermission}
       errorPage={<></>}
     >
-      <Card variant="outlined">
-        <CardContent>
+      <Card>
+        <CardBody>
           <form
             onSubmit={handleSubmit(postAnswer)}
             onChange={() => {
               setEdited(true);
             }}
           >
-            <Typography variant="h6">Your answer</Typography>
+            <Text as="h6" variant="title-small">
+              Your answer
+            </Text>
             {error && (
               <WarningPanel
                 severity="error"
@@ -245,7 +239,7 @@ export const AnswerForm = (props: {
               name="answer"
             />
             {isModerator && id && (
-              <Box mt={1} mb={1}>
+              <Box mt="2" mb="2">
                 <Controller
                   control={control}
                   render={({ field, fieldState: { error: authorError } }) => {
@@ -274,28 +268,30 @@ export const AnswerForm = (props: {
                 label={t('anonymousCheckbox.answerAnonymously')}
               />
             )}
-            <Button
-              variant="contained"
-              type="submit"
-              color="primary"
-              disabled={posting || isSubmitting || post.status === 'obsolete'}
-              style={{ marginTop: theme.spacing(2) }}
-            >
-              {posting || isSubmitting ? (
-                <span>
-                  {t('answerForm.submitting')}{' '}
-                  <span className="spinner-border spinner-border-sm" />
-                </span>
-              ) : (
-                t(
-                  id
-                    ? 'answerForm.submit.existingAnswer'
-                    : 'answerForm.submit.newAnswer',
-                )
-              )}
-            </Button>
+            <Box mt="4">
+              <Button
+                variant="primary"
+                type="submit"
+                isDisabled={
+                  posting || isSubmitting || post.status === 'obsolete'
+                }
+              >
+                {posting || isSubmitting ? (
+                  <span>
+                    {t('answerForm.submitting')}{' '}
+                    <span className="spinner-border spinner-border-sm" />
+                  </span>
+                ) : (
+                  t(
+                    id
+                      ? 'answerForm.submit.existingAnswer'
+                      : 'answerForm.submit.newAnswer',
+                  )
+                )}
+              </Button>
+            </Box>
           </form>
-        </CardContent>
+        </CardBody>
       </Card>
     </OptionalRequirePermission>
   );

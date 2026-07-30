@@ -7,7 +7,7 @@ import {
   StatisticsResponse,
   UserStat,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Card, CardContent, CircularProgress, Grid } from '@material-ui/core';
+import { Card, CardBody, Grid, Skeleton } from '@backstage/ui';
 
 export const UserStatsContent = (props: {
   userRef: string;
@@ -35,27 +35,29 @@ export const UserStatsContent = (props: {
     return null;
   }
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
+    <Grid.Root columns={{ sm: '12' }} gap="6">
+      <Grid.Item colSpan={{ sm: '12' }}>
         <Card>
-          <CardContent>
+          <CardBody>
             <UserBadges entityRef={props.userRef} />
-          </CardContent>
+          </CardBody>
         </Card>
-      </Grid>
-      <Grid item xs={12}>
+      </Grid.Item>
+      <Grid.Item colSpan={{ sm: '12' }}>
         <Card>
-          <CardContent>
+          <CardBody>
             {!isLoading && stats && (
               <StatsChart
                 data={stats.statistics}
                 summary={stats.summary as unknown as Record<string, number>}
               />
             )}
-            {isLoading && !props.stats && <CircularProgress />}
-          </CardContent>
+            {isLoading && !props.stats && (
+              <Skeleton width="100%" height={300} />
+            )}
+          </CardBody>
         </Card>
-      </Grid>
-    </Grid>
+      </Grid.Item>
+    </Grid.Root>
   );
 };

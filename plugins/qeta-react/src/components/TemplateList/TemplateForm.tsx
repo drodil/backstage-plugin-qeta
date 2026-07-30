@@ -12,8 +12,7 @@ import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { TagInput } from '../PostForm/TagInput';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { TemplateFormValues } from '../PostForm/types';
-import { Button, TextField } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Alert, Box, Button, TextField } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 
@@ -76,7 +75,6 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
   const { isModerator } = useIsModerator();
   const { t } = useTranslationRef(qetaTranslationRef);
   const {
-    register,
     handleSubmit,
     control,
     getValues: getFormValues,
@@ -155,60 +153,52 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
   return (
     <form onSubmit={handleSubmit(postTemplate)}>
       {error && (
-        <Alert severity="error">{t('templateList.errorPosting')}</Alert>
+        <Alert status="danger" description={t('templateList.errorPosting')} />
       )}
-      <TextField
-        label={t('templateList.titleInput.label')}
-        className="qetaTemplateFormTitle"
-        required
-        fullWidth
-        error={'title' in errors}
-        margin="normal"
-        variant="outlined"
-        helperText={t('templateList.titleInput.helperText')}
-        FormHelperTextProps={{
-          style: { marginLeft: '0.2em' },
-        }}
-        {
-          // @ts-ignore
-          ...register('title', { required: true, maxLength: 255 })
-        }
-      />
+      <Box mb="4">
+        <TextField
+          id="title"
+          label={t('templateList.titleInput.label')}
+          className="qetaTemplateFormTitle"
+          isRequired
+          isInvalid={'title' in errors}
+          description={t('templateList.titleInput.helperText')}
+          value={control._formValues.title ?? ''}
+          onChange={value => setValue('title', value, { shouldValidate: true })}
+          maxLength={255}
+        />
+      </Box>
 
-      <TextField
-        label={t('templateList.descriptionInput.label')}
-        className="qetaTemplateFormDescription"
-        required
-        fullWidth
-        error={'description' in errors}
-        margin="normal"
-        variant="outlined"
-        helperText={t('templateList.descriptionInput.helperText')}
-        FormHelperTextProps={{
-          style: { marginLeft: '0.2em' },
-        }}
-        {
-          // @ts-ignore
-          ...register('description', { required: true, maxLength: 255 })
-        }
-      />
+      <Box mb="4">
+        <TextField
+          id="description"
+          label={t('templateList.descriptionInput.label')}
+          className="qetaTemplateFormDescription"
+          isRequired
+          isInvalid={'description' in errors}
+          description={t('templateList.descriptionInput.helperText')}
+          value={control._formValues.description ?? ''}
+          onChange={value =>
+            setValue('description', value, { shouldValidate: true })
+          }
+          maxLength={255}
+        />
+      </Box>
 
-      <TextField
-        label={t('templateList.questionTitleInput.label')}
-        className="qetaTemplateFormQuestionTitle"
-        fullWidth
-        error={'questionTitle' in errors}
-        margin="normal"
-        variant="outlined"
-        FormHelperTextProps={{
-          style: { marginLeft: '0.2em' },
-        }}
-        helperText={t('templateList.questionTitleInput.helperText')}
-        {
-          // @ts-ignore
-          ...register('questionTitle', { maxLength: 255 })
-        }
-      />
+      <Box mb="4">
+        <TextField
+          id="questionTitle"
+          label={t('templateList.questionTitleInput.label')}
+          className="qetaTemplateFormQuestionTitle"
+          isInvalid={'questionTitle' in errors}
+          description={t('templateList.questionTitleInput.helperText')}
+          value={control._formValues.questionTitle ?? ''}
+          onChange={value =>
+            setValue('questionTitle', value, { shouldValidate: true })
+          }
+          maxLength={255}
+        />
+      </Box>
 
       <Controller
         control={control}
@@ -245,12 +235,7 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
         )}
         name="entities"
       />
-      <Button
-        color="primary"
-        type="submit"
-        variant="contained"
-        disabled={posting}
-      >
+      <Button variant="primary" type="submit" isDisabled={posting}>
         {id
           ? t('templateList.submit.existingTemplate')
           : t('templateList.submit.newTemplate')}

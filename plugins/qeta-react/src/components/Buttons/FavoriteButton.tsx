@@ -1,9 +1,8 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
-import { IconButton, Tooltip } from '@material-ui/core';
+import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { Fragment, useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import StarIcon from '@material-ui/icons/Star';
-import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import { RiStarFill, RiStarLine } from '@remixicon/react';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -48,36 +47,36 @@ export const FavoriteButton = (props: { entity: PostResponse }) => {
       });
   };
 
+  const isDisabled = entity.status !== 'active' && entity.status !== 'obsolete';
+
   return (
     <Fragment>
       {entity.favorite ? (
-        <Tooltip title={t('favorite.remove')}>
-          <IconButton
+        <TooltipTrigger>
+          <ButtonIcon
             aria-label="unfavorite"
             size="small"
-            disabled={
-              entity.status !== 'active' && entity.status !== 'obsolete'
-            }
-            onClick={unfavoriteQuestion}
+            variant="tertiary"
+            isDisabled={isDisabled}
+            onPress={unfavoriteQuestion}
             className="qetaUnfavoriteBtn"
-          >
-            <StarIcon />
-          </IconButton>
-        </Tooltip>
+            icon={<RiStarFill size={16} />}
+          />
+          <Tooltip>{t('favorite.remove')}</Tooltip>
+        </TooltipTrigger>
       ) : (
-        <Tooltip title={t('favorite.add')}>
-          <IconButton
+        <TooltipTrigger>
+          <ButtonIcon
             aria-label="favorite"
             size="small"
-            disabled={
-              entity.status !== 'active' && entity.status !== 'obsolete'
-            }
-            onClick={favoriteQuestion}
+            variant="tertiary"
+            isDisabled={isDisabled}
+            onPress={favoriteQuestion}
             className="qetaFavoriteBtn"
-          >
-            <StarOutlineIcon />
-          </IconButton>
-        </Tooltip>
+            icon={<RiStarLine size={16} />}
+          />
+          <Tooltip>{t('favorite.add')}</Tooltip>
+        </TooltipTrigger>
       )}
     </Fragment>
   );

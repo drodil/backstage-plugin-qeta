@@ -1,11 +1,12 @@
 import {
   Avatar,
   Box,
-  Grid,
+  Flex,
+  Skeleton,
+  Text,
   Tooltip,
-  TooltipProps,
-  Typography,
-} from '@material-ui/core';
+  TooltipTrigger,
+} from '@backstage/ui';
 import {
   Post,
   removeMarkdownFormatting,
@@ -15,20 +16,35 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { useUserInfo } from '../../hooks';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import ThumbUpOutlined from '@material-ui/icons/ThumbUpOutlined';
-import VisibilityOutlined from '@material-ui/icons/VisibilityOutlined';
-import QuestionAnswerOutlined from '@material-ui/icons/QuestionAnswerOutlined';
-import ChatBubbleOutline from '@material-ui/icons/ChatBubbleOutline';
-import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
-import { useEffect, useState } from 'react';
+import {
+  RiCheckboxCircleLine,
+  RiChat3Line,
+  RiEyeLine,
+  RiQuestionAnswerLine,
+  RiThumbUpLine,
+} from '@remixicon/react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles';
-import { Skeleton } from '@material-ui/lab';
 
 const cache: Map<string, { data: Post; timestamp: number }> = new Map();
 const requestCache: Map<string, Promise<Post | undefined>> = new Map();
 const TTL = 5 * 60 * 1000;
+
+type TooltipPlacement =
+  | 'top'
+  | 'top start'
+  | 'top end'
+  | 'bottom'
+  | 'bottom start'
+  | 'bottom end'
+  | 'left'
+  | 'left top'
+  | 'left bottom'
+  | 'right'
+  | 'right top'
+  | 'right bottom';
 
 const PostTooltipContent = ({
   post: propsPost,
@@ -39,6 +55,7 @@ const PostTooltipContent = ({
 }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const qetaApi = useApi(qetaApiRef);
+  const styles = useTooltipStyles();
   const [post, setPost] = useState<Post | undefined>(propsPost);
 
   useEffect(() => {
@@ -78,192 +95,124 @@ const PostTooltipContent = ({
     }
   }, [propsPost, id, qetaApi]);
 
-  const { name, initials, user } = useUserInfo(
+  const { name, user } = useUserInfo(
     post?.author ?? '',
     post?.anonymous ?? false,
   );
 
   if (!post) {
     return (
-      <Grid container style={{ padding: '0.5em', maxWidth: 300 }} spacing={1}>
-        <Grid item xs={12}>
-          <Skeleton variant="text" width={200} height={24} />
-          <Skeleton
-            variant="circle"
-            width={20}
-            height={20}
-            style={{ display: 'inline-block', marginRight: 8 }}
-          />
-          <Skeleton
-            variant="text"
-            width={100}
-            height={20}
-            style={{ display: 'inline-block' }}
-          />
-          <Skeleton
-            variant="rect"
-            width={280}
-            height={80}
-            style={{ marginTop: 8 }}
-          />
-        </Grid>
-      </Grid>
+      <Flex direction="column" gap="2">
+        <Skeleton width={200} height={24} />
+        <Flex align="center" gap="2">
+          <Skeleton rounded width={20} height={20} />
+          <Skeleton width={100} height={20} />
+        </Flex>
+        <Skeleton width={280} height={80} />
+      </Flex>
     );
   }
 
   return (
-    <Grid container style={{ padding: '0.5em', maxWidth: 300 }} spacing={1}>
-      <Grid item xs={12}>
-        <Typography
-          variant="subtitle1"
-          style={{
-            fontWeight: 600,
-            marginBottom: '0.5em',
-          }}
-        >
-          {post.title}
-        </Typography>
-      </Grid>
+    <Flex direction="column" gap="2">
+      <Text variant="body-medium" weight="bold">
+        {post.title}
+      </Text>
 
-      <Grid item xs={12}>
-        <Box
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            marginBottom: '0.5em',
-          }}
-        >
-          <Box style={{ display: 'inline-block', marginRight: '0.5em' }}>
-            <Avatar
-              src={user?.spec?.profile?.picture}
-              alt={name}
-              variant="rounded"
-              style={{ width: '20px', height: '20px' }}
-            >
-              {initials}
-            </Avatar>
-          </Box>
-          <Typography variant="body2" style={{ marginRight: '0.5em' }}>
-            {name}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="textSecondary"
-            style={{ marginTop: '0.2em' }}
-          >
-            <RelativeTimeWithTooltip value={post.created} />
-          </Typography>
-        </Box>
-      </Grid>
+      <Flex align="center" gap="2">
+        <Avatar
+          src={user?.spec?.profile?.picture ?? ''}
+          name={name}
+          size="x-small"
+        />
+        <Text variant="body-small">{name}</Text>
+        <Text variant="body-x-small" color="secondary">
+          <RelativeTimeWithTooltip value={post.created} />
+        </Text>
+      </Flex>
 
       {post.tags && post.tags.length > 0 && (
-        <Grid item xs={12}>
-          <Typography variant="caption" color="textSecondary">
-            {post.tags.map(tag => `#${tag}`).join(' ')}
-          </Typography>
-        </Grid>
+        <Text variant="body-x-small" color="secondary">
+          {post.tags.map(tag => `#${tag}`).join(' ')}
+        </Text>
       )}
 
       {post.content && (
-        <Grid item xs={12}>
-          <Typography variant="body2" color="textSecondary">
-            {truncate(removeMarkdownFormatting(post.content), 150)}
-          </Typography>
-        </Grid>
+        <Text variant="body-small" color="secondary">
+          {truncate(removeMarkdownFormatting(post.content), 150)}
+        </Text>
       )}
 
-      <Grid item xs={12}>
-        <Box
-          display="flex"
-          alignItems="center"
-          flexWrap="wrap"
-          style={{ gap: '0.5em' }}
-        >
-          <Box display="flex" alignItems="center">
-            <ThumbUpOutlined
-              style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-            />
-            <Typography variant="caption">
-              {post.score} {t('common.votes', {})}
-            </Typography>
-          </Box>
+      <div className={styles.statsRow}>
+        <div className={styles.stat}>
+          <RiThumbUpLine size={14} />
+          <Text variant="body-x-small">
+            {post.score} {t('common.votes', {})}
+          </Text>
+        </div>
 
-          <Box display="flex" alignItems="center">
-            <VisibilityOutlined
-              style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-            />
-            <Typography variant="caption">
-              {post.views} {t('common.views', {})}
-            </Typography>
-          </Box>
+        <div className={styles.stat}>
+          <RiEyeLine size={14} />
+          <Text variant="body-x-small">
+            {post.views} {t('common.views', {})}
+          </Text>
+        </div>
 
-          {post.type === 'question' && (
-            <Box display="flex" alignItems="center">
-              <QuestionAnswerOutlined
-                style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-              />
-              <Typography variant="caption">
-                {post.answersCount} {t('common.answers', {})}
-              </Typography>
-            </Box>
-          )}
+        {post.type === 'question' && (
+          <div className={styles.stat}>
+            <RiQuestionAnswerLine size={14} />
+            <Text variant="body-x-small">
+              {post.answersCount} {t('common.answers', {})}
+            </Text>
+          </div>
+        )}
 
-          <Box display="flex" alignItems="center">
-            <ChatBubbleOutline
-              style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-            />
-            <Typography variant="caption">
-              {post.commentsCount} {t('common.comments', {})}
-            </Typography>
-          </Box>
+        <div className={styles.stat}>
+          <RiChat3Line size={14} />
+          <Text variant="body-x-small">
+            {post.commentsCount} {t('common.comments', {})}
+          </Text>
+        </div>
 
-          {post.correctAnswer && (
-            <Box display="flex" alignItems="center" color="success.main">
-              <CheckCircleOutline
-                style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-              />
-              <Typography variant="caption">
-                {t('questionPage.correctAnswer', {})}
-              </Typography>
-            </Box>
-          )}
-        </Box>
-      </Grid>
-    </Grid>
+        {post.correctAnswer && (
+          <div className={styles.stat}>
+            <RiCheckboxCircleLine size={14} color="var(--bui-fg-positive)" />
+            <Text variant="body-x-small" color="success">
+              {t('questionPage.correctAnswer', {})}
+            </Text>
+          </div>
+        )}
+      </div>
+    </Flex>
   );
 };
 
-export const PostTooltip = (
-  props: {
-    post?: Post;
-    id?: string | number;
-    interactive?: boolean;
-  } & Omit<TooltipProps, 'title'>,
-) => {
+export const PostTooltip = (props: {
+  post?: Post;
+  id?: string | number;
+  children: ReactNode;
+  className?: string;
+  placement?: TooltipPlacement;
+  enterDelay?: number;
+  [key: string]: unknown;
+}) => {
   const {
     post: propsPost,
     id,
-    interactive = true,
     children,
     className,
-    ...tooltipProps
+    placement,
+    enterDelay,
   } = props;
-  const classes = useTooltipStyles();
 
   return (
-    <Tooltip
-      title={<PostTooltipContent post={propsPost} id={id} />}
-      interactive={interactive}
-      arrow
-      classes={{
-        tooltip: classes.tooltip,
-        arrow: classes.tooltipArrow,
-        ...props.classes,
-      }}
-      className={className}
-      {...tooltipProps}
-    >
-      {children}
-    </Tooltip>
+    <TooltipTrigger delay={enterDelay}>
+      {className ? <span className={className}>{children}</span> : children}
+      <Tooltip placement={placement}>
+        <Box p="2" maxWidth="300px">
+          <PostTooltipContent post={propsPost} id={id} />
+        </Box>
+      </Tooltip>
+    </TooltipTrigger>
   );
 };

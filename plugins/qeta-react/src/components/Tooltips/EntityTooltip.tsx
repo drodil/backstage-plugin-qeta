@@ -1,5 +1,5 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { qetaApiRef } from '../../api';
@@ -8,17 +8,19 @@ import { useEntityFollow } from '../../hooks';
 import {
   Box,
   Button,
-  Grid,
+  Flex,
+  Skeleton,
+  Text,
   Tooltip,
-  TooltipProps,
-  Typography,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import Visibility from '@material-ui/icons/Visibility';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import DescriptionOutlined from '@material-ui/icons/DescriptionOutlined';
-import PeopleAltOutlined from '@material-ui/icons/PeopleAltOutlined';
+  TooltipTrigger,
+} from '@backstage/ui';
+import {
+  RiEyeLine,
+  RiEyeOffLine,
+  RiFileTextLine,
+  RiGroupLine,
+  RiQuestionLine,
+} from '@remixicon/react';
 import { qetaTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles';
@@ -30,6 +32,20 @@ const requestCache: Map<
   Promise<EntityResponse | undefined>
 > = new Map();
 const TTL = 5 * 60 * 1000;
+
+type TooltipPlacement =
+  | 'top'
+  | 'top start'
+  | 'top end'
+  | 'bottom'
+  | 'bottom start'
+  | 'bottom end'
+  | 'left'
+  | 'left top'
+  | 'left bottom'
+  | 'right'
+  | 'right top'
+  | 'right bottom';
 
 const EntityTooltipContent = ({
   entity,
@@ -44,6 +60,7 @@ const EntityTooltipContent = ({
   const { primaryTitle, secondaryTitle, Icon } = useEntityPresentation(entity);
   const { t } = useTranslationRef(qetaTranslationRef);
   const entitiesFollow = useEntityFollow();
+  const styles = useTooltipStyles();
   const [resp, setResp] = useState<undefined | EntityResponse>();
 
   useEffect(() => {
@@ -76,139 +93,102 @@ const EntityTooltipContent = ({
 
   if (!resp) {
     return (
-      <Grid container style={{ padding: '0.5em', maxWidth: 300 }} spacing={1}>
-        <Grid item xs={12}>
-          <Skeleton variant="text" width={150} height={24} />
-          <Skeleton variant="text" width={100} height={20} />
-          <Skeleton
-            variant="rect"
-            width={280}
-            height={60}
-            style={{ marginTop: 8 }}
-          />
-        </Grid>
-      </Grid>
+      <Flex direction="column" gap="2">
+        <Skeleton width={150} height={24} />
+        <Skeleton width={100} height={20} />
+        <Skeleton width={280} height={60} />
+      </Flex>
     );
   }
 
   return (
-    <Grid container style={{ padding: '0.5em', maxWidth: 300 }} spacing={1}>
-      <Grid item xs={12}>
-        <Box style={{ display: 'flex', alignItems: 'center' }}>
-          {Icon ? (
-            <Box marginRight={1} display="flex" alignItems="center">
-              <Icon fontSize="small" />
-            </Box>
-          ) : null}
-          <Typography
-            variant="subtitle1"
-            style={{
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-              fontWeight: 600,
-            }}
-          >
+    <Flex direction="column" gap="2">
+      <div>
+        <Flex align="center" gap="2">
+          {Icon ? <Icon fontSize="small" /> : null}
+          <Text variant="body-medium" weight="bold" truncate as="div">
             {primaryTitle}
-          </Typography>
-        </Box>
-        <Typography variant="subtitle2" color="textSecondary">
+          </Text>
+        </Flex>
+        <Text variant="body-small" color="secondary">
           {secondaryTitle}
-        </Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <Box display="flex" flexWrap="wrap" style={{ gap: '1em' }}>
-          <Box display="flex" alignItems="center">
-            <HelpOutline
-              style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-            />
-            <Typography variant="caption">
-              {resp.questionsCount} {t('common.questions')}
-            </Typography>
-          </Box>
-          <Box display="flex" alignItems="center">
-            <DescriptionOutlined
-              style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-            />
-            <Typography variant="caption">
-              {resp.articlesCount} {t('common.articles')}
-            </Typography>
-          </Box>
-          <Box display="flex" alignItems="center">
-            <PeopleAltOutlined
-              style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-            />
-            <Typography variant="caption">
-              {t('common.followers', { count: resp.followerCount })}
-            </Typography>
-          </Box>
-        </Box>
-      </Grid>
+        </Text>
+      </div>
+      <div className={styles.statsRow}>
+        <div className={styles.stat}>
+          <RiQuestionLine size={14} />
+          <Text variant="body-x-small">
+            {resp.questionsCount} {t('common.questions')}
+          </Text>
+        </div>
+        <div className={styles.stat}>
+          <RiFileTextLine size={14} />
+          <Text variant="body-x-small">
+            {resp.articlesCount} {t('common.articles')}
+          </Text>
+        </div>
+        <div className={styles.stat}>
+          <RiGroupLine size={14} />
+          <Text variant="body-x-small">
+            {t('common.followers', { count: resp.followerCount })}
+          </Text>
+        </div>
+      </div>
       {interactive && !entitiesFollow.loading && (
-        <Grid item xs={12}>
-          <Button
-            size="small"
-            variant="outlined"
-            color={
-              entitiesFollow.isFollowingEntity(entityRef)
-                ? 'secondary'
-                : 'primary'
+        <Button
+          variant="secondary"
+          size="small"
+          className={styles.followButton}
+          iconStart={
+            entitiesFollow.isFollowingEntity(entityRef) ? (
+              <RiEyeOffLine size={14} />
+            ) : (
+              <RiEyeLine size={14} />
+            )
+          }
+          onClick={() => {
+            if (entitiesFollow.isFollowingEntity(entityRef)) {
+              entitiesFollow.unfollowEntity(entityRef);
+            } else {
+              entitiesFollow.followEntity(entityRef);
             }
-            fullWidth
-            onClick={() => {
-              if (entitiesFollow.isFollowingEntity(entityRef)) {
-                entitiesFollow.unfollowEntity(entityRef);
-              } else {
-                entitiesFollow.followEntity(entityRef);
-              }
-            }}
-            startIcon={
-              entitiesFollow.isFollowingEntity(entityRef) ? (
-                <VisibilityOff />
-              ) : (
-                <Visibility />
-              )
-            }
-          >
-            {entitiesFollow.isFollowingEntity(entityRef)
-              ? t('entityButton.unfollow')
-              : t('entityButton.follow')}
-          </Button>
-        </Grid>
+          }}
+        >
+          {entitiesFollow.isFollowingEntity(entityRef)
+            ? t('entityButton.unfollow')
+            : t('entityButton.follow')}
+        </Button>
       )}
-    </Grid>
+    </Flex>
   );
 };
 
-export const EntityTooltip = (
-  props: {
-    entity: Entity | string;
-    interactive?: boolean;
-  } & Omit<TooltipProps, 'title'>,
-) => {
+export const EntityTooltip = (props: {
+  entity: Entity | string;
+  interactive?: boolean;
+  children: ReactNode;
+  className?: string;
+  placement?: TooltipPlacement;
+  enterDelay?: number;
+  [key: string]: unknown;
+}) => {
   const {
     entity,
     interactive = true,
     children,
     className,
-    ...tooltipProps
+    placement,
+    enterDelay,
   } = props;
-  const classes = useTooltipStyles();
 
   return (
-    <Tooltip
-      title={<EntityTooltipContent entity={entity} interactive={interactive} />}
-      interactive={interactive}
-      arrow
-      classes={{
-        tooltip: classes.tooltip,
-        arrow: classes.tooltipArrow,
-        ...props.classes,
-      }}
-      className={className}
-      {...tooltipProps}
-    >
-      {children}
-    </Tooltip>
+    <TooltipTrigger delay={enterDelay}>
+      {className ? <span className={className}>{children}</span> : children}
+      <Tooltip placement={placement}>
+        <Box p="2" maxWidth="300px">
+          <EntityTooltipContent entity={entity} interactive={interactive} />
+        </Box>
+      </Tooltip>
+    </TooltipTrigger>
   );
 };

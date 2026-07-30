@@ -1,0 +1,35 @@
+@layer components {
+  .reviewList {
+    margin-top: var(--bui-space-2);
+  }
+
+  .reviewItem {
+    padding-top: var(--bui-space-1);
+    padding-bottom: var(--bui-space-1);
+    border-bottom: 1px solid var(--bui-border-1);
+  }
+
+  .reviewItem:last-child {
+    border-bottom: none;
+  }
+
+  .reviewMeta {
+    display: flex;
+    align-items: baseline;
+    gap: var(--bui-space-1);
+    flex-wrap: wrap;
+  }
+
+  .reviewUserLink {
+    font-size: 0.75rem;
+  }
+
+  .reviewStatus {
+    font-weight: var(--bui-font-weight-bold);
+  }
+
+  .reviewComment {
+    margin-top: 2px;
+    font-size: 0.8rem;
+  }
+}

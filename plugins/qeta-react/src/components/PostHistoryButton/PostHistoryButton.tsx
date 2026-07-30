@@ -2,11 +2,12 @@ import { useCallback, useState } from 'react';
 import {
   Button,
   Dialog,
-  DialogContent,
-  DialogTitle,
+  DialogBody,
+  DialogHeader,
   Tooltip,
-} from '@material-ui/core';
-import HistoryIcon from '@material-ui/icons/History';
+  TooltipTrigger,
+} from '@backstage/ui';
+import { RiHistoryLine } from '@remixicon/react';
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
@@ -42,30 +43,30 @@ export const PostHistoryButton = (props: {
 
   return (
     <>
-      <Tooltip title={getTooltipTitle()}>
-        <span>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<HistoryIcon />}
-            disabled={!isActive}
-            onClick={() => setHistoryOpen(true)}
-          >
-            {t('postHistory.buttonLabel')}
-          </Button>
-        </span>
-      </Tooltip>
+      <TooltipTrigger>
+        <Button
+          variant="secondary"
+          size="small"
+          iconStart={<RiHistoryLine size={16} />}
+          isDisabled={!isActive}
+          onClick={() => setHistoryOpen(true)}
+        >
+          {t('postHistory.buttonLabel')}
+        </Button>
+        <Tooltip>{getTooltipTitle()}</Tooltip>
+      </TooltipTrigger>
 
       <Dialog
-        open={historyOpen}
-        onClose={() => setHistoryOpen(false)}
-        maxWidth="md"
-        fullWidth
+        isOpen={historyOpen}
+        isDismissable
+        onOpenChange={isOpenState => {
+          if (!isOpenState) setHistoryOpen(false);
+        }}
       >
-        <DialogTitle>{t('postHistory.title')}</DialogTitle>
-        <DialogContent>
+        <DialogHeader>{t('postHistory.title')}</DialogHeader>
+        <DialogBody>
           <PostHistory postId={post.id} onRestore={handleRestore} />
-        </DialogContent>
+        </DialogBody>
       </Dialog>
     </>
   );

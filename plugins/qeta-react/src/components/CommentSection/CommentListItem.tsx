@@ -1,4 +1,4 @@
-import { Box, makeStyles, Typography } from '@material-ui/core';
+import { Box, Text } from '@backstage/ui';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { AuthorLink } from '../Links';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
@@ -15,51 +15,7 @@ import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api.ts';
 import { CommentForm } from './CommentForm.tsx';
 import { ExpertIcon } from '../Icons/ExpertIcon.tsx';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {},
-    box: {
-      padding: theme.spacing(1.5),
-      transition: 'all 0.2s ease-in-out',
-      '&:hover': {
-        backgroundColor: theme.palette.action.hover,
-      },
-    },
-    content: {
-      display: 'inline',
-      '&>*:last-child:not(ul,ol,blockquote)': {
-        display: 'inline',
-      },
-      lineHeight: 1.5,
-    },
-    metadata: {
-      color: theme.palette.text.secondary,
-      marginTop: theme.spacing(0.5),
-      display: 'flex',
-      alignItems: 'center',
-      gap: theme.spacing(0.5),
-      '& a': {
-        color: theme.palette.text.secondary,
-        transition: 'all 0.2s ease-in-out',
-        textDecoration: 'none',
-        '&:hover': {
-          color: theme.palette.primary.main,
-          textDecoration: 'underline',
-        },
-      },
-      '& .actionBtn': {
-        marginLeft: theme.spacing(1),
-        fontSize: '0.75rem',
-        opacity: 0.7,
-        '&:hover': {
-          opacity: 1,
-        },
-      },
-    },
-  }),
-  { name: 'QetaCommentList' },
-);
+import styles from './CommentListItem.module.css';
 
 export const CommentListItem = (props: {
   comment: Comment;
@@ -71,7 +27,6 @@ export const CommentListItem = (props: {
   const { comment, onCommentAction, post, answer } = props;
   const qetaApi = useApi(qetaApiRef);
   const [posting, setPosting] = useState(false);
-  const styles = useStyles();
   const [editing, setEditing] = useState(false);
   const alertApi = useApi(alertApiRef);
 
@@ -170,7 +125,7 @@ export const CommentListItem = (props: {
             content={comment.content}
             className={styles.content}
           />
-          <Typography variant="caption" className={styles.metadata}>
+          <Text as="div" variant="body-small" className={styles.metadata}>
             <AuthorLink entity={comment} />
             {comment.expert && <ExpertIcon />}
             {' • '}
@@ -179,7 +134,7 @@ export const CommentListItem = (props: {
               <Link
                 underline="none"
                 to="#"
-                className="actionBtn qetaCommentEditBtn"
+                className={`${styles.actionBtn} qetaCommentEditBtn`}
                 onClick={() => setEditing(true)}
               >
                 {t('commentList.editLink')}
@@ -189,13 +144,13 @@ export const CommentListItem = (props: {
               <Link
                 underline="none"
                 to="#"
-                className="actionBtn qetaCommentDeleteBtn"
+                className={`${styles.actionBtn} qetaCommentDeleteBtn`}
                 onClick={() => deleteComment(comment.id)}
               >
                 {t('commentList.deleteLink')}
               </Link>
             )}
-          </Typography>
+          </Text>
         </>
       )}
     </Box>

@@ -1,0 +1,125 @@
+@layer components {
+  .root {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    height: 100%;
+    padding: var(--bui-space-2) var(--bui-space-4);
+    min-height: 80px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+  }
+
+  .root:hover {
+    background-color: var(--bui-bg-neutral-1-hover);
+  }
+
+  .root:hover .title {
+    color: var(--bui-fg-primary);
+  }
+
+  .metaCol {
+    min-width: 64px;
+    max-width: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: var(--bui-space-3);
+    gap: 6px;
+  }
+
+  .metaItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--bui-space-1);
+    color: var(--bui-fg-secondary);
+    width: 100%;
+    font-size: 15px;
+  }
+
+  .metaValue {
+    font-size: inherit;
+  }
+
+  .metaItemActive {
+    color: var(--bui-fg-success);
+    font-weight: 500;
+  }
+
+  .metaIcon {
+    flex-shrink: 0;
+  }
+
+  .title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--bui-fg-primary);
+    margin-bottom: var(--bui-space-1);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  .content {
+    color: var(--bui-fg-primary);
+    opacity: 0.9;
+    margin: 4px 0 8px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.95rem;
+    min-height: 20px;
+  }
+
+  .tagsRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .authorBoxContainer {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .contentContainer {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .titleContainer {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-2);
+    justify-content: space-between;
+    margin-bottom: var(--bui-space-1);
+  }
+
+  .titleWrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-2);
+    flex: 1;
+    min-width: 0;
+  }
+}

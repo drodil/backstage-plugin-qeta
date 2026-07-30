@@ -8,61 +8,41 @@ import {
   Avatar,
   Box,
   Card,
-  CardContent,
+  Columns,
+  Flex,
   Grid,
-  makeStyles,
+  Text,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
-import { GridSize } from '@material-ui/core/Grid';
+  TooltipTrigger,
+} from '@backstage/ui';
 import { UserFollowButton } from '../Buttons/UserFollowButton';
-import Visibility from '@material-ui/icons/Visibility';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import DescriptionIcon from '@material-ui/icons/Description';
-import LinkIcon from '@material-ui/icons/Link';
-import EmojiEvents from '@material-ui/icons/EmojiEvents';
+import {
+  RiEyeLine,
+  RiFileTextLine,
+  RiLinkM,
+  RiQuestionAnswerLine,
+  RiQuestionLine,
+  RiStarFill,
+  RiThumbUpLine,
+} from '@remixicon/react';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
 import { ClickableLink } from '../Utility/ClickableLink';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { useQetaConfig } from '../../hooks/useQetaConfig';
-
-const useStyles = makeStyles(theme => ({
-  statsGrid: {
-    marginTop: 'auto',
-  },
-  statItem: {
-    padding: theme.spacing(1),
-    borderRadius: theme.shape.borderRadius,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-  },
-  flexColumn: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-}));
+import styles from './UsersGridItem.module.css';
 
 export const UsersGridItem = (props: { user: UserResponse }) => {
   const { user } = props;
   const classes = useGridItemStyles();
-  const localClasses = useStyles();
   const userRoute = useRouteRef(userRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const entityRef = stringifyEntityRef(
     parseEntityRef(user.userRef, { defaultKind: 'user' }),
   );
   const { primaryTitle, Icon } = useEntityPresentation(entityRef);
-  const {
-    name,
-    initials,
-    user: userEntity,
-    secondaryTitle,
-  } = useEntityAuthor(user);
+  const { name, user: userEntity, secondaryTitle } = useEntityAuthor(user);
   const {
     value: currentUser,
     loading: loadingUser,
@@ -77,176 +57,139 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
     !disabled.articles,
     !disabled.links,
   ].filter(Boolean).length;
-  const row1Xs = Math.floor(12 / row1Count) as GridSize;
+  const row1ColSpan = String(Math.floor(12 / row1Count)) as Columns;
 
   // Row 2: votes + views (always) + answers (if questions enabled)
   const row2Count = [true, true, !disabled.questions].filter(Boolean).length;
-  const row2Xs = Math.floor(12 / row2Count) as GridSize;
+  const row2ColSpan = String(Math.floor(12 / row2Count)) as Columns;
 
   const href = `${userRoute()}/${user.userRef}`;
 
   return (
     <Card className={classes.card}>
       <ClickableLink href={href} ariaLabel={primaryTitle}>
-        <Box className={classes.cardHeader} display="flex" alignItems="center">
+        <Flex align="center" className={classes.cardHeader}>
           {Icon && (
             <Avatar
-              src={userEntity?.spec?.profile?.picture}
-              className="avatar"
-              alt={name}
-              variant="rounded"
-              style={{ marginRight: 16 }}
-            >
-              {initials}
-            </Avatar>
+              src={userEntity?.spec?.profile?.picture ?? ''}
+              name={name}
+              className={styles.avatar}
+            />
           )}
-          <Box flex={1} minWidth={0}>
-            <Tooltip title={secondaryTitle ?? ''} arrow>
-              <Typography variant="h6" noWrap>
+          <Box grow minWidth="0">
+            <TooltipTrigger>
+              <Text variant="title-small" truncate as="div">
                 {primaryTitle}
-              </Typography>
-            </Tooltip>
+              </Text>
+              <Tooltip>{secondaryTitle ?? ''}</Tooltip>
+            </TooltipTrigger>
           </Box>
           {!loadingUser &&
-          !userError &&
-          currentUser?.userEntityRef !== user.userRef ? (
-            <Box
-              flexShrink={0}
-              onClick={e => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
-              <UserFollowButton userRef={user.userRef} />
-            </Box>
-          ) : null}
-        </Box>
-        <CardContent
-          className={`${classes.cardContent} ${localClasses.flexColumn}`}
-        >
-          <Grid container spacing={1} className={localClasses.statsGrid}>
-            <Grid item xs={row1Xs}>
+            !userError &&
+            currentUser?.userEntityRef !== user.userRef && (
               <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                className={localClasses.statItem}
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
               >
-                <EmojiEvents fontSize="small" color="disabled" />
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
-                  {user.reputation}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                  {t('impactCard.reputation')}
-                </Typography>
+                <UserFollowButton userRef={user.userRef} />
               </Box>
-            </Grid>
+            )}
+        </Flex>
+        <div className={`${classes.cardContent} ${styles.flexColumn}`}>
+          <Grid.Root
+            columns={{ sm: '12' }}
+            gap="1"
+            className={styles.statsGrid}
+          >
+            <Grid.Item colSpan={{ sm: row1ColSpan }}>
+              <div className={styles.statItem}>
+                <RiStarFill size={16} color="var(--bui-fg-warning)" />
+                <Text variant="body-small" weight="bold">
+                  {user.reputation}
+                </Text>
+                <Text variant="body-x-small" color="secondary">
+                  {t('impactCard.reputation')}
+                </Text>
+              </div>
+            </Grid.Item>
             {!disabled.questions && (
-              <Grid item xs={row1Xs}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  className={localClasses.statItem}
-                >
-                  <QuestionAnswerIcon fontSize="small" color="disabled" />
-                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+              <Grid.Item colSpan={{ sm: row1ColSpan }}>
+                <div className={styles.statItem}>
+                  <RiQuestionLine size={16} />
+                  <Text variant="body-small" weight="bold">
                     {user.totalQuestions}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
+                  </Text>
+                  <Text variant="body-x-small" color="secondary">
                     {t('common.questions')}
-                  </Typography>
-                </Box>
-              </Grid>
+                  </Text>
+                </div>
+              </Grid.Item>
             )}
             {!disabled.articles && (
-              <Grid item xs={row1Xs}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  className={localClasses.statItem}
-                >
-                  <DescriptionIcon fontSize="small" color="disabled" />
-                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+              <Grid.Item colSpan={{ sm: row1ColSpan }}>
+                <div className={styles.statItem}>
+                  <RiFileTextLine size={16} />
+                  <Text variant="body-small" weight="bold">
                     {user.totalArticles}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
+                  </Text>
+                  <Text variant="body-x-small" color="secondary">
                     {t('common.articles')}
-                  </Typography>
-                </Box>
-              </Grid>
+                  </Text>
+                </div>
+              </Grid.Item>
             )}
             {!disabled.links && (
-              <Grid item xs={row1Xs}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  className={localClasses.statItem}
-                >
-                  <LinkIcon fontSize="small" color="disabled" />
-                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+              <Grid.Item colSpan={{ sm: row1ColSpan }}>
+                <div className={styles.statItem}>
+                  <RiLinkM size={16} />
+                  <Text variant="body-small" weight="bold">
                     {user.totalLinks}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
+                  </Text>
+                  <Text variant="body-x-small" color="secondary">
                     {t('common.links')}
-                  </Typography>
-                </Box>
-              </Grid>
+                  </Text>
+                </div>
+              </Grid.Item>
             )}
             {!disabled.questions && (
-              <Grid item xs={row2Xs}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  className={localClasses.statItem}
-                >
-                  <CheckCircleIcon fontSize="small" color="disabled" />
-                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+              <Grid.Item colSpan={{ sm: row2ColSpan }}>
+                <div className={styles.statItem}>
+                  <RiQuestionAnswerLine size={16} />
+                  <Text variant="body-small" weight="bold">
                     {user.totalAnswers}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
+                  </Text>
+                  <Text variant="body-x-small" color="secondary">
                     {t('common.answers')}
-                  </Typography>
-                </Box>
-              </Grid>
+                  </Text>
+                </div>
+              </Grid.Item>
             )}
-            <Grid item xs={row2Xs}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                className={localClasses.statItem}
-              >
-                <ThumbUpIcon fontSize="small" color="disabled" />
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
+            <Grid.Item colSpan={{ sm: row2ColSpan }}>
+              <div className={styles.statItem}>
+                <RiThumbUpLine size={16} />
+                <Text variant="body-small" weight="bold">
                   {user.totalVotes}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
+                </Text>
+                <Text variant="body-x-small" color="secondary">
                   {t('common.votes')}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={row2Xs}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                className={localClasses.statItem}
-              >
-                <Visibility fontSize="small" color="disabled" />
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
+                </Text>
+              </div>
+            </Grid.Item>
+            <Grid.Item colSpan={{ sm: row2ColSpan }}>
+              <div className={styles.statItem}>
+                <RiEyeLine size={16} />
+                <Text variant="body-small" weight="bold">
                   {user.totalViews}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
+                </Text>
+                <Text variant="body-x-small" color="secondary">
                   {t('common.views')}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
+                </Text>
+              </div>
+            </Grid.Item>
+          </Grid.Root>
+        </div>
       </ClickableLink>
     </Card>
   );

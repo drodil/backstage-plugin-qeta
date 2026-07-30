@@ -1,56 +1,17 @@
 import { ReactNode, useState, Children, useMemo } from 'react';
-import {
-  Box,
-  Button,
-  List,
-  ListSubheader,
-  makeStyles,
-} from '@material-ui/core';
+import { Box, Button, Text } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-
-const useStyles = makeStyles(theme => ({
-  container: {
-    width: '100%',
-    marginBottom: '1em',
-  },
-  subheader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(0.5),
-    color: theme.palette.text.hint,
-    padding: '0px 0px 0.5rem 0.5rem',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    lineHeight: 1.5,
-  },
-  list: {
-    '& li': {
-      paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1),
-    },
-  },
-  showMoreButton: {
-    marginLeft: theme.spacing(1),
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'center',
-    fontSize: '0.8rem',
-  },
-}));
+import { RiArrowDownSLine, RiArrowUpSLine } from '@remixicon/react';
+import styles from './RightList.module.css';
 
 export const RightListContainer = (props: {
   children: ReactNode;
   className?: string;
 }) => {
-  const styles = useStyles();
   return (
     <Box
-      display={{ md: 'none', lg: 'block' }}
-      className={`${styles.container} ${props.className ?? ''}`}
+      className={`${styles.container} ${styles.desktopOnly} ${props.className ?? ''}`}
     >
       {props.children}
     </Box>
@@ -65,7 +26,6 @@ export const RightList = (props: {
   randomize?: boolean;
   titleClassName?: string;
 }) => {
-  const styles = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
   const [expanded, setExpanded] = useState(false);
   const arrayChildren = useMemo(() => {
@@ -82,35 +42,35 @@ export const RightList = (props: {
       : arrayChildren;
 
   return (
-    <List
-      component="nav"
-      aria-labelledby="nested-list-subheader"
-      className={styles.list}
-      subheader={
-        <ListSubheader
-          disableSticky
-          component="div"
+    <Box className={styles.list}>
+      <nav aria-labelledby="nested-list-subheader">
+        <div
           id="nested-list-subheader"
-          color="primary"
           className={`${styles.subheader} ${props.titleClassName ?? ''}`}
         >
           {props.icon}
-          {props.title}
-        </ListSubheader>
-      }
-    >
-      {displayChildren}
-      {showButton && (
-        <Button
-          onClick={() => setExpanded(!expanded)}
-          color="primary"
-          size="small"
-          className={styles.showMoreButton}
-          endIcon={expanded ? <ExpandLess /> : <ExpandMore />}
-        >
-          {expanded ? t('common.showLess') : t('common.showMore')}
-        </Button>
-      )}
-    </List>
+          <Text variant="body-small" color="secondary">
+            {props.title}
+          </Text>
+        </div>
+        <div className={styles.items}>{displayChildren}</div>
+        {showButton && (
+          <Button
+            onClick={() => setExpanded(!expanded)}
+            variant="tertiary"
+            className={styles.showMoreButton}
+          >
+            {expanded ? t('common.showLess') : t('common.showMore')}
+            <span className={styles.showMoreIcon} aria-hidden="true">
+              {expanded ? (
+                <RiArrowUpSLine size={16} />
+              ) : (
+                <RiArrowDownSLine size={16} />
+              )}
+            </span>
+          </Button>
+        )}
+      </nav>
+    </Box>
   );
 };

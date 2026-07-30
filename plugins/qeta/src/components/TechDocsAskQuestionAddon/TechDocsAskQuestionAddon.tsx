@@ -1,4 +1,4 @@
-import { makeStyles, Portal, Typography } from '@material-ui/core';
+import { createPortal } from 'react-dom';
 import {
   useShadowRootElements,
   useTechDocsReaderPage,
@@ -6,23 +6,12 @@ import {
 import { Link } from '@backstage/core-components';
 import { askRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import ContactSupportIcon from '@material-ui/icons/ContactSupport';
+import { RiQuestionAnswerLine } from '@remixicon/react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(1),
-  },
-  link: {
-    display: 'grid',
-    gridAutoFlow: 'column',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-}));
+import { Text } from '@backstage/ui';
+import styles from './TechDocsAskQuestionAddon.module.css';
 
 export const TechDocsAskQuestionAddon = () => {
-  const styles = useStyles();
   const { title, subtitle, entityRef } = useTechDocsReaderPage();
   const [mainContent] = useShadowRootElements([
     '[data-md-component="main"] .md-content',
@@ -35,28 +24,25 @@ export const TechDocsAskQuestionAddon = () => {
     params.append('entity', stringifyEntityRef(entityRef));
   }
   if (title) {
-    params.append(
-      'title',
-      `Question about "${title}${subtitle ? ` - ${subtitle}` : ''}"`,
-    );
+    const subtitleSuffix = subtitle ? ` - ${subtitle}` : '';
+    params.append('title', `Question about "${title}${subtitleSuffix}"`);
   }
   params.append(
     'content',
-    `\n\nThis question relates to ${window.location.href}`,
+    `\n\nThis question relates to ${globalThis.location.href}`,
   );
 
-  return (
-    <Portal container={mainContent}>
-      <div className={styles.root}>
-        <Link
-          target="_blank"
-          className={styles.link}
-          to={`${askRoute()}?${params.toString()}`}
-        >
-          <ContactSupportIcon />
-          <Typography>Ask a question about the content</Typography>
-        </Link>
-      </div>
-    </Portal>
+  return createPortal(
+    <div className={styles.root}>
+      <Link
+        target="_blank"
+        className={styles.link}
+        to={`${askRoute()}?${params.toString()}`}
+      >
+        <RiQuestionAnswerLine size={16} />
+        <Text as="span">Ask a question about the content</Text>
+      </Link>
+    </div>,
+    mainContent ?? document.body,
   );
 };

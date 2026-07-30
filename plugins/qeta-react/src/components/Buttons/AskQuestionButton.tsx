@@ -1,4 +1,4 @@
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import { RiQuestionLine } from '@remixicon/react';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { askRouteRef } from '../../routes';
@@ -41,7 +41,7 @@ export const AskQuestionButton = (props: {
       <ContentHeaderButton
         to={entity || tags ? `${askRoute()}?${params.toString()}` : askRoute()}
         color="primary"
-        icon={<HelpOutline />}
+        icon={<RiQuestionLine />}
       >
         {t('askQuestionButton.title')}
       </ContentHeaderButton>

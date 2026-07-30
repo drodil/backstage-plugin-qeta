@@ -1,0 +1,11 @@
+@layer components {
+  .root {
+    height: 10vh;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

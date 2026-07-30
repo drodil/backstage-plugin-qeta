@@ -1,19 +1,17 @@
-import { Autocomplete } from '@material-ui/lab';
 import { getEntityDescription, getEntityTitle } from '../../utils/utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   Box,
-  Chip,
-  CircularProgress,
+  Tag,
+  TagGroup,
   TextField,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
+  TooltipTrigger,
+} from '@backstage/ui';
 import {
-  ComponentType,
   CSSProperties,
+  FocusEvent,
   forwardRef,
-  HTMLAttributes,
   useCallback,
   useEffect,
   useMemo,
@@ -26,11 +24,6 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { qetaApiRef } from '../../api';
 import { compact } from 'lodash';
-import {
-  AutocompleteListboxComponent,
-  renderGroup,
-} from './AutocompleteListComponent';
-import { AutocompleteProps } from '@material-ui/lab/Autocomplete/Autocomplete';
 import { FieldError } from 'react-hook-form';
 import type { CatalogApi } from '@backstage/catalog-client';
 import type {
@@ -40,6 +33,7 @@ import type {
 import { getSupportedEntityKinds } from '@drodil/backstage-plugin-qeta-common';
 import { useDebounce } from 'react-use';
 import { useQetaConfig } from '../../hooks';
+import styles from './EntitiesInput.module.css';
 
 type CommonEntitiesInputProps = {
   singleValue?: string;
@@ -54,7 +48,6 @@ type CommonEntitiesInputProps = {
   label?: string;
   name?: string;
   placeholder?: string;
-  autocompleteProps?: AutocompleteProps<any, any, any, any>;
   onChange: (value: any) => void;
   title?: string;
   content?: string;
@@ -257,23 +250,6 @@ const handleEntitySelectionChange = ({
   }
 };
 
-const handleAutocompleteInputChange = ({
-  nextValue,
-  reason,
-  setInputValue,
-}: {
-  nextValue: string;
-  reason: string;
-  setInputValue: (value: string) => void;
-}) => {
-  if (reason === 'reset') {
-    setInputValue('');
-    return;
-  }
-
-  setInputValue(nextValue);
-};
-
 const appendSuggestedEntity = ({
   entity,
   max,
@@ -312,7 +288,6 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
       label,
       name = 'entities',
       placeholder,
-      autocompleteProps,
       title,
       content,
       tags,
@@ -331,6 +306,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
     const [inputValue, setInputValue] = useState('');
     const searchCache = useRef<Map<string, Entity[]>>(new Map());
     const activeRequest = useRef(0);
+    const containerRef = useRef<HTMLDivElement>(null);
     const qetaConfig = useQetaConfig();
 
     const explicitEntityKindsKey = useMemo(
@@ -396,6 +372,18 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
 
       return inputValue;
     }, [inputValue, multiple, open, usedValue]);
+
+    const filteredOptions = useMemo(() => {
+      const term = inputValue.trim().toLocaleLowerCase();
+      if (!term) {
+        return options;
+      }
+      return options.filter(option =>
+        getEntityTitle(option, { withType: false })
+          .toLocaleLowerCase()
+          .includes(term),
+      );
+    }, [inputValue, options]);
 
     useEffect(() => {
       searchCache.current.clear();
@@ -519,6 +507,13 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
       setOpen(true);
     }, []);
 
+    const handleClose = useCallback(() => {
+      activeRequest.current += 1;
+      setLoading(false);
+      setInputValue('');
+      setOpen(false);
+    }, []);
+
     useEffect(() => {
       searchEntities('');
     }, [searchEntities]);
@@ -572,138 +567,168 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
       }
     };
 
+    const handleSelect = (entity: Entity) => {
+      const entityRef = stringifyEntityRef(entity);
+      if (multiple) {
+        const alreadySelected = valueEntities.some(
+          e => stringifyEntityRef(e) === entityRef,
+        );
+        const nextValues = alreadySelected
+          ? valueEntities.filter(e => stringifyEntityRef(e) !== entityRef)
+          : [...valueEntities, entity];
+        handleEntitySelectionChange({
+          max,
+          multiple,
+          newValue: nextValues,
+          onChange,
+        });
+        setInputValue('');
+      } else {
+        handleEntitySelectionChange({
+          max,
+          multiple,
+          newValue: entity,
+          onChange,
+        });
+        setInputValue('');
+        setOpen(false);
+      }
+    };
+
+    const handleRemoveEntities = (keys: Iterable<string | number>) => {
+      const removed = new Set(Array.from(keys).map(String));
+      onChange(valueEntities.filter(e => !removed.has(stringifyEntityRef(e))));
+    };
+
+    const handleFieldBlur = (event: FocusEvent<HTMLInputElement>) => {
+      if (!containerRef.current?.contains(event.relatedTarget)) {
+        handleClose();
+      }
+    };
+
     if (qetaConfig.disabled.entities && !skipDisabledEntitiesCheck) {
       return null;
     }
 
+    const showGroups = entityKinds.length > 1;
+    const groupedOptions = showGroups
+      ? entityKinds
+          .map(entityKind => ({
+            kind: entityKind,
+            entities: filteredOptions.filter(
+              option => option.kind === entityKind,
+            ),
+          }))
+          .filter(group => group.entities.length > 0)
+      : [{ kind: '', entities: filteredOptions }];
+
+    const tagItems = valueEntities.map(entity => ({
+      id: stringifyEntityRef(entity),
+      entity,
+    }));
+
     return (
-      <Box>
-        <Autocomplete
-          multiple={multiple}
-          autoHighlight
-          autoComplete
-          className="qetaEntitiesInput"
-          value={usedValue}
-          disabled={disabled}
-          loading={loading}
-          limitTags={max}
-          loadingText={t('common.loading')}
-          groupBy={entityKinds.length > 1 ? option => option.kind : undefined}
-          renderGroup={renderGroup}
-          handleHomeEndKeys
-          open={open}
-          onOpen={handleOpen}
-          onClose={() => {
-            activeRequest.current += 1;
-            setLoading(false);
-            setInputValue('');
-            setOpen(false);
-          }}
-          options={options}
-          getOptionLabel={getEntityTitle}
-          inputValue={displayedInputValue}
-          onInputChange={(_event, nextValue, reason) => {
-            handleAutocompleteInputChange({
-              nextValue,
-              reason,
-              setInputValue,
-            });
-          }}
-          ListboxComponent={
-            AutocompleteListboxComponent as ComponentType<
-              HTMLAttributes<HTMLElement>
+      <Box className={styles.root}>
+        <div ref={containerRef} className={styles.container}>
+          {multiple && tagItems.length > 0 && (
+            <TagGroup
+              className={styles.chips}
+              items={tagItems}
+              onRemove={handleRemoveEntities}
             >
-          }
-          disableListWrap
-          style={style}
-          getOptionSelected={(o, v) =>
-            stringifyEntityRef(o) === stringifyEntityRef(v)
-          }
-          onChange={(_e, newValue) => {
-            handleEntitySelectionChange({
-              max,
-              multiple,
-              newValue,
-              onChange,
-            });
-          }}
-          renderOption={(option: Entity) => {
-            const stringified = stringifyEntityRef(option);
-            return (
-              <span key={stringified}>
-                <Tooltip
-                  arrow
-                  placement="right"
-                  title={
-                    <>
-                      <Typography>{getEntityTitle(option)}</Typography>
-                      <Typography variant="caption">
-                        {getEntityDescription(option)}
-                      </Typography>
-                    </>
-                  }
-                >
-                  <span>{getEntityTitle(option, { withType: false })}</span>
-                </Tooltip>
-              </span>
-            );
-          }}
-          renderInput={params => {
-            return (
-              <TextField
-                {...params}
-                variant="outlined"
-                margin="normal"
-                required={required}
-                label={label || t('entitiesInput.label')}
-                placeholder={placeholder || t('entitiesInput.placeholder')}
-                helperText={helperText}
-                name={name}
-                FormHelperTextProps={{
-                  style: { marginLeft: '0.2em' },
-                }}
-                InputProps={{
-                  ...params.InputProps,
-                  endAdornment: (
-                    <>
-                      {loading ? (
-                        <CircularProgress color="inherit" size={20} />
-                      ) : null}
-                      {params.InputProps.endAdornment}
-                    </>
-                  ),
-                }}
-                error={error !== undefined}
-              />
-            );
-          }}
-          {...autocompleteProps}
-        />
+              {item => (
+                <Tag>{getEntityTitle(item.entity, { withType: false })}</Tag>
+              )}
+            </TagGroup>
+          )}
+          <div className={styles.fieldWrapper}>
+            <TextField
+              className="qetaEntitiesInput"
+              isDisabled={disabled}
+              isRequired={required}
+              label={label || t('entitiesInput.label')}
+              placeholder={placeholder || t('entitiesInput.placeholder')}
+              description={helperText}
+              isInvalid={error !== undefined}
+              name={name}
+              style={style}
+              value={displayedInputValue}
+              onChange={value_ => setInputValue(value_)}
+              onFocus={handleOpen}
+              onBlur={handleFieldBlur}
+              onKeyDown={event => {
+                if (event.key === 'Escape') {
+                  handleClose();
+                }
+              }}
+            />
+            {open && (
+              <div className={styles.dropdown}>
+                {loading && (
+                  <div className={styles.statusText}>{t('common.loading')}</div>
+                )}
+                {!loading &&
+                  groupedOptions.map(group => (
+                    <div key={group.kind || 'default'}>
+                      {showGroups && group.entities.length > 0 && (
+                        <div className={styles.groupHeader}>{group.kind}</div>
+                      )}
+                      {group.entities.map(option => {
+                        const stringified = stringifyEntityRef(option);
+                        return (
+                          <TooltipTrigger key={stringified}>
+                            <button
+                              type="button"
+                              className={styles.option}
+                              onMouseDown={event => event.preventDefault()}
+                              onClick={() => handleSelect(option)}
+                            >
+                              {getEntityTitle(option, { withType: false })}
+                            </button>
+                            <Tooltip placement="right">
+                              {getEntityTitle(option)}
+                              {getEntityDescription(option)
+                                ? ` — ${getEntityDescription(option)}`
+                                : ''}
+                            </Tooltip>
+                          </TooltipTrigger>
+                        );
+                      })}
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        </div>
         {suggestedEntities?.length > 0 && (
-          <Box style={{ marginLeft: '4px' }}>
-            <Typography variant="caption" color="textSecondary">
+          <Box className={styles.suggestedSection}>
+            <span className={styles.suggestedLabel}>
               {t('entitiesInput.suggestedEntities')}
-            </Typography>
-            <Box mt={0.5}>
-              {suggestedEntities.map(entity => (
-                <Chip
-                  key={stringifyEntityRef(entity)}
-                  label={getEntityTitle(entity)}
-                  size="small"
-                  onClick={() => handleSuggestedEntityClick(entity)}
-                  style={{ margin: '0 4px 4px 0' }}
-                  disabled={
+            </span>
+            <TagGroup
+              className={styles.suggestedChips}
+              items={suggestedEntities.map(entity => ({
+                id: stringifyEntityRef(entity),
+                entity,
+              }))}
+            >
+              {item => (
+                <Tag
+                  isDisabled={
                     valueEntities
                       .map(stringifyEntityRef)
-                      .includes(stringifyEntityRef(entity)) ||
+                      .includes(stringifyEntityRef(item.entity)) ||
                     (max !== null && valueEntities.length >= max) ||
                     loadingSuggestions
                   }
-                />
-              ))}
-            </Box>
+                  onAction={() => handleSuggestedEntityClick(item.entity)}
+                >
+                  {getEntityTitle(item.entity)}
+                </Tag>
+              )}
+            </TagGroup>
           </Box>
-        )}{' '}
+        )}
       </Box>
     );
   },

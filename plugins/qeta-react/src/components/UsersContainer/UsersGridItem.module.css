@@ -1,0 +1,25 @@
+@layer components {
+  .avatar {
+    margin-right: var(--bui-space-4);
+    flex-shrink: 0;
+  }
+
+  .flexColumn {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .statsGrid {
+    margin-top: auto;
+  }
+
+  .statItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--bui-space-2);
+    border-radius: var(--bui-radius-2);
+    width: 100%;
+    height: 100%;
+  }
+}

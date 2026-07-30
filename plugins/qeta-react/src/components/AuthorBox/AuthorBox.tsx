@@ -1,72 +1,9 @@
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { UserLink } from '../Links';
 import { useUserInfo } from '../../hooks/useEntityAuthor';
-import { Avatar, Box, makeStyles, Typography } from '@material-ui/core';
+import { Avatar, Flex, Text } from '@backstage/ui';
 import { ExpertIcon } from '../Icons/ExpertIcon.tsx';
-
-const useStyles = makeStyles(
-  theme => ({
-    authorBox: {
-      padding: theme.spacing(0, 1.5, 0, 0),
-      textAlign: 'right',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: theme.spacing(0.5),
-      marginLeft: theme.spacing(2),
-      maxWidth: '200px',
-    },
-    authorBoxCompact: {
-      display: 'flex',
-      gap: theme.spacing(0.5),
-      alignItems: 'center',
-      whiteSpace: 'nowrap',
-      '& > *': {
-        fontSize: '12px',
-        display: 'inline-flex',
-        lineHeight: '16px',
-      },
-    },
-    timeRow: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-    },
-    avatar: {
-      width: '20px',
-      height: '20px',
-    },
-    avatarCompact: {
-      width: '20px',
-      height: '20px',
-    },
-    authorInfo: {
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      color: theme.palette.text.primary,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-      gap: theme.spacing(0.5),
-    },
-    authorLink: {
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      color: theme.palette.text.primary,
-    },
-    expertIcon: {
-      marginLeft: theme.spacing(0.5),
-      verticalAlign: 'middle',
-    },
-    meta: {
-      color: theme.palette.text.secondary,
-      textAlign: 'center',
-      margin: 0,
-    },
-  }),
-  { name: 'QetaAuthorBox' },
-);
+import styles from './AuthorBox.module.css';
 
 export const AuthorBox = (props: {
   userEntityRef: string;
@@ -79,60 +16,63 @@ export const AuthorBox = (props: {
 }) => {
   const { userEntityRef, time, label, expert, anonymous, compact, noLink } =
     props;
-  const { name, initials, user } = useUserInfo(userEntityRef);
-  const styles = useStyles();
+  const { name, user } = useUserInfo(userEntityRef);
 
   if (compact) {
     return (
-      <Box className={`qetaAuthorBox ${styles.authorBoxCompact}`}>
+      <Flex
+        align="center"
+        gap="1"
+        className={`qetaAuthorBox ${styles.authorBoxCompact}`}
+      >
         <Avatar
-          src={user?.spec?.profile?.picture}
-          className={`qetaAuthorBoxAvatar ${styles.avatarCompact}`}
-          alt={name}
-          variant="rounded"
-        >
-          {initials}
-        </Avatar>
-        <Typography variant="body2" component="span">
+          src={user?.spec?.profile?.picture ?? ''}
+          name={name}
+          size="x-small"
+          className="qetaAuthorBoxAvatar"
+        />
+        <Text variant="body-small" as="span">
           <UserLink
             entityRef={userEntityRef}
             anonymous={anonymous}
             noLink={noLink}
           />
-        </Typography>
+        </Text>
         {expert && <ExpertIcon className={styles.expertIcon} />}
-        <Typography className="qetaAuthorBoxCreated" variant="caption">
+        <Text className="qetaAuthorBoxCreated" variant="body-x-small" as="span">
           <RelativeTimeWithTooltip value={time} />
-        </Typography>
-      </Box>
+        </Text>
+      </Flex>
     );
   }
 
   return (
-    <Box className={`qetaAuthorBox ${styles.authorBox}`}>
-      <Box className={styles.timeRow}>
-        <Typography className="qetaAuthorBoxCreated" variant="caption">
+    <Flex
+      direction="column"
+      gap="1"
+      className={`qetaAuthorBox ${styles.authorBox}`}
+    >
+      <Flex justify="end" className={styles.timeRow}>
+        <Text className="qetaAuthorBoxCreated" variant="body-x-small">
           {label} <RelativeTimeWithTooltip value={time} />
-        </Typography>
-      </Box>
-      <Box className={styles.authorInfo}>
+        </Text>
+      </Flex>
+      <Flex align="center" justify="end" gap="1" className={styles.authorInfo}>
         <Avatar
-          src={user?.spec?.profile?.picture}
-          className={`qetaAuthorBoxAvatar ${styles.avatar}`}
-          alt={name}
-          variant="rounded"
-        >
-          {initials}
-        </Avatar>
-        <Box className={styles.authorLink}>
+          src={user?.spec?.profile?.picture ?? ''}
+          name={name}
+          size="x-small"
+          className="qetaAuthorBoxAvatar"
+        />
+        <div className={styles.authorLink}>
           <UserLink
             entityRef={userEntityRef}
             anonymous={anonymous}
             noLink={noLink}
           />
           {expert && <ExpertIcon className={styles.expertIcon} />}
-        </Box>
-      </Box>
-    </Box>
+        </div>
+      </Flex>
+    </Flex>
   );
 };

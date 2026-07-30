@@ -1,52 +1,36 @@
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
 import { EntityFollowButton } from '../Buttons/EntityFollowButton';
 import {
-  Avatar,
   Box,
   Card,
-  CardContent,
+  Columns,
+  Flex,
   Grid,
-  GridSize,
-  makeStyles,
+  Text,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
+  TooltipTrigger,
+} from '@backstage/ui';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
 import { parseEntityRef } from '@backstage/catalog-model';
 
-import LinkIcon from '@material-ui/icons/Link';
-import DescriptionIcon from '@material-ui/icons/Description';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import PeopleIcon from '@material-ui/icons/People';
+import {
+  RiFileTextLine,
+  RiGroupLine,
+  RiLinkM,
+  RiQuestionLine,
+} from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import useGridItemStyles from '../GridItemStyles/useGridItemStyles';
 import { ClickableLink } from '../Utility/ClickableLink';
 import { useQetaConfig } from '../../hooks';
-
-const useStyles = makeStyles(theme => ({
-  statsGrid: {
-    marginTop: 'auto',
-  },
-  statItem: {
-    padding: theme.spacing(1),
-    borderRadius: theme.shape.borderRadius,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-  },
-  flexColumn: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-}));
+import styles from './EntitiesGridItem.module.css';
 
 export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
   const { entity } = props;
   const classes = useGridItemStyles();
-  const localClasses = useStyles();
   const entityRoute = useRouteRef(entityRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
@@ -62,26 +46,26 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
     !disabled.links,
     true,
   ].filter(Boolean).length;
-  const statXs = Math.floor(12 / enabledStatsCount) as GridSize;
+  const statColSpan = String(Math.floor(12 / enabledStatsCount)) as Columns;
 
   return (
     <Card className={classes.card}>
       <ClickableLink href={href} ariaLabel={primaryTitle}>
-        <Box className={classes.cardHeader} display="flex" alignItems="center">
+        <Flex align="center" className={classes.cardHeader}>
           {Icon && (
-            <Avatar style={{ marginRight: 16 }}>
+            <div className={styles.avatar}>
               <Icon />
-            </Avatar>
+            </div>
           )}
-          <Box flex={1} minWidth={0}>
-            <Tooltip title={secondaryTitle ?? ''} arrow>
-              <Typography variant="h6" noWrap>
+          <Box grow minWidth="0">
+            <TooltipTrigger>
+              <Text variant="title-small" truncate as="div">
                 {primaryTitle}
-              </Typography>
-            </Tooltip>
+              </Text>
+              <Tooltip>{secondaryTitle ?? ''}</Tooltip>
+            </TooltipTrigger>
           </Box>
           <Box
-            flexShrink={0}
             onClick={e => {
               e.preventDefault();
               e.stopPropagation();
@@ -89,83 +73,65 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
           >
             <EntityFollowButton entityRef={entity.entityRef} />
           </Box>
-        </Box>
-        <CardContent
-          className={`${classes.cardContent} ${localClasses.flexColumn}`}
-        >
-          <Grid container spacing={1} className={localClasses.statsGrid}>
+        </Flex>
+        <div className={`${classes.cardContent} ${styles.flexColumn}`}>
+          <Grid.Root
+            columns={{ sm: '12' }}
+            gap="2"
+            className={styles.statsGrid}
+          >
             {!disabled.questions && (
-              <Grid item xs={statXs}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  className={localClasses.statItem}
-                >
-                  <QuestionAnswerIcon fontSize="small" color="disabled" />
-                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+              <Grid.Item colSpan={{ sm: statColSpan }}>
+                <div className={styles.statItem}>
+                  <RiQuestionLine size={16} />
+                  <Text variant="body-small" weight="bold">
                     {entity.questionsCount}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
+                  </Text>
+                  <Text variant="body-x-small" color="secondary">
                     {t('stats.questions', {})}
-                  </Typography>
-                </Box>
-              </Grid>
+                  </Text>
+                </div>
+              </Grid.Item>
             )}
             {!disabled.articles && (
-              <Grid item xs={statXs}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  className={localClasses.statItem}
-                >
-                  <DescriptionIcon fontSize="small" color="disabled" />
-                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+              <Grid.Item colSpan={{ sm: statColSpan }}>
+                <div className={styles.statItem}>
+                  <RiFileTextLine size={16} />
+                  <Text variant="body-small" weight="bold">
                     {entity.articlesCount}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
+                  </Text>
+                  <Text variant="body-x-small" color="secondary">
                     {t('stats.articles', {})}
-                  </Typography>
-                </Box>
-              </Grid>
+                  </Text>
+                </div>
+              </Grid.Item>
             )}
             {!disabled.links && (
-              <Grid item xs={statXs}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  className={localClasses.statItem}
-                >
-                  <LinkIcon fontSize="small" color="disabled" />
-                  <Typography variant="body2" style={{ fontWeight: 600 }}>
+              <Grid.Item colSpan={{ sm: statColSpan }}>
+                <div className={styles.statItem}>
+                  <RiLinkM size={16} />
+                  <Text variant="body-small" weight="bold">
                     {entity.linksCount}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
+                  </Text>
+                  <Text variant="body-x-small" color="secondary">
                     {t('stats.links', {})}
-                  </Typography>
-                </Box>
-              </Grid>
+                  </Text>
+                </div>
+              </Grid.Item>
             )}
-            <Grid item xs={statXs}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                className={localClasses.statItem}
-              >
-                <PeopleIcon fontSize="small" color="disabled" />
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
+            <Grid.Item colSpan={{ sm: statColSpan }}>
+              <div className={styles.statItem}>
+                <RiGroupLine size={16} />
+                <Text variant="body-small" weight="bold">
                   {entity.followerCount}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
+                </Text>
+                <Text variant="body-x-small" color="secondary">
                   {t('stats.followers', {})}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
+                </Text>
+              </div>
+            </Grid.Item>
+          </Grid.Root>
+        </div>
       </ClickableLink>
     </Card>
   );

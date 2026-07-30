@@ -1,0 +1,37 @@
+@layer components {
+  .header {
+    margin-bottom: var(--bui-space-5);
+  }
+
+  .quickFilters {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-2);
+  }
+
+  .filterButton {
+    border-radius: var(--bui-radius-2);
+  }
+
+  .tableContainer {
+    overflow-x: auto;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table th {
+    text-align: left;
+    padding: var(--bui-space-2) var(--bui-space-3);
+    border-bottom: 1px solid var(--bui-border-1);
+    color: var(--bui-fg-secondary);
+    font-weight: 500;
+  }
+
+  .table td {
+    padding: var(--bui-space-2) var(--bui-space-3);
+    border-bottom: 1px solid var(--bui-border-1);
+  }
+}

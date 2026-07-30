@@ -1,0 +1,22 @@
+@layer components {
+  .markdownHelpLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--bui-space-1);
+    font-size: var(--bui-font-size-1);
+  }
+
+  .markdownHelpIcon {
+    flex-shrink: 0;
+  }
+
+  .tipsBox {
+    background-color: var(--bui-bg-neutral-1-hover);
+    border-radius: var(--bui-radius-2);
+  }
+
+  .tipsList {
+    margin: 0;
+    padding-left: 20px;
+  }
+}

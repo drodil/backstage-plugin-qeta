@@ -8,8 +8,7 @@ import {
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import LibraryBooksOutlined from '@material-ui/icons/LibraryBooksOutlined';
-import { Typography } from '@material-ui/core';
+import { RiBookOpenLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const ArticlesPage = () => {
@@ -32,18 +31,8 @@ export const ArticlesPage = () => {
   return (
     <>
       <ContentHeader
-        titleComponent={
-          <Typography
-            variant="h4"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <LibraryBooksOutlined
-              fontSize="large"
-              style={{ marginRight: '8px' }}
-            />
-            {t('articlesPage.title')}
-          </Typography>
-        }
+        title={t('articlesPage.title')}
+        titleIcon={<RiBookOpenLine size={24} />}
       >
         <WriteArticleButton entity={entityRef} tags={tags} />
       </ContentHeader>

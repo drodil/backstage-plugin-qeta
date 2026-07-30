@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip, TooltipTrigger } from '@backstage/ui';
 
 export const RelativeTimeWithTooltip = (props: { value: Date | string }) => {
   const { value } = props;
@@ -15,13 +15,16 @@ export const RelativeTimeWithTooltip = (props: { value: Date | string }) => {
     return () => clearInterval(interval);
   }, [updates, setUpdates]);
 
-  if (typeof date === 'string' || date instanceof String) {
+  if (typeof date === 'string') {
     date = new Date(date);
   }
 
   return (
-    <Tooltip title={date.toLocaleString(navigator.languages)}>
-      <RelativeTime value={date} />
-    </Tooltip>
+    <TooltipTrigger>
+      <span>
+        <RelativeTime value={date} />
+      </span>
+      <Tooltip>{date.toLocaleString(navigator.languages)}</Tooltip>
+    </TooltipTrigger>
   );
 };

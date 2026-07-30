@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { WarningPanel } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
@@ -21,7 +21,6 @@ import {
   useQetaApi,
   FollowPostButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import Comment from '@material-ui/icons/Comment';
 import {
   Answer,
   AnswerResponse,
@@ -29,28 +28,9 @@ import {
   QetaSignal,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useSignal } from '@backstage/plugin-signals-react';
-import {
-  Box,
-  FormControl,
-  Grid,
-  makeStyles,
-  MenuItem,
-  TextField,
-  Typography,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Flex, Select, Skeleton, Text } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-
-const useDescriptionStyles = makeStyles(
-  () => ({
-    root: {},
-    box: {
-      display: 'inline',
-    },
-  }),
-  { name: 'QetaDescription' },
-);
+import { RiChat3Line, RiQuestionLine } from '@remixicon/react';
 
 export const QuestionPage = () => {
   const { id } = useParams();
@@ -59,7 +39,6 @@ export const QuestionPage = () => {
   const [answers, setAnswers] = useState<AnswerResponse[]>([]);
   const [newAnswers, setNewAnswers] = useState<AnswerResponse[]>([]);
   const [answerSort, setAnswerSort] = useState<string>('default');
-  const dStyles = useDescriptionStyles();
 
   const [answersCount, setAnswersCount] = useState(0);
   const [views, setViews] = useState(0);
@@ -145,26 +124,24 @@ export const QuestionPage = () => {
 
   const getDescription = (q: PostResponse) => {
     return (
-      <span className={dStyles.root}>
-        <Box fontWeight="fontWeightMedium" className={dStyles.box}>
+      <>
+        <Text as="span" weight="bold">
           {t('authorBox.postedAtTime')}{' '}
           <RelativeTimeWithTooltip value={q.created} />
           {' · '}
-        </Box>
+        </Text>
         {q.updated && (
-          <Fragment>
-            <Box fontWeight="fontWeightMedium" className={dStyles.box}>
-              {t('authorBox.updatedAtTime')}{' '}
-              <RelativeTimeWithTooltip value={q.updated} />{' '}
-              {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
-              {' · '}
-            </Box>
-          </Fragment>
+          <Text as="span" weight="bold">
+            {t('authorBox.updatedAtTime')}{' '}
+            <RelativeTimeWithTooltip value={q.updated} />{' '}
+            {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
+            {' · '}
+          </Text>
         )}
-        <Box fontWeight="fontWeightMedium" className={dStyles.box}>
+        <Text as="span" weight="bold">
           {t('common.viewsCount', { count: views })}
-        </Box>
-      </span>
+        </Text>
+      </>
     );
   };
 
@@ -175,12 +152,12 @@ export const QuestionPage = () => {
   if (loading) {
     return (
       <Box role="status" aria-label={t('common.loading')}>
-        <Skeleton variant="rect" height={200} animation="wave" />
-        <Box mt={2}>
-          <Skeleton variant="text" height={40} width="60%" animation="wave" />
-          <Skeleton variant="text" height={20} width="40%" animation="wave" />
-          <Skeleton variant="text" height={20} width="80%" animation="wave" />
-        </Box>
+        <Skeleton height={200} />
+        <Flex direction="column" gap="2" mt="4">
+          <Skeleton height={40} width="60%" />
+          <Skeleton height={20} width="40%" />
+          <Skeleton height={20} width="80%" />
+        </Flex>
       </Box>
     );
   }
@@ -208,7 +185,7 @@ export const QuestionPage = () => {
       <ContentHeader
         title={question.title}
         description={getDescription(question)}
-        titleIcon={<HelpOutline fontSize="large" />}
+        titleIcon={<RiQuestionLine size={28} />}
       >
         <PostHistoryButton post={question} onRestore={retry} />
         <FollowPostButton post={question} />
@@ -224,7 +201,7 @@ export const QuestionPage = () => {
               }
             }
           }}
-          icon={<Comment />}
+          icon={<RiChat3Line />}
           disabled={question.status === 'obsolete'}
         >
           {t('questionPage.answerButton')}
@@ -238,91 +215,76 @@ export const QuestionPage = () => {
       <AIAnswerCard question={question} debounceMs={0} />
       {(question.status === 'active' || question.status === 'obsolete') && (
         <>
-          <Box sx={{ mt: 3, mb: 2 }}>
-            <Grid container justifyContent="space-between" alignItems="center">
-              <Grid item>
-                <Typography variant="h6">
-                  {t('common.answersCount', {
-                    count: answersCount,
-                  })}
-                </Typography>
-              </Grid>
-              {sortedAnswers.length > 1 && (
-                <Grid item>
-                  <FormControl>
-                    <TextField
-                      select
-                      size="small"
-                      label={t('questionPage.sortAnswers.label')}
-                      value={answerSort}
-                      onChange={val =>
-                        setAnswerSort(val.target.value as string)
-                      }
-                      inputProps={{
-                        name: 'sortAnswers',
-                        id: 'sort-answers',
-                        'aria-label': t('questionPage.sortAnswers.label'),
-                        'aria-describedby': 'sort-answers-helper',
-                      }}
-                      variant="outlined"
-                      SelectProps={{
-                        MenuProps: {
-                          'aria-label': t('questionPage.sortAnswers.menuLabel'),
-                        },
-                      }}
-                    >
-                      <MenuItem value="default">
-                        {t('questionPage.sortAnswers.default')}
-                      </MenuItem>
-                      <MenuItem value="created_desc">
-                        {t('questionPage.sortAnswers.createdDesc')}
-                      </MenuItem>
-                      <MenuItem value="created_asc">
-                        {t('questionPage.sortAnswers.createdAsc')}
-                      </MenuItem>
-                      <MenuItem value="score_desc">
-                        {t('questionPage.sortAnswers.scoreDesc')}
-                      </MenuItem>
-                      <MenuItem value="score_asc">
-                        {t('questionPage.sortAnswers.scoreAsc')}
-                      </MenuItem>
-                      <MenuItem value="comments_desc">
-                        {t('questionPage.sortAnswers.commentsDesc')}
-                      </MenuItem>
-                      <MenuItem value="comments_asc">
-                        {t('questionPage.sortAnswers.commentsAsc')}
-                      </MenuItem>
-                      <MenuItem value="author_desc">
-                        {t('questionPage.sortAnswers.authorDesc')}
-                      </MenuItem>
-                      <MenuItem value="author_asc">
-                        {t('questionPage.sortAnswers.authorAsc')}
-                      </MenuItem>
-                      <MenuItem value="updated_desc">
-                        {t('questionPage.sortAnswers.updatedDesc')}
-                      </MenuItem>
-                      <MenuItem value="updated_asc">
-                        {t('questionPage.sortAnswers.updatedAsc')}
-                      </MenuItem>
-                    </TextField>
-                  </FormControl>
-                </Grid>
-              )}
-            </Grid>
-          </Box>
-          {sortedAnswers.map(a => {
-            return (
-              <Fragment key={a.id}>
-                <Box key={a.id} sx={{ mb: 1 }}>
-                  <AnswerCard
-                    answer={a}
-                    question={question}
-                    onAnswerDelete={onAnswerDelete}
-                  />
-                </Box>
-              </Fragment>
-            );
-          })}
+          <Flex justify="between" align="center" mt="6" mb="4">
+            <Text variant="title-small">
+              {t('common.answersCount', {
+                count: answersCount,
+              })}
+            </Text>
+            {sortedAnswers.length > 1 && (
+              <Select
+                size="small"
+                label={t('questionPage.sortAnswers.label')}
+                value={answerSort}
+                onChange={key => setAnswerSort(String(key))}
+                options={[
+                  {
+                    id: 'default',
+                    label: t('questionPage.sortAnswers.default'),
+                  },
+                  {
+                    id: 'created_desc',
+                    label: t('questionPage.sortAnswers.createdDesc'),
+                  },
+                  {
+                    id: 'created_asc',
+                    label: t('questionPage.sortAnswers.createdAsc'),
+                  },
+                  {
+                    id: 'score_desc',
+                    label: t('questionPage.sortAnswers.scoreDesc'),
+                  },
+                  {
+                    id: 'score_asc',
+                    label: t('questionPage.sortAnswers.scoreAsc'),
+                  },
+                  {
+                    id: 'comments_desc',
+                    label: t('questionPage.sortAnswers.commentsDesc'),
+                  },
+                  {
+                    id: 'comments_asc',
+                    label: t('questionPage.sortAnswers.commentsAsc'),
+                  },
+                  {
+                    id: 'author_desc',
+                    label: t('questionPage.sortAnswers.authorDesc'),
+                  },
+                  {
+                    id: 'author_asc',
+                    label: t('questionPage.sortAnswers.authorAsc'),
+                  },
+                  {
+                    id: 'updated_desc',
+                    label: t('questionPage.sortAnswers.updatedDesc'),
+                  },
+                  {
+                    id: 'updated_asc',
+                    label: t('questionPage.sortAnswers.updatedAsc'),
+                  },
+                ]}
+              />
+            )}
+          </Flex>
+          {sortedAnswers.map(a => (
+            <Box key={a.id} mb="2">
+              <AnswerCard
+                answer={a}
+                question={question}
+                onAnswerDelete={onAnswerDelete}
+              />
+            </Box>
+          ))}
 
           {question.status === 'active' && (
             <div id="qeta-answer-form">

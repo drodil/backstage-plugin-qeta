@@ -1,19 +1,21 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import {
-  Backdrop,
+  Alert,
   Button,
-  Modal,
-  TextField,
-  Typography,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import CheckIcon from '@material-ui/icons/Check';
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Flex,
+  Text,
+  TextAreaField,
+} from '@backstage/ui';
+import { RiCheckLine } from '@remixicon/react';
 import { useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { ModalContent } from '../Utility/ModalContent';
 
 export const ValidReviewModal = (props: {
   post: PostResponse;
@@ -48,61 +50,56 @@ export const ValidReviewModal = (props: {
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      className="qetaValidReviewModal"
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{
-        timeout: 500,
+    <Dialog
+      isOpen={open}
+      isDismissable
+      onOpenChange={isOpenState => {
+        if (!isOpenState) onClose();
       }}
+      className="qetaValidReviewModal"
     >
-      <ModalContent>
-        {error && (
-          <Alert severity="error">
-            {t('validReviewModal.errorMarking', {})}
-          </Alert>
-        )}
-        <Typography
-          id="modal-modal-title"
-          className="qetaValidReviewModalTitle"
-          variant="h6"
-          component="h2"
-        >
-          {t('validReviewModal.title', {})}
-        </Typography>
-        <Typography variant="body2" style={{ marginTop: 8 }}>
-          {t('validReviewModal.description', {})}
-        </Typography>
-        <TextField
-          variant="outlined"
-          multiline
-          style={{ marginTop: 16 }}
-          minRows={4}
-          label={t('validReviewModal.comment', {})}
-          id="comment"
-          fullWidth
-          value={comment}
-          InputLabelProps={{ shrink: true }}
-          onChange={e => {
-            setComment(e.target.value);
-          }}
-        />
+      <DialogHeader className="qetaValidReviewModalTitle">
+        {t('validReviewModal.title', {})}
+      </DialogHeader>
+      <DialogBody>
+        <Flex direction="column" gap="4">
+          {error && (
+            <Alert
+              status="danger"
+              icon
+              description={t('validReviewModal.errorMarking', {})}
+            />
+          )}
+          <Text variant="body-small">
+            {t('validReviewModal.description', {})}
+          </Text>
+          <TextAreaField
+            label={t('validReviewModal.comment', {})}
+            id="comment"
+            rows={4}
+            value={comment}
+            onChange={value => setComment(value)}
+          />
+        </Flex>
+      </DialogBody>
+      <DialogFooter>
         <Button
           onClick={handleMarkValid}
           className="qetaValidReviewModalConfirmBtn"
-          startIcon={<CheckIcon />}
-          color="primary"
+          iconStart={<RiCheckLine />}
+          variant="primary"
         >
           {t('validReviewModal.confirmButton', {})}
         </Button>
-        <Button onClick={onClose} className="qetaValidReviewModalCancelBtn">
+        <Button
+          onClick={onClose}
+          className="qetaValidReviewModalCancelBtn"
+          variant="secondary"
+          slot="close"
+        >
           {t('validReviewModal.cancelButton', {})}
         </Button>
-      </ModalContent>
-    </Modal>
+      </DialogFooter>
+    </Dialog>
   );
 };

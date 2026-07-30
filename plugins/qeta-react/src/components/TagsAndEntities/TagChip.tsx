@@ -1,9 +1,8 @@
 import { CSSProperties } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
-import { Link } from 'react-router-dom';
-import { Chip, Tooltip } from '@material-ui/core';
-import { useTooltipStyles } from '../../hooks/useTooltipStyles';
+import { Tag, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { TagTooltip } from '../Tooltips';
 
 export const TagChip = (props: {
@@ -13,41 +12,32 @@ export const TagChip = (props: {
   tooltip?: React.ReactElement;
 }) => {
   const tagRoute = useRouteRef(tagRouteRef);
-  const { tag, tooltip } = props;
-  const classes = useTooltipStyles();
+  const { tag, tooltip, useHref } = props;
+  const navigate = useNavigate();
   const href = tagRoute({ tag });
 
   const content = (
-    <Chip
-      label={tag}
+    <Tag
       size="small"
       className="qetaTagChip"
-      component={props.useHref ? 'a' : Link}
       style={props.style}
-      to={props.useHref ? undefined : href}
-      href={props.useHref ? href : undefined}
-      target={props.useHref ? '_blank' : undefined}
+      href={useHref ? href : undefined}
+      target={useHref ? '_blank' : undefined}
+      onPress={useHref ? undefined : () => navigate(href)}
       onClick={(e: React.MouseEvent) => {
         e.stopPropagation();
       }}
-      clickable
-    />
+    >
+      {tag}
+    </Tag>
   );
 
   if (tooltip) {
     return (
-      <Tooltip
-        arrow
-        title={tooltip}
-        enterDelay={400}
-        interactive
-        classes={{
-          tooltip: classes.tooltip,
-          arrow: classes.tooltipArrow,
-        }}
-      >
+      <TooltipTrigger delay={400}>
         {content}
-      </Tooltip>
+        <Tooltip>{tooltip}</Tooltip>
+      </TooltipTrigger>
     );
   }
 

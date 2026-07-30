@@ -4,7 +4,7 @@ import {
   qetaTranslationRef,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import Whatshot from '@material-ui/icons/Whatshot';
+import { RiFireLine } from '@remixicon/react';
 
 export const EntityRightContent = (props: { entityRef?: string }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -18,7 +18,7 @@ export const EntityRightContent = (props: { entityRef?: string }) => {
         type="hot"
         title={t('highlights.hotQuestions.title')}
         noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
-        icon={<Whatshot fontSize="small" />}
+        icon={<RiFireLine size={16} />}
         options={{ entities: entities }}
         postType="question"
       />

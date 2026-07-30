@@ -5,8 +5,8 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { IconButton, Tooltip } from '@material-ui/core';
-import LinkIcon from '@material-ui/icons/Link';
+import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { RiLinkM } from '@remixicon/react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const LinkButton = (props: {
@@ -30,15 +30,16 @@ export const LinkButton = (props: {
   };
 
   return (
-    <Tooltip title={isPostEntity ? t('link.post') : t('link.answer')}>
-      <IconButton
+    <TooltipTrigger>
+      <ButtonIcon
         aria-label={t('link.aria')}
         size="small"
-        onClick={copyToClipboard}
+        variant="tertiary"
+        onPress={copyToClipboard}
         className={props.className}
-      >
-        <LinkIcon />
-      </IconButton>
-    </Tooltip>
+        icon={<RiLinkM size={16} />}
+      />
+      <Tooltip>{isPostEntity ? t('link.post') : t('link.answer')}</Tooltip>
+    </TooltipTrigger>
   );
 };

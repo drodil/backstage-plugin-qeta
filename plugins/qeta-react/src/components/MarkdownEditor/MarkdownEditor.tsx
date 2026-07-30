@@ -8,7 +8,6 @@ import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { imageUpload } from '../../utils';
-import { makeStyles } from '@material-ui/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
   Entity,
@@ -19,95 +18,7 @@ import {
 import { findTagMentions } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-
-export type QetaMarkdownEditorClassKey =
-  | 'markdownEditor'
-  | 'markdownEditorError'
-  | 'markdownPreview'
-  | 'suggestionsDropdown';
-
-export const useStyles = makeStyles(
-  theme => {
-    return {
-      markdownEditor: {
-        backgroundColor: 'initial',
-        color: theme.palette.text.primary,
-        border: `1px solid ${theme.palette.action.disabled}`,
-        borderRadius: theme.shape.borderRadius,
-        '&:hover': {
-          borderColor: theme.palette.action.active,
-        },
-        '&:focus-within': {
-          borderColor: theme.palette.primary.main,
-        },
-        '& .mde-header': {
-          backgroundColor: 'initial',
-          color: theme.palette.text.primary,
-          borderBottom: `1px solid ${theme.palette.action.selected}`,
-          '& .mde-tabs button, .mde-header-item > button': {
-            color: `${theme.palette.text.primary} !important`,
-          },
-        },
-        '& .mde-preview-content': {
-          padding: '10px',
-        },
-        '& .mde-text, .mde-preview': {
-          fontSize: theme.typography.body1.fontSize,
-          fontFamily: theme.typography.body1.fontFamily,
-          lineHeight: theme.typography.body1.lineHeight,
-        },
-        '& .mde-text': {
-          backgroundColor: 'initial',
-          color: theme.palette.text.primary,
-          outline: 'none',
-        },
-        '& .image-tip': {
-          color: theme.palette.text.primary,
-          backgroundColor: 'initial',
-        },
-      },
-      markdownEditorError: {
-        border: `1px solid ${theme.palette.error.main} !important`,
-      },
-      markdownPreview: {
-        '& *': {
-          wordBreak: 'break-word',
-        },
-        '&.inline': {
-          display: 'inline-block',
-        },
-        '& > :first-child': {
-          marginTop: '0px !important',
-        },
-        '& > :last-child': {
-          marginBottom: '0px !important',
-        },
-      },
-      suggestionsDropdown: {
-        position: 'absolute',
-        minWidth: '180px',
-        margin: '20px 0 0',
-        listStyle: 'none',
-        padding: '0',
-        cursor: 'pointer',
-        background: theme.palette.background.paper,
-        border: `1px solid ${theme.palette.divider}`,
-        borderRadius: theme.shape.borderRadius,
-        '& li': {
-          width: '100%',
-          padding: '0.5rem',
-          '&:hover': {
-            backgroundColor: theme.palette.action.hover,
-          },
-        },
-      },
-      hide: {
-        display: 'none',
-      },
-    };
-  },
-  { name: 'QetaMarkdownEditor' },
-);
+import styles from './MarkdownEditor.module.css';
 
 export type MarkdownEditorProps = {
   value: string;
@@ -151,7 +62,6 @@ export const MarkdownEditor = (props: MarkdownEditorProps) => {
     required = true,
   } = props;
   const [selectedTab, setSelectedTab] = useState<'write' | 'preview'>('write');
-  const styles = useStyles();
   const errorApi = useApi(errorApiRef);
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);

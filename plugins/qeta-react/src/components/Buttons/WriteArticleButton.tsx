@@ -1,4 +1,4 @@
-import CreateIcon from '@material-ui/icons/Create';
+import { RiEditLine } from '@remixicon/react';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { writeRouteRef } from '../../routes';
@@ -43,7 +43,7 @@ export const WriteArticleButton = (props: {
           entity || tags ? `${writeRoute()}?${params.toString()}` : writeRoute()
         }
         color="primary"
-        icon={<CreateIcon />}
+        icon={<RiEditLine />}
       >
         {t('writeArticleButton.title')}
       </ContentHeaderButton>

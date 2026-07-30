@@ -21,7 +21,7 @@ import {
   getSupportedEntityKinds,
   QetaClient,
 } from '@drodil/backstage-plugin-qeta-common';
-import ContactSupportIcon from '@material-ui/icons/ContactSupport';
+import { RiQuestionAnswerLine } from '@remixicon/react';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -106,7 +106,7 @@ const qetaPage = PageBlueprint.makeWithOverrides({
     return originalFactory({
       path: config.path ?? '/qeta',
       title: config.title ?? 'Q&A',
-      icon: <ContactSupportIcon />,
+      icon: <RiQuestionAnswerLine />,
       routeRef: convertLegacyRouteRef(qetaRouteRef),
       loader: () =>
         import('./components/QetaPage').then(m =>
@@ -184,7 +184,7 @@ const qetaPostSearchFilterType = SearchFilterResultTypeBlueprint.make({
   params: {
     value: 'qeta',
     name: 'Q&A',
-    icon: <ContactSupportIcon />,
+    icon: <RiQuestionAnswerLine />,
   },
 });
 

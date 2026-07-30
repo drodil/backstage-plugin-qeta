@@ -5,16 +5,17 @@ import {
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import {
+  Alert,
   Box,
   Button,
-  Collapse,
-  IconButton,
+  ButtonIcon,
+  Flex,
   Link,
+  Text,
   TextField,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+  TooltipTrigger,
+} from '@backstage/ui';
 import { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -37,9 +38,12 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { compact } from 'lodash';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import HelpIcon from '@material-ui/icons/Help';
+import {
+  RiArrowDownSLine,
+  RiArrowUpSLine,
+  RiInformationLine,
+} from '@remixicon/react';
+import styles from './CollectionForm.module.css';
 
 const formToRequest = (
   form: CollectionFormData,
@@ -240,9 +244,9 @@ export const CollectionForm = (props: CollectionFormProps) => {
     [setImages],
   );
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitleCharCount(e.target.value.length);
-    setValue('title', e.target.value, { shouldValidate: true });
+  const handleTitleChange = (value: string) => {
+    setTitleCharCount(value.length);
+    setValue('title', value, { shouldValidate: true });
   };
 
   return (
@@ -253,7 +257,11 @@ export const CollectionForm = (props: CollectionFormProps) => {
       }}
     >
       {error && (
-        <Alert severity="error">{t('collectionForm.errorPosting')}</Alert>
+        <Alert
+          status="danger"
+          icon
+          description={t('collectionForm.errorPosting')}
+        />
       )}
       <Controller
         control={control}
@@ -267,70 +275,63 @@ export const CollectionForm = (props: CollectionFormProps) => {
         )}
         name="headerImage"
       />
-      <Box mb={2}>
+      <Box mb="4">
         <TextField
+          id="title"
           label={t('collectionForm.titleInput.label')}
           className="qetaCollectionFormTitle"
-          required
-          fullWidth
-          error={'title' in errors}
-          margin="normal"
-          name="title"
-          variant="outlined"
-          helperText={
-            <span>
-              {t('collectionForm.titleInput.helperText')}{' '}
-              <span style={{ float: 'right' }}>{titleCharCount}/255</span>
-            </span>
-          }
-          FormHelperTextProps={{
-            style: { marginLeft: '0.2em' },
-          }}
+          isRequired
+          isInvalid={'title' in errors}
+          description={t('collectionForm.titleInput.helperText')}
+          secondaryLabel={`${titleCharCount}/255`}
           value={control._formValues.title}
           onChange={handleTitleChange}
-          inputProps={{ maxLength: 255 }}
+          maxLength={255}
         />
       </Box>
-      <Box
-        mb={1}
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
-          {t('collectionForm.descriptionInput.label')}
-          <Tooltip title="Tips for a good collection">
-            <IconButton size="small" onClick={() => setShowTips(v => !v)}>
-              {showTips ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </IconButton>
-          </Tooltip>
-        </Typography>
-        <Box>
-          <Link
-            href="https://www.markdownguide.org/cheat-sheet/"
-            target="_blank"
-            rel="noopener noreferrer"
-            color="inherit"
-            style={{ fontSize: 12 }}
-          >
-            {t('collectionForm.descriptionInput.markdownHelp')}
-            <HelpIcon
-              style={{ fontSize: 12, marginLeft: 4, verticalAlign: 'middle' }}
+      <Flex mb="2" align="center" justify="between">
+        <Flex align="center" gap="1">
+          <Text variant="body-medium" weight="bold">
+            {t('collectionForm.descriptionInput.label')}
+          </Text>
+          <TooltipTrigger>
+            <ButtonIcon
+              aria-label="Tips for a good collection"
+              size="small"
+              variant="tertiary"
+              icon={
+                showTips ? (
+                  <RiArrowUpSLine size={16} />
+                ) : (
+                  <RiArrowDownSLine size={16} />
+                )
+              }
+              onPress={() => setShowTips(v => !v)}
             />
-          </Link>
-        </Box>
-      </Box>
-      <Collapse in={showTips}>
-        <Box mb={2} p={2}>
-          <Typography variant="body2">
-            <ul style={{ margin: 0, paddingLeft: 20 }}>
+            <Tooltip>Tips for a good collection</Tooltip>
+          </TooltipTrigger>
+        </Flex>
+        <Link
+          href="https://www.markdownguide.org/cheat-sheet/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.markdownHelpLink}
+        >
+          {t('collectionForm.descriptionInput.markdownHelp')}
+          <RiInformationLine size={12} className={styles.markdownHelpIcon} />
+        </Link>
+      </Flex>
+      {showTips && (
+        <Box mb="4" p="4" className={styles.tipsBox}>
+          <Text variant="body-small" as="div">
+            <ul className={styles.tipsList}>
               <li>{t('collectionForm.tips_1')}</li>
               <li>{t('collectionForm.tips_2')}</li>
               <li>{t('collectionForm.tips_3')}</li>
             </ul>
-          </Typography>
+          </Text>
         </Box>
-      </Collapse>
+      )}
       <Controller
         control={control}
         rules={{
@@ -350,15 +351,15 @@ export const CollectionForm = (props: CollectionFormProps) => {
         )}
         name="description"
       />
-      <Box mt={3} mb={1}>
-        <Typography variant="h6">
+      <Box mt="6" mb="2">
+        <Text variant="title-small">
           {t('collectionForm.automaticRules.title')}
-        </Typography>
-        <Typography variant="body2" color="textSecondary">
+        </Text>
+        <Text variant="body-small" color="secondary">
           {t('collectionForm.automaticRules.description')}
-        </Typography>
+        </Text>
       </Box>
-      <Box mt={1} mb={1}>
+      <Box mt="2" mb="2">
         <Controller
           control={control}
           render={({ field, fieldState: { error: entityError } }) => (
@@ -372,7 +373,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
           name="entities"
         />
       </Box>
-      <Box mt={1} mb={1}>
+      <Box mt="2" mb="2">
         <Controller
           control={control}
           render={({ field, fieldState: { error: tagError } }) => {
@@ -388,7 +389,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
           name="tags"
         />
       </Box>
-      <Box mt={1} mb={1}>
+      <Box mt="2" mb="2">
         <Controller
           control={control}
           render={({ field, fieldState: { error: userError } }) => (
@@ -402,26 +403,20 @@ export const CollectionForm = (props: CollectionFormProps) => {
           name="users"
         />
       </Box>
-      <Box mt={3}>
+      <Box mt="6">
         <Button
-          color="primary"
           type="submit"
-          variant="contained"
-          disabled={posting || isSubmitting}
-          size="large"
+          variant="primary"
+          isDisabled={posting || isSubmitting}
+          isPending={posting}
         >
-          {posting ? (
-            <span>
-              {t('collectionForm.submitting')}{' '}
-              <span className="spinner-border spinner-border-sm" />
-            </span>
-          ) : (
-            t(
-              id
-                ? 'collectionForm.submit.existingCollection'
-                : 'collectionForm.submit.newCollection',
-            )
-          )}
+          {posting
+            ? t('collectionForm.submitting')
+            : t(
+                id
+                  ? 'collectionForm.submit.existingCollection'
+                  : 'collectionForm.submit.newCollection',
+              )}
         </Button>
       </Box>
     </form>

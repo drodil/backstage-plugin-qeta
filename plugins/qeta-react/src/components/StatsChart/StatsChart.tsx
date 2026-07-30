@@ -7,92 +7,25 @@ import {
   Line,
   LineChart,
   ResponsiveContainer,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   XAxis,
   YAxis,
 } from 'recharts';
 import {
-  ButtonGroup,
-  createStyles,
-  IconButton,
-  makeStyles,
-  Theme,
-  Typography,
-  Tooltip as MuiTooltip,
-  CircularProgress,
   Box,
-} from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import ShowChartIcon from '@material-ui/icons/ShowChart';
-import BarChartIcon from '@material-ui/icons/BarChart';
+  ButtonIcon,
+  Flex,
+  Text,
+  Tooltip,
+  TooltipTrigger,
+} from '@backstage/ui';
+import { RiBarChartLine, RiLineChartLine } from '@remixicon/react';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { useQetaConfig } from '../../hooks/useQetaConfig';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { isGlobalStat, isUserStat } from './util';
-
-export type QetaStatsChartClassKey =
-  | 'tooltipLabel'
-  | 'tooltipWrapper'
-  | 'xAxis'
-  | 'lineChart'
-  | 'barChart';
-
-const useStyles = makeStyles(
-  (theme: Theme) =>
-    createStyles({
-      tooltipLabel: {
-        color: theme.palette.text.primary,
-      },
-      tooltipWrapper: {
-        backgroundColor: `${theme.palette.background.default} !important`,
-        border: 'none !important',
-        padding: theme.spacing(1),
-        borderRadius: theme.shape.borderRadius,
-        boxShadow: theme.shadows[2],
-      },
-      xAxis: {
-        color: `${theme.palette.text.primary} !important`,
-      },
-      lineChart: {},
-      barChart: {},
-      chartContainer: {
-        position: 'relative',
-        width: '100%',
-        height: 500,
-      },
-      loadingOverlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-        zIndex: 1,
-      },
-      chartTypeButton: {
-        '&.Mui-selected': {
-          backgroundColor: theme.palette.action.selected,
-        },
-      },
-      errorMessage: {
-        color: theme.palette.error.main,
-        textAlign: 'center',
-        padding: theme.spacing(2),
-      },
-      legend: {
-        '& .recharts-legend-item-text': {
-          fontFamily: theme.typography.fontFamily,
-          fontSize: theme.typography.body2.fontSize,
-          color: theme.palette.text.primary,
-        },
-      },
-    }),
-  { name: 'QetaStatsChart' },
-);
+import styles from './StatsChart.module.css';
 
 type StatType = {
   dataKey:
@@ -242,7 +175,6 @@ const getDefaultStats = (isDark: boolean, t: any): StatType[] => [
 ];
 
 const useChartState = (data: Stat[]) => {
-  const styles = useStyles();
   const isDark = useIsDarkTheme();
   const { disabled } = useQetaConfig();
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -294,7 +226,7 @@ const useChartState = (data: Stat[]) => {
     [stats],
   );
 
-  return { styles, isDark, toggleStat, stats, isDisabled };
+  return { isDark, toggleStat, stats, isDisabled };
 };
 
 // Custom tick renderer for angled date labels
@@ -322,11 +254,8 @@ const StatsBarChart = (props: {
   data: any[];
   stats: StatType[];
   isDark: boolean;
-  styles: ReturnType<typeof useStyles>;
 }) => {
-  const localStyles = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const theme = useTheme();
 
   return (
     <ResponsiveContainer height={500} width="100%">
@@ -335,12 +264,12 @@ const StatsBarChart = (props: {
         width={1000}
         height={400}
         margin={{ bottom: 80, right: 30 }}
-        className={localStyles.barChart}
+        className={styles.barChart}
         aria-label={t('stats.barChart')}
       >
-        <Tooltip
-          labelClassName={props.styles.tooltipLabel}
-          wrapperClassName={props.styles.tooltipWrapper}
+        <RechartsTooltip
+          labelClassName={styles.tooltipLabel}
+          wrapperClassName={styles.tooltipWrapper}
           cursor={{ fill: props.isDark ? '#4f4f4f' : '#f5f5f5' }}
           content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
@@ -376,7 +305,7 @@ const StatsBarChart = (props: {
           tick={
             <XAxisTick
               fill={props.isDark ? 'white' : 'black'}
-              fontFamily={theme.typography.fontFamily}
+              fontFamily="var(--bui-font-regular)"
             />
           }
           angle={-90}
@@ -399,11 +328,8 @@ const StatsLineChart = (props: {
   data: any[];
   stats: StatType[];
   isDark: boolean;
-  styles: ReturnType<typeof useStyles>;
 }) => {
-  const localStyles = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const theme = useTheme();
 
   return (
     <ResponsiveContainer height={500} width="100%">
@@ -412,11 +338,11 @@ const StatsLineChart = (props: {
         width={1000}
         height={400}
         margin={{ bottom: 80, right: 30 }}
-        className={localStyles.lineChart}
+        className={styles.lineChart}
       >
-        <Tooltip
-          labelClassName={props.styles.tooltipLabel}
-          wrapperClassName={props.styles.tooltipWrapper}
+        <RechartsTooltip
+          labelClassName={styles.tooltipLabel}
+          wrapperClassName={styles.tooltipWrapper}
           cursor={{ fill: props.isDark ? '#4f4f4f' : '#f5f5f5' }}
         />
         {props.stats.map(stat => (
@@ -436,7 +362,7 @@ const StatsLineChart = (props: {
           tick={
             <XAxisTick
               fill={props.isDark ? 'white' : 'black'}
-              fontFamily={theme.typography.fontFamily}
+              fontFamily="var(--bui-font-regular)"
             />
           }
           angle={-45}
@@ -462,19 +388,22 @@ export const StatsChart = (props: {
 }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const [chart, setChart] = useState<'line' | 'bar'>('line');
-  const classes = useStyles();
   const { stats, isDark, toggleStat } = useChartState(props.data);
 
   if (props.error) {
     return (
-      <Typography variant="subtitle1" className={classes.errorMessage}>
+      <Text as="div" variant="body-large" className={styles.errorMessage}>
         {props.error}
-      </Typography>
+      </Text>
     );
   }
 
   if (!props.data || props.data.length === 0) {
-    return <Typography variant="subtitle1">{t('stats.noStats')}</Typography>;
+    return (
+      <Text as="div" variant="body-large">
+        {t('stats.noStats')}
+      </Text>
+    );
   }
 
   const data = props.data
@@ -483,13 +412,11 @@ export const StatsChart = (props: {
 
   return (
     <Box>
-      <Box
-        display="flex"
-        flexWrap="wrap"
-        justifyContent="center"
-        mb={4}
-        mt={2}
-        style={{ gap: 16 }}
+      <Flex
+        justify="center"
+        gap="4"
+        className={styles.statButtons}
+        style={{ flexWrap: 'wrap' }}
       >
         {stats.map(stat => {
           const value = props.summary ? props.summary[stat.dataKey] : undefined;
@@ -506,86 +433,78 @@ export const StatsChart = (props: {
           return (
             <Box
               key={stat.dataKey}
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              p={2}
-              border={1}
-              borderColor={borderColor}
-              borderRadius={8}
-              minWidth={140}
+              className={styles.statBox}
               style={{
-                cursor: 'pointer',
+                borderColor,
+                backgroundColor,
                 opacity: isActive ? 1 : 0.5,
-                backgroundColor: backgroundColor,
-                transition: 'all 0.2s',
               }}
               onClick={() => toggleStat(stat.name)}
             >
-              <Typography
-                variant="h4"
-                style={{ color: stat.color, fontWeight: 'bold' }}
+              <Text
+                as="div"
+                variant="title-medium"
+                weight="bold"
+                style={{ color: stat.color }}
               >
                 {value instanceof Date
                   ? value.toLocaleDateString()
                   : (value ?? '-')}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
+              </Text>
+              <Text as="div" variant="body-small" color="secondary">
                 {stat.name}
-              </Typography>
+              </Text>
             </Box>
           );
         })}
-      </Box>
-      <Box className={classes.chartContainer}>
+      </Flex>
+      <Box className={styles.chartContainer}>
         {props.loading && (
-          <div className={classes.loadingOverlay}>
-            <CircularProgress />
+          <div className={styles.loadingOverlay}>
+            <div className={styles.spinner} />
           </div>
         )}
         {chart === 'line' ? (
-          <StatsLineChart
-            data={data}
-            stats={stats}
-            isDark={isDark}
-            styles={classes}
-          />
+          <StatsLineChart data={data} stats={stats} isDark={isDark} />
         ) : (
-          <StatsBarChart
-            data={data}
-            stats={stats}
-            isDark={isDark}
-            styles={classes}
-          />
+          <StatsBarChart data={data} stats={stats} isDark={isDark} />
         )}
-        <ButtonGroup
-          aria-label={t('stats.chartType')}
-          style={{ float: 'right' }}
+        <Flex
+          justify="end"
+          gap="1"
           role="radiogroup"
+          aria-label={t('stats.chartType')}
+          className={styles.chartTypeGroup}
         >
-          <MuiTooltip title={t('stats.lineChart')}>
-            <IconButton
+          <TooltipTrigger>
+            <ButtonIcon
               aria-label={t('stats.lineChart')}
-              onClick={() => setChart('line')}
-              className={classes.chartTypeButton}
-              aria-checked={chart === 'line'}
-              role="radio"
-            >
-              <ShowChartIcon />
-            </IconButton>
-          </MuiTooltip>
-          <MuiTooltip title={t('stats.barChart')}>
-            <IconButton
+              icon={<RiLineChartLine size={16} />}
+              variant={chart === 'line' ? 'secondary' : 'tertiary'}
+              size="small"
+              onPress={() => setChart('line')}
+              {...({
+                role: 'radio',
+                'aria-checked': chart === 'line',
+              } as Record<string, unknown>)}
+            />
+            <Tooltip>{t('stats.lineChart')}</Tooltip>
+          </TooltipTrigger>
+          <TooltipTrigger>
+            <ButtonIcon
               aria-label={t('stats.barChart')}
-              onClick={() => setChart('bar')}
-              className={classes.chartTypeButton}
-              aria-checked={chart === 'bar'}
-              role="radio"
-            >
-              <BarChartIcon />
-            </IconButton>
-          </MuiTooltip>
-        </ButtonGroup>
+              icon={<RiBarChartLine size={16} />}
+              variant={chart === 'bar' ? 'secondary' : 'tertiary'}
+              size="small"
+              onPress={() => setChart('bar')}
+              {...({ role: 'radio', 'aria-checked': chart === 'bar' } as Record<
+                string,
+                unknown
+              >)}
+            />
+            <Tooltip>{t('stats.barChart')}</Tooltip>
+          </TooltipTrigger>
+        </Flex>
       </Box>
     </Box>
   );

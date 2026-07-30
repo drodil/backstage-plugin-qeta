@@ -1,7 +1,7 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import { qetaApiRef } from '../../api.ts';
 import { useApi } from '@backstage/core-plugin-api';
-import LinkIcon from '@material-ui/icons/Link';
+import { RiLinkM } from '@remixicon/react';
 import { useState } from 'react';
 import { useFavicon } from '../../hooks';
 
@@ -43,9 +43,8 @@ export const FaviconItem = (props: { entity: PostResponse }) => {
         />
       )}
       {error && (
-        <LinkIcon
-          width={16}
-          height={16}
+        <RiLinkM
+          size={16}
           style={{
             display: 'inline-block',
             marginBottom: 5,

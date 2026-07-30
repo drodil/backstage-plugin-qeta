@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { Post } from '@drodil/backstage-plugin-qeta-common';
 import {
+  Alert,
+  Box,
   Button,
   Card,
-  CardContent,
+  CardBody,
   CardHeader,
-  Divider,
-  LinearProgress,
-  makeStyles,
+  Flex,
+  Text,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
+  TooltipTrigger,
+} from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   ObsoleteModal,
@@ -19,49 +20,11 @@ import {
   useQetaApi,
   ValidReviewModal,
 } from '@drodil/backstage-plugin-qeta-react';
-import CheckIcon from '@material-ui/icons/Check';
-import BlockIcon from '@material-ui/icons/Block';
-import { Alert } from '@material-ui/lab';
+import { RiCheckLine, RiForbidLine } from '@remixicon/react';
 import { ReviewList } from './ReviewList';
-
-const useStyles = makeStyles(theme => ({
-  card: {
-    marginBottom: theme.spacing(2),
-  },
-  cardHeader: {
-    paddingBottom: 0,
-  },
-  scoreContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: theme.spacing(1),
-  },
-  scoreLabel: {
-    flexGrow: 1,
-    marginRight: theme.spacing(2),
-  },
-  progressBar: {
-    flexGrow: 2,
-    height: 10,
-    borderRadius: 5,
-  },
-  actions: {
-    marginTop: theme.spacing(2),
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: theme.spacing(1),
-  },
-  obsoleteAlert: {
-    marginTop: theme.spacing(1),
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(1),
-  },
-}));
+import styles from './ContentHealthCard.module.css';
 
 export const ContentHealthCard = ({ post }: { post: Post }) => {
-  const classes = useStyles();
   const { canReview, canRead } = useCanReview();
   const { t } = useTranslationRef(qetaTranslationRef);
 
@@ -81,70 +44,80 @@ export const ContentHealthCard = ({ post }: { post: Post }) => {
     return null;
   }
 
-  const getProgressColor = (score: number) => {
-    if (score > 70) return 'primary';
-    if (score > 40) return 'secondary';
-    return 'secondary';
+  const getProgressFillClass = (score: number) => {
+    if (score > 70) return styles.progressFillHigh;
+    if (score > 40) return styles.progressFillMedium;
+    return styles.progressFillLow;
   };
 
+  const healthScore = post.healthScore ?? 0;
+
   return (
-    <Card className={classes.card}>
-      <CardHeader
-        title={t('contentHealth.cardTitle')}
-        titleTypographyProps={{ variant: 'h6' }}
-        className={classes.cardHeader}
-      />
-      <CardContent>
+    <Card className={styles.card}>
+      <CardHeader>
+        <Text as="h3" variant="title-small">
+          {t('contentHealth.cardTitle')}
+        </Text>
+      </CardHeader>
+      <CardBody>
         {post.status !== 'obsolete' && post.needsReview && (
-          <Typography variant="body2" paragraph>
+          <Text as="div" variant="body-medium">
             {t('contentHealth.description')}
-          </Typography>
+          </Text>
         )}
-        <div className={classes.scoreContainer}>
-          <Typography variant="body1" className={classes.scoreLabel}>
+        <div className={styles.scoreContainer}>
+          <Text className={styles.scoreLabel}>
             {t('contentHealth.healthScore', {
               score: String(post.healthScore),
             })}
-          </Typography>
+          </Text>
+          <div className={styles.progressTrack}>
+            <div
+              className={`${styles.progressFill} ${getProgressFillClass(
+                healthScore,
+              )}`}
+              style={{ width: `${Math.min(100, Math.max(0, healthScore))}%` }}
+            />
+          </div>
         </div>
-        <LinearProgress
-          variant="determinate"
-          value={post.healthScore ?? 0}
-          className={classes.progressBar}
-          color={getProgressColor(post.healthScore ?? 0)}
-        />
 
         {post.status === 'obsolete' && (
-          <Alert severity="warning" className={classes.obsoleteAlert}>
-            {t('contentHealth.obsoleteWarning')}
-          </Alert>
+          <Alert
+            status="warning"
+            icon
+            description={t('contentHealth.obsoleteWarning')}
+            className={styles.obsoleteAlert}
+          />
         )}
 
         {canReview && (post.needsReview || post.status === 'obsolete') && (
-          <div className={classes.actions}>
-            <Tooltip title={t('contentHealth.markValid')}>
-              <Button
-                variant="outlined"
-                color="primary"
-                size="small"
-                startIcon={<CheckIcon />}
-                onClick={() => setOpenValidModal(true)}
-              >
-                {t('contentHealth.valid')}
-              </Button>
-            </Tooltip>
-            <Tooltip title={t('contentHealth.markObsolete')}>
-              <Button
-                variant="outlined"
-                color="secondary"
-                size="small"
-                startIcon={<BlockIcon />}
-                onClick={() => setOpenObsoleteModal(true)}
-              >
-                {t('contentHealth.obsolete')}
-              </Button>
-            </Tooltip>
-          </div>
+          <Box className={styles.actions}>
+            <Flex gap="2">
+              <TooltipTrigger>
+                <Button
+                  variant="secondary"
+                  size="small"
+                  iconStart={<RiCheckLine size={16} />}
+                  onClick={() => setOpenValidModal(true)}
+                >
+                  {t('contentHealth.valid')}
+                </Button>
+                <Tooltip>{t('contentHealth.markValid')}</Tooltip>
+              </TooltipTrigger>
+              <TooltipTrigger>
+                <Button
+                  variant="secondary"
+                  destructive
+                  size="small"
+                  iconStart={<RiForbidLine size={16} />}
+                  onClick={() => setOpenObsoleteModal(true)}
+                >
+                  {t('contentHealth.obsolete')}
+                </Button>
+                <Tooltip>{t('contentHealth.markObsolete')}</Tooltip>
+              </TooltipTrigger>
+            </Flex>
+          </Box>
         )}
 
         <ObsoleteModal
@@ -162,11 +135,11 @@ export const ContentHealthCard = ({ post }: { post: Post }) => {
 
         {reviews && reviews.length > 0 && (
           <>
-            <Divider className={classes.divider} />
+            <div className={styles.divider} />
             <ReviewList reviews={reviews} />
           </>
         )}
-      </CardContent>
+      </CardBody>
     </Card>
   );
 };

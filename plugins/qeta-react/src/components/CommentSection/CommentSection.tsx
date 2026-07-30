@@ -1,6 +1,5 @@
-/* eslint-disable jsx-a11y/no-autofocus */
 import { useState } from 'react';
-import { Box, Button, Grid, makeStyles } from '@material-ui/core';
+import { Box, Button, Flex } from '@backstage/ui';
 import {
   AnswerResponse,
   PostResponse,
@@ -11,64 +10,15 @@ import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import AddCommentIcon from '@material-ui/icons/AddComment';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import {
+  RiArrowDownSLine,
+  RiArrowUpSLine,
+  RiChatNewLine,
+} from '@remixicon/react';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { CommentForm } from './CommentForm.tsx';
 import { useConfirmNavigationIfEdited } from '../../utils';
-
-export type QetaCommentSectionClassKey =
-  | 'root'
-  | 'addCommentButton'
-  | 'commentSection'
-  | 'commentForm'
-  | 'prominentButton';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {},
-    commentSection: {
-      position: 'relative',
-      marginLeft: theme.spacing(3.5),
-      '&::before': {
-        content: '""',
-        position: 'absolute',
-        left: theme.spacing(1),
-        height: 'calc(100% - 46px)',
-        width: '1px',
-        backgroundColor: theme.palette.divider,
-        opacity: 0.4,
-        transition: 'all 0.2s ease-in-out',
-        zIndex: 1,
-      },
-    },
-    addCommentButton: {
-      textTransform: 'none',
-      backgroundColor: 'transparent',
-      border: 'none',
-      color: theme.palette.text.secondary,
-      marginTop: '3px',
-      '&:hover': {
-        backgroundColor: 'transparent',
-        color: theme.palette.primary.main,
-      },
-    },
-    commentForm: {
-      marginLeft: theme.spacing(2.5),
-      marginTop: theme.spacing(1),
-    },
-    prominentButton: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(2),
-      marginLeft: theme.spacing(1),
-      padding: theme.spacing(1, 2.5),
-      textTransform: 'none',
-      fontSize: '1rem',
-    },
-  }),
-  { name: 'QetaCommentSection' },
-);
+import styles from './CommentSection.module.css';
 
 export const CommentSection = (props: {
   onCommentAction: (post: PostResponse, answer?: AnswerResponse) => void;
@@ -84,7 +34,6 @@ export const CommentSection = (props: {
   const [formVisible, setFormVisible] = useState(false);
   const [edited, setEdited] = useState(false);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const styles = useStyles();
 
   // Determine the entity to get comments from
   const entity = answer ?? post;
@@ -145,34 +94,28 @@ export const CommentSection = (props: {
 
   return (
     <Box
-      className={`${styles.root} ${styles.commentSection} ${props.className} qetaCommentSection`}
+      className={`${styles.commentSection} ${props.className ?? ''} qetaCommentSection`}
     >
       {commentsCount > 0 && (
-        <Box display="flex" alignItems="center" pl={1}>
+        <Flex align="center" pl="1">
           <Button
             size="small"
-            variant="text"
+            variant="tertiary"
             onClick={() => setCommentsVisible(v => !v)}
-            style={{
-              textTransform: 'none',
-              padding: '0.5rem 0.8rem',
-              border: 'none',
-              backgroundColor: 'transparent',
-            }}
-            endIcon={
+            iconEnd={
               commentsVisible ? (
-                <ExpandMoreIcon fontSize="small" />
+                <RiArrowUpSLine size={16} />
               ) : (
-                <ExpandLessIcon fontSize="small" />
+                <RiArrowDownSLine size={16} />
               )
             }
           >
             {`${commentsCount} ${t('common.comments')}`}
           </Button>
-        </Box>
+        </Flex>
       )}
       {commentsVisible && (
-        <Box pl={1}>
+        <Box pl="1">
           <CommentList
             post={post}
             answer={answer}
@@ -186,34 +129,28 @@ export const CommentSection = (props: {
           errorPage={<></>}
         >
           {!formVisible && showProminentButton && (
-            <Grid container justifyContent="flex-start">
-              <Grid item>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  startIcon={<AddCommentIcon />}
-                  onClick={() => setFormVisible(true)}
-                  className={styles.prominentButton}
-                >
-                  {t('commentSection.leaveComment')}
-                </Button>
-              </Grid>
-            </Grid>
+            <Flex justify="start">
+              <Button
+                variant="primary"
+                iconStart={<RiChatNewLine size={16} />}
+                onClick={() => setFormVisible(true)}
+                className={styles.prominentButton}
+              >
+                {t('commentSection.leaveComment')}
+              </Button>
+            </Flex>
           )}
           {!formVisible && !showProminentButton && (
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Button
-                  size="small"
-                  startIcon={<AddCommentIcon fontSize="small" />}
-                  onClick={() => setFormVisible(true)}
-                  className={styles.addCommentButton}
-                >
-                  {t('commentSection.addComment')}
-                </Button>
-              </Grid>
-            </Grid>
+            <Flex justify="end">
+              <Button
+                size="small"
+                variant="tertiary"
+                iconStart={<RiChatNewLine size={16} />}
+                onClick={() => setFormVisible(true)}
+              >
+                {t('commentSection.addComment')}
+              </Button>
+            </Flex>
           )}
           {formVisible && (
             <Box className={styles.commentForm}>

@@ -1,25 +1,8 @@
-import { Chip, makeStyles } from '@material-ui/core';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { Tag } from '@backstage/ui';
+import { RiDeleteBinLine, RiDraftLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-
-const useStyles = makeStyles(theme => ({
-  icon: {
-    color: theme.palette.warning.contrastText,
-  },
-  statusChip: {
-    marginLeft: theme.spacing(1),
-    padding: '0.5rem 0.5rem',
-    flexShrink: 0,
-    backgroundColor: theme.palette.warning.light,
-    color: theme.palette.warning.contrastText,
-    '&.deleted': {
-      backgroundColor: theme.palette.error.light,
-      color: theme.palette.error.contrastText,
-    },
-  },
-}));
+import styles from './StatusChip.module.css';
 
 interface StatusChipProps {
   status?: string;
@@ -27,27 +10,28 @@ interface StatusChipProps {
 }
 
 export const StatusChip = ({ status, className }: StatusChipProps) => {
-  const styles = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
 
   if (status === 'draft') {
     return (
-      <Chip
+      <Tag
         size="small"
-        icon={<DraftsIcon className={styles.icon} />}
-        label={t('common.draft')}
-        className={`${styles.statusChip} ${className || ''}`}
-      />
+        icon={<RiDraftLine size={14} />}
+        className={`${styles.statusChip} ${styles.draft} ${className || ''}`}
+      >
+        {t('common.draft')}
+      </Tag>
     );
   }
   if (status === 'deleted') {
     return (
-      <Chip
+      <Tag
         size="small"
-        icon={<DeleteIcon className={styles.icon} />}
-        label={t('common.deleted')}
-        className={`${styles.statusChip} deleted ${className || ''}`}
-      />
+        icon={<RiDeleteBinLine size={14} />}
+        className={`${styles.statusChip} ${styles.deleted} ${className || ''}`}
+      >
+        {t('common.deleted')}
+      </Tag>
     );
   }
   return null;

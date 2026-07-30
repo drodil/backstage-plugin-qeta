@@ -1,16 +1,7 @@
-import {
-  Box,
-  Collapse,
-  Button,
-  Grid,
-  GridProps,
-  Typography,
-  Card,
-  Divider,
-} from '@material-ui/core';
+import { Box, Button, Card, Grid, GridItemProps, Text } from '@backstage/ui';
 import { WarningPanel } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import FilterList from '@material-ui/icons/FilterList';
+import { RiFilterLine } from '@remixicon/react';
 import { useInfiniteScroll } from 'infinite-scroll-hook';
 
 import {
@@ -33,6 +24,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { Fragment, useState, useEffect, useRef } from 'react';
 import { useUserSettings } from '../../hooks/useUserSettings';
+import styles from './QetaEntityContainer.module.css';
 
 export type QetaEntityContainerProps<T, F extends Filters> = QetaEntitiesProps<
   T,
@@ -52,7 +44,7 @@ export type QetaEntityContainerProps<T, F extends Filters> = QetaEntitiesProps<
     | React.ReactNode
     | ((utils: { retry: () => void }) => React.ReactNode);
   getKey?: (item: T) => string | number;
-  gridItemProps?: GridProps;
+  gridItemProps?: Omit<GridItemProps, 'children'>;
   defaultView?: ViewType;
 };
 
@@ -155,7 +147,8 @@ export function QetaEntityContainer<
               {filterPanelProps && (
                 <Button
                   onClick={() => setShowFilterPanel(!showFilterPanel)}
-                  startIcon={<FilterList />}
+                  iconStart={<RiFilterLine size={16} />}
+                  variant="secondary"
                 >
                   {t('filterPanel.filterButton')}
                 </Button>
@@ -168,15 +161,13 @@ export function QetaEntityContainer<
           }
         />
 
-        {filterPanelProps && (
-          <Collapse in={showFilterPanel}>
-            <FilterPanel<F>
-              onChange={onFilterChange}
-              filters={filters}
-              mode={filterPanelProps.mode ?? 'posts'}
-              {...filterPanelProps}
-            />
-          </Collapse>
+        {filterPanelProps && showFilterPanel && (
+          <FilterPanel<F>
+            onChange={onFilterChange}
+            filters={filters}
+            mode={filterPanelProps.mode ?? 'posts'}
+            {...filterPanelProps}
+          />
         )}
 
         {loading && (items?.length === 0 || settings.usePagination) && (
@@ -194,20 +185,17 @@ export function QetaEntityContainer<
         {items?.length > 0 && (!loading || !settings.usePagination) && (
           <>
             {view === 'grid' && renderGridItem && (
-              <Grid container spacing={3} direction="row" alignItems="stretch">
+              <Grid.Root columns={{ sm: '12' }} gap="6">
                 {items.map((item, index) => (
-                  <Grid
-                    item
-                    xs={12}
-                    md={6}
-                    xl={4}
+                  <Grid.Item
+                    colSpan={{ sm: '12', md: '6', xl: '4' }}
                     key={getKey ? getKey(item) : index}
                     {...gridItemProps}
                   >
                     {renderGridItem(item, { retry })}
-                  </Grid>
+                  </Grid.Item>
                 ))}
-              </Grid>
+              </Grid.Root>
             )}
             {view === 'list' && renderListItem && (
               <Card>
@@ -216,25 +204,23 @@ export function QetaEntityContainer<
                     key={getKey ? getKey(item) : (item as any).id || index}
                   >
                     {renderListItem(item, { retry })}
-                    {index < items.length - 1 && <Divider />}
+                    {index < items.length - 1 && (
+                      <div className={styles.divider} />
+                    )}
                   </Fragment>
                 ))}
               </Card>
             )}
 
             {!renderGridItem && !renderListItem && (
-              <Typography variant="body1">
+              <Text variant="body-medium">
                 No renderer provided for current view.
-              </Typography>
+              </Text>
             )}
 
             <div
               ref={!settings.usePagination ? (sentryRef as any) : undefined}
-              style={{
-                width: '100%',
-                marginTop: '10px',
-                textAlign: 'center',
-              }}
+              className={styles.loadMoreSentry}
             >
               {loading && <LoadingGrid />}
             </div>

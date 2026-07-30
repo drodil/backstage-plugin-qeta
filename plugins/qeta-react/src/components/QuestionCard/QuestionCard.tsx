@@ -5,9 +5,7 @@ import {
 import { useEffect, useState } from 'react';
 import { VoteButtons } from '../Buttons/VoteButtons';
 import { DeleteModal } from '../Modals';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import RestoreIcon from '@material-ui/icons/Restore';
+import { RiDeleteBinLine, RiEditLine, RiRestartLine } from '@remixicon/react';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
@@ -19,48 +17,11 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  makeStyles,
-} from '@material-ui/core';
+import { Box, Button, Card, CardBody, Flex } from '@backstage/ui';
 import { useIsModerator } from '../../hooks';
 import { qetaApiRef } from '../../api.ts';
 import { AuthorBoxes } from '../AuthorBox/AuthorBoxes.tsx';
-
-export type QuestionCardClassKeys =
-  | 'root'
-  | 'contentContainer'
-  | 'markdownContainer'
-  | 'buttons'
-  | 'metadata';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {},
-    contentContainer: {
-      marginLeft: '0.5em',
-      width: 'calc(100% - 70px)',
-    },
-    markdownContainer: {
-      minHeight: '6em',
-      paddingBottom: '0.5em',
-    },
-    buttons: {
-      marginTop: '1em',
-      '& *:not(:last-child)': {
-        marginRight: '0.3em',
-      },
-    },
-    metadata: {
-      marginTop: theme.spacing(3),
-    },
-  }),
-  { name: 'QetaQuestionCard' },
-);
+import styles from './QuestionCard.module.css';
 
 export const QuestionCard = (props: { question: PostResponse }) => {
   const { question } = props;
@@ -76,7 +37,6 @@ export const QuestionCard = (props: { question: PostResponse }) => {
   const onCommentAction = (q: PostResponse, _?: AnswerResponse) => {
     setQuestionEntity(q);
   };
-  const styles = useStyles();
 
   const highlightedAnswer = window.location.hash.slice(1) ?? undefined;
   useEffect(() => {
@@ -100,48 +60,27 @@ export const QuestionCard = (props: { question: PostResponse }) => {
 
   return (
     <>
-      <Card
-        variant="outlined"
-        className={styles.root}
-        data-testid="question-card"
-      >
-        <CardContent>
-          <Grid
-            container
-            spacing={2}
-            justifyContent="flex-start"
-            style={{ flexWrap: 'nowrap' }}
-          >
-            <Grid item>
-              <VoteButtonContainer>
-                <VoteButtons entity={questionEntity} />
-                <FavoriteButton entity={questionEntity} />
-                <LinkButton entity={questionEntity} />
-              </VoteButtonContainer>
-            </Grid>
-            <Grid
-              item
-              className={styles.contentContainer}
-              style={{ flexGrow: '1' }}
-            >
-              <Grid item className={styles.markdownContainer}>
+      <Card data-testid="question-card">
+        <CardBody>
+          <Flex align="start" gap="4" style={{ flexWrap: 'nowrap' }}>
+            <VoteButtonContainer>
+              <VoteButtons entity={questionEntity} />
+              <FavoriteButton entity={questionEntity} />
+              <LinkButton entity={questionEntity} />
+            </VoteButtonContainer>
+            <Box className={styles.contentContainer}>
+              <Box className={styles.markdownContainer}>
                 <MarkdownRenderer content={questionEntity.content} />
-              </Grid>
-              <Box
-                display="flex"
-                alignItems="flex-start"
-                justifyContent="space-between"
-                className={styles.metadata}
-                style={{ width: '100%' }}
-              >
-                <Box flex="1 1 0%" minWidth={0}>
+              </Box>
+              <Flex align="start" justify="between" className={styles.metadata}>
+                <Box style={{ flex: '1 1 0%', minWidth: 0 }}>
                   <TagsAndEntities entity={questionEntity} />
                   <Box className={styles.buttons}>
                     {question.canEdit && question.status !== 'obsolete' && (
                       <Button
-                        variant="outlined"
+                        variant="secondary"
                         size="small"
-                        startIcon={<EditIcon />}
+                        iconStart={<RiEditLine size={16} />}
                         onClick={() =>
                           navigate(
                             editQuestionRoute({
@@ -157,11 +96,11 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                     {question.canDelete && (
                       <>
                         <Button
-                          variant="outlined"
+                          variant="secondary"
                           size="small"
-                          color="secondary"
+                          destructive
                           onClick={handleDeleteModalOpen}
-                          startIcon={<DeleteIcon />}
+                          iconStart={<RiDeleteBinLine size={16} />}
                         >
                           {t('deleteModal.deleteButton')}
                         </Button>
@@ -174,9 +113,9 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                     )}
                     {isModerator && questionEntity.status === 'deleted' && (
                       <Button
-                        variant="contained"
+                        variant="primary"
                         size="small"
-                        startIcon={<RestoreIcon />}
+                        iconStart={<RiRestartLine size={16} />}
                         onClick={() => restoreQuestion()}
                         className="qetaQuestionCardRestoreBtn"
                       >
@@ -186,10 +125,10 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                   </Box>
                 </Box>
                 <AuthorBoxes entity={questionEntity} />
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
+              </Flex>
+            </Box>
+          </Flex>
+        </CardBody>
       </Card>
       <CommentSection post={questionEntity} onCommentAction={onCommentAction} />
     </>

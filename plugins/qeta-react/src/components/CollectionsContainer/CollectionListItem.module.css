@@ -1,0 +1,39 @@
+@layer components {
+  .link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--bui-radius-2);
+  }
+
+  .rowActions {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-4);
+  }
+
+  .statsWrapper {
+    display: none;
+    align-items: center;
+    gap: var(--bui-space-3);
+  }
+
+  @media (min-width: 600px) {
+    .statsWrapper {
+      display: flex;
+    }
+  }
+
+  .statItem {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-1);
+    color: var(--bui-fg-secondary);
+  }
+}

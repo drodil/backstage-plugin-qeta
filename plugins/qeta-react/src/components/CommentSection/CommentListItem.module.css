@@ -1,0 +1,48 @@
+@layer components {
+  .box {
+    padding: var(--bui-space-3);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .box:hover {
+    background-color: var(--bui-bg-neutral-1-hover);
+  }
+
+  .content {
+    display: inline;
+    line-height: 1.5;
+  }
+
+  .content > *:last-child:not(ul, ol, blockquote) {
+    display: inline;
+  }
+
+  .metadata {
+    color: var(--bui-fg-secondary);
+    margin-top: var(--bui-space-1);
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-1);
+  }
+
+  .metadata a {
+    color: var(--bui-fg-secondary);
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+  }
+
+  .metadata a:hover {
+    color: var(--bui-fg-primary);
+    text-decoration: underline;
+  }
+
+  .actionBtn {
+    margin-left: var(--bui-space-2);
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .actionBtn:hover {
+    opacity: 1;
+  }
+}

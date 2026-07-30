@@ -7,10 +7,10 @@ import {
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { GlobalStatsContent } from './GlobalStatsContent';
-import { Box, Tab } from '@material-ui/core';
-import EmojiEventsOutlined from '@material-ui/icons/EmojiEventsOutlined';
-import { TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
+import { RiTrophyLine } from '@remixicon/react';
 import { useEffect, useState } from 'react';
+import styles from './StatisticsPage.module.css';
 
 export const StatisticsPage = () => {
   const [tab, setTab] = useState('global');
@@ -22,38 +22,27 @@ export const StatisticsPage = () => {
     }
   }, [disabled.questions, tab]);
 
-  const handleChange = (_event: React.ChangeEvent<{}>, newValue: string) => {
-    setTab(newValue);
-  };
-
   return (
     <>
-      <ContentHeader
-        title="Statistics"
-        titleIcon={<EmojiEventsOutlined fontSize="large" />}
-      >
+      <ContentHeader title="Statistics" titleIcon={<RiTrophyLine size={24} />}>
         <AskQuestionButton />
         <WriteArticleButton />
         <CreateLinkButton />
       </ContentHeader>
-      <TabContext value={tab}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <TabList onChange={handleChange} style={{ padding: 0 }}>
-            <Tab label="Global Stats" value="global" />
-            {!disabled.questions && (
-              <Tab label="Leaderboard" value="leaderboard" />
-            )}
-          </TabList>
-        </Box>
-        <TabPanel value="global" style={{ padding: '24px 0' }}>
+      <Tabs selectedKey={tab} onSelectionChange={key => setTab(key as string)}>
+        <TabList>
+          <Tab id="global">Global Stats</Tab>
+          {!disabled.questions && <Tab id="leaderboard">Leaderboard</Tab>}
+        </TabList>
+        <TabPanel id="global" className={styles.tabPanel}>
           <GlobalStatsContent />
         </TabPanel>
         {!disabled.questions && (
-          <TabPanel value="leaderboard" style={{ padding: '24px 0' }}>
+          <TabPanel id="leaderboard" className={styles.tabPanel}>
             <TopRankingUsers limit={10} />
           </TabPanel>
         )}
-      </TabContext>
+      </Tabs>
     </>
   );
 };

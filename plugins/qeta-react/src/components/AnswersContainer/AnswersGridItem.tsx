@@ -12,97 +12,23 @@ import { qetaTranslationRef } from '../../translation';
 import {
   Box,
   Card,
-  CardContent,
-  makeStyles,
+  CardBody,
+  Flex,
+  Text,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
+  TooltipTrigger,
+} from '@backstage/ui';
 import numeral from 'numeral';
-import ThumbUp from '@material-ui/icons/ThumbUp';
-import CheckCircle from '@material-ui/icons/CheckCircle';
+import { RiCheckboxCircleLine, RiThumbUpLine } from '@remixicon/react';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { ClickableLink } from '../Utility/ClickableLink';
+import styles from './AnswersGridItem.module.css';
 
 export interface AnswersGridItemProps {
   answer: AnswerResponse;
   entity?: string;
 }
-
-const useStyles = makeStyles(theme => ({
-  card: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    cursor: 'pointer',
-    position: 'relative',
-    '&:hover::after': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'currentColor',
-      opacity: theme.palette.action.hoverOpacity || 0.04,
-      borderRadius: theme.shape.borderRadius,
-      pointerEvents: 'none',
-    },
-  },
-  contentContainer: {
-    padding: theme.spacing(2),
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  title: {
-    fontWeight: 700,
-    fontSize: '1.1rem',
-    color: theme.palette.text.primary,
-    marginBottom: theme.spacing(1),
-    display: '-webkit-box',
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    lineHeight: 1.2,
-  },
-  content: {
-    color: theme.palette.text.secondary,
-    margin: theme.spacing(1, 0),
-    display: '-webkit-box',
-    WebkitLineClamp: 3,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    fontSize: '0.9rem',
-    flexGrow: 1,
-  },
-  footer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: theme.spacing(2),
-    marginTop: 'auto',
-  },
-  metaContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(2),
-  },
-  metaItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(0.5),
-    color: theme.palette.text.secondary,
-    fontSize: '0.875rem',
-  },
-  metaItemActive: {
-    color: theme.palette.success.main,
-  },
-  metaIcon: {
-    fontSize: 18,
-  },
-}));
 
 function formatShortNumber(num: number): string {
   return num >= 1000 ? numeral(num).format('0.0 a') : num.toString();
@@ -112,7 +38,6 @@ export const AnswersGridItem = (props: AnswersGridItemProps) => {
   const { answer, entity } = props;
   const [score] = useState(answer.score);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const classes = useStyles();
 
   const questionRoute = useRouteRef(questionRouteRef);
 
@@ -125,20 +50,16 @@ export const AnswersGridItem = (props: AnswersGridItemProps) => {
       })}#answer_${answer.id}`;
 
   return (
-    <Card className={classes.card}>
+    <Card className={styles.card}>
       <ClickableLink href={href} ariaLabel={answer.post?.title ?? ''}>
-        <CardContent className={classes.contentContainer}>
-          <Typography component="div" className={classes.title}>
+        <CardBody className={styles.contentContainer}>
+          <Text as="div" className={styles.title}>
             {t('answer.questionTitle', {
               question: answer.post?.title ?? '',
             })}
-          </Typography>
+          </Text>
 
-          <Typography
-            variant="body2"
-            component="div"
-            className={classes.content}
-          >
+          <Text as="div" variant="body-small" className={styles.content}>
             <span
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
@@ -146,31 +67,29 @@ export const AnswersGridItem = (props: AnswersGridItemProps) => {
                 ),
               }}
             />
-          </Typography>
+          </Text>
 
-          <div className={classes.footer}>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <div className={classes.metaContainer}>
-                <Tooltip title={t('common.votesCount', { count: score })} arrow>
-                  <div className={classes.metaItem}>
-                    <ThumbUp className={classes.metaIcon} />
+          <Box className={styles.footer}>
+            <Flex align="center" justify="between">
+              <Flex align="center" gap="4">
+                <TooltipTrigger>
+                  <Box className={styles.metaItem}>
+                    <RiThumbUpLine size={18} />
                     <span>{formatShortNumber(score)}</span>
-                  </div>
-                </Tooltip>
+                  </Box>
+                  <Tooltip>{t('common.votesCount', { count: score })}</Tooltip>
+                </TooltipTrigger>
                 {answer.correct && (
-                  <Tooltip title={t('authorBox.correctAnswer')} arrow>
-                    <div
-                      className={`${classes.metaItem} ${classes.metaItemActive}`}
+                  <TooltipTrigger>
+                    <Box
+                      className={`${styles.metaItem} ${styles.metaItemActive}`}
                     >
-                      <CheckCircle className={classes.metaIcon} />
-                    </div>
-                  </Tooltip>
+                      <RiCheckboxCircleLine size={18} />
+                    </Box>
+                    <Tooltip>{t('authorBox.correctAnswer')}</Tooltip>
+                  </TooltipTrigger>
                 )}
-              </div>
+              </Flex>
               <AuthorBox
                 userEntityRef={answer.author}
                 time={answer.created}
@@ -178,14 +97,14 @@ export const AnswersGridItem = (props: AnswersGridItemProps) => {
                 anonymous={answer.anonymous}
                 compact
               />
-            </Box>
+            </Flex>
             {answer.post && (
-              <Box display="flex" flexWrap="wrap" style={{ gap: '4px' }}>
+              <Box className={styles.tagsRow}>
                 <TagsAndEntities entity={answer.post} />
               </Box>
             )}
-          </div>
-        </CardContent>
+          </Box>
+        </CardBody>
       </ClickableLink>
     </Card>
   );

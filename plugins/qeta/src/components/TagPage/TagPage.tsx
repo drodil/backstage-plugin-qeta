@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
   ContentHeader,
+  ContentHeaderCard,
   CreateLinkButton,
   DeleteModal,
   EditTagModal,
@@ -15,17 +16,19 @@ import {
   useIsModerator,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import LocalOfferOutlined from '@material-ui/icons/LocalOfferOutlined';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import PeopleIcon from '@material-ui/icons/People';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
+import {
+  RiDeleteBinLine,
+  RiEditLine,
+  RiGroupLine,
+  RiPriceTag3Line,
+  RiQuestionAnswerLine,
+} from '@remixicon/react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { ContentHeaderCard } from '@drodil/backstage-plugin-qeta-react';
-import { Button, Typography } from '@material-ui/core';
+import { Button, Flex, Text } from '@backstage/ui';
+import styles from './TagPage.module.css';
 
 export const TagPage = () => {
   const { tag } = useParams();
@@ -83,10 +86,7 @@ export const TagPage = () => {
   return (
     <>
       {tag ? (
-        <ContentHeader
-          title={tag}
-          titleIcon={<LocalOfferOutlined fontSize="large" />}
-        >
+        <ContentHeader title={tag} titleIcon={<RiPriceTag3Line size={24} />}>
           <TagFollowButton tag={tag} />
           <AskQuestionButton tags={[tag]} />
           <WriteArticleButton tags={[tag]} />
@@ -95,7 +95,7 @@ export const TagPage = () => {
       ) : (
         <ContentHeader
           title={t('tagPage.defaultTitle', {})}
-          titleIcon={<LocalOfferOutlined fontSize="large" />}
+          titleIcon={<RiPriceTag3Line size={24} />}
         >
           <AskQuestionButton />
           <WriteArticleButton />
@@ -105,7 +105,7 @@ export const TagPage = () => {
       {resp && (
         <ContentHeaderCard
           description={resp.description}
-          imageIcon={<LocalOfferOutlined style={{ fontSize: 80 }} />}
+          imageIcon={<RiPriceTag3Line size={80} />}
           stats={[
             {
               label: t('common.postsLabel', {
@@ -113,17 +113,17 @@ export const TagPage = () => {
                 itemType: 'post',
               }),
               value: resp.postsCount,
-              icon: <QuestionAnswerIcon fontSize="small" />,
+              icon: <RiQuestionAnswerLine size={16} />,
             },
             {
               label: t('common.followersLabel', { count: resp.followerCount }),
               value: resp.followerCount,
-              icon: <PeopleIcon fontSize="small" />,
+              icon: <RiGroupLine size={16} />,
             },
           ]}
         >
           {resp.experts && resp.experts.length > 0 && (
-            <Typography variant="caption">
+            <Text as="div" variant="body-small" color="secondary">
               {t('common.experts')}
               {': '}
               {resp.experts.map((e, i) => (
@@ -132,33 +132,32 @@ export const TagPage = () => {
                   {i === resp.experts!.length - 1 ? '' : ','}
                 </>
               ))}
-            </Typography>
+            </Text>
           )}
           {(resp.canEdit || resp.canDelete) && (
-            <div style={{ marginTop: '1em' }}>
+            <Flex align="center" gap="2" className={styles.actions}>
               {resp.canEdit && (
                 <Button
-                  variant="outlined"
+                  variant="secondary"
                   size="small"
-                  startIcon={<EditIcon />}
+                  iconStart={<RiEditLine size={16} />}
                   onClick={() => setEditModalOpen(true)}
-                  style={{ marginRight: '0.5em' }}
                 >
                   {t('tagButton.edit')}
                 </Button>
               )}
               {resp.canDelete && (
                 <Button
-                  variant="outlined"
+                  variant="secondary"
                   size="small"
-                  color="secondary"
-                  startIcon={<DeleteIcon />}
+                  destructive
+                  iconStart={<RiDeleteBinLine size={16} />}
                   onClick={() => setDeleteModalOpen(true)}
                 >
                   {t('tagButton.delete')}
                 </Button>
               )}
-            </div>
+            </Flex>
           )}
         </ContentHeaderCard>
       )}

@@ -2,83 +2,16 @@ import { ReactNode } from 'react';
 import {
   Box,
   Card,
-  CardContent,
-  CardMedia,
-  Grid,
-  makeStyles,
+  CardBody,
+  Flex,
+  Text,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
+  TooltipTrigger,
+} from '@backstage/ui';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
-
-const useStyles = makeStyles(theme => ({
-  card: {
-    marginBottom: theme.spacing(3),
-    backgroundColor: theme.palette.background.paper,
-    borderLeft: `4px solid ${theme.palette.primary.main}`,
-  },
-  content: {
-    padding: theme.spacing(3),
-    '&:last-child': {
-      paddingBottom: theme.spacing(3),
-    },
-  },
-  headerContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    justifyContent: 'center',
-  },
-  statsRow: {
-    display: 'flex',
-    gap: theme.spacing(4),
-    marginTop: theme.spacing(2),
-    flexWrap: 'wrap',
-  },
-  statItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-  },
-  statValue: {
-    fontWeight: 'bold',
-    fontSize: '1.2rem',
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(1),
-  },
-  statLabel: {
-    color: theme.palette.text.secondary,
-    textTransform: 'uppercase',
-    fontSize: '0.75rem',
-    letterSpacing: '0.05em',
-  },
-  description: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  media: {
-    height: 180,
-    width: 180,
-    borderRadius: theme.shape.borderRadius,
-    objectFit: 'cover',
-    objectPosition: '50% 50%',
-    boxShadow: theme.shadows[2],
-  },
-  mediaContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingRight: theme.spacing(3),
-    [theme.breakpoints.down('xs')]: {
-      paddingRight: 0,
-      marginBottom: theme.spacing(2),
-    },
-  },
-}));
+import styles from './ContentHeaderCard.module.css';
 
 export interface ContentHeaderCardProps {
   title?: ReactNode;
@@ -110,61 +43,37 @@ export const ContentHeaderCard = (props: ContentHeaderCardProps) => {
     actions,
     children,
   } = props;
-  const classes = useStyles();
 
   return (
-    <Card className={classes.card} variant="outlined">
-      <CardContent className={classes.content}>
-        <Grid container>
+    <Card className={styles.card}>
+      <CardBody className={styles.content}>
+        <Flex gap="6" align="start" className={styles.mediaRow}>
           {(image || imageIcon) && (
-            <Grid item>
-              <Box className={classes.mediaContainer}>
-                {image ? (
-                  <CardMedia
-                    className={classes.media}
-                    image={image}
-                    component="img"
-                  />
-                ) : (
-                  <Box
-                    className={classes.media}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    bgcolor="background.default"
-                    color="primary.main"
-                  >
-                    {imageIcon}
-                  </Box>
-                )}
-              </Box>
-            </Grid>
+            <Box className={styles.mediaContainer}>
+              {image ? (
+                <img src={image} alt="" className={styles.media} />
+              ) : (
+                <Box className={`${styles.media} ${styles.mediaIcon}`}>
+                  {imageIcon}
+                </Box>
+              )}
+            </Box>
           )}
 
-          <Grid item xs container className={classes.headerContent}>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="flex-start"
-              width="100%"
-            >
+          <Flex direction="column" className={styles.headerContent}>
+            <Flex justify="between" align="start" className={styles.titleRow}>
               <Box>
                 {title && (
-                  <Typography
-                    variant="h4"
-                    component="h1"
-                    gutterBottom
-                    style={{ fontWeight: 'bold' }}
-                  >
+                  <Text as="h1" variant="title-large" weight="bold">
                     {title}
-                  </Typography>
+                  </Text>
                 )}
               </Box>
               {actions && <Box>{actions}</Box>}
-            </Box>
+            </Flex>
 
             {description && (
-              <Box className={classes.description}>
+              <Box className={styles.description}>
                 <MarkdownRenderer content={description} />
               </Box>
             )}
@@ -174,7 +83,7 @@ export const ContentHeaderCard = (props: ContentHeaderCardProps) => {
                 (tagsAndEntities.tags && tagsAndEntities.tags.length > 0) ||
                 (tagsAndEntities.entities &&
                   tagsAndEntities.entities.length > 0)) && (
-                <Box mb={2}>
+                <Box className={styles.tagsRow}>
                   <TagsAndEntities
                     entity={
                       tagsAndEntities.entity ||
@@ -188,25 +97,24 @@ export const ContentHeaderCard = (props: ContentHeaderCardProps) => {
               )}
 
             {stats && stats.length > 0 && (
-              <Box className={classes.statsRow}>
+              <Flex className={styles.statsRow}>
                 {stats.map((stat, index) => (
-                  <Tooltip key={index} title={stat.label}>
-                    <Box className={classes.statItem}>
-                      <Typography className={classes.statValue} color="primary">
+                  <TooltipTrigger key={index}>
+                    <Box className={styles.statItem}>
+                      <Text className={styles.statValue}>
                         {stat.icon} {stat.value}
-                      </Typography>
-                      <Typography className={classes.statLabel}>
-                        {stat.label}
-                      </Typography>
+                      </Text>
+                      <Text className={styles.statLabel}>{stat.label}</Text>
                     </Box>
-                  </Tooltip>
+                    <Tooltip>{stat.label}</Tooltip>
+                  </TooltipTrigger>
                 ))}
-              </Box>
+              </Flex>
             )}
-            {children && <Box mt={2}>{children}</Box>}
-          </Grid>
-        </Grid>
-      </CardContent>
+            {children && <Box className={styles.children}>{children}</Box>}
+          </Flex>
+        </Flex>
+      </CardBody>
     </Card>
   );
 };

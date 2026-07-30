@@ -8,7 +8,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { InfoCard } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const CreateLinkPage = () => {
@@ -40,8 +40,8 @@ export const CreateLinkPage = () => {
   return (
     <>
       <ContentHeader title={title} />
-      <Grid container spacing={3} direction="column">
-        <Grid item>
+      <Grid.Root columns={{ sm: '12' }} gap="6">
+        <Grid.Item colSpan={{ sm: '12' }}>
           <InfoCard>
             <PostForm
               id={id}
@@ -51,8 +51,8 @@ export const CreateLinkPage = () => {
               type="link"
             />
           </InfoCard>
-        </Grid>
-      </Grid>
+        </Grid.Item>
+      </Grid.Root>
     </>
   );
 };

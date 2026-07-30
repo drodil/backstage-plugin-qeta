@@ -3,22 +3,18 @@ import {
   PostAnswerEntity,
   isAnswer,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Box } from '@material-ui/core';
+import { Flex } from '@backstage/ui';
 import { AuthorBox } from './AuthorBox.tsx';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import styles from './AuthorBoxes.module.css';
 
 export const AuthorBoxes = (props: { entity: PostAnswerEntity }) => {
   const entity = props.entity;
   const { t } = useTranslationRef(qetaTranslationRef);
 
   return (
-    <Box
-      display="flex"
-      minWidth={220}
-      style={{ gap: '8px', justifyContent: 'flex-end' }}
-      ml={1}
-    >
+    <Flex justify="end" gap="2" className={styles.container}>
       {entity.updated && entity.updatedBy && (
         <AuthorBox
           userEntityRef={entity.updatedBy}
@@ -39,6 +35,6 @@ export const AuthorBoxes = (props: { entity: PostAnswerEntity }) => {
         expert={isAnswer(entity) ? (entity as Answer).expert : false}
         anonymous={entity.anonymous}
       />
-    </Box>
+    </Flex>
   );
 };

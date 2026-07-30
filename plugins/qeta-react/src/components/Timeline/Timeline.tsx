@@ -4,7 +4,7 @@ import { qetaApiRef } from '../../api';
 import { TimelineItem } from '@drodil/backstage-plugin-qeta-common';
 import { TimelineItemCard } from './TimelineItem';
 import { Progress, ErrorPanel } from '@backstage/core-components';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Text } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 
@@ -79,9 +79,9 @@ export const Timeline = (props: TimelineProps) => {
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom>
+      <Text as="h2" variant="title-small">
         {t('timeline.title')}
-      </Typography>
+      </Text>
       {items.map((item, index) => (
         <TimelineItemCard
           key={`${item.type}-${item.id}-${index}`}
@@ -93,9 +93,7 @@ export const Timeline = (props: TimelineProps) => {
           ref={sentryRef}
           style={{ height: '20px', margin: '10px 0', textAlign: 'center' }}
         >
-          {loading && (
-            <Typography variant="body2">{t('timeline.loading')}</Typography>
-          )}
+          {loading && <Text variant="body-small">{t('timeline.loading')}</Text>}
         </div>
       )}
       {!hasMore && items.length > 0 && (

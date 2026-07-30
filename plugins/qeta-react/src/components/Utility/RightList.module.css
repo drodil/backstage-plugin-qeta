@@ -1,0 +1,50 @@
+@layer components {
+  .container {
+    width: 100%;
+    margin-bottom: 1em;
+  }
+
+  .desktopOnly {
+    display: none;
+  }
+
+  @media (min-width: 1280px) {
+    .desktopOnly {
+      display: block;
+    }
+  }
+
+  .list {
+    width: 100%;
+  }
+
+  .subheader {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-1);
+    padding: 0 0 var(--bui-space-2) var(--bui-space-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
+  }
+
+  .items > * {
+    padding-left: var(--bui-space-2);
+    padding-right: var(--bui-space-2);
+  }
+
+  .showMoreButton {
+    margin-left: var(--bui-space-2);
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    font-size: 0.8rem;
+  }
+
+  .showMoreIcon {
+    display: inline-flex;
+    margin-left: var(--bui-space-1);
+  }
+}
+

@@ -1,4 +1,4 @@
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Box, Flex, Text } from '@backstage/ui';
 import { SearchBar } from '../SearchBar/SearchBar';
 
 export type QetaGridHeaderProps = {
@@ -19,39 +19,29 @@ export const QetaGridHeader = ({
   rightElement,
 }: QetaGridHeaderProps) => {
   return (
-    <Box mb={3}>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Box width="100%" maxWidth={400}>
+    <Box mb="6">
+      <Flex align="center" justify="between">
+        <Box width="100%" maxWidth="400px">
           <SearchBar
             onSearch={onSearch}
             label={searchBarLabel}
             loading={loading}
           />
         </Box>
-        {rightElement && (
-          <Box display="flex" justifyContent="flex-end">
-            {rightElement}
-          </Box>
-        )}
-      </Box>
-      <Box mt={3} mb={2}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            {!loading &&
-              (typeof title === 'string' ? (
-                <Typography
-                  variant="h6"
-                  component="h2"
-                  style={{ fontWeight: 500, paddingBottom: 2 }}
-                >
-                  {title}
-                </Typography>
-              ) : (
-                title
-              ))}
-          </Grid>
-          {buttons && <Grid item>{buttons}</Grid>}
-        </Grid>
+        {rightElement && <Flex justify="end">{rightElement}</Flex>}
+      </Flex>
+      <Box mt="6" mb="4">
+        <Flex align="center" justify="between">
+          {!loading &&
+            (typeof title === 'string' ? (
+              <Text variant="title-small" weight="bold">
+                {title}
+              </Text>
+            ) : (
+              title
+            ))}
+          {buttons}
+        </Flex>
       </Box>
     </Box>
   );

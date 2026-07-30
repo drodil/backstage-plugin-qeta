@@ -6,7 +6,7 @@ import {
   PostHighlightList,
   qetaTranslationRef,
 } from '@drodil/backstage-plugin-qeta-react';
-import Whatshot from '@material-ui/icons/Whatshot';
+import { RiFireLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const DefaultRightContent = () => {
@@ -17,7 +17,7 @@ export const DefaultRightContent = () => {
         type="hot"
         title={t('highlights.hotQuestions.title')}
         noQuestionsLabel={t('highlights.hotQuestions.noQuestionsLabel')}
-        icon={<Whatshot fontSize="small" />}
+        icon={<RiFireLine size={16} />}
         postType="question"
       />
       <FollowedTagsList />
