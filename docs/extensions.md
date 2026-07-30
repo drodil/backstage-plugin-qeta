@@ -5,24 +5,34 @@ Q&A provides possibility to extend functionalities with extensions.
 ## Markdown extensions
 
 It's possible to add custom `remark` and `rehype` plugins to process markdown content.
-To do that, you need to provide `markdown` configuration with `remarkPlugins` and/or `rehypePlugins` options in
-the `QetaPage` component and `PostsTableCard` component properties.
+In the new frontend system, this is done with extension blueprints.
 
 ```tsx
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import rehypeMermaid from 'rehype-mermaid';
+import {
+  QetaMarkdownRehypePluginBlueprint,
+  QetaPageIntroElementBlueprint,
+} from '@drodil/backstage-plugin-qeta-react';
 
-<QetaPage
-  title="Questions and answers"
-  subtitle="We have answers to everything!"
-  headerType="See @ GitHub"
-  headerTypeLink="https://github.com/drodil/backstage-plugin-qeta"
-  headerTooltip="This is very cool plugin"
-  introElement={<IntroElement />}
-  rehypePlugins={[rehypeMermaid]}
-/>;
+const module = createFrontendModule({
+  pluginId: 'qeta',
+  extensions: [
+    QetaPageIntroElementBlueprint.make({
+      params: {
+        element: <IntroElement />,
+      },
+    }),
+    QetaMarkdownRehypePluginBlueprint.make({
+      params: {
+        plugin: rehypeMermaid,
+      },
+    }),
+  ],
+});
 ```
 
-In the new frontend system, this is made possible via `QetaMarkdownRehypePluginBlueprint` and `QetaMarkdownRemarkPluginBlueprint` extension points.
+This is made possible via `QetaMarkdownRehypePluginBlueprint`, `QetaMarkdownRemarkPluginBlueprint`, and `QetaPageIntroElementBlueprint`.
 
 Example of adding `rehype-mermaid` plugin:
 

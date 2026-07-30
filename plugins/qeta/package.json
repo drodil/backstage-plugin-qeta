@@ -8,8 +8,8 @@
     "backstage.io"
   ],
   "version": "3.60.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "src/index.tsx",
+  "types": "src/index.tsx",
   "prepublishOnly": "yarn tsc && yarn build",
   "license": "MIT",
   "homepage": "https://github.com/drodil/backstage-plugin-qeta",
@@ -17,15 +17,11 @@
     "url": "https://github.com/drodil/backstage-plugin-qeta/issues"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./alpha": "./src/alpha.tsx",
+    ".": "./src/index.tsx",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
-      "alpha": [
-        "src/alpha.tsx"
-      ],
       "package.json": [
         "package.json"
       ]

@@ -1,5 +1,5 @@
-import { Fragment, ReactNode } from 'react';
-import { Content, Header, Page } from '@backstage/core-components';
+import { ReactNode } from 'react';
+import { Content, Page } from '@backstage/core-components';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { AskPage } from '../AskPage';
 import { QuestionPage } from '../QuestionPage/QuestionPage';
@@ -62,13 +62,7 @@ import { RightContent } from '../RightContent/RightContent';
 import type { PluggableList } from 'unified';
 
 type Props = {
-  title?: string;
-  subtitle?: string;
-  headerElements?: ReactNode[];
   themeId?: string;
-  headerTooltip?: string;
-  headerType?: string;
-  headerTypeLink?: string;
   introElement?: ReactNode;
   remarkPlugins?: PluggableList;
   rehypePlugins?: PluggableList;
@@ -141,13 +135,7 @@ const useStyles = makeStyles(theme => ({
 
 export const QetaPage = (props?: Props) => {
   const {
-    title = 'Q&A',
-    subtitle,
-    headerElements,
     themeId = 'tool',
-    headerTooltip,
-    headerType,
-    headerTypeLink,
     introElement,
     remarkPlugins,
     rehypePlugins,
@@ -170,17 +158,6 @@ export const QetaPage = (props?: Props) => {
   return (
     <QetaProvider remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>
       <Page themeId={themeId}>
-        <Header
-          title={title}
-          subtitle={subtitle}
-          type={headerType}
-          typeLink={headerTypeLink}
-          tooltip={headerTooltip}
-        >
-          {headerElements?.map((element, index) => (
-            <Fragment key={index}>{element}</Fragment>
-          ))}
-        </Header>
         <Content className="qetaHomePage">
           {introElement}
           <Container maxWidth="xl">

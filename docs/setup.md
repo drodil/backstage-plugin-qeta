@@ -28,41 +28,29 @@ Add the plugin to your frontend app:
 yarn workspace app add @drodil/backstage-plugin-qeta
 ```
 
-Expose the questions page:
+Register the plugin in your frontend app:
 
 ```ts
 // packages/app/src/App.tsx
-import { QetaPage } from '@drodil/backstage-plugin-qeta';
+import { createApp } from '@backstage/frontend-defaults';
+import qetaPlugin from '@drodil/backstage-plugin-qeta';
 
-// ...
-
-const AppRoutes = () => (
-  <FlatRoutes>
-    // ...
-    <Route path="/qeta" element={<QetaPage title="Questions" />} />
-    // ...
-  </FlatRoutes>
-);
+const app = createApp({
+  features: [qetaPlugin],
+});
 ```
 
-Add the navigation in the frontend:
+If you want to customize entity page content, use the frontend extension configuration:
 
-```ts
-// packages/app/src/components/Root/Root.tsx
-import LiveHelpIcon from '@material-ui/icons/LiveHelp';
-// ...
-export const Root = ({ children }: PropsWithChildren<{}>) => (
-  <SidebarPage>
-    // ...
-    <SidebarItem icon={LiveHelpIcon} to="qeta" text="Q&A" />
-    // ...
-  </SidebarPage>
-);
+```yaml
+app:
+  extensions:
+    - entity-content:qeta/entity-posts-content:
+        config:
+          relations: ['partOf']
 ```
 
 An interface for Q&A is now available at `/qeta`.
-
-QetaPage also takes optional properties if you want to change the page title/subtitle/elements shown in the header.
 
 ### Adding questions to entity page
 

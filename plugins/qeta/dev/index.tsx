@@ -5,12 +5,11 @@ import { createRoot } from 'react-dom/client';
 import notificationPlugin from '@backstage/plugin-notifications/alpha';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 
-import plugin from '../src/alpha';
+import plugin from '../src';
 import {
   QetaMarkdownRehypePluginBlueprint,
-  QetaPageHeaderElementBlueprint,
   QetaPageIntroElementBlueprint,
-} from '@drodil/backstage-plugin-qeta-react/alpha';
+} from '@drodil/backstage-plugin-qeta-react';
 import { Box } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import searchPlugin from '@backstage/plugin-search/alpha';
@@ -39,11 +38,6 @@ const module = createFrontendModule({
     QetaPageIntroElementBlueprint.make({
       params: {
         element: <IntroElement />,
-      },
-    }),
-    QetaPageHeaderElementBlueprint.make({
-      params: {
-        element: <div>Extra header element</div>,
       },
     }),
     QetaMarkdownRehypePluginBlueprint.make({

@@ -1,4 +1,4 @@
-import { qetaPlugin } from './plugin';
+import qetaPlugin from './index';
 
 describe('qeta', () => {
   it('should export plugin', () => {

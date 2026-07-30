@@ -32,7 +32,7 @@ import { TechDocsAddonLocations } from '@backstage/plugin-techdocs-react';
 import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsAskQuestionAddon } from './components/TechDocsAskQuestionAddon';
 import { Pluggable } from 'unified';
-import { markdownPlugin } from '@drodil/backstage-plugin-qeta-react/alpha';
+import { markdownPlugin } from '@drodil/backstage-plugin-qeta-react';
 import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 
 interface QetaMarkdownPluginsApi {
@@ -87,11 +87,7 @@ const qetaApi = ApiBlueprint.make({
 const qetaPage = PageBlueprint.makeWithOverrides({
   config: {
     schema: {
-      subtitle: z => z.string().optional(),
       themeId: z => z.string().optional(),
-      headerTooltip: z => z.string().optional(),
-      headerType: z => z.string().optional(),
-      headerTypeLink: z => z.string().optional(),
     },
   },
   inputs: {
@@ -99,17 +95,10 @@ const qetaPage = PageBlueprint.makeWithOverrides({
       singleton: true,
       optional: true,
     }),
-    headerElements: createExtensionInput([coreExtensionData.reactElement], {
-      singleton: false,
-      optional: true,
-    }),
   },
   factory: (originalFactory, { config, inputs, apis }) => {
     const introElement = inputs.introElement?.get(
       coreExtensionData.reactElement,
-    );
-    const headerElements = inputs.headerElements.map(e =>
-      e.get(coreExtensionData.reactElement),
     );
     const pluginsApi = apis.get(qetaMarkdownPluginsApiRef);
     const remarkPlugins = pluginsApi?.getRemarkPlugins();
@@ -123,9 +112,8 @@ const qetaPage = PageBlueprint.makeWithOverrides({
         import('./components/QetaPage').then(m =>
           compatWrapper(
             <m.QetaPage
-              {...config}
+              themeId={config.themeId}
               introElement={introElement}
-              headerElements={headerElements}
               remarkPlugins={remarkPlugins}
               rehypePlugins={rehypePlugins}
             />,
@@ -252,8 +240,6 @@ const homeTimeline = HomePageWidgetBlueprint.make({
 
 /**
  * Backstage frontend plugin.
- *
- * @alpha
  */
 const qetaPlugin = createFrontendPlugin({
   pluginId: 'qeta',
@@ -278,14 +264,11 @@ export default qetaPlugin;
 
 export { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
 
-// TODO: To be removed in favor of direct imports from `@drodil/backstage-plugin-qeta-react/alpha` in the next major release, after the deprecation period has ended.
 export {
-  /** @deprecated Use blueprints from `@drodil/backstage-plugin-qeta-react/alpha` instead. */
+  /** @deprecated Use blueprints from `@drodil/backstage-plugin-qeta-react` instead. */
   QetaMarkdownRehypePluginBlueprint,
-  /** @deprecated Use blueprints from `@drodil/backstage-plugin-qeta-react/alpha` instead. */
+  /** @deprecated Use blueprints from `@drodil/backstage-plugin-qeta-react` instead. */
   QetaPageIntroElementBlueprint,
-  /** @deprecated Use blueprints from `@drodil/backstage-plugin-qeta-react/alpha` instead. */
-  QetaPageHeaderElementBlueprint,
-  /** @deprecated Use blueprints from `@drodil/backstage-plugin-qeta-react/alpha` instead. */
+  /** @deprecated Use blueprints from `@drodil/backstage-plugin-qeta-react` instead. */
   QetaMarkdownRemarkPluginBlueprint,
-} from '@drodil/backstage-plugin-qeta-react/alpha';
+} from '@drodil/backstage-plugin-qeta-react';
