@@ -4,20 +4,22 @@ import { useSignal } from '@backstage/plugin-signals-react';
 import { PostResponse, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import {
   AddToCollectionButton,
-  CreateLinkButton,
+  AuthorHeaderItem,
+  DeleteButton,
   DeletedBanner,
   DraftBanner,
+  EditButton,
+  FollowPostButton,
   LinkCard,
   PostHistoryButton,
   qetaTranslationRef,
   RelativeTimeWithTooltip,
-  UpdatedByLink,
+  RestoreButton,
   useQetaApi,
-  FollowPostButton,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { Alert, Box, Flex, Header, Skeleton, Text } from '@backstage/ui';
+import { Alert, Header, HeaderMetadataItem, Skeleton } from '@backstage/ui';
 
 export const LinkPage = () => {
   const { id } = useParams();
@@ -73,45 +75,54 @@ export const LinkPage = () => {
     );
   }
 
-  const getDescription = (q: PostResponse) => {
-    return (
-      <Flex align="center" gap="1" style={{ flexWrap: 'wrap' }}>
-        <Text as="span" variant="body-small">
-          {t('authorBox.postedAtTime')}{' '}
-          <RelativeTimeWithTooltip value={q.created} />
-        </Text>
-        {q.updated && (
-          <Text as="span" variant="body-small">
-            {' · '}
-            {t('authorBox.updatedAtTime')}{' '}
-            <RelativeTimeWithTooltip value={q.updated} />{' '}
-            {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
-          </Text>
-        )}
-        <Text as="span" variant="body-small">
-          {' · '}
-          {t('common.clicksCount', { count: score })}
-        </Text>
-      </Flex>
-    );
+  const getMetadata = (q: PostResponse): HeaderMetadataItem[] => {
+    const metadata: HeaderMetadataItem[] = [
+      {
+        label: t('postHeader.postedAtTime'),
+        value: <RelativeTimeWithTooltip value={q.created} />,
+      },
+      {
+        label: t('postHeader.author'),
+        value: <AuthorHeaderItem userEntityRef={q.author} />,
+      },
+    ];
+
+    if (q.updated) {
+      metadata.push({
+        label: t('postHeader.updatedAtTime'),
+        value: <RelativeTimeWithTooltip value={q.updated} />,
+      });
+    }
+    if (q.updatedBy) {
+      metadata.push({
+        label: t('postHeader.updatedBy'),
+        value: <AuthorHeaderItem userEntityRef={q.updatedBy} />,
+      });
+    }
+    metadata.push({
+      label: t('postHeader.clicks'),
+      value: score,
+    });
+
+    return metadata;
   };
 
   return (
     <>
       <Header
         title={post.title}
+        metadata={getMetadata(post)}
         customActions={
           <>
+            <EditButton entity={post} compact />
+            <DeleteButton entity={post} compact />
+            <RestoreButton entity={post} compact />
             <PostHistoryButton post={post} onRestore={retry} />
             <FollowPostButton post={post} />
-            <CreateLinkButton />
             <AddToCollectionButton post={post} />
           </>
         }
       />
-      <Box style={{ marginBottom: 'var(--bui-space-4)' }}>
-        {getDescription(post)}
-      </Box>
       {post.status === 'draft' && <DraftBanner />}
       {post.status === 'deleted' && <DeletedBanner />}
       <LinkCard link={post} />

@@ -10,11 +10,12 @@ import {
   Comment,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api.ts';
 import { CommentForm } from './CommentForm.tsx';
 import { ExpertIcon } from '../Icons/ExpertIcon.tsx';
 import styles from './CommentListItem.module.css';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const CommentListItem = (props: {
   comment: Comment;
@@ -27,19 +28,18 @@ export const CommentListItem = (props: {
   const qetaApi = useApi(qetaApiRef);
   const [posting, setPosting] = useState(false);
   const [editing, setEditing] = useState(false);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
 
   const deleteComment = (id: number) => {
     if (answer) {
       qetaApi
         .deleteAnswerComment(post.id, answer.id, id)
-        .catch(e =>
-          alertApi.post({
-            message: e.message,
-            display: 'transient',
-            severity: 'error',
-          }),
-        )
+        .catch(e => {
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
+          });
+        })
         .then(a => {
           if (a) {
             onCommentAction(post, a);
@@ -49,13 +49,12 @@ export const CommentListItem = (props: {
     }
     qetaApi
       .deletePostComment(post.id, id)
-      .catch(e =>
-        alertApi.post({
-          message: e.message,
-          display: 'transient',
-          severity: 'error',
-        }),
-      )
+      .catch(e => {
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
+        });
+      })
       .then(q => {
         if (q) {
           onCommentAction(q);
@@ -68,13 +67,12 @@ export const CommentListItem = (props: {
     if (answer) {
       qetaApi
         .updateAnswerComment(post.id, answer.id, comment.id, data.content)
-        .catch(e =>
-          alertApi.post({
-            message: e.message,
-            display: 'transient',
-            severity: 'error',
-          }),
-        )
+        .catch(e => {
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
+          });
+        })
         .then(a => {
           if (a) {
             onCommentAction(post, a);
@@ -88,13 +86,12 @@ export const CommentListItem = (props: {
     }
     qetaApi
       .updatePostComment(post.id, comment.id, data.content)
-      .catch(e =>
-        alertApi.post({
-          message: e.message,
-          display: 'transient',
-          severity: 'error',
-        }),
-      )
+      .catch(e => {
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
+        });
+      })
       .then(q => {
         if (q) {
           onCommentAction(q);

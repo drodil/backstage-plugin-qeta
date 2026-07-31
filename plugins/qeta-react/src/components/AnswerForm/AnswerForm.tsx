@@ -1,10 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  alertApiRef,
-  configApiRef,
-  useAnalytics,
-  useApi,
-} from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   AnswerResponse,
   PostResponse,
@@ -23,6 +18,7 @@ import { useIdentityApi, useIsModerator, useUserSettings } from '../../hooks';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 type AnswerFormData = {
   postId: number;
@@ -61,7 +57,7 @@ export const AnswerForm = (props: {
   const configApi = useApi(configApiRef);
   const allowAnonymous = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const { t } = useTranslationRef(qetaTranslationRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
 
   const {
     handleSubmit,
@@ -95,10 +91,9 @@ export const AnswerForm = (props: {
           onPost(a);
         })
         .catch(e => {
-          alertApi.post({
-            message: e.message,
-            display: 'transient',
-            severity: 'error',
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
           });
           setError(true);
         })
@@ -124,10 +119,9 @@ export const AnswerForm = (props: {
         onPost(a);
       })
       .catch(e => {
-        alertApi.post({
-          message: e.message,
-          display: 'transient',
-          severity: 'error',
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
         });
         setError(true);
       })
@@ -154,15 +148,14 @@ export const AnswerForm = (props: {
           }
         })
         .catch(e => {
-          alertApi.post({
-            message: e.message,
-            display: 'transient',
-            severity: 'error',
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
           });
           setError(true);
         });
     }
-  }, [alertApi, catalogApi, id, post, qetaApi]);
+  }, [toastApi, catalogApi, id, post, qetaApi]);
 
   useEffect(() => {
     if (!id && identity?.userEntityRef) {

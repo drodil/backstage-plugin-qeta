@@ -1,28 +1,28 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { Fragment, useState } from 'react';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { RiStarFill, RiStarLine } from '@remixicon/react';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const FavoriteButton = (props: { entity: PostResponse }) => {
   const [entity, setEntity] = useState<PostResponse>(props.entity);
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
 
   const favoriteQuestion = () => {
     qetaApi
       .favoritePost(entity.id)
-      .catch(e =>
-        alertApi.post({
-          message: e.message,
-          display: 'transient',
-          severity: 'error',
-        }),
-      )
+      .catch(e => {
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
+        });
+      })
       .then(response => {
         if (response) {
           setEntity(response);
@@ -33,13 +33,12 @@ export const FavoriteButton = (props: { entity: PostResponse }) => {
   const unfavoriteQuestion = () => {
     qetaApi
       .unfavoritePost(entity.id)
-      .catch(e =>
-        alertApi.post({
-          message: e.message,
-          display: 'transient',
-          severity: 'error',
-        }),
-      )
+      .catch(e => {
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
+        });
+      })
       .then(response => {
         if (response) {
           setEntity(response);

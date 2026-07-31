@@ -14,3 +14,4 @@ export { RankingButtons } from './RankingButtons';
 export { FollowPostButton } from './FollowPostButton';
 export { EditButton } from './EditButton';
 export { DeleteButton } from './DeleteButton';
+export { RestoreButton } from './RestoreButton';

@@ -4,6 +4,7 @@ import { qetaTranslationRef } from '../../translation.ts';
 import {
   AnswerResponse,
   CollectionResponse,
+  isPost,
   PostResponse,
   TagResponse,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -20,6 +21,14 @@ export const DeleteButton = (props: {
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
   const { t } = useTranslationRef(qetaTranslationRef);
+  let tooltip: string = t('common.delete');
+  if (isPost(entity) && entity.status === 'deleted') {
+    tooltip = t('common.deletePermanently');
+  }
+
+  if (!entity.canDelete) {
+    return null;
+  }
 
   if (compact) {
     return (
@@ -31,7 +40,7 @@ export const DeleteButton = (props: {
             onClick={handleDeleteModalOpen}
             icon={<RiDeleteBinLine size={16} />}
           />
-          <Tooltip>{t('common.delete')}</Tooltip>
+          <Tooltip>{tooltip}</Tooltip>
         </TooltipTrigger>
         <DeleteModal
           open={deleteModalOpen}
@@ -51,7 +60,7 @@ export const DeleteButton = (props: {
         onClick={handleDeleteModalOpen}
         iconStart={<RiDeleteBinLine size={16} />}
       >
-        {t('common.delete')}
+        {tooltip}
       </Button>
       <DeleteModal
         open={deleteModalOpen}

@@ -1,5 +1,4 @@
 import {
-  alertApiRef,
   configApiRef,
   useAnalytics,
   useApi,
@@ -54,6 +53,7 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { useDebounce } from 'react-use';
 import { useIdentityApi, useIsModerator, useUserSettings } from '../../hooks';
 import styles from './PostForm.module.css';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 const formToRequest = (
   form: QuestionFormValues,
@@ -181,7 +181,7 @@ export const PostForm = (props: PostFormProps) => {
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
   const configApi = useApi(configApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const allowAnonymous = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const minEntities = configApi.getOptionalNumber('qeta.entities.min') ?? 0;
   const minTags = configApi.getOptionalNumber('qeta.tags.min') ?? 0;
@@ -234,16 +234,14 @@ export const PostForm = (props: PostFormProps) => {
               setDraftId(q.id.toString(10));
               setPosting(false);
               if (autoSave) {
-                alertApi.post({
-                  message: t('postForm.autoSaveSuccess'),
-                  severity: 'success',
-                  display: 'transient',
+                toastApi.post({
+                  title: t('postForm.autoSaveSuccess'),
+                  status: 'success',
                 });
               } else {
-                alertApi.post({
-                  message: t('postForm.draftSaved'),
-                  severity: 'success',
-                  display: 'transient',
+                toastApi.post({
+                  title: t('postForm.draftSaved'),
+                  status: 'success',
                 });
               }
               return;
@@ -281,16 +279,14 @@ export const PostForm = (props: PostFormProps) => {
             setDraftId(q.id.toString(10));
             setPosting(false);
             if (autoSave) {
-              alertApi.post({
-                message: t('postForm.autoSaveSuccess'),
-                severity: 'success',
-                display: 'transient',
+              toastApi.post({
+                title: t('postForm.autoSaveSuccess'),
+                status: 'success',
               });
             } else {
-              alertApi.post({
-                message: t('postForm.draftSaved'),
-                severity: 'success',
-                display: 'transient',
+              toastApi.post({
+                title: t('postForm.draftSaved'),
+                status: 'success',
               });
             }
             return;
@@ -327,7 +323,7 @@ export const PostForm = (props: PostFormProps) => {
       onPost,
       navigate,
       images,
-      alertApi,
+      toastApi,
       t,
     ],
   );
@@ -353,10 +349,9 @@ export const PostForm = (props: PostFormProps) => {
           setStatus(data.status ?? 'draft');
         })
         .catch(e => {
-          alertApi.post({
-            message: e.message,
-            severity: 'error',
-            display: 'transient',
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
           });
           setDraftId(undefined);
           setLoadError(true);
@@ -365,7 +360,7 @@ export const PostForm = (props: PostFormProps) => {
     } else {
       setLoading(false);
     }
-  }, [qetaApi, catalogApi, type, id, alertApi]);
+  }, [qetaApi, catalogApi, type, id, toastApi]);
 
   useEffect(() => {
     if (entityRef) {

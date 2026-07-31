@@ -17,6 +17,7 @@ import {
   qetaTranslationRef,
   QuestionCard,
   RelativeTimeWithTooltip,
+  RestoreButton,
   useQetaApi,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
@@ -207,10 +208,9 @@ export const QuestionPage = () => {
         metadata={getMetadata(question)}
         customActions={
           <>
-            {question.canEdit && question.status !== 'obsolete' && (
-              <EditButton entity={question} compact />
-            )}
-            {question.canDelete && <DeleteButton entity={question} compact />}
+            <EditButton entity={question} compact />
+            <DeleteButton entity={question} compact />
+            <RestoreButton entity={question} compact />
             <PostHistoryButton post={question} onRestore={retry} />
             <FollowPostButton post={question} />
             <ContentHeaderButton

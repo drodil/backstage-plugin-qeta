@@ -10,7 +10,7 @@ import {
   TextAreaField,
 } from '@backstage/ui';
 import { useEffect, useState } from 'react';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
@@ -18,6 +18,7 @@ import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { compact } from 'lodash';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const EditTagModal = (props: {
   tag: TagResponse;
@@ -32,7 +33,7 @@ export const EditTagModal = (props: {
   const [error, setError] = useState(false);
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
 
   useEffect(() => {
     if (!isModerator || !tag.experts || tag.experts.length === 0) {
@@ -40,19 +41,18 @@ export const EditTagModal = (props: {
     }
     catalogApi
       .getEntitiesByRefs({ entityRefs: tag.experts })
-      .catch(e =>
-        alertApi.post({
-          message: e.message,
-          severity: 'error',
-          display: 'transient',
-        }),
-      )
+      .catch(e => {
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
+        });
+      })
       .then(resp => {
         if (resp) {
           setExperts(compact(resp.items));
         }
       });
-  }, [alertApi, catalogApi, isModerator, tag.experts]);
+  }, [toastApi, catalogApi, isModerator, tag.experts]);
 
   const handleUpdate = () => {
     qetaApi
@@ -70,10 +70,9 @@ export const EditTagModal = (props: {
       })
       .catch(e => {
         setError(true);
-        alertApi.post({
-          message: e.message,
-          severity: 'error',
-          display: 'transient',
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
         });
       });
   };

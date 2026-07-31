@@ -13,17 +13,18 @@ import {
   RiIndeterminateCircleLine,
   RiPlayListAddLine,
 } from '@remixicon/react';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useQetaApi } from '../../hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { ContentHeaderButton } from './ContentHeaderButton';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const AddToCollectionButton = (props: { post: PostResponse }) => {
   const { post } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const { value: response, retry } = useQetaApi(api => {
     return api.getCollections({
       checkAccess: true,
@@ -43,40 +44,36 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
       qetaApi
         .removePostFromCollection(collection.id, post.id)
         .then(() => {
-          alertApi.post({
-            message: t('addToCollectionButton.removed', {
+          toastApi.post({
+            title: t('addToCollectionButton.removed', {
               collection: collection.title,
             }),
-            severity: 'success',
-            display: 'transient',
+            status: 'success',
           });
           retry();
         })
         .catch(e => {
-          alertApi.post({
-            message: e.message,
-            severity: 'error',
-            display: 'transient',
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
           });
         });
     } else {
       qetaApi
         .addPostToCollection(collection.id, post.id)
         .then(() => {
-          alertApi.post({
-            message: t('addToCollectionButton.added', {
+          toastApi.post({
+            title: t('addToCollectionButton.added', {
               collection: collection.title,
             }),
-            severity: 'success',
-            display: 'transient',
+            status: 'success',
           });
           retry();
         })
         .catch(e => {
-          alertApi.post({
-            message: e.message,
-            severity: 'error',
-            display: 'transient',
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
           });
         });
     }

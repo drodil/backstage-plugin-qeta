@@ -1,45 +1,45 @@
 @layer components {
-    .root {
-        margin-top: var(--bui-space-4);
-    }
+  .root {
+    margin-top: var(--bui-space-4);
+  }
 
-    .highlight {
-        animation: qetaAnswerHighlight 5s;
-    }
+  .highlight {
+    animation: qetaAnswerHighlight 5s;
+  }
 
-    .markdownContainer {
-        min-height: 6em;
-        padding-top: var(--bui-space-2);
-        padding-bottom: var(--bui-space-2);
-    }
+  .markdownContainer {
+    min-height: 6em;
+    padding-top: var(--bui-space-2);
+    padding-bottom: var(--bui-space-2);
+  }
 
-    @keyframes qetaAnswerHighlight {
-        0% {
-            box-shadow: 0 0 0 3px var(--bui-ring);
-        }
-        100% {
-            box-shadow: none;
-        }
+  @keyframes qetaAnswerHighlight {
+    0% {
+      box-shadow: 0 0 0 3px var(--bui-ring);
     }
+    100% {
+      box-shadow: none;
+    }
+  }
 
-    .contentContainer {
-        flex: 1;
-        min-width: 0;
-    }
+  .contentContainer {
+    flex: 1;
+    min-width: 0;
+  }
 
-    .markdownContainer {
-        min-height: 6em;
-        padding-bottom: var(--bui-space-2);
-    }
+  .markdownContainer {
+    min-height: 6em;
+    padding-bottom: var(--bui-space-2);
+  }
 
-    .metadata {
-        margin-top: var(--bui-space-4);
-        width: 100%;
-    }
+  .metadata {
+    margin-top: var(--bui-space-4);
+    width: 100%;
+  }
 
-    .buttons {
-        margin-top: var(--bui-space-4);
-        display: flex;
-        gap: var(--bui-space-2);
-    }
+  .buttons {
+    margin-top: var(--bui-space-4);
+    display: flex;
+    gap: var(--bui-space-2);
+  }
 }

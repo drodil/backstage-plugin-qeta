@@ -16,7 +16,7 @@ import {
 } from '@backstage/ui';
 import { RiArrowGoBackLine, RiEyeLine } from '@remixicon/react';
 import { PostRevision } from '@drodil/backstage-plugin-qeta-common';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { qetaApiRef } from '../../api';
@@ -26,6 +26,7 @@ import { MarkdownRenderer } from '../MarkdownRenderer';
 import { UserLink } from '../Links';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 import styles from './PostHistory.module.css';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const PostHistory = (props: {
   postId: number;
@@ -34,7 +35,7 @@ export const PostHistory = (props: {
   const { postId, onRestore } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   const qetaApi = useApi(qetaApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
 
   const [viewRevision, setViewRevision] = useState<PostRevision | null>(null);
   const [restoreRevision, setRestoreRevision] = useState<PostRevision | null>(
@@ -54,24 +55,22 @@ export const PostHistory = (props: {
     setRestoring(true);
     try {
       await qetaApi.restorePostRevision(postId, restoreRevision.id);
-      alertApi.post({
-        message: t('postHistory.restoreSuccess'),
-        severity: 'success',
-        display: 'transient',
+      toastApi.post({
+        title: t('postHistory.restoreSuccess'),
+        status: 'success',
       });
       setRestoreRevision(null);
       retry();
       onRestore?.();
     } catch {
-      alertApi.post({
-        message: t('postHistory.restoreError'),
-        severity: 'error',
-        display: 'transient',
+      toastApi.post({
+        title: t('postHistory.restoreError'),
+        status: 'warning',
       });
     } finally {
       setRestoring(false);
     }
-  }, [restoreRevision, qetaApi, postId, alertApi, t, retry, onRestore]);
+  }, [restoreRevision, qetaApi, postId, toastApi, t, retry, onRestore]);
 
   if (loading) {
     return <LoadingGrid />;

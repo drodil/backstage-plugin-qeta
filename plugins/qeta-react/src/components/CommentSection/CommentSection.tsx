@@ -5,7 +5,7 @@ import {
   PostResponse,
   qetaCreateCommentPermission,
 } from '@drodil/backstage-plugin-qeta-common';
-import { alertApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -19,6 +19,7 @@ import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission'
 import { CommentForm } from './CommentForm.tsx';
 import { useConfirmNavigationIfEdited } from '../../utils';
 import styles from './CommentSection.module.css';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const CommentSection = (props: {
   onCommentAction: (post: PostResponse, answer?: AnswerResponse) => void;
@@ -39,20 +40,19 @@ export const CommentSection = (props: {
   const entity = answer ?? post;
   const commentsCount = entity.comments?.length || 0;
   const [commentsVisible, setCommentsVisible] = useState(true);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
 
   const postComment = (data: { content: string }) => {
     setPosting(true);
     if (answer) {
       qetaApi
         .commentAnswer(post.id, answer.id, data.content)
-        .catch(e =>
-          alertApi.post({
-            message: e.message,
-            severity: 'error',
-            display: 'transient',
-          }),
-        )
+        .catch(e => {
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
+          });
+        })
         .then(a => {
           setFormVisible(false);
           analytics.captureEvent('comment', 'answer');
@@ -65,13 +65,12 @@ export const CommentSection = (props: {
     } else {
       qetaApi
         .commentPost(post.id, data.content)
-        .catch(e =>
-          alertApi.post({
-            message: e.message,
-            severity: 'error',
-            display: 'transient',
-          }),
-        )
+        .catch(e => {
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
+          });
+        })
         .then(q => {
           setFormVisible(false);
           analytics.captureEvent('comment', 'question');

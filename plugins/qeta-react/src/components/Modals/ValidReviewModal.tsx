@@ -12,10 +12,11 @@ import {
 } from '@backstage/ui';
 import { RiCheckLine } from '@remixicon/react';
 import { useState } from 'react';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const ValidReviewModal = (props: {
   post: PostResponse;
@@ -24,7 +25,7 @@ export const ValidReviewModal = (props: {
   onConfirm?: () => void;
 }) => {
   const qetaApi = useApi(qetaApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const { post, open, onClose, onConfirm } = props;
   const [error, setError] = useState(false);
   const [comment, setComment] = useState<undefined | string>(undefined);
@@ -38,10 +39,9 @@ export const ValidReviewModal = (props: {
         if (ret) {
           onClose();
           onConfirm?.();
-          alertApi.post({
-            message: t('validReviewModal.success', {}),
-            severity: 'success',
-            display: 'transient',
+          toastApi.post({
+            title: t('validReviewModal.success', {}),
+            status: 'success',
           });
         } else {
           setError(true);

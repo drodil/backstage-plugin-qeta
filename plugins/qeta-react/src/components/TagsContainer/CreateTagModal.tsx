@@ -10,13 +10,14 @@ import {
   TextField,
 } from '@backstage/ui';
 import { useState } from 'react';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { EntitiesInput } from '../PostForm/EntitiesInput.tsx';
 import { isValidTag } from '@drodil/backstage-plugin-qeta-common';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const CreateTagModal = (props: {
   open: boolean;
@@ -28,16 +29,15 @@ export const CreateTagModal = (props: {
   const [description, setDescription] = useState('');
   const [experts, setExperts] = useState<Entity[]>([]);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const [error, setError] = useState(false);
   const qetaApi = useApi(qetaApiRef);
 
   const handleCreate = () => {
     if (!isValidTag(tag)) {
-      alertApi.post({
-        message: t('createTagModal.invalidTagAlert'),
-        severity: 'error',
-        display: 'transient',
+      toastApi.post({
+        title: t('createTagModal.invalidTagAlert'),
+        status: 'warning',
       });
       return;
     }
@@ -59,10 +59,9 @@ export const CreateTagModal = (props: {
         setError(true);
       })
       .catch(e => {
-        alertApi.post({
-          message: e.message,
-          severity: 'error',
-          display: 'transient',
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
         });
         setError(true);
       });

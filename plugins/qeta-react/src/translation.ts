@@ -102,6 +102,9 @@ export const qetaTranslationRef = createTranslationRef({
       showLess: 'Show less',
       edit: 'Edit',
       delete: 'Delete',
+      deletePermanently: 'Delete permanently',
+      deletePermanentlyWarning: 'Note: This will be deleted permanently',
+      restore: 'Restore',
     },
     markdownEditor: {
       write: 'Write',
@@ -759,6 +762,7 @@ export const qetaTranslationRef = createTranslationRef({
       updatedBy: 'Updated by',
       answeredAtTime: 'Answered',
       views: 'Views',
+      clicks: 'Clicks',
     },
     authorBox: {
       postedAtTime: 'Posted',

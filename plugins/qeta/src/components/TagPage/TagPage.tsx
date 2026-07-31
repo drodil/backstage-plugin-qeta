@@ -20,12 +20,13 @@ import {
   RiGroupLine,
   RiQuestionAnswerLine,
 } from '@remixicon/react';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Button, Flex, Header, Text } from '@backstage/ui';
 import styles from './TagPage.module.css';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const TagPage = () => {
   const { tag } = useParams();
@@ -38,7 +39,7 @@ export const TagPage = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const qetaApi = useApi(qetaApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
 
   const fetchTag = () => {
     if (!tag) {
@@ -54,10 +55,9 @@ export const TagPage = () => {
         }
       })
       .catch(e => {
-        alertApi.post({
-          message: e.message,
-          severity: 'error',
-          display: 'transient',
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
         });
       });
   };
@@ -65,7 +65,7 @@ export const TagPage = () => {
   useEffect(() => {
     fetchTag();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [qetaApi, tag, alertApi]);
+  }, [qetaApi, tag, toastApi]);
 
   const handleEditModalClose = () => {
     setEditModalOpen(false);

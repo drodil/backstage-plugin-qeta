@@ -21,7 +21,7 @@ export const AuthorBox = (props: {
   if (compact) {
     return (
       <Flex
-        align="center"
+        align="end"
         gap="1"
         className={`qetaAuthorBox ${styles.authorBoxCompact}`}
       >
@@ -39,7 +39,7 @@ export const AuthorBox = (props: {
           />
         </Text>
         {expert && <ExpertIcon className={styles.expertIcon} />}
-        <Text className="qetaAuthorBoxCreated" variant="body-x-small" as="span">
+        <Text className="qetaAuthorBoxCreated" variant="body-small" as="span">
           <RelativeTimeWithTooltip value={time} />
         </Text>
       </Flex>

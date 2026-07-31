@@ -1,179 +1,178 @@
 @layer components {
-    /* Row hover/cursor affordance matches the shared convention in
-       Utility/clickable.module.css (same --bui-bg-neutral-1-hover token,
-       same transition timing); kept as its own rule rather than composing
-       from that file since .root also carries the row's layout/box-model
-       properties. focus-within highlights the row when the child .overlayLink
-       anchor receives keyboard focus, since .root itself has no tabIndex. */
-    .root {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        height: 100%;
-        padding: var(--bui-space-5) var(--bui-space-7) var(--bui-space-4) var(--bui-space-4);
-        min-height: 80px;
-        transition: all 0.2s ease-in-out;
-        text-decoration: none;
-        color: inherit;
-        position: relative;
-        cursor: pointer;
-    }
+  /* Row hover/cursor affordance matches the shared convention in
+         Utility/clickable.module.css (same --bui-bg-neutral-1-hover token,
+         same transition timing); kept as its own rule rather than composing
+         from that file since .root also carries the row's layout/box-model
+         properties. focus-within highlights the row when the child .overlayLink
+         anchor receives keyboard focus, since .root itself has no tabIndex. */
+  .root {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    height: 100%;
+    padding: var(--bui-space-5) var(--bui-space-7) var(--bui-space-4)
+      var(--bui-space-4);
+    min-height: 80px;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    cursor: pointer;
+  }
 
-    .root:hover,
-    .root:focus-within {
-        background-color: var(--bui-bg-neutral-1-hover);
-    }
+  .root:hover,
+  .root:focus-within {
+    background-color: var(--bui-bg-neutral-1-hover);
+  }
 
-    .root:hover .title {
-        color: var(--bui-fg-primary);
-    }
+  .root:hover .title {
+    color: var(--bui-fg-primary);
+  }
 
-    .overlayLink {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 0;
-    }
+  .overlayLink {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+  }
 
-    .contentWrapper {
-        pointer-events: none;
-    }
+  .contentWrapper {
+    pointer-events: none;
+  }
 
-    /* Layering helper only (keeps nested interactive children clickable above
-       .overlayLink) — no hover/cursor styling of its own, so nothing to
-       compose from the shared clickable convention here. */
-    .contentClickable {
-        position: relative;
-        z-index: 10;
-        pointer-events: auto;
-    }
+  /* Layering helper only (keeps nested interactive children clickable above
+         .overlayLink) — no hover/cursor styling of its own, so nothing to
+         compose from the shared clickable convention here. */
+  .contentClickable {
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+  }
 
-    .metaCol {
-        min-width: 64px;
-        max-width: 64px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin-right: var(--bui-space-3);
-        margin-top: var(--bui-space-1);
-        gap: 10px;
-    }
+  .metaCol {
+    min-width: 64px;
+    max-width: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: var(--bui-space-3);
+    margin-top: var(--bui-space-1);
+    gap: 10px;
+  }
 
-    .metaItem {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: var(--bui-space-1);
-        color: var(--bui-fg-secondary);
-        width: 100%;
-    }
+  .metaItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--bui-space-1);
+    color: var(--bui-fg-secondary);
+    width: 100%;
+  }
 
-    .metaValue {
-        font-size: inherit;
-    }
+  .metaValue {
+    font-size: inherit;
+  }
 
-    .metaItemActive {
-        color: var(--bui-fg-success);
-        font-weight: 500;
-    }
+  .metaItemActive {
+    color: var(--bui-fg-success);
+    font-weight: 500;
+  }
 
-    .metaItemWarning {
-        color: var(--bui-fg-warning);
-        font-weight: 500;
-    }
+  .metaItemWarning {
+    color: var(--bui-fg-warning);
+    font-weight: 500;
+  }
 
-    .metaIcon {
-        flex-shrink: 0;
-    }
+  .metaIcon {
+    flex-shrink: 0;
+  }
 
-    .title {
-        font-weight: 700;
-        font-size: 16px;
-        color: var(--bui-fg-primary);
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-        line-height: 1.2;
-        text-decoration: none;
-    }
+  .title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--bui-fg-primary);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    line-height: 1.2;
+    text-decoration: none;
+  }
 
-    .content {
-        color: var(--bui-fg-primary);
-        opacity: 0.9;
-        margin: 0 0 4px 0;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 14px;
-        min-height: 20px;
-    }
+  .content {
+    color: var(--bui-fg-primary);
+    opacity: 0.9;
+    margin: 0 0 4px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    min-height: 20px;
+  }
 
-    .tagsRow {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        margin-top: 10px;
-    }
+  .tagsRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+  }
 
-    .tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-    }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
 
-    .authorBoxContainer {
-        margin-left: auto;
-        display: flex;
-        align-items: center;
-    }
+  .authorBoxContainer {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
 
-    .contentContainer {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
+  .contentContainer {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 
-    .titleContainer {
-        display: flex;
-        align-items: center;
-        gap: var(--bui-space-2);
-        justify-content: space-between;
-        margin-bottom: var(--bui-space-1);
-    }
+  .titleContainer {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-2);
+    justify-content: space-between;
+    margin-bottom: var(--bui-space-1);
+  }
 
-    .titleWrapper {
-        flex: 1;
-        min-width: 0;
-    }
+  .titleWrapper {
+    flex: 1;
+    min-width: 0;
+  }
 
-    .openLinkButton {
-        padding: 0;
-        height: 24px;
-        width: 24px;
-    }
+  .openLinkButton {
+    padding: 0;
+  }
 
-    .starContainer {
-        height: 24px;
-        width: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        color: var(--bui-fg-warning);
-    }
+  .starContainer {
+    height: 24px;
+    width: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: var(--bui-fg-warning);
+  }
 
-    .rankingWrapper {
-        margin-right: var(--bui-space-4);
-        margin-bottom: var(--bui-space-2);
-    }
+  .rankingWrapper {
+    margin-right: var(--bui-space-4);
+    margin-bottom: var(--bui-space-2);
+  }
 }

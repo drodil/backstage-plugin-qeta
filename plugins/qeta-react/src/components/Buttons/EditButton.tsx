@@ -7,6 +7,7 @@ import {
   Collection,
   isArticle,
   isLink,
+  isPost,
   isQuestion,
   Link,
   Question,
@@ -45,6 +46,10 @@ export const EditButton = (props: {
       }),
     );
   };
+
+  if (!entity.canEdit || (isPost(entity) && entity.status === 'obsolete')) {
+    return null;
+  }
 
   if (compact) {
     return (

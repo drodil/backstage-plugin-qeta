@@ -27,7 +27,7 @@ export const OpenLinkButton = (props: {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={t('link.open')}
-        variant="tertiary"
+        variant="secondary"
         onPress={() => qetaApi.clickLink(entity.id)}
         className={className}
         style={style}

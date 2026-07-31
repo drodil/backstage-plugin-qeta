@@ -1,12 +1,12 @@
 import {
   AnswerResponse,
   CollectionResponse,
+  isCollection,
+  isPost,
+  isTag,
   PostResponse,
   selectByPostType,
   TagResponse,
-  isPost,
-  isCollection,
-  isTag,
 } from '@drodil/backstage-plugin-qeta-common';
 import {
   Alert,
@@ -20,7 +20,7 @@ import {
 } from '@backstage/ui';
 import { RiDeleteBinLine } from '@remixicon/react';
 import { useState } from 'react';
-import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -32,6 +32,7 @@ import {
   questionsRouteRef,
   tagsRouteRef,
 } from '../../routes.ts';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const DeleteModal = (props: {
   entity: PostResponse | AnswerResponse | CollectionResponse | TagResponse;
@@ -43,7 +44,7 @@ export const DeleteModal = (props: {
   ) => void;
 }) => {
   const qetaApi = useApi(qetaApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const navigate = useNavigate();
   const collectionsRoute = useRouteRef(collectionsRouteRef);
   const tagsRoute = useRouteRef(tagsRouteRef);
@@ -73,6 +74,7 @@ export const DeleteModal = (props: {
 
   // eslint-disable-next-line no-nested-ternary
   const title = getTitle();
+  const permanentDelete = isPostEntity && entity.status === 'deleted';
 
   const handleDelete = () => {
     if (isCollectionEntity) {
@@ -83,10 +85,9 @@ export const DeleteModal = (props: {
           if (ret) {
             onClose();
             onDelete?.(entity);
-            alertApi.post({
-              message: t('deleteModal.collectionDeleted'),
-              severity: 'success',
-              display: 'transient',
+            toastApi.post({
+              title: t('deleteModal.collectionDeleted'),
+              status: 'success',
             });
             navigate(collectionsRoute());
           } else {
@@ -101,10 +102,9 @@ export const DeleteModal = (props: {
           if (ret) {
             onClose();
             onDelete?.(entity);
-            alertApi.post({
-              message: t('deleteModal.tagDeleted'),
-              severity: 'success',
-              display: 'transient',
+            toastApi.post({
+              title: t('deleteModal.tagDeleted'),
+              status: 'success',
             });
             navigate(tagsRoute());
           } else {
@@ -119,15 +119,14 @@ export const DeleteModal = (props: {
           if (ret) {
             onClose();
             onDelete?.(entity);
-            alertApi.post({
-              message: selectByPostType(
+            toastApi.post({
+              title: selectByPostType(
                 (entity as PostResponse).type,
                 t('deleteModal.questionDeleted'),
                 t('deleteModal.articleDeleted'),
                 t('deleteModal.linkDeleted'),
               ),
-              severity: 'success',
-              display: 'transient',
+              status: 'success',
             });
             navigate(
               selectByPostType(
@@ -149,10 +148,9 @@ export const DeleteModal = (props: {
           if (ret) {
             onClose();
             onDelete?.(entity);
-            alertApi.post({
-              message: t('deleteModal.answerDeleted'),
-              severity: 'success',
-              display: 'transient',
+            toastApi.post({
+              title: t('deleteModal.answerDeleted'),
+              status: 'success',
             });
           } else {
             setError(true);
@@ -181,13 +179,22 @@ export const DeleteModal = (props: {
               description={t('deleteModal.errorDeleting')}
             />
           )}
-          <TextAreaField
-            label={t('deleteModal.reason')}
-            id="reason"
-            rows={4}
-            value={reason}
-            onChange={value => setReason(value)}
-          />
+          {!permanentDelete && (
+            <TextAreaField
+              label={t('deleteModal.reason')}
+              id="reason"
+              rows={4}
+              value={reason}
+              onChange={value => setReason(value)}
+            />
+          )}
+          {permanentDelete && (
+            <Alert
+              status="warning"
+              title={t('common.deletePermanently')}
+              description={t('common.deletePermanentlyWarning')}
+            />
+          )}
         </Flex>
       </DialogBody>
       <DialogFooter>

@@ -1,9 +1,4 @@
-import {
-  alertApiRef,
-  useAnalytics,
-  useApi,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   Alert,
   Box,
@@ -44,6 +39,7 @@ import {
   RiInformationLine,
 } from '@remixicon/react';
 import styles from './CollectionForm.module.css';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 const formToRequest = (
   form: CollectionFormData,
@@ -142,7 +138,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
   const [showTips, setShowTips] = useState(false);
   const [titleCharCount, setTitleCharCount] = useState(values.title.length);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
 
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -180,10 +176,9 @@ export const CollectionForm = (props: CollectionFormProps) => {
         })
         .catch(_e => {
           setError(true);
-          alertApi.post({
-            message: t('collectionForm.errorPosting'),
-            severity: 'error',
-            display: 'transient',
+          toastApi.post({
+            title: t('collectionForm.errorPosting'),
+            status: 'warning',
           });
         })
         .finally(() => setPosting(false));
@@ -203,10 +198,9 @@ export const CollectionForm = (props: CollectionFormProps) => {
       })
       .catch(_e => {
         setError(true);
-        alertApi.post({
-          message: t('collectionForm.errorPosting'),
-          severity: 'error',
-          display: 'transient',
+        toastApi.post({
+          title: t('collectionForm.errorPosting'),
+          status: 'warning',
         });
       })
       .finally(() => setPosting(false));
@@ -215,13 +209,12 @@ export const CollectionForm = (props: CollectionFormProps) => {
   useEffect(() => {
     if (id) {
       getValues(qetaApi, catalogApi, id)
-        .catch(e =>
-          alertApi.post({
-            message: e.message,
-            severity: 'error',
-            display: 'transient',
-          }),
-        )
+        .catch(e => {
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
+          });
+        })
         .then(data => {
           if (data) {
             setValues(data.form);
@@ -229,7 +222,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
           }
         });
     }
-  }, [qetaApi, id, alertApi, catalogApi]);
+  }, [qetaApi, id, toastApi, catalogApi]);
 
   useEffect(() => {
     reset(values);

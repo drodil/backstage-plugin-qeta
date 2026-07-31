@@ -1,19 +1,33 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { Article, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
+import {
+  Article,
+  PostResponse,
+  QetaSignal,
+} from '@drodil/backstage-plugin-qeta-common';
 import {
   AddToCollectionButton,
   AIAnswerCard,
   ArticleContent,
+  AuthorHeaderItem,
+  DeleteButton,
+  EditButton,
+  FollowPostButton,
   PostHistoryButton,
   qetaTranslationRef,
-  useQetaConfig,
+  RelativeTimeWithTooltip,
+  RestoreButton,
   useQetaApi,
-  WriteArticleButton,
-  FollowPostButton,
+  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Alert, Box, Header, Skeleton } from '@backstage/ui';
+import {
+  Alert,
+  Box,
+  Header,
+  HeaderMetadataItem,
+  Skeleton,
+} from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const ArticlePage = () => {
@@ -72,15 +86,50 @@ export const ArticlePage = () => {
     );
   }
 
+  const getMetadata = (q: PostResponse): HeaderMetadataItem[] => {
+    const metadata: HeaderMetadataItem[] = [
+      {
+        label: t('postHeader.postedAtTime'),
+        value: <RelativeTimeWithTooltip value={q.created} />,
+      },
+      {
+        label: t('postHeader.author'),
+        value: <AuthorHeaderItem userEntityRef={q.author} />,
+      },
+    ];
+
+    if (q.updated) {
+      metadata.push({
+        label: t('postHeader.updatedAtTime'),
+        value: <RelativeTimeWithTooltip value={q.updated} />,
+      });
+    }
+    if (q.updatedBy) {
+      metadata.push({
+        label: t('postHeader.updatedBy'),
+        value: <AuthorHeaderItem userEntityRef={q.updatedBy} />,
+      });
+    }
+    metadata.push({
+      label: t('postHeader.views'),
+      value: views,
+    });
+
+    return metadata;
+  };
+
   return (
     <>
       <Header
         title={post.title}
+        metadata={getMetadata(post)}
         customActions={
           <>
+            <EditButton entity={post} compact />
+            <DeleteButton entity={post} compact />
+            <RestoreButton entity={post} compact />
             <PostHistoryButton post={post} onRestore={retry} />
             <FollowPostButton post={post} />
-            <WriteArticleButton />
             <AddToCollectionButton post={post} />
           </>
         }

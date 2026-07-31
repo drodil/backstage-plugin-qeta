@@ -16,7 +16,7 @@ import rehypeToc, { HeadingNode, TextNode } from '@jsdevtools/rehype-toc';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useIsDarkTheme } from '../../hooks/useIsDarkTheme';
 import { RiFileCopyLine, RiLinksLine } from '@remixicon/react';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import GithubSlugger from 'github-slugger';
@@ -24,6 +24,7 @@ import { HtmlElementNode } from '@jsdevtools/rehype-toc/lib/types';
 import { find } from 'unist-util-find';
 import { useQetaContext } from '../QetaContext';
 import styles from './MarkdownRenderer.module.css';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 const TagChip = lazy(() =>
   import('../TagsAndEntities/TagChip').then(m => ({ default: m.TagChip })),
@@ -62,26 +63,24 @@ export const MarkdownRenderer = (props: {
   const { content, className: mainClassName, showToc, useBlankLinks } = props;
   const darkTheme = useIsDarkTheme();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   slugger.reset();
 
   const copyToClipboard = (slug: string) => {
     const url = new URL(window.location.href);
     url.hash = `#${slug}`;
     window.navigator.clipboard.writeText(url.toString());
-    alertApi.post({
-      message: t('link.copied'),
-      severity: 'info',
-      display: 'transient',
+    toastApi.post({
+      title: t('link.copied'),
+      status: 'info',
     });
   };
 
   const copyCodeToClipboard = (code: string) => {
     window.navigator.clipboard.writeText(code);
-    alertApi.post({
-      message: t('code.copied'),
-      severity: 'info',
-      display: 'transient',
+    toastApi.post({
+      title: t('code.copied'),
+      status: 'info',
     });
   };
 

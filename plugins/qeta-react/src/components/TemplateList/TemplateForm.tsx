@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useIsModerator } from '../../hooks';
 import { QetaApi, TemplateRequest } from '@drodil/backstage-plugin-qeta-common';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { Controller, useForm } from 'react-hook-form';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -15,6 +15,7 @@ import { TemplateFormValues } from '../PostForm/types';
 import { Alert, Box, Button, TextField } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 const formToRequest = (form: TemplateFormValues): TemplateRequest => {
   return {
@@ -69,7 +70,7 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
   const [posting, setPosting] = useState(false);
   const catalogApi = useApi(catalogApiRef);
   const qetaApi = useApi(qetaApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const [error, setError] = useState(false);
   const [values, setValues] = useState(getDefaultValues());
   const { isModerator } = useIsModerator();
@@ -89,20 +90,19 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
   useEffect(() => {
     if (id) {
       getValues(qetaApi, catalogApi, id.toString(10))
-        .catch(e =>
-          alertApi.post({
-            message: e.message,
-            severity: 'error',
-            display: 'transient',
-          }),
-        )
+        .catch(e => {
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
+          });
+        })
         .then(data => {
           if (data) {
             setValues(data);
           }
         });
     }
-  }, [qetaApi, catalogApi, id, alertApi]);
+  }, [qetaApi, catalogApi, id, toastApi]);
 
   const postTemplate = (data: TemplateFormValues) => {
     setPosting(true);
@@ -116,10 +116,9 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
         })
         .catch(e => {
           setError(true);
-          alertApi.post({
-            message: e.message,
-            severity: 'error',
-            display: 'transient',
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
           });
         })
         .finally(() => setPosting(false));
@@ -137,10 +136,9 @@ export const TemplateForm = (props: { id?: number; onPost: () => void }) => {
       })
       .catch(e => {
         setError(true);
-        alertApi.post({
-          message: e.message,
-          severity: 'error',
-          display: 'transient',
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
         });
       })
       .finally(() => setPosting(false));
