@@ -1,8 +1,7 @@
-import { Box, Text } from '@backstage/ui';
+import { Box, Link, Text } from '@backstage/ui';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { AuthorLink } from '../Links';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
-import { Link } from '@backstage/core-components';
 import { useState } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -132,20 +131,18 @@ export const CommentListItem = (props: {
             <RelativeTimeWithTooltip value={comment.created} />
             {comment.canEdit && post.status !== 'obsolete' && (
               <Link
-                underline="none"
-                to="#"
+                standalone
                 className={`${styles.actionBtn} qetaCommentEditBtn`}
-                onClick={() => setEditing(true)}
+                onPress={() => setEditing(true)}
               >
                 {t('commentList.editLink')}
               </Link>
             )}
             {comment.canDelete && post.status !== 'obsolete' && (
               <Link
-                underline="none"
-                to="#"
+                standalone
                 className={`${styles.actionBtn} qetaCommentDeleteBtn`}
-                onClick={() => deleteComment(comment.id)}
+                onPress={() => deleteComment(comment.id)}
               >
                 {t('commentList.deleteLink')}
               </Link>

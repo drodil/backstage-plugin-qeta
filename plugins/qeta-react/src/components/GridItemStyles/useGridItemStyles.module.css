@@ -1,6 +1,9 @@
 @layer components {
   .card {
     height: 100%;
+    /* Override BUI Card's `overflow: auto` so rows can grow to fit content
+       instead of clipping/scrolling when a grid row stretches this card. */
+    overflow: visible;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

@@ -103,7 +103,7 @@ export const CollectionListItem = (props: { collection: Collection }) => {
             </Box>
           }
         >
-          {collection.title}
+          <Text weight="bold">{collection.title}</Text>
         </ListRow>
       </List>
     </Link>

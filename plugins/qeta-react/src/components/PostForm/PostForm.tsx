@@ -656,6 +656,7 @@ export const PostForm = (props: PostFormProps) => {
           isRequired
           isInvalid={'title' in errors}
           name="title"
+          size="medium"
           placeholder={t(
             isLink
               ? 'postForm.titleInput.placeholder_link'

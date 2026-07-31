@@ -11,7 +11,6 @@ import {
   TooltipTrigger,
 } from '@backstage/ui';
 import {
-  RiArrowRightSLine,
   RiBook2Line,
   RiFileEditLine,
   RiGroupLine,
@@ -19,6 +18,7 @@ import {
   RiHomeLine,
   RiLinksLine,
   RiMenuFoldLine,
+  RiMenuUnfoldLine,
   RiPlayListLine,
   RiPriceTag3Line,
   RiQuestionLine,
@@ -302,7 +302,7 @@ export const LeftMenu = (props: {
               className={styles.toggleButton}
               icon={
                 isCompact ? (
-                  <RiArrowRightSLine size={16} />
+                  <RiMenuUnfoldLine size={16} />
                 ) : (
                   <RiMenuFoldLine size={16} />
                 )

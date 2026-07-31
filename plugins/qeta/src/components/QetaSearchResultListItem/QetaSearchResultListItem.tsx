@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { Link } from '@backstage/core-components';
+import { Link } from 'react-router-dom';
 import { Text } from '@backstage/ui';
 import {
   IndexableDocument,
@@ -185,7 +185,7 @@ export const QetaSearchResultListItem = (
   }
 
   const title = (
-    <Link noTrack to={result.location}>
+    <Link to={result.location}>
       {highlight?.fields.title ? (
         <HighlightedSearchResultText
           text={highlight.fields.title}

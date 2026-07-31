@@ -77,7 +77,12 @@ export const AnswerListItem = (props: AnswerListItemProps) => {
       <Box className={styles.contentContainer}>
         <Box className={styles.titleContainer}>
           <Box className={styles.titleWrapper}>
-            <Text as="div" className={styles.title}>
+            <Text
+              as="div"
+              variant="title-small"
+              weight="bold"
+              className={styles.title}
+            >
               {t('answer.questionTitle', {
                 question: answer.post?.title ?? '',
               })}

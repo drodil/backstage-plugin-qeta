@@ -37,11 +37,10 @@ export * from './SuggestionsCard';
 export * from './LinkCard';
 export * from './FaviconItem';
 export * from './QetaContext';
+export * from './TagsAndEntities/TagsAndEntities';
 export {
   DeletedBanner,
   DraftBanner,
   ObsoleteBanner,
   StatusChip,
 } from './Utility';
-export * from './ContentHeaderCard/ContentHeaderCard';
-export * from './ContentHeader/ContentHeader';

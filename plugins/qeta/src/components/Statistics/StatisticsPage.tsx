@@ -1,14 +1,12 @@
 import {
   AskQuestionButton,
-  ContentHeader,
   CreateLinkButton,
   TopRankingUsers,
   useQetaConfig,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { GlobalStatsContent } from './GlobalStatsContent';
-import { Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
-import { RiTrophyLine } from '@remixicon/react';
+import { Header, Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
 import { useEffect, useState } from 'react';
 import styles from './StatisticsPage.module.css';
 
@@ -24,11 +22,16 @@ export const StatisticsPage = () => {
 
   return (
     <>
-      <ContentHeader title="Statistics" titleIcon={<RiTrophyLine size={24} />}>
-        <AskQuestionButton />
-        <WriteArticleButton />
-        <CreateLinkButton />
-      </ContentHeader>
+      <Header
+        title="Statistics"
+        customActions={
+          <>
+            <AskQuestionButton />
+            <WriteArticleButton />
+            <CreateLinkButton />
+          </>
+        }
+      />
       <Tabs selectedKey={tab} onSelectionChange={key => setTab(key as string)}>
         <TabList>
           <Tab id="global">Global Stats</Tab>

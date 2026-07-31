@@ -2,14 +2,13 @@ import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
   AskQuestionButton,
-  ContentHeader,
   PostsContainer,
   qetaTranslationRef,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import { RiQuestionLine } from '@remixicon/react';
+import { Header } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const QuestionsPage = () => {
@@ -31,12 +30,10 @@ export const QuestionsPage = () => {
 
   return (
     <>
-      <ContentHeader
+      <Header
         title={t('questionsPage.title')}
-        titleIcon={<RiQuestionLine size={28} />}
-      >
-        <AskQuestionButton entity={entityRef} tags={tags} />
-      </ContentHeader>
+        customActions={<AskQuestionButton entity={entityRef} tags={tags} />}
+      />
       <PostsContainer type="question" defaultView="list" />
     </>
   );

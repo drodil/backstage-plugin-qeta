@@ -54,8 +54,6 @@
   }
 
   .title {
-    font-weight: 700;
-    font-size: 1.1rem;
     color: var(--bui-fg-primary);
     margin-bottom: var(--bui-space-1);
     text-overflow: ellipsis;

@@ -148,6 +148,73 @@ describe('EntitiesInput', () => {
     });
   });
 
+  it('should fall back to catalog defaults when no used entities exist yet', async () => {
+    mockQetaApi.getEntities.mockResolvedValue({ entities: [], total: 0 });
+    mockCatalogApi.queryEntities.mockResolvedValue({
+      items: [testServiceEntity],
+    });
+
+    render(
+      <EntitiesInput multiple value={[]} onChange={jest.fn()} maximum={3} />,
+      { wrapper },
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(350);
+    });
+
+    await waitFor(() => {
+      expect(mockQetaApi.getEntities).toHaveBeenCalledTimes(1);
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+    });
+
+    expect(mockCatalogApi.getEntitiesByRefs).not.toHaveBeenCalled();
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: { kind: { $in: ['component', 'system'] } },
+      }),
+    );
+
+    act(() => {
+      screen.getByRole('textbox').focus();
+    });
+
+    act(() => {
+      jest.advanceTimersByTime(350);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: /Test Service/ }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should not fall back to catalog defaults when useOnlyUsedEntities is set', async () => {
+    mockQetaApi.getEntities.mockResolvedValue({ entities: [], total: 0 });
+
+    render(
+      <EntitiesInput
+        multiple
+        value={[]}
+        onChange={jest.fn()}
+        maximum={3}
+        useOnlyUsedEntities
+      />,
+      { wrapper },
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(350);
+    });
+
+    await waitFor(() => {
+      expect(mockQetaApi.getEntities).toHaveBeenCalledTimes(1);
+    });
+
+    expect(mockCatalogApi.queryEntities).not.toHaveBeenCalled();
+  });
+
   it('should preload catalog examples when kind is provided', async () => {
     mockCatalogApi.queryEntities.mockResolvedValue({
       items: [currentUserEntity, otherUserEntity],

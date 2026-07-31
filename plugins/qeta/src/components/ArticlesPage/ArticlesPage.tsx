@@ -1,14 +1,13 @@
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
-  ContentHeader,
   PostsContainer,
   qetaTranslationRef,
   useQetaConfig,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import { RiBookOpenLine } from '@remixicon/react';
+import { Header } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const ArticlesPage = () => {
@@ -30,12 +29,10 @@ export const ArticlesPage = () => {
 
   return (
     <>
-      <ContentHeader
+      <Header
         title={t('articlesPage.title')}
-        titleIcon={<RiBookOpenLine size={24} />}
-      >
-        <WriteArticleButton entity={entityRef} tags={tags} />
-      </ContentHeader>
+        customActions={<WriteArticleButton entity={entityRef} tags={tags} />}
+      />
       <PostsContainer type="article" defaultView="grid" />
     </>
   );

@@ -97,7 +97,12 @@ export const EntityListItem = (props: { entity: EntityResponse }) => {
           }
         >
           <TooltipTrigger>
-            <Text as="span" truncate className={styles.titleWrapper}>
+            <Text
+              as="span"
+              weight="bold"
+              truncate
+              className={styles.titleWrapper}
+            >
               {primaryTitle}
             </Text>
             <Tooltip placement="top">{secondaryTitle ?? ''}</Tooltip>

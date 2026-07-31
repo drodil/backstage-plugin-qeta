@@ -1,5 +1,12 @@
-import { Box, Button, Card, Grid, GridItemProps, Text } from '@backstage/ui';
-import { WarningPanel } from '@backstage/core-components';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  Grid,
+  GridItemProps,
+  Text,
+} from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { RiFilterLine } from '@remixicon/react';
 import { useInfiniteScroll } from 'infinite-scroll-hook';
@@ -175,9 +182,11 @@ export function QetaEntityContainer<
         )}
 
         {error && (
-          <WarningPanel severity="error" title={t('common.error')}>
-            {error?.message}
-          </WarningPanel>
+          <Alert
+            status="danger"
+            title={t('common.error')}
+            description={error?.message}
+          />
         )}
 
         {!loading && !error && items?.length === 0 && emptyState}

@@ -15,6 +15,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--bui-space-1);
+    margin-top: var(--bui-space-2);
   }
 
   .fieldWrapper {

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { WarningPanel } from '@backstage/core-components';
 import { useParams } from 'react-router-dom';
 import {
   AddToCollectionButton,
@@ -7,7 +6,6 @@ import {
   AnswerCard,
   AnswerForm,
   AskQuestionButton,
-  ContentHeader,
   ContentHeaderButton,
   DeletedBanner,
   DraftBanner,
@@ -28,9 +26,17 @@ import {
   QetaSignal,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { Box, Flex, Select, Skeleton, Text } from '@backstage/ui';
+import {
+  Alert,
+  Box,
+  Flex,
+  Header,
+  Select,
+  Skeleton,
+  Text,
+} from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { RiChat3Line, RiQuestionLine } from '@remixicon/react';
+import { RiChat3Line } from '@remixicon/react';
 
 export const QuestionPage = () => {
   const { id } = useParams();
@@ -164,50 +170,57 @@ export const QuestionPage = () => {
 
   if (error || question === undefined) {
     return (
-      <WarningPanel
-        severity="error"
+      <Alert
+        status="danger"
         title={t('questionPage.errorLoading')}
+        description={error?.message}
         aria-live="assertive"
-      >
-        {error?.message}
-      </WarningPanel>
+      />
     );
   }
 
   if (question.type !== 'question') {
     return (
-      <WarningPanel title="Not found" message={t('questionPage.notFound')} />
+      <Alert
+        status="warning"
+        title="Not found"
+        description={t('questionPage.notFound')}
+      />
     );
   }
 
   return (
     <>
-      <ContentHeader
+      <Header
         title={question.title}
-        description={getDescription(question)}
-        titleIcon={<RiQuestionLine size={28} />}
-      >
-        <PostHistoryButton post={question} onRestore={retry} />
-        <FollowPostButton post={question} />
-        <AskQuestionButton />
-        <ContentHeaderButton
-          onClick={() => {
-            const element = document.getElementById('qeta-answer-form');
-            if (element) {
-              element.scrollIntoView({ behavior: 'smooth' });
-              const input = element.querySelector('textarea');
-              if (input) {
-                input.focus();
-              }
-            }
-          }}
-          icon={<RiChat3Line />}
-          disabled={question.status === 'obsolete'}
-        >
-          {t('questionPage.answerButton')}
-        </ContentHeaderButton>
-        <AddToCollectionButton post={question} />
-      </ContentHeader>
+        customActions={
+          <>
+            <PostHistoryButton post={question} onRestore={retry} />
+            <FollowPostButton post={question} />
+            <AskQuestionButton />
+            <ContentHeaderButton
+              onClick={() => {
+                const element = document.getElementById('qeta-answer-form');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                  const input = element.querySelector('textarea');
+                  if (input) {
+                    input.focus();
+                  }
+                }
+              }}
+              icon={<RiChat3Line />}
+              disabled={question.status === 'obsolete'}
+            >
+              {t('questionPage.answerButton')}
+            </ContentHeaderButton>
+            <AddToCollectionButton post={question} />
+          </>
+        }
+      />
+      <Box style={{ marginBottom: 'var(--bui-space-4)' }}>
+        {getDescription(question)}
+      </Box>
       {question.status === 'draft' && <DraftBanner />}
       {question.status === 'deleted' && <DeletedBanner />}
       {question.status === 'obsolete' && <ObsoleteBanner />}

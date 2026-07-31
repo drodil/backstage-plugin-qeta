@@ -12,8 +12,9 @@ export const AskQuestionButton = (props: {
   entity?: string;
   tags?: string[];
   entityPage?: boolean;
+  compact?: boolean;
 }) => {
-  const { entity, entityPage, tags } = props;
+  const { entity, entityPage, tags, compact } = props;
   const askRoute = useRouteRef(askRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
@@ -43,7 +44,7 @@ export const AskQuestionButton = (props: {
         color="primary"
         icon={<RiQuestionLine />}
       >
-        {t('askQuestionButton.title')}
+        {!compact && t('askQuestionButton.title')}
       </ContentHeaderButton>
     </OptionalRequirePermission>
   );

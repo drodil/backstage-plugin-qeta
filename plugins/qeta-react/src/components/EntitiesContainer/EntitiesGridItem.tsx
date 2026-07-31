@@ -59,7 +59,7 @@ export const EntitiesGridItem = (props: { entity: EntityResponse }) => {
           )}
           <Box grow minWidth="0">
             <TooltipTrigger>
-              <Text variant="title-small" truncate as="div">
+              <Text variant="title-small" weight="bold" truncate as="div">
                 {primaryTitle}
               </Text>
               <Tooltip>{secondaryTitle ?? ''}</Tooltip>

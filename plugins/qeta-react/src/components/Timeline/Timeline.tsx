@@ -3,10 +3,10 @@ import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { TimelineItem } from '@drodil/backstage-plugin-qeta-common';
 import { TimelineItemCard } from './TimelineItem';
-import { Progress, ErrorPanel } from '@backstage/core-components';
-import { Box, Text } from '@backstage/ui';
+import { Alert, Box, Text } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
+import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 
 import { useInfiniteScroll } from 'infinite-scroll-hook';
 
@@ -66,11 +66,17 @@ export const Timeline = (props: TimelineProps) => {
   });
 
   if (loading && items.length === 0) {
-    return <Progress />;
+    return <LoadingGrid />;
   }
 
   if (error) {
-    return <ErrorPanel error={error} />;
+    return (
+      <Alert
+        status="danger"
+        title={t('common.error')}
+        description={error.message}
+      />
+    );
   }
 
   if (items.length === 0) {

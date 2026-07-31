@@ -1,14 +1,13 @@
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
-  ContentHeader,
   CreateLinkButton,
   PostsContainer,
   qetaTranslationRef,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import { RiLinksLine } from '@remixicon/react';
+import { Header } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const LinksPage = () => {
@@ -30,12 +29,10 @@ export const LinksPage = () => {
 
   return (
     <>
-      <ContentHeader
+      <Header
         title={t('linksPage.title')}
-        titleIcon={<RiLinksLine size={28} />}
-      >
-        <CreateLinkButton entity={entityRef} tags={tags} />
-      </ContentHeader>
+        customActions={<CreateLinkButton entity={entityRef} tags={tags} />}
+      />
       <PostsContainer type="link" defaultView="list" />
     </>
   );

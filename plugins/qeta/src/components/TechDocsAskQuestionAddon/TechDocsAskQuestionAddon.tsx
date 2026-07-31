@@ -3,12 +3,12 @@ import {
   useShadowRootElements,
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
-import { Link } from '@backstage/core-components';
 import { askRouteRef } from '@drodil/backstage-plugin-qeta-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { RiQuestionAnswerLine } from '@remixicon/react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Text } from '@backstage/ui';
+import { Link } from 'react-router-dom';
 import styles from './TechDocsAskQuestionAddon.module.css';
 
 export const TechDocsAskQuestionAddon = () => {

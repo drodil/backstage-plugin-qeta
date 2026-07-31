@@ -1,4 +1,3 @@
-import { WarningPanel } from '@backstage/core-components';
 import { useCallback, useEffect, useState } from 'react';
 import {
   alertApiRef,
@@ -16,7 +15,7 @@ import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { PostAnonymouslyCheckbox } from '../PostAnonymouslyCheckbox/PostAnonymouslyCheckbox';
 import { useConfirmNavigationIfEdited } from '../../utils/utils';
 import { qetaApiRef } from '../../api';
-import { Box, Button, Card, CardBody, Text } from '@backstage/ui';
+import { Alert, Box, Button, Card, CardBody, Text } from '@backstage/ui';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -213,10 +212,7 @@ export const AnswerForm = (props: {
               Your answer
             </Text>
             {error && (
-              <WarningPanel
-                severity="error"
-                title={t('answerForm.errorPosting')}
-              />
+              <Alert status="danger" title={t('answerForm.errorPosting')} />
             )}
             <Controller
               control={control}

@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode } from 'react';
-import { LinkButton } from '@backstage/core-components';
+import { useNavigate } from 'react-router-dom';
 import { Button, useBreakpoint } from '@backstage/ui';
 
 interface ContentHeaderButtonProps {
@@ -27,6 +27,7 @@ export const ContentHeaderButton = (props: ContentHeaderButtonProps) => {
   const { to, onClick, icon, children, color = 'primary', disabled } = props;
   const { down } = useBreakpoint();
   const isSmallScreen = down('md');
+  const navigate = useNavigate();
 
   const style = {
     minWidth: isSmallScreen ? '0' : undefined,
@@ -35,17 +36,16 @@ export const ContentHeaderButton = (props: ContentHeaderButtonProps) => {
 
   if (to) {
     return (
-      <LinkButton
+      <Button
         size="small"
-        variant="contained"
-        color={color}
-        startIcon={isSmallScreen ? undefined : icon}
+        variant={toButtonVariant(color)}
+        iconStart={isSmallScreen ? undefined : icon}
         style={style}
-        disabled={disabled}
-        to={to}
+        isDisabled={disabled}
+        onClick={() => navigate(to)}
       >
         {isSmallScreen ? icon : children}
-      </LinkButton>
+      </Button>
     );
   }
 

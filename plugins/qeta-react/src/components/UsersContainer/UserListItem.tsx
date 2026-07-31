@@ -129,7 +129,12 @@ export const UserListItem = (props: { user: UserResponse }) => {
           }
         >
           <TooltipTrigger>
-            <Text as="span" truncate className={styles.titleWrapper}>
+            <Text
+              as="span"
+              weight="bold"
+              truncate
+              className={styles.titleWrapper}
+            >
               {name}
             </Text>
             <Tooltip placement="top">{secondaryTitle ?? ''}</Tooltip>

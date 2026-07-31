@@ -1,14 +1,12 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import {
-  ContentHeader,
   PostForm,
   qetaTranslationRef,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
-import { InfoCard } from '@backstage/core-components';
-import { Grid } from '@backstage/ui';
+import { Box, Header } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const CreateLinkPage = () => {
@@ -39,20 +37,16 @@ export const CreateLinkPage = () => {
 
   return (
     <>
-      <ContentHeader title={title} />
-      <Grid.Root columns={{ sm: '12' }} gap="6">
-        <Grid.Item colSpan={{ sm: '12' }}>
-          <InfoCard>
-            <PostForm
-              id={id}
-              entity={entity}
-              entityPage={entityPage}
-              tags={tags}
-              type="link"
-            />
-          </InfoCard>
-        </Grid.Item>
-      </Grid.Root>
+      <Header title={title} />
+      <Box>
+        <PostForm
+          id={id}
+          entity={entity}
+          entityPage={entityPage}
+          tags={tags}
+          type="link"
+        />
+      </Box>
     </>
   );
 };

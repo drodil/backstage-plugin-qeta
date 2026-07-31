@@ -31,6 +31,9 @@ import {
   RiCheckboxBlankCircleFill,
   RiSortDesc,
   RiArrowUpDownLine,
+  RiCalendarLine,
+  RiApps2Line,
+  RiPriceTag3Line,
 } from '@remixicon/react';
 import { compact } from 'lodash';
 import styles from './FilterPanel.module.css';
@@ -329,7 +332,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                 {t('filterPanel.quickFilters.label')}
               </Text>
             </Flex>
-            <Flex direction="column" gap="1">
+            <Flex direction="column" gap="2">
               {postFilters && type === 'question' && (
                 <Checkbox
                   isSelected={filters.noAnswers === 'true'}
@@ -503,8 +506,14 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
               {t('filterPanel.filters.label')}
             </Text>
           </Flex>
-          <Grid.Root columns={{ initial: '1', md: '12' }} gap="2">
+          <Grid.Root columns={{ initial: '1', md: '12' }} gap="4">
             <Grid.Item colSpan={{ initial: '1', md: '4' }}>
+              <Flex align="center" gap="1" className={styles.label}>
+                <RiCalendarLine size={16} />
+                <Text as="span" variant="body-small" weight="bold">
+                  {t('datePicker.range.label')}
+                </Text>
+              </Flex>
               <DateRangeFilter
                 value={filters.dateRange}
                 onChange={val => onChange({ key: 'dateRange', value: val })}
@@ -512,6 +521,12 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
             </Grid.Item>
             {showEntityFilter && (
               <Grid.Item colSpan={{ initial: '1', md: '4' }}>
+                <Flex align="center" gap="1" className={styles.label}>
+                  <RiApps2Line size={16} />
+                  <Text as="span" variant="body-small" weight="bold">
+                    {t('filterPanel.filters.entity.label')}
+                  </Text>
+                </Flex>
                 <Flex align="center" gap="1">
                   <Box style={{ flex: '1 1 0%', minWidth: 0 }}>
                     <EntitiesInput
@@ -567,6 +582,12 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
             )}
             {showTagFilter && (
               <Grid.Item colSpan={{ initial: '1', md: '4' }}>
+                <Flex align="center" gap="1" className={styles.label}>
+                  <RiPriceTag3Line size={16} />
+                  <Text as="span" variant="body-small" weight="bold">
+                    {t('filterPanel.filters.tag.label')}
+                  </Text>
+                </Flex>
                 <Flex align="center" gap="1">
                   <Box style={{ flex: '1 1 0%', minWidth: 0 }}>
                     <TagInput

@@ -1,5 +1,5 @@
-import { LinkButton } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { useNavigate } from 'react-router-dom';
 import { askRouteRef, createLinkRouteRef, writeRouteRef } from '../../routes';
 import {
   PostType,
@@ -8,7 +8,7 @@ import {
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityQueryParameter } from '../../hooks/useEntityQueryParameter';
-import { Card, CardBody, Flex, Text } from '@backstage/ui';
+import { Button, Card, CardBody, Flex, Text } from '@backstage/ui';
 import { RiEditLine, RiLinkM, RiQuestionLine } from '@remixicon/react';
 import styles from './NoPostsCard.module.css';
 
@@ -25,6 +25,7 @@ export const NoPostsCard = (props: {
   const linkRoute = useRouteRef(createLinkRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const entityRef = useEntityQueryParameter(entity) ?? entity;
+  const navigate = useNavigate();
 
   const queryParams = new URLSearchParams();
   if (entityRef) {
@@ -55,23 +56,24 @@ export const NoPostsCard = (props: {
             })}
           </Text>
           {showNoPostsBtn && (
-            <LinkButton
-              to={
-                queryParams.size > 0
-                  ? `${route()}?${queryParams.toString()}`
-                  : `${route()}`
+            <Button
+              onClick={() =>
+                navigate(
+                  queryParams.size > 0
+                    ? `${route()}?${queryParams.toString()}`
+                    : `${route()}`,
+                )
               }
-              startIcon={selectByPostType(
+              iconStart={selectByPostType(
                 type ?? 'question',
                 <RiQuestionLine />,
                 <RiEditLine />,
                 <RiLinkM />,
               )}
-              color="primary"
-              variant="outlined"
+              variant="primary"
             >
               {t('postsContainer.createButton')}
-            </LinkButton>
+            </Button>
           )}
         </Flex>
       </CardBody>

@@ -4,7 +4,6 @@ import {
   AnswersContainer,
   AskQuestionButton,
   CollectionsContainer,
-  ContentHeader,
   CreateLinkButton,
   PostsContainer,
   qetaTranslationRef,
@@ -17,16 +16,7 @@ import {
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { UserStatsContent } from './UserStatsContent';
-import {
-  Avatar,
-  Box,
-  Flex,
-  Tab,
-  TabList,
-  TabPanel,
-  Tabs,
-  Text,
-} from '@backstage/ui';
+import { Flex, Header, Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   RiBarChartLine,
@@ -84,40 +74,6 @@ export const UserPage = () => {
     </Flex>
   );
 
-  const title = (
-    <Box
-      className={styles.headerContent}
-      role="banner"
-      aria-label={t('userPage.profileHeader', {})}
-    >
-      <Avatar
-        src={user?.spec?.profile?.picture ?? ''}
-        name={name}
-        size="x-large"
-        className={styles.avatar}
-        aria-label={t('userPage.profilePicture', { name })}
-      />
-      <Flex direction="column" justify="center">
-        <Box className={styles.nameRow}>
-          <Text as="h1" id="user-name" variant="title-large" weight="bold">
-            {name}
-          </Text>
-        </Box>
-        {(secondaryTitle || user?.spec?.profile?.email) && (
-          <Text as="div" variant="title-small" color="secondary">
-            {secondaryTitle || user?.spec?.profile?.email}
-          </Text>
-        )}
-        {userStats?.summary?.lastSeen && (
-          <Text as="div" variant="body-small" color="secondary">
-            {t('stats.lastSeen')}:{' '}
-            <RelativeTimeWithTooltip value={userStats.summary.lastSeen} />
-          </Text>
-        )}
-      </Flex>
-    </Box>
-  );
-
   const tabItems = [
     <Tab key="statistics" id="statistics">
       <TabLabel
@@ -166,19 +122,46 @@ export const UserPage = () => {
 
   return (
     <>
-      <ContentHeader titleComponent={title}>
-        {!loadingUser &&
-          !userError &&
-          currentUser?.userEntityRef !== identity && (
-            <UserFollowButton
-              userRef={identity}
-              aria-label={t('userPage.followUser', { name })}
-            />
-          )}
-        <AskQuestionButton />
-        <WriteArticleButton />
-        <CreateLinkButton />
-      </ContentHeader>
+      <Header
+        title={name}
+        metadata={[
+          ...(secondaryTitle || user?.spec?.profile?.email
+            ? [
+                {
+                  label: t('userPage.profileHeader', {}),
+                  value: secondaryTitle || user?.spec?.profile?.email,
+                },
+              ]
+            : []),
+          ...(userStats?.summary?.lastSeen
+            ? [
+                {
+                  label: t('stats.lastSeen'),
+                  value: (
+                    <RelativeTimeWithTooltip
+                      value={userStats.summary.lastSeen}
+                    />
+                  ),
+                },
+              ]
+            : []),
+        ]}
+        customActions={
+          <>
+            {!loadingUser &&
+              !userError &&
+              currentUser?.userEntityRef !== identity && (
+                <UserFollowButton
+                  userRef={identity}
+                  aria-label={t('userPage.followUser', { name })}
+                />
+              )}
+            <AskQuestionButton />
+            <WriteArticleButton />
+            <CreateLinkButton />
+          </>
+        }
+      />
       <Tabs
         selectedKey={tab}
         onSelectionChange={key => handleChange(key as string)}

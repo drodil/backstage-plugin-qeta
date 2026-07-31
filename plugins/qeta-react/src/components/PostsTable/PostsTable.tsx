@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { LinkButton, WarningPanel } from '@backstage/core-components';
 import { PostsTableRow } from './PostsTableRow';
 import { useQetaApi } from '../../hooks';
-import { Box, Button, Flex, TablePagination, Text } from '@backstage/ui';
+import { Alert, Box, Button, Flex, TablePagination, Text } from '@backstage/ui';
 import { RiRefreshLine } from '@remixicon/react';
 import { PostType } from '@drodil/backstage-plugin-qeta-common';
 import { qetaTranslationRef } from '../../translation.ts';
@@ -83,9 +82,11 @@ export const PostsTable = (props: {
 
   if (error || response === undefined) {
     return (
-      <WarningPanel severity="error" title={t('postsTable.errorLoading')}>
-        {error?.message}
-      </WarningPanel>
+      <Alert
+        status="danger"
+        title={t('postsTable.errorLoading')}
+        description={error?.message}
+      />
     );
   }
 
@@ -127,13 +128,13 @@ export const PostsTable = (props: {
               {t('postsTable.mostViewed')}
             </Button>
           </Flex>
-          <LinkButton
-            to="#"
-            variant="text"
+          <Button
+            variant="tertiary"
+            size="small"
             onClick={() => setRefresh(refresh + 1)}
           >
             <RiRefreshLine size={16} />
-          </LinkButton>
+          </Button>
         </Flex>
       </Flex>
       <Box className={styles.tableContainer}>

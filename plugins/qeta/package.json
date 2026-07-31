@@ -76,7 +76,8 @@
     "lodash": "^4.17.23",
     "luxon": "^3.5.0",
     "react-use": "^17.4.0",
-    "unified": "^11.0.5"
+    "unified": "^11.0.5",
+    "zod": "^4.0.0"
   },
   "peerDependencies": {
     "@backstage/catalog-client": "^1.16.1",

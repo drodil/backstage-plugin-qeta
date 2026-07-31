@@ -1,7 +1,7 @@
-import { Tag } from '@backstage/ui';
 import { RiDeleteBinLine, RiDraftLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { Chip } from './Chip.tsx';
 import styles from './StatusChip.module.css';
 
 interface StatusChipProps {
@@ -14,24 +14,24 @@ export const StatusChip = ({ status, className }: StatusChipProps) => {
 
   if (status === 'draft') {
     return (
-      <Tag
+      <Chip
         size="small"
         icon={<RiDraftLine size={14} />}
         className={`${styles.statusChip} ${styles.draft} ${className || ''}`}
       >
         {t('common.draft')}
-      </Tag>
+      </Chip>
     );
   }
   if (status === 'deleted') {
     return (
-      <Tag
+      <Chip
         size="small"
         icon={<RiDeleteBinLine size={14} />}
         className={`${styles.statusChip} ${styles.deleted} ${className || ''}`}
       >
         {t('common.deleted')}
-      </Tag>
+      </Chip>
     );
   }
   return null;

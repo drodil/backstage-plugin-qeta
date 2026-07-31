@@ -44,7 +44,10 @@
   }
 
   .menuItemLinkCompact {
-    max-width: none;
+    display: flex;
+    justify-content: center;
+    width: 40px;
+    max-width: 40px;
   }
 
   .selectedMenuItem {

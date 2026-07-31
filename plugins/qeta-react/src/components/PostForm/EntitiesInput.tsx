@@ -471,6 +471,21 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
                 catalogApi.getEntitiesByRefs(request),
               term: trimmed,
             });
+
+            // Fall back to catalog defaults when there are no previously-used
+            // entities yet, instead of leaving the dropdown empty. Only applies
+            // to the implicit default load (not when useOnlyUsedEntities is set).
+            if (
+              nextEntities.length === 0 &&
+              !useOnlyUsedEntities &&
+              catalogQuery
+            ) {
+              nextEntities = await loadCatalogEntities({
+                catalogQuery,
+                queryEntities: request => catalogApi.queryEntities(request),
+                term: trimmed,
+              });
+            }
           } else if (catalogQuery) {
             nextEntities = await loadCatalogEntities({
               catalogQuery,
@@ -616,7 +631,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
           .map(entityKind => ({
             kind: entityKind,
             entities: filteredOptions.filter(
-              option => option.kind === entityKind,
+              option => option.kind.toLocaleLowerCase() === entityKind,
             ),
           }))
           .filter(group => group.entities.length > 0)
@@ -630,17 +645,6 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
     return (
       <Box className={styles.root}>
         <div ref={containerRef} className={styles.container}>
-          {multiple && tagItems.length > 0 && (
-            <TagGroup
-              className={styles.chips}
-              items={tagItems}
-              onRemove={handleRemoveEntities}
-            >
-              {item => (
-                <Tag>{getEntityTitle(item.entity, { withType: false })}</Tag>
-              )}
-            </TagGroup>
-          )}
           <div className={styles.fieldWrapper}>
             <TextField
               className="qetaEntitiesInput"
@@ -662,6 +666,17 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
                 }
               }}
             />
+            {multiple && tagItems.length > 0 && (
+              <TagGroup
+                className={styles.chips}
+                items={tagItems}
+                onRemove={handleRemoveEntities}
+              >
+                {item => (
+                  <Tag>{getEntityTitle(item.entity, { withType: false })}</Tag>
+                )}
+              </TagGroup>
+            )}
             {open && (
               <div className={styles.dropdown}>
                 {loading && (

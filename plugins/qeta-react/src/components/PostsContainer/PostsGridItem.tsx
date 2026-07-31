@@ -176,7 +176,12 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
           <Flex align="center" justify="between" className={styles.titleRow}>
             <Flex align="center" className={styles.titleGroup}>
               {post.type === 'link' && <FaviconItem entity={post} />}
-              <Text as="div" variant="title-x-small" className={styles.title}>
+              <Text
+                as="div"
+                variant="title-small"
+                weight="bold"
+                className={styles.title}
+              >
                 {post.title}
               </Text>
             </Flex>
@@ -204,10 +209,20 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
             <Box className={styles.statsGroup}>
               <TooltipTrigger>
                 <Box className={styles.statBox}>
-                  <Text as="div" className={styles.statValue}>
+                  <Text
+                    as="div"
+                    variant="body-small"
+                    weight="bold"
+                    className={styles.statValue}
+                  >
                     {formatShortNumber(score)}
                   </Text>
-                  <Text as="div" className={styles.statLabel}>
+                  <Text
+                    as="div"
+                    variant="body-x-small"
+                    color="secondary"
+                    className={styles.statLabel}
+                  >
                     {post.type !== 'link'
                       ? t('common.votes')
                       : t('common.clicks')}
@@ -224,10 +239,20 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
                         : styles.answersBox
                     }`}
                   >
-                    <Text as="div" className={styles.statValue}>
+                    <Text
+                      as="div"
+                      variant="body-small"
+                      weight="bold"
+                      className={styles.statValue}
+                    >
                       {formatShortNumber(answersCount)}
                     </Text>
-                    <Text as="div" className={styles.statLabel}>
+                    <Text
+                      as="div"
+                      variant="body-x-small"
+                      color="secondary"
+                      className={styles.statLabel}
+                    >
                       {t('common.answers')}
                     </Text>
                   </Box>
@@ -236,10 +261,20 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               )}
               <TooltipTrigger>
                 <Box className={styles.statBox}>
-                  <Text as="div" className={styles.statValue}>
+                  <Text
+                    as="div"
+                    variant="body-small"
+                    weight="bold"
+                    className={styles.statValue}
+                  >
                     {formatShortNumber(views)}
                   </Text>
-                  <Text as="div" className={styles.statLabel}>
+                  <Text
+                    as="div"
+                    variant="body-x-small"
+                    color="secondary"
+                    className={styles.statLabel}
+                  >
                     {t('common.views')}
                   </Text>
                 </Box>
@@ -247,10 +282,20 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               </TooltipTrigger>
               <TooltipTrigger>
                 <Box className={styles.statBox}>
-                  <Text as="div" className={styles.statValue}>
+                  <Text
+                    as="div"
+                    variant="body-small"
+                    weight="bold"
+                    className={styles.statValue}
+                  >
                     {formatShortNumber(commentsCount)}
                   </Text>
-                  <Text as="div" className={styles.statLabel}>
+                  <Text
+                    as="div"
+                    variant="body-x-small"
+                    color="secondary"
+                    className={styles.statLabel}
+                  >
                     {t('common.comments').toLowerCase()}
                   </Text>
                 </Box>

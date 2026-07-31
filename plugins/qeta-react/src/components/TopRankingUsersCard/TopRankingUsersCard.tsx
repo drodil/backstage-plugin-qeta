@@ -1,11 +1,19 @@
-import { ReactElement, ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import {
-  CardTab,
-  Progress,
-  TabbedCard,
-  WarningPanel,
-} from '@backstage/core-components';
-import { Box, Flex, List, ListRow, Text } from '@backstage/ui';
+  Alert,
+  Box,
+  Card,
+  CardBody,
+  CardHeader,
+  Flex,
+  List,
+  ListRow,
+  Tab,
+  TabList,
+  TabPanel,
+  Tabs,
+  Text,
+} from '@backstage/ui';
 import { StatisticResponse } from '@drodil/backstage-plugin-qeta-common';
 import { TrophyIcon } from './TrophyIcon';
 import { UserLink } from '../Links';
@@ -155,6 +163,7 @@ export const TopRankingUsers = (props: {
 }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
+  const [selectedTab, setSelectedTab] = useState('0');
   const {
     value: topStatistics,
     loading,
@@ -199,50 +208,76 @@ export const TopRankingUsers = (props: {
 
   if ((error || topStatistics === undefined) && !loading) {
     return (
-      <WarningPanel severity="error" title={t('statistics.errorLoading')}>
-        {error?.message}
-      </WarningPanel>
+      <Alert
+        status="danger"
+        title={t('statistics.errorLoading')}
+        description={error?.message}
+      />
     );
   }
 
-  let content: ReactElement[];
+  let panels: ReactNode;
 
   if (loading) {
-    content = [
-      <CardTab>
+    panels = (
+      <TabPanel id="0" className={styles.tabPanel}>
         <Flex justify="center" className={styles.loadingBox}>
-          <Progress />
+          <div className={styles.spinner} />
         </Flex>
-      </CardTab>,
-    ];
+      </TabPanel>
+    );
   } else if (topStatistics && topStatistics.length > 0) {
-    content = topStatistics?.map((stats, index) => {
-      return (
-        <CardTab label={tabData[index].title} key={tabData[index].title}>
-          <RankingCard
-            description={tabData[index].description}
-            limit={props.limit}
-            statistic={stats}
-            unit={tabData[index].unit}
-          />
-        </CardTab>
-      );
-    });
+    panels = topStatistics.map((stats, index) => (
+      <TabPanel
+        id={String(index)}
+        key={tabData[index].title}
+        className={styles.tabPanel}
+      >
+        <RankingCard
+          description={tabData[index].description}
+          limit={props.limit}
+          statistic={stats}
+          unit={tabData[index].unit}
+        />
+      </TabPanel>
+    ));
   } else {
-    content = [
-      <CardTab>
+    panels = (
+      <TabPanel id="0" className={styles.tabPanel}>
         <Flex justify="center" className={styles.loadingBox}>
           {t('statistics.notAvailable')}
         </Flex>
-      </CardTab>,
-    ];
+      </TabPanel>
+    );
   }
+
+  const tabTitles =
+    !loading && topStatistics && topStatistics.length > 0
+      ? topStatistics.map((_, index) => tabData[index].title)
+      : [props.title || t('statistics.ranking')];
 
   return (
     <div className={styles.root}>
-      <TabbedCard title={props.title || t('statistics.ranking')}>
-        {content}
-      </TabbedCard>
+      <Card>
+        <CardHeader className={styles.header}>
+          {props.title || t('statistics.ranking')}
+        </CardHeader>
+        <CardBody className={styles.body}>
+          <Tabs
+            selectedKey={selectedTab}
+            onSelectionChange={key => setSelectedTab(key as string)}
+          >
+            <TabList aria-label={props.title || t('statistics.ranking')}>
+              {tabTitles.map((title, index) => (
+                <Tab id={String(index)} key={title}>
+                  {title}
+                </Tab>
+              ))}
+            </TabList>
+            {panels}
+          </Tabs>
+        </CardBody>
+      </Card>
     </div>
   );
 };

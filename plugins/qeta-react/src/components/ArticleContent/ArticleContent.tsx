@@ -2,14 +2,13 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Avatar, Box, Flex, Text } from '@backstage/ui';
+import { Alert, Avatar, Box, Flex, Text } from '@backstage/ui';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useState } from 'react';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { ArticleButtons } from './ArticleButtons';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
-import { WarningPanel } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityAuthor } from '../../hooks/useEntityAuthor';
@@ -33,7 +32,11 @@ export const ArticleContent = (props: {
 
   if (post.type !== 'article') {
     return (
-      <WarningPanel title="Not found" message="Could not find the article" />
+      <Alert
+        status="warning"
+        title="Not found"
+        description="Could not find the article"
+      />
     );
   }
 

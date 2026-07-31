@@ -18,7 +18,7 @@
   .orderByGroup {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0 var(--bui-space-4);
+    gap: var(--bui-space-2) var(--bui-space-4);
   }
 
   .divider {

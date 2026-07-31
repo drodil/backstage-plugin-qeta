@@ -1,11 +1,9 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { WarningPanel } from '@backstage/core-components';
 import { PostResponse, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import {
   AddToCollectionButton,
-  ContentHeader,
   CreateLinkButton,
   DeletedBanner,
   DraftBanner,
@@ -15,18 +13,14 @@ import {
   RelativeTimeWithTooltip,
   UpdatedByLink,
   useQetaApi,
-  FaviconItem,
-  qetaApiRef,
   FollowPostButton,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { Flex, Skeleton, Text } from '@backstage/ui';
-import { useApi } from '@backstage/core-plugin-api';
+import { Alert, Box, Flex, Header, Skeleton, Text } from '@backstage/ui';
 
 export const LinkPage = () => {
   const { id } = useParams();
-  const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
   const [score, setScore] = useState(0);
@@ -61,14 +55,22 @@ export const LinkPage = () => {
 
   if (error || post === undefined) {
     return (
-      <WarningPanel severity="error" title={t('linkPage.errorLoading')}>
-        {error?.message}
-      </WarningPanel>
+      <Alert
+        status="danger"
+        title={t('linkPage.errorLoading')}
+        description={error?.message}
+      />
     );
   }
 
   if (post.type !== 'link') {
-    return <WarningPanel title="Not found" message={t('linkPage.notFound')} />;
+    return (
+      <Alert
+        status="warning"
+        title="Not found"
+        description={t('linkPage.notFound')}
+      />
+    );
   }
 
   const getDescription = (q: PostResponse) => {
@@ -96,34 +98,20 @@ export const LinkPage = () => {
 
   return (
     <>
-      <ContentHeader
-        title={
-          post.url ? (
-            <a
-              href={post.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'inherit', textDecoration: 'none' }}
-              data-testid="link-title"
-              onClick={event => {
-                event.stopPropagation();
-                qetaApi.clickLink(post.id);
-              }}
-            >
-              {post.title}
-            </a>
-          ) : (
-            post.title
-          )
+      <Header
+        title={post.title}
+        customActions={
+          <>
+            <PostHistoryButton post={post} onRestore={retry} />
+            <FollowPostButton post={post} />
+            <CreateLinkButton />
+            <AddToCollectionButton post={post} />
+          </>
         }
-        titleIcon={post.url ? <FaviconItem entity={post} /> : undefined}
-        description={getDescription(post)}
-      >
-        <PostHistoryButton post={post} onRestore={retry} />
-        <FollowPostButton post={post} />
-        <CreateLinkButton />
-        <AddToCollectionButton post={post} />
-      </ContentHeader>
+      />
+      <Box style={{ marginBottom: 'var(--bui-space-4)' }}>
+        {getDescription(post)}
+      </Box>
       {post.status === 'draft' && <DraftBanner />}
       {post.status === 'deleted' && <DeletedBanner />}
       <LinkCard link={post} />

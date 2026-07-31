@@ -51,8 +51,12 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
       const startDate = new Date(from ?? fromDate);
       const endDate = new Date(to ?? toDate);
       if (startDate <= endDate) {
+        const formattedFrom = formatDate(startDate);
+        const formattedTo = formatDate(endDate);
         setValidation({ isValid: true });
-        onChange(`${formatDate(startDate)}--${formatDate(endDate)}`);
+        setFromDate(formattedFrom);
+        setToDate(formattedTo);
+        onChange(`${formattedFrom}--${formattedTo}`);
       } else {
         setValidation({
           isValid: false,

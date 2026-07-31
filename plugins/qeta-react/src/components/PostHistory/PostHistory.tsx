@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import {
+  Alert,
   Box,
   Button,
   ButtonIcon,
@@ -23,7 +24,7 @@ import { useQetaApi } from '../../hooks';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { UserLink } from '../Links';
-import { Progress, WarningPanel } from '@backstage/core-components';
+import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 import styles from './PostHistory.module.css';
 
 export const PostHistory = (props: {
@@ -73,13 +74,11 @@ export const PostHistory = (props: {
   }, [restoreRevision, qetaApi, postId, alertApi, t, retry, onRestore]);
 
   if (loading) {
-    return <Progress />;
+    return <LoadingGrid />;
   }
 
   if (error) {
-    return (
-      <WarningPanel severity="error" title={t('postHistory.errorLoading')} />
-    );
+    return <Alert status="danger" title={t('postHistory.errorLoading')} />;
   }
 
   const revisions = revisionsData?.revisions ?? [];

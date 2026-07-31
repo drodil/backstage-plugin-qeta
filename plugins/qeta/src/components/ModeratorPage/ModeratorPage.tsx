@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import {
-  ContentHeader,
   PostsContainer,
   qetaTranslationRef,
   TemplateList,
   useIsModerator,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Alert, Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
+import { Alert, Header, Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { RiSettingsLine } from '@remixicon/react';
 import styles from './ModeratorPage.module.css';
 
 export const ModeratorPage = () => {
@@ -22,10 +20,7 @@ export const ModeratorPage = () => {
 
   return (
     <>
-      <ContentHeader
-        title={t('moderatorPage.title')}
-        titleIcon={<RiSettingsLine size={28} />}
-      />
+      <Header title={t('moderatorPage.title')} />
       <Tabs selectedKey={tab} onSelectionChange={key => setTab(key as string)}>
         <TabList aria-label={t('moderatorPage.tools')}>
           <Tab id="templates">{t('moderatorPage.templates')}</Tab>

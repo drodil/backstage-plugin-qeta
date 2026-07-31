@@ -42,7 +42,6 @@
   }
 
   .title {
-    font-weight: 600;
     margin-bottom: var(--bui-space-1);
   }
 
@@ -101,15 +100,10 @@
   }
 
   .statValue {
-    font-weight: 700;
-    font-size: 1.2rem;
     line-height: 1.2;
   }
 
   .statLabel {
-    font-weight: 400;
-    font-size: 0.8rem;
-    color: var(--bui-fg-secondary);
     line-height: 1.2;
   }
 

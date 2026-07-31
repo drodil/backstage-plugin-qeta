@@ -1,5 +1,4 @@
 import { useIsModerator, useQetaApi } from '../../hooks';
-import { Progress, WarningPanel } from '@backstage/core-components';
 import { useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { RiDeleteBinLine, RiEditLine } from '@remixicon/react';
@@ -7,9 +6,10 @@ import { qetaApiRef } from '../../api';
 import { TemplateForm } from './TemplateForm';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-use';
-import { Box, Button, List, ListRow, MenuItem } from '@backstage/ui';
+import { Alert, Box, Button, List, ListRow, MenuItem } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
+import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
 import styles from './TemplateList.module.css';
 
 export const TemplateList = () => {
@@ -49,14 +49,16 @@ export const TemplateList = () => {
   };
 
   if (loading) {
-    return <Progress />;
+    return <LoadingGrid />;
   }
 
   if (error || value === undefined) {
     return (
-      <WarningPanel severity="error" title={t('templateList.errorLoading')}>
-        {error?.message}
-      </WarningPanel>
+      <Alert
+        status="danger"
+        title={t('templateList.errorLoading')}
+        description={error?.message}
+      />
     );
   }
 

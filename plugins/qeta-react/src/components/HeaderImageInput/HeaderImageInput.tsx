@@ -135,20 +135,24 @@ export const HeaderImageInput = (props: {
           }`}
         >
           <input {...getInputProps()} />
-          <RiUploadCloud2Line size={36} className={styles.uploadIcon} />
-          <Text variant="title-small">
-            {isDragActive
-              ? t('fileInput.dropHere')
-              : t('fileInput.dragAndDrop')}
-          </Text>
-          <Text variant="body-small" color="secondary">
-            {t('fileInput.supportedFormats', {
-              formats: allowedMimeTypes.join(', '),
-            })}
-          </Text>
-          <Box className={styles.selectFileButton}>
-            <Button variant="primary">{t('fileInput.selectFile')}</Button>
-          </Box>
+          <Flex direction="column" gap="2">
+            <Flex gap="1" justify="center">
+              <RiUploadCloud2Line size={24} className={styles.uploadIcon} />
+              <Text variant="title-x-small">
+                {isDragActive
+                  ? t('fileInput.dropHere')
+                  : t('fileInput.dragAndDrop')}
+              </Text>
+            </Flex>
+            <Text variant="body-small" color="secondary">
+              {t('fileInput.supportedFormats', {
+                formats: allowedMimeTypes.join(', '),
+              })}
+            </Text>
+            <Box className={styles.selectFileButton}>
+              <Button variant="primary">{t('fileInput.selectFile')}</Button>
+            </Box>
+          </Flex>
         </div>
       )}
       {debouncedValue && (

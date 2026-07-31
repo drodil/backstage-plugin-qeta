@@ -83,7 +83,9 @@
 
     .sidebarColumn {
       width: 100%;
-      margin-bottom: var(--bui-space-2);
+      /* No margin-bottom here: .row's gap (var(--bui-space-6)) already
+         provides vertical spacing between wrapped flex items, so an
+         extra margin would double up the gutter with a different token. */
       position: static;
       max-height: none;
     }

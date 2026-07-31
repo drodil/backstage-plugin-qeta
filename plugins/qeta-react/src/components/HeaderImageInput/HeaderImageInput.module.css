@@ -22,6 +22,7 @@
     background-color: var(--bui-bg-neutral-1);
     transition: all 0.2s ease-in-out;
     margin: 0 auto;
+    width: 100%;
   }
 
   .dropzone:hover {
@@ -35,11 +36,7 @@
 
   .uploadIcon {
     color: var(--bui-fg-secondary);
-    margin-bottom: var(--bui-space-2);
-  }
-
-  .selectFileButton {
-    margin-top: var(--bui-space-4);
+    margin-top: var(--bui-space-1);
   }
 
   .previewContainer {

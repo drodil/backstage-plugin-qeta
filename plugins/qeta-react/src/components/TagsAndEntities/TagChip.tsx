@@ -2,7 +2,8 @@ import { CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
-import { Tag, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { Tooltip, TooltipTrigger } from '@backstage/ui';
+import { Chip } from '../Utility/Chip.tsx';
 import { TagTooltip } from '../Tooltips';
 
 export const TagChip = (props: {
@@ -17,7 +18,7 @@ export const TagChip = (props: {
   const href = tagRoute({ tag });
 
   const content = (
-    <Tag
+    <Chip
       size="small"
       className="qetaTagChip"
       style={props.style}
@@ -29,7 +30,7 @@ export const TagChip = (props: {
       }}
     >
       {tag}
-    </Tag>
+    </Chip>
   );
 
   if (tooltip) {

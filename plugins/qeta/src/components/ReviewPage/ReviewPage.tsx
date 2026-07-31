@@ -14,13 +14,10 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { Table, TableColumn } from '@backstage/core-components';
+import { Link } from 'react-router-dom';
 import {
-  Link,
-  Table,
-  TableColumn,
-  WarningPanel,
-} from '@backstage/core-components';
-import {
+  Alert,
   Box,
   ButtonIcon,
   Flex,
@@ -162,9 +159,11 @@ export const ReviewPage = () => {
 
   if (error) {
     return (
-      <WarningPanel severity="error" title={t('reviewPage.errorLoading')}>
-        {error.message}
-      </WarningPanel>
+      <Alert
+        status="danger"
+        title={t('reviewPage.errorLoading')}
+        description={error.message}
+      />
     );
   }
 

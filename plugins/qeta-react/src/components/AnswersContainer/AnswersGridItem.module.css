@@ -1,6 +1,9 @@
 @layer components {
   .card {
     height: 100%;
+    /* Override BUI Card's `overflow: auto` so rows can grow to fit content
+       instead of clipping/scrolling when a grid row stretches this card. */
+    overflow: visible;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -22,8 +25,6 @@
   }
 
   .title {
-    font-weight: 700;
-    font-size: 1.1rem;
     color: var(--bui-fg-primary);
     margin-bottom: var(--bui-space-2);
     display: -webkit-box;

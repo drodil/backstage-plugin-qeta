@@ -8,4 +8,19 @@
     align-items: center;
     justify-content: center;
   }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--bui-border-1);
+    border-top-color: var(--bui-fg-primary);
+    border-radius: var(--bui-radius-full);
+    animation: qetaLoadingGridSpin 0.8s linear infinite;
+  }
+
+  @keyframes qetaLoadingGridSpin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }

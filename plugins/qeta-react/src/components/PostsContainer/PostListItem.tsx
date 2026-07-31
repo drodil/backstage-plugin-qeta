@@ -14,7 +14,8 @@ import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { Box, Flex, Tag, Text, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { Box, Flex, Text, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { Chip } from '../Utility/Chip.tsx';
 import { AuthorBox } from '../AuthorBox/AuthorBox';
 import numeral from 'numeral';
 import {
@@ -184,7 +185,7 @@ export const PostListItem = (props: PostListItemProps) => {
             )}
             <StatusChip status={post.status} />
             {showTypeLabel && post.type && (
-              <Tag
+              <Chip
                 size="small"
                 icon={selectByPostType(
                   post.type,
@@ -194,7 +195,7 @@ export const PostListItem = (props: PostListItemProps) => {
                 )}
               >
                 {capitalizeFirstLetter(t(`common.${post.type}`))}
-              </Tag>
+              </Chip>
             )}
             {post.type === 'link' && (
               <OpenLinkButton entity={post} className={styles.openLinkButton} />

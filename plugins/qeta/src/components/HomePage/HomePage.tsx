@@ -1,6 +1,5 @@
 import {
   AskQuestionButton,
-  ContentHeader,
   CreateLinkButton,
   ImpactCard,
   qetaTranslationRef,
@@ -11,9 +10,8 @@ import {
   FollowedItemsCard,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box } from '@backstage/ui';
+import { Box, Header } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { RiHomeLine } from '@remixicon/react';
 import styles from './HomePage.module.css';
 
 export const HomePage = () => {
@@ -27,14 +25,16 @@ export const HomePage = () => {
 
   return (
     <>
-      <ContentHeader
+      <Header
         title={t('homePage.title')}
-        titleIcon={<RiHomeLine size={28} />}
-      >
-        <AskQuestionButton />
-        <WriteArticleButton />
-        <CreateLinkButton />
-      </ContentHeader>
+        customActions={
+          <>
+            <AskQuestionButton />
+            <WriteArticleButton />
+            <CreateLinkButton />
+          </>
+        }
+      />
 
       {(showSuggestions || showFollowed) && (
         <Box className={styles.flexRow}>

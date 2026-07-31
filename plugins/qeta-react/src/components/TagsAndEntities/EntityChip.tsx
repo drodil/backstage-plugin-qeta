@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { entityRouteRef } from '../../routes';
-import { Tag } from '@backstage/ui';
+import { Chip } from '../Utility/Chip.tsx';
 import { EntityTooltip } from '../Tooltips';
 
 export const EntityChip = (props: {
@@ -22,7 +22,7 @@ export const EntityChip = (props: {
 
   return (
     <EntityTooltip entity={entity} enterDelay={400} interactive>
-      <Tag
+      <Chip
         size="small"
         style={props.style}
         icon={Icon ? <Icon fontSize="small" /> : undefined}
@@ -35,7 +35,7 @@ export const EntityChip = (props: {
         }}
       >
         {primaryTitle}
-      </Tag>
+      </Chip>
     </EntityTooltip>
   );
 };

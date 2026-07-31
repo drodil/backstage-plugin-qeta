@@ -1,4 +1,3 @@
-import { InfoCard } from '@backstage/core-components';
 import {
   qetaTranslationRef,
   useAI,
@@ -10,6 +9,9 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   Box,
   Button,
+  Card,
+  CardBody,
+  CardHeader,
   Flex,
   Switch,
   Text,
@@ -116,40 +118,95 @@ export const SettingsPage = () => {
   }
 
   return (
-    <InfoCard title={t('settingsPage.title', {})} data-testid="settings-page">
-      <Box className={styles.content}>
-        <Box className={styles.section}>
-          <Text as="h2" variant="title-small" className={styles.sectionTitle}>
-            {t('settingsPage.editorPreferences', {})}
-          </Text>
-
-          <div className={styles.settingItem} data-testid="auto-save-setting">
-            <Switch
-              isSelected={settings.autoSaveEnabled}
-              onChange={value => setSetting('autoSaveEnabled', value)}
-              label={t('settingsPage.autoSave.label', {})}
-              data-testid="auto-save-switch"
-            />
-            <Text
-              as="div"
-              variant="body-small"
-              color="secondary"
-              className={styles.description}
-            >
-              {t('settingsPage.autoSave.description', {})}
+    <Card data-testid="settings-page">
+      <CardHeader>
+        <Text as="h1" variant="title-small">
+          {t('settingsPage.title', {})}
+        </Text>
+      </CardHeader>
+      <CardBody>
+        <Box className={styles.content}>
+          <Box className={styles.section}>
+            <Text as="h2" variant="title-small" className={styles.sectionTitle}>
+              {t('settingsPage.editorPreferences', {})}
             </Text>
-          </div>
 
-          {allowAnonymous && (
+            <div className={styles.settingItem} data-testid="auto-save-setting">
+              <Switch
+                isSelected={settings.autoSaveEnabled}
+                onChange={value => setSetting('autoSaveEnabled', value)}
+                label={t('settingsPage.autoSave.label', {})}
+                data-testid="auto-save-switch"
+              />
+              <Text
+                as="div"
+                variant="body-small"
+                color="secondary"
+                className={styles.description}
+              >
+                {t('settingsPage.autoSave.description', {})}
+              </Text>
+            </div>
+
+            {allowAnonymous && (
+              <div
+                className={styles.settingItem}
+                data-testid="anonymous-posting-setting"
+              >
+                <Switch
+                  isSelected={settings.anonymousPosting}
+                  onChange={value => setSetting('anonymousPosting', value)}
+                  label={t('settingsPage.anonymousPosting.label', {})}
+                  data-testid="anonymous-posting-switch"
+                />
+                <Text
+                  as="div"
+                  variant="body-small"
+                  color="secondary"
+                  className={styles.description}
+                >
+                  {t('settingsPage.anonymousPosting.description', {})}
+                </Text>
+              </div>
+            )}
+          </Box>
+
+          <Box className={styles.section}>
+            <Text as="h2" variant="title-small" className={styles.sectionTitle}>
+              {t('settingsPage.displayPreferences', {})}
+            </Text>
+
+            {isAIEnabled && (
+              <div
+                className={styles.settingItem}
+                data-testid="ai-answer-setting"
+              >
+                <Switch
+                  isSelected={settings.aiAnswerExpanded}
+                  onChange={value => setSetting('aiAnswerExpanded', value)}
+                  label={t('settingsPage.aiAnswerExpanded.label', {})}
+                  data-testid="ai-answer-switch"
+                />
+                <Text
+                  as="div"
+                  variant="body-small"
+                  color="secondary"
+                  className={styles.description}
+                >
+                  {t('settingsPage.aiAnswerExpanded.description', {})}
+                </Text>
+              </div>
+            )}
+
             <div
               className={styles.settingItem}
-              data-testid="anonymous-posting-setting"
+              data-testid="pagination-setting"
             >
               <Switch
-                isSelected={settings.anonymousPosting}
-                onChange={value => setSetting('anonymousPosting', value)}
-                label={t('settingsPage.anonymousPosting.label', {})}
-                data-testid="anonymous-posting-switch"
+                isSelected={settings.usePagination}
+                onChange={value => setSetting('usePagination', value)}
+                label={t('settingsPage.usePagination.label', {})}
+                data-testid="pagination-switch"
               />
               <Text
                 as="div"
@@ -157,135 +214,95 @@ export const SettingsPage = () => {
                 color="secondary"
                 className={styles.description}
               >
-                {t('settingsPage.anonymousPosting.description', {})}
+                {t('settingsPage.usePagination.description', {})}
               </Text>
             </div>
-          )}
-        </Box>
 
-        <Box className={styles.section}>
-          <Text as="h2" variant="title-small" className={styles.sectionTitle}>
-            {t('settingsPage.displayPreferences', {})}
-          </Text>
-
-          {isAIEnabled && (
-            <div className={styles.settingItem} data-testid="ai-answer-setting">
-              <Switch
-                isSelected={settings.aiAnswerExpanded}
-                onChange={value => setSetting('aiAnswerExpanded', value)}
-                label={t('settingsPage.aiAnswerExpanded.label', {})}
-                data-testid="ai-answer-switch"
-              />
+            <Box className={styles.viewTypeSection}>
+              <Text as="h3" variant="title-x-small">
+                {t('settingsPage.viewTypePreferences.title', {})}
+              </Text>
               <Text
                 as="div"
                 variant="body-small"
                 color="secondary"
                 className={styles.description}
               >
-                {t('settingsPage.aiAnswerExpanded.description', {})}
+                {t('settingsPage.viewTypePreferences.description', {})}
               </Text>
-            </div>
-          )}
 
-          <div className={styles.settingItem} data-testid="pagination-setting">
-            <Switch
-              isSelected={settings.usePagination}
-              onChange={value => setSetting('usePagination', value)}
-              label={t('settingsPage.usePagination.label', {})}
-              data-testid="pagination-switch"
-            />
-            <Text
-              as="div"
-              variant="body-small"
-              color="secondary"
-              className={styles.description}
-            >
-              {t('settingsPage.usePagination.description', {})}
-            </Text>
-          </div>
-
-          <Box className={styles.viewTypeSection}>
-            <Text as="h3" variant="title-x-small">
-              {t('settingsPage.viewTypePreferences.title', {})}
-            </Text>
-            <Text
-              as="div"
-              variant="body-small"
-              color="secondary"
-              className={styles.description}
-            >
-              {t('settingsPage.viewTypePreferences.description', {})}
-            </Text>
-
-            {viewTypes.map(({ key, label }) => {
-              const currentView = getViewType(key) ?? 'default';
-              return (
-                <div
-                  key={key}
-                  className={styles.viewTypeItem}
-                  data-testid={`view-type-${key}`}
-                >
-                  <Text className={styles.viewTypeLabel}>{label}</Text>
-                  <ToggleButtonGroup
-                    selectionMode="single"
-                    disallowEmptySelection
-                    selectedKeys={[currentView]}
-                    onSelectionChange={keys => {
-                      const selected = Array.from(keys)[0];
-                      handleViewTypeChange(
-                        key,
-                        selected === 'default' ? null : (selected as ViewType),
-                      );
-                    }}
+              {viewTypes.map(({ key, label }) => {
+                const currentView = getViewType(key) ?? 'default';
+                return (
+                  <div
+                    key={key}
+                    className={styles.viewTypeItem}
+                    data-testid={`view-type-${key}`}
                   >
-                    <ToggleButton
-                      id="grid"
-                      size="small"
-                      data-testid={`view-type-${key}-grid`}
+                    <Text className={styles.viewTypeLabel}>{label}</Text>
+                    <ToggleButtonGroup
+                      selectionMode="single"
+                      disallowEmptySelection
+                      selectedKeys={[currentView]}
+                      onSelectionChange={keys => {
+                        const selected = Array.from(keys)[0];
+                        handleViewTypeChange(
+                          key,
+                          selected === 'default'
+                            ? null
+                            : (selected as ViewType),
+                        );
+                      }}
                     >
-                      {t('settingsPage.viewTypePreferences.grid', {})}
-                    </ToggleButton>
-                    <ToggleButton
-                      id="list"
-                      size="small"
-                      data-testid={`view-type-${key}-list`}
-                    >
-                      {t('settingsPage.viewTypePreferences.list', {})}
-                    </ToggleButton>
-                    <ToggleButton
-                      id="default"
-                      size="small"
-                      data-testid={`view-type-${key}-default`}
-                    >
-                      {t('settingsPage.viewTypePreferences.default', {})}
-                    </ToggleButton>
-                  </ToggleButtonGroup>
-                </div>
-              );
-            })}
+                      <ToggleButton
+                        id="grid"
+                        size="small"
+                        data-testid={`view-type-${key}-grid`}
+                      >
+                        {t('settingsPage.viewTypePreferences.grid', {})}
+                      </ToggleButton>
+                      <ToggleButton
+                        id="list"
+                        size="small"
+                        data-testid={`view-type-${key}-list`}
+                      >
+                        {t('settingsPage.viewTypePreferences.list', {})}
+                      </ToggleButton>
+                      <ToggleButton
+                        id="default"
+                        size="small"
+                        data-testid={`view-type-${key}-default`}
+                      >
+                        {t('settingsPage.viewTypePreferences.default', {})}
+                      </ToggleButton>
+                    </ToggleButtonGroup>
+                  </div>
+                );
+              })}
+            </Box>
           </Box>
-        </Box>
 
-        <Flex direction="column" className={styles.footer}>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              resetSettings();
-            }}
-            data-testid="reset-all-settings-button"
-          >
-            {t('settingsPage.resetAllSettings', {})}
-          </Button>
-          <Text
-            as="div"
-            variant="body-small"
-            color="secondary"
-            className={styles.description}
-          >
-            {t('settingsPage.resetAllSettingsDescription', {})}
-          </Text>
-        </Flex>
-      </Box>
-    </InfoCard>
+          <Flex direction="column" className={styles.footer}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                resetSettings();
+              }}
+              data-testid="reset-all-settings-button"
+            >
+              {t('settingsPage.resetAllSettings', {})}
+            </Button>
+            <Text
+              as="div"
+              variant="body-small"
+              color="secondary"
+              className={styles.description}
+            >
+              {t('settingsPage.resetAllSettingsDescription', {})}
+            </Text>
+          </Flex>
+        </Box>
+      </CardBody>
+    </Card>
   );
 };

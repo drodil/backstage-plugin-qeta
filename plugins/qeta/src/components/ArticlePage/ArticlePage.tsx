@@ -1,13 +1,11 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { WarningPanel } from '@backstage/core-components';
 import { Article, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
 import {
   AddToCollectionButton,
   AIAnswerCard,
   ArticleContent,
-  ContentHeader,
   PostHistoryButton,
   qetaTranslationRef,
   useQetaConfig,
@@ -15,9 +13,8 @@ import {
   WriteArticleButton,
   FollowPostButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box, Skeleton } from '@backstage/ui';
+import { Alert, Box, Header, Skeleton } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { RiBookOpenLine } from '@remixicon/react';
 
 export const ArticlePage = () => {
   const { id } = useParams();
@@ -57,29 +54,37 @@ export const ArticlePage = () => {
 
   if (error || post === undefined) {
     return (
-      <WarningPanel severity="error" title={t('articlePage.errorLoading')}>
-        {error?.message}
-      </WarningPanel>
+      <Alert
+        status="danger"
+        title={t('articlePage.errorLoading')}
+        description={error?.message}
+      />
     );
   }
 
   if (post.type !== 'article') {
     return (
-      <WarningPanel title="Not found" message={t('articlePage.notFound')} />
+      <Alert
+        status="warning"
+        title="Not found"
+        description={t('articlePage.notFound')}
+      />
     );
   }
 
   return (
     <>
-      <ContentHeader
+      <Header
         title={post.title}
-        titleIcon={<RiBookOpenLine size={24} />}
-      >
-        <PostHistoryButton post={post} onRestore={retry} />
-        <FollowPostButton post={post} />
-        <WriteArticleButton />
-        <AddToCollectionButton post={post} />
-      </ContentHeader>
+        customActions={
+          <>
+            <PostHistoryButton post={post} onRestore={retry} />
+            <FollowPostButton post={post} />
+            <WriteArticleButton />
+            <AddToCollectionButton post={post} />
+          </>
+        }
+      />
       <Box>
         <AIAnswerCard
           article={post as Article}

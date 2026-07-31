@@ -412,15 +412,6 @@ export const TagInput = forwardRef<
   return (
     <Box className={styles.root}>
       <div ref={containerRef} className={styles.container}>
-        {selectedTags.length > 0 && (
-          <TagGroup
-            className={styles.chips}
-            items={tagItems}
-            onRemove={handleRemoveTags}
-          >
-            {item => <Tag>{item.id}</Tag>}
-          </TagGroup>
-        )}
         <div className={styles.fieldWrapper}>
           <TextField
             className="qetaTagInput"
@@ -436,6 +427,15 @@ export const TagInput = forwardRef<
             onBlur={handleFieldBlur}
             onKeyDown={handleKeyDown}
           />
+          {selectedTags.length > 0 && (
+            <TagGroup
+              className={styles.chips}
+              items={tagItems}
+              onRemove={handleRemoveTags}
+            >
+              {item => <Tag>{item.id}</Tag>}
+            </TagGroup>
+          )}
           {open && (
             <div className={styles.dropdown}>
               {loading && (

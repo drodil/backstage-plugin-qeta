@@ -2,7 +2,7 @@
   .markdownEditor {
     background-color: initial;
     color: var(--bui-fg-primary);
-    border: 1px solid var(--bui-border-1);
+    border: 1px solid var(--bui-border-1) !important;
     border-radius: var(--bui-radius-2);
   }
 
@@ -15,9 +15,9 @@
   }
 
   .markdownEditor :global(.mde-header) {
-    background-color: initial;
+    background-color: initial !important;
     color: var(--bui-fg-primary);
-    border-bottom: 1px solid var(--bui-border-1);
+    border-bottom: 1px solid var(--bui-border-1) !important;
   }
 
   .markdownEditor :global(.mde-tabs button),
@@ -25,8 +25,37 @@
     color: var(--bui-fg-primary) !important;
   }
 
+  .markdownEditor :global(.mde-tabs button.selected) {
+    border-color: var(--bui-border-2) !important;
+  }
+
   .markdownEditor :global(.mde-preview-content) {
     padding: 10px;
+  }
+
+  .markdownEditor :global(.mde-preview-content h1),
+  .markdownEditor :global(.mde-preview-content h2),
+  .markdownEditor :global(.mde-preview-content h3) {
+    border-bottom: 1px solid var(--bui-border-1) !important;
+  }
+
+  .markdownEditor :global(.mde-preview-content blockquote) {
+    color: var(--bui-fg-secondary) !important;
+    border-left-color: var(--bui-border-1) !important;
+  }
+
+  .markdownEditor :global(.mde-preview-content code),
+  .markdownEditor :global(.mde-preview-content pre) {
+    background-color: var(--bui-bg-neutral-1) !important;
+  }
+
+  .markdownEditor :global(.mde-preview-content a) {
+    color: var(--bui-fg-info) !important;
+  }
+
+  .markdownEditor :global(.mde-preview-content table th),
+  .markdownEditor :global(.mde-preview-content table td) {
+    border-color: var(--bui-border-1) !important;
   }
 
   .markdownEditor :global(.mde-text),
@@ -44,7 +73,8 @@
 
   .markdownEditor :global(.image-tip) {
     color: var(--bui-fg-primary);
-    background-color: initial;
+    background-color: initial !important;
+    border-top: 1px solid var(--bui-border-1) !important;
   }
 
   .markdownEditorError {
@@ -74,18 +104,23 @@
     list-style: none;
     padding: 0;
     cursor: pointer;
-    background: var(--bui-bg-neutral-1);
-    border: 1px solid var(--bui-border-1);
+    background: var(--bui-bg-neutral-1) !important;
+    border: 1px solid var(--bui-border-1) !important;
     border-radius: var(--bui-radius-2);
+    box-shadow: var(--bui-shadow) !important;
   }
 
   .suggestionsDropdown li {
     width: 100%;
     padding: var(--bui-space-2);
+    color: var(--bui-fg-primary) !important;
+    border-bottom: 1px solid var(--bui-border-1) !important;
   }
 
-  .suggestionsDropdown li:hover {
-    background-color: var(--bui-bg-neutral-1-hover);
+  .suggestionsDropdown li:hover,
+  .suggestionsDropdown li[aria-selected='true'] {
+    color: var(--bui-fg-primary) !important;
+    background-color: var(--bui-bg-neutral-1-hover) !important;
   }
 
   .hide {

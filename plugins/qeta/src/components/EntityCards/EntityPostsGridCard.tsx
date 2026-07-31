@@ -4,18 +4,20 @@ import {
   PostsContainer,
   PostsContainerProps,
 } from '@drodil/backstage-plugin-qeta-react';
-import { InfoCard } from '@backstage/core-components';
+import { Card, CardBody } from '@backstage/ui';
 
 export const EntityPostsGridCard = (props: PostsContainerProps) => {
   const { entity } = useEntity();
 
   return (
-    <InfoCard>
-      <PostsContainer
-        defaultView="grid"
-        {...props}
-        entity={stringifyEntityRef(entity)}
-      />
-    </InfoCard>
+    <Card>
+      <CardBody>
+        <PostsContainer
+          defaultView="grid"
+          {...props}
+          entity={stringifyEntityRef(entity)}
+        />
+      </CardBody>
+    </Card>
   );
 };

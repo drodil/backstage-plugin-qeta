@@ -90,7 +90,7 @@ export const TagGridItem = (props: {
             </div>
             <Box grow={1} minWidth="0">
               <TooltipTrigger>
-                <Text variant="title-medium" truncate as="div">
+                <Text variant="title-small" weight="bold" truncate as="div">
                   {tag.tag}
                 </Text>
                 <Tooltip>{tag.tag}</Tooltip>

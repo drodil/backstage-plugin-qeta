@@ -1,5 +1,5 @@
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { Link, LinkProps } from '@backstage/core-components';
+import { Link, LinkProps } from 'react-router-dom';
 import { userRouteRef } from '../../routes';
 import { Answer, Comment, Post } from '@drodil/backstage-plugin-qeta-common';
 import { useUserInfo } from '../../hooks';

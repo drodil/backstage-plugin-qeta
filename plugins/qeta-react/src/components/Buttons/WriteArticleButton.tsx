@@ -12,8 +12,9 @@ export const WriteArticleButton = (props: {
   entity?: string;
   tags?: string[];
   entityPage?: boolean;
+  compact?: boolean;
 }) => {
-  const { entity, entityPage, tags } = props;
+  const { entity, entityPage, tags, compact } = props;
   const writeRoute = useRouteRef(writeRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
@@ -45,7 +46,7 @@ export const WriteArticleButton = (props: {
         color="primary"
         icon={<RiEditLine />}
       >
-        {t('writeArticleButton.title')}
+        {!compact && t('writeArticleButton.title')}
       </ContentHeaderButton>
     </OptionalRequirePermission>
   );

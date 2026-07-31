@@ -1,10 +1,10 @@
 import { Post, selectByPostType } from '@drodil/backstage-plugin-qeta-common';
-import { Link } from '@backstage/core-components';
+import { Link } from 'react-router-dom';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { AuthorLink } from '../Links';
-import { Tag } from '@backstage/ui';
+import { Chip } from '../Utility/Chip.tsx';
 import { capitalize } from 'lodash';
 import {
   RiFileTextLine,
@@ -37,7 +37,7 @@ export const PostsTableRow = (props: { post: Post; showIcon?: boolean }) => {
       </td>
       {props.showIcon && (
         <td className={styles.typeCell}>
-          <Tag
+          <Chip
             size="small"
             icon={selectByPostType(
               post.type,
@@ -47,7 +47,7 @@ export const PostsTableRow = (props: { post: Post; showIcon?: boolean }) => {
             )}
           >
             {capitalize(post.type)}
-          </Tag>
+          </Chip>
         </td>
       )}
       <td>

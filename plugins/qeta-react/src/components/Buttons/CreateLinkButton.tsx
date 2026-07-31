@@ -12,8 +12,9 @@ export const CreateLinkButton = (props: {
   entity?: string;
   tags?: string[];
   entityPage?: boolean;
+  compact?: boolean;
 }) => {
-  const { entity, entityPage, tags } = props;
+  const { entity, entityPage, tags, compact } = props;
   const linkRoute = useRouteRef(createLinkRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
@@ -45,7 +46,7 @@ export const CreateLinkButton = (props: {
         color="primary"
         icon={<RiLinkM />}
       >
-        {t('createLinkButton.title')}
+        {!compact && t('createLinkButton.title')}
       </ContentHeaderButton>
     </OptionalRequirePermission>
   );

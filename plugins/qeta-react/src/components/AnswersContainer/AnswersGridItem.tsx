@@ -53,7 +53,12 @@ export const AnswersGridItem = (props: AnswersGridItemProps) => {
     <Card className={styles.card}>
       <ClickableLink href={href} ariaLabel={answer.post?.title ?? ''}>
         <CardBody className={styles.contentContainer}>
-          <Text as="div" className={styles.title}>
+          <Text
+            as="div"
+            variant="title-small"
+            weight="bold"
+            className={styles.title}
+          >
             {t('answer.questionTitle', {
               question: answer.post?.title ?? '',
             })}

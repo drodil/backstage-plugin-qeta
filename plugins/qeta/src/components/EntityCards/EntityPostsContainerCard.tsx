@@ -4,14 +4,16 @@ import {
   PostsContainer,
   PostsContainerProps,
 } from '@drodil/backstage-plugin-qeta-react';
-import { InfoCard } from '@backstage/core-components';
+import { Card, CardBody } from '@backstage/ui';
 
 export const EntityPostsContainerCard = (props: PostsContainerProps) => {
   const { entity } = useEntity();
 
   return (
-    <InfoCard>
-      <PostsContainer {...props} entity={stringifyEntityRef(entity)} />
-    </InfoCard>
+    <Card>
+      <CardBody>
+        <PostsContainer {...props} entity={stringifyEntityRef(entity)} />
+      </CardBody>
+    </Card>
   );
 };

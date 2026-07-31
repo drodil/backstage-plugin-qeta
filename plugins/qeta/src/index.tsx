@@ -4,26 +4,37 @@ import {
   createExtensionInput,
   createFrontendPlugin,
   PageBlueprint,
+  PluginHeaderActionBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
   compatWrapper,
   convertLegacyRouteRef,
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
-import { qetaApiRef, qetaRouteRef } from '@drodil/backstage-plugin-qeta-react';
+import {
+  askRouteRef,
+  markdownPlugin,
+  qetaApiRef,
+  qetaRouteRef,
+} from '@drodil/backstage-plugin-qeta-react';
 import {
   configApiRef,
   createApiRef,
   discoveryApiRef,
   fetchApiRef,
+  useApi,
+  useRouteRef,
 } from '@backstage/core-plugin-api';
 import {
   getSupportedEntityKinds,
   QetaClient,
 } from '@drodil/backstage-plugin-qeta-common';
 import { RiQuestionAnswerLine } from '@remixicon/react';
-import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
-import { Entity } from '@backstage/catalog-model';
+import {
+  EntityContentBlueprint,
+  EntityContextMenuItemBlueprint,
+} from '@backstage/plugin-catalog-react/alpha';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   SearchFilterResultTypeBlueprint,
   SearchResultListItemBlueprint,
@@ -32,8 +43,9 @@ import { TechDocsAddonLocations } from '@backstage/plugin-techdocs-react';
 import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsAskQuestionAddon } from './components/TechDocsAskQuestionAddon';
 import { Pluggable } from 'unified';
-import { markdownPlugin } from '@drodil/backstage-plugin-qeta-react';
 import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { z } from 'zod';
 
 interface QetaMarkdownPluginsApi {
   getRehypePlugins(): Pluggable[];
@@ -85,10 +97,8 @@ const qetaApi = ApiBlueprint.make({
 });
 
 const qetaPage = PageBlueprint.makeWithOverrides({
-  config: {
-    schema: {
-      themeId: z => z.string().optional(),
-    },
+  configSchema: {
+    themeId: z.string().optional(),
   },
   inputs: {
     introElement: createExtensionInput([coreExtensionData.reactElement], {
@@ -125,19 +135,17 @@ const qetaPage = PageBlueprint.makeWithOverrides({
 
 const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
   name: 'entity-posts-content',
-  config: {
-    schema: {
-      showFilters: z => z.boolean().optional(),
-      showTitle: z => z.boolean().optional(),
-      showAskButton: z => z.boolean().optional(),
-      showWriteButton: z => z.boolean().optional(),
-      showLinkButton: z => z.boolean().optional(),
-      showNoQuestionsBtn: z => z.boolean().optional(),
-      initialPageSize: z => z.number().optional(),
-      type: z => z.enum(['question', 'article', 'link']).optional(),
-      view: z => z.enum(['list', 'grid']).optional(),
-      relations: z => z.array(z.string()).optional(),
-    },
+  configSchema: {
+    showFilters: z.boolean().optional(),
+    showTitle: z.boolean().optional(),
+    showAskButton: z.boolean().optional(),
+    showWriteButton: z.boolean().optional(),
+    showLinkButton: z.boolean().optional(),
+    showNoQuestionsBtn: z.boolean().optional(),
+    initialPageSize: z.number().optional(),
+    type: z.enum(['question', 'article', 'link']).optional(),
+    view: z.enum(['list', 'grid']).optional(),
+    relations: z.array(z.string()).optional(),
   },
   inputs: {},
   factory: (originalFactory, { config, apis }) => {
@@ -238,6 +246,55 @@ const homeTimeline = HomePageWidgetBlueprint.make({
   },
 });
 
+const askQuestionAction = PluginHeaderActionBlueprint.make({
+  name: 'ask-question',
+  params: {
+    loader: () =>
+      import('@drodil/backstage-plugin-qeta-react').then(m => (
+        <m.AskQuestionButton compact />
+      )),
+  },
+});
+
+const writeArticleAction = PluginHeaderActionBlueprint.make({
+  name: 'write-article',
+  params: {
+    loader: () =>
+      import('@drodil/backstage-plugin-qeta-react').then(m => (
+        <m.WriteArticleButton compact />
+      )),
+  },
+});
+
+const createLinkAction = PluginHeaderActionBlueprint.make({
+  name: 'create-link',
+  params: {
+    loader: () =>
+      import('@drodil/backstage-plugin-qeta-react').then(m => (
+        <m.CreateLinkButton compact />
+      )),
+  },
+});
+
+const entityContextMenuItem = EntityContextMenuItemBlueprint.make({
+  name: 'ask-question-context-menu',
+  params: {
+    icon: <RiQuestionAnswerLine />,
+    useProps() {
+      const { entity } = useEntity();
+      const configApi = useApi(configApiRef);
+      const supportedKinds = getSupportedEntityKinds(configApi);
+      const entityKind = entity.kind.toLowerCase();
+      const route = useRouteRef(askRouteRef);
+      return {
+        title: 'Ask a question',
+        href: `${route()}/?entity=${stringifyEntityRef(entity)}`,
+        disabled: !supportedKinds?.includes(entityKind),
+      };
+    },
+  },
+});
+
 /**
  * Backstage frontend plugin.
  */
@@ -257,6 +314,10 @@ const qetaPlugin = createFrontendPlugin({
     qetaMarkdownPluginsApiExtension,
     homePageTable,
     homeTimeline,
+    entityContextMenuItem,
+    askQuestionAction,
+    writeArticleAction,
+    createLinkAction,
   ],
 });
 
