@@ -1,74 +1,76 @@
 @layer components {
-    .card {
-        height: 100%;
-        /* Override BUI Card's `overflow: auto` so rows can grow to fit content
+  .card {
+    height: 100%;
+    /* Override BUI Card's `overflow: auto` so rows can grow to fit content
            instead of clipping/scrolling when a grid row stretches this card. */
-        overflow: visible;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: relative;
-        padding: 0;
-    }
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    padding: 0;
+  }
 
-    .card:hover::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-color: var(--bui-bg-neutral-1-hover);
-        border-radius: var(--bui-radius-2);
-        pointer-events: none;
-    }
+  .card:hover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--bui-bg-neutral-1-hover);
+    border-radius: var(--bui-radius-2);
+    pointer-events: none;
+  }
 
-    .cardHeader {
-        padding: var(--bui-space-4) var(--bui-space-4) var(--bui-space-2) var(--bui-space-4);
-        min-width: 0;
-    }
+  .cardHeader {
+    padding: var(--bui-space-4) var(--bui-space-4) var(--bui-space-2)
+      var(--bui-space-4);
+    min-width: 0;
+  }
 
-    .cardContent {
-        padding: var(--bui-space-4) var(--bui-space-4) var(--bui-space-4) var(--bui-space-4);
-        flex-grow: 1;
-    }
+  .cardContent {
+    padding: var(--bui-space-4) var(--bui-space-4) var(--bui-space-4)
+      var(--bui-space-4);
+    flex-grow: 1;
+  }
 
-    .stats {
-        color: var(--bui-fg-secondary);
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--bui-space-2);
-    }
+  .stats {
+    color: var(--bui-fg-secondary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--bui-space-2);
+  }
 
-    .stats > span {
-        display: inline-flex;
-        align-items: center;
-    }
+  .stats > span {
+    display: inline-flex;
+    align-items: center;
+  }
 
-    .experts {
-        margin-bottom: var(--bui-space-2);
-    }
+  .experts {
+    margin-bottom: var(--bui-space-2);
+  }
 
-    .description {
-        color: var(--bui-fg-primary);
-        line-height: 1.5;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+  .description {
+    color: var(--bui-fg-primary);
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-    .cardActions {
-        padding: var(--bui-space-4);
-        border-top: 1px solid var(--bui-border-1);
-    }
+  .cardActions {
+    padding: var(--bui-space-4);
+    border-top: 1px solid var(--bui-border-1);
+  }
 
-    .actionButton {
-        margin: 0 var(--bui-space-2);
-        text-transform: none;
-    }
+  .actionButton {
+    margin: 0 var(--bui-space-2);
+    text-transform: none;
+  }
 
-    .ellipsis {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: 180px;
-        display: block;
-    }
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+    display: block;
+  }
 }
