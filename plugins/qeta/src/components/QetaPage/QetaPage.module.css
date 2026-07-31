@@ -1,115 +1,116 @@
 @layer components {
-  .container {
-    width: 100%;
-    max-width: 1920px;
-    margin: 0 auto;
-  }
-
-  .row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: var(--bui-space-6);
-  }
-
-  .sidebarColumn {
-    padding: 0;
-    transition: all 0.2s ease-in-out;
-    flex-shrink: 0;
-    position: sticky;
-    top: var(--bui-space-4);
-    align-self: flex-start;
-    max-height: calc(100dvh - 20px);
-    overflow-x: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .sidebarColumn::-webkit-scrollbar {
-    display: none;
-  }
-
-  .rightSidebarColumn {
-    padding: 0;
-    transition: all 0.2s ease-in-out;
-    flex-shrink: 0;
-    position: sticky;
-    top: var(--bui-space-4);
-    align-self: flex-start;
-    max-height: calc(100vh - 150px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .rightSidebarColumn::-webkit-scrollbar {
-    display: none;
-  }
-
-  .mainColumn {
-    padding-right: 0;
-    min-width: 0;
-    flex: 1 1 auto;
-    transition: all 0.2s ease-in-out;
-  }
-
-  /*
-   * BUI's <Header> wraps its top/content/bottom sections in its own
-   * Container, which applies horizontal padding intended for full-bleed
-   * placement directly under <Page>. Since Header is rendered inside
-   * <Content> here (which already applies the page gutter), this results
-   * in double horizontal padding around the header specifically. Zero it
-   * out so Header's content aligns with the rest of the page content.
-   */
-  .mainColumn :global(.bui-HeaderTop),
-  .mainColumn :global(.bui-HeaderContent),
-  .mainColumn :global(.bui-HeaderBottom) {
-    padding: 0;
-  }
-
-  @media (min-width: 1280px) {
-    .sidebarColumn {
-      width: 180px;
-      min-width: 180px;
+    .container {
+        width: 100%;
+        max-width: 1920px;
+        margin: 0 auto;
     }
 
-    .sidebarColumnCompact {
-      width: 80px;
-      min-width: 80px;
+    .row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: var(--bui-space-6);
+    }
+
+    .sidebarColumn {
+        padding: 0;
+        transition: all 0.2s ease-in-out;
+        flex-shrink: 0;
+        position: sticky;
+        top: var(--bui-space-4);
+        align-self: flex-start;
+        max-height: calc(100dvh - 20px);
+        overflow-x: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .sidebarColumn::-webkit-scrollbar {
+        display: none;
     }
 
     .rightSidebarColumn {
-      width: 250px;
-      min-width: 250px;
+        padding: 0;
+        transition: all 0.2s ease-in-out;
+        flex-shrink: 0;
+        position: sticky;
+        top: var(--bui-space-4);
+        align-self: flex-start;
+        max-height: calc(100vh - 150px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 
-    .rightSidebarColumnCompact {
-      width: 72px;
-      min-width: 72px;
-    }
-  }
-
-  @media (max-width: 959px) {
-    .row {
-      flex-wrap: wrap;
-    }
-
-    .sidebarColumn {
-      width: 100%;
-      /* No margin-bottom here: .row's gap (var(--bui-space-6)) already
-         provides vertical spacing between wrapped flex items, so an
-         extra margin would double up the gutter with a different token. */
-      position: static;
-      max-height: none;
+    .rightSidebarColumn::-webkit-scrollbar {
+        display: none;
     }
 
     .mainColumn {
-      padding-left: 0;
+        padding-right: 0;
+        min-width: 0;
+        flex: 1 1 auto;
+        transition: all 0.2s ease-in-out;
     }
 
-    .rightSidebarColumn {
-      display: none;
+    /*
+     * BUI's <Header> wraps its top/content/bottom sections in its own
+     * Container, which applies horizontal padding intended for full-bleed
+     * placement directly under <Page>. Since Header is rendered inside
+     * <Content> here (which already applies the page gutter), this results
+     * in double horizontal padding around the header specifically. Zero it
+     * out so Header's content aligns with the rest of the page content.
+     */
+    .mainColumn :global(.bui-HeaderTop),
+    .mainColumn :global(.bui-HeaderContent),
+    .mainColumn :global(.bui-HeaderBottom) {
+        padding-left: 0;
+        padding-right: 0;
     }
-  }
+
+    @media (min-width: 1280px) {
+        .sidebarColumn {
+            width: 180px;
+            min-width: 180px;
+        }
+
+        .sidebarColumnCompact {
+            width: 80px;
+            min-width: 80px;
+        }
+
+        .rightSidebarColumn {
+            width: 250px;
+            min-width: 250px;
+        }
+
+        .rightSidebarColumnCompact {
+            width: 72px;
+            min-width: 72px;
+        }
+    }
+
+    @media (max-width: 959px) {
+        .row {
+            flex-wrap: wrap;
+        }
+
+        .sidebarColumn {
+            width: 100%;
+            /* No margin-bottom here: .row's gap (var(--bui-space-6)) already
+               provides vertical spacing between wrapped flex items, so an
+               extra margin would double up the gutter with a different token. */
+            position: static;
+            max-height: none;
+        }
+
+        .mainColumn {
+            padding-left: 0;
+        }
+
+        .rightSidebarColumn {
+            display: none;
+        }
+    }
 }

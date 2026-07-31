@@ -12,3 +12,5 @@ export { ButtonContainer } from './ButtonContainer';
 export { ContentHeaderButton } from './ContentHeaderButton';
 export { RankingButtons } from './RankingButtons';
 export { FollowPostButton } from './FollowPostButton';
+export { EditButton } from './EditButton';
+export { DeleteButton } from './DeleteButton';

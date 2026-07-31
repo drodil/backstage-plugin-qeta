@@ -7,6 +7,7 @@ import { TagChip } from './TagChip';
 import { Chip } from '../Utility/Chip.tsx';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
+import { Flex } from '@backstage/ui';
 
 export const TagsAndEntities = (props: {
   entity: PostResponse | CollectionResponse;
@@ -38,7 +39,7 @@ export const TagsAndEntities = (props: {
   const moreCount = tagsCount + entitiesCount;
 
   return (
-    <>
+    <Flex gap="1" align="center" style={{ flexWrap: 'wrap' }}>
       {tags && tags.map(tag => <TagChip key={tag} tag={tag} />)}
       {entities &&
         entities.map(component => (
@@ -49,6 +50,6 @@ export const TagsAndEntities = (props: {
           {t('common.more', { count: moreCount } as any)}
         </Chip>
       )}
-    </>
+    </Flex>
   );
 };

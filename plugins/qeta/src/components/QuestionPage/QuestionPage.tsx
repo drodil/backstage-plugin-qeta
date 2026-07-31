@@ -5,19 +5,20 @@ import {
   AIAnswerCard,
   AnswerCard,
   AnswerForm,
-  AskQuestionButton,
+  AuthorHeaderItem,
   ContentHeaderButton,
+  DeleteButton,
   DeletedBanner,
   DraftBanner,
+  EditButton,
+  FollowPostButton,
   ObsoleteBanner,
   PostHistoryButton,
   qetaTranslationRef,
   QuestionCard,
   RelativeTimeWithTooltip,
-  useQetaConfig,
-  UpdatedByLink,
   useQetaApi,
-  FollowPostButton,
+  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import {
   Answer,
@@ -31,6 +32,7 @@ import {
   Box,
   Flex,
   Header,
+  HeaderMetadataItem,
   Select,
   Skeleton,
   Text,
@@ -128,27 +130,36 @@ export const QuestionPage = () => {
     setAnswersCount(prev => prev - 1);
   };
 
-  const getDescription = (q: PostResponse) => {
-    return (
-      <>
-        <Text as="span" weight="bold">
-          {t('authorBox.postedAtTime')}{' '}
-          <RelativeTimeWithTooltip value={q.created} />
-          {' · '}
-        </Text>
-        {q.updated && (
-          <Text as="span" weight="bold">
-            {t('authorBox.updatedAtTime')}{' '}
-            <RelativeTimeWithTooltip value={q.updated} />{' '}
-            {t('authorBox.updatedBy')} <UpdatedByLink entity={q} />
-            {' · '}
-          </Text>
-        )}
-        <Text as="span" weight="bold">
-          {t('common.viewsCount', { count: views })}
-        </Text>
-      </>
-    );
+  const getMetadata = (q: PostResponse): HeaderMetadataItem[] => {
+    const metadata: HeaderMetadataItem[] = [
+      {
+        label: t('postHeader.postedAtTime'),
+        value: <RelativeTimeWithTooltip value={q.created} />,
+      },
+      {
+        label: t('postHeader.author'),
+        value: <AuthorHeaderItem userEntityRef={q.author} />,
+      },
+    ];
+
+    if (q.updated) {
+      metadata.push({
+        label: t('postHeader.updatedAtTime'),
+        value: <RelativeTimeWithTooltip value={q.updated} />,
+      });
+    }
+    if (q.updatedBy) {
+      metadata.push({
+        label: t('postHeader.updatedBy'),
+        value: <AuthorHeaderItem userEntityRef={q.updatedBy} />,
+      });
+    }
+    metadata.push({
+      label: t('postHeader.views'),
+      value: views,
+    });
+
+    return metadata;
   };
 
   if (disabled.questions) {
@@ -193,11 +204,15 @@ export const QuestionPage = () => {
     <>
       <Header
         title={question.title}
+        metadata={getMetadata(question)}
         customActions={
           <>
+            {question.canEdit && question.status !== 'obsolete' && (
+              <EditButton entity={question} compact />
+            )}
+            {question.canDelete && <DeleteButton entity={question} compact />}
             <PostHistoryButton post={question} onRestore={retry} />
             <FollowPostButton post={question} />
-            <AskQuestionButton />
             <ContentHeaderButton
               onClick={() => {
                 const element = document.getElementById('qeta-answer-form');
@@ -218,9 +233,6 @@ export const QuestionPage = () => {
           </>
         }
       />
-      <Box style={{ marginBottom: 'var(--bui-space-4)' }}>
-        {getDescription(question)}
-      </Box>
       {question.status === 'draft' && <DraftBanner />}
       {question.status === 'deleted' && <DeletedBanner />}
       {question.status === 'obsolete' && <ObsoleteBanner />}
@@ -229,7 +241,7 @@ export const QuestionPage = () => {
       {(question.status === 'active' || question.status === 'obsolete') && (
         <>
           <Flex justify="between" align="center" mt="6" mb="4">
-            <Text variant="title-small">
+            <Text variant="title-x-small">
               {t('common.answersCount', {
                 count: answersCount,
               })}

@@ -7,6 +7,7 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { ContentHeaderButton } from './ContentHeaderButton';
 import { useQetaConfig } from '../../hooks';
+import { Tooltip, TooltipTrigger } from '@backstage/ui';
 
 export const AskQuestionButton = (props: {
   entity?: string;
@@ -34,18 +35,40 @@ export const AskQuestionButton = (props: {
     params.set('tags', tags.join(','));
   }
 
+  if (!compact) {
+    return (
+      <OptionalRequirePermission
+        permission={qetaCreatePostPermission}
+        errorPage={<></>}
+      >
+        <ContentHeaderButton
+          to={
+            entity || tags ? `${askRoute()}?${params.toString()}` : askRoute()
+          }
+          color="primary"
+          icon={<RiQuestionLine />}
+        >
+          {t('askQuestionButton.title')}
+        </ContentHeaderButton>
+      </OptionalRequirePermission>
+    );
+  }
+
   return (
     <OptionalRequirePermission
       permission={qetaCreatePostPermission}
       errorPage={<></>}
     >
-      <ContentHeaderButton
-        to={entity || tags ? `${askRoute()}?${params.toString()}` : askRoute()}
-        color="primary"
-        icon={<RiQuestionLine />}
-      >
-        {!compact && t('askQuestionButton.title')}
-      </ContentHeaderButton>
+      <TooltipTrigger>
+        <ContentHeaderButton
+          to={
+            entity || tags ? `${askRoute()}?${params.toString()}` : askRoute()
+          }
+          color="primary"
+          icon={<RiQuestionLine />}
+        />
+        <Tooltip>{t('askQuestionButton.title')}</Tooltip>
+      </TooltipTrigger>
     </OptionalRequirePermission>
   );
 };

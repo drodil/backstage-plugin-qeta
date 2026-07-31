@@ -59,7 +59,11 @@ export const AnswerCard = (props: {
               <VoteButtons entity={answerEntity} post={question} />
               <LinkButton entity={answerEntity} />
             </VoteButtonContainer>
-            <Box className={styles.contentContainer}>
+            <Flex
+              className={styles.contentContainer}
+              gap="2"
+              direction="column"
+            >
               {editMode ? (
                 <AnswerForm
                   post={question}
@@ -121,7 +125,7 @@ export const AnswerCard = (props: {
                   </Flex>
                 </>
               )}
-            </Box>
+            </Flex>
           </Flex>
         </CardBody>
       </Card>

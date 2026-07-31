@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
-import { Tooltip, TooltipTrigger } from '@backstage/ui';
+import { Focusable, Tooltip, TooltipTrigger } from '@backstage/ui';
 
 export const RelativeTimeWithTooltip = (props: { value: Date | string }) => {
   const { value } = props;
@@ -21,9 +21,11 @@ export const RelativeTimeWithTooltip = (props: { value: Date | string }) => {
 
   return (
     <TooltipTrigger>
-      <span>
-        <RelativeTime value={date} />
-      </span>
+      <Focusable>
+        <span>
+          <RelativeTime value={date} />
+        </span>
+      </Focusable>
       <Tooltip>{date.toLocaleString(navigator.languages)}</Tooltip>
     </TooltipTrigger>
   );

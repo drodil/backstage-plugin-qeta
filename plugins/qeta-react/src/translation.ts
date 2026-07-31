@@ -33,6 +33,7 @@ export const qetaTranslationRef = createTranslationRef({
     common: {
       post: 'post',
       posts: 'Posts',
+      author: 'Author',
       experts: 'Experts',
       error: 'Error',
       tagExpert: 'This user is an expert in this area',
@@ -99,6 +100,8 @@ export const qetaTranslationRef = createTranslationRef({
       more: '+{{count}} more',
       showMore: 'Show more',
       showLess: 'Show less',
+      edit: 'Edit',
+      delete: 'Delete',
     },
     markdownEditor: {
       write: 'Write',
@@ -308,7 +311,7 @@ export const qetaTranslationRef = createTranslationRef({
       title: 'Write an article',
     },
     createLinkButton: {
-      title: 'Link',
+      title: 'Create a link',
     },
     createCollectionButton: {
       title: 'Create a collection',
@@ -749,10 +752,18 @@ export const qetaTranslationRef = createTranslationRef({
         updatedAsc: 'Updated (asc)',
       },
     },
+    postHeader: {
+      author: 'Author',
+      postedAtTime: 'Posted',
+      updatedAtTime: 'Updated',
+      updatedBy: 'Updated by',
+      answeredAtTime: 'Answered',
+      views: 'Views',
+    },
     authorBox: {
       postedAtTime: 'Posted',
       updatedAtTime: 'Updated',
-      updatedBy: 'by',
+      updatedBy: 'Updated by',
       answeredAtTime: 'Answered',
       correctAnswer: 'Correct answer',
     },

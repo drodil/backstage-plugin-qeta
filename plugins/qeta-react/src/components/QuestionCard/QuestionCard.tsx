@@ -4,35 +4,26 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { useEffect, useState } from 'react';
 import { VoteButtons } from '../Buttons/VoteButtons';
-import { DeleteModal } from '../Modals';
-import { RiDeleteBinLine, RiEditLine, RiRestartLine } from '@remixicon/react';
+import { RiRestartLine } from '@remixicon/react';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { LinkButton } from '../Buttons/LinkButton';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
-import { editQuestionRouteRef } from '../../routes';
-import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
 import { Box, Button, Card, CardBody, Flex } from '@backstage/ui';
 import { useIsModerator } from '../../hooks';
 import { qetaApiRef } from '../../api.ts';
-import { AuthorBoxes } from '../AuthorBox/AuthorBoxes.tsx';
 import styles from './QuestionCard.module.css';
 
 export const QuestionCard = (props: { question: PostResponse }) => {
   const { question } = props;
-  const navigate = useNavigate();
-  const editQuestionRoute = useRouteRef(editQuestionRouteRef);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [questionEntity, setQuestionEntity] = useState(question);
   const qetaApi = useApi(qetaApiRef);
   const { isModerator } = useIsModerator();
-  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
-  const handleDeleteModalClose = () => setDeleteModalOpen(false);
   const { t } = useTranslationRef(qetaTranslationRef);
   const onCommentAction = (q: PostResponse, _?: AnswerResponse) => {
     setQuestionEntity(q);
@@ -76,41 +67,6 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                 <Box style={{ flex: '1 1 0%', minWidth: 0 }}>
                   <TagsAndEntities entity={questionEntity} />
                   <Box className={styles.buttons}>
-                    {question.canEdit && question.status !== 'obsolete' && (
-                      <Button
-                        variant="secondary"
-                        size="small"
-                        iconStart={<RiEditLine size={16} />}
-                        onClick={() =>
-                          navigate(
-                            editQuestionRoute({
-                              id: question.id.toString(10),
-                            }),
-                          )
-                        }
-                        className="qetaQuestionCardEditBtn"
-                      >
-                        {t('questionPage.editButton')}
-                      </Button>
-                    )}
-                    {question.canDelete && (
-                      <>
-                        <Button
-                          variant="secondary"
-                          size="small"
-                          destructive
-                          onClick={handleDeleteModalOpen}
-                          iconStart={<RiDeleteBinLine size={16} />}
-                        >
-                          {t('deleteModal.deleteButton')}
-                        </Button>
-                        <DeleteModal
-                          open={deleteModalOpen}
-                          onClose={handleDeleteModalClose}
-                          entity={questionEntity}
-                        />
-                      </>
-                    )}
                     {isModerator && questionEntity.status === 'deleted' && (
                       <Button
                         variant="primary"
@@ -124,7 +80,6 @@ export const QuestionCard = (props: { question: PostResponse }) => {
                     )}
                   </Box>
                 </Box>
-                <AuthorBoxes entity={questionEntity} />
               </Flex>
             </Box>
           </Flex>

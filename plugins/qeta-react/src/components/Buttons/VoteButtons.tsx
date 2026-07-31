@@ -81,7 +81,7 @@ export const VoteButtons = (props: {
           variant={ownVote > 0 ? 'secondary' : 'tertiary'}
           className={ownVote > 0 ? 'qetaVoteUpSelected' : 'qetaVoteUp'}
           isDisabled={isDisabled()}
-          size="small"
+          size="medium"
           data-testid={`vote-up-btn-${ownVote > 0 ? 'selected' : 'unselected'}`}
           onPress={voteUp}
           icon={<RiArrowUpLine size={16} />}
@@ -89,7 +89,7 @@ export const VoteButtons = (props: {
         getVoteUpTooltip(),
       )}
       <Text
-        variant="title-small"
+        variant="title-x-small"
         className={styles.voteCount}
         data-testid="vote-count"
       >
@@ -101,7 +101,7 @@ export const VoteButtons = (props: {
           variant={ownVote < 0 ? 'secondary' : 'tertiary'}
           className={ownVote < 0 ? 'qetaVoteDownSelected' : 'qetaVoteDown'}
           isDisabled={isDisabled()}
-          size="small"
+          size="medium"
           data-testid={`vote-down-btn-${
             ownVote < 0 ? 'selected' : 'unselected'
           }`}
@@ -116,7 +116,7 @@ export const VoteButtons = (props: {
             {withTooltip(
               <ButtonIcon
                 aria-label="mark correct"
-                size="small"
+                size="medium"
                 variant="tertiary"
                 isDisabled={isDisabled(true)}
                 data-testid={`mark-correct-answer-btn-${

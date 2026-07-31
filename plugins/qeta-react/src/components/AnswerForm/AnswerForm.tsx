@@ -208,7 +208,7 @@ export const AnswerForm = (props: {
               setEdited(true);
             }}
           >
-            <Text as="h6" variant="title-small">
+            <Text as="h6" variant="title-x-small">
               Your answer
             </Text>
             {error && (

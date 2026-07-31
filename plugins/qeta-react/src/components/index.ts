@@ -10,6 +10,7 @@ export * from './AnswerCard';
 export * from './QuestionCard';
 export * from './HomePageCards';
 export * from './FollowedLists';
+export * from './AuthorBox';
 export * from './AnswerForm';
 export * from './RelativeTimeWithTooltip';
 export * from './Links';

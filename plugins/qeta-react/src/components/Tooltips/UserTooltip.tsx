@@ -1,8 +1,7 @@
-import { useIdentityApi, useUserFollow, useUserInfo } from '../../hooks';
+import { useUserInfo } from '../../hooks';
 import {
   Avatar,
   Box,
-  Button,
   Flex,
   Focusable,
   Skeleton,
@@ -13,7 +12,6 @@ import {
 import {
   RiCheckboxCircleLine,
   RiEyeLine,
-  RiEyeOffLine,
   RiFileTextLine,
   RiQuestionAnswerLine,
   RiQuestionLine,
@@ -48,11 +46,9 @@ type TooltipPlacement =
 const UserTooltipContent = ({
   entityRef,
   anonymous,
-  interactive,
 }: {
   entityRef: string;
   anonymous?: boolean;
-  interactive: boolean;
 }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const qetaApi = useApi(qetaApiRef);
@@ -92,12 +88,6 @@ const UserTooltipContent = ({
       requestCache.delete(entityRef);
     });
   }, [qetaApi, entityRef]);
-
-  const { value: currentUser } = useIdentityApi(
-    api => api.getBackstageIdentity(),
-    [],
-  );
-  const users = useUserFollow();
 
   if (!stats) {
     return (
@@ -166,33 +156,6 @@ const UserTooltipContent = ({
           </Text>
         </div>
       </div>
-      {interactive &&
-        !users.loading &&
-        currentUser?.userEntityRef !== entityRef && (
-          <Button
-            variant="secondary"
-            size="small"
-            className={styles.followButton}
-            iconStart={
-              users.isFollowingUser(entityRef) ? (
-                <RiEyeOffLine size={14} />
-              ) : (
-                <RiEyeLine size={14} />
-              )
-            }
-            onClick={() => {
-              if (users.isFollowingUser(entityRef)) {
-                users.unfollowUser(entityRef);
-              } else {
-                users.followUser(entityRef);
-              }
-            }}
-          >
-            {users.isFollowingUser(entityRef)
-              ? t('userButton.unfollow')
-              : t('userButton.follow')}
-          </Button>
-        )}
     </Flex>
   );
 };
@@ -200,22 +163,14 @@ const UserTooltipContent = ({
 export const UserTooltip = (props: {
   entityRef: string;
   anonymous?: boolean;
-  interactive?: boolean;
   children: ReactNode;
   className?: string;
   placement?: TooltipPlacement;
   enterDelay?: number;
   [key: string]: unknown;
 }) => {
-  const {
-    entityRef,
-    anonymous,
-    interactive = true,
-    children,
-    className,
-    placement,
-    enterDelay,
-  } = props;
+  const { entityRef, anonymous, children, className, placement, enterDelay } =
+    props;
 
   return (
     <TooltipTrigger delay={enterDelay}>
@@ -230,11 +185,7 @@ export const UserTooltip = (props: {
       </Focusable>
       <Tooltip placement={placement}>
         <Box p="2" maxWidth="300px">
-          <UserTooltipContent
-            entityRef={entityRef}
-            anonymous={anonymous}
-            interactive={interactive}
-          />
+          <UserTooltipContent entityRef={entityRef} anonymous={anonymous} />
         </Box>
       </Tooltip>
     </TooltipTrigger>

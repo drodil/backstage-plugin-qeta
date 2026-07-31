@@ -1,4 +1,3 @@
-import { RiEditLine } from '@remixicon/react';
 import { qetaCreatePostPermission } from '@drodil/backstage-plugin-qeta-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { writeRouteRef } from '../../routes';
@@ -7,6 +6,8 @@ import { qetaTranslationRef } from '../../translation.ts';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { ContentHeaderButton } from './ContentHeaderButton';
 import { useQetaConfig } from '../../hooks';
+import { RiBook2Line } from '@remixicon/react';
+import { Tooltip, TooltipTrigger } from '@backstage/ui';
 
 export const WriteArticleButton = (props: {
   entity?: string;
@@ -34,20 +35,44 @@ export const WriteArticleButton = (props: {
     params.set('tags', tags.join(','));
   }
 
+  if (!compact) {
+    return (
+      <OptionalRequirePermission
+        permission={qetaCreatePostPermission}
+        errorPage={<></>}
+      >
+        <ContentHeaderButton
+          to={
+            entity || tags
+              ? `${writeRoute()}?${params.toString()}`
+              : writeRoute()
+          }
+          color="primary"
+          icon={<RiBook2Line />}
+        >
+          {t('writeArticleButton.title')}
+        </ContentHeaderButton>
+      </OptionalRequirePermission>
+    );
+  }
+
   return (
     <OptionalRequirePermission
       permission={qetaCreatePostPermission}
       errorPage={<></>}
     >
-      <ContentHeaderButton
-        to={
-          entity || tags ? `${writeRoute()}?${params.toString()}` : writeRoute()
-        }
-        color="primary"
-        icon={<RiEditLine />}
-      >
-        {!compact && t('writeArticleButton.title')}
-      </ContentHeaderButton>
+      <TooltipTrigger>
+        <ContentHeaderButton
+          to={
+            entity || tags
+              ? `${writeRoute()}?${params.toString()}`
+              : writeRoute()
+          }
+          color="primary"
+          icon={<RiBook2Line />}
+        />
+        <Tooltip>{t('writeArticleButton.title')}</Tooltip>
+      </TooltipTrigger>
     </OptionalRequirePermission>
   );
 };

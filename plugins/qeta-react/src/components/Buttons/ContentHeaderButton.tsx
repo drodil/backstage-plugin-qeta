@@ -6,7 +6,7 @@ interface ContentHeaderButtonProps {
   to?: string;
   onClick?: () => void;
   icon: ReactElement;
-  children: ReactNode;
+  children?: ReactNode;
   color?: 'primary' | 'secondary' | 'default';
   disabled?: boolean;
 }
