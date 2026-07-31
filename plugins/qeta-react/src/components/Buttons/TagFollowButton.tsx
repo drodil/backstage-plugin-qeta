@@ -18,7 +18,8 @@ export const TagFollowButton = (props: { tag: string }) => {
         aria-label={t('tagButton.tooltip')}
         size="small"
         variant={isFollowing ? 'secondary' : 'tertiary'}
-        onPress={() => {
+        onClick={e => e.preventDefault()}
+        onPress={e => {
           if (isFollowing) {
             tags.unfollowTag(tag);
           } else {

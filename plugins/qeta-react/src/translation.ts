@@ -764,6 +764,11 @@ export const qetaTranslationRef = createTranslationRef({
       views: 'Views',
       clicks: 'Clicks',
     },
+    metadata: {
+      posts: 'Posts',
+      followers: 'Followers',
+      owner: 'Owner',
+    },
     authorBox: {
       postedAtTime: 'Posted',
       updatedAtTime: 'Updated',

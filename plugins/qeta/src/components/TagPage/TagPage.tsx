@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
   CreateLinkButton,
+  DeleteButton,
   DeleteModal,
   EditTagModal,
   PostsContainer,
@@ -12,20 +13,20 @@ import {
   TagsContainer,
   useIsModerator,
   useQetaConfig,
+  UserLink,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import {
-  RiDeleteBinLine,
-  RiEditLine,
-  RiGroupLine,
-  RiQuestionAnswerLine,
-} from '@remixicon/react';
+import { RiEditLine } from '@remixicon/react';
 import { useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { Button, Flex, Header, Text } from '@backstage/ui';
-import styles from './TagPage.module.css';
+import {
+  ButtonIcon,
+  Header,
+  HeaderMetadataItem,
+  Tooltip,
+  TooltipTrigger,
+} from '@backstage/ui';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const TagPage = () => {
@@ -80,80 +81,65 @@ export const TagPage = () => {
     return null;
   }
 
+  const getMetadata = (r?: TagResponse): HeaderMetadataItem[] => {
+    if (!r) {
+      return [];
+    }
+    const metadata: HeaderMetadataItem[] = [
+      {
+        label: t('metadata.posts'),
+        value: r.postsCount,
+      },
+      {
+        label: t('metadata.followers'),
+        value: r.followerCount,
+      },
+    ];
+    if (r?.experts && r.experts.length > 0) {
+      metadata.push({
+        label: t('common.experts'),
+        value: (
+          <>
+            {r.experts.map((e, i) => (
+              <>
+                <UserLink key={e} entityRef={e} />
+                {i === r.experts!.length - 1 ? '' : ','}
+              </>
+            ))}
+          </>
+        ),
+      });
+    }
+    return metadata;
+  };
+
   return (
     <>
       <Header
         title={tag ?? t('tagPage.defaultTitle', {})}
         description={resp?.description}
-        metadata={
-          resp && [
-            {
-              label: t('common.postsLabel', {
-                count: resp.postsCount,
-                itemType: 'post',
-              }),
-              value: (
-                <>
-                  <RiQuestionAnswerLine size={16} /> {resp.postsCount}
-                </>
-              ),
-            },
-            {
-              label: t('common.followersLabel', {
-                count: resp.followerCount,
-              }),
-              value: (
-                <>
-                  <RiGroupLine size={16} /> {resp.followerCount}
-                </>
-              ),
-            },
-          ]
-        }
+        metadata={getMetadata(resp)}
         customActions={
           <>
+            {resp?.canEdit && (
+              <TooltipTrigger>
+                <ButtonIcon
+                  icon={<RiEditLine size={16} />}
+                  variant="secondary"
+                  aria-label={t('common.edit')}
+                  onClick={() => setEditModalOpen(true)}
+                />
+                <Tooltip>{t('common.edit')}</Tooltip>
+              </TooltipTrigger>
+            )}
+            {resp && <DeleteButton entity={resp} compact />}
             {tag && <TagFollowButton tag={tag} />}
             {tag && <AskQuestionButton tags={tag ? [tag] : undefined} />}
             {tag && <WriteArticleButton tags={tag ? [tag] : undefined} />}
             {tag && <CreateLinkButton tags={tag ? [tag] : undefined} />}
-            {resp?.canEdit && (
-              <Button
-                variant="secondary"
-                size="small"
-                iconStart={<RiEditLine size={16} />}
-                onClick={() => setEditModalOpen(true)}
-              >
-                {t('tagButton.edit')}
-              </Button>
-            )}
-            {resp?.canDelete && (
-              <Button
-                variant="secondary"
-                size="small"
-                destructive
-                iconStart={<RiDeleteBinLine size={16} />}
-                onClick={() => setDeleteModalOpen(true)}
-              >
-                {t('tagButton.delete')}
-              </Button>
-            )}
           </>
         }
       />
-      {resp?.experts && resp.experts.length > 0 && (
-        <Flex className={styles.actions}>
-          <Text as="div" variant="body-small" color="secondary">
-            {t('common.experts')}
-            {': '}
-            {resp.experts.map((e, i) => (
-              <>
-                <EntityRefLink key={e} entityRef={e} />
-                {i === resp.experts!.length - 1 ? '' : ','}
-              </>
-            ))}
-          </Text>
-        </Flex>
-      )}
       {tag && (
         <PostsContainer
           tags={[tag ?? '']}

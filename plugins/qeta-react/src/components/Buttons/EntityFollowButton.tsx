@@ -19,6 +19,7 @@ export const EntityFollowButton = (props: { entityRef: string }) => {
         aria-label={t('entityButton.tooltip')}
         size="small"
         variant={isFollowing ? 'secondary' : 'tertiary'}
+        onClick={e => e.preventDefault()}
         onPress={() => {
           if (isFollowing) {
             entities.unfollowEntity(entityRef);

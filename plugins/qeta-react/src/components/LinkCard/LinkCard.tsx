@@ -10,10 +10,11 @@ import { useApi } from '@backstage/core-plugin-api';
 import { LinkButton } from '../Buttons/LinkButton';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { Box, Card, CardBody, Flex } from '@backstage/ui';
-import { AuthorBoxes } from '../AuthorBox/AuthorBoxes.tsx';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
 import { qetaApiRef } from '../../api.ts';
 import styles from './LinkCard.module.css';
+import { useFavicon } from '../../hooks';
+import { RiLinkM } from '@remixicon/react';
 
 export const LinkCard = (props: { link: PostResponse }) => {
   const { link } = props;
@@ -22,6 +23,7 @@ export const LinkCard = (props: { link: PostResponse }) => {
   const onCommentAction = (l: PostResponse, _?: AnswerResponse) => {
     setLinkEntity(l);
   };
+  const favicon = useFavicon(link.url);
 
   return (
     <>
@@ -33,6 +35,32 @@ export const LinkCard = (props: { link: PostResponse }) => {
             gap="2"
             className={styles.header}
           >
+            <Box>
+              {linkEntity.headerImage && (
+                <img
+                  src={linkEntity.headerImage}
+                  alt={linkEntity.title}
+                  onError={e => (e.currentTarget.style.display = 'none')}
+                  className={styles.headerImage}
+                />
+              )}
+              {favicon ? (
+                <img
+                  src={favicon}
+                  alt={link.title}
+                  style={{
+                    height: 24,
+                    width: 24,
+                    objectFit: 'contain',
+                  }}
+                  onError={e => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <RiLinkM size={24} />
+              )}
+            </Box>
             <a
               href={linkEntity.url}
               target="_blank"
@@ -51,17 +79,7 @@ export const LinkCard = (props: { link: PostResponse }) => {
               <OpenLinkButton entity={linkEntity} />
             </Flex>
           </Flex>
-          <Flex direction="column" gap="2" className={styles.content}>
-            {linkEntity.headerImage && (
-              <img
-                src={linkEntity.headerImage}
-                alt={linkEntity.title}
-                onError={e => (e.currentTarget.style.display = 'none')}
-                className={styles.headerImage}
-              />
-            )}
-            <MarkdownRenderer content={linkEntity.content} />
-          </Flex>
+          <MarkdownRenderer content={linkEntity.content} />
           <Flex
             align="start"
             justify="between"
@@ -71,7 +89,6 @@ export const LinkCard = (props: { link: PostResponse }) => {
             <Box className={styles.metaMain}>
               <TagsAndEntities entity={linkEntity} />
             </Box>
-            <AuthorBoxes entity={linkEntity} />
           </Flex>
         </CardBody>
       </Card>

@@ -774,6 +774,7 @@ export const PostForm = (props: PostFormProps) => {
           render={({ field, fieldState: { error: entityError } }) => (
             <EntitiesInput
               {...field}
+              label={t('entitiesInput.label')}
               singleValue={entityRef}
               error={entityError}
               title={getFormValues('title')}
@@ -799,6 +800,7 @@ export const PostForm = (props: PostFormProps) => {
             return (
               <TagInput
                 {...field}
+                label={t('tagsInput.label')}
                 error={tagError}
                 title={watch('title')}
                 content={watch('content')}

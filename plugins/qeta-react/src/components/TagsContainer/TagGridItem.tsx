@@ -4,6 +4,7 @@ import {
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
 import { TagFollowButton } from '../Buttons/TagFollowButton';
+import type { Columns } from '@backstage/ui';
 import {
   Box,
   ButtonIcon,
@@ -17,7 +18,6 @@ import {
   Tooltip,
   TooltipTrigger,
 } from '@backstage/ui';
-import type { Columns } from '@backstage/ui';
 import { useState } from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
@@ -86,11 +86,11 @@ export const TagGridItem = (props: {
         <ClickableLink href={href} ariaLabel={tag.tag}>
           <Flex align="center" className={classes.cardHeader}>
             <div className={styles.iconAvatar}>
-              <RiPriceTag3Line size={20} />
+              <RiPriceTag3Line size={16} />
             </div>
             <Box grow={1} minWidth="0">
               <TooltipTrigger>
-                <Text variant="title-small" weight="bold" truncate as="div">
+                <Text variant="title-x-small" weight="bold" truncate as="div">
                   {tag.tag}
                 </Text>
                 <Tooltip>{tag.tag}</Tooltip>

@@ -15,10 +15,10 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import {
   catalogApiRef,
+  EntityRefLink,
   useEntityPresentation,
 } from '@backstage/plugin-catalog-react';
 import { Alert, Header, Skeleton } from '@backstage/ui';
-import { RiGroupLine, RiQuestionAnswerLine } from '@remixicon/react';
 import { Entity } from '@backstage/catalog-model';
 
 const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
@@ -69,25 +69,26 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
         title={primaryTitle}
         description={description}
         metadata={[
-          {
-            label: t('common.postsLabel', {
-              count: resp.postsCount,
-              itemType: 'post',
-            }),
-            value: (
-              <>
-                <RiQuestionAnswerLine size={16} /> {resp.postsCount}
-              </>
-            ),
-          },
-          {
-            label: t('common.followersLabel', { count: resp.followerCount }),
-            value: (
-              <>
-                <RiGroupLine size={16} /> {resp.followerCount}
-              </>
-            ),
-          },
+          ...[
+            {
+              label: t('metadata.posts'),
+              value: resp.postsCount,
+            },
+            {
+              label: t('metadata.followers'),
+              value: resp.followerCount,
+            },
+          ],
+          ...(entity?.spec?.owner
+            ? [
+                {
+                  label: t('metadata.owner'),
+                  value: (
+                    <EntityRefLink entityRef={entity.spec.owner as string} />
+                  ),
+                },
+              ]
+            : []),
         ]}
         customActions={
           <>

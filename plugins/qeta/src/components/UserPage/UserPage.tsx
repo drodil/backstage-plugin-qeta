@@ -2,18 +2,15 @@ import { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import {
   AnswersContainer,
-  AskQuestionButton,
   CollectionsContainer,
-  CreateLinkButton,
   PostsContainer,
   qetaTranslationRef,
+  RelativeTimeWithTooltip,
   useIdentityApi,
+  useQetaApi,
+  useQetaConfig,
   UserFollowButton,
   useUserInfo,
-  WriteArticleButton,
-  useQetaApi,
-  RelativeTimeWithTooltip,
-  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { UserStatsContent } from './UserStatsContent';
 import { Flex, Header, Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
@@ -27,6 +24,7 @@ import {
   RiStackLine,
 } from '@remixicon/react';
 import styles from './UserPage.module.css';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
@@ -129,7 +127,11 @@ export const UserPage = () => {
             ? [
                 {
                   label: t('userPage.profileHeader', {}),
-                  value: secondaryTitle || user?.spec?.profile?.email,
+                  value: (
+                    <EntityRefLink entityRef={identity}>
+                      {secondaryTitle || user?.spec?.profile?.email}
+                    </EntityRefLink>
+                  ),
                 },
               ]
             : []),
@@ -145,6 +147,14 @@ export const UserPage = () => {
                 },
               ]
             : []),
+          ...(userStats?.summary?.totalFollowers
+            ? [
+                {
+                  label: t('metadata.followers'),
+                  value: userStats.summary.totalFollowers,
+                },
+              ]
+            : []),
         ]}
         customActions={
           <>
@@ -156,9 +166,6 @@ export const UserPage = () => {
                   aria-label={t('userPage.followUser', { name })}
                 />
               )}
-            <AskQuestionButton />
-            <WriteArticleButton />
-            <CreateLinkButton />
           </>
         }
       />

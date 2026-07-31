@@ -2,8 +2,8 @@ import { Box, Tag, TagGroup, TextField } from '@backstage/ui';
 import {
   CSSProperties,
   FocusEvent,
-  KeyboardEvent,
   forwardRef,
+  KeyboardEvent,
   useEffect,
   useMemo,
   useRef,
@@ -422,7 +422,7 @@ export const TagInput = forwardRef<
         <div className={styles.fieldWrapper}>
           <TextField
             className="qetaTagInput"
-            label={label ?? t('tagsInput.label')}
+            label={label ?? undefined}
             placeholder={t('tagsInput.placeholder')}
             description={error ? error.message : getHelperText()}
             isInvalid={error !== undefined}

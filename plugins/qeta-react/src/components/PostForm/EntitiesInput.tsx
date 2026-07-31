@@ -654,7 +654,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
               className="qetaEntitiesInput"
               isDisabled={disabled}
               isRequired={required}
-              label={label || t('entitiesInput.label')}
+              label={label ?? undefined}
               placeholder={placeholder || t('entitiesInput.placeholder')}
               description={helperText}
               isInvalid={error !== undefined}
@@ -690,7 +690,9 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
                   groupedOptions.map(group => (
                     <div key={group.kind || 'default'}>
                       {showGroups && group.entities.length > 0 && (
-                        <div className={styles.groupHeader}>{group.kind}</div>
+                        <div className={styles.groupHeader}>
+                          {group.kind.toLocaleUpperCase('en-US')}
+                        </div>
                       )}
                       {group.entities.map(option => {
                         const stringified = stringifyEntityRef(option);

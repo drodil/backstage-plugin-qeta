@@ -26,7 +26,6 @@ import {
 import { StatusChip } from '../Utility/StatusChip';
 import numeral from 'numeral';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
-import { FaviconItem } from '../FaviconItem';
 import { getPostDisplayDate } from '../../utils/utils';
 import { RankingButtons } from '../Buttons';
 import { useFavicon } from '../../hooks';
@@ -175,7 +174,6 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
         <Box className={styles.cardContent}>
           <Flex align="center" justify="between" className={styles.titleRow}>
             <Flex align="center" className={styles.titleGroup}>
-              {post.type === 'link' && <FaviconItem entity={post} />}
               <Text
                 as="div"
                 variant="title-small"
@@ -184,8 +182,6 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
               >
                 {post.title}
               </Text>
-            </Flex>
-            <Flex align="center">
               <StatusChip status={post.status} />
               {post.type === 'link' && <OpenLinkButton entity={post} />}
             </Flex>

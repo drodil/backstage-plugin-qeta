@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CalendarDate, parseDate } from '@internationalized/date';
 import { formatDate } from '../../utils/utils';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -66,6 +66,7 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
     },
     [onChange, fromDate, toDate, t],
   );
+  // TODO: Change to https://ui.backstage.io/components/date-range-picker
 
   return (
     <Box className={styles.root}>
