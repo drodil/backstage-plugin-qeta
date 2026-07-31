@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { TestApiProvider, mockApis } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { qetaApiRef } from '../../api';
 import { Chip } from '../Utility/Chip.tsx';
@@ -32,7 +32,7 @@ describe('TagTooltip', () => {
 
   it('renders standalone (no TagGroup ancestor) without throwing, wrapping a Chip child', () => {
     render(
-      <TagTooltip tag="backstage" interactive={false}>
+      <TagTooltip tag="backstage">
         <Chip>backstage</Chip>
       </TagTooltip>,
       { wrapper },
@@ -42,7 +42,7 @@ describe('TagTooltip', () => {
 
   it('renders standalone with a plain text child without throwing', () => {
     render(
-      <TagTooltip tag="backstage" interactive={false}>
+      <TagTooltip tag="backstage">
         <span>backstage</span>
       </TagTooltip>,
       { wrapper },

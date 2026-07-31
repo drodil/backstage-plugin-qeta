@@ -18,7 +18,7 @@ export const FaviconItem = (props: { entity: PostResponse }) => {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      style={{ display: 'inline-block', marginRight: 8 }}
+      style={{ display: 'inline-block', marginRight: 4 }}
       onClick={event => {
         event.stopPropagation();
         qetaApi.clickLink(entity.id);
@@ -35,23 +35,11 @@ export const FaviconItem = (props: { entity: PostResponse }) => {
             setError(true);
           }}
           style={{
-            display: 'inline-block',
-            verticalAlign: 'middle',
             objectFit: 'contain',
-            marginBottom: 5,
           }}
         />
       )}
-      {error && (
-        <RiLinkM
-          size={16}
-          style={{
-            display: 'inline-block',
-            marginBottom: 5,
-            verticalAlign: 'middle',
-          }}
-        />
-      )}
+      {error || (!favicon && <RiLinkM size={16} />)}
     </a>
   );
 };

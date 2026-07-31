@@ -12,13 +12,13 @@ import { RiFilterLine } from '@remixicon/react';
 import { useInfiniteScroll } from 'infinite-scroll-hook';
 
 import {
-  useQetaEntities,
   QetaEntitiesProps,
+  useQetaEntities,
 } from '../../hooks/useQetaEntities';
 import { QetaGridHeader } from '../Utility/QetaGridHeader';
 import {
-  FilterPanel,
   CommonFilterPanelProps,
+  FilterPanel,
   Filters,
 } from '../FilterPanel/FilterPanel';
 import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
@@ -29,7 +29,7 @@ import {
   QetaIdEntity,
   UserResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import { Fragment, useState, useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { useUserSettings } from '../../hooks/useUserSettings';
 import styles from './QetaEntityContainer.module.css';
 
@@ -207,7 +207,7 @@ export function QetaEntityContainer<
               </Grid.Root>
             )}
             {view === 'list' && renderListItem && (
-              <Card>
+              <Card className={styles.card}>
                 {items.map((item, index) => (
                   <Fragment
                     key={getKey ? getKey(item) : (item as any).id || index}

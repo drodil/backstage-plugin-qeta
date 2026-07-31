@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Flex,
+  Focusable,
   Skeleton,
   Text,
   Tooltip,
@@ -15,18 +16,18 @@ import {
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { useUserInfo } from '../../hooks';
-import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import {
-  RiCheckboxCircleLine,
   RiChat3Line,
+  RiCheckboxCircleLine,
   RiEyeLine,
   RiQuestionAnswerLine,
   RiThumbUpLine,
 } from '@remixicon/react';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles';
+import RelativeTime from 'react-relative-time';
 
 const cache: Map<string, { data: Post; timestamp: number }> = new Map();
 const requestCache: Map<string, Promise<Post | undefined>> = new Map();
@@ -127,7 +128,7 @@ const PostTooltipContent = ({
         />
         <Text variant="body-small">{name}</Text>
         <Text variant="body-x-small" color="secondary">
-          <RelativeTimeWithTooltip value={post.created} />
+          <RelativeTime value={post.created} />
         </Text>
       </Flex>
 
@@ -207,7 +208,15 @@ export const PostTooltip = (props: {
 
   return (
     <TooltipTrigger delay={enterDelay}>
-      {className ? <span className={className}>{children}</span> : children}
+      <Focusable>
+        {
+          (className ? (
+            <span className={className}>{children}</span>
+          ) : (
+            children
+          )) as ReactElement<any, any>
+        }
+      </Focusable>
       <Tooltip placement={placement}>
         <Box p="2" maxWidth="300px">
           <PostTooltipContent post={propsPost} id={id} />

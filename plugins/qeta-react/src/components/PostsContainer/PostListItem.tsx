@@ -159,12 +159,12 @@ export const PostListItem = (props: PostListItemProps) => {
 
       <Box className={`${styles.contentContainer} ${styles.contentWrapper}`}>
         <Box className={styles.titleContainer}>
-          <Box className={styles.titleWrapper}>
+          <Flex className={styles.titleWrapper} gap="1" align="center">
             {post.type === 'link' && <FaviconItem entity={post} />}
             <Text as="div" className={styles.title}>
               {post.title}
             </Text>
-          </Box>
+          </Flex>
 
           <Flex align="center" gap="2" className={styles.contentClickable}>
             {post.favorite && (

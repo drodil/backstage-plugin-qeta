@@ -375,15 +375,19 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
 
     const filteredOptions = useMemo(() => {
       const term = inputValue.trim().toLocaleLowerCase();
-      if (!term) {
-        return options;
-      }
-      return options.filter(option =>
-        getEntityTitle(option, { withType: false })
+      const selectedRefs = new Set(selectedEntities.map(stringifyEntityRef));
+      return options.filter(option => {
+        if (selectedRefs.has(stringifyEntityRef(option))) {
+          return false;
+        }
+        if (!term) {
+          return true;
+        }
+        return getEntityTitle(option, { withType: false })
           .toLocaleLowerCase()
-          .includes(term),
-      );
-    }, [inputValue, options]);
+          .includes(term);
+      });
+    }, [inputValue, options, selectedEntities]);
 
     useEffect(() => {
       searchCache.current.clear();

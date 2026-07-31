@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Flex,
+  Focusable,
   Skeleton,
   Text,
   Tooltip,
@@ -21,7 +22,7 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { UserStat } from '@drodil/backstage-plugin-qeta-common';
 import { qetaApiRef } from '../../api';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles';
@@ -218,7 +219,15 @@ export const UserTooltip = (props: {
 
   return (
     <TooltipTrigger delay={enterDelay}>
-      {className ? <span className={className}>{children}</span> : children}
+      <Focusable>
+        {
+          (className ? (
+            <span className={className}>{children}</span>
+          ) : (
+            children
+          )) as ReactElement<any, any>
+        }
+      </Focusable>
       <Tooltip placement={placement}>
         <Box p="2" maxWidth="300px">
           <UserTooltipContent

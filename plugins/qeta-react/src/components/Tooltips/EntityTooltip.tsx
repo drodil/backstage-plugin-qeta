@@ -1,26 +1,19 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { qetaApiRef } from '../../api';
 import { EntityResponse } from '@drodil/backstage-plugin-qeta-common';
-import { useEntityFollow } from '../../hooks';
 import {
   Box,
-  Button,
   Flex,
+  Focusable,
   Skeleton,
   Text,
   Tooltip,
   TooltipTrigger,
 } from '@backstage/ui';
-import {
-  RiEyeLine,
-  RiEyeOffLine,
-  RiFileTextLine,
-  RiGroupLine,
-  RiQuestionLine,
-} from '@remixicon/react';
+import { RiFileTextLine, RiGroupLine, RiQuestionLine } from '@remixicon/react';
 import { qetaTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles';
@@ -47,19 +40,12 @@ type TooltipPlacement =
   | 'right top'
   | 'right bottom';
 
-const EntityTooltipContent = ({
-  entity,
-  interactive,
-}: {
-  entity: Entity | string;
-  interactive: boolean;
-}) => {
+const EntityTooltipContent = ({ entity }: { entity: Entity | string }) => {
   const entityRef =
     typeof entity === 'string' ? entity : stringifyEntityRef(entity);
   const qetaApi = useApi(qetaApiRef);
   const { primaryTitle, secondaryTitle, Icon } = useEntityPresentation(entity);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const entitiesFollow = useEntityFollow();
   const styles = useTooltipStyles();
   const [resp, setResp] = useState<undefined | EntityResponse>();
 
@@ -134,59 +120,34 @@ const EntityTooltipContent = ({
           </Text>
         </div>
       </div>
-      {interactive && !entitiesFollow.loading && (
-        <Button
-          variant="secondary"
-          size="small"
-          className={styles.followButton}
-          iconStart={
-            entitiesFollow.isFollowingEntity(entityRef) ? (
-              <RiEyeOffLine size={14} />
-            ) : (
-              <RiEyeLine size={14} />
-            )
-          }
-          onClick={() => {
-            if (entitiesFollow.isFollowingEntity(entityRef)) {
-              entitiesFollow.unfollowEntity(entityRef);
-            } else {
-              entitiesFollow.followEntity(entityRef);
-            }
-          }}
-        >
-          {entitiesFollow.isFollowingEntity(entityRef)
-            ? t('entityButton.unfollow')
-            : t('entityButton.follow')}
-        </Button>
-      )}
     </Flex>
   );
 };
 
 export const EntityTooltip = (props: {
   entity: Entity | string;
-  interactive?: boolean;
   children: ReactNode;
   className?: string;
   placement?: TooltipPlacement;
   enterDelay?: number;
   [key: string]: unknown;
 }) => {
-  const {
-    entity,
-    interactive = true,
-    children,
-    className,
-    placement,
-    enterDelay,
-  } = props;
+  const { entity, children, className, placement, enterDelay } = props;
 
   return (
     <TooltipTrigger delay={enterDelay}>
-      {className ? <span className={className}>{children}</span> : children}
+      <Focusable>
+        {
+          (className ? (
+            <span className={className}>{children}</span>
+          ) : (
+            children
+          )) as ReactElement<any, any>
+        }
+      </Focusable>
       <Tooltip placement={placement}>
         <Box p="2" maxWidth="300px">
-          <EntityTooltipContent entity={entity} interactive={interactive} />
+          <EntityTooltipContent entity={entity} />
         </Box>
       </Tooltip>
     </TooltipTrigger>

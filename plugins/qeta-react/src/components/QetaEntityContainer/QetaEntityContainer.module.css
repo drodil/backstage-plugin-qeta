@@ -1,13 +1,17 @@
 @layer components {
-  .divider {
-    border: 0;
-    border-top: 1px solid var(--bui-border-1);
-    margin: 0;
-  }
+    .divider {
+        border: 0;
+        border-top: 1px solid var(--bui-border-1);
+        margin: 0;
+    }
 
-  .loadMoreSentry {
-    width: 100%;
-    margin-top: var(--bui-space-2);
-    text-align: center;
-  }
+    .loadMoreSentry {
+        width: 100%;
+        margin-top: var(--bui-space-2);
+        text-align: center;
+    }
+
+    .card {
+        padding: 0;
+    }
 }

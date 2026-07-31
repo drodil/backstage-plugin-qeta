@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
-import { Tooltip, TooltipTrigger } from '@backstage/ui';
+import { Focusable, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { Chip } from '../Utility/Chip.tsx';
 import { TagTooltip } from '../Tooltips';
 
@@ -36,14 +36,14 @@ export const TagChip = (props: {
   if (tooltip) {
     return (
       <TooltipTrigger delay={400}>
-        {content}
+        <Focusable>{content}</Focusable>
         <Tooltip>{tooltip}</Tooltip>
       </TooltipTrigger>
     );
   }
 
   return (
-    <TagTooltip tag={tag} interactive enterDelay={400}>
+    <TagTooltip tag={tag} enterDelay={400}>
       {content}
     </TagTooltip>
   );

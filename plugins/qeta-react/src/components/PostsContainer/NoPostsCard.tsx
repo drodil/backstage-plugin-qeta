@@ -50,7 +50,7 @@ export const NoPostsCard = (props: {
     <Card className={styles.card}>
       <CardBody>
         <Flex direction="column" align="center" justify="center" gap="4">
-          <Text variant="title-small">
+          <Text variant="title-x-small">
             {t('postsContainer.noItems', {
               itemType,
             })}

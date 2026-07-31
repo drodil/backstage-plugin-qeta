@@ -1,21 +1,17 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
-import { useTagsFollow } from '../../hooks';
 import {
-  Box,
-  Button,
   Flex,
+  Focusable,
   Skeleton,
   Text,
   Tooltip,
   TooltipTrigger,
 } from '@backstage/ui';
 import {
-  RiEyeLine,
-  RiEyeOffLine,
   RiFileTextLine,
   RiGroupLine,
   RiPriceTag3Line,
@@ -43,16 +39,9 @@ type TooltipPlacement =
   | 'right top'
   | 'right bottom';
 
-const TagTooltipContent = ({
-  tag,
-  interactive,
-}: {
-  tag: string;
-  interactive: boolean;
-}) => {
+const TagTooltipContent = ({ tag }: { tag: string }) => {
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const tags = useTagsFollow();
   const styles = useTooltipStyles();
   const [resp, setResp] = useState<undefined | TagResponse>();
 
@@ -138,60 +127,33 @@ const TagTooltipContent = ({
         </div>
       )}
       {resp.description && <MarkdownRenderer content={resp.description} />}
-      {interactive && !tags.loading && resp.id !== 0 && (
-        <Button
-          variant="secondary"
-          size="small"
-          className={styles.followButton}
-          iconStart={
-            tags.isFollowingTag(tag) ? (
-              <RiEyeOffLine size={14} />
-            ) : (
-              <RiEyeLine size={14} />
-            )
-          }
-          onClick={() => {
-            if (tags.isFollowingTag(tag)) {
-              tags.unfollowTag(tag);
-            } else {
-              tags.followTag(tag);
-            }
-          }}
-        >
-          {tags.isFollowingTag(tag)
-            ? t('tagButton.unfollow')
-            : t('tagButton.follow')}
-        </Button>
-      )}
     </Flex>
   );
 };
 
 export const TagTooltip = (props: {
   tag: string;
-  interactive?: boolean;
   children: ReactNode;
   className?: string;
   placement?: TooltipPlacement;
   enterDelay?: number;
   [key: string]: unknown;
 }) => {
-  const {
-    tag,
-    interactive = true,
-    children,
-    className,
-    placement,
-    enterDelay,
-  } = props;
+  const { tag, children, className, placement, enterDelay } = props;
 
   return (
     <TooltipTrigger delay={enterDelay}>
-      {className ? <span className={className}>{children}</span> : children}
+      <Focusable>
+        {
+          (className ? (
+            <span className={className}>{children}</span>
+          ) : (
+            children
+          )) as ReactElement<any, any>
+        }
+      </Focusable>
       <Tooltip placement={placement}>
-        <Box p="2" maxWidth="300px">
-          <TagTooltipContent tag={tag} interactive={interactive} />
-        </Box>
+        <TagTooltipContent tag={tag} />
       </Tooltip>
     </TooltipTrigger>
   );

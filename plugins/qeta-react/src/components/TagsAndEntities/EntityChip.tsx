@@ -21,7 +21,7 @@ export const EntityChip = (props: {
   const href = entityRoute({ entityRef });
 
   return (
-    <EntityTooltip entity={entity} enterDelay={400} interactive>
+    <EntityTooltip entity={entity} enterDelay={400}>
       <Chip
         size="small"
         style={props.style}

@@ -16,12 +16,12 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import numeral from 'numeral';
 import { PostTooltip } from '../Tooltips';
 import {
-  RiHistoryLine,
-  RiFireLine,
   RiBookmarkLine,
-  RiUserLine,
-  RiQuestionLine,
   RiErrorWarningLine,
+  RiFireLine,
+  RiHistoryLine,
+  RiQuestionLine,
+  RiUserLine,
 } from '@remixicon/react';
 import styles from './PostHighlightList.module.css';
 
@@ -119,7 +119,6 @@ export const PostHighlightListContent = (props: {
                   enterDelay={400}
                   enterNextDelay={400}
                   placement="left"
-                  interactive={false}
                 >
                   <Link to={href} className={styles.link} aria-label={q.title}>
                     <List>

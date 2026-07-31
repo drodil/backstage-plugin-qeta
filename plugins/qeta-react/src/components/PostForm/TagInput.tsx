@@ -111,6 +111,9 @@ const getFilteredTagOptions = ({
   const trimmedInput = inputValue.trim();
   const normalizedInput = trimmedInput.toLocaleLowerCase();
   const filteredOptions = options.filter(option => {
+    if (selectedTags.includes(option)) {
+      return false;
+    }
     if (!normalizedInput) {
       return true;
     }
@@ -361,7 +364,11 @@ export const TagInput = forwardRef<
   };
 
   const selectOption = (option: TagAutocompleteOption) => {
-    const nextValues = [...selectedTags, getTagOptionValue(option)];
+    const tagValue = getTagOptionValue(option);
+    if (selectedTags.includes(tagValue)) {
+      return;
+    }
+    const nextValues = [...selectedTags, tagValue];
     const tags = filterTags(nextValues);
     if (
       tags &&

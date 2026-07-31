@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, ReactElement, ReactNode } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import {
@@ -13,6 +13,7 @@ import {
   Box,
   Button,
   Flex,
+  Focusable,
   Skeleton,
   Text,
   Tooltip,
@@ -175,7 +176,15 @@ export const CollectionTooltip = (props: {
 
   return (
     <TooltipTrigger delay={enterDelay}>
-      {className ? <span className={className}>{children}</span> : children}
+      <Focusable>
+        {
+          (className ? (
+            <span className={className}>{children}</span>
+          ) : (
+            children
+          )) as ReactElement<any, any>
+        }
+      </Focusable>
       <Tooltip placement={placement}>
         <Box p="2" maxWidth="300px">
           <CollectionTooltipContent

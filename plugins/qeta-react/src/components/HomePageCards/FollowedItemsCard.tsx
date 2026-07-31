@@ -13,32 +13,32 @@ import {
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import {
-  tagRouteRef,
-  userRouteRef,
   collectionRouteRef,
   entityRouteRef,
+  tagRouteRef,
+  userRouteRef,
 } from '../../routes';
 import {
-  useTagsFollow,
-  useEntityFollow,
-  useUserFollow,
   useCollectionsFollow,
+  useEntityFollow,
   useQetaConfig,
+  useTagsFollow,
+  useUserFollow,
 } from '../../hooks';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import {
-  EntityTooltip,
-  UserTooltip,
-  TagTooltip,
   CollectionTooltip,
+  EntityTooltip,
+  TagTooltip,
+  UserTooltip,
 } from '../Tooltips';
 import {
-  RiPriceTag3Line,
-  RiPlayListLine,
-  RiShapesLine,
   RiNotification3Line,
+  RiPlayListLine,
+  RiPriceTag3Line,
+  RiShapesLine,
 } from '@remixicon/react';
 import styles from './FollowedItemsCard.module.css';
 
@@ -49,7 +49,6 @@ const EntityItem = ({ entityRef }: { entityRef: string }) => {
   return (
     <EntityTooltip
       entity={entityRef}
-      interactive={false}
       enterDelay={400}
       enterNextDelay={400}
       placement="left"
@@ -140,7 +139,6 @@ export const FollowedItemsCard = () => {
               <TagTooltip
                 key={tag}
                 tag={tag}
-                interactive={false}
                 enterDelay={400}
                 enterNextDelay={400}
                 placement="left"

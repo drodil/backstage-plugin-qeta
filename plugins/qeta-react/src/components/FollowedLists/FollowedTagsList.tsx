@@ -1,4 +1,4 @@
-import { useTagsFollow, useQetaConfig } from '../../hooks';
+import { useQetaConfig, useTagsFollow } from '../../hooks';
 import { RightList, RightListContainer } from '../Utility/RightList';
 import { List, ListRow } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -29,7 +29,6 @@ export const FollowedTagsList = () => {
             <TagTooltip
               key={tag}
               tag={tag}
-              interactive={false}
               enterDelay={400}
               enterNextDelay={400}
               placement="left"

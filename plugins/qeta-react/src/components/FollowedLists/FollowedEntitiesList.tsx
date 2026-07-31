@@ -18,7 +18,6 @@ const FollowedEntityItem = ({ entityRef }: { entityRef: string }) => {
   return (
     <EntityTooltip
       entity={entityRef}
-      interactive={false}
       enterDelay={400}
       enterNextDelay={400}
       placement="left"

@@ -54,6 +54,20 @@
     transition: all 0.2s ease-in-out;
   }
 
+  /*
+   * BUI's <Header> wraps its top/content/bottom sections in its own
+   * Container, which applies horizontal padding intended for full-bleed
+   * placement directly under <Page>. Since Header is rendered inside
+   * <Content> here (which already applies the page gutter), this results
+   * in double horizontal padding around the header specifically. Zero it
+   * out so Header's content aligns with the rest of the page content.
+   */
+  .mainColumn :global(.bui-HeaderTop),
+  .mainColumn :global(.bui-HeaderContent),
+  .mainColumn :global(.bui-HeaderBottom) {
+    padding: 0;
+  }
+
   @media (min-width: 1280px) {
     .sidebarColumn {
       width: 180px;

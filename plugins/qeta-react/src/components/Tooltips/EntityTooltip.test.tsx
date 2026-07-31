@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { TestApiProvider, mockApis } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
@@ -54,7 +54,7 @@ describe('EntityTooltip', () => {
 
   it('renders standalone (no TagGroup ancestor) without throwing, wrapping a Chip child', () => {
     render(
-      <EntityTooltip entity={testEntity} interactive={false}>
+      <EntityTooltip entity={testEntity}>
         <Chip>Test Service</Chip>
       </EntityTooltip>,
       { wrapper },
