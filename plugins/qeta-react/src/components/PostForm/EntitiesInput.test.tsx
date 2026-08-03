@@ -185,7 +185,7 @@ describe('EntitiesInput', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: /Test Service/ }),
+        screen.getByRole('option', { name: /Test Service/ }),
       ).toBeInTheDocument();
     });
   });
@@ -418,11 +418,11 @@ describe('EntitiesInput', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Other User' }),
+        screen.getByRole('option', { name: 'Other User' }),
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Other User' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Other User' }));
 
     await waitFor(() => {
       expect(screen.getByRole('textbox')).toHaveValue('Other User');
@@ -459,7 +459,7 @@ describe('EntitiesInput', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: /Alpha Service/ }),
+        screen.getByRole('option', { name: /Alpha Service/ }),
       ).toBeInTheDocument();
     });
 
@@ -474,7 +474,7 @@ describe('EntitiesInput', () => {
     await waitFor(() => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(2);
       expect(
-        screen.getByRole('button', { name: /Test Service/ }),
+        screen.getByRole('option', { name: /Test Service/ }),
       ).toBeInTheDocument();
     });
 
@@ -494,10 +494,10 @@ describe('EntitiesInput', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: /Alpha Service/ }),
+        screen.getByRole('option', { name: /Alpha Service/ }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: /Test Service/ }),
+        screen.getByRole('option', { name: /Test Service/ }),
       ).toBeInTheDocument();
     });
   });
