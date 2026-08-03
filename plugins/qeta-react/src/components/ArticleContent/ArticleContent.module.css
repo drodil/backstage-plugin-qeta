@@ -1,8 +1,4 @@
 @layer components {
-  .authorRow {
-    margin-bottom: var(--bui-space-2);
-  }
-
   .headerImage {
     margin-top: var(--bui-space-4);
     margin-bottom: var(--bui-space-4);

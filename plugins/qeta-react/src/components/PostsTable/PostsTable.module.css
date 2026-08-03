@@ -9,10 +9,6 @@
     gap: var(--bui-space-2);
   }
 
-  .filterButton {
-    border-radius: var(--bui-radius-2);
-  }
-
   .tableContainer {
     overflow-x: auto;
   }

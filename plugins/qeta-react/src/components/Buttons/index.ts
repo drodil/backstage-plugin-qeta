@@ -8,7 +8,6 @@ export { CreateCollectionButton } from './CreateCollectionButton';
 export { AddToCollectionButton } from './AddToCollectionButton';
 export { UserFollowButton } from './UserFollowButton';
 export { CollectionFollowButton } from './CollectionFollowButton';
-export { ButtonContainer } from './ButtonContainer';
 export { ContentHeaderButton } from './ContentHeaderButton';
 export { RankingButtons } from './RankingButtons';
 export { FollowPostButton } from './FollowPostButton';

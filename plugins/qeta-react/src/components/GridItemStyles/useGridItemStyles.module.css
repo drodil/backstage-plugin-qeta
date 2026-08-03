@@ -32,45 +32,11 @@
     flex-grow: 1;
   }
 
-  .stats {
-    color: var(--bui-fg-secondary);
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--bui-space-2);
-  }
-
-  .stats > span {
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .experts {
-    margin-bottom: var(--bui-space-2);
-  }
-
   .description {
     color: var(--bui-fg-primary);
     line-height: 1.5;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  .cardActions {
-    padding: var(--bui-space-4);
-    border-top: 1px solid var(--bui-border-1);
-  }
-
-  .actionButton {
-    margin: 0 var(--bui-space-2);
-    text-transform: none;
-  }
-
-  .ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 180px;
-    display: block;
   }
 }

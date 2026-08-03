@@ -13,8 +13,4 @@
     margin-top: var(--bui-space-2);
     margin-bottom: var(--bui-space-2);
   }
-
-  .error {
-    color: var(--bui-fg-danger);
-  }
 }

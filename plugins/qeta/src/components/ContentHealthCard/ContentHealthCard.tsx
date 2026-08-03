@@ -66,7 +66,7 @@ export const ContentHealthCard = ({ post }: { post: Post }) => {
           </Text>
         )}
         <div className={styles.scoreContainer}>
-          <Text className={styles.scoreLabel}>
+          <Text className={styles.scoreLabel} weight="bold">
             {t('contentHealth.healthScore', {
               score: String(post.healthScore),
             })}

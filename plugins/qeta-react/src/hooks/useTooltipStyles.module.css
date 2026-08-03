@@ -1,23 +1,4 @@
 @layer components {
-  .tooltip {
-    background-color: var(--bui-bg);
-    color: var(--bui-fg-primary);
-    font-size: 0.875rem;
-    border: 1px solid var(--bui-border-1);
-    border-radius: var(--bui-radius-2);
-    box-shadow: var(--bui-shadow-2);
-    padding: var(--bui-space-2);
-    max-width: 300px;
-  }
-
-  .tooltipArrow {
-    color: var(--bui-bg);
-  }
-
-  .tooltipArrow::before {
-    border: 1px solid var(--bui-border-1);
-  }
-
   .statsRow {
     display: flex;
     align-items: center;

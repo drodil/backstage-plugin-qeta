@@ -156,11 +156,6 @@
     display: inline-block;
   }
 
-  .tocHeader {
-    margin-top: 0.5em;
-    margin-bottom: 0;
-  }
-
   .toc {
     margin-top: 0.5em;
     margin-left: 0.2em;

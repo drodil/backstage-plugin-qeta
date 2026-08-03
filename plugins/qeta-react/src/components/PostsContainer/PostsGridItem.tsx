@@ -92,7 +92,6 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
   const renderHeaderMedia = () => {
     if (post.headerImage) {
       return (
-        // eslint-disable-next-line jsx-a11y/alt-text
         <img
           onError={e => (e.currentTarget.style.display = 'none')}
           height={140}
@@ -199,7 +198,7 @@ export const PostsGridItem = (props: PostsGridItemProps) => {
         </Box>
       </Box>
       <Box className={styles.cardContentFooter}>
-        <TagsAndEntities entity={post} />
+        <TagsAndEntities entity={post} tagsLimit={5} entitiesLimit={3} />
         <Box className={styles.footer}>
           <Box className={styles.statsContainer}>
             <Box className={styles.statsGroup}>

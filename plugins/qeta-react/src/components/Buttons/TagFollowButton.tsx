@@ -19,7 +19,7 @@ export const TagFollowButton = (props: { tag: string }) => {
         size="small"
         variant={isFollowing ? 'secondary' : 'tertiary'}
         onClick={e => e.preventDefault()}
-        onPress={e => {
+        onPress={() => {
           if (isFollowing) {
             tags.unfollowTag(tag);
           } else {

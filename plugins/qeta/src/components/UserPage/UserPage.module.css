@@ -1,19 +1,4 @@
 @layer components {
-  .headerContent {
-    display: flex;
-    align-items: center;
-    padding: var(--bui-space-6) 0;
-  }
-
-  .avatar {
-    margin-right: var(--bui-space-6);
-  }
-
-  .nameRow {
-    display: flex;
-    align-items: center;
-  }
-
   .tabPanel {
     padding: var(--bui-space-6) 0;
   }

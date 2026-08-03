@@ -8,14 +8,8 @@ export const qetaTranslationRef = createTranslationRef({
   id: 'qeta',
   messages: {
     pluginName: 'Q&A',
-    answerList: {
-      errorLoading: 'Could not load answers',
-      noAnswers: 'No answers',
-      limitSelect: 'Answers per page',
-    },
     timeline: {
       title: 'Timeline',
-      loadMore: 'Load more',
       loading: 'Loading...',
       postedQuestion: 'posted question',
       postedArticle: 'posted article',
@@ -33,7 +27,6 @@ export const qetaTranslationRef = createTranslationRef({
     common: {
       post: 'post',
       posts: 'Posts',
-      author: 'Author',
       experts: 'Experts',
       error: 'Error',
       tagExpert: 'This user is an expert in this area',
@@ -54,12 +47,9 @@ export const qetaTranslationRef = createTranslationRef({
       followersPlain: 'followers',
       views: 'views',
       postStats: 'Post stats',
-      anonymousAuthor: 'Anonymous',
       search: 'Search',
       favorite: 'Favorite',
       obsolete: 'Obsolete',
-      readMore: 'Read more',
-      clear: 'Clear search',
       cancel: 'Cancel',
       answersCount_zero: 'No answers',
       answersCount_one: '{{count}} answer',
@@ -82,9 +72,6 @@ export const qetaTranslationRef = createTranslationRef({
       collections_zero: 'No collections',
       collections_one: '{{count}} collection',
       collections_other: '{{count}} collections',
-      entities_zero: 'No entities',
-      entities_one: '{{count}} entity',
-      entities_other: '{{count}} entities',
       followers_zero: 'No followers',
       followers_one: '{{count}} follower',
       followers_other: '{{count}} followers',
@@ -132,12 +119,10 @@ export const qetaTranslationRef = createTranslationRef({
         "By enabling this, other users won't be able to see you as an author",
       answerAnonymously: 'Answer anonymously',
       postAnonymously: 'Post anonymously',
-      info: 'Your name will not be shown to others.',
     },
     fileInput: {
       label: 'Header image',
       helperText: 'URL of the header image to be used',
-      uploadHeaderImage: 'Upload image',
       preview: 'Preview image',
       dropHere: 'Drop your image here',
       dragAndDrop: 'Drag and drop an image here',
@@ -218,7 +203,6 @@ export const qetaTranslationRef = createTranslationRef({
         existingPost: 'Save',
         publish: 'Publish',
       },
-      successPosting: 'Your {{type}} was posted successfully!',
       submitting: 'Posting...',
       savingDraft: 'Saving draft...',
       saveDraft: 'Save as draft',
@@ -292,7 +276,6 @@ export const qetaTranslationRef = createTranslationRef({
         entityLink: 'Create a link about {{entity}}',
         newLink: 'New link',
       },
-      editButton: 'Edit this link',
     },
     collectionCreatePage: {
       title: {
@@ -644,14 +627,10 @@ export const qetaTranslationRef = createTranslationRef({
     articlePage: {
       notFound: 'Could not find the article',
       errorLoading: 'Could not load article',
-      editButton: 'Edit this article',
-      restoreButton: 'Restore this article',
-      deleteButton: 'Delete this article',
     },
     postHistory: {
       title: 'Post History',
       buttonLabel: 'History',
-      disabledTooltip: 'Revision history is not enabled for this content type',
       notActiveTooltip: 'History is only available for active posts',
       noRevisions: 'No revisions found for this post.',
       errorLoading: 'Could not load post history',
@@ -666,14 +645,10 @@ export const qetaTranslationRef = createTranslationRef({
       closeButton: 'Close',
       restoreSuccess: 'Post restored successfully',
       restoreError: 'Failed to restore revision',
-      revisionTitle: 'Revision from {{date}}',
     },
     linkPage: {
       notFound: 'Could not find the link',
       errorLoading: 'Could not load link',
-      editButton: 'Edit this link',
-      restoreButton: 'Restore this link',
-      deleteButton: 'Delete this link',
     },
     templateList: {
       errorLoading: 'Could not load templates',
@@ -718,10 +693,6 @@ export const qetaTranslationRef = createTranslationRef({
         placeholder: 'Search...',
       },
     },
-    collectionPage: {
-      description: 'Description',
-      info: 'You can add questions and articles to the collection from question and article pages',
-    },
     searchResult: {
       created: 'Created',
     },
@@ -734,14 +705,12 @@ export const qetaTranslationRef = createTranslationRef({
         'This is a draft post. Please edit and publish it to make it visible to others.',
       deletedStatus:
         'This post has been deleted. You can delete it permanently or restore it.',
-      obsoleteTitle: 'Obsolete Content',
       obsoleteStatus:
         'This post has been marked as obsolete. It may contain outdated information. Commenting and answering are disabled.',
       answerButton: 'Answer',
       correctAnswer: 'Has correct answer',
       sortAnswers: {
         label: 'Sort answers',
-        menuLabel: 'Sort answers menu',
         default: 'Default',
         createdDesc: 'Created (desc)',
         createdAsc: 'Created (asc)',
@@ -760,7 +729,6 @@ export const qetaTranslationRef = createTranslationRef({
       postedAtTime: 'Posted',
       updatedAtTime: 'Updated',
       updatedBy: 'Updated by',
-      answeredAtTime: 'Answered',
       views: 'Views',
       clicks: 'Clicks',
     },
@@ -813,7 +781,6 @@ export const qetaTranslationRef = createTranslationRef({
         "Date range invalid, 'To date' should be greater than 'From date'",
       range: {
         label: 'Posted',
-        default: 'Select',
         last7days: 'Last 7 days',
         last30days: 'Last 30 days',
         custom: 'Custom',
@@ -1057,22 +1024,16 @@ export const qetaTranslationRef = createTranslationRef({
         'By following a collection, you will get notified when ever a new post is added to the collection',
     },
     tagButton: {
-      follow: 'Follow',
-      unfollow: 'Unfollow',
       edit: 'Edit',
       delete: 'Delete',
       tooltip:
         'By following a tag, you will get notified when ever a new post with that tag is posted',
     },
     entityButton: {
-      follow: 'Follow',
-      unfollow: 'Unfollow',
       tooltip:
         'By following an entity, you will get notified when ever a new post for that entity is posted',
     },
     userButton: {
-      follow: 'Follow',
-      unfollow: 'Unfollow',
       tooltip:
         'By following a user, you will get notified when ever a new post by that user is posted',
     },
@@ -1100,19 +1061,8 @@ export const qetaTranslationRef = createTranslationRef({
         title: 'Title',
         author: 'Author',
         created: 'Created',
-        score: 'Health Score',
         healthScore: 'Health',
         actions: 'Actions',
-      },
-      actions: {
-        markObsolete: 'Mark Obsolete',
-        markValid: 'Mark Valid',
-      },
-      dialog: {
-        title: 'Mark Post as Obsolete',
-        commentLabel: 'Comment (Optional)',
-        cancel: 'Cancel',
-        confirm: 'Mark as Obsolete',
       },
     },
   },

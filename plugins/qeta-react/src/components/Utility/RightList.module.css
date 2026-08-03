@@ -4,6 +4,11 @@
     margin-bottom: 1em;
   }
 
+  .container + .container {
+    border-top: 1px solid var(--bui-border-1);
+    padding-top: var(--bui-space-3);
+  }
+
   .desktopOnly {
     display: none;
   }

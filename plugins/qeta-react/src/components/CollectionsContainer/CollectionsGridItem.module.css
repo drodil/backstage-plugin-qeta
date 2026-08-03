@@ -9,14 +9,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--bui-bg-neutral-1-hover);
-    color: var(--bui-fg-secondary);
-  }
-
-  .image {
-    height: 140px;
-    width: 100%;
-    display: block;
+    background: linear-gradient(
+      145deg,
+      var(--bui-bg-neutral-2) 0%,
+      var(--bui-bg-neutral-3) 50%,
+      var(--bui-bg-neutral-4) 100%
+    );
+    color: var(--bui-fg-tertiary);
+    border-bottom: 1px solid var(--bui-border-1);
     object-fit: cover;
   }
 
@@ -41,5 +41,7 @@
     border-radius: var(--bui-radius-2);
     width: 100%;
     height: 100%;
+    border: 1px solid var(--bui-border-1);
+    transition: background-color 0.2s ease-in-out;
   }
 }

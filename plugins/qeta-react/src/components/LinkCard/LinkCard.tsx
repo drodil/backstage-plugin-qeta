@@ -27,7 +27,7 @@ export const LinkCard = (props: { link: PostResponse }) => {
 
   return (
     <>
-      <Card className={styles.root}>
+      <Card>
         <CardBody>
           <Flex
             align="center"

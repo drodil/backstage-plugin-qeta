@@ -8,6 +8,7 @@
     transition: background-color 0.15s ease-in-out;
     position: relative;
     cursor: pointer;
+    overflow: hidden;
   }
 
   .root:hover {
@@ -41,6 +42,12 @@
     min-width: 36px;
   }
 
+  /* text contentWrapper must shrink within the outer flex row */
+  .avatar + .contentWrapper {
+    flex: 1;
+    min-width: 0;
+  }
+
   .text {
     white-space: nowrap;
     overflow: hidden;
@@ -55,11 +62,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 450px;
-    display: inline-block;
-    vertical-align: bottom;
     color: inherit;
     text-decoration: none;
+    min-width: 0;
+    flex: 1 1 0;
   }
 
   .action {
@@ -70,5 +76,7 @@
     opacity: 0.6;
     font-size: 0.8em;
     margin-left: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 }

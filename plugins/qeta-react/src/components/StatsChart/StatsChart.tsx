@@ -353,7 +353,7 @@ const StatsLineChart = (props: {
             stroke={stat.color}
           />
         ))}
-        <CartesianGrid stroke="#ccc" />
+        <CartesianGrid stroke={props.isDark ? '#4f4f4f' : '#e0e0e0'} />
         <XAxis
           dataKey="date"
           tickFormatter={(tick: string) => new Date(tick).toDateString()}
@@ -440,6 +440,15 @@ export const StatsChart = (props: {
                 opacity: isActive ? 1 : 0.5,
               }}
               onClick={() => toggleStat(stat.name)}
+              onKeyDown={(e: React.KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  toggleStat(stat.name);
+                }
+              }}
+              tabIndex={0}
+              role="button"
+              aria-pressed={isActive}
             >
               <Text
                 as="div"

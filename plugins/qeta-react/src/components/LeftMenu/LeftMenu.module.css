@@ -1,7 +1,7 @@
 @layer components {
   .leftMenu {
     top: 0;
-    width: 220px;
+    width: 100%;
     padding-top: 0;
     padding-bottom: var(--bui-space-4);
     transition: width 0.2s ease-in-out;
@@ -11,7 +11,6 @@
   }
 
   .leftMenuCompact {
-    width: 70px;
     overflow-x: hidden;
   }
 
@@ -26,14 +25,13 @@
   }
 
   .outsidePopup {
-    padding-right: var(--bui-space-4);
+    padding-right: var(--bui-space-2);
   }
 
   .menuItemLink {
     display: block;
     text-decoration: none;
     color: inherit;
-    max-width: 75%;
     border-radius: var(--bui-radius-2);
     transition: all 0.2s ease-in-out;
     margin-bottom: var(--bui-space-1);
@@ -46,12 +44,12 @@
   .menuItemLinkCompact {
     display: flex;
     justify-content: center;
-    width: 40px;
-    max-width: 40px;
+    width: 100%;
   }
 
   .selectedMenuItem {
     color: var(--bui-ring);
+    background-color: var(--bui-bg-neutral-2);
   }
 
   .selectedMenuItem :global(svg) {
@@ -83,7 +81,7 @@
   }
 
   .toggleButton {
-    margin-top: 8px;
+    margin-top: var(--bui-space-2);
   }
 
   .label {

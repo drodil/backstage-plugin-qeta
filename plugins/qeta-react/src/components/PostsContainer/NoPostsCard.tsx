@@ -9,7 +9,12 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useEntityQueryParameter } from '../../hooks/useEntityQueryParameter';
 import { Button, Card, CardBody, Flex, Text } from '@backstage/ui';
-import { RiEditLine, RiLinkM, RiQuestionLine } from '@remixicon/react';
+import {
+  RiEditLine,
+  RiFileTextLine,
+  RiLinkM,
+  RiQuestionLine,
+} from '@remixicon/react';
 import styles from './NoPostsCard.module.css';
 
 export const NoPostsCard = (props: {
@@ -50,6 +55,14 @@ export const NoPostsCard = (props: {
     <Card className={styles.card}>
       <CardBody>
         <Flex direction="column" align="center" justify="center" gap="4">
+          <div className={styles.iconContainer}>
+            {selectByPostType(
+              type ?? 'question',
+              <RiQuestionLine size={32} />,
+              <RiFileTextLine size={32} />,
+              <RiLinkM size={32} />,
+            )}
+          </div>
           <Text variant="title-x-small">
             {t('postsContainer.noItems', {
               itemType,

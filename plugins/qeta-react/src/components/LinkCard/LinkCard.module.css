@@ -14,10 +14,6 @@
     color: var(--bui-fg-info);
   }
 
-  .content {
-    padding-bottom: var(--bui-space-2);
-  }
-
   .headerImage {
     display: block;
     max-width: 90%;
@@ -33,9 +29,5 @@
   .metaMain {
     flex: 1 1 0%;
     min-width: 0;
-  }
-
-  .buttons {
-    margin-top: var(--bui-space-4);
   }
 }

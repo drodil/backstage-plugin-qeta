@@ -28,6 +28,11 @@
     transition: all 0.2s;
   }
 
+  .statBox:focus-visible {
+    outline: 2px solid var(--bui-ring);
+    outline-offset: 2px;
+  }
+
   .chartContainer {
     position: relative;
     width: 100%;
@@ -43,7 +48,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: color-mix(
+      in srgb,
+      var(--bui-bg-surface-1) 85%,
+      transparent
+    );
     z-index: 1;
   }
 

@@ -7,11 +7,17 @@
     display: flex;
     align-items: center;
     gap: var(--bui-space-4);
+    margin-top: var(--bui-space-3);
     margin-bottom: var(--bui-space-2);
   }
 
   .scoreLabel {
     flex-grow: 1;
+  }
+
+  .scoreValue {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
 
   .progressTrack {

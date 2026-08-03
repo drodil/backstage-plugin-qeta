@@ -1,10 +1,4 @@
 @layer components {
-  /* Row hover/cursor affordance matches the shared convention in
-         Utility/clickable.module.css (same --bui-bg-neutral-1-hover token,
-         same transition timing); kept as its own rule rather than composing
-         from that file since .root also carries the row's layout/box-model
-         properties. focus-within highlights the row when the child .overlayLink
-         anchor receives keyboard focus, since .root itself has no tabIndex. */
   .root {
     display: flex;
     flex-direction: row;
@@ -42,9 +36,6 @@
     pointer-events: none;
   }
 
-  /* Layering helper only (keeps nested interactive children clickable above
-         .overlayLink) — no hover/cursor styling of its own, so nothing to
-         compose from the shared clickable convention here. */
   .contentClickable {
     position: relative;
     z-index: 10;
@@ -103,8 +94,7 @@
   }
 
   .content {
-    color: var(--bui-fg-primary);
-    opacity: 0.9;
+    color: var(--bui-fg-secondary);
     margin: 0 0 4px 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;

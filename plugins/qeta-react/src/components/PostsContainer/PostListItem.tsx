@@ -215,7 +215,7 @@ export const PostListItem = (props: PostListItemProps) => {
 
         <Box className={styles.tagsRow}>
           <Box className={`${styles.tags} ${styles.contentClickable}`}>
-            <TagsAndEntities entity={post} />
+            <TagsAndEntities entity={post} tagsLimit={5} entitiesLimit={3} />
           </Box>
           <Box
             className={`${styles.authorBoxContainer} ${styles.contentClickable}`}
