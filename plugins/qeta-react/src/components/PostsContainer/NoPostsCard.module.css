@@ -1,0 +1,18 @@
+@layer components {
+  .card {
+    margin-top: var(--bui-space-8);
+    border: 1px dashed var(--bui-border-2);
+  }
+
+  .iconContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: var(--bui-radius-full);
+    background-color: var(--bui-bg-neutral-2);
+    color: var(--bui-fg-secondary);
+    margin-bottom: var(--bui-space-2);
+  }
+}

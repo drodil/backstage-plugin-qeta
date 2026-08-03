@@ -6,85 +6,36 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { TagFollowButton } from '../Buttons/TagFollowButton';
 import {
-  Box,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
+  ButtonIcon,
+  Flex,
   Menu,
   MenuItem,
+  MenuTrigger,
+  Text,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
+  TooltipTrigger,
+} from '@backstage/ui';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
 import { EditTagModal } from './EditTagModal';
 import DOMPurify from 'dompurify';
 import { DeleteModal } from '../Modals';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import LocalOfferIcon from '@material-ui/icons/LocalOffer';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import PeopleIcon from '@material-ui/icons/People';
-import LinkIcon from '@material-ui/icons/Link';
-import DescriptionIcon from '@material-ui/icons/Description';
+import {
+  RiDeleteBinLine,
+  RiEditLine,
+  RiFileTextLine,
+  RiGroupLine,
+  RiLink,
+  RiMore2Line,
+  RiPriceTag3Line,
+  RiQuestionLine,
+} from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { Link } from 'react-router-dom';
 
 import { useListItemStyles, useQetaConfig } from '../../hooks';
-
-const useStyles = makeStyles(theme => ({
-  icon: {
-    marginRight: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  content: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    minWidth: 0,
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(1),
-  },
-  tagName: {
-    fontWeight: 600,
-    fontSize: '1rem',
-  },
-  description: {
-    color: theme.palette.text.secondary,
-    fontSize: '0.875rem',
-    marginTop: theme.spacing(0.5),
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  statsWrapper: {
-    display: 'flex',
-    gap: theme.spacing(3),
-    marginLeft: theme.spacing(2),
-    alignItems: 'center',
-    [theme.breakpoints.down('sm')]: {
-      display: 'none',
-    },
-  },
-  statItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(0.5),
-    color: theme.palette.text.secondary,
-  },
-  actions: {
-    display: 'flex',
-    alignItems: 'center',
-    marginLeft: theme.spacing(2),
-    gap: theme.spacing(1),
-  },
-}));
+import styles from './TagListItem.module.css';
 
 export const TagListItem = (props: {
   tag: TagResponse;
@@ -94,26 +45,11 @@ export const TagListItem = (props: {
   const { tag, onTagEdit, isModerator } = props;
   const tagRoute = useRouteRef(tagRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const classes = useStyles();
   const listItemClasses = useListItemStyles();
   const { disabled } = useQetaConfig();
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setAnchorEl(event.currentTarget);
-  };
-  const handleMenuClose = (
-    _event: {},
-    _reason: 'backdropClick' | 'escapeKeyDown',
-  ) => {
-    setAnchorEl(null);
-  };
-
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const handleEditModalOpen = (event: React.MouseEvent<HTMLElement>) => {
-    handleMenuClose(event as any, 'backdropClick');
+  const handleEditModalOpen = () => {
     setEditModalOpen(true);
   };
   const handleEditModalClose = () => {
@@ -122,8 +58,7 @@ export const TagListItem = (props: {
   };
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const handleDeleteModalOpen = (event: React.MouseEvent<HTMLElement>) => {
-    handleMenuClose(event as any, 'backdropClick');
+  const handleDeleteModalOpen = () => {
     setDeleteModalOpen(true);
   };
   const handleDeleteModalClose = () => {
@@ -136,116 +71,98 @@ export const TagListItem = (props: {
   return (
     <>
       <Link to={href} className={listItemClasses.root}>
-        <LocalOfferIcon className={classes.icon} />
-        <Box className={classes.content}>
-          <Box className={classes.header}>
-            <Typography className={classes.tagName}>{tag.tag}</Typography>
-          </Box>
+        <RiPriceTag3Line className={styles.icon} size={20} />
+        <div className={styles.content}>
+          <Text weight="bold">{tag.tag}</Text>
           {tag.description && (
-            <Typography className={classes.description}>
+            <Text
+              className={styles.description}
+              variant="body-small"
+              color="secondary"
+            >
               {DOMPurify.sanitize(
                 truncate(removeMarkdownFormatting(tag.description), 100),
               )}
-            </Typography>
+            </Text>
           )}
-        </Box>
+        </div>
 
-        <Box className={classes.statsWrapper}>
+        <div className={styles.statsWrapper}>
           {!disabled.questions && (
-            <Tooltip title={t('common.questions')} arrow>
-              <div className={classes.statItem}>
-                <QuestionAnswerIcon fontSize="small" />
-                <Typography variant="body2">{tag.questionsCount}</Typography>
+            <TooltipTrigger>
+              <div className={styles.statItem}>
+                <RiQuestionLine size={16} />
+                <Text variant="body-small">{tag.questionsCount}</Text>
               </div>
-            </Tooltip>
+              <Tooltip>{t('common.questions')}</Tooltip>
+            </TooltipTrigger>
           )}
           {!disabled.articles && (
-            <Tooltip title={t('common.articles')} arrow>
-              <div className={classes.statItem}>
-                <DescriptionIcon fontSize="small" />
-                <Typography variant="body2">{tag.articlesCount}</Typography>
+            <TooltipTrigger>
+              <div className={styles.statItem}>
+                <RiFileTextLine size={16} />
+                <Text variant="body-small">{tag.articlesCount}</Text>
               </div>
-            </Tooltip>
+              <Tooltip>{t('common.articles')}</Tooltip>
+            </TooltipTrigger>
           )}
           {!disabled.links && (
-            <Tooltip title={t('common.links')} arrow>
-              <div className={classes.statItem}>
-                <LinkIcon fontSize="small" />
-                <Typography variant="body2">{tag.linksCount}</Typography>
+            <TooltipTrigger>
+              <div className={styles.statItem}>
+                <RiLink size={16} />
+                <Text variant="body-small">{tag.linksCount}</Text>
               </div>
-            </Tooltip>
+              <Tooltip>{t('common.links')}</Tooltip>
+            </TooltipTrigger>
           )}
-          <Tooltip title={t('common.followersPlain')} arrow>
-            <div className={classes.statItem}>
-              <PeopleIcon fontSize="small" />
-              <Typography variant="body2">{tag.followerCount}</Typography>
+          <TooltipTrigger>
+            <div className={styles.statItem}>
+              <RiGroupLine size={16} />
+              <Text variant="body-small">{tag.followerCount}</Text>
             </div>
-          </Tooltip>
-        </Box>
+            <Tooltip>{t('common.followersPlain')}</Tooltip>
+          </TooltipTrigger>
+        </div>
 
-        <Box
-          className={classes.actions}
+        <Flex
+          align="center"
+          className={styles.actions}
           onClick={e => {
             e.preventDefault();
             e.stopPropagation();
           }}
         >
           <TagFollowButton tag={tag.tag} />
-          {tag.canEdit || tag.canDelete ? (
-            <>
-              <IconButton
+          {(tag.canEdit || tag.canDelete) && (
+            <MenuTrigger>
+              <ButtonIcon
                 aria-label="settings"
-                onClick={handleMenuClick}
+                icon={<RiMore2Line />}
+                variant="tertiary"
                 size="small"
-              >
-                <MoreVertIcon />
-              </IconButton>
-              <Menu
-                id="tag-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                getContentAnchorEl={null}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-              >
+              />
+              <Menu>
                 {tag.canEdit && (
                   <MenuItem
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleEditModalOpen(e);
-                    }}
+                    iconStart={<RiEditLine size={16} />}
+                    onAction={handleEditModalOpen}
                   >
-                    <ListItemIcon style={{ minWidth: '32px' }}>
-                      <EditIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary={t('tagButton.edit')} />
+                    {t('tagButton.edit')}
                   </MenuItem>
                 )}
                 {tag.canDelete && (
                   <MenuItem
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleDeleteModalOpen(e);
-                    }}
+                    iconStart={<RiDeleteBinLine size={16} />}
+                    color="danger"
+                    onAction={handleDeleteModalOpen}
                   >
-                    <ListItemIcon style={{ minWidth: '32px' }}>
-                      <DeleteIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary={t('tagButton.delete')} />
+                    {t('tagButton.delete')}
                   </MenuItem>
                 )}
               </Menu>
-            </>
-          ) : null}
-        </Box>
+            </MenuTrigger>
+          )}
+        </Flex>
       </Link>
       <EditTagModal
         tag={tag}

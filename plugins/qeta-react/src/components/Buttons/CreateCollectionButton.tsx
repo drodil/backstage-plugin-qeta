@@ -1,4 +1,4 @@
-import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
+import { RiPlayListAddLine } from '@remixicon/react';
 import { qetaCreateCollectionPermission } from '@drodil/backstage-plugin-qeta-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { collectionCreateRouteRef } from '../../routes';
@@ -25,7 +25,7 @@ export const CreateCollectionButton = () => {
       <ContentHeaderButton
         to={createRoute()}
         color="primary"
-        icon={<PlayListAddIcon />}
+        icon={<RiPlayListAddLine />}
       >
         {t('createCollectionButton.title')}
       </ContentHeaderButton>

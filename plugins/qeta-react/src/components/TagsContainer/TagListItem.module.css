@@ -1,0 +1,47 @@
+@layer components {
+  .icon {
+    margin-right: var(--bui-space-4);
+    color: var(--bui-fg-secondary);
+    flex-shrink: 0;
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .statsWrapper {
+    display: flex;
+    gap: var(--bui-space-6);
+    margin-left: var(--bui-space-4);
+    align-items: center;
+  }
+
+  @media (max-width: 599px) {
+    .statsWrapper {
+      display: none;
+    }
+  }
+
+  .statItem {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-1);
+    color: var(--bui-fg-secondary);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    margin-left: var(--bui-space-4);
+    gap: var(--bui-space-2);
+  }
+}

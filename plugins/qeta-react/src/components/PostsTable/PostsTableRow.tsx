@@ -1,15 +1,18 @@
 import { Post, selectByPostType } from '@drodil/backstage-plugin-qeta-common';
-import { Link } from '@backstage/core-components';
+import { Link } from 'react-router-dom';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { AuthorLink } from '../Links';
-import { Chip, TableCell, TableRow } from '@material-ui/core';
+import { Chip } from '../Utility/Chip.tsx';
 import { capitalize } from 'lodash';
-import HelpOutlined from '@material-ui/icons/HelpOutlined';
-import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
-import LinkIcon from '@material-ui/icons/Link';
+import {
+  RiFileTextLine,
+  RiLinkM,
+  RiQuestionAnswerLine,
+} from '@remixicon/react';
 import { getPostDisplayDate } from '../../utils/utils';
+import styles from './PostsTableRow.module.css';
 
 export const PostsTableRow = (props: { post: Post; showIcon?: boolean }) => {
   const { post } = props;
@@ -25,36 +28,36 @@ export const PostsTableRow = (props: { post: Post; showIcon?: boolean }) => {
   );
 
   return (
-    <TableRow key={post.id}>
-      <TableCell>
+    <tr key={post.id}>
+      <td>
         <Link to={route({ id: post.id.toString(10) })}>{post.title}</Link>
-      </TableCell>
-      <TableCell>
+      </td>
+      <td>
         <AuthorLink entity={post} />
-      </TableCell>
+      </td>
       {props.showIcon && (
-        <TableCell>
+        <td className={styles.typeCell}>
           <Chip
-            color="secondary"
             size="small"
-            label={`${capitalize(post.type)}`}
             icon={selectByPostType(
               post.type,
-              <HelpOutlined />,
-              <CollectionsBookmarkIcon />,
-              <LinkIcon />,
+              <RiQuestionAnswerLine size={14} />,
+              <RiFileTextLine size={14} />,
+              <RiLinkM size={14} />,
             )}
-          />
-        </TableCell>
+          >
+            {capitalize(post.type)}
+          </Chip>
+        </td>
       )}
-      <TableCell>
+      <td>
         <RelativeTimeWithTooltip value={getPostDisplayDate(post)} />
-      </TableCell>
-      <TableCell>
+      </td>
+      <td>
         <RelativeTimeWithTooltip
           value={post.updated ? post.updated : getPostDisplayDate(post)}
         />
-      </TableCell>
-    </TableRow>
+      </td>
+    </tr>
   );
 };

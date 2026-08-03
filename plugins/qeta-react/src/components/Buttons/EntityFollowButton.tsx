@@ -1,7 +1,6 @@
-import NotificationsActive from '@material-ui/icons/NotificationsActive';
-import NotificationsNone from '@material-ui/icons/NotificationsNone';
+import { RiNotification3Fill, RiNotification3Line } from '@remixicon/react';
 import { useEntityFollow } from '../../hooks';
-import { IconButton, Tooltip } from '@material-ui/core';
+import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 
@@ -12,27 +11,31 @@ export const EntityFollowButton = (props: { entityRef: string }) => {
   if (entities.loading) {
     return null;
   }
+  const isFollowing = entities.isFollowingEntity(entityRef);
 
   return (
-    <Tooltip title={t('entityButton.tooltip')}>
-      <IconButton
-        disableRipple
+    <TooltipTrigger>
+      <ButtonIcon
+        aria-label={t('entityButton.tooltip')}
         size="small"
-        color={entities.isFollowingEntity(entityRef) ? 'secondary' : 'default'}
-        onClick={() => {
-          if (entities.isFollowingEntity(entityRef)) {
+        variant={isFollowing ? 'secondary' : 'tertiary'}
+        onClick={e => e.preventDefault()}
+        onPress={() => {
+          if (isFollowing) {
             entities.unfollowEntity(entityRef);
           } else {
             entities.followEntity(entityRef);
           }
         }}
-      >
-        {entities.isFollowingEntity(entityRef) ? (
-          <NotificationsActive />
-        ) : (
-          <NotificationsNone />
-        )}
-      </IconButton>
-    </Tooltip>
+        icon={
+          isFollowing ? (
+            <RiNotification3Fill size={16} />
+          ) : (
+            <RiNotification3Line size={16} />
+          )
+        }
+      />
+      <Tooltip>{t('entityButton.tooltip')}</Tooltip>
+    </TooltipTrigger>
   );
 };

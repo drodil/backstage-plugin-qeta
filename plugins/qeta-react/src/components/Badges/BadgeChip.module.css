@@ -1,0 +1,95 @@
+@layer components {
+  .badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: var(--bui-space-3);
+    border-radius: var(--bui-radius-3);
+    width: 100%;
+    min-height: 140px;
+    height: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--bui-border-1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    user-select: none;
+    position: relative;
+  }
+
+  .count {
+    position: absolute;
+    top: 18px;
+    right: -12px;
+    background-color: white !important;
+    color: black !important;
+    border-radius: var(--bui-radius-1);
+    display: flex;
+    padding: var(--bui-space-1);
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .bronze {
+    background: linear-gradient(135deg, #cd7f32 0%, #a0522d 100%);
+  }
+
+  .bronze * {
+    color: #ffffff;
+  }
+
+  .silver {
+    background: linear-gradient(135deg, #e8e8e8 0%, #a8a8a8 100%);
+  }
+
+  .silver * {
+    color: #333333;
+  }
+
+  .gold {
+    background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+  }
+
+  .gold * {
+    color: #333333;
+  }
+
+  .diamond {
+    background: linear-gradient(135deg, #b9f2ff 0%, #7ec8e3 100%);
+  }
+
+  .diamond * {
+    color: #333333;
+  }
+
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--bui-space-1);
+  }
+
+  .name {
+    font-weight: 600;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    margin-bottom: var(--bui-space-1);
+  }
+
+  .level {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.85;
+    margin-bottom: var(--bui-space-1);
+  }
+
+  .description {
+    font-size: 0.7rem;
+    line-height: 1.3;
+    opacity: 0.9;
+  }
+}

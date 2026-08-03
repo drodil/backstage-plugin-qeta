@@ -1,0 +1,13 @@
+@layer components {
+  .voteCount {
+    user-select: none;
+  }
+
+  .correctAnswerSelected {
+    color: var(--bui-fg-positive);
+  }
+
+  .correctAnswer {
+    color: var(--bui-fg-secondary);
+  }
+}

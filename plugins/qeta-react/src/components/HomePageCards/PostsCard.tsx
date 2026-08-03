@@ -1,7 +1,8 @@
 import { PostsQuery, PostType } from '@drodil/backstage-plugin-qeta-common';
 import { PostListItem } from '../PostsContainer';
 import { useQetaApi, useQetaConfig } from '../../hooks';
-import { Card, CardHeader, Divider, Grid } from '@material-ui/core';
+import { Card, CardBody, CardHeader } from '@backstage/ui';
+import styles from './PostsCard.module.css';
 
 export const PostsCard = (props: {
   title: string;
@@ -37,17 +38,15 @@ export const PostsCard = (props: {
 
   return (
     <Card>
-      <CardHeader style={{ paddingBottom: '8px' }} title={props.title} />
-      <Grid container spacing={2}>
-        {posts.map(question => {
-          return (
-            <Grid item xs={12} key={question.id}>
-              <PostListItem post={question} type={props.postType} />
-              <Divider />
-            </Grid>
-          );
-        })}
-      </Grid>
+      <CardHeader className={styles.header}>{props.title}</CardHeader>
+      <CardBody className={styles.body}>
+        {posts.map((question, index) => (
+          <div key={question.id}>
+            <PostListItem post={question} type={props.postType} />
+            {index < posts.length - 1 && <div className={styles.divider} />}
+          </div>
+        ))}
+      </CardBody>
     </Card>
   );
 };

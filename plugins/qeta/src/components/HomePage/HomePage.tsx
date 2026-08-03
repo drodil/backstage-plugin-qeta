@@ -1,6 +1,5 @@
 import {
   AskQuestionButton,
-  ContentHeader,
   CreateLinkButton,
   ImpactCard,
   qetaTranslationRef,
@@ -11,57 +10,11 @@ import {
   FollowedItemsCard,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box, Header } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import HomeOutlined from '@material-ui/icons/HomeOutlined';
-
-const useStyles = makeStyles(theme => ({
-  flexRow: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: theme.spacing(2),
-    width: '100%',
-    marginBottom: theme.spacing(2),
-    alignItems: 'stretch',
-  },
-  suggestionColumn: {
-    flex: '3 1 350px',
-    display: 'flex',
-    minWidth: 0,
-    '& > *': {
-      flex: 1,
-      maxHeight: 460,
-      overflowY: 'auto',
-    },
-  },
-  followedColumn: {
-    flex: '1 1 250px',
-    display: 'flex',
-    minWidth: 0,
-    '& > *': {
-      flex: 1,
-      maxHeight: 460,
-      overflowY: 'auto',
-    },
-  },
-  equalColumn: {
-    flex: '1 1 395px',
-    display: 'flex',
-    minWidth: 0,
-    '& > *': {
-      flex: 1,
-      maxHeight: 460,
-      overflowY: 'auto',
-    },
-  },
-  timelineWrapper: {
-    width: '100%',
-    marginTop: theme.spacing(2),
-  },
-}));
+import styles from './HomePage.module.css';
 
 export const HomePage = () => {
-  const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
 
@@ -72,40 +25,42 @@ export const HomePage = () => {
 
   return (
     <>
-      <ContentHeader
+      <Header
         title={t('homePage.title')}
-        titleIcon={<HomeOutlined fontSize="large" />}
-      >
-        <AskQuestionButton />
-        <WriteArticleButton />
-        <CreateLinkButton />
-      </ContentHeader>
+        customActions={
+          <>
+            <AskQuestionButton />
+            <WriteArticleButton />
+            <CreateLinkButton />
+          </>
+        }
+      />
 
       {(showSuggestions || showFollowed) && (
-        <Box className={classes.flexRow}>
+        <Box className={styles.flexRow}>
           {showSuggestions && (
-            <Box className={classes.suggestionColumn}>
+            <Box className={styles.suggestionColumn}>
               <SuggestionsCard />
             </Box>
           )}
           {showFollowed && (
-            <Box className={classes.followedColumn}>
+            <Box className={styles.followedColumn}>
               <FollowedItemsCard />
             </Box>
           )}
         </Box>
       )}
 
-      <Box className={classes.flexRow}>
-        <Box className={classes.equalColumn}>
+      <Box className={styles.flexRow}>
+        <Box className={styles.equalColumn}>
           <ImpactCard />
         </Box>
-        <Box className={classes.equalColumn}>
+        <Box className={styles.equalColumn}>
           <CommunityActivityCard />
         </Box>
       </Box>
 
-      <Box className={classes.timelineWrapper}>
+      <Box className={styles.timelineWrapper}>
         <Timeline />
       </Box>
     </>

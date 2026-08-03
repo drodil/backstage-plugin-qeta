@@ -13,28 +13,7 @@ backend.add(import('@drodil/backstage-plugin-search-backend-module-qeta'));
 backend.start();
 ```
 
-Displaying search results:
-
-```tsx
-// packages/app/src/components/search/SearchPage.tsx
-
-import { QetaSearchResultListItem } from '@drodil/backstage-plugin-qeta';
-import {
-  DefaultResultListItem,
-  SearchBar,
-  SearchContextProvider,
-  SearchResult,
-} from '@backstage/plugin-search-react';
-
-export const searchPage = (
-  <Page themeId="home">
-    <SearchResult>
-      // ...
-      <QetaSearchResultListItem />
-    </SearchResult>
-  </Page>
-);
-```
+In the new frontend system, the Q&A search result item is registered automatically when `@drodil/backstage-plugin-qeta` is added to your app features.
 
 ## Custom Routes
 

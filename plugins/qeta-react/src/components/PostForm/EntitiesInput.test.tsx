@@ -9,71 +9,6 @@ import { Entity } from '@backstage/catalog-model';
 import { qetaApiRef } from '../../api';
 import { EntitiesInput } from './EntitiesInput';
 
-jest.mock('@material-ui/lab', () => ({
-  Autocomplete: ({
-    filterOptions,
-    open,
-    onOpen,
-    onClose,
-    onInputChange,
-    onChange,
-    getOptionLabel,
-    inputValue,
-    multiple,
-    options = [],
-    value,
-  }: any) => {
-    let visibleOptions: any[] = [];
-
-    if (open) {
-      if (filterOptions) {
-        visibleOptions = filterOptions(options, { inputValue, getOptionLabel });
-      } else {
-        visibleOptions = options.filter((option: any) =>
-          getOptionLabel?.(option)
-            ?.toLocaleLowerCase()
-            .includes(inputValue.toLocaleLowerCase()),
-        );
-      }
-    }
-
-    return (
-      <div>
-        <button type="button" onClick={() => onOpen?.()}>
-          open
-        </button>
-        <button type="button" onClick={() => onClose?.()}>
-          close
-        </button>
-        <input
-          aria-label="search"
-          value={inputValue}
-          onChange={event =>
-            onInputChange?.(event, event.currentTarget.value, 'input')
-          }
-        />
-        {!multiple && value ? <span>{getOptionLabel?.(value)}</span> : null}
-        <div>
-          {visibleOptions.map((option: any) => (
-            <button
-              key={option.metadata?.name ?? option.kind}
-              type="button"
-              onClick={() => {
-                onChange?.(undefined, option);
-                if (!multiple) {
-                  onClose?.();
-                }
-              }}
-            >
-              {getOptionLabel?.(option)}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  },
-}));
-
 const testServiceEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
   kind: 'Component',
@@ -155,6 +90,7 @@ describe('EntitiesInput', () => {
 
   const mockQetaApi = {
     getEntities: jest.fn(),
+    getEntitySuggestions: jest.fn(),
   };
 
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -181,6 +117,7 @@ describe('EntitiesInput', () => {
       entities: [{ entityRef: 'component:default/test-service' }],
       total: 1,
     });
+    mockQetaApi.getEntitySuggestions.mockResolvedValue({ entities: [] });
     mockCatalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [testServiceEntity],
     });
@@ -209,6 +146,73 @@ describe('EntitiesInput', () => {
       orderBy: 'postsCount',
       order: 'desc',
     });
+  });
+
+  it('should fall back to catalog defaults when no used entities exist yet', async () => {
+    mockQetaApi.getEntities.mockResolvedValue({ entities: [], total: 0 });
+    mockCatalogApi.queryEntities.mockResolvedValue({
+      items: [testServiceEntity],
+    });
+
+    render(
+      <EntitiesInput multiple value={[]} onChange={jest.fn()} maximum={3} />,
+      { wrapper },
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(350);
+    });
+
+    await waitFor(() => {
+      expect(mockQetaApi.getEntities).toHaveBeenCalledTimes(1);
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+    });
+
+    expect(mockCatalogApi.getEntitiesByRefs).not.toHaveBeenCalled();
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: { kind: { $in: ['component', 'system'] } },
+      }),
+    );
+
+    act(() => {
+      screen.getByRole('textbox').focus();
+    });
+
+    act(() => {
+      jest.advanceTimersByTime(350);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('option', { name: /Test Service/ }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should not fall back to catalog defaults when useOnlyUsedEntities is set', async () => {
+    mockQetaApi.getEntities.mockResolvedValue({ entities: [], total: 0 });
+
+    render(
+      <EntitiesInput
+        multiple
+        value={[]}
+        onChange={jest.fn()}
+        maximum={3}
+        useOnlyUsedEntities
+      />,
+      { wrapper },
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(350);
+    });
+
+    await waitFor(() => {
+      expect(mockQetaApi.getEntities).toHaveBeenCalledTimes(1);
+    });
+
+    expect(mockCatalogApi.queryEntities).not.toHaveBeenCalled();
   });
 
   it('should preload catalog examples when kind is provided', async () => {
@@ -323,8 +327,10 @@ describe('EntitiesInput', () => {
 
     mockCatalogApi.queryEntities.mockClear();
 
-    fireEvent.click(screen.getByRole('button', { name: 'open' }));
-    fireEvent.change(screen.getByRole('textbox', { name: 'search' }), {
+    act(() => {
+      screen.getByRole('textbox').focus();
+    });
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'test' },
     });
 
@@ -361,8 +367,10 @@ describe('EntitiesInput', () => {
       query: { kind: 'Component' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'close' }));
-    fireEvent.click(screen.getByRole('button', { name: 'open' }));
+    fireEvent.blur(screen.getByRole('textbox'));
+    act(() => {
+      screen.getByRole('textbox').focus();
+    });
 
     act(() => {
       jest.advanceTimersByTime(350);
@@ -394,9 +402,7 @@ describe('EntitiesInput', () => {
 
     render(<Wrapper />, { wrapper });
 
-    expect(screen.getByRole('textbox', { name: 'search' })).toHaveValue(
-      'Current User',
-    );
+    expect(screen.getByRole('textbox')).toHaveValue('Current User');
 
     act(() => {
       jest.advanceTimersByTime(350);
@@ -406,20 +412,20 @@ describe('EntitiesInput', () => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'open' }));
+    act(() => {
+      screen.getByRole('textbox').focus();
+    });
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Other User' }),
+        screen.getByRole('option', { name: 'Other User' }),
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Other User' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Other User' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('textbox', { name: 'search' })).toHaveValue(
-        'Other User',
-      );
+      expect(screen.getByRole('textbox')).toHaveValue('Other User');
     });
   });
 
@@ -447,15 +453,17 @@ describe('EntitiesInput', () => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'open' }));
+    act(() => {
+      screen.getByRole('textbox').focus();
+    });
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: /Alpha Service/ }),
+        screen.getByRole('option', { name: /Alpha Service/ }),
       ).toBeInTheDocument();
     });
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'search' }), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'test' },
     });
 
@@ -466,7 +474,7 @@ describe('EntitiesInput', () => {
     await waitFor(() => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(2);
       expect(
-        screen.getByRole('button', { name: /Test Service/ }),
+        screen.getByRole('option', { name: /Test Service/ }),
       ).toBeInTheDocument();
     });
 
@@ -474,7 +482,7 @@ describe('EntitiesInput', () => {
       screen.queryByRole('button', { name: /Alpha Service/ }),
     ).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'search' }), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: '' },
     });
 
@@ -486,10 +494,10 @@ describe('EntitiesInput', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: /Alpha Service/ }),
+        screen.getByRole('option', { name: /Alpha Service/ }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: /Test Service/ }),
+        screen.getByRole('option', { name: /Test Service/ }),
       ).toBeInTheDocument();
     });
   });
@@ -521,9 +529,11 @@ describe('EntitiesInput', () => {
       order: 'desc',
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'open' }));
+    act(() => {
+      screen.getByRole('textbox').focus();
+    });
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'search' }), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'service' },
     });
 

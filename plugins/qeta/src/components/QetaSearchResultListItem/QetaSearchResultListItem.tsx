@@ -1,18 +1,11 @@
 import { DateTime } from 'luxon';
-import { Link } from '@backstage/core-components';
+import { Link } from 'react-router-dom';
+import { Text } from '@backstage/ui';
 import {
   IndexableDocument,
   ResultHighlight,
 } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
-import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
-import {
-  Divider,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-} from '@material-ui/core';
 import {
   QetaCollectionDocument,
   QetaPostDocument,
@@ -22,28 +15,18 @@ import {
   truncate,
 } from '@drodil/backstage-plugin-qeta-common';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
-import HelpOutlined from '@material-ui/icons/HelpOutlined';
-import PlaylistPlay from '@material-ui/icons/PlaylistPlay';
 import DOMPurify from 'dompurify';
 import { capitalize } from 'lodash';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
-import LinkIcon from '@material-ui/icons/Link';
 import { parseEntityRef } from '@backstage/catalog-model';
-
-const useStyles = makeStyles({
-  excerptText: {
-    display: 'block',
-    marginTop: '0.2rem',
-    marginBottom: '0.4rem',
-  },
-  excerpt: {
-    lineHeight: '1.55',
-  },
-  itemText: {
-    wordBreak: 'break-all',
-  },
-});
+import {
+  RiBookOpenLine,
+  RiLink,
+  RiPlayList2Line,
+  RiQuestionLine,
+} from '@remixicon/react';
+import styles from './QetaSearchResultListItem.module.css';
 
 export type QetaSearchResultListItemProps = {
   result?: IndexableDocument;
@@ -78,7 +61,6 @@ const Excerpt = (props: {
   highlight?: ResultHighlight;
 }) => {
   const { document, highlight } = props;
-  const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
 
   const text = DOMPurify.sanitize(
@@ -95,7 +77,11 @@ const Excerpt = (props: {
     });
     return (
       <>
-        <span className={classes.excerptText}>
+        <Text
+          className={styles.excerptMeta}
+          variant="body-small"
+          color="secondary"
+        >
           {capitalize(t(`common.${document.postType}`))}
           {' · '}
           {t('searchResult.created')}{' '}
@@ -119,7 +105,7 @@ const Excerpt = (props: {
               {t('common.answersCount', { count: document.answerCount })}
             </>
           )}
-        </span>
+        </Text>
         <>
           {highlight?.fields.text ? (
             <HighlightedSearchResultText
@@ -140,7 +126,11 @@ const Excerpt = (props: {
     });
     return (
       <>
-        <span className={classes.excerptText}>
+        <Text
+          className={styles.excerptMeta}
+          variant="body-small"
+          color="secondary"
+        >
           {capitalize(t(`common.collection`))}
           {' · '}
           {t('searchResult.created')}{' '}
@@ -152,7 +142,7 @@ const Excerpt = (props: {
             count: document.postsCount,
             itemType: t('common.post'),
           })}
-        </span>
+        </Text>
         <>
           {highlight?.fields.text ? (
             <HighlightedSearchResultText
@@ -176,19 +166,18 @@ const ResultIcon = (props: { document: QetaSearchDocument }) => {
   if (isQetaPostDocument(document)) {
     return selectByPostType(
       document.postType,
-      <HelpOutlined />,
-      <CollectionsBookmarkIcon />,
-      <LinkIcon />,
+      <RiQuestionLine size={20} />,
+      <RiBookOpenLine size={20} />,
+      <RiLink size={20} />,
     );
   }
 
-  return <PlaylistPlay />;
+  return <RiPlayList2Line size={20} />;
 };
 
 export const QetaSearchResultListItem = (
   props: QetaSearchResultListItemProps,
 ) => {
-  const classes = useStyles();
   const { result, highlight, hideIcon } = props;
 
   if (!result || !isQetaSearchDocument(result)) {
@@ -196,7 +185,7 @@ export const QetaSearchResultListItem = (
   }
 
   const title = (
-    <Link noTrack to={result.location}>
+    <Link to={result.location}>
       {highlight?.fields.title ? (
         <HighlightedSearchResultText
           text={highlight.fields.title}
@@ -211,29 +200,26 @@ export const QetaSearchResultListItem = (
 
   return (
     <>
-      <ListItem
-        alignItems="center"
-        role="article"
+      <article
+        className={styles.resultItem}
         aria-labelledby={`search-result-${result.title}`}
       >
         {hideIcon !== true && (
-          <ListItemIcon>
+          <span className={styles.resultIcon}>
             <ResultIcon document={result} aria-hidden="true" />
-          </ListItemIcon>
+          </span>
         )}
-        <ListItemText
-          primary={title}
-          secondary={<Excerpt document={result} highlight={highlight} />}
-          className={classes.itemText}
-          primaryTypographyProps={{
-            variant: 'h6',
-            id: `search-result-${result.title}`,
-            component: 'h3',
-          }}
-        />
-      </ListItem>
+        <div className={styles.itemText}>
+          <h3 id={`search-result-${result.title}`} className={styles.title}>
+            {title}
+          </h3>
+          <div className={styles.excerpt}>
+            <Excerpt document={result} highlight={highlight} />
+          </div>
+        </div>
+      </article>
 
-      <Divider component="li" aria-hidden="true" />
+      <hr className={styles.divider} aria-hidden="true" />
     </>
   );
 };

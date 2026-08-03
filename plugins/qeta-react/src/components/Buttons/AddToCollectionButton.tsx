@@ -3,25 +3,28 @@ import { useState } from 'react';
 import {
   Button,
   Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-} from '@material-ui/core';
-import AddCircle from '@material-ui/icons/AddCircle';
-import RemoveCircle from '@material-ui/icons/RemoveCircle';
-import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Flex,
+} from '@backstage/ui';
+import {
+  RiAddCircleLine,
+  RiIndeterminateCircleLine,
+  RiPlayListAddLine,
+} from '@remixicon/react';
+import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useQetaApi } from '../../hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { ContentHeaderButton } from './ContentHeaderButton';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const AddToCollectionButton = (props: { post: PostResponse }) => {
   const { post } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const { value: response, retry } = useQetaApi(api => {
     return api.getCollections({
       checkAccess: true,
@@ -36,49 +39,41 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
     setOpen(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   const handleClick = (collection: Collection) => {
     if (collection.posts?.find(p => p.id === post.id)) {
       qetaApi
         .removePostFromCollection(collection.id, post.id)
         .then(() => {
-          alertApi.post({
-            message: t('addToCollectionButton.removed', {
+          toastApi.post({
+            title: t('addToCollectionButton.removed', {
               collection: collection.title,
             }),
-            severity: 'success',
-            display: 'transient',
+            status: 'success',
           });
           retry();
         })
         .catch(e => {
-          alertApi.post({
-            message: e.message,
-            severity: 'error',
-            display: 'transient',
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
           });
         });
     } else {
       qetaApi
         .addPostToCollection(collection.id, post.id)
         .then(() => {
-          alertApi.post({
-            message: t('addToCollectionButton.added', {
+          toastApi.post({
+            title: t('addToCollectionButton.added', {
               collection: collection.title,
             }),
-            severity: 'success',
-            display: 'transient',
+            status: 'success',
           });
           retry();
         })
         .catch(e => {
-          alertApi.post({
-            message: e.message,
-            severity: 'error',
-            display: 'transient',
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
           });
         });
     }
@@ -95,40 +90,45 @@ export const AddToCollectionButton = (props: { post: PostResponse }) => {
 
   return (
     <>
-      <ContentHeaderButton onClick={handleClickOpen} icon={<PlayListAddIcon />}>
+      <ContentHeaderButton
+        onClick={handleClickOpen}
+        icon={<RiPlayListAddLine />}
+      >
         {t('addToCollectionButton.title')}
       </ContentHeaderButton>
-      <Dialog open={open} onClose={handleClose} fullWidth>
-        <DialogTitle>{t('addToCollectionButton.manage')}</DialogTitle>
-        <DialogContent>
-          <Grid container>
+      <Dialog isOpen={open} onOpenChange={setOpen}>
+        <DialogHeader>{t('addToCollectionButton.manage')}</DialogHeader>
+        <DialogBody>
+          <Flex gap="2" style={{ flexWrap: 'wrap' }}>
             {collections.map(collection => {
               const isInCollection = collection.posts?.find(
                 p => p.id === post.id,
               );
 
               return (
-                <Grid item key={collection.id}>
-                  <Button
-                    variant="outlined"
-                    startIcon={
-                      isInCollection ? <RemoveCircle /> : <AddCircle />
-                    }
-                    color={isInCollection ? 'secondary' : 'primary'}
-                    onClick={() => handleClick(collection)}
-                  >
-                    {collection.title}
-                  </Button>
-                </Grid>
+                <Button
+                  key={collection.id}
+                  variant="secondary"
+                  iconStart={
+                    isInCollection ? (
+                      <RiIndeterminateCircleLine />
+                    ) : (
+                      <RiAddCircleLine />
+                    )
+                  }
+                  onClick={() => handleClick(collection)}
+                >
+                  {collection.title}
+                </Button>
               );
             })}
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          </Flex>
+        </DialogBody>
+        <DialogFooter>
+          <Button variant="tertiary" slot="close">
             {t('addToCollectionButton.close')}
           </Button>
-        </DialogActions>
+        </DialogFooter>
       </Dialog>
     </>
   );

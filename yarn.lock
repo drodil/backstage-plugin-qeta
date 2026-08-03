@@ -4595,7 +4595,6 @@ __metadata:
     "@backstage/catalog-client": "backstage:^"
     "@backstage/catalog-model": "backstage:^"
     "@backstage/cli": "backstage:^"
-    "@backstage/core-components": "backstage:^"
     "@backstage/core-plugin-api": "backstage:^"
     "@backstage/frontend-plugin-api": "backstage:^"
     "@backstage/plugin-catalog-react": "backstage:^"
@@ -4603,18 +4602,17 @@ __metadata:
     "@backstage/plugin-permission-react": "backstage:^"
     "@backstage/plugin-signals-react": "backstage:^"
     "@backstage/test-utils": "backstage:^"
+    "@backstage/ui": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
+    "@internationalized/date": "npm:^3.12.1"
     "@jsdevtools/rehype-toc": "npm:^3.0.2"
-    "@material-ui/core": "npm:^4.12.2"
-    "@material-ui/icons": "npm:^4.11.3"
-    "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@remixicon/react": "npm:^4.2.0"
     "@testing-library/dom": "npm:^10.4.0"
     "@testing-library/jest-dom": "npm:^5.10.1"
     "@testing-library/react": "npm:^16.0.1"
     "@types/lodash": "npm:^4.14.199"
     "@types/numeral": "npm:^2"
     "@types/react-syntax-highlighter": "npm:^15"
-    "@types/react-window": "npm:^1"
     dataloader: "npm:^2.2.2"
     dompurify: "npm:^3.2.4"
     file-type: "npm:16.5.4"
@@ -4629,7 +4627,6 @@ __metadata:
     react-relative-time: "npm:^0.0.9"
     react-syntax-highlighter: "npm:^15.6.1"
     react-use: "npm:^17.4.0"
-    react-window: "npm:^1.8.10"
     recharts: "npm:^2.13.0"
     rehype-slug: "npm:^6.0.0"
     remark-gfm: "npm:^4.0.0"
@@ -4668,9 +4665,7 @@ __metadata:
     "@backstage/ui": "backstage:^"
     "@drodil/backstage-plugin-qeta-common": "workspace:^"
     "@drodil/backstage-plugin-qeta-react": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
-    "@material-ui/icons": "npm:^4.11.3"
-    "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@remixicon/react": "npm:^4.2.0"
     "@testing-library/jest-dom": "npm:^6.1.3"
     "@types/lodash": "npm:^4.14.199"
     "@types/luxon": "npm:^3"
@@ -4681,6 +4676,7 @@ __metadata:
     react-use: "npm:^17.4.0"
     rehype-mermaid: "npm:^3.0.0"
     unified: "npm:^11.0.5"
+    zod: "npm:^4.0.0"
   peerDependencies:
     "@backstage/catalog-client": ^1.16.1
     react: " ^18.0.0 || ^19.0.0"
@@ -6125,7 +6121,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/icons@npm:^4.11.3, @material-ui/icons@npm:^4.9.1":
+"@material-ui/icons@npm:^4.9.1":
   version: 4.11.3
   resolution: "@material-ui/icons@npm:4.11.3"
   dependencies:
@@ -7616,7 +7612,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remixicon/react@npm:^4.6.0":
+"@remixicon/react@npm:^4.2.0, @remixicon/react@npm:^4.6.0":
   version: 4.9.0
   resolution: "@remixicon/react@npm:4.9.0"
   peerDependencies:
@@ -10499,15 +10495,6 @@ __metadata:
   dependencies:
     "@types/react": "npm:*"
   checksum: 10c0/8fbf0dcc1b81985cdcebe3c59d769fe2ea3f4525f12c3a10a7429a59f93e303c82b2abb744d21cb762879f4514969d70a7ab11b9bf486f92213e8fe70e04098d
-  languageName: node
-  linkType: hard
-
-"@types/react-window@npm:^1":
-  version: 1.8.8
-  resolution: "@types/react-window@npm:1.8.8"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/2170a3957752603e8b994840c5d31b72ddf94c427c0f42b0175b343cc54f50fe66161d8871e11786ec7a59906bd33861945579a3a8f745455a3744268ec1069f
   languageName: node
   linkType: hard
 
@@ -27098,7 +27085,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-window@npm:^1.8.10, react-window@npm:^1.8.6":
+"react-window@npm:^1.8.6":
   version: 1.8.10
   resolution: "react-window@npm:1.8.10"
   dependencies:

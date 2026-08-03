@@ -1,11 +1,5 @@
 import { StatsChart, useQetaApi } from '@drodil/backstage-plugin-qeta-react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CircularProgress,
-  Grid,
-} from '@material-ui/core';
+import { Card, CardBody, CardHeader, Grid, Skeleton } from '@backstage/ui';
 
 export const GlobalStatsContent = () => {
   const {
@@ -17,21 +11,21 @@ export const GlobalStatsContent = () => {
     return null;
   }
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
+    <Grid.Root columns={{ sm: '12' }} gap="6">
+      <Grid.Item colSpan={{ sm: '12' }}>
         <Card>
-          <CardHeader title="Activity Trends" />
-          <CardContent>
+          <CardHeader>Activity Trends</CardHeader>
+          <CardBody>
             {!loading && response && (
               <StatsChart
                 data={response.statistics}
                 summary={response.summary as unknown as Record<string, number>}
               />
             )}
-            {loading && <CircularProgress />}
-          </CardContent>
+            {loading && <Skeleton width="100%" height={300} />}
+          </CardBody>
         </Card>
-      </Grid>
-    </Grid>
+      </Grid.Item>
+    </Grid.Root>
   );
 };

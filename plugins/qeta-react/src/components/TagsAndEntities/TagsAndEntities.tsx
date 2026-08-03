@@ -4,9 +4,10 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { EntityChip } from './EntityChip';
 import { TagChip } from './TagChip';
-import { Chip } from '@material-ui/core';
+import { Chip } from '../Utility/Chip.tsx';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
+import { Flex } from '@backstage/ui';
 
 export const TagsAndEntities = (props: {
   entity: PostResponse | CollectionResponse;
@@ -38,20 +39,17 @@ export const TagsAndEntities = (props: {
   const moreCount = tagsCount + entitiesCount;
 
   return (
-    <>
+    <Flex gap="1" align="center" style={{ flexWrap: 'wrap' }}>
       {tags && tags.map(tag => <TagChip key={tag} tag={tag} />)}
       {entities &&
         entities.map(component => (
           <EntityChip entity={component} key={component} />
         ))}
       {moreCount > 0 && (
-        <Chip
-          label={t('common.more', { count: moreCount } as any)}
-          size="small"
-          variant="outlined"
-          color="primary"
-        />
+        <Chip size="small">
+          {t('common.more', { count: moreCount } as any)}
+        </Chip>
       )}
-    </>
+    </Flex>
   );
 };

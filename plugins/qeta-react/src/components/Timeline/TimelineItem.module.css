@@ -1,0 +1,82 @@
+@layer components {
+  .root {
+    width: 100%;
+    padding: var(--bui-space-2) var(--bui-space-3);
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--bui-border-1);
+    border-radius: var(--bui-radius-1);
+    transition: background-color 0.15s ease-in-out;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .root:hover {
+    background-color: var(--bui-bg-surface-2);
+  }
+
+  .root:last-child {
+    border-bottom: none;
+  }
+
+  .overlayLink {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+  }
+
+  .contentWrapper {
+    pointer-events: none;
+  }
+
+  .contentClickable {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+  }
+
+  .avatar {
+    min-width: 36px;
+  }
+
+  /* text contentWrapper must shrink within the outer flex row */
+  .avatar + .contentWrapper {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .link {
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: inherit;
+    text-decoration: none;
+    min-width: 0;
+    flex: 1 1 0;
+  }
+
+  .action {
+    opacity: 0.8;
+  }
+
+  .time {
+    opacity: 0.6;
+    font-size: 0.8em;
+    margin-left: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}

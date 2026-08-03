@@ -8,79 +8,32 @@ import {
 import { useQetaApi, useQetaConfig } from '../../hooks';
 import { Link } from 'react-router-dom';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import { Box, ListItem, ListItemText, makeStyles } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, List, ListRow, Skeleton } from '@backstage/ui';
 import { qetaTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import numeral from 'numeral';
 import { PostTooltip } from '../Tooltips';
-import HistoryIcon from '@material-ui/icons/History';
-import WhatshotIcon from '@material-ui/icons/Whatshot';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
-import PersonIcon from '@material-ui/icons/Person';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import {
+  RiBookmarkLine,
+  RiErrorWarningLine,
+  RiFireLine,
+  RiHistoryLine,
+  RiQuestionLine,
+  RiUserLine,
+} from '@remixicon/react';
+import styles from './PostHighlightList.module.css';
 
-const typeIconMap: Record<string, React.ReactNode> = {
-  recent: <HistoryIcon fontSize="small" />,
-  hot: <WhatshotIcon fontSize="small" />,
-  followed: <BookmarkIcon fontSize="small" />,
-  own: <PersonIcon fontSize="small" />,
-  unanswered: <HelpOutlineIcon fontSize="small" />,
-  incorrect: <ErrorOutlineIcon fontSize="small" />,
+const typeIconMap: Record<string, ReactNode> = {
+  recent: <RiHistoryLine size={16} />,
+  hot: <RiFireLine size={16} />,
+  followed: <RiBookmarkLine size={16} />,
+  own: <RiUserLine size={16} />,
+  unanswered: <RiQuestionLine size={16} />,
+  incorrect: <RiErrorWarningLine size={16} />,
 };
 
-const useStyles = makeStyles(theme => ({
-  listItem: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 4px',
-    minHeight: 28,
-    cursor: 'pointer',
-    transition: 'background 0.2s',
-    textDecoration: 'none',
-    color: 'inherit',
-    '&:hover': {
-      background: theme.palette.action.hover,
-    },
-  },
-  emptyItem: {
-    padding: '0 0 0 0.6rem',
-  },
-  voteBox: {
-    minWidth: 28,
-    maxWidth: 28,
-    height: 24,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 4,
-    fontWeight: 600,
-    marginRight: theme.spacing(1),
-    marginLeft: theme.spacing(0.5),
-    background: theme.palette.background.paper,
-    color: theme.palette.text.primary,
-    border: `1px solid ${theme.palette.divider}`,
-  },
-  voteBoxPositive: {
-    background: theme.palette.success.main,
-    color: theme.palette.getContrastText(theme.palette.success.main),
-  },
-  voteBoxNegative: {
-    background: theme.palette.error.main,
-    color: theme.palette.getContrastText(theme.palette.error.main),
-  },
-  listItemText: {
-    color: theme.palette.text.primary,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    flex: 1,
-  },
-}));
 function formatShortNumber(num: number): string {
   return num >= 1000 ? numeral(num).format('0.0 a') : num.toString();
 }
@@ -109,7 +62,6 @@ export const PostHighlightListContent = (props: {
     titleClassName,
     hideIfEmpty,
   } = props;
-  const classes = useStyles();
 
   const { t } = useTranslationRef(qetaTranslationRef);
   const questionRoute = useRouteRef(questionRouteRef);
@@ -127,28 +79,21 @@ export const PostHighlightListContent = (props: {
         {loading &&
           !disableLoading &&
           Array.from({ length: 5 }).map((_, i) => (
-            <ListItem className={classes.listItem} dense key={`skeleton-${i}`}>
-              <Box className={classes.voteBox}>
-                <Skeleton variant="rect" width="100%" height="100%" />
-              </Box>
-              <Skeleton variant="text" width="80%" />
-            </ListItem>
+            <List key={`skeleton-${i}`}>
+              <ListRow icon={<Skeleton rounded width={28} height={24} />}>
+                <Skeleton width="80%" height={16} />
+              </ListRow>
+            </List>
           ))}
         {error && (
-          <ListItem className={classes.emptyItem} dense>
-            <ListItemText
-              primary={t('highlights.loadError')}
-              classes={{ primary: classes.listItemText }}
-            />
-          </ListItem>
+          <List>
+            <ListRow>{t('highlights.loadError')}</ListRow>
+          </List>
         )}
         {!error && !loading && posts.length === 0 && noPostsLabel && (
-          <ListItem className={classes.emptyItem} dense>
-            <ListItemText
-              primary={noPostsLabel}
-              classes={{ primary: classes.listItemText }}
-            />
-          </ListItem>
+          <List>
+            <ListRow>{noPostsLabel}</ListRow>
+          </List>
         )}
         {!error &&
           posts.map(q => {
@@ -160,11 +105,11 @@ export const PostHighlightListContent = (props: {
             );
             const href = route({ id: q.id.toString(10) });
             const vote = formatShortNumber(q.score);
-            let voteBoxClass = classes.voteBox;
+            let voteBoxClass = styles.voteBox;
             if (q.correctAnswer) {
-              voteBoxClass = `${classes.voteBox} ${classes.voteBoxPositive}`;
+              voteBoxClass = `${styles.voteBox} ${styles.voteBoxPositive}`;
             } else if (q.score < 0) {
-              voteBoxClass = `${classes.voteBox} ${classes.voteBoxNegative}`;
+              voteBoxClass = `${styles.voteBox} ${styles.voteBoxNegative}`;
             }
             return (
               <Fragment key={q.id}>
@@ -174,22 +119,16 @@ export const PostHighlightListContent = (props: {
                   enterDelay={400}
                   enterNextDelay={400}
                   placement="left"
-                  interactive={false}
                 >
-                  <ListItem
-                    dense
-                    button
-                    className={classes.listItem}
-                    component={Link}
-                    to={href}
-                    aria-label={q.title}
-                  >
-                    <Box className={voteBoxClass}>{vote}</Box>
-                    <ListItemText
-                      primary={q.title}
-                      classes={{ primary: classes.listItemText }}
-                    />
-                  </ListItem>
+                  <Link to={href} className={styles.link} aria-label={q.title}>
+                    <List>
+                      <ListRow
+                        icon={<Box className={voteBoxClass}>{vote}</Box>}
+                      >
+                        {q.title}
+                      </ListRow>
+                    </List>
+                  </Link>
                 </PostTooltip>
               </Fragment>
             );

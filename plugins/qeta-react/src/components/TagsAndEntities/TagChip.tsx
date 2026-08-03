@@ -1,9 +1,9 @@
 import { CSSProperties } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { tagRouteRef } from '../../routes';
-import { Link } from 'react-router-dom';
-import { Chip, Tooltip } from '@material-ui/core';
-import { useTooltipStyles } from '../../hooks/useTooltipStyles';
+import { Focusable, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { Chip } from '../Utility/Chip.tsx';
 import { TagTooltip } from '../Tooltips';
 
 export const TagChip = (props: {
@@ -13,46 +13,37 @@ export const TagChip = (props: {
   tooltip?: React.ReactElement;
 }) => {
   const tagRoute = useRouteRef(tagRouteRef);
-  const { tag, tooltip } = props;
-  const classes = useTooltipStyles();
+  const { tag, tooltip, useHref } = props;
+  const navigate = useNavigate();
   const href = tagRoute({ tag });
 
   const content = (
     <Chip
-      label={tag}
       size="small"
       className="qetaTagChip"
-      component={props.useHref ? 'a' : Link}
       style={props.style}
-      to={props.useHref ? undefined : href}
-      href={props.useHref ? href : undefined}
-      target={props.useHref ? '_blank' : undefined}
+      href={useHref ? href : undefined}
+      target={useHref ? '_blank' : undefined}
+      onPress={useHref ? undefined : () => navigate(href)}
       onClick={(e: React.MouseEvent) => {
         e.stopPropagation();
       }}
-      clickable
-    />
+    >
+      {tag}
+    </Chip>
   );
 
   if (tooltip) {
     return (
-      <Tooltip
-        arrow
-        title={tooltip}
-        enterDelay={400}
-        interactive
-        classes={{
-          tooltip: classes.tooltip,
-          arrow: classes.tooltipArrow,
-        }}
-      >
-        {content}
-      </Tooltip>
+      <TooltipTrigger delay={400}>
+        <Focusable>{content}</Focusable>
+        <Tooltip>{tooltip}</Tooltip>
+      </TooltipTrigger>
     );
   }
 
   return (
-    <TagTooltip tag={tag} interactive enterDelay={400}>
+    <TagTooltip tag={tag} enterDelay={400}>
       {content}
     </TagTooltip>
   );

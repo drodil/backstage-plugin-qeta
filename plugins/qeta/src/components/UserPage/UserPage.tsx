@@ -1,66 +1,37 @@
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import {
   AnswersContainer,
-  AskQuestionButton,
   CollectionsContainer,
-  ContentHeader,
-  CreateLinkButton,
   PostsContainer,
   qetaTranslationRef,
+  RelativeTimeWithTooltip,
   useIdentityApi,
+  useQetaApi,
+  useQetaConfig,
   UserFollowButton,
   useUserInfo,
-  WriteArticleButton,
-  useQetaApi,
-  RelativeTimeWithTooltip,
-  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { UserStatsContent } from './UserStatsContent';
-import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import { Avatar, Box, makeStyles, Tab, Typography } from '@material-ui/core';
+import { Flex, Header, Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import AssessmentIcon from '@material-ui/icons/Assessment';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
-import CollectionsIcon from '@material-ui/icons/Collections';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import LinkIcon from '@material-ui/icons/Link';
-
-const useStyles = makeStyles(theme => ({
-  tabIcon: {
-    marginRight: theme.spacing(1),
-  },
-  tabPanel: {
-    padding: theme.spacing(3, 0),
-  },
-  avatar: {
-    width: theme.spacing(12),
-    height: theme.spacing(12),
-    marginRight: theme.spacing(3),
-    boxShadow: theme.shadows[2],
-  },
-  headerContent: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(3, 0),
-  },
-  tabList: {},
-  tabLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    minWidth: 0,
-  },
-}));
+import {
+  RiBarChartLine,
+  RiBookmarkLine,
+  RiLink,
+  RiQuestionAnswerLine,
+  RiQuestionLine,
+  RiStackLine,
+} from '@remixicon/react';
+import styles from './UserPage.module.css';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 export const UserPage = () => {
   const identity = useParams()['*'] ?? 'unknown';
-  const { name, initials, user, secondaryTitle } = useUserInfo(identity);
+  const { name, user, secondaryTitle } = useUserInfo(identity);
   const [tab, setTab] = useState('statistics');
   const { t } = useTranslationRef(qetaTranslationRef);
   const [_searchParams, setSearchParams] = useSearchParams();
-  const classes = useStyles();
   const { disabled } = useQetaConfig();
   const {
     value: currentUser,
@@ -72,7 +43,7 @@ export const UserPage = () => {
     [identity],
   );
 
-  const handleChange = (_event: ChangeEvent<{}>, newValue: string) => {
+  const handleChange = (newValue: string) => {
     setSearchParams({});
     setTab(newValue);
   };
@@ -94,161 +65,116 @@ export const UserPage = () => {
     }
   }, [availableTabs, tab]);
 
-  const TabLabel = ({
-    icon,
-    label,
-  }: {
-    icon: React.ReactNode;
-    label: string;
-  }) => (
-    <div className={classes.tabLabel}>
+  const TabLabel = ({ icon, label }: { icon: ReactNode; label: string }) => (
+    <Flex align="center" gap="2" className={styles.tabLabel}>
       {icon}
       <span>{label}</span>
-    </div>
-  );
-
-  const title = (
-    <Box
-      className={classes.headerContent}
-      role="banner"
-      aria-label={t('userPage.profileHeader', {})}
-    >
-      <Avatar
-        src={user?.spec?.profile?.picture}
-        alt={name}
-        variant="rounded"
-        className={classes.avatar}
-        aria-label={t('userPage.profilePicture', { name })}
-      >
-        {initials}
-      </Avatar>
-      <Box display="flex" flexDirection="column" justifyContent="center">
-        <Box display="flex" alignItems="center">
-          <Typography
-            variant="h4"
-            component="h2"
-            id="user-name"
-            style={{ fontWeight: 700 }}
-          >
-            {name}
-          </Typography>
-        </Box>
-        {(secondaryTitle || user?.spec?.profile?.email) && (
-          <Typography variant="h6" color="textSecondary">
-            {secondaryTitle || user?.spec?.profile?.email}
-          </Typography>
-        )}
-        {userStats?.summary?.lastSeen && (
-          <Typography variant="body2" color="textSecondary">
-            {t('stats.lastSeen')}:{' '}
-            <RelativeTimeWithTooltip value={userStats.summary.lastSeen} />
-          </Typography>
-        )}
-      </Box>
-    </Box>
+    </Flex>
   );
 
   const tabItems = [
-    <Tab
-      key="statistics"
-      value="statistics"
-      label={
-        <TabLabel
-          icon={<AssessmentIcon className={classes.tabIcon} />}
-          label={t('userPage.statistics', {})}
-        />
-      }
-    />,
-    !disabled.questions ? (
-      <Tab
-        key="questions"
-        value="questions"
-        label={
-          <TabLabel
-            icon={<HelpOutlineIcon className={classes.tabIcon} />}
-            label={t('userPage.questions', {})}
-          />
-        }
+    <Tab key="statistics" id="statistics">
+      <TabLabel
+        icon={<RiBarChartLine size={16} />}
+        label={t('userPage.statistics', {})}
       />
+    </Tab>,
+    !disabled.questions ? (
+      <Tab key="questions" id="questions">
+        <TabLabel
+          icon={<RiQuestionLine size={16} />}
+          label={t('userPage.questions', {})}
+        />
+      </Tab>
     ) : null,
     !disabled.articles ? (
-      <Tab
-        key="articles"
-        value="articles"
-        label={
-          <TabLabel
-            icon={<CollectionsBookmarkIcon className={classes.tabIcon} />}
-            label={t('userPage.articles', {})}
-          />
-        }
-      />
+      <Tab key="articles" id="articles">
+        <TabLabel
+          icon={<RiBookmarkLine size={16} />}
+          label={t('userPage.articles', {})}
+        />
+      </Tab>
     ) : null,
     !disabled.links ? (
-      <Tab
-        key="links"
-        value="links"
-        label={
-          <TabLabel
-            icon={<LinkIcon className={classes.tabIcon} />}
-            label={t('userPage.links', {})}
-          />
-        }
-      />
+      <Tab key="links" id="links">
+        <TabLabel icon={<RiLink size={16} />} label={t('userPage.links', {})} />
+      </Tab>
     ) : null,
     !disabled.collections ? (
-      <Tab
-        key="collections"
-        value="collections"
-        label={
-          <TabLabel
-            icon={<CollectionsIcon className={classes.tabIcon} />}
-            label={t('userPage.collections', {})}
-          />
-        }
-      />
+      <Tab key="collections" id="collections">
+        <TabLabel
+          icon={<RiStackLine size={16} />}
+          label={t('userPage.collections', {})}
+        />
+      </Tab>
     ) : null,
     !disabled.questions ? (
-      <Tab
-        key="answers"
-        value="answers"
-        label={
-          <TabLabel
-            icon={<QuestionAnswerIcon className={classes.tabIcon} />}
-            label={t('userPage.answers', {})}
-          />
-        }
-      />
+      <Tab key="answers" id="answers">
+        <TabLabel
+          icon={<RiQuestionAnswerLine size={16} />}
+          label={t('userPage.answers', {})}
+        />
+      </Tab>
     ) : null,
-  ].filter((item): item is React.ReactElement => item !== null);
+  ].filter((item): item is ReactElement => item !== null);
 
   return (
     <>
-      <ContentHeader titleComponent={title}>
-        {!loadingUser &&
-          !userError &&
-          currentUser?.userEntityRef !== identity && (
-            <UserFollowButton
-              userRef={identity}
-              aria-label={t('userPage.followUser', { name })}
-            />
-          )}
-        <AskQuestionButton />
-        <WriteArticleButton />
-        <CreateLinkButton />
-      </ContentHeader>
-      <TabContext value={tab}>
-        <Box className={classes.tabList}>
-          <TabList
-            onChange={handleChange}
-            aria-label={t('userPage.profileTab', {})}
-            aria-labelledby="user-name"
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            {tabItems}
-          </TabList>
-        </Box>
-        <TabPanel value="statistics" className={classes.tabPanel}>
+      <Header
+        title={name}
+        metadata={[
+          ...(secondaryTitle || user?.spec?.profile?.email
+            ? [
+                {
+                  label: t('userPage.profileHeader', {}),
+                  value: (
+                    <EntityRefLink entityRef={identity}>
+                      {secondaryTitle || user?.spec?.profile?.email}
+                    </EntityRefLink>
+                  ),
+                },
+              ]
+            : []),
+          ...(userStats?.summary?.lastSeen
+            ? [
+                {
+                  label: t('stats.lastSeen'),
+                  value: (
+                    <RelativeTimeWithTooltip
+                      value={userStats.summary.lastSeen}
+                    />
+                  ),
+                },
+              ]
+            : []),
+          ...(userStats?.summary?.totalFollowers
+            ? [
+                {
+                  label: t('metadata.followers'),
+                  value: userStats.summary.totalFollowers,
+                },
+              ]
+            : []),
+        ]}
+        customActions={
+          <>
+            {!loadingUser &&
+              !userError &&
+              currentUser?.userEntityRef !== identity && (
+                <UserFollowButton
+                  userRef={identity}
+                  aria-label={t('userPage.followUser', { name })}
+                />
+              )}
+          </>
+        }
+      />
+      <Tabs
+        selectedKey={tab}
+        onSelectionChange={key => handleChange(key as string)}
+      >
+        <TabList aria-label={t('userPage.profileTab', {})}>{tabItems}</TabList>
+        <TabPanel id="statistics" className={styles.tabPanel}>
           <UserStatsContent
             userRef={identity ?? ''}
             stats={userStats}
@@ -256,7 +182,7 @@ export const UserPage = () => {
           />
         </TabPanel>
         {!disabled.questions && (
-          <TabPanel value="questions" className={classes.tabPanel}>
+          <TabPanel id="questions" className={styles.tabPanel}>
             <PostsContainer
               author={identity ?? ''}
               showNoQuestionsBtn={false}
@@ -266,7 +192,7 @@ export const UserPage = () => {
           </TabPanel>
         )}
         {!disabled.articles && (
-          <TabPanel value="articles" className={classes.tabPanel}>
+          <TabPanel id="articles" className={styles.tabPanel}>
             <PostsContainer
               author={identity ?? ''}
               type="article"
@@ -276,7 +202,7 @@ export const UserPage = () => {
           </TabPanel>
         )}
         {!disabled.links && (
-          <TabPanel value="links" className={classes.tabPanel}>
+          <TabPanel id="links" className={styles.tabPanel}>
             <PostsContainer
               author={identity ?? ''}
               type="link"
@@ -286,7 +212,7 @@ export const UserPage = () => {
           </TabPanel>
         )}
         {!disabled.collections && (
-          <TabPanel value="collections" className={classes.tabPanel}>
+          <TabPanel id="collections" className={styles.tabPanel}>
             <CollectionsContainer
               owner={identity ?? ''}
               prefix="user-collections"
@@ -294,7 +220,7 @@ export const UserPage = () => {
           </TabPanel>
         )}
         {!disabled.questions && (
-          <TabPanel value="answers" className={classes.tabPanel}>
+          <TabPanel id="answers" className={styles.tabPanel}>
             <AnswersContainer
               author={identity ?? ''}
               title={t('userPage.answers', {})}
@@ -302,7 +228,7 @@ export const UserPage = () => {
             />
           </TabPanel>
         )}
-      </TabContext>
+      </Tabs>
     </>
   );
 };

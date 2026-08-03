@@ -1,0 +1,33 @@
+@layer components {
+  .container {
+    width: 245px;
+    padding: 0 0 0 var(--bui-space-2);
+    transition: width 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  .compact {
+    width: 72px;
+    padding: var(--bui-space-2);
+  }
+
+  .full {
+    width: 100%;
+  }
+
+  .toggleButton {
+    margin-bottom: var(--bui-space-2);
+    margin-right: var(--bui-space-3);
+  }
+
+  .content {
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .contentHidden {
+    display: none;
+    opacity: 0;
+  }
+}

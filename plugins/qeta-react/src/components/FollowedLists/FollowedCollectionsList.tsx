@@ -2,53 +2,18 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import { Box, ListItem, ListItemText, makeStyles } from '@material-ui/core';
-import PlaylistPlayOutlined from '@material-ui/icons/PlaylistPlayOutlined';
+import { List, ListRow } from '@backstage/ui';
+import { RiPlayListLine } from '@remixicon/react';
 import { Link } from 'react-router-dom';
 import { collectionRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { CollectionTooltip } from '../Tooltips';
 import { useQetaConfig } from '../../hooks';
-
-const useStyles = makeStyles(theme => ({
-  listItem: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 4px',
-    minHeight: 28,
-    cursor: 'pointer',
-    transition: 'background 0.2s',
-    textDecoration: 'none',
-    color: 'inherit',
-    '&:hover': {
-      background: theme.palette.action.hover,
-    },
-  },
-  listItemText: {
-    color: theme.palette.text.primary,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    flex: 1,
-  },
-  iconBox: {
-    minWidth: 28,
-    maxWidth: 28,
-    height: 24,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 4,
-    marginRight: theme.spacing(1),
-    marginLeft: theme.spacing(0.5),
-    color: theme.palette.text.secondary,
-  },
-}));
+import styles from './FollowedCollectionsList.module.css';
 
 export const FollowedCollectionsList = () => {
   const collections = useCollectionsFollow();
   const { t } = useTranslationRef(qetaTranslationRef);
-  const classes = useStyles();
   const collectionRoute = useRouteRef(collectionRouteRef);
   const { disabled } = useQetaConfig();
 
@@ -74,21 +39,13 @@ export const FollowedCollectionsList = () => {
               enterNextDelay={400}
               placement="left"
             >
-              <ListItem
-                dense
-                button
-                className={classes.listItem}
-                component={Link}
-                to={href}
-              >
-                <Box className={classes.iconBox}>
-                  <PlaylistPlayOutlined fontSize="small" />
-                </Box>
-                <ListItemText
-                  primary={collection.title}
-                  classes={{ primary: classes.listItemText }}
-                />
-              </ListItem>
+              <Link to={href} className={styles.link}>
+                <List>
+                  <ListRow icon={<RiPlayListLine size={16} />}>
+                    {collection.title}
+                  </ListRow>
+                </List>
+              </Link>
             </CollectionTooltip>
           );
         })}

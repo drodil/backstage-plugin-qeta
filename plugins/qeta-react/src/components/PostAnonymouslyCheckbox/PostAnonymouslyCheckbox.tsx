@@ -1,7 +1,8 @@
 import { Control, Controller } from 'react-hook-form';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { Box, Checkbox, FormControlLabel, Tooltip } from '@material-ui/core';
+import { Checkbox, Tooltip, TooltipTrigger } from '@backstage/ui';
+import styles from './PostAnonymouslyCheckbox.module.css';
 
 export const PostAnonymouslyCheckbox = (props: {
   control: Control<any>;
@@ -11,31 +12,27 @@ export const PostAnonymouslyCheckbox = (props: {
   const { control, disabled, label } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
   return (
-    <Box style={{ marginLeft: '0.2em' }}>
+    <div className={styles.root}>
       <Controller
         control={control}
         render={({ field: { onChange, value } }) => {
           return (
-            <FormControlLabel
-              control={
-                <Tooltip title={t('anonymousCheckbox.tooltip')}>
-                  <Checkbox
-                    onChange={onChange}
-                    value={value}
-                    checked={value === true}
-                    size="small"
-                    disabled={disabled}
-                    name="anonymous"
-                    data-testid="post-anonymously-checkbox"
-                  />
-                </Tooltip>
-              }
-              label={label}
-            />
+            <TooltipTrigger>
+              <Checkbox
+                onChange={onChange}
+                isSelected={value === true}
+                isDisabled={disabled}
+                name="anonymous"
+                data-testid="post-anonymously-checkbox"
+              >
+                {label}
+              </Checkbox>
+              <Tooltip>{t('anonymousCheckbox.tooltip')}</Tooltip>
+            </TooltipTrigger>
           );
         }}
         name="anonymous"
       />
-    </Box>
+    </div>
   );
 };

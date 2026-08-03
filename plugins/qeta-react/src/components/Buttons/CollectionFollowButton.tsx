@@ -1,7 +1,6 @@
 import { CSSProperties } from 'react';
-import { IconButton, Tooltip } from '@material-ui/core';
-import NotificationsActive from '@material-ui/icons/NotificationsActive';
-import NotificationsNone from '@material-ui/icons/NotificationsNone';
+import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { RiNotification3Fill, RiNotification3Line } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { Collection } from '@drodil/backstage-plugin-qeta-common';
@@ -17,30 +16,31 @@ export const CollectionFollowButton = (props: {
   if (collections.loading) {
     return null;
   }
+  const isFollowing = collections.isFollowingCollection(collection);
   return (
-    <Tooltip title={t('collectionButton.tooltip')}>
-      <IconButton
+    <TooltipTrigger>
+      <ButtonIcon
+        aria-label={t('collectionButton.tooltip')}
         size="small"
-        color={
-          collections.isFollowingCollection(collection)
-            ? 'secondary'
-            : 'default'
-        }
-        onClick={() => {
-          if (collections.isFollowingCollection(collection)) {
+        variant={isFollowing ? 'secondary' : 'tertiary'}
+        onClick={e => e.preventDefault()}
+        onPress={() => {
+          if (isFollowing) {
             collections.unfollowCollection(collection);
           } else {
             collections.followCollection(collection);
           }
         }}
         style={style}
-      >
-        {collections.isFollowingCollection(collection) ? (
-          <NotificationsActive />
-        ) : (
-          <NotificationsNone />
-        )}
-      </IconButton>
-    </Tooltip>
+        icon={
+          isFollowing ? (
+            <RiNotification3Fill size={16} />
+          ) : (
+            <RiNotification3Line size={16} />
+          )
+        }
+      />
+      <Tooltip>{t('collectionButton.tooltip')}</Tooltip>
+    </TooltipTrigger>
   );
 };

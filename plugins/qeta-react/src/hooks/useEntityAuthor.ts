@@ -145,7 +145,14 @@ export const useUserInfo = (entityRef: string, anonymous?: boolean) => {
     setInitials(init);
   }, [name]);
 
-  return { name, initials, user, secondaryTitle, Icon, isCurrentUser };
+  return {
+    name,
+    initials,
+    user,
+    secondaryTitle,
+    Icon,
+    isCurrentUser,
+  };
 };
 
 export const useEntityAuthor = (

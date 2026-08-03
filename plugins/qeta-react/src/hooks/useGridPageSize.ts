@@ -1,4 +1,4 @@
-import { useTheme, useMediaQuery } from '@material-ui/core';
+import { useBreakpoint } from '@backstage/ui';
 
 export type GridType = 'posts' | 'tags' | 'entities' | 'users' | 'collections';
 
@@ -6,12 +6,11 @@ export function useGridPageSize(
   gridType: GridType,
   basePageSize: number = 24,
 ): number {
-  const theme = useTheme();
-
-  const isXl = useMediaQuery(theme.breakpoints.up('xl'));
-  const isLg = useMediaQuery(theme.breakpoints.up('lg'));
-  const isMd = useMediaQuery(theme.breakpoints.up('md'));
-  const isSm = useMediaQuery(theme.breakpoints.up('sm'));
+  const { up } = useBreakpoint();
+  const isXl = up('xl');
+  const isLg = up('lg');
+  const isMd = up('md');
+  const isSm = up('sm');
 
   let itemsPerRow: number;
 

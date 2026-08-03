@@ -1,0 +1,16 @@
+@layer components {
+  .root {
+    width: 100%;
+  }
+
+  .select {
+    width: 100%;
+    margin-top: var(--bui-space-2);
+    margin-bottom: var(--bui-space-2);
+  }
+
+  .dateRange {
+    margin-top: var(--bui-space-2);
+    margin-bottom: var(--bui-space-2);
+  }
+}

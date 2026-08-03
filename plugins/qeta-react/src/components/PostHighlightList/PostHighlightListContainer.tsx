@@ -1,4 +1,4 @@
-import Whatshot from '@material-ui/icons/Whatshot';
+import { RiFireLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { PostHighlightList } from './PostHighlightList';
@@ -12,7 +12,7 @@ export const PostHighlightListContainer = ({
 }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
-  const icon = <Whatshot fontSize="small" />;
+  const icon = <RiFireLine size={16} />;
   return (
     <>
       {!disabled.questions && (

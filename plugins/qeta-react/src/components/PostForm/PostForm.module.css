@@ -1,0 +1,30 @@
+@layer components {
+  .form {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .favicon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .headerImagePreview {
+    max-height: 54px;
+  }
+
+  .titleHelper {
+    margin-top: var(--bui-space-1);
+  }
+
+  .markdownHelpLink {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--bui-font-size-1);
+  }
+
+  .markdownHelpIcon {
+    margin-left: var(--bui-space-1);
+    vertical-align: middle;
+  }
+}

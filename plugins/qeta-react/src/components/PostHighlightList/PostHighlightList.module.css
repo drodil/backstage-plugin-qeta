@@ -1,0 +1,33 @@
+@layer components {
+  .link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .voteBox {
+    min-width: 28px;
+    max-width: 28px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--bui-radius-2);
+    font-weight: var(--bui-font-weight-bold);
+    background: var(--bui-bg-neutral-1);
+    color: var(--bui-fg-primary);
+    border: 1px solid var(--bui-border-1);
+  }
+
+  .voteBoxPositive {
+    background: var(--bui-fg-success);
+    color: white;
+    border-color: var(--bui-fg-success);
+  }
+
+  .voteBoxNegative {
+    background: var(--bui-fg-danger);
+    color: white;
+    border-color: var(--bui-fg-danger);
+  }
+}

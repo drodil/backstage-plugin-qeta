@@ -1,15 +1,13 @@
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
-  ContentHeader,
   PostsContainer,
   qetaTranslationRef,
   useQetaConfig,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
-import LibraryBooksOutlined from '@material-ui/icons/LibraryBooksOutlined';
-import { Typography } from '@material-ui/core';
+import { Header } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const ArticlesPage = () => {
@@ -31,22 +29,10 @@ export const ArticlesPage = () => {
 
   return (
     <>
-      <ContentHeader
-        titleComponent={
-          <Typography
-            variant="h4"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <LibraryBooksOutlined
-              fontSize="large"
-              style={{ marginRight: '8px' }}
-            />
-            {t('articlesPage.title')}
-          </Typography>
-        }
-      >
-        <WriteArticleButton entity={entityRef} tags={tags} />
-      </ContentHeader>
+      <Header
+        title={t('articlesPage.title')}
+        customActions={<WriteArticleButton entity={entityRef} tags={tags} />}
+      />
       <PostsContainer type="article" defaultView="grid" />
     </>
   );

@@ -1,13 +1,14 @@
 import {
   AnswerResponse,
-  PostResponse,
   isPost,
+  PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { IconButton, Tooltip } from '@material-ui/core';
-import LinkIcon from '@material-ui/icons/Link';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { RiLinkM } from '@remixicon/react';
+import { useApi } from '@backstage/core-plugin-api';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const LinkButton = (props: {
   entity: PostResponse | AnswerResponse;
@@ -15,30 +16,30 @@ export const LinkButton = (props: {
 }) => {
   const isPostEntity = isPost(props.entity);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const copyToClipboard = () => {
     const url = new URL(window.location.href);
     if (!isPostEntity) {
       url.hash = `#answer_${props.entity.id}`;
     }
     window.navigator.clipboard.writeText(url.toString());
-    alertApi.post({
-      message: t('link.copied'),
-      severity: 'info',
-      display: 'transient',
+    toastApi.post({
+      title: t('link.copied'),
+      status: 'info',
     });
   };
 
   return (
-    <Tooltip title={isPostEntity ? t('link.post') : t('link.answer')}>
-      <IconButton
+    <TooltipTrigger>
+      <ButtonIcon
         aria-label={t('link.aria')}
         size="small"
-        onClick={copyToClipboard}
+        variant="tertiary"
+        onPress={copyToClipboard}
         className={props.className}
-      >
-        <LinkIcon />
-      </IconButton>
-    </Tooltip>
+        icon={<RiLinkM size={16} />}
+      />
+      <Tooltip>{isPostEntity ? t('link.post') : t('link.answer')}</Tooltip>
+    </TooltipTrigger>
   );
 };

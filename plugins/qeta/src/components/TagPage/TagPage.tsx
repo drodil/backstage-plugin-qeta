@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   AskQuestionButton,
-  ContentHeader,
   CreateLinkButton,
+  DeleteButton,
   DeleteModal,
   EditTagModal,
   PostsContainer,
@@ -11,21 +11,23 @@ import {
   qetaTranslationRef,
   TagFollowButton,
   TagsContainer,
-  useQetaConfig,
   useIsModerator,
+  useQetaConfig,
+  UserLink,
   WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import LocalOfferOutlined from '@material-ui/icons/LocalOfferOutlined';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import PeopleIcon from '@material-ui/icons/People';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { RiEditLine } from '@remixicon/react';
+import { useApi } from '@backstage/core-plugin-api';
 import { TagResponse } from '@drodil/backstage-plugin-qeta-common';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { ContentHeaderCard } from '@drodil/backstage-plugin-qeta-react';
-import { Button, Typography } from '@material-ui/core';
+import {
+  ButtonIcon,
+  Header,
+  HeaderMetadataItem,
+  Tooltip,
+  TooltipTrigger,
+} from '@backstage/ui';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const TagPage = () => {
   const { tag } = useParams();
@@ -38,7 +40,7 @@ export const TagPage = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const qetaApi = useApi(qetaApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
 
   const fetchTag = () => {
     if (!tag) {
@@ -54,10 +56,9 @@ export const TagPage = () => {
         }
       })
       .catch(e => {
-        alertApi.post({
-          message: e.message,
-          severity: 'error',
-          display: 'transient',
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
         });
       });
   };
@@ -65,7 +66,7 @@ export const TagPage = () => {
   useEffect(() => {
     fetchTag();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [qetaApi, tag, alertApi]);
+  }, [qetaApi, tag, toastApi]);
 
   const handleEditModalClose = () => {
     setEditModalOpen(false);
@@ -80,88 +81,65 @@ export const TagPage = () => {
     return null;
   }
 
+  const getMetadata = (r?: TagResponse): HeaderMetadataItem[] => {
+    if (!r) {
+      return [];
+    }
+    const metadata: HeaderMetadataItem[] = [
+      {
+        label: t('metadata.posts'),
+        value: r.postsCount,
+      },
+      {
+        label: t('metadata.followers'),
+        value: r.followerCount,
+      },
+    ];
+    if (r?.experts && r.experts.length > 0) {
+      metadata.push({
+        label: t('common.experts'),
+        value: (
+          <>
+            {r.experts.map((e, i) => (
+              <>
+                <UserLink key={e} entityRef={e} />
+                {i === r.experts!.length - 1 ? '' : ','}
+              </>
+            ))}
+          </>
+        ),
+      });
+    }
+    return metadata;
+  };
+
   return (
     <>
-      {tag ? (
-        <ContentHeader
-          title={tag}
-          titleIcon={<LocalOfferOutlined fontSize="large" />}
-        >
-          <TagFollowButton tag={tag} />
-          <AskQuestionButton tags={[tag]} />
-          <WriteArticleButton tags={[tag]} />
-          <CreateLinkButton tags={[tag]} />
-        </ContentHeader>
-      ) : (
-        <ContentHeader
-          title={t('tagPage.defaultTitle', {})}
-          titleIcon={<LocalOfferOutlined fontSize="large" />}
-        >
-          <AskQuestionButton />
-          <WriteArticleButton />
-          <CreateLinkButton />
-        </ContentHeader>
-      )}
-      {resp && (
-        <ContentHeaderCard
-          description={resp.description}
-          imageIcon={<LocalOfferOutlined style={{ fontSize: 80 }} />}
-          stats={[
-            {
-              label: t('common.postsLabel', {
-                count: resp.postsCount,
-                itemType: 'post',
-              }),
-              value: resp.postsCount,
-              icon: <QuestionAnswerIcon fontSize="small" />,
-            },
-            {
-              label: t('common.followersLabel', { count: resp.followerCount }),
-              value: resp.followerCount,
-              icon: <PeopleIcon fontSize="small" />,
-            },
-          ]}
-        >
-          {resp.experts && resp.experts.length > 0 && (
-            <Typography variant="caption">
-              {t('common.experts')}
-              {': '}
-              {resp.experts.map((e, i) => (
-                <>
-                  <EntityRefLink key={e} entityRef={e} />
-                  {i === resp.experts!.length - 1 ? '' : ','}
-                </>
-              ))}
-            </Typography>
-          )}
-          {(resp.canEdit || resp.canDelete) && (
-            <div style={{ marginTop: '1em' }}>
-              {resp.canEdit && (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<EditIcon />}
+      <Header
+        title={tag ?? t('tagPage.defaultTitle', {})}
+        description={resp?.description}
+        metadata={getMetadata(resp)}
+        customActions={
+          <>
+            {resp?.canEdit && (
+              <TooltipTrigger>
+                <ButtonIcon
+                  icon={<RiEditLine size={16} />}
+                  variant="secondary"
+                  aria-label={t('common.edit')}
                   onClick={() => setEditModalOpen(true)}
-                  style={{ marginRight: '0.5em' }}
-                >
-                  {t('tagButton.edit')}
-                </Button>
-              )}
-              {resp.canDelete && (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  color="secondary"
-                  startIcon={<DeleteIcon />}
-                  onClick={() => setDeleteModalOpen(true)}
-                >
-                  {t('tagButton.delete')}
-                </Button>
-              )}
-            </div>
-          )}
-        </ContentHeaderCard>
-      )}
+                />
+                <Tooltip>{t('common.edit')}</Tooltip>
+              </TooltipTrigger>
+            )}
+            {resp && <DeleteButton entity={resp} compact />}
+            {tag && <TagFollowButton tag={tag} />}
+            {tag && <AskQuestionButton tags={tag ? [tag] : undefined} />}
+            {tag && <WriteArticleButton tags={tag ? [tag] : undefined} />}
+            {tag && <CreateLinkButton tags={tag ? [tag] : undefined} />}
+          </>
+        }
+      />
       {tag && (
         <PostsContainer
           tags={[tag ?? '']}

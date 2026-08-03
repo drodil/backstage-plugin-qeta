@@ -1,0 +1,16 @@
+@layer components {
+  .statusChip {
+    margin-left: var(--bui-space-2);
+    flex-shrink: 0;
+  }
+
+  .draft {
+    background-color: var(--bui-bg-warning);
+    color: var(--bui-fg-warning-on-solid);
+  }
+
+  .deleted {
+    background-color: var(--bui-bg-danger);
+    color: var(--bui-fg-danger-on-solid);
+  }
+}

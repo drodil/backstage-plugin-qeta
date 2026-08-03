@@ -1,0 +1,46 @@
+@layer components {
+  .card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .content {
+    flex-grow: 1;
+    overflow: auto;
+  }
+
+  .sectionTitle {
+    display: block;
+    margin-top: var(--bui-space-4);
+    margin-bottom: var(--bui-space-1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .emptyMessage {
+    display: block;
+    font-style: italic;
+    padding: var(--bui-space-4) 0;
+    text-align: center;
+  }
+
+  .loadingContainer {
+    width: 100%;
+  }
+
+  .loadingTitle {
+    margin-top: var(--bui-space-4);
+    margin-bottom: var(--bui-space-2);
+  }
+
+  .loadingRow {
+    padding: var(--bui-space-1) 0;
+  }
+}

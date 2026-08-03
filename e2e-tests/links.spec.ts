@@ -26,6 +26,7 @@ test.describe.serial('Links - Form Flow', () => {
     await tagsInput.fill(tags[0]);
     await page.waitForTimeout(500);
     await tagsInput.press('Enter');
+    await tagsInput.press('Escape');
 
     await page.getByRole('button', { name: 'Publish', exact: true }).click();
 
@@ -44,7 +45,7 @@ test.describe.serial('Links - Form Flow', () => {
     await page.goto('/qeta/links');
     await page.waitForLoadState('networkidle');
 
-    const searchInput = page.getByRole('textbox', { name: /Search/i });
+    const searchInput = page.getByRole('searchbox', { name: /Search/i });
 
     const partialTitle = title.split(' ')[0];
     await searchInput.fill(partialTitle);

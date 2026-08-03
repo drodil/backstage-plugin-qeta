@@ -1,11 +1,10 @@
 import {
   CollectionsContainer,
-  ContentHeader,
   CreateCollectionButton,
   qetaTranslationRef,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
-import PlaylistPlayOutlined from '@material-ui/icons/PlaylistPlayOutlined';
+import { Header } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const CollectionsPage = () => {
@@ -18,12 +17,10 @@ export const CollectionsPage = () => {
 
   return (
     <>
-      <ContentHeader
+      <Header
         title={t('collectionsPage.title')}
-        titleIcon={<PlaylistPlayOutlined fontSize="large" />}
-      >
-        <CreateCollectionButton />
-      </ContentHeader>
+        customActions={<CreateCollectionButton />}
+      />
       <CollectionsContainer />
     </>
   );

@@ -1,17 +1,12 @@
-import { Grid } from '@material-ui/core';
-import { Progress } from '@backstage/core-components';
+import { Grid } from '@backstage/ui';
+import styles from './LoadingGrid.module.css';
 
 export const LoadingGrid = () => {
   return (
-    <Grid
-      container
-      justifyContent="center"
-      alignItems="center"
-      style={{ height: '10vh' }}
-    >
-      <Grid item xs={12}>
-        <Progress />
-      </Grid>
-    </Grid>
+    <Grid.Root columns={{ sm: '12' }} className={styles.root}>
+      <Grid.Item colSpan={{ sm: '12' }} className={styles.item}>
+        <div className={styles.spinner} />
+      </Grid.Item>
+    </Grid.Root>
   );
 };

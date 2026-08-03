@@ -1,5 +1,5 @@
-import { Fragment, ReactNode } from 'react';
-import { Content, Header, Page } from '@backstage/core-components';
+import { ReactNode } from 'react';
+import { Content, Page } from '@backstage/core-components';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { AskPage } from '../AskPage';
 import { QuestionPage } from '../QuestionPage/QuestionPage';
@@ -56,98 +56,22 @@ import { UsersPage } from '../UsersPage/UsersPage';
 import { ModeratorPage } from '../ModeratorPage/ModeratorPage';
 import { ReviewPage } from '../ReviewPage/ReviewPage';
 import { SettingsPage } from '../SettingsPage/SettingsPage';
-import { Box, Container, Grid, makeStyles } from '@material-ui/core';
+import { Box, useBreakpoint } from '@backstage/ui';
 import { useSidebarSettings } from '../../hooks/useSidebarSettings';
 import { RightContent } from '../RightContent/RightContent';
 import type { PluggableList } from 'unified';
+import styles from './QetaPage.module.css';
 
 type Props = {
-  title?: string;
-  subtitle?: string;
-  headerElements?: ReactNode[];
   themeId?: string;
-  headerTooltip?: string;
-  headerType?: string;
-  headerTypeLink?: string;
   introElement?: ReactNode;
   remarkPlugins?: PluggableList;
   rehypePlugins?: PluggableList;
 };
 
-type StyleProps = {
-  leftCompact: boolean;
-  rightCompact: boolean;
-};
-
-const useStyles = makeStyles(theme => ({
-  sidebarColumn: {
-    padding: 0,
-    transition: 'all 0.2s ease-in-out',
-    flexShrink: 0,
-    position: 'sticky',
-    top: theme.spacing(2),
-    alignSelf: 'flex-start',
-    maxHeight: 'calc(100dvh - 20px)',
-    overflowX: 'hidden',
-    [theme.breakpoints.up('lg')]: {
-      width: (props: StyleProps) => (props.leftCompact ? 80 : 180),
-      minWidth: (props: StyleProps) => (props.leftCompact ? 80 : 180),
-    },
-    [theme.breakpoints.down('md')]: {
-      width: '100%',
-      marginBottom: theme.spacing(1),
-      position: 'static',
-      maxHeight: 'none',
-    },
-    '-ms-overflow-style': 'none',
-    'scrollbar-width': 'none',
-    '&::-webkit-scrollbar': {
-      display: 'none',
-    },
-  },
-  rightSidebarColumn: {
-    padding: 0,
-    transition: 'all 0.2s ease-in-out',
-    flexShrink: 0,
-    position: 'sticky',
-    top: theme.spacing(2),
-    alignSelf: 'flex-start',
-    maxHeight: 'calc(100vh - 150px)',
-    overflowY: 'auto',
-    overflowX: 'hidden',
-    // Hide scrollbar but keep scrolling functionality
-    scrollbarWidth: 'none', // Firefox
-    '-ms-overflow-style': 'none', // IE/Edge
-    '&::-webkit-scrollbar': {
-      display: 'none', // Chrome/Safari/Edge
-    },
-    [theme.breakpoints.up('lg')]: {
-      width: (props: StyleProps) => (props.rightCompact ? 72 : 250),
-      minWidth: (props: StyleProps) => (props.rightCompact ? 72 : 250),
-    },
-    [theme.breakpoints.down('md')]: {
-      display: 'none',
-    },
-  },
-  mainColumn: {
-    paddingRight: 0,
-    minWidth: 0,
-    transition: 'all 0.2s ease-in-out',
-    [theme.breakpoints.down('md')]: {
-      paddingLeft: 0,
-    },
-  },
-}));
-
 export const QetaPage = (props?: Props) => {
   const {
-    title = 'Q&A',
-    subtitle,
-    headerElements,
     themeId = 'tool',
-    headerTooltip,
-    headerType,
-    headerTypeLink,
     introElement,
     remarkPlugins,
     rehypePlugins,
@@ -156,49 +80,33 @@ export const QetaPage = (props?: Props) => {
     useSidebarSettings();
   const { disabled } = useQetaConfig();
   const location = useLocation();
+  const { down } = useBreakpoint();
+  const isSmallScreen = down('lg');
 
   // Hide right sidebar on review and moderator pages
   const hideRightSidebar =
     location.pathname.includes('/review') ||
     location.pathname.includes('/moderate');
 
-  const classes = useStyles({
-    leftCompact,
-    rightCompact,
-  });
-
   return (
     <QetaProvider remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>
       <Page themeId={themeId}>
-        <Header
-          title={title}
-          subtitle={subtitle}
-          type={headerType}
-          typeLink={headerTypeLink}
-          tooltip={headerTooltip}
-        >
-          {headerElements?.map((element, index) => (
-            <Fragment key={index}>{element}</Fragment>
-          ))}
-        </Header>
         <Content className="qetaHomePage">
           {introElement}
-          <Container maxWidth="xl">
-            <Grid
-              container
-              spacing={3}
-              justifyContent="flex-start"
-              alignItems="flex-start"
-            >
-              <Grid item className={classes.sidebarColumn}>
-                <Box display={{ xs: 'block', lg: 'none' }}>
+          <Box className={styles.container}>
+            <Box className={styles.row}>
+              <Box
+                className={`${styles.sidebarColumn} ${
+                  leftCompact ? styles.sidebarColumnCompact : ''
+                }`}
+              >
+                {isSmallScreen ? (
                   <LeftMenuButton />
-                </Box>
-                <Box display={{ xs: 'none', lg: 'block' }}>
+                ) : (
                   <LeftMenu compact={leftCompact} onToggle={toggleLeft} />
-                </Box>
-              </Grid>
-              <Grid item xs className={classes.mainColumn}>
+                )}
+              </Box>
+              <Box className={styles.mainColumn}>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   {!disabled.questions && (
@@ -313,14 +221,18 @@ export const QetaPage = (props?: Props) => {
                     element={<SettingsPage />}
                   />
                 </Routes>
-              </Grid>
+              </Box>
               {!hideRightSidebar && (
-                <Grid item className={classes.rightSidebarColumn}>
+                <Box
+                  className={`${styles.rightSidebarColumn} ${
+                    rightCompact ? styles.rightSidebarColumnCompact : ''
+                  }`}
+                >
                   <RightContent compact={rightCompact} onToggle={toggleRight} />
-                </Grid>
+                </Box>
               )}
-            </Grid>
-          </Container>
+            </Box>
+          </Box>
         </Content>
       </Page>
     </QetaProvider>

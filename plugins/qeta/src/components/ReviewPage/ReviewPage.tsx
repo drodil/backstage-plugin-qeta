@@ -14,16 +14,18 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { Table, TableColumn } from '@backstage/core-components';
+import { Link } from 'react-router-dom';
 import {
-  Link,
-  Table,
-  TableColumn,
-  WarningPanel,
-} from '@backstage/core-components';
-import { Box, Grid, IconButton, Tooltip, Typography } from '@material-ui/core';
-import CheckIcon from '@material-ui/icons/Check';
-import BlockIcon from '@material-ui/icons/Block';
-import DeleteIcon from '@material-ui/icons/Delete';
+  Alert,
+  Box,
+  ButtonIcon,
+  Flex,
+  Text,
+  Tooltip,
+  TooltipTrigger,
+} from '@backstage/ui';
+import { RiCheckLine, RiForbidLine, RiDeleteBinLine } from '@remixicon/react';
 import { Post } from '@drodil/backstage-plugin-qeta-common';
 
 export const ReviewPage = () => {
@@ -113,34 +115,40 @@ export const ReviewPage = () => {
       title: t('reviewPage.table.actions'),
       field: 'actions',
       render: row => (
-        <Grid container spacing={1}>
-          <Grid item>
-            <Tooltip title={t('contentHealth.markValid')}>
-              <IconButton color="primary" onClick={() => openMarkValid(row)}>
-                <CheckIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-          <Grid item>
-            <Tooltip title={t('contentHealth.markObsolete')}>
-              <IconButton
-                color="secondary"
-                onClick={() => openMarkObsolete(row)}
-              >
-                <BlockIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
+        <Flex gap="2">
+          <TooltipTrigger>
+            <ButtonIcon
+              aria-label={t('contentHealth.markValid')}
+              size="small"
+              variant="tertiary"
+              onPress={() => openMarkValid(row)}
+              icon={<RiCheckLine size={16} />}
+            />
+            <Tooltip>{t('contentHealth.markValid')}</Tooltip>
+          </TooltipTrigger>
+          <TooltipTrigger>
+            <ButtonIcon
+              aria-label={t('contentHealth.markObsolete')}
+              size="small"
+              variant="tertiary"
+              onPress={() => openMarkObsolete(row)}
+              icon={<RiForbidLine size={16} />}
+            />
+            <Tooltip>{t('contentHealth.markObsolete')}</Tooltip>
+          </TooltipTrigger>
           {row.canDelete && (
-            <Grid item>
-              <Tooltip title={t('deleteModal.deleteButton')}>
-                <IconButton color="secondary" onClick={() => openDelete(row)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
+            <TooltipTrigger>
+              <ButtonIcon
+                aria-label={t('deleteModal.deleteButton')}
+                size="small"
+                variant="tertiary"
+                onPress={() => openDelete(row)}
+                icon={<RiDeleteBinLine size={16} />}
+              />
+              <Tooltip>{t('deleteModal.deleteButton')}</Tooltip>
+            </TooltipTrigger>
           )}
-        </Grid>
+        </Flex>
       ),
     },
   ];
@@ -151,16 +159,18 @@ export const ReviewPage = () => {
 
   if (error) {
     return (
-      <WarningPanel severity="error" title={t('reviewPage.errorLoading')}>
-        {error.message}
-      </WarningPanel>
+      <Alert
+        status="danger"
+        title={t('reviewPage.errorLoading')}
+        description={error.message}
+      />
     );
   }
 
   return (
     <>
-      <Box mb={2}>
-        <Typography variant="body1">{t('reviewPage.description')}</Typography>
+      <Box mb="4">
+        <Text variant="body-medium">{t('reviewPage.description')}</Text>
       </Box>
       <Table
         options={{ paging: true, pageSize: 10, search: true }}

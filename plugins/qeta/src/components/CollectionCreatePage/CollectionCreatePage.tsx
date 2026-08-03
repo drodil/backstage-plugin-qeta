@@ -1,11 +1,10 @@
 import { useParams } from 'react-router-dom';
-import { ContentHeader, InfoCard } from '@backstage/core-components';
 import {
   CollectionForm,
   qetaTranslationRef,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Grid } from '@material-ui/core';
+import { Box, Header } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const CollectionCreatePage = () => {
@@ -25,14 +24,10 @@ export const CollectionCreatePage = () => {
   }
   return (
     <>
-      <ContentHeader title={title} />
-      <Grid container spacing={3} direction="column">
-        <Grid item>
-          <InfoCard>
-            <CollectionForm id={id} />
-          </InfoCard>
-        </Grid>
-      </Grid>
+      <Header title={title} />
+      <Box>
+        <CollectionForm id={id} />
+      </Box>
     </>
   );
 };

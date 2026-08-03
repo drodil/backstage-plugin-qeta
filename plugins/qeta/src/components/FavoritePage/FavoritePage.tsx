@@ -1,12 +1,8 @@
 import {
-  AskQuestionButton,
-  ContentHeader,
-  CreateLinkButton,
   PostsContainer,
   qetaTranslationRef,
-  WriteArticleButton,
 } from '@drodil/backstage-plugin-qeta-react';
-import StarBorder from '@material-ui/icons/StarBorder';
+import { Header } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const FavoritePage = () => {
@@ -14,14 +10,7 @@ export const FavoritePage = () => {
 
   return (
     <>
-      <ContentHeader
-        title={t('favoritePage.title')}
-        titleIcon={<StarBorder fontSize="large" />}
-      >
-        <AskQuestionButton />
-        <WriteArticleButton />
-        <CreateLinkButton />
-      </ContentHeader>
+      <Header title={t('favoritePage.title')} />
       <PostsContainer
         favorite
         showNoQuestionsBtn={false}

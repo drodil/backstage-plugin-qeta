@@ -22,14 +22,10 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.tsx",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
-      "alpha": [
-        "src/alpha.tsx"
-      ],
       "package.json": [
         "package.json"
       ]
@@ -63,18 +59,17 @@
   "dependencies": {
     "@backstage/catalog-client": "backstage:^",
     "@backstage/catalog-model": "backstage:^",
-    "@backstage/core-components": "backstage:^",
     "@backstage/core-plugin-api": "backstage:^",
     "@backstage/frontend-plugin-api": "backstage:^",
     "@backstage/plugin-catalog-react": "backstage:^",
     "@backstage/plugin-permission-common": "backstage:^",
     "@backstage/plugin-permission-react": "backstage:^",
     "@backstage/plugin-signals-react": "backstage:^",
+    "@backstage/ui": "backstage:^",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",
+    "@internationalized/date": "^3.12.1",
     "@jsdevtools/rehype-toc": "^3.0.2",
-    "@material-ui/core": "^4.12.2",
-    "@material-ui/icons": "^4.11.3",
-    "@material-ui/lab": "4.0.0-alpha.61",
+    "@remixicon/react": "^4.2.0",
     "dataloader": "^2.2.2",
     "dompurify": "^3.2.4",
     "file-type": "16.5.4",
@@ -89,7 +84,6 @@
     "react-relative-time": "^0.0.9",
     "react-syntax-highlighter": "^15.6.1",
     "react-use": "^17.4.0",
-    "react-window": "^1.8.10",
     "recharts": "^2.13.0",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.0",
@@ -108,8 +102,7 @@
     "@testing-library/react": "^16.0.1",
     "@types/lodash": "^4.14.199",
     "@types/numeral": "^2",
-    "@types/react-syntax-highlighter": "^15",
-    "@types/react-window": "^1"
+    "@types/react-syntax-highlighter": "^15"
   },
   "files": [
     "dist"

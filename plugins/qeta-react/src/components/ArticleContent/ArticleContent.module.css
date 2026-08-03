@@ -1,0 +1,29 @@
+@layer components {
+  .headerImage {
+    margin-top: var(--bui-space-4);
+    margin-bottom: var(--bui-space-4);
+    height: 300px;
+    object-fit: cover;
+    width: 100%;
+    border: 1px solid var(--bui-border-1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  }
+
+  .content {
+    padding-top: var(--bui-space-4);
+    padding-bottom: var(--bui-space-4);
+    margin-bottom: var(--bui-space-4);
+    border-bottom: 1px solid var(--bui-border-1);
+  }
+
+  .commentSection {
+    border-bottom: 1px solid var(--bui-border-1);
+    padding-bottom: var(--bui-space-4);
+    margin-bottom: var(--bui-space-4);
+    margin-left: 0;
+  }
+
+  .commentSectionContainer {
+    margin-top: var(--bui-space-8);
+  }
+}

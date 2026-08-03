@@ -3,8 +3,7 @@ import { VoteButtons } from '../Buttons/VoteButtons';
 import { AnswerForm } from '../AnswerForm';
 import { CommentSection } from '../CommentSection/CommentSection';
 import { LinkButton } from '../Buttons/LinkButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
+import { RiDeleteBinLine, RiEditLine } from '@remixicon/react';
 import {
   AnswerResponse,
   PostResponse,
@@ -12,63 +11,11 @@ import {
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { DeleteModal } from '../Modals';
 import { VoteButtonContainer } from '../Utility/VoteButtonContainer';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  makeStyles,
-} from '@material-ui/core';
+import { Box, Button, Card, CardBody, Flex } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { AuthorBoxes } from '../AuthorBox/AuthorBoxes.tsx';
-
-export type AnswerCardClassKeys =
-  | 'root'
-  | 'highlight'
-  | 'buttons'
-  | 'metadata'
-  | 'markdownContainer'
-  | 'contentContainer';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      marginTop: '1em',
-    },
-    contentContainer: {
-      marginLeft: '0.5em',
-      display: 'inline-block',
-      width: 'calc(100% - 70px)',
-    },
-    markdownContainer: {
-      minHeight: '6em',
-      paddingBottom: '0.5em',
-    },
-    metadata: {
-      marginTop: '1em',
-    },
-    highlight: {
-      animation: 'highlight 5s',
-    },
-    '@keyframes highlight': {
-      '0%': {
-        boxShadow: `0px 0px 0px 3px ${theme.palette.secondary.light}`,
-      },
-      '100%': {
-        boxShadow: 'none',
-      },
-    },
-    buttons: {
-      marginTop: '1em',
-      '& *:not(:last-child)': {
-        marginRight: '0.3em',
-      },
-    },
-  }),
-  { name: 'QetaAnswerCard' },
-);
+import styles from './AnswerCard.module.css';
 
 export const AnswerCard = (props: {
   answer: AnswerResponse;
@@ -80,7 +27,6 @@ export const AnswerCard = (props: {
   const [editMode, setEditMode] = useState(false);
   const [answerEntity, setAnswerEntity] = useState(answer);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const styles = useStyles();
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
@@ -107,20 +53,17 @@ export const AnswerCard = (props: {
           highlightedAnswer ? styles.highlight : ''
         }`}
       >
-        <CardContent>
-          <Grid
-            container
-            spacing={2}
-            justifyContent="flex-start"
-            style={{ flexWrap: 'nowrap' }}
-          >
-            <Grid item>
-              <VoteButtonContainer>
-                <VoteButtons entity={answerEntity} post={question} />
-                <LinkButton entity={answerEntity} />
-              </VoteButtonContainer>
-            </Grid>
-            <Grid item className={styles.contentContainer}>
+        <CardBody>
+          <Flex align="start" gap="4" style={{ flexWrap: 'nowrap' }}>
+            <VoteButtonContainer>
+              <VoteButtons entity={answerEntity} post={question} />
+              <LinkButton entity={answerEntity} />
+            </VoteButtonContainer>
+            <Flex
+              className={styles.contentContainer}
+              gap="2"
+              direction="column"
+            >
               {editMode ? (
                 <AnswerForm
                   post={question}
@@ -129,28 +72,23 @@ export const AnswerCard = (props: {
                 />
               ) : (
                 <>
-                  <Grid item className={styles.markdownContainer}>
+                  <Box className={styles.markdownContainer}>
                     <MarkdownRenderer content={answerEntity.content} />
-                  </Grid>
-                  <Box
-                    display="flex"
-                    alignItems="flex-end"
-                    justifyContent="space-between"
+                  </Box>
+                  <Flex
+                    align="end"
+                    justify="between"
                     className={styles.metadata}
-                    style={{ width: '100%' }}
                   >
-                    <Box flex="1 1 0%" minWidth={0}>
+                    <Box style={{ flex: '1 1 0%', minWidth: 0 }}>
                       {(answerEntity.canDelete || answerEntity.canEdit) &&
                         question.status !== 'obsolete' && (
-                          <Box
-                            className={styles.buttons}
-                            style={{ alignSelf: 'flex-end' }}
-                          >
+                          <Box className={styles.buttons}>
                             {answerEntity.canEdit && (
                               <Button
-                                variant="outlined"
+                                variant="secondary"
                                 size="small"
-                                startIcon={<EditIcon />}
+                                iconStart={<RiEditLine size={16} />}
                                 onClick={() => setEditMode(true)}
                                 className="qetaAnswerCardEditBtn"
                               >
@@ -161,11 +99,11 @@ export const AnswerCard = (props: {
                               answerEntity.canDelete && (
                                 <>
                                   <Button
-                                    variant="outlined"
+                                    variant="secondary"
                                     size="small"
-                                    color="secondary"
+                                    destructive
+                                    iconStart={<RiDeleteBinLine size={16} />}
                                     onClick={handleDeleteModalOpen}
-                                    startIcon={<DeleteIcon />}
                                   >
                                     {t('deleteModal.deleteButton')}
                                   </Button>
@@ -184,12 +122,12 @@ export const AnswerCard = (props: {
                         )}
                     </Box>
                     <AuthorBoxes entity={answerEntity} />
-                  </Box>
+                  </Flex>
                 </>
               )}
-            </Grid>
-          </Grid>
-        </CardContent>
+            </Flex>
+          </Flex>
+        </CardBody>
       </Card>
       <CommentSection
         post={question}

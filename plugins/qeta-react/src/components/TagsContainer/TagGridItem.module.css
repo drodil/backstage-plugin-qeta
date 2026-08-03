@@ -1,0 +1,35 @@
+@layer components {
+  .iconAvatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--bui-radius-2);
+    background-color: var(--bui-bg-neutral-2);
+    color: var(--bui-fg-secondary);
+    flex-shrink: 0;
+  }
+
+  .flexColumn {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .statsGrid {
+    margin-top: auto;
+  }
+
+  .statItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--bui-space-2);
+    border-radius: var(--bui-radius-2);
+    border: 1px solid var(--bui-border-1);
+    width: 100%;
+    height: 100%;
+    transition: background-color 0.2s ease-in-out;
+  }
+}

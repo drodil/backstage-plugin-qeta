@@ -9,54 +9,6 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { qetaApiRef } from '../../api';
 import { TagInput } from './TagInput';
 
-jest.mock('@material-ui/lab', () => ({
-  Autocomplete: ({
-    filterOptions,
-    freeSolo,
-    getOptionLabel,
-    onChange,
-    onInputChange,
-    options = [],
-    inputValue,
-    value = [],
-  }: any) => {
-    const visibleOptions = filterOptions
-      ? filterOptions(options, { inputValue, getOptionLabel })
-      : options.filter((option: any) =>
-          getOptionLabel(option)
-            .toLocaleLowerCase()
-            .includes(inputValue.toLocaleLowerCase()),
-        );
-
-    return (
-      <div>
-        <input
-          aria-label="tag-search"
-          value={inputValue}
-          onChange={event =>
-            onInputChange?.(event, event.currentTarget.value, 'input')
-          }
-        />
-        <div>
-          {visibleOptions.map((option: any) => (
-            <button
-              key={typeof option === 'string' ? option : option.inputValue}
-              type="button"
-              onClick={() => {
-                if (freeSolo || typeof option === 'string') {
-                  onChange?.(undefined, [...value, option]);
-                }
-              }}
-            >
-              {getOptionLabel(option)}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  },
-}));
-
 describe('TagInput', () => {
   const mockConfigApi = {
     getOptionalBoolean: jest.fn(),
@@ -135,6 +87,10 @@ describe('TagInput', () => {
       order: 'desc',
     });
 
+    act(() => {
+      screen.getByRole('textbox').focus();
+    });
+
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'react' })).toBeInTheDocument();
       expect(
@@ -156,7 +112,10 @@ describe('TagInput', () => {
       total: 1,
     });
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'tag-search' }), {
+    act(() => {
+      screen.getByRole('textbox').focus();
+    });
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'red' },
     });
 
@@ -186,7 +145,7 @@ describe('TagInput', () => {
       screen.queryByRole('button', { name: 'backstage' }),
     ).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'tag-search' }), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: '' },
     });
 
@@ -194,7 +153,7 @@ describe('TagInput', () => {
       jest.advanceTimersByTime(350);
     });
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'tag-search' }), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'red' },
     });
 
@@ -208,6 +167,10 @@ describe('TagInput', () => {
   it('should keep fetched tags available when a search returns no matches', async () => {
     render(<TagInput value={[]} onChange={jest.fn()} />, { wrapper });
 
+    act(() => {
+      screen.getByRole('textbox').focus();
+    });
+
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'react' })).toBeInTheDocument();
       expect(
@@ -218,7 +181,7 @@ describe('TagInput', () => {
     mockQetaApi.getTags.mockClear();
     mockQetaApi.getTags.mockResolvedValue({ tags: [], total: 0 });
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'tag-search' }), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'zzz' },
     });
 
@@ -235,7 +198,9 @@ describe('TagInput', () => {
       });
     });
 
-    expect(screen.getByRole('button', { name: /zzz/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /zzz/i })).toBeInTheDocument();
+    });
     expect(
       screen.queryByRole('button', { name: 'react' }),
     ).not.toBeInTheDocument();
@@ -243,7 +208,7 @@ describe('TagInput', () => {
       screen.queryByRole('button', { name: 'backstage' }),
     ).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'tag-search' }), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: '' },
     });
 
@@ -270,7 +235,10 @@ describe('TagInput', () => {
 
     mockQetaApi.getTags.mockClear();
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'tag-search' }), {
+    act(() => {
+      screen.getByRole('textbox').focus();
+    });
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'New Tag' },
     });
 
@@ -282,6 +250,12 @@ describe('TagInput', () => {
 
     await waitFor(() => {
       expect(mockQetaApi.getTags).toHaveBeenCalledTimes(1);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: /New Tag/ }),
+      ).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole('button', { name: /New Tag/ }));

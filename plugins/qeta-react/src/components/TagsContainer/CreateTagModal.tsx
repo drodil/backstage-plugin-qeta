@@ -1,21 +1,23 @@
 import {
-  Backdrop,
+  Alert,
   Button,
-  Grid,
-  Modal,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Flex,
+  TextAreaField,
   TextField,
-  Typography,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+} from '@backstage/ui';
 import { useState } from 'react';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { ModalContent } from '../Utility/ModalContent';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { EntitiesInput } from '../PostForm/EntitiesInput.tsx';
 import { isValidTag } from '@drodil/backstage-plugin-qeta-common';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const CreateTagModal = (props: {
   open: boolean;
@@ -27,16 +29,15 @@ export const CreateTagModal = (props: {
   const [description, setDescription] = useState('');
   const [experts, setExperts] = useState<Entity[]>([]);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const [error, setError] = useState(false);
   const qetaApi = useApi(qetaApiRef);
 
   const handleCreate = () => {
     if (!isValidTag(tag)) {
-      alertApi.post({
-        message: t('createTagModal.invalidTagAlert'),
-        severity: 'error',
-        display: 'transient',
+      toastApi.post({
+        title: t('createTagModal.invalidTagAlert'),
+        status: 'warning',
       });
       return;
     }
@@ -58,88 +59,79 @@ export const CreateTagModal = (props: {
         setError(true);
       })
       .catch(e => {
-        alertApi.post({
-          message: e.message,
-          severity: 'error',
-          display: 'transient',
+        toastApi.post({
+          title: e.message,
+          status: 'warning',
         });
         setError(true);
       });
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      className="qetaCreateTagModal"
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{
-        timeout: 500,
+    <Dialog
+      isOpen={open}
+      isDismissable
+      onOpenChange={isOpenState => {
+        if (!isOpenState) onClose();
       }}
+      className="qetaCreateTagModal"
     >
-      <ModalContent>
-        {error && (
-          <Alert severity="error">{t('createTagModal.errorPosting')}</Alert>
-        )}
-        <Typography
-          id="modal-modal-title"
-          className="qetaCreateTagModalTitle"
-          variant="h6"
-          component="h2"
-          style={{ marginBottom: '1em' }}
-        >
-          {t('createTagModal.title')}
-        </Typography>
-        <Grid container>
-          <Grid item xs={12}>
-            <TextField
-              variant="outlined"
-              label={t('createTagModal.tagInput')}
-              style={{ width: '100%' }}
-              required
-              value={tag}
-              onChange={e => setTag(e.target.value)}
+      <DialogHeader className="qetaCreateTagModalTitle">
+        {t('createTagModal.title')}
+      </DialogHeader>
+      <DialogBody>
+        <Flex direction="column" gap="4">
+          {error && (
+            <Alert
+              status="danger"
+              icon
+              description={t('createTagModal.errorPosting')}
             />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              variant="outlined"
-              label={t('createTagModal.description')}
-              multiline
-              minRows={10}
-              style={{ width: '100%' }}
-              value={description ?? ''}
-              onChange={e => setDescription(e.target.value)}
-            />
-          </Grid>
-          {isModerator && (
-            <Grid item xs={12}>
-              <EntitiesInput
-                value={experts}
-                onChange={setExperts}
-                maximum={null}
-                kind={['User']}
-                hideHelpText
-                label={t('editTagModal.expertsLabel')}
-                placeholder={t('editTagModal.expertsPlaceholder')}
-              />
-            </Grid>
           )}
-        </Grid>
+          <TextField
+            isRequired
+            id="tag"
+            label={t('createTagModal.tagInput')}
+            value={tag}
+            onChange={value => setTag(value)}
+          />
+          <TextAreaField
+            id="description"
+            label={t('createTagModal.description')}
+            rows={10}
+            value={description ?? ''}
+            onChange={value => setDescription(value)}
+          />
+          {isModerator && (
+            <EntitiesInput
+              value={experts}
+              onChange={setExperts}
+              maximum={null}
+              kind={['User']}
+              hideHelpText
+              label={t('editTagModal.expertsLabel')}
+              placeholder={t('editTagModal.expertsPlaceholder')}
+            />
+          )}
+        </Flex>
+      </DialogBody>
+      <DialogFooter>
         <Button
           onClick={handleCreate}
           className="qetaCreateTagModalSaveBtn"
-          color="secondary"
+          variant="primary"
         >
           {t('createTagModal.createButton')}
         </Button>
-        <Button onClick={onClose} className="qetaCreateTagModalCancelBtn">
+        <Button
+          onClick={onClose}
+          className="qetaCreateTagModalCancelBtn"
+          variant="secondary"
+          slot="close"
+        >
           {t('createTagModal.cancelButton')}
         </Button>
-      </ModalContent>
-    </Modal>
+      </DialogFooter>
+    </Dialog>
   );
 };

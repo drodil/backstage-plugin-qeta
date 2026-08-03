@@ -1,0 +1,13 @@
+@layer components {
+  .container {
+    width: 100%;
+    padding-top: var(--bui-space-2);
+    padding-bottom: var(--bui-space-2);
+    border-top: 1px solid var(--bui-border-1);
+    border-bottom: 1px solid var(--bui-border-1);
+  }
+
+  .scoreText {
+    user-select: none;
+  }
+}

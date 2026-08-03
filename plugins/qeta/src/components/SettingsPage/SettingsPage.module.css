@@ -1,0 +1,44 @@
+@layer components {
+  .content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .section {
+    margin-bottom: var(--bui-space-6);
+  }
+
+  .sectionTitle {
+    margin-bottom: var(--bui-space-4);
+  }
+
+  .settingItem {
+    margin-bottom: var(--bui-space-4);
+  }
+
+  .description {
+    margin-top: var(--bui-space-1);
+  }
+
+  .viewTypeSection {
+    margin-top: var(--bui-space-6);
+  }
+
+  .viewTypeItem {
+    margin-bottom: var(--bui-space-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--bui-space-2);
+  }
+
+  .viewTypeLabel {
+    min-width: 200px;
+  }
+
+  .footer {
+    margin-top: var(--bui-space-8);
+    padding-top: var(--bui-space-6);
+    border-top: 1px solid var(--bui-border-1);
+  }
+}

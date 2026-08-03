@@ -22,7 +22,14 @@ import {
   useQetaConfig,
   usersRouteRef,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box, IconButton, makeStyles, Tooltip } from '@material-ui/core';
+import {
+  Box,
+  ButtonIcon,
+  Flex,
+  Tooltip,
+  TooltipTrigger,
+  useBreakpoint,
+} from '@backstage/ui';
 import { matchPath, useLocation, useSearchParams } from 'react-router-dom';
 import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { HomeRightContent } from './HomeRightContent';
@@ -36,36 +43,11 @@ import { TagsRightContent } from './TagsRightContent';
 import { EntitiesRightContent } from './EntitiesRightContent';
 import { EntityRightContent } from './EntityRightContent';
 import { CollectionsRightContent } from './CollectionsRightContent';
-import MenuOpenIcon from '@material-ui/icons/MenuOpen';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import { RiMenuFoldLine, RiMenuUnfoldLine } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { DefaultRightContent } from './DefaultRightContent';
 import { PostRightContent } from './PostRightContent';
-
-const useStyles = makeStyles(theme => ({
-  container: {
-    width: (props: { compact: boolean }) => (props.compact ? '72px' : '245px'),
-    padding: (props: { compact: boolean }) =>
-      props.compact ? theme.spacing(1) : theme.spacing(0, 0, 0, 1),
-    transition: 'width 0.2s ease-in-out',
-    display: 'flex',
-    flexDirection: 'column',
-    overflowX: 'hidden',
-    [theme.breakpoints.down('md')]: {
-      width: '100%',
-    },
-  },
-  toggleButton: {
-    marginBottom: theme.spacing(1),
-    marginRight: theme.spacing(1.5),
-  },
-  content: {
-    display: (props: { compact: boolean }) =>
-      props.compact ? 'none' : 'block',
-    opacity: (props: { compact: boolean }) => (props.compact ? 0 : 1),
-    transition: 'opacity 0.2s ease-in-out',
-  },
-}));
+import styles from './RightContent.module.css';
 
 export const RightContent = (props: {
   compact?: boolean;
@@ -73,7 +55,8 @@ export const RightContent = (props: {
 }) => {
   const { compact = false, onToggle } = props;
   const { disabled } = useQetaConfig();
-  const classes = useStyles({ compact });
+  const { down } = useBreakpoint();
+  const isSmall = down('md');
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { t } = useTranslationRef(qetaTranslationRef);
@@ -251,31 +234,43 @@ export const RightContent = (props: {
   }
 
   return (
-    <Box className={classes.container}>
-      <Box className={classes.content}>{content}</Box>
+    <Box
+      className={[
+        styles.container,
+        compact ? styles.compact : '',
+        isSmall ? styles.full : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <Box
-        display="flex"
-        justifyContent={compact ? 'center' : 'flex-end'}
-        style={{ marginTop: 'auto' }}
+        className={`${styles.content} ${compact ? styles.contentHidden : ''}`}
       >
-        <Tooltip
-          title={compact ? t('rightMenu.expand') : t('rightMenu.collapse')}
-          placement="left"
-        >
-          <IconButton
-            onClick={onToggle}
-            size="small"
-            className={compact ? '' : classes.toggleButton}
-            style={{ marginTop: 8 }}
-          >
-            {compact ? (
-              <ChevronLeftIcon />
-            ) : (
-              <MenuOpenIcon style={{ transform: 'scaleX(-1)' }} />
-            )}
-          </IconButton>
-        </Tooltip>
+        {content}
       </Box>
+      <Flex justify={compact ? 'center' : 'end'} style={{ marginTop: 'auto' }}>
+        <TooltipTrigger>
+          <ButtonIcon
+            aria-label={
+              compact ? t('rightMenu.expand') : t('rightMenu.collapse')
+            }
+            size="small"
+            variant="tertiary"
+            className={compact ? '' : styles.toggleButton}
+            onPress={onToggle}
+            icon={
+              compact ? (
+                <RiMenuUnfoldLine size={16} />
+              ) : (
+                <RiMenuFoldLine size={16} />
+              )
+            }
+          />
+          <Tooltip placement="left">
+            {compact ? t('rightMenu.expand') : t('rightMenu.collapse')}
+          </Tooltip>
+        </TooltipTrigger>
+      </Flex>
     </Box>
   );
 };

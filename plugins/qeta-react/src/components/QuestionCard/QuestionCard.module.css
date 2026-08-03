@@ -1,0 +1,23 @@
+@layer components {
+  .contentContainer {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .markdownContainer {
+    min-height: 6em;
+    padding-top: var(--bui-space-2);
+    padding-bottom: var(--bui-space-2);
+  }
+
+  .metadata {
+    margin-top: var(--bui-space-4);
+    width: 100%;
+  }
+
+  .buttons {
+    margin-top: var(--bui-space-4);
+    display: flex;
+    gap: var(--bui-space-2);
+  }
+}

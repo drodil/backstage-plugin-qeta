@@ -56,6 +56,7 @@ test.describe.serial('Questions - Form Flow', () => {
     await tagsInput.fill(tags[0]);
     await page.waitForTimeout(500);
     await tagsInput.press('Enter');
+    await tagsInput.press('Escape');
 
     await expect(page.getByText(tags[0], { exact: true })).toBeVisible();
 
@@ -77,7 +78,7 @@ test.describe.serial('Questions - Form Flow', () => {
     await page.goto('/qeta/questions');
     await page.waitForLoadState('networkidle');
 
-    const searchInput = page.getByRole('textbox', { name: /Search/i });
+    const searchInput = page.getByRole('searchbox', { name: /Search/i });
 
     const partialTitle = title.split(' ')[0];
     await searchInput.fill(partialTitle);
@@ -85,7 +86,7 @@ test.describe.serial('Questions - Form Flow', () => {
     await expect(page.getByText(title).first()).toBeVisible();
 
     await page.waitForLoadState('networkidle');
-    await page.getByRole('button', { name: 'clear', exact: true }).click();
+    await page.getByRole('button', { name: /clear/i }).click();
     await expect(searchInput).toHaveValue('');
 
     const partialContent = content.split(' ')[0];
@@ -159,8 +160,8 @@ test.describe('Questions - Independent Tests', () => {
     await page.goto(`/qeta/questions/${questionId}`);
     await page.waitForLoadState('networkidle');
 
-    const answer1 = page.locator(`div#answer_${answer1Id}`);
-    const answer2 = page.locator(`div#answer_${answer2Id}`);
+    const answer1 = page.locator(`#answer_${answer1Id}`);
+    const answer2 = page.locator(`#answer_${answer2Id}`);
 
     const markCorrectBtn1 = answer1.locator(
       'button[aria-label="mark correct"]',
@@ -211,7 +212,7 @@ test.describe('Questions - Independent Tests', () => {
     await page.goto(`/qeta/questions/${questionId}`);
     await page.waitForLoadState('networkidle');
 
-    const answer1 = page.locator(`div#answer_${answer1Id}`);
+    const answer1 = page.locator(`#answer_${answer1Id}`);
 
     const voteUpBtn = answer1.locator('[data-testid^="vote-up-btn"]');
     const voteCount = answer1.locator('[data-testid="vote-count"]');
@@ -353,7 +354,7 @@ test.describe('Questions - Independent Tests', () => {
     await page.goto(`/qeta/questions/${questionId}`);
     await page.waitForLoadState('networkidle');
 
-    const editBtn = page.locator('button.qetaQuestionCardEditBtn');
+    const editBtn = page.getByRole('button', { name: 'Edit' });
     await expect(editBtn).toBeVisible();
     await editBtn.click();
     await page.waitForLoadState('networkidle');
@@ -375,8 +376,8 @@ test.describe('Questions - Independent Tests', () => {
     await page.goto(`/qeta/questions/${questionId}`);
     await page.waitForLoadState('networkidle');
 
-    const questionCard = page.locator('[data-testid="question-card"]');
-    await questionCard.getByRole('button', { name: 'Delete' }).click();
+    const deleteBtn = page.getByRole('button', { name: 'Delete' }).first();
+    await deleteBtn.click();
 
     // Expect confirmation dialog
     const dialog = page.getByTestId('delete-modal');

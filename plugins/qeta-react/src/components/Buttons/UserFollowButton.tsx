@@ -1,8 +1,7 @@
 import { CSSProperties } from 'react';
-import NotificationsActive from '@material-ui/icons/NotificationsActive';
-import NotificationsNone from '@material-ui/icons/NotificationsNone';
+import { RiNotification3Fill, RiNotification3Line } from '@remixicon/react';
 import { useUserFollow } from '../../hooks';
-import { IconButton, Tooltip } from '@material-ui/core';
+import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { qetaTranslationRef } from '../../translation.ts';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -16,28 +15,31 @@ export const UserFollowButton = (props: {
   if (users.loading) {
     return null;
   }
+  const isFollowing = users.isFollowingUser(userRef);
 
   return (
-    <Tooltip title={t('userButton.tooltip')}>
-      <IconButton
-        disableRipple
+    <TooltipTrigger>
+      <ButtonIcon
+        aria-label={t('userButton.tooltip')}
         size="small"
-        color={users.isFollowingUser(userRef) ? 'secondary' : 'default'}
-        onClick={() => {
-          if (users.isFollowingUser(userRef)) {
+        variant={isFollowing ? 'secondary' : 'tertiary'}
+        onPress={() => {
+          if (isFollowing) {
             users.unfollowUser(userRef);
           } else {
             users.followUser(userRef);
           }
         }}
         style={style}
-      >
-        {users.isFollowingUser(userRef) ? (
-          <NotificationsActive />
-        ) : (
-          <NotificationsNone />
-        )}
-      </IconButton>
-    </Tooltip>
+        icon={
+          isFollowing ? (
+            <RiNotification3Fill size={16} />
+          ) : (
+            <RiNotification3Line size={16} />
+          )
+        }
+      />
+      <Tooltip>{t('userButton.tooltip')}</Tooltip>
+    </TooltipTrigger>
   );
 };

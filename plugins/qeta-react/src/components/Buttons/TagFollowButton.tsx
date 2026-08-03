@@ -1,7 +1,6 @@
-import NotificationsActive from '@material-ui/icons/NotificationsActive';
-import NotificationsNone from '@material-ui/icons/NotificationsNone';
+import { RiNotification3Fill, RiNotification3Line } from '@remixicon/react';
 import { useTagsFollow } from '../../hooks';
-import { IconButton, Tooltip } from '@material-ui/core';
+import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 
@@ -12,26 +11,30 @@ export const TagFollowButton = (props: { tag: string }) => {
   if (tags.loading) {
     return null;
   }
+  const isFollowing = tags.isFollowingTag(tag);
   return (
-    <Tooltip title={t('tagButton.tooltip')}>
-      <IconButton
-        disableRipple
+    <TooltipTrigger>
+      <ButtonIcon
+        aria-label={t('tagButton.tooltip')}
         size="small"
-        color={tags.isFollowingTag(tag) ? 'secondary' : 'default'}
-        onClick={() => {
-          if (tags.isFollowingTag(tag)) {
+        variant={isFollowing ? 'secondary' : 'tertiary'}
+        onClick={e => e.preventDefault()}
+        onPress={() => {
+          if (isFollowing) {
             tags.unfollowTag(tag);
           } else {
             tags.followTag(tag);
           }
         }}
-      >
-        {tags.isFollowingTag(tag) ? (
-          <NotificationsActive />
-        ) : (
-          <NotificationsNone />
-        )}
-      </IconButton>
-    </Tooltip>
+        icon={
+          isFollowing ? (
+            <RiNotification3Fill size={16} />
+          ) : (
+            <RiNotification3Line size={16} />
+          )
+        }
+      />
+      <Tooltip>{t('tagButton.tooltip')}</Tooltip>
+    </TooltipTrigger>
   );
 };

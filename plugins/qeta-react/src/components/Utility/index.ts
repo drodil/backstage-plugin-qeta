@@ -1,3 +1,4 @@
+export * from './Chip.tsx';
 export * from './ClickableLink.tsx';
 export * from './DeletedBanner.tsx';
 export * from './DraftBanner.tsx';

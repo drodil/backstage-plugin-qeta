@@ -1,0 +1,13 @@
+@layer components {
+  .similarQuestionsContainer {
+    border-left: 3px solid var(--bui-border-warning);
+    background-color: var(--bui-bg-warning);
+    border-radius: var(--bui-radius-2);
+    padding: var(--bui-space-2) 2px var(--bui-space-2);
+  }
+
+  .similarQuestionsTitle {
+    color: var(--bui-fg-warning);
+    font-weight: 600;
+  }
+}

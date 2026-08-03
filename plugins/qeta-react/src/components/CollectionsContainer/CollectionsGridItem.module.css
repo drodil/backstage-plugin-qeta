@@ -1,0 +1,47 @@
+@layer components {
+  .card {
+    padding: 0;
+  }
+
+  .placeholderImage {
+    height: 140px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+      145deg,
+      var(--bui-bg-neutral-2) 0%,
+      var(--bui-bg-neutral-3) 50%,
+      var(--bui-bg-neutral-4) 100%
+    );
+    color: var(--bui-fg-tertiary);
+    border-bottom: 1px solid var(--bui-border-1);
+    object-fit: cover;
+  }
+
+  .body {
+    padding: var(--bui-space-2) var(--bui-space-4) var(--bui-space-4)
+      var(--bui-space-4);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-2);
+  }
+
+  .statsGrid {
+    margin-top: auto;
+  }
+
+  .statItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--bui-space-2);
+    border-radius: var(--bui-radius-2);
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--bui-border-1);
+    transition: background-color 0.2s ease-in-out;
+  }
+}

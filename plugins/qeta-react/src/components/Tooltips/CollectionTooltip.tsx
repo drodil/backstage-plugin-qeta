@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactElement, ReactNode } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import {
@@ -12,21 +12,38 @@ import { useCollectionsFollow } from '../../hooks/useCollectionsFollow';
 import {
   Box,
   Button,
-  Grid,
+  Flex,
+  Focusable,
+  Skeleton,
+  Text,
   Tooltip,
-  TooltipProps,
-  Typography,
-} from '@material-ui/core';
-import LibraryBooksOutlined from '@material-ui/icons/LibraryBooksOutlined';
-import PeopleAltOutlined from '@material-ui/icons/PeopleAltOutlined';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
+  TooltipTrigger,
+} from '@backstage/ui';
+import {
+  RiBookShelfLine,
+  RiEyeLine,
+  RiEyeOffLine,
+  RiGroupLine,
+} from '@remixicon/react';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles';
-import { Skeleton } from '@material-ui/lab';
 
 const cache: Map<number, { data: Collection; timestamp: number }> = new Map();
 const requestCache: Map<number, Promise<Collection | undefined>> = new Map();
 const TTL = 5 * 60 * 1000;
+
+type TooltipPlacement =
+  | 'top'
+  | 'top start'
+  | 'top end'
+  | 'bottom'
+  | 'bottom start'
+  | 'bottom end'
+  | 'left'
+  | 'left top'
+  | 'left bottom'
+  | 'right'
+  | 'right top'
+  | 'right bottom';
 
 const CollectionTooltipContent = ({
   collectionId,
@@ -38,6 +55,7 @@ const CollectionTooltipContent = ({
   const qetaApi = useApi(qetaApiRef);
   const { t } = useTranslationRef(qetaTranslationRef);
   const collections = useCollectionsFollow();
+  const styles = useTooltipStyles();
   const [resp, setResp] = useState<undefined | Collection>();
 
   useEffect(() => {
@@ -71,129 +89,110 @@ const CollectionTooltipContent = ({
 
   if (!resp) {
     return (
-      <Grid container style={{ padding: '0.5em', maxWidth: 300 }} spacing={1}>
-        <Grid item xs={12}>
-          <Skeleton variant="text" width={150} height={24} />
-          <Skeleton variant="text" width={100} height={20} />
-          <Skeleton
-            variant="rect"
-            width={280}
-            height={60}
-            style={{ marginTop: 8 }}
-          />
-        </Grid>
-      </Grid>
+      <Flex direction="column" gap="2">
+        <Skeleton width={150} height={24} />
+        <Skeleton width={100} height={20} />
+        <Skeleton width={280} height={60} />
+      </Flex>
     );
   }
 
   return (
-    <Grid container style={{ padding: '0.5em', maxWidth: 300 }} spacing={1}>
-      <Grid item xs={12}>
-        <Box style={{ display: 'flex', alignItems: 'center' }}>
-          <LibraryBooksOutlined style={{ marginRight: '0.5em' }} />
-          <Typography variant="subtitle1" style={{ fontWeight: 600 }}>
-            {resp.title}
-          </Typography>
-        </Box>
-      </Grid>
-      <Grid item xs={12}>
-        <Box display="flex" flexWrap="wrap" style={{ gap: '1em' }}>
-          <Box display="flex" alignItems="center">
-            <LibraryBooksOutlined
-              style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-            />
-            <Typography variant="caption">
-              {t('common.posts', {
-                count: resp.postsCount ?? resp.posts?.length ?? 0,
-                itemType: 'post',
-              })}
-            </Typography>
-          </Box>
-          <Box display="flex" alignItems="center">
-            <PeopleAltOutlined
-              style={{ fontSize: '0.875rem', marginRight: '0.25em' }}
-            />
-            <Typography variant="caption">
-              {t('common.followers', { count: resp.followers })}
-            </Typography>
-          </Box>
-        </Box>
-      </Grid>
+    <Flex direction="column" gap="2">
+      <Flex align="center" gap="2">
+        <RiBookShelfLine size={16} />
+        <Text variant="body-medium" weight="bold">
+          {resp.title}
+        </Text>
+      </Flex>
+      <div className={styles.statsRow}>
+        <div className={styles.stat}>
+          <RiBookShelfLine size={14} />
+          <Text variant="body-x-small">
+            {t('common.posts', {
+              count: resp.postsCount ?? resp.posts?.length ?? 0,
+              itemType: 'post',
+            })}
+          </Text>
+        </div>
+        <div className={styles.stat}>
+          <RiGroupLine size={14} />
+          <Text variant="body-x-small">
+            {t('common.followers', { count: resp.followers })}
+          </Text>
+        </div>
+      </div>
       {resp.description && (
-        <Grid item xs={12}>
-          <Typography variant="body2" color="textSecondary">
-            {truncate(removeMarkdownFormatting(resp.description), 150)}
-          </Typography>
-        </Grid>
+        <Text variant="body-small" color="secondary">
+          {truncate(removeMarkdownFormatting(resp.description), 150)}
+        </Text>
       )}
       {interactive && !collections.loading && (
-        <Grid item xs={12}>
-          <Button
-            size="small"
-            variant="outlined"
-            color={
-              collections.isFollowingCollection(resp) ? 'secondary' : 'primary'
+        <Button
+          variant="secondary"
+          size="small"
+          className={styles.followButton}
+          iconStart={
+            collections.isFollowingCollection(resp) ? (
+              <RiEyeOffLine size={14} />
+            ) : (
+              <RiEyeLine size={14} />
+            )
+          }
+          onClick={() => {
+            if (collections.isFollowingCollection(resp)) {
+              collections.unfollowCollection(resp);
+            } else {
+              collections.followCollection(resp);
             }
-            fullWidth
-            onClick={() => {
-              if (collections.isFollowingCollection(resp)) {
-                collections.unfollowCollection(resp);
-              } else {
-                collections.followCollection(resp);
-              }
-            }}
-            startIcon={
-              collections.isFollowingCollection(resp) ? (
-                <VisibilityOff />
-              ) : (
-                <Visibility />
-              )
-            }
-          >
-            {collections.isFollowingCollection(resp)
-              ? t('collectionButton.unfollow')
-              : t('collectionButton.follow')}
-          </Button>
-        </Grid>
+          }}
+        >
+          {collections.isFollowingCollection(resp)
+            ? t('collectionButton.unfollow')
+            : t('collectionButton.follow')}
+        </Button>
       )}
-    </Grid>
+    </Flex>
   );
 };
 
-export const CollectionTooltip = (
-  props: {
-    collectionId: number;
-    interactive?: boolean;
-  } & Omit<TooltipProps, 'title'>,
-) => {
+export const CollectionTooltip = (props: {
+  collectionId: number;
+  interactive?: boolean;
+  children: ReactNode;
+  className?: string;
+  placement?: TooltipPlacement;
+  enterDelay?: number;
+  [key: string]: unknown;
+}) => {
   const {
     collectionId,
     interactive = true,
     children,
     className,
-    ...tooltipProps
+    placement,
+    enterDelay,
   } = props;
-  const classes = useTooltipStyles();
 
   return (
-    <Tooltip
-      title={
-        <CollectionTooltipContent
-          collectionId={collectionId}
-          interactive={interactive}
-        />
-      }
-      interactive={interactive}
-      arrow
-      classes={{
-        tooltip: classes.tooltip,
-        arrow: classes.tooltipArrow,
-        ...props.classes,
-      }}
-      className={className}
-      {...tooltipProps}
-    >
-      {children}
-    </Tooltip>
+    <TooltipTrigger delay={enterDelay}>
+      <Focusable>
+        {
+          (className ? (
+            <span className={className}>{children}</span>
+          ) : (
+            children
+          )) as ReactElement<any, any>
+        }
+      </Focusable>
+      <Tooltip placement={placement}>
+        <Box p="2" maxWidth="300px">
+          <CollectionTooltipContent
+            collectionId={collectionId}
+            interactive={interactive}
+          />
+        </Box>
+      </Tooltip>
+    </TooltipTrigger>
   );
 };

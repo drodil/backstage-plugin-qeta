@@ -110,6 +110,13 @@ qeta:
   #permissions: true
   entities:
     disabled: false
+    kinds:
+      - User
+      - Group
+      - System
+      - Component
+      - API
+      - Resource
     max: 5
   tags:
     disabled: false
@@ -130,11 +137,6 @@ qeta:
     supportedKinds:
       - User
       - Group
-  entityKinds:
-    - Component
-    - Resource
-    - Group
-    - System
   aiBotName: 'Q&A Bot'
   stats:
     schedule:

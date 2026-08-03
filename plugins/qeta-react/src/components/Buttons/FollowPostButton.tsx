@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
-import { IconButton, Tooltip } from '@material-ui/core';
-import NotificationsActive from '@material-ui/icons/NotificationsActive';
-import NotificationsNone from '@material-ui/icons/NotificationsNone';
+import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { RiNotification3Fill, RiNotification3Line } from '@remixicon/react';
 import { Post } from '@drodil/backstage-plugin-qeta-common';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
@@ -24,22 +23,26 @@ export const FollowPostButton = (props: { post: Post }) => {
     }
   };
 
+  const tooltip = following
+    ? t('followPostButton.unfollow', {})
+    : t('followPostButton.follow', {});
+
   return (
-    <Tooltip
-      title={
-        following
-          ? t('followPostButton.unfollow', {})
-          : t('followPostButton.follow', {})
-      }
-    >
-      <IconButton
-        disableRipple
+    <TooltipTrigger>
+      <ButtonIcon
+        aria-label={tooltip}
         size="small"
-        color={following ? 'secondary' : 'default'}
-        onClick={handleFollow}
-      >
-        {following ? <NotificationsActive /> : <NotificationsNone />}
-      </IconButton>
-    </Tooltip>
+        variant={following ? 'secondary' : 'tertiary'}
+        onPress={handleFollow}
+        icon={
+          following ? (
+            <RiNotification3Fill size={16} />
+          ) : (
+            <RiNotification3Line size={16} />
+          )
+        }
+      />
+      <Tooltip>{tooltip}</Tooltip>
+    </TooltipTrigger>
   );
 };

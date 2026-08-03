@@ -1,24 +1,34 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { WarningPanel } from '@backstage/core-components';
-import { Article, QetaSignal } from '@drodil/backstage-plugin-qeta-common';
+import {
+  Article,
+  PostResponse,
+  QetaSignal,
+} from '@drodil/backstage-plugin-qeta-common';
 import {
   AddToCollectionButton,
   AIAnswerCard,
   ArticleContent,
-  ContentHeader,
+  AuthorHeaderItem,
+  DeleteButton,
+  EditButton,
+  FollowPostButton,
   PostHistoryButton,
   qetaTranslationRef,
-  useQetaConfig,
+  RelativeTimeWithTooltip,
+  RestoreButton,
   useQetaApi,
-  WriteArticleButton,
-  FollowPostButton,
+  useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Container } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import {
+  Alert,
+  Box,
+  Header,
+  HeaderMetadataItem,
+  Skeleton,
+} from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import LibraryBooksOutlined from '@material-ui/icons/LibraryBooksOutlined';
 
 export const ArticlePage = () => {
   const { id } = useParams();
@@ -53,41 +63,84 @@ export const ArticlePage = () => {
   }
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Skeleton width="100%" height={200} />;
   }
 
   if (error || post === undefined) {
     return (
-      <WarningPanel severity="error" title={t('articlePage.errorLoading')}>
-        {error?.message}
-      </WarningPanel>
+      <Alert
+        status="danger"
+        title={t('articlePage.errorLoading')}
+        description={error?.message}
+      />
     );
   }
 
   if (post.type !== 'article') {
     return (
-      <WarningPanel title="Not found" message={t('articlePage.notFound')} />
+      <Alert
+        status="warning"
+        title="Not found"
+        description={t('articlePage.notFound')}
+      />
     );
   }
 
+  const getMetadata = (q: PostResponse): HeaderMetadataItem[] => {
+    const metadata: HeaderMetadataItem[] = [
+      {
+        label: t('postHeader.postedAtTime'),
+        value: <RelativeTimeWithTooltip value={q.created} />,
+      },
+      {
+        label: t('postHeader.author'),
+        value: <AuthorHeaderItem userEntityRef={q.author} />,
+      },
+    ];
+
+    if (q.updated) {
+      metadata.push({
+        label: t('postHeader.updatedAtTime'),
+        value: <RelativeTimeWithTooltip value={q.updated} />,
+      });
+    }
+    if (q.updatedBy) {
+      metadata.push({
+        label: t('postHeader.updatedBy'),
+        value: <AuthorHeaderItem userEntityRef={q.updatedBy} />,
+      });
+    }
+    metadata.push({
+      label: t('postHeader.views'),
+      value: views,
+    });
+
+    return metadata;
+  };
+
   return (
     <>
-      <ContentHeader
+      <Header
         title={post.title}
-        titleIcon={<LibraryBooksOutlined fontSize="large" />}
-      >
-        <PostHistoryButton post={post} onRestore={retry} />
-        <FollowPostButton post={post} />
-        <WriteArticleButton />
-        <AddToCollectionButton post={post} />
-      </ContentHeader>
-      <Container maxWidth={false}>
+        metadata={getMetadata(post)}
+        customActions={
+          <>
+            <EditButton entity={post} compact />
+            <DeleteButton entity={post} compact />
+            <RestoreButton entity={post} compact />
+            <PostHistoryButton post={post} onRestore={retry} />
+            <FollowPostButton post={post} />
+            <AddToCollectionButton post={post} />
+          </>
+        }
+      />
+      <Box>
         <AIAnswerCard
           article={post as Article}
           style={{ marginBottom: '2em' }}
         />
         <ArticleContent post={post} views={views} />
-      </Container>
+      </Box>
     </>
   );
 };

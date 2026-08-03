@@ -1,0 +1,98 @@
+@layer components {
+  .container {
+    margin-bottom: 1rem;
+  }
+
+  .fieldRow {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--bui-space-2);
+  }
+
+  .fieldGrow {
+    flex: 1;
+  }
+
+  .dropzone {
+    border: 2px dashed var(--bui-border-1);
+    border-radius: var(--bui-radius-2);
+    padding: var(--bui-space-4);
+    text-align: center;
+    cursor: pointer;
+    background-color: var(--bui-bg-neutral-1);
+    transition: all 0.2s ease-in-out;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .dropzone:hover {
+    background-color: var(--bui-bg-neutral-1-hover);
+  }
+
+  .dropzoneActive {
+    border-color: var(--bui-fg-primary);
+    background-color: var(--bui-bg-neutral-2);
+  }
+
+  .uploadIcon {
+    color: var(--bui-fg-secondary);
+    margin-top: var(--bui-space-1);
+  }
+
+  .previewContainer {
+    position: relative;
+    margin: var(--bui-space-2) auto 0;
+  }
+
+  .previewLabel {
+    margin-bottom: var(--bui-space-2);
+    display: block;
+  }
+
+  .headerImage {
+    margin-bottom: var(--bui-space-4);
+    height: 250px;
+    object-fit: cover;
+    width: 100%;
+    border: 1px solid var(--bui-border-1);
+    border-radius: var(--bui-radius-2);
+    box-shadow: var(--bui-shadow);
+  }
+
+  .imageErrorBox {
+    padding: var(--bui-space-6);
+    text-align: center;
+    color: var(--bui-fg-danger);
+    border: 1px solid var(--bui-fg-danger);
+    border-radius: var(--bui-radius-2);
+    margin-top: var(--bui-space-2);
+  }
+
+  .loadingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: color-mix(in srgb, var(--bui-bg-app) 70%, transparent);
+    border-radius: var(--bui-radius-2);
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--bui-border-1);
+    border-top-color: var(--bui-fg-primary);
+    border-radius: var(--bui-radius-full);
+    animation: qetaHeaderImageSpin 0.8s linear infinite;
+  }
+
+  @keyframes qetaHeaderImageSpin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

@@ -1,9 +1,7 @@
-import { InfoCard, Progress } from '@backstage/core-components';
 import { useEffect, useState } from 'react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AIAnswerCard,
-  ContentHeader,
   PostForm,
   qetaTranslationRef,
   QuestionFormValues,
@@ -16,7 +14,7 @@ import {
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { filterTags, Template } from '@drodil/backstage-plugin-qeta-common';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Header, Skeleton } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export const AskPage = () => {
@@ -66,7 +64,7 @@ export const AskPage = () => {
   if (loading) {
     return (
       <Box role="status" aria-label={t('common.loading')}>
-        <Progress />
+        <Skeleton width="100%" height={200} />
       </Box>
     );
   }
@@ -109,26 +107,22 @@ export const AskPage = () => {
 
   return (
     <>
-      <ContentHeader title={title} />
-      <Grid container spacing={3} direction="column">
-        <Grid item style={{ width: '100%' }}>
-          <InfoCard>
-            <PostForm
-              id={id}
-              entity={entity}
-              entityPage={entityPage}
-              tags={tags}
-              type="question"
-              template={template}
-              onFormChange={handleFormChange}
-              aria-label={t('askPage.questionForm')}
-              title={questionTitle}
-              content={content}
-            />
-            <AIAnswerCard draft={draft} />
-          </InfoCard>
-        </Grid>
-      </Grid>
+      <Header title={title} />
+      <Box>
+        <PostForm
+          id={id}
+          entity={entity}
+          entityPage={entityPage}
+          tags={tags}
+          type="question"
+          template={template}
+          onFormChange={handleFormChange}
+          aria-label={t('askPage.questionForm')}
+          title={questionTitle}
+          content={content}
+        />
+        <AIAnswerCard draft={draft} />
+      </Box>
     </>
   );
 };

@@ -1,15 +1,16 @@
+import { CSSProperties } from 'react';
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { IconButton, Tooltip } from '@material-ui/core';
-import OpenLinkIcon from '@material-ui/icons/OpenInNew';
+import { ButtonLink, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { RiExternalLinkLine } from '@remixicon/react';
 import { qetaApiRef } from '../../api.ts';
 import { useApi } from '@backstage/core-plugin-api';
 
 export const OpenLinkButton = (props: {
   entity: PostResponse;
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }) => {
   const { entity, className, style } = props;
   const qetaApi = useApi(qetaApiRef);
@@ -19,30 +20,20 @@ export const OpenLinkButton = (props: {
     return null;
   }
 
-  const handleClick = (
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-  ) => {
-    event.stopPropagation();
-    event.preventDefault();
-    qetaApi.clickLink(entity.id);
-    window.open(entity.url, '_blank', 'noopener,noreferrer');
-  };
-
   return (
-    <Tooltip title={`${t('link.open')}: ${entity.url}`}>
-      <IconButton
-        component="a"
+    <TooltipTrigger>
+      <ButtonLink
         href={entity.url}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={t('link.open')}
-        size="small"
-        onClick={handleClick}
+        variant="secondary"
+        onPress={() => qetaApi.clickLink(entity.id)}
         className={className}
         style={style}
-      >
-        <OpenLinkIcon />
-      </IconButton>
-    </Tooltip>
+        iconStart={<RiExternalLinkLine size={16} />}
+      />
+      <Tooltip>{`${t('link.open')}: ${entity.url}`}</Tooltip>
+    </TooltipTrigger>
   );
 };

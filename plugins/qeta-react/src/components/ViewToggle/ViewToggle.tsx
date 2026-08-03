@@ -1,6 +1,5 @@
-import { Button, ButtonGroup, Tooltip } from '@material-ui/core';
-import ViewList from '@material-ui/icons/ViewList';
-import ViewModule from '@material-ui/icons/ViewModule';
+import { ToggleButton, ToggleButtonGroup } from '@backstage/ui';
+import { RiLayoutGridLine, RiListUnordered } from '@remixicon/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 
@@ -15,25 +14,29 @@ export const ViewToggle = ({ view, onChange }: ViewToggleProps) => {
   const { t } = useTranslationRef(qetaTranslationRef);
 
   return (
-    <ButtonGroup size="small">
-      <Tooltip title={t('viewToggle.listView')}>
-        <Button
-          color={view === 'list' ? 'primary' : undefined}
-          onClick={() => onChange('list')}
-          aria-label={t('viewToggle.listView')}
-        >
-          <ViewList />
-        </Button>
-      </Tooltip>
-      <Tooltip title={t('viewToggle.gridView')}>
-        <Button
-          color={view === 'grid' ? 'primary' : undefined}
-          onClick={() => onChange('grid')}
-          aria-label={t('viewToggle.gridView')}
-        >
-          <ViewModule />
-        </Button>
-      </Tooltip>
-    </ButtonGroup>
+    <ToggleButtonGroup
+      selectionMode="single"
+      disallowEmptySelection
+      selectedKeys={[view]}
+      onSelectionChange={keys => {
+        const key = Array.from(keys)[0];
+        if (key) {
+          onChange(key as ViewType);
+        }
+      }}
+    >
+      <ToggleButton
+        id="list"
+        size="small"
+        aria-label={t('viewToggle.listView')}
+        iconStart={<RiListUnordered size={16} />}
+      />
+      <ToggleButton
+        id="grid"
+        size="small"
+        aria-label={t('viewToggle.gridView')}
+        iconStart={<RiLayoutGridLine size={16} />}
+      />
+    </ToggleButtonGroup>
   );
 };

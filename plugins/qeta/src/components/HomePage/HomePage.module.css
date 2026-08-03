@@ -1,0 +1,51 @@
+@layer components {
+  .flexRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--bui-space-4);
+    width: 100%;
+    margin-bottom: var(--bui-space-4);
+    align-items: stretch;
+  }
+
+  .suggestionColumn {
+    flex: 3 1 350px;
+    display: flex;
+    min-width: 0;
+  }
+
+  .suggestionColumn > * {
+    flex: 1;
+    max-height: 460px;
+    overflow-y: auto;
+  }
+
+  .followedColumn {
+    flex: 1 1 250px;
+    display: flex;
+    min-width: 0;
+  }
+
+  .followedColumn > * {
+    flex: 1;
+    max-height: 460px;
+    overflow-y: auto;
+  }
+
+  .equalColumn {
+    flex: 1 1 395px;
+    display: flex;
+    min-width: 0;
+  }
+
+  .equalColumn > * {
+    flex: 1;
+    max-height: 460px;
+    overflow-y: auto;
+  }
+
+  .timelineWrapper {
+    width: 100%;
+    margin-top: var(--bui-space-4);
+  }
+}

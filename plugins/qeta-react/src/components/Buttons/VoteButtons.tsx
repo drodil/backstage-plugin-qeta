@@ -2,42 +2,11 @@ import {
   AnswerResponse,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-import Check from '@material-ui/icons/Check';
-import { Fragment } from 'react';
+import { RiArrowDownLine, RiArrowUpLine, RiCheckLine } from '@remixicon/react';
+import { Fragment, ReactElement } from 'react';
 import { useVoting } from '../../hooks/useVoting';
-import {
-  Box,
-  createStyles,
-  IconButton,
-  makeStyles,
-  Theme,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
-
-export type QetaVoteButtonsClassKey =
-  | 'qetaCorrectAnswerSelected'
-  | 'qetaCorrectAnswer'
-  | 'voteButtonContainer';
-
-const useStyles = makeStyles(
-  (theme: Theme) =>
-    createStyles({
-      qetaCorrectAnswerSelected: {
-        color: theme.palette.success.main,
-      },
-      qetaCorrectAnswer: {
-        color: theme.palette.grey[500],
-      },
-      voteButtonContainer: {
-        borderWidth: '1px',
-        borderColor: 'white',
-      },
-    }),
-  { name: 'QetaVoteButtons' },
-);
+import { Box, ButtonIcon, Text, Tooltip, TooltipTrigger } from '@backstage/ui';
+import styles from './VoteButtons.module.css';
 
 export const VoteButtons = (props: {
   entity: PostResponse | AnswerResponse;
@@ -55,7 +24,6 @@ export const VoteButtons = (props: {
     toggleCorrectAnswer,
   } = useVoting(props.entity);
   const own = props.entity.own ?? false;
-  const classes = useStyles();
 
   const isDisabled = (isCorrectButton = false) => {
     // Check if parent post is obsolete (for answers)
@@ -95,77 +63,83 @@ export const VoteButtons = (props: {
     return correctTooltip;
   };
 
+  const withTooltip = (element: ReactElement, tooltip: string) =>
+    tooltip ? (
+      <TooltipTrigger>
+        {element}
+        <Tooltip>{tooltip}</Tooltip>
+      </TooltipTrigger>
+    ) : (
+      element
+    );
+
   return (
     <Fragment>
-      <Tooltip title={getVoteUpTooltip()}>
-        <span>
-          <IconButton
-            aria-label="vote up"
-            color={ownVote > 0 ? 'primary' : 'default'}
-            className={ownVote > 0 ? 'qetaVoteUpSelected' : 'qetaVoteUp'}
-            disabled={isDisabled()}
-            size="small"
-            data-testid={`vote-up-btn-${
-              ownVote > 0 ? 'selected' : 'unselected'
-            }`}
-            onClick={voteUp}
-          >
-            <ArrowUpward />
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Typography
-        variant="h6"
-        style={{ userSelect: 'none' }}
+      {withTooltip(
+        <ButtonIcon
+          aria-label="vote up"
+          variant={ownVote > 0 ? 'secondary' : 'tertiary'}
+          className={ownVote > 0 ? 'qetaVoteUpSelected' : 'qetaVoteUp'}
+          isDisabled={isDisabled()}
+          size="medium"
+          data-testid={`vote-up-btn-${ownVote > 0 ? 'selected' : 'unselected'}`}
+          onPress={voteUp}
+          icon={<RiArrowUpLine size={16} />}
+        />,
+        getVoteUpTooltip(),
+      )}
+      <Text
+        variant="title-x-small"
+        className={styles.voteCount}
         data-testid="vote-count"
       >
         {score}
-      </Typography>
-      <Tooltip title={getVoteDownTooltip()}>
-        <span>
-          <IconButton
-            aria-label="vote down"
-            color={ownVote < 0 ? 'primary' : 'default'}
-            className={ownVote < 0 ? 'qetaVoteDownSelected' : 'qetaVoteDown'}
-            disabled={isDisabled()}
-            size="small"
-            data-testid={`vote-down-btn-${
-              ownVote < 0 ? 'selected' : 'unselected'
-            }`}
-            onClick={voteDown}
-          >
-            <ArrowDownward />
-          </IconButton>
-        </span>
-      </Tooltip>
+      </Text>
+      {withTooltip(
+        <ButtonIcon
+          aria-label="vote down"
+          variant={ownVote < 0 ? 'secondary' : 'tertiary'}
+          className={ownVote < 0 ? 'qetaVoteDownSelected' : 'qetaVoteDown'}
+          isDisabled={isDisabled()}
+          size="medium"
+          data-testid={`vote-down-btn-${
+            ownVote < 0 ? 'selected' : 'unselected'
+          }`}
+          onPress={voteDown}
+          icon={<RiArrowDownLine size={16} />}
+        />,
+        getVoteDownTooltip(),
+      )}
       {'correct' in props.entity &&
         (props.post?.own || props.post?.canEdit || correctAnswer) && (
           <Box>
-            <Tooltip title={getCorrectTooltip()}>
-              <span>
-                <IconButton
-                  aria-label="mark correct"
-                  size="small"
-                  disabled={isDisabled(true)}
-                  data-testid={`mark-correct-answer-btn-${
-                    correctAnswer ? 'checked' : 'unchecked'
-                  }`}
-                  onClick={
-                    props.post?.own || props.post?.canEdit
-                      ? toggleCorrectAnswer
-                      : undefined
-                  }
-                >
-                  <Check
+            {withTooltip(
+              <ButtonIcon
+                aria-label="mark correct"
+                size="medium"
+                variant="tertiary"
+                isDisabled={isDisabled(true)}
+                data-testid={`mark-correct-answer-btn-${
+                  correctAnswer ? 'checked' : 'unchecked'
+                }`}
+                onPress={
+                  props.post?.own || props.post?.canEdit
+                    ? toggleCorrectAnswer
+                    : undefined
+                }
+                icon={
+                  <RiCheckLine
+                    size={16}
                     className={
                       correctAnswer
-                        ? classes.qetaCorrectAnswerSelected
-                        : classes.qetaCorrectAnswer
+                        ? styles.correctAnswerSelected
+                        : styles.correctAnswer
                     }
                   />
-                </IconButton>
-              </span>
-            </Tooltip>
+                }
+              />,
+              getCorrectTooltip(),
+            )}
           </Box>
         )}
     </Fragment>

@@ -1,0 +1,139 @@
+@layer components {
+  .iconsContainer {
+    position: absolute;
+    top: var(--bui-space-2);
+    right: var(--bui-space-2);
+    display: flex;
+    gap: var(--bui-space-1);
+    z-index: 10;
+  }
+
+  .starIcon {
+    color: var(--bui-fg-warning);
+  }
+
+  .obsoleteIcon {
+    color: var(--bui-fg-warning);
+  }
+
+  .cardContent {
+    padding: var(--bui-space-3) var(--bui-space-3) var(--bui-space-2)
+      var(--bui-space-3);
+  }
+
+  .cardContentFooter {
+    padding: var(--bui-space-2) var(--bui-space-3) var(--bui-space-3)
+      var(--bui-space-3);
+    flex-grow: unset;
+  }
+
+  .titleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--bui-space-2);
+  }
+
+  .titleGroup {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-2);
+    min-width: 0;
+  }
+
+  .title {
+    margin-bottom: var(--bui-space-1);
+  }
+
+  .content {
+    margin-bottom: 0;
+    height: 80px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+
+  .footer {
+    padding-top: var(--bui-space-2);
+    margin-top: var(--bui-space-1);
+    margin-bottom: var(--bui-space-1);
+    display: flex;
+    gap: var(--bui-space-2);
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .authorRanking {
+    display: flex;
+    gap: var(--bui-space-2);
+    align-items: center;
+    justify-content: space-between;
+    margin-left: var(--bui-space-2);
+  }
+
+  .statsContainer {
+    display: flex;
+    gap: var(--bui-space-2);
+    margin-bottom: var(--bui-space-2);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .statsGroup {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-2);
+  }
+
+  .statBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--bui-space-2);
+    border-radius: var(--bui-radius-2);
+    background: transparent;
+    user-select: none;
+    min-width: 50px;
+    gap: 0;
+    border: 1px solid var(--bui-border-1);
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  .statValue {
+    line-height: 1.2;
+  }
+
+  .statLabel {
+    line-height: 1.2;
+  }
+
+  .answersBox {
+    color: var(--bui-fg-warning);
+    border: 1px solid var(--bui-fg-warning);
+    background-color: var(--bui-bg-warning);
+  }
+
+  .answersBoxAnswered {
+    color: var(--bui-fg-success);
+    border: 1px solid var(--bui-fg-success);
+    background-color: var(--bui-bg-success);
+  }
+
+  .placeholderImage {
+    height: 140px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+      145deg,
+      var(--bui-bg-neutral-2) 0%,
+      var(--bui-bg-neutral-3) 50%,
+      var(--bui-bg-neutral-4) 100%
+    );
+    color: var(--bui-fg-tertiary);
+    border-bottom: 1px solid var(--bui-border-1);
+  }
+}

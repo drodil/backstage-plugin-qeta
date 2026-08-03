@@ -1,0 +1,19 @@
+@layer components {
+  .root {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: var(--bui-space-2) var(--bui-space-4);
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+  }
+
+  .root:hover {
+    background-color: var(--bui-bg-neutral-1-hover);
+  }
+
+  .root:first-child {
+    padding-top: var(--bui-space-4);
+  }
+}

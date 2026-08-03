@@ -1,25 +1,22 @@
 import { useCallback, useState } from 'react';
 import {
+  Alert,
   Box,
   Button,
+  ButtonIcon,
   Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
   List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  makeStyles,
+  ListRow,
+  Text,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
-import RestoreIcon from '@material-ui/icons/Restore';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+  TooltipTrigger,
+} from '@backstage/ui';
+import { RiArrowGoBackLine, RiEyeLine } from '@remixicon/react';
 import { PostRevision } from '@drodil/backstage-plugin-qeta-common';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { qetaApiRef } from '../../api';
@@ -27,41 +24,18 @@ import { useQetaApi } from '../../hooks';
 import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { UserLink } from '../Links';
-import { Progress, WarningPanel } from '@backstage/core-components';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      width: '100%',
-    },
-    listItem: {
-      borderBottom: `1px solid ${theme.palette.divider}`,
-    },
-    revisionContent: {
-      maxHeight: '60vh',
-      overflowY: 'auto',
-      padding: theme.spacing(2),
-    },
-    revisionTitle: {
-      marginBottom: theme.spacing(1),
-    },
-    emptyState: {
-      padding: theme.spacing(4),
-      textAlign: 'center',
-    },
-  }),
-  { name: 'QetaPostHistory' },
-);
+import { LoadingGrid } from '../LoadingGrid/LoadingGrid';
+import styles from './PostHistory.module.css';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const PostHistory = (props: {
   postId: number;
   onRestore?: () => void;
 }) => {
   const { postId, onRestore } = props;
-  const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
   const qetaApi = useApi(qetaApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
 
   const [viewRevision, setViewRevision] = useState<PostRevision | null>(null);
   const [restoreRevision, setRestoreRevision] = useState<PostRevision | null>(
@@ -81,115 +55,118 @@ export const PostHistory = (props: {
     setRestoring(true);
     try {
       await qetaApi.restorePostRevision(postId, restoreRevision.id);
-      alertApi.post({
-        message: t('postHistory.restoreSuccess'),
-        severity: 'success',
-        display: 'transient',
+      toastApi.post({
+        title: t('postHistory.restoreSuccess'),
+        status: 'success',
       });
       setRestoreRevision(null);
       retry();
       onRestore?.();
     } catch {
-      alertApi.post({
-        message: t('postHistory.restoreError'),
-        severity: 'error',
-        display: 'transient',
+      toastApi.post({
+        title: t('postHistory.restoreError'),
+        status: 'warning',
       });
     } finally {
       setRestoring(false);
     }
-  }, [restoreRevision, qetaApi, postId, alertApi, t, retry, onRestore]);
+  }, [restoreRevision, qetaApi, postId, toastApi, t, retry, onRestore]);
 
   if (loading) {
-    return <Progress />;
+    return <LoadingGrid />;
   }
 
   if (error) {
-    return (
-      <WarningPanel severity="error" title={t('postHistory.errorLoading')} />
-    );
+    return <Alert status="danger" title={t('postHistory.errorLoading')} />;
   }
 
   const revisions = revisionsData?.revisions ?? [];
 
   if (revisions.length === 0) {
     return (
-      <Box className={classes.emptyState}>
-        <Typography variant="body1" color="textSecondary">
+      <Box className={styles.emptyState}>
+        <Text variant="body-medium" color="secondary">
           {t('postHistory.noRevisions')}
-        </Typography>
+        </Text>
       </Box>
     );
   }
 
   return (
-    <Box className={classes.root}>
-      <List>
-        {revisions.map(revision => (
-          <ListItem key={revision.id} className={classes.listItem}>
-            <ListItemText
-              primary={revision.title}
-              secondary={
-                <>
-                  <RelativeTimeWithTooltip value={revision.created} />
-                  {' · '}
-                  {t('postHistory.revisionBy')}{' '}
-                  <UserLink entityRef={revision.createdBy} />
-                </>
-              }
-            />
-            <ListItemSecondaryAction>
-              <Tooltip title={t('postHistory.viewRevision')}>
-                <IconButton
-                  edge="end"
-                  size="small"
-                  aria-label={t('postHistory.viewRevision')}
-                  onClick={() => setViewRevision(revision)}
-                >
-                  <VisibilityIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={t('postHistory.restoreRevision')}>
-                <IconButton
-                  edge="end"
-                  size="small"
-                  aria-label={t('postHistory.restoreRevision')}
-                  onClick={() => setRestoreRevision(revision)}
-                >
-                  <RestoreIcon />
-                </IconButton>
-              </Tooltip>
-            </ListItemSecondaryAction>
-          </ListItem>
-        ))}
-      </List>
+    <Box className={styles.root}>
+      {revisions.map(revision => (
+        <List key={revision.id}>
+          <ListRow
+            className={styles.listRow}
+            customActions={
+              <Box className={styles.rowActions}>
+                <TooltipTrigger>
+                  <ButtonIcon
+                    aria-label={t('postHistory.viewRevision')}
+                    size="small"
+                    variant="tertiary"
+                    icon={<RiEyeLine size={16} />}
+                    onPress={() => setViewRevision(revision)}
+                  />
+                  <Tooltip>{t('postHistory.viewRevision')}</Tooltip>
+                </TooltipTrigger>
+                <TooltipTrigger>
+                  <ButtonIcon
+                    aria-label={t('postHistory.restoreRevision')}
+                    size="small"
+                    variant="tertiary"
+                    icon={<RiArrowGoBackLine size={16} />}
+                    onPress={() => setRestoreRevision(revision)}
+                  />
+                  <Tooltip>{t('postHistory.restoreRevision')}</Tooltip>
+                </TooltipTrigger>
+              </Box>
+            }
+          >
+            <div className={styles.rowContent}>
+              <Text variant="body-medium" weight="bold" as="div" truncate>
+                {revision.title}
+              </Text>
+              <Text variant="body-small" color="secondary" as="div">
+                <RelativeTimeWithTooltip value={revision.created} />
+                {' · '}
+                {t('postHistory.revisionBy')}{' '}
+                <UserLink entityRef={revision.createdBy} />
+              </Text>
+            </div>
+          </ListRow>
+        </List>
+      ))}
 
       {/* View revision dialog */}
       <Dialog
-        open={viewRevision !== null}
-        onClose={() => setViewRevision(null)}
-        maxWidth="md"
-        fullWidth
+        isOpen={viewRevision !== null}
+        isDismissable
+        onOpenChange={isOpenState => {
+          if (!isOpenState) setViewRevision(null);
+        }}
       >
         {viewRevision && (
           <>
-            <DialogTitle>{viewRevision.title}</DialogTitle>
-            <DialogContent className={classes.revisionContent}>
-              <Typography variant="caption" color="textSecondary" gutterBottom>
+            <DialogHeader>{viewRevision.title}</DialogHeader>
+            <DialogBody className={styles.revisionContent}>
+              <Text
+                variant="body-x-small"
+                color="secondary"
+                as="div"
+                className={styles.revisionMeta}
+              >
                 <RelativeTimeWithTooltip value={viewRevision.created} />
                 {' · '}
                 {t('postHistory.revisionBy')}{' '}
                 <UserLink entityRef={viewRevision.createdBy} />
-              </Typography>
+              </Text>
               <MarkdownRenderer content={viewRevision.content} />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setViewRevision(null)}>
-                {t('postHistory.closeButton')}
-              </Button>
+            </DialogBody>
+            <DialogFooter>
               <Button
-                color="primary"
-                startIcon={<RestoreIcon />}
+                variant="primary"
+                iconStart={<RiArrowGoBackLine />}
                 onClick={() => {
                   setViewRevision(null);
                   setRestoreRevision(viewRevision);
@@ -197,30 +174,44 @@ export const PostHistory = (props: {
               >
                 {t('postHistory.restoreRevision')}
               </Button>
-            </DialogActions>
+              <Button variant="secondary" onClick={() => setViewRevision(null)}>
+                {t('postHistory.closeButton')}
+              </Button>
+            </DialogFooter>
           </>
         )}
       </Dialog>
 
       {/* Restore confirmation dialog */}
       <Dialog
-        open={restoreRevision !== null}
-        onClose={() => setRestoreRevision(null)}
+        isOpen={restoreRevision !== null}
+        isDismissable
+        onOpenChange={isOpenState => {
+          if (!isOpenState) setRestoreRevision(null);
+        }}
       >
-        <DialogTitle>{t('postHistory.restoreConfirmTitle')}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
+        <DialogHeader>{t('postHistory.restoreConfirmTitle')}</DialogHeader>
+        <DialogBody>
+          <Text variant="body-medium">
             {t('postHistory.restoreConfirmDescription')}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setRestoreRevision(null)} disabled={restoring}>
-            {t('postHistory.cancelButton')}
-          </Button>
-          <Button color="primary" onClick={handleRestore} disabled={restoring}>
+          </Text>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="primary"
+            isDisabled={restoring}
+            onClick={handleRestore}
+          >
             {t('postHistory.restoreConfirmButton')}
           </Button>
-        </DialogActions>
+          <Button
+            variant="secondary"
+            isDisabled={restoring}
+            onClick={() => setRestoreRevision(null)}
+          >
+            {t('postHistory.cancelButton')}
+          </Button>
+        </DialogFooter>
       </Dialog>
     </Box>
   );

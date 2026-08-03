@@ -1,20 +1,13 @@
 # Adding Q&A table to homepage
 
-This shows questions table in the custom homepage for the user:
+In the new frontend system, Qeta provides home widgets that you can enable through frontend extension configuration.
 
-```tsx
-import React from 'react';
-import { QuestionTableCard } from '@drodil/backstage-plugin-qeta';
-import { CustomHomepageGrid } from '@backstage/plugin-home';
-import { Content, Page } from '@backstage/core-components';
-
-export const homePage = (
-  <Page themeId="home">
-    <Content>
-      <CustomHomepageGrid>
-        <QuestionTableCard />
-      </CustomHomepageGrid>
-    </Content>
-  </Page>
-);
+```yaml
+app:
+  extensions:
+    - home-page-widget:qeta/home-posts-table:
+        config:
+          rowsPerPage: 10
+          postType: all
+    - home-page-widget:qeta/home-posts-timeline: {}
 ```

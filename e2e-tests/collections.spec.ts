@@ -24,6 +24,7 @@ test.describe('Collections', () => {
 
     await expect(page.getByRole('listbox')).toBeVisible();
     await page.getByRole('option').first().click();
+    await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Create Collection' }).click();
 
@@ -56,6 +57,7 @@ test.describe('Collections', () => {
     await tagsInput.fill(tag);
     await page.waitForTimeout(1000);
     await tagsInput.press('Enter');
+    await tagsInput.press('Escape');
 
     await page.getByRole('button', { name: 'Create Collection' }).click();
 
@@ -90,8 +92,9 @@ test.describe('Collections', () => {
     await entitiesInput.fill('test component 2');
 
     const option = page.getByRole('option', { name: /test component 2/i });
-    await expect(option).toBeVisible();
+    await expect(option).toBeVisible({ timeout: 5000 });
     await option.click();
+    await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Create Collection' }).click();
 
@@ -133,12 +136,14 @@ test.describe('Collections', () => {
     const userOption = page.getByRole('option').first();
     await expect(userOption).toBeVisible();
     await userOption.click();
+    await page.keyboard.press('Escape');
 
     const tagsInput = page.getByRole('textbox', { name: 'Automatic Tags' });
     await tagsInput.click();
     await tagsInput.fill(tag);
     await page.waitForTimeout(1000);
     await tagsInput.press('Enter');
+    await tagsInput.press('Escape');
 
     await page.getByRole('button', { name: 'Create Collection' }).click();
 

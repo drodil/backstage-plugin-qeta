@@ -5,64 +5,26 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   Box,
   Card,
-  CardContent,
+  CardBody,
   CardHeader,
+  Flex,
   Grid,
-  makeStyles,
-  MenuItem,
   Select,
-  Typography,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
-import PostAddIcon from '@material-ui/icons/PostAdd';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import CommentIcon from '@material-ui/icons/Comment';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import PeopleIcon from '@material-ui/icons/People';
-import GroupWorkIcon from '@material-ui/icons/GroupWork';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    height: '100%',
-  },
-  statBox: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: theme.spacing(1.5),
-    borderRadius: theme.shape.borderRadius,
-    background:
-      theme.palette.type === 'dark'
-        ? 'rgba(255, 255, 255, 0.05)'
-        : 'rgba(0, 0, 0, 0.02)',
-  },
-  statIcon: {
-    marginBottom: theme.spacing(0.5),
-    color: theme.palette.primary.main,
-    opacity: 0.8,
-  },
-  statValue: {
-    fontWeight: 'bold',
-    fontSize: '1.3rem',
-    color: theme.palette.primary.main,
-    lineHeight: 1.2,
-  },
-  statLabel: {
-    color: theme.palette.text.secondary,
-    fontSize: '0.75rem',
-    marginTop: theme.spacing(0.25),
-  },
-  header: {
-    paddingBottom: 0,
-  },
-  select: {
-    fontSize: '0.8rem',
-  },
-}));
+  Skeleton,
+  Text,
+} from '@backstage/ui';
+import {
+  RiFileAddLine,
+  RiQuestionAnswerLine,
+  RiEyeLine,
+  RiChat3Line,
+  RiThumbUpLine,
+  RiGroupLine,
+  RiTeamLine,
+} from '@remixicon/react';
+import styles from './CommunityActivityCard.module.css';
 
 export const CommunityActivityCard = () => {
-  const classes = useStyles();
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
   const [period, setPeriod] = useState('7d');
@@ -75,22 +37,22 @@ export const CommunityActivityCard = () => {
   const renderContent = () => {
     if (loading) {
       return (
-        <Grid container spacing={2}>
+        <Grid.Root columns={{ initial: '12' }} gap="4">
           {Array.from(new Array(6)).map((_, i) => (
-            <Grid item xs={6} md={4} key={i}>
-              <Box className={classes.statBox}>
+            <Grid.Item key={i} colSpan={{ initial: '6', md: '4' }}>
+              <Box className={styles.statBox}>
                 <Skeleton
-                  variant="circle"
+                  rounded
                   width={24}
                   height={24}
-                  className={classes.statIcon}
+                  className={styles.statIcon}
                 />
-                <Skeleton variant="text" width="60%" height={32} />
-                <Skeleton variant="text" width="40%" />
+                <Skeleton width="60%" height={32} />
+                <Skeleton width="40%" />
               </Box>
-            </Grid>
+            </Grid.Item>
           ))}
-        </Grid>
+        </Grid.Root>
       );
     }
 
@@ -102,7 +64,7 @@ export const CommunityActivityCard = () => {
       ...(!disabled.questions || !disabled.articles || !disabled.links
         ? [
             {
-              icon: PostAddIcon,
+              icon: RiFileAddLine,
               value: stats.posts,
               label: t('communityActivity.newPosts'),
             },
@@ -111,78 +73,82 @@ export const CommunityActivityCard = () => {
       ...(!disabled.questions
         ? [
             {
-              icon: QuestionAnswerIcon,
+              icon: RiQuestionAnswerLine,
               value: stats.answers,
               label: t('communityActivity.newAnswers'),
             },
           ]
         : []),
       {
-        icon: VisibilityIcon,
+        icon: RiEyeLine,
         value: stats.views,
         label: t('communityActivity.views'),
       },
       {
-        icon: CommentIcon,
+        icon: RiChat3Line,
         value: stats.comments,
         label: t('communityActivity.newComments'),
       },
       {
-        icon: ThumbUpIcon,
+        icon: RiThumbUpLine,
         value: stats.votes,
         label: t('communityActivity.newVotes'),
       },
       {
-        icon: PeopleIcon,
+        icon: RiGroupLine,
         value: stats.activeUsers,
         label: t('communityActivity.activeUsers'),
       },
     ];
 
     return (
-      <Grid container spacing={2}>
+      <Grid.Root columns={{ initial: '12' }} gap="4">
         {statItems.map((item, index) => (
-          <Grid item xs={6} md={4} key={index}>
-            <Box className={classes.statBox}>
-              <item.icon className={classes.statIcon} />
-              <Typography className={classes.statValue}>
-                {item.value}
-              </Typography>
-              <Typography className={classes.statLabel}>
+          <Grid.Item key={index} colSpan={{ initial: '6', md: '4' }}>
+            <Box className={styles.statBox}>
+              <item.icon size={24} className={styles.statIcon} />
+              <Text className={styles.statValue}>{item.value}</Text>
+              <Text
+                variant="body-x-small"
+                color="secondary"
+                className={styles.statLabel}
+              >
                 {item.label}
-              </Typography>
+              </Text>
             </Box>
-          </Grid>
+          </Grid.Item>
         ))}
-      </Grid>
+      </Grid.Root>
     );
   };
 
   return (
-    <Card className={classes.root} variant="outlined">
-      <CardHeader
-        title={t('communityActivity.title')}
-        className={classes.header}
-        avatar={<GroupWorkIcon />}
-        titleTypographyProps={{ variant: 'h5' }}
-        action={
+    <Card className={styles.card}>
+      <CardHeader>
+        <Flex align="center" justify="between">
+          <Flex align="center" gap="2">
+            <RiTeamLine size={20} />
+            <Text variant="title-small">{t('communityActivity.title')}</Text>
+          </Flex>
           <Select
-            value={period}
-            onChange={e => setPeriod(e.target.value as string)}
-            className={classes.select}
-            disableUnderline
-          >
-            <MenuItem value="1d">{t('communityActivity.period.1d')}</MenuItem>
-            <MenuItem value="3d">{t('communityActivity.period.3d')}</MenuItem>
-            <MenuItem value="7d">{t('communityActivity.period.7d')}</MenuItem>
-            <MenuItem value="14d">{t('communityActivity.period.14d')}</MenuItem>
-            <MenuItem value="30d">{t('communityActivity.period.30d')}</MenuItem>
-            <MenuItem value="90d">{t('communityActivity.period.90d')}</MenuItem>
-            <MenuItem value="1y">{t('communityActivity.period.1y')}</MenuItem>
-          </Select>
-        }
-      />
-      <CardContent>{renderContent()}</CardContent>
+            size="small"
+            className={styles.select}
+            aria-label={t('communityActivity.title')}
+            selectedKey={period}
+            onSelectionChange={key => setPeriod(key as string)}
+            options={[
+              { value: '1d', label: t('communityActivity.period.1d') },
+              { value: '3d', label: t('communityActivity.period.3d') },
+              { value: '7d', label: t('communityActivity.period.7d') },
+              { value: '14d', label: t('communityActivity.period.14d') },
+              { value: '30d', label: t('communityActivity.period.30d') },
+              { value: '90d', label: t('communityActivity.period.90d') },
+              { value: '1y', label: t('communityActivity.period.1y') },
+            ]}
+          />
+        </Flex>
+      </CardHeader>
+      <CardBody>{renderContent()}</CardBody>
     </Card>
   );
 };

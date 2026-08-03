@@ -15,21 +15,16 @@ Add the plugin to your frontend app:
 cd packages/app && yarn add @drodil/backstage-plugin-qeta
 ```
 
-Expose the questions page:
+Register the plugin in your frontend app:
 
 ```ts
 // packages/app/src/App.tsx
-import { QetaPage } from '@drodil/backstage-plugin-qeta';
+import { createApp } from '@backstage/frontend-defaults';
+import qetaPlugin from '@drodil/backstage-plugin-qeta';
 
-// ...
-
-const AppRoutes = () => (
-  <FlatRoutes>
-    // ...
-    <Route path="/qeta" element={<QetaPage />} />
-    // ...
-  </FlatRoutes>
-);
+const app = createApp({
+  features: [qetaPlugin],
+});
 ```
 
 An interface for Q&A is now available at `/qeta`.

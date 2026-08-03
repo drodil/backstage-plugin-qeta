@@ -1,0 +1,8 @@
+@layer components {
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    color: var(--bui-fg-secondary);
+    vertical-align: middle;
+  }
+}

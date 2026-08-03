@@ -6,69 +6,35 @@ import { useEntityAuthor } from '../../hooks/useEntityAuthor';
 import {
   Avatar,
   Box,
-  makeStyles,
+  List,
+  ListRow,
+  Text,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
+  TooltipTrigger,
+} from '@backstage/ui';
 import { UserFollowButton } from '../Buttons/UserFollowButton';
-import Visibility from '@material-ui/icons/Visibility';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import DescriptionIcon from '@material-ui/icons/Description';
-import LinkIcon from '@material-ui/icons/Link';
-import EmojiEvents from '@material-ui/icons/EmojiEvents';
+import {
+  RiEyeLine,
+  RiFileTextLine,
+  RiLinkM,
+  RiQuestionAnswerLine,
+  RiQuestionLine,
+  RiStarFill,
+  RiThumbUpLine,
+} from '@remixicon/react';
 import { qetaTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Link } from 'react-router-dom';
 
-import { useListItemStyles } from '../../hooks';
 import { useQetaConfig } from '../../hooks/useQetaConfig';
-
-const useStyles = makeStyles(theme => ({
-  content: {
-    flex: 1,
-    minWidth: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    marginLeft: theme.spacing(2),
-  },
-  title: {
-    fontWeight: 600,
-  },
-  statsWrapper: {
-    display: 'flex',
-    gap: theme.spacing(3),
-    marginLeft: theme.spacing(2),
-    alignItems: 'center',
-    [theme.breakpoints.down('sm')]: {
-      display: 'none',
-    },
-  },
-  statItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(0.5),
-    color: theme.palette.text.secondary,
-  },
-  actions: {
-    marginLeft: theme.spacing(2),
-  },
-}));
+import styles from './UserListItem.module.css';
 
 export const UserListItem = (props: { user: UserResponse }) => {
   const { user } = props;
-  const classes = useStyles();
-  const listItemClasses = useListItemStyles();
   const { disabled } = useQetaConfig();
   const userRoute = useRouteRef(userRouteRef);
   const { t } = useTranslationRef(qetaTranslationRef);
-  const {
-    name,
-    initials,
-    user: userEntity,
-    secondaryTitle,
-  } = useEntityAuthor(user);
+  const { name, user: userEntity, secondaryTitle } = useEntityAuthor(user);
   const {
     value: currentUser,
     loading: loadingUser,
@@ -78,88 +44,103 @@ export const UserListItem = (props: { user: UserResponse }) => {
   const href = `${userRoute()}/${user.userRef}`;
 
   return (
-    <Link to={href} className={listItemClasses.root}>
-      <Avatar
-        src={userEntity?.spec?.profile?.picture}
-        alt={name}
-        variant="rounded"
-      >
-        {initials}
-      </Avatar>
-      <Box className={classes.content}>
-        <Tooltip title={secondaryTitle ?? ''} arrow placement="top-start">
-          <Typography className={classes.title} noWrap>
-            {name}
-          </Typography>
-        </Tooltip>
-      </Box>
-
-      <Box className={classes.statsWrapper}>
-        <Tooltip title={t('impactCard.reputation')} arrow>
-          <div className={classes.statItem}>
-            <EmojiEvents fontSize="small" />
-            <Typography variant="body2">{user.reputation}</Typography>
-          </div>
-        </Tooltip>
-        {!disabled.questions && (
-          <Tooltip title={t('common.questions')} arrow>
-            <div className={classes.statItem}>
-              <QuestionAnswerIcon fontSize="small" />
-              <Typography variant="body2">{user.totalQuestions}</Typography>
-            </div>
-          </Tooltip>
-        )}
-        {!disabled.questions && (
-          <Tooltip title={t('common.answers')} arrow>
-            <div className={classes.statItem}>
-              <CheckCircleIcon fontSize="small" />
-              <Typography variant="body2">{user.totalAnswers}</Typography>
-            </div>
-          </Tooltip>
-        )}
-        {!disabled.articles && (
-          <Tooltip title={t('common.articles')} arrow>
-            <div className={classes.statItem}>
-              <DescriptionIcon fontSize="small" />
-              <Typography variant="body2">{user.totalArticles}</Typography>
-            </div>
-          </Tooltip>
-        )}
-        {!disabled.links && (
-          <Tooltip title={t('common.links')} arrow>
-            <div className={classes.statItem}>
-              <LinkIcon fontSize="small" />
-              <Typography variant="body2">{user.totalLinks}</Typography>
-            </div>
-          </Tooltip>
-        )}
-        <Tooltip title={t('common.votes')} arrow>
-          <div className={classes.statItem}>
-            <ThumbUpIcon fontSize="small" />
-            <Typography variant="body2">{user.totalVotes}</Typography>
-          </div>
-        </Tooltip>
-        <Tooltip title={t('common.views')} arrow>
-          <div className={classes.statItem}>
-            <Visibility fontSize="small" />
-            <Typography variant="body2">{user.totalViews}</Typography>
-          </div>
-        </Tooltip>
-      </Box>
-
-      {!loadingUser &&
-      !userError &&
-      currentUser?.userEntityRef !== user.userRef ? (
-        <Box
-          className={classes.actions}
-          onClick={e => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
+    <Link to={href} className={styles.link}>
+      <List>
+        <ListRow
+          icon={
+            <Avatar
+              src={userEntity?.spec?.profile?.picture ?? ''}
+              name={name}
+            />
+          }
+          customActions={
+            <Box
+              className={styles.rowActions}
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <div className={styles.statsWrapper}>
+                <TooltipTrigger>
+                  <div className={styles.statItem}>
+                    <RiStarFill size={16} color="var(--bui-fg-warning)" />
+                    <Text variant="body-small">{user.reputation}</Text>
+                  </div>
+                  <Tooltip>{t('impactCard.reputation')}</Tooltip>
+                </TooltipTrigger>
+                {!disabled.questions && (
+                  <TooltipTrigger>
+                    <div className={styles.statItem}>
+                      <RiQuestionLine size={16} />
+                      <Text variant="body-small">{user.totalQuestions}</Text>
+                    </div>
+                    <Tooltip>{t('common.questions')}</Tooltip>
+                  </TooltipTrigger>
+                )}
+                {!disabled.questions && (
+                  <TooltipTrigger>
+                    <div className={styles.statItem}>
+                      <RiQuestionAnswerLine size={16} />
+                      <Text variant="body-small">{user.totalAnswers}</Text>
+                    </div>
+                    <Tooltip>{t('common.answers')}</Tooltip>
+                  </TooltipTrigger>
+                )}
+                {!disabled.articles && (
+                  <TooltipTrigger>
+                    <div className={styles.statItem}>
+                      <RiFileTextLine size={16} />
+                      <Text variant="body-small">{user.totalArticles}</Text>
+                    </div>
+                    <Tooltip>{t('common.articles')}</Tooltip>
+                  </TooltipTrigger>
+                )}
+                {!disabled.links && (
+                  <TooltipTrigger>
+                    <div className={styles.statItem}>
+                      <RiLinkM size={16} />
+                      <Text variant="body-small">{user.totalLinks}</Text>
+                    </div>
+                    <Tooltip>{t('common.links')}</Tooltip>
+                  </TooltipTrigger>
+                )}
+                <TooltipTrigger>
+                  <div className={styles.statItem}>
+                    <RiThumbUpLine size={16} />
+                    <Text variant="body-small">{user.totalVotes}</Text>
+                  </div>
+                  <Tooltip>{t('common.votes')}</Tooltip>
+                </TooltipTrigger>
+                <TooltipTrigger>
+                  <div className={styles.statItem}>
+                    <RiEyeLine size={16} />
+                    <Text variant="body-small">{user.totalViews}</Text>
+                  </div>
+                  <Tooltip>{t('common.views')}</Tooltip>
+                </TooltipTrigger>
+              </div>
+              {!loadingUser &&
+                !userError &&
+                currentUser?.userEntityRef !== user.userRef && (
+                  <UserFollowButton userRef={user.userRef} />
+                )}
+            </Box>
+          }
         >
-          <UserFollowButton userRef={user.userRef} />
-        </Box>
-      ) : null}
+          <TooltipTrigger>
+            <Text
+              as="span"
+              weight="bold"
+              truncate
+              className={styles.titleWrapper}
+            >
+              {name}
+            </Text>
+            <Tooltip placement="top">{secondaryTitle ?? ''}</Tooltip>
+          </TooltipTrigger>
+        </ListRow>
+      </List>
     </Link>
   );
 };

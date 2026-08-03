@@ -29,6 +29,7 @@ test.describe.serial('Articles - Form Flow', () => {
     await tagsInput.fill(tags[0]);
     await page.waitForTimeout(500);
     await tagsInput.press('Enter');
+    await tagsInput.press('Escape');
 
     await expect(page.getByText(tags[0], { exact: true })).toBeVisible();
 
@@ -50,7 +51,7 @@ test.describe.serial('Articles - Form Flow', () => {
     await page.goto('/qeta/articles');
     await page.waitForLoadState('networkidle');
 
-    const searchInput = page.getByRole('textbox', { name: /Search/i });
+    const searchInput = page.getByRole('searchbox', { name: /Search/i });
 
     const partialTitle = title.split(' ')[0];
     await searchInput.fill(partialTitle);
@@ -78,7 +79,7 @@ test.describe('Articles - Independent Tests', () => {
 
     await page.goto('/qeta/articles?orderBy=created&order=desc');
     await page.waitForLoadState('networkidle');
-    const listButton = page.getByRole('button', { name: 'List View' });
+    const listButton = page.getByRole('radio', { name: 'List View' });
     await expect(listButton).toBeVisible({ timeout: 10000 });
     await listButton.click();
     await page.waitForTimeout(500);

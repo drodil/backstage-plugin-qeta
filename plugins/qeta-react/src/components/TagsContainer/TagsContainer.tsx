@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
-import { Button } from '@material-ui/core';
-import Add from '@material-ui/icons/Add';
+import { Button } from '@backstage/ui';
+import { RiAddLine } from '@remixicon/react';
 import { useIsModerator } from '../../hooks/useIsModerator';
 import { CommonFilterPanelProps, TagFilters } from '../FilterPanel/FilterPanel';
 import { TagGridItem } from './TagGridItem';
@@ -80,9 +80,8 @@ export const TagsContainer = (props: {
             errorPage={<></>}
           >
             <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<Add />}
+              variant="secondary"
+              iconStart={<RiAddLine size={16} />}
               size="small"
               onClick={handleCreateModalOpen}
             >

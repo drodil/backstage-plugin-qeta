@@ -15,7 +15,7 @@ test.describe('Settings', () => {
 
     // Wait for reset to complete by checking that a view type shows default state
     const defaultButton = page.getByTestId('view-type-posts-question-default');
-    await expect(defaultButton).toHaveAttribute('data-selected', 'true', {
+    await expect(defaultButton).toHaveAttribute('aria-checked', 'true', {
       timeout: 3000,
     });
 
@@ -34,7 +34,7 @@ test.describe('Settings', () => {
     const gridButton = page.getByTestId('view-type-posts-question-grid');
     await gridButton.click();
 
-    await expect(gridButton).toHaveAttribute('data-selected', 'true', {
+    await expect(gridButton).toHaveAttribute('aria-checked', 'true', {
       timeout: 2000,
     });
     await page.waitForTimeout(500);
@@ -52,10 +52,10 @@ test.describe('Settings', () => {
     const gridButtonAfter = page.getByTestId('view-type-posts-question-grid');
     const listButtonAfter = page.getByTestId('view-type-posts-question-list');
 
-    await expect(gridButtonAfter).toHaveAttribute('data-selected', 'true', {
+    await expect(gridButtonAfter).toHaveAttribute('aria-checked', 'true', {
       timeout: 10000,
     });
-    await expect(listButtonAfter).toHaveAttribute('data-selected', 'false');
+    await expect(listButtonAfter).toHaveAttribute('aria-checked', 'false');
   });
 
   test('change questions view type to list and verify it persists', async ({
@@ -70,7 +70,7 @@ test.describe('Settings', () => {
     const listButton = page.getByTestId('view-type-posts-question-list');
     await listButton.click();
 
-    await expect(listButton).toHaveAttribute('data-selected', 'true', {
+    await expect(listButton).toHaveAttribute('aria-checked', 'true', {
       timeout: 2000,
     });
     await page.waitForTimeout(500);
@@ -88,10 +88,10 @@ test.describe('Settings', () => {
     const listButtonAfter = page.getByTestId('view-type-posts-question-list');
     const gridButtonAfter = page.getByTestId('view-type-posts-question-grid');
 
-    await expect(listButtonAfter).toHaveAttribute('data-selected', 'true', {
+    await expect(listButtonAfter).toHaveAttribute('aria-checked', 'true', {
       timeout: 10000,
     });
-    await expect(gridButtonAfter).toHaveAttribute('data-selected', 'false');
+    await expect(gridButtonAfter).toHaveAttribute('aria-checked', 'false');
   });
 
   test('change multiple view types and verify they all persist', async ({
@@ -115,13 +115,13 @@ test.describe('Settings', () => {
     const questionsGridButton = page.getByTestId(
       'view-type-posts-question-grid',
     );
-    await expect(questionsGridButton).toHaveAttribute('data-selected', 'true');
+    await expect(questionsGridButton).toHaveAttribute('aria-checked', 'true');
 
     const articlesListButton = page.getByTestId('view-type-posts-article-list');
-    await expect(articlesListButton).toHaveAttribute('data-selected', 'true');
+    await expect(articlesListButton).toHaveAttribute('aria-checked', 'true');
 
     const linksGridButton = page.getByTestId('view-type-posts-link-grid');
-    await expect(linksGridButton).toHaveAttribute('data-selected', 'true');
+    await expect(linksGridButton).toHaveAttribute('aria-checked', 'true');
   });
 
   test('toggle auto-save setting and verify it persists', async ({ page }) => {
@@ -260,6 +260,6 @@ test.describe('Settings', () => {
     await page.waitForLoadState('networkidle');
 
     const defaultButton = page.getByTestId('view-type-posts-question-default');
-    await expect(defaultButton).toHaveAttribute('data-selected', 'true');
+    await expect(defaultButton).toHaveAttribute('aria-checked', 'true');
   });
 });

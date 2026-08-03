@@ -1,23 +1,28 @@
 import {
-  alertApiRef,
   configApiRef,
   useAnalytics,
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import {
+  Alert,
   Box,
   Button,
-  Collapse,
-  FormControlLabel,
-  IconButton,
+  ButtonIcon,
+  Flex,
   Link,
   Switch,
+  Text,
   TextField,
   Tooltip,
-  Typography,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+  TooltipTrigger,
+} from '@backstage/ui';
+import {
+  RiArrowDownSLine,
+  RiArrowUpSLine,
+  RiInformationLine,
+  RiQuestionLine,
+} from '@remixicon/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -45,12 +50,10 @@ import { qetaApiRef } from '../../api';
 import { HeaderImageInput } from '../HeaderImageInput/HeaderImageInput';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import InfoIcon from '@material-ui/icons/Info';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import HelpIcon from '@material-ui/icons/Help';
 import { useDebounce } from 'react-use';
 import { useIdentityApi, useIsModerator, useUserSettings } from '../../hooks';
+import styles from './PostForm.module.css';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 const formToRequest = (
   form: QuestionFormValues,
@@ -178,7 +181,7 @@ export const PostForm = (props: PostFormProps) => {
   const qetaApi = useApi(qetaApiRef);
   const catalogApi = useApi(catalogApiRef);
   const configApi = useApi(configApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const allowAnonymous = configApi.getOptionalBoolean('qeta.allowAnonymous');
   const minEntities = configApi.getOptionalNumber('qeta.entities.min') ?? 0;
   const minTags = configApi.getOptionalNumber('qeta.tags.min') ?? 0;
@@ -231,16 +234,14 @@ export const PostForm = (props: PostFormProps) => {
               setDraftId(q.id.toString(10));
               setPosting(false);
               if (autoSave) {
-                alertApi.post({
-                  message: t('postForm.autoSaveSuccess'),
-                  severity: 'success',
-                  display: 'transient',
+                toastApi.post({
+                  title: t('postForm.autoSaveSuccess'),
+                  status: 'success',
                 });
               } else {
-                alertApi.post({
-                  message: t('postForm.draftSaved'),
-                  severity: 'success',
-                  display: 'transient',
+                toastApi.post({
+                  title: t('postForm.draftSaved'),
+                  status: 'success',
                 });
               }
               return;
@@ -278,16 +279,14 @@ export const PostForm = (props: PostFormProps) => {
             setDraftId(q.id.toString(10));
             setPosting(false);
             if (autoSave) {
-              alertApi.post({
-                message: t('postForm.autoSaveSuccess'),
-                severity: 'success',
-                display: 'transient',
+              toastApi.post({
+                title: t('postForm.autoSaveSuccess'),
+                status: 'success',
               });
             } else {
-              alertApi.post({
-                message: t('postForm.draftSaved'),
-                severity: 'success',
-                display: 'transient',
+              toastApi.post({
+                title: t('postForm.draftSaved'),
+                status: 'success',
               });
             }
             return;
@@ -324,7 +323,7 @@ export const PostForm = (props: PostFormProps) => {
       onPost,
       navigate,
       images,
-      alertApi,
+      toastApi,
       t,
     ],
   );
@@ -350,10 +349,9 @@ export const PostForm = (props: PostFormProps) => {
           setStatus(data.status ?? 'draft');
         })
         .catch(e => {
-          alertApi.post({
-            message: e.message,
-            severity: 'error',
-            display: 'transient',
+          toastApi.post({
+            title: e.message,
+            status: 'warning',
           });
           setDraftId(undefined);
           setLoadError(true);
@@ -362,7 +360,7 @@ export const PostForm = (props: PostFormProps) => {
     } else {
       setLoading(false);
     }
-  }, [qetaApi, catalogApi, type, id, alertApi]);
+  }, [qetaApi, catalogApi, type, id, toastApi]);
 
   useEffect(() => {
     if (entityRef) {
@@ -434,17 +432,17 @@ export const PostForm = (props: PostFormProps) => {
     [setImages],
   );
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitleCharCount(e.target.value.length);
-    setValue('title', e.target.value, {
+  const handleTitleChange = (newValue: string) => {
+    setTitleCharCount(newValue.length);
+    setValue('title', newValue, {
       shouldValidate: true,
       shouldDirty: true,
     });
   };
 
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUrlChange = (newValue: string) => {
     setFavicon(undefined);
-    setValue('url', e.target.value, {
+    setValue('url', newValue, {
       shouldValidate: true,
       shouldDirty: true,
     });
@@ -543,10 +541,9 @@ export const PostForm = (props: PostFormProps) => {
     return t('postForm.saveDraft');
   };
 
-  const handleAutoSaveChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.checked;
-    setAutoSaveEnabled(newValue);
-    setSetting('autoSaveEnabled', newValue);
+  const handleAutoSaveChange = (isSelected: boolean) => {
+    setAutoSaveEnabled(isSelected);
+    setSetting('autoSaveEnabled', isSelected);
   };
 
   useEffect(() => {
@@ -569,7 +566,10 @@ export const PostForm = (props: PostFormProps) => {
 
   if (loadError) {
     return (
-      <Alert severity="error">{t('postForm.errorLoading', { type })}</Alert>
+      <Alert
+        status="danger"
+        description={t('postForm.errorLoading', { type })}
+      />
     );
   }
 
@@ -578,10 +578,13 @@ export const PostForm = (props: PostFormProps) => {
       onSubmit={handleSubmit(data =>
         postQuestion({ ...data, status: 'active' }),
       )}
-      style={{ maxWidth: 1000, margin: '0 auto' }}
+      className={styles.form}
     >
       {error && (
-        <Alert severity="error">{t('postForm.errorPosting', { type })}</Alert>
+        <Alert
+          status="danger"
+          description={t('postForm.errorPosting', { type })}
+        />
       )}
       {type === 'article' && (
         <Controller
@@ -598,17 +601,12 @@ export const PostForm = (props: PostFormProps) => {
         />
       )}
       {isLink && (
-        <Box mb={2} display="flex" alignItems="center" style={{ gap: 8 }}>
+        <Flex align="center" gap="2" mb="4">
           {favicon && (
             <img
               src={favicon}
               alt="Favicon"
-              style={{
-                width: 16,
-                height: 16,
-                marginRight: 4,
-                marginBottom: 16,
-              }}
+              className={styles.favicon}
               onError={e => (e.currentTarget.style.display = 'none')}
             />
           )}
@@ -623,23 +621,16 @@ export const PostForm = (props: PostFormProps) => {
               <TextField
                 label={t('postForm.urlInput.label')}
                 className="qetaAskFormTitle"
-                required
-                fullWidth
-                error={!!errors.url}
-                margin="normal"
-                variant="outlined"
+                isRequired
+                isInvalid={!!errors.url}
                 name="url"
-                helperText={
-                  errors.url?.message || (
-                    <span>{t('postForm.urlInput.helperText')}</span>
-                  )
+                description={
+                  errors.url?.message ?? t('postForm.urlInput.helperText')
                 }
                 placeholder={t('postForm.urlInput.placeholder')}
-                FormHelperTextProps={{
-                  style: { marginLeft: '0.2em' },
-                }}
                 value={control._formValues.url ?? ''}
                 onChange={handleUrlChange}
+                style={{ flex: 1 }}
               />
             )}
           />
@@ -648,72 +639,70 @@ export const PostForm = (props: PostFormProps) => {
               src={control._formValues.headerImage}
               alt="Preview"
               onError={e => (e.currentTarget.style.display = 'none')}
-              style={{ maxHeight: 54, marginBottom: 14 }}
+              className={styles.headerImagePreview}
             />
           )}
-        </Box>
+        </Flex>
       )}
-      <Box mb={2}>
+      <Box mb="4">
         <TextField
           label={t('postForm.titleInput.label')}
           className="qetaAskFormTitle"
-          required
-          fullWidth
-          error={'title' in errors}
-          margin="normal"
-          variant="outlined"
+          isRequired
+          isInvalid={'title' in errors}
           name="title"
-          helperText={
-            <span>
-              {t('postForm.titleInput.helperText', { type })}{' '}
-              <span style={{ float: 'right' }}>{titleCharCount}/255</span>
-            </span>
-          }
+          size="medium"
           placeholder={t(
             isLink
               ? 'postForm.titleInput.placeholder_link'
               : 'postForm.titleInput.placeholder',
           )}
-          FormHelperTextProps={{
-            style: { marginLeft: '0.2em' },
-          }}
           value={control._formValues.title}
           onChange={handleTitleChange}
-          inputProps={{ maxLength: 255 }}
+          maxLength={255}
         />
+        <Flex justify="between" className={styles.titleHelper}>
+          <Text variant="body-small" color="secondary">
+            {t('postForm.titleInput.helperText', { type })}
+          </Text>
+          <Text variant="body-small" color="secondary">
+            {titleCharCount}/255
+          </Text>
+        </Flex>
       </Box>
-      <Box
-        mb={1}
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
+      <Flex align="center" justify="between" mb="2">
+        <Text variant="title-small" weight="bold">
           {t('postForm.contentInput.label', { type })}
-          <Tooltip title="Tips for a good question">
-            <IconButton size="small" onClick={() => setShowTips(v => !v)}>
-              {showTips ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </IconButton>
-          </Tooltip>
-        </Typography>
-        <Box>
-          <Link
-            href="https://www.markdownguide.org/cheat-sheet/"
-            target="_blank"
-            color="inherit"
-            rel="noopener noreferrer"
-            style={{ fontSize: 12 }}
-          >
-            {t('postForm.contentInput.markdownHelp')}
-            <HelpIcon
-              style={{ fontSize: 12, marginLeft: 4, verticalAlign: 'middle' }}
+          <TooltipTrigger>
+            <ButtonIcon
+              aria-label="Tips for a good question"
+              size="small"
+              variant="tertiary"
+              icon={
+                showTips ? (
+                  <RiArrowUpSLine size={16} />
+                ) : (
+                  <RiArrowDownSLine size={16} />
+                )
+              }
+              onPress={() => setShowTips(v => !v)}
             />
-          </Link>
-        </Box>
-      </Box>
-      <Collapse in={showTips}>
-        <Box mb={2} p={2}>
-          <Typography variant="body2">
+            <Tooltip>Tips for a good question</Tooltip>
+          </TooltipTrigger>
+        </Text>
+        <Link
+          href="https://www.markdownguide.org/cheat-sheet/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.markdownHelpLink}
+        >
+          {t('postForm.contentInput.markdownHelp')}
+          <RiQuestionLine size={12} className={styles.markdownHelpIcon} />
+        </Link>
+      </Flex>
+      {showTips && (
+        <Box mb="4" p="4">
+          <Text variant="body-small">
             <ul style={{ margin: 0, paddingLeft: 20 }}>
               {selectByPostType(
                 type,
@@ -735,9 +724,9 @@ export const PostForm = (props: PostFormProps) => {
                 </>,
               )}
             </ul>
-          </Typography>
+          </Text>
         </Box>
-      </Collapse>
+      )}
       <Controller
         control={control}
         rules={{
@@ -769,7 +758,7 @@ export const PostForm = (props: PostFormProps) => {
         )}
         name="content"
       />
-      <Box mt={1} mb={1}>
+      <Box mt="2" mb="2">
         <Controller
           control={control}
           rules={{
@@ -785,6 +774,7 @@ export const PostForm = (props: PostFormProps) => {
           render={({ field, fieldState: { error: entityError } }) => (
             <EntitiesInput
               {...field}
+              label={t('entitiesInput.label')}
               singleValue={entityRef}
               error={entityError}
               title={getFormValues('title')}
@@ -795,7 +785,7 @@ export const PostForm = (props: PostFormProps) => {
           name="entities"
         />
       </Box>
-      <Box mt={1} mb={1}>
+      <Box mt="2" mb="2">
         <Controller
           control={control}
           rules={{
@@ -810,6 +800,7 @@ export const PostForm = (props: PostFormProps) => {
             return (
               <TagInput
                 {...field}
+                label={t('tagsInput.label')}
                 error={tagError}
                 title={watch('title')}
                 content={watch('content')}
@@ -821,7 +812,7 @@ export const PostForm = (props: PostFormProps) => {
         />
       </Box>
       {isModerator && (
-        <Box mt={1} mb={1}>
+        <Box mt="2" mb="2">
           <Controller
             control={control}
             render={({ field, fieldState: { error: authorError } }) => {
@@ -844,38 +835,30 @@ export const PostForm = (props: PostFormProps) => {
         </Box>
       )}
       {allowAnonymous && !id && (
-        <Box mt={2} mb={2} display="flex" alignItems="center">
+        <Flex align="center" gap="1" mt="4" mb="4">
           <PostAnonymouslyCheckbox
             control={control}
             label={t('anonymousCheckbox.postAnonymously')}
           />
-          <Tooltip title={t('anonymousCheckbox.tooltip')}>
-            <InfoIcon fontSize="small" style={{ marginLeft: 4 }} />
-          </Tooltip>
-        </Box>
+          <TooltipTrigger>
+            <RiInformationLine size={16} />
+            <Tooltip>{t('anonymousCheckbox.tooltip')}</Tooltip>
+          </TooltipTrigger>
+        </Flex>
       )}
-      <Box
-        mt={3}
-        display="flex"
-        style={{ gap: '16px' }}
-        justifyContent="space-between"
-      >
-        <Box display="flex" style={{ gap: '16px' }}>
+      <Flex justify="between" gap="4" mt="6">
+        <Flex gap="4">
           <Button
-            color="primary"
+            variant="primary"
             type="submit"
-            variant="contained"
-            disabled={loading || posting || isSubmitting}
-            size="large"
+            isDisabled={loading || posting || isSubmitting}
           >
             {getSubmitButtonText()}
           </Button>
           {status === 'draft' && !loading && !customAuthor && (
             <Button
-              color="secondary"
-              variant="outlined"
-              disabled={loading || posting || isSubmitting}
-              size="large"
+              variant="secondary"
+              isDisabled={loading || posting || isSubmitting}
               onClick={handleSubmit(data =>
                 postQuestion({ ...data, status: 'draft' }),
               )}
@@ -883,21 +866,17 @@ export const PostForm = (props: PostFormProps) => {
               {getDraftButtonText()}
             </Button>
           )}
-        </Box>
-        <FormControlLabel
-          control={
-            <Tooltip title={t('postForm.autoSaveDraftTooltip')}>
-              <Switch
-                checked={autoSaveEnabled}
-                onChange={handleAutoSaveChange}
-                color="primary"
-                disabled={loading || posting || isSubmitting}
-              />
-            </Tooltip>
-          }
-          label={t('postForm.autoSaveDraft')}
-        />
-      </Box>
+        </Flex>
+        <TooltipTrigger>
+          <Switch
+            isSelected={autoSaveEnabled}
+            onChange={handleAutoSaveChange}
+            isDisabled={loading || posting || isSubmitting}
+            label={t('postForm.autoSaveDraft')}
+          />
+          <Tooltip>{t('postForm.autoSaveDraftTooltip')}</Tooltip>
+        </TooltipTrigger>
+      </Flex>
     </form>
   );
 };

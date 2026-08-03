@@ -6,7 +6,9 @@
 
 [![CI](https://github.com/drodil/backstage-plugin-qeta/actions/workflows/ci.yaml/badge.svg)](https://github.com/drodil/backstage-plugin-qeta/actions/workflows/ci.yaml)
 
-**Qeta** is a comprehensive Q&A and knowledge sharing plugin for Backstage, inspired by Stack Overflow. It allows your engineering teams to ask questions, share answers, write articles, and build a knowledge base directly within your developer portal.
+**Qeta** is a comprehensive Q&A and knowledge sharing plugin for Backstage, inspired by Stack Overflow. It allows your
+engineering teams to ask questions, share answers, write articles, and build a knowledge base directly within your
+developer portal.
 
 ## ✨ Features
 
@@ -37,20 +39,26 @@ Detailed documentation is available in the `docs` directory:
 
 Qeta integrates seamlessly with many Backstage plugins:
 
-- **[Search](https://github.com/backstage/backstage/tree/master/plugins/search)**: Index questions and answers in Backstage global search.
-- **[Catalog](https://github.com/backstage/backstage/tree/master/plugins/catalog-react)**: Link questions to catalog entities.
-- **[Notifications](https://github.com/backstage/backstage/tree/master/plugins/notifications)**: Receive alerts for relevant activity.
+- **[Search](https://github.com/backstage/backstage/tree/master/plugins/search)**: Index questions and answers in
+  Backstage global search.
+- **[Catalog](https://github.com/backstage/backstage/tree/master/plugins/catalog-react)**: Link questions to catalog
+  entities.
+- **[Notifications](https://github.com/backstage/backstage/tree/master/plugins/notifications)**: Receive alerts for
+  relevant activity.
 - **[Signals](https://github.com/backstage/backstage/tree/master/plugins/signals)**: Real-time updates.
 - **[Home](https://github.com/backstage/backstage/tree/master/plugins/home)**: Widgets for your homepage.
 
-> [!IMPORTANT] > **Version 2.0.0+** requires the new Backstage backend system. Use version 1.24.5 for the old backend system.
+> [!IMPORTANT] > **Version 2.0.0+** requires the new Backstage backend system. Use version 1.24.5 for the old backend
+> system.
 >
 > **Version 3.22.0+** requires Backstage 1.36.0 or later due to permission integration changes.
+>
+> **Version 4.0.0+** Frontend support now targets the new Backstage frontend system only.\*\*
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-If your organization uses Qeta, please add yourself to our [ADOPTERS](ADOPTERS.md) list! ❤️
+We welcome contributions! Please see [CONTRIBUTING](CONTRIBUTING.md) for details. If your organization uses Qeta, please
+add yourself to our [ADOPTERS](ADOPTERS.md) list! ❤️
 
 ## 📄 License
 

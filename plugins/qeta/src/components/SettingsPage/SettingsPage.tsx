@@ -1,16 +1,4 @@
 import {
-  Box,
-  Button,
-  ButtonGroup,
-  CardContent,
-  FormControlLabel,
-  makeStyles,
-  Switch,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
-import { InfoCard } from '@backstage/core-components';
-import {
   qetaTranslationRef,
   useAI,
   useUserSettings,
@@ -18,41 +6,21 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-
-const useStyles = makeStyles(theme => ({
-  content: {
-    maxWidth: '800px',
-    margin: '0 auto',
-  },
-  section: {
-    marginBottom: theme.spacing(3),
-  },
-  sectionTitle: {
-    marginBottom: theme.spacing(2),
-    fontWeight: 600,
-  },
-  settingItem: {
-    marginBottom: theme.spacing(2),
-  },
-  description: {
-    color: theme.palette.text.secondary,
-    fontSize: '0.875rem',
-    marginTop: theme.spacing(0.5),
-  },
-  viewTypeItem: {
-    marginBottom: theme.spacing(2),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  viewTypeLabel: {
-    minWidth: '200px',
-  },
-}));
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Flex,
+  Switch,
+  Text,
+  ToggleButton,
+  ToggleButtonGroup,
+} from '@backstage/ui';
+import styles from './SettingsPage.module.css';
 
 export const SettingsPage = () => {
-  const classes = useStyles();
-  const theme = useTheme();
   const {
     settings,
     setSetting,
@@ -150,183 +118,191 @@ export const SettingsPage = () => {
   }
 
   return (
-    <InfoCard title={t('settingsPage.title', {})} data-testid="settings-page">
-      <CardContent>
-        <div className={classes.section}>
-          <Typography variant="h6" className={classes.sectionTitle}>
-            {t('settingsPage.editorPreferences', {})}
-          </Typography>
+    <Card data-testid="settings-page">
+      <CardHeader>
+        <Text as="h1" variant="title-small">
+          {t('settingsPage.title', {})}
+        </Text>
+      </CardHeader>
+      <CardBody>
+        <Box className={styles.content}>
+          <Box className={styles.section}>
+            <Text as="h2" variant="title-small" className={styles.sectionTitle}>
+              {t('settingsPage.editorPreferences', {})}
+            </Text>
 
-          <div className={classes.settingItem} data-testid="auto-save-setting">
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.autoSaveEnabled}
-                  onChange={e =>
-                    setSetting('autoSaveEnabled', e.target.checked)
-                  }
-                  color="primary"
-                  data-testid="auto-save-switch"
-                />
-              }
-              label={t('settingsPage.autoSave.label', {})}
-            />
-            <Typography className={classes.description}>
-              {t('settingsPage.autoSave.description', {})}
-            </Typography>
-          </div>
-
-          {allowAnonymous && (
-            <div
-              className={classes.settingItem}
-              data-testid="anonymous-posting-setting"
-            >
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={settings.anonymousPosting}
-                    onChange={e =>
-                      setSetting('anonymousPosting', e.target.checked)
-                    }
-                    color="primary"
-                    data-testid="anonymous-posting-switch"
-                  />
-                }
-                label={t('settingsPage.anonymousPosting.label', {})}
+            <div className={styles.settingItem} data-testid="auto-save-setting">
+              <Switch
+                isSelected={settings.autoSaveEnabled}
+                onChange={value => setSetting('autoSaveEnabled', value)}
+                label={t('settingsPage.autoSave.label', {})}
+                data-testid="auto-save-switch"
               />
-              <Typography className={classes.description}>
-                {t('settingsPage.anonymousPosting.description', {})}
-              </Typography>
+              <Text
+                as="div"
+                variant="body-small"
+                color="secondary"
+                className={styles.description}
+              >
+                {t('settingsPage.autoSave.description', {})}
+              </Text>
             </div>
-          )}
-        </div>
 
-        <div className={classes.section}>
-          <Typography variant="h6" className={classes.sectionTitle}>
-            {t('settingsPage.displayPreferences', {})}
-          </Typography>
-
-          {isAIEnabled && (
-            <div
-              className={classes.settingItem}
-              data-testid="ai-answer-setting"
-            >
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={settings.aiAnswerExpanded}
-                    onChange={e =>
-                      setSetting('aiAnswerExpanded', e.target.checked)
-                    }
-                    color="primary"
-                    data-testid="ai-answer-switch"
-                  />
-                }
-                label={t('settingsPage.aiAnswerExpanded.label', {})}
-              />
-              <Typography className={classes.description}>
-                {t('settingsPage.aiAnswerExpanded.description', {})}
-              </Typography>
-            </div>
-          )}
-
-          <div className={classes.settingItem} data-testid="pagination-setting">
-            <FormControlLabel
-              control={
+            {allowAnonymous && (
+              <div
+                className={styles.settingItem}
+                data-testid="anonymous-posting-setting"
+              >
                 <Switch
-                  checked={settings.usePagination}
-                  onChange={e => setSetting('usePagination', e.target.checked)}
-                  color="primary"
-                  data-testid="pagination-switch"
+                  isSelected={settings.anonymousPosting}
+                  onChange={value => setSetting('anonymousPosting', value)}
+                  label={t('settingsPage.anonymousPosting.label', {})}
+                  data-testid="anonymous-posting-switch"
                 />
-              }
-              label={t('settingsPage.usePagination.label', {})}
-            />
-            <Typography className={classes.description}>
-              {t('settingsPage.usePagination.description', {})}
-            </Typography>
-          </div>
-
-          <Box mt={3}>
-            <Typography
-              variant="subtitle1"
-              style={{ fontWeight: 500, marginBottom: 16 }}
-            >
-              {t('settingsPage.viewTypePreferences.title', {})}
-            </Typography>
-            <Typography
-              className={classes.description}
-              style={{ marginBottom: 16 }}
-            >
-              {t('settingsPage.viewTypePreferences.description', {})}
-            </Typography>
-
-            {viewTypes.map(({ key, label }) => {
-              const currentView = getViewType(key);
-              return (
-                <div
-                  key={key}
-                  className={classes.viewTypeItem}
-                  data-testid={`view-type-${key}`}
+                <Text
+                  as="div"
+                  variant="body-small"
+                  color="secondary"
+                  className={styles.description}
                 >
-                  <Typography className={classes.viewTypeLabel}>
-                    {label}
-                  </Typography>
-                  <ButtonGroup size="small" color="primary">
-                    <Button
-                      variant={
-                        currentView === 'grid' ? 'contained' : 'outlined'
-                      }
-                      onClick={() => handleViewTypeChange(key, 'grid')}
-                      data-testid={`view-type-${key}-grid`}
-                      data-selected={currentView === 'grid'}
-                    >
-                      {t('settingsPage.viewTypePreferences.grid', {})}
-                    </Button>
-                    <Button
-                      variant={
-                        currentView === 'list' ? 'contained' : 'outlined'
-                      }
-                      onClick={() => handleViewTypeChange(key, 'list')}
-                      data-testid={`view-type-${key}-list`}
-                      data-selected={currentView === 'list'}
-                    >
-                      {t('settingsPage.viewTypePreferences.list', {})}
-                    </Button>
-                    <Button
-                      variant={currentView === null ? 'contained' : 'outlined'}
-                      onClick={() => handleViewTypeChange(key, null)}
-                      data-testid={`view-type-${key}-default`}
-                      data-selected={currentView === null}
-                    >
-                      {t('settingsPage.viewTypePreferences.default', {})}
-                    </Button>
-                  </ButtonGroup>
-                </div>
-              );
-            })}
+                  {t('settingsPage.anonymousPosting.description', {})}
+                </Text>
+              </div>
+            )}
           </Box>
-        </div>
 
-        <Box mt={4} pt={3} borderTop={`1px solid ${theme.palette.divider}`}>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => {
-              resetSettings();
-            }}
-            data-testid="reset-all-settings-button"
-          >
-            {t('settingsPage.resetAllSettings', {})}
-          </Button>
-          <Typography
-            className={classes.description}
-            style={{ marginTop: theme.spacing(1) }}
-          >
-            {t('settingsPage.resetAllSettingsDescription', {})}
-          </Typography>
+          <Box className={styles.section}>
+            <Text as="h2" variant="title-small" className={styles.sectionTitle}>
+              {t('settingsPage.displayPreferences', {})}
+            </Text>
+
+            {isAIEnabled && (
+              <div
+                className={styles.settingItem}
+                data-testid="ai-answer-setting"
+              >
+                <Switch
+                  isSelected={settings.aiAnswerExpanded}
+                  onChange={value => setSetting('aiAnswerExpanded', value)}
+                  label={t('settingsPage.aiAnswerExpanded.label', {})}
+                  data-testid="ai-answer-switch"
+                />
+                <Text
+                  as="div"
+                  variant="body-small"
+                  color="secondary"
+                  className={styles.description}
+                >
+                  {t('settingsPage.aiAnswerExpanded.description', {})}
+                </Text>
+              </div>
+            )}
+
+            <div
+              className={styles.settingItem}
+              data-testid="pagination-setting"
+            >
+              <Switch
+                isSelected={settings.usePagination}
+                onChange={value => setSetting('usePagination', value)}
+                label={t('settingsPage.usePagination.label', {})}
+                data-testid="pagination-switch"
+              />
+              <Text
+                as="div"
+                variant="body-small"
+                color="secondary"
+                className={styles.description}
+              >
+                {t('settingsPage.usePagination.description', {})}
+              </Text>
+            </div>
+
+            <Box className={styles.viewTypeSection}>
+              <Text as="h3" variant="title-x-small">
+                {t('settingsPage.viewTypePreferences.title', {})}
+              </Text>
+              <Text
+                as="div"
+                variant="body-small"
+                color="secondary"
+                className={styles.description}
+              >
+                {t('settingsPage.viewTypePreferences.description', {})}
+              </Text>
+
+              {viewTypes.map(({ key, label }) => {
+                const currentView = getViewType(key) ?? 'default';
+                return (
+                  <div
+                    key={key}
+                    className={styles.viewTypeItem}
+                    data-testid={`view-type-${key}`}
+                  >
+                    <Text className={styles.viewTypeLabel}>{label}</Text>
+                    <ToggleButtonGroup
+                      selectionMode="single"
+                      disallowEmptySelection
+                      selectedKeys={[currentView]}
+                      onSelectionChange={keys => {
+                        const selected = Array.from(keys)[0];
+                        handleViewTypeChange(
+                          key,
+                          selected === 'default'
+                            ? null
+                            : (selected as ViewType),
+                        );
+                      }}
+                    >
+                      <ToggleButton
+                        id="grid"
+                        size="small"
+                        data-testid={`view-type-${key}-grid`}
+                      >
+                        {t('settingsPage.viewTypePreferences.grid', {})}
+                      </ToggleButton>
+                      <ToggleButton
+                        id="list"
+                        size="small"
+                        data-testid={`view-type-${key}-list`}
+                      >
+                        {t('settingsPage.viewTypePreferences.list', {})}
+                      </ToggleButton>
+                      <ToggleButton
+                        id="default"
+                        size="small"
+                        data-testid={`view-type-${key}-default`}
+                      >
+                        {t('settingsPage.viewTypePreferences.default', {})}
+                      </ToggleButton>
+                    </ToggleButtonGroup>
+                  </div>
+                );
+              })}
+            </Box>
+          </Box>
+
+          <Flex direction="column" className={styles.footer}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                resetSettings();
+              }}
+              data-testid="reset-all-settings-button"
+            >
+              {t('settingsPage.resetAllSettings', {})}
+            </Button>
+            <Text
+              as="div"
+              variant="body-small"
+              color="secondary"
+              className={styles.description}
+            >
+              {t('settingsPage.resetAllSettingsDescription', {})}
+            </Text>
+          </Flex>
         </Box>
-      </CardContent>
-    </InfoCard>
+      </CardBody>
+    </Card>
   );
 };

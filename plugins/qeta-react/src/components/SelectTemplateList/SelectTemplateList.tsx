@@ -7,13 +7,11 @@ import { qetaTranslationRef } from '../../translation.ts';
 import {
   Button,
   Card,
-  CardContent,
+  CardBody,
   CardHeader,
   List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from '@material-ui/core';
+  ListRow,
+} from '@backstage/ui';
 
 export const SelectTemplateList = (props: {
   templates: TemplatesResponse;
@@ -27,43 +25,42 @@ export const SelectTemplateList = (props: {
 
   return (
     <Card>
-      <CardHeader title={t('templateSelectList.title')} />
-      <CardContent>
-        <List style={{ width: '100%' }}>
-          {templates.templates.map((template, index) => (
-            <ListItem key={index}>
-              <ListItemText
-                primary={template.title}
-                secondary={template.description}
-              />
-              <ListItemSecondaryAction>
+      <CardHeader>{t('templateSelectList.title')}</CardHeader>
+      <CardBody>
+        <List>
+          {templates.templates.map(template => (
+            <ListRow
+              key={template.id}
+              description={template.description}
+              customActions={
                 <Button
-                  variant="outlined"
-                  color="primary"
+                  variant="secondary"
+                  size="small"
                   onClick={() => onTemplateSelect(template)}
                 >
                   {t('templateSelectList.selectButton')}
                 </Button>
-              </ListItemSecondaryAction>
-            </ListItem>
+              }
+            >
+              {template.title}
+            </ListRow>
           ))}
-          <ListItem>
-            <ListItemText
-              primary={t('templateSelectList.genericQuestion')}
-              secondary={t('templateSelectList.genericQuestionDescription')}
-            />
-            <ListItemSecondaryAction>
+          <ListRow
+            description={t('templateSelectList.genericQuestionDescription')}
+            customActions={
               <Button
-                variant="outlined"
-                color="primary"
+                variant="secondary"
+                size="small"
                 onClick={() => onTemplateSelect(null)}
               >
                 {t('templateSelectList.selectButton')}
               </Button>
-            </ListItemSecondaryAction>
-          </ListItem>
+            }
+          >
+            {t('templateSelectList.genericQuestion')}
+          </ListRow>
         </List>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 };

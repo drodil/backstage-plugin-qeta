@@ -1,0 +1,33 @@
+@layer components {
+  .header {
+    margin-bottom: var(--bui-space-2);
+  }
+
+  .linkUrl {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: var(--bui-font-size-3);
+    margin-right: var(--bui-space-4);
+    word-break: break-all;
+    text-decoration: underline;
+    cursor: pointer;
+    color: var(--bui-fg-info);
+  }
+
+  .headerImage {
+    display: block;
+    max-width: 90%;
+    max-height: 300px;
+    margin: var(--bui-space-4) auto;
+  }
+
+  .metadata {
+    margin-top: var(--bui-space-6);
+    width: 100%;
+  }
+
+  .metaMain {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+}

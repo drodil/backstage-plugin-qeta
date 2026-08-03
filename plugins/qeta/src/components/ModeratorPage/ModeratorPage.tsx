@@ -1,15 +1,13 @@
-import { ChangeEvent, useState } from 'react';
+import { useState } from 'react';
 import {
-  ContentHeader,
   PostsContainer,
   qetaTranslationRef,
   TemplateList,
   useIsModerator,
 } from '@drodil/backstage-plugin-qeta-react';
-import { Box, Tab } from '@material-ui/core';
-import { Alert, TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { Alert, Header, Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import SettingsOutlined from '@material-ui/icons/SettingsOutlined';
+import styles from './ModeratorPage.module.css';
 
 export const ModeratorPage = () => {
   const { isModerator } = useIsModerator();
@@ -20,40 +18,30 @@ export const ModeratorPage = () => {
     return null;
   }
 
-  const handleChange = (_event: ChangeEvent<{}>, newValue: string) => {
-    setTab(newValue);
-  };
-
   return (
     <>
-      <ContentHeader
-        title={t('moderatorPage.title')}
-        titleIcon={<SettingsOutlined fontSize="large" />}
-      />
-      <TabContext value={tab}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <TabList
-            onChange={handleChange}
-            aria-label={t('moderatorPage.tools')}
-          >
-            <Tab label={t('moderatorPage.templates')} value="templates" />
-            <Tab label={t('moderatorPage.deletedPosts')} value="deletedPosts" />
-          </TabList>
-        </Box>
-        <TabPanel value="templates" style={{ padding: '24px 0' }}>
-          <Alert severity="info" style={{ marginBottom: '1em' }}>
-            {t('moderatorPage.templatesInfo')}
-          </Alert>
+      <Header title={t('moderatorPage.title')} />
+      <Tabs selectedKey={tab} onSelectionChange={key => setTab(key as string)}>
+        <TabList aria-label={t('moderatorPage.tools')}>
+          <Tab id="templates">{t('moderatorPage.templates')}</Tab>
+          <Tab id="deletedPosts">{t('moderatorPage.deletedPosts')}</Tab>
+        </TabList>
+        <TabPanel id="templates" className={styles.tabPanel}>
+          <Alert
+            status="info"
+            description={t('moderatorPage.templatesInfo')}
+            className={styles.alert}
+          />
           <TemplateList />
         </TabPanel>
-        <TabPanel value="deletedPosts" style={{ padding: '24px 0' }}>
+        <TabPanel id="deletedPosts" className={styles.tabPanel}>
           <PostsContainer
             status="deleted"
             showNoQuestionsBtn={false}
             showTypeLabel
           />
         </TabPanel>
-      </TabContext>
+      </Tabs>
     </>
   );
 };

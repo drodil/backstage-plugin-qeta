@@ -1,48 +1,18 @@
 import { useUserFollow } from '../../hooks';
 import { useUserInfo } from '../../hooks/useEntityAuthor';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import { Avatar, ListItem, ListItemText, makeStyles } from '@material-ui/core';
+import { Avatar, List, ListRow } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { Link } from 'react-router-dom';
 import { userRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { UserTooltip } from '../Tooltips';
-
-const useStyles = makeStyles(theme => ({
-  listItem: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 4px',
-    minHeight: 28,
-    cursor: 'pointer',
-    transition: 'background 0.2s',
-    textDecoration: 'none',
-    color: 'inherit',
-    '&:hover': {
-      background: theme.palette.action.hover,
-    },
-  },
-  listItemText: {
-    color: theme.palette.text.primary,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    flex: 1,
-  },
-  avatar: {
-    width: 24,
-    height: 24,
-    fontSize: '0.75rem',
-    marginRight: theme.spacing(1),
-    marginLeft: theme.spacing(0.5),
-  },
-}));
+import styles from './FollowedUsersList.module.css';
 
 const FollowedUserItem = ({ entityRef }: { entityRef: string }) => {
-  const classes = useStyles();
   const userRoute = useRouteRef(userRouteRef);
-  const { name, initials, user } = useUserInfo(entityRef);
+  const { name, user } = useUserInfo(entityRef);
   const href = `${userRoute()}/${entityRef}`;
 
   return (
@@ -53,25 +23,21 @@ const FollowedUserItem = ({ entityRef }: { entityRef: string }) => {
       enterNextDelay={400}
       placement="left"
     >
-      <ListItem
-        dense
-        button
-        className={classes.listItem}
-        component={Link}
-        to={href}
-      >
-        <Avatar
-          src={user?.spec?.profile?.picture}
-          alt={name}
-          className={classes.avatar}
-        >
-          {initials}
-        </Avatar>
-        <ListItemText
-          primary={name ?? entityRef}
-          classes={{ primary: classes.listItemText }}
-        />
-      </ListItem>
+      <Link to={href} className={styles.link}>
+        <List>
+          <ListRow
+            icon={
+              <Avatar
+                src={user?.spec?.profile?.picture ?? ''}
+                name={name ?? entityRef}
+                size="small"
+              />
+            }
+          >
+            {name ?? entityRef}
+          </ListRow>
+        </List>
+      </Link>
     </UserTooltip>
   );
 };

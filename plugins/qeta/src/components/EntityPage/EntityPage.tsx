@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useApi } from '@backstage/core-plugin-api';
@@ -12,26 +12,20 @@ import {
   useQetaApi,
   useQetaConfig,
   WriteArticleButton,
-  ContentHeaderCard,
-  ContentHeader,
 } from '@drodil/backstage-plugin-qeta-react';
 import {
+  catalogApiRef,
   EntityRefLink,
   useEntityPresentation,
-  catalogApiRef,
 } from '@backstage/plugin-catalog-react';
-import CategoryOutlined from '@material-ui/icons/CategoryOutlined';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import PeopleIcon from '@material-ui/icons/People';
-import { Skeleton } from '@material-ui/lab';
-import { WarningPanel } from '@backstage/core-components';
+import { Alert, Header, Skeleton } from '@backstage/ui';
 import { Entity } from '@backstage/catalog-model';
 
 const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
   const [entity, setEntity] = useState<Entity | undefined>(undefined);
-  const { Icon } = useEntityPresentation(entityRef);
+  const { primaryTitle } = useEntityPresentation(entityRef);
   const catalogApi = useApi(catalogApiRef);
 
   useEffect(() => {
@@ -49,72 +43,62 @@ const SingleEntityPage = ({ entityRef }: { entityRef: string }) => {
   }
 
   if (loading) {
-    return <Skeleton variant="rect" height={200} />;
+    return <Skeleton width="100%" height={200} />;
   }
 
   if (error || !resp) {
     return (
-      <WarningPanel severity="error" title={t('questionPage.errorLoading')}>
-        {error?.message}
-      </WarningPanel>
+      <Alert
+        status="danger"
+        title={t('questionPage.errorLoading')}
+        description={error?.message}
+      />
     );
   }
 
-  const title = (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <EntityRefLink
-        entityRef={resp.entityRef}
-        defaultKind="Component"
-        hideIcon
-      />
-    </div>
-  );
-
-  const description = `${entity?.kind} ${
-    entity?.spec?.type ? `(${entity?.spec?.type})` : ''
-  }`;
+  const description = [
+    `${entity?.kind} ${entity?.spec?.type ? `(${entity?.spec?.type})` : ''}`,
+    entity?.metadata?.description,
+  ]
+    .filter(Boolean)
+    .join(' · ');
 
   return (
     <>
-      <ContentHeader
-        title={title}
-        titleIcon={<CategoryOutlined fontSize="large" />}
+      <Header
+        title={primaryTitle}
         description={description}
-      >
-        <EntityFollowButton entityRef={resp.entityRef} />
-        <AskQuestionButton entity={resp.entityRef} />
-        <WriteArticleButton entity={resp.entityRef} />
-        <CreateLinkButton entity={resp.entityRef} />
-      </ContentHeader>
-      {resp && (
-        <ContentHeaderCard
-          description={entity?.metadata?.description}
-          imageIcon={
-            Icon ? (
-              <div style={{ fontSize: '80px', display: 'flex' }}>
-                <Icon fontSize="inherit" />
-              </div>
-            ) : (
-              <CategoryOutlined style={{ fontSize: 80 }} />
-            )
-          }
-          stats={[
+        metadata={[
+          ...[
             {
-              label: t('common.postsLabel', {
-                count: resp.postsCount,
-                itemType: 'post',
-              }),
+              label: t('metadata.posts'),
               value: resp.postsCount,
-              icon: <QuestionAnswerIcon fontSize="small" />,
             },
             {
-              label: t('common.followersLabel', { count: resp.followerCount }),
+              label: t('metadata.followers'),
               value: resp.followerCount,
-              icon: <PeopleIcon fontSize="small" />,
             },
-          ]}
-        />
-      )}
+          ],
+          ...(entity?.spec?.owner
+            ? [
+                {
+                  label: t('metadata.owner'),
+                  value: (
+                    <EntityRefLink entityRef={entity.spec.owner as string} />
+                  ),
+                },
+              ]
+            : []),
+        ]}
+        customActions={
+          <>
+            <EntityFollowButton entityRef={resp.entityRef} />
+            <AskQuestionButton entity={resp.entityRef} />
+            <WriteArticleButton entity={resp.entityRef} />
+            <CreateLinkButton entity={resp.entityRef} />
+          </>
+        }
+      />
       <PostsContainer
         entity={entityRef}
         filterPanelProps={{ showEntityFilter: false }}
@@ -140,14 +124,7 @@ export const EntityPage = () => {
 
   return (
     <>
-      <ContentHeader
-        title={t('entitiesPage.defaultTitle')}
-        titleIcon={<CategoryOutlined fontSize="large" />}
-      >
-        <AskQuestionButton />
-        <WriteArticleButton />
-        <CreateLinkButton />
-      </ContentHeader>
+      <Header title={t('entitiesPage.defaultTitle')} />
       <EntitiesContainer />
     </>
   );

@@ -14,35 +14,32 @@ import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { useSearchParams } from 'react-router-dom';
 import {
   Box,
+  ButtonIcon,
   Checkbox,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
+  Flex,
   Grid,
-  IconButton,
-  makeStyles,
   Radio,
   RadioGroup,
+  Text,
   Tooltip,
-} from '@material-ui/core';
-import AdjustIcon from '@material-ui/icons/Adjust';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import SortIcon from '@material-ui/icons/Sort';
-import SwapVertIcon from '@material-ui/icons/SwapVert';
-import TuneIcon from '@material-ui/icons/Tune';
+  TooltipTrigger,
+} from '@backstage/ui';
+import {
+  RiEqualizerLine,
+  RiFilterLine,
+  RiFocusLine,
+  RiCheckboxBlankCircleFill,
+  RiSortDesc,
+  RiArrowUpDownLine,
+  RiCalendarLine,
+  RiApps2Line,
+  RiPriceTag3Line,
+} from '@remixicon/react';
 import { compact } from 'lodash';
+import styles from './FilterPanel.module.css';
 
 const radioSelect = (value: string, label: string) => {
-  return (
-    <FormControlLabel
-      value={value}
-      control={<Radio size="small" />}
-      label={label}
-    />
-  );
+  return <Radio value={value}>{label}</Radio>;
 };
 
 export const filterKeys = [
@@ -182,33 +179,6 @@ export interface FilterPanelProps<
   filters: T;
 }
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      padding: '1.5em',
-      marginTop: '0',
-      marginBottom: '2em',
-      border: `1px solid ${theme.palette.divider}`,
-      borderRadius: theme.shape.borderRadius,
-      backgroundColor: theme.palette.background.paper,
-    },
-    label: {
-      display: 'flex',
-      alignItems: 'center',
-      textTransform: 'uppercase',
-      fontSize: '0.75rem',
-      fontWeight: 'bold',
-      marginBottom: '0.75em',
-      color: theme.palette.text.secondary,
-      '& > svg': {
-        marginRight: '0.25em',
-        fontSize: '1.1rem',
-      },
-    },
-  }),
-  { name: 'QetaFilterPanel' },
-);
-
 export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const {
     onChange,
@@ -226,7 +196,6 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const starredEntitiesApi = useStarredEntities();
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
-  const styles = useStyles();
   const [searchParams, setSearchParams] = useSearchParams();
   const initializedRef = useRef(false);
 
@@ -272,19 +241,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     });
   }, [catalogApi, identityApi]);
 
-  const handleChange = (event: {
-    target: {
-      value?: string | string[];
-      type?: string;
-      name: string;
-      checked?: boolean;
-    };
-  }) => {
-    let value = event.target.value;
-    if (event.target.type === 'checkbox') {
-      value = event.target.checked ? 'true' : 'false';
-    }
-
+  const updateFilter = (name: keyof T, value?: string | string[]) => {
     // Update URL parameters
     setSearchParams(prev => {
       const newParams = new URLSearchParams(prev);
@@ -293,16 +250,20 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
         value === 'false' ||
         (Array.isArray(value) && value.length === 0)
       ) {
-        newParams.delete(event.target.name);
+        newParams.delete(name as string);
       } else if (Array.isArray(value)) {
-        newParams.set(event.target.name, value.join(','));
+        newParams.set(name as string, value.join(','));
       } else {
-        newParams.set(event.target.name, value);
+        newParams.set(name as string, value);
       }
       return newParams;
     });
 
-    onChange({ key: event.target.name as keyof T, value });
+    onChange({ key: name, value });
+  };
+
+  const updateCheckboxFilter = (name: keyof T, checked: boolean) => {
+    updateFilter(name, checked ? 'true' : 'false');
   };
 
   const handleStarredEntities = useCallback(
@@ -362,254 +323,212 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
 
   return (
     <Box className={styles.root}>
-      <Grid
-        container
-        spacing={3}
-        alignItems="flex-start"
-        justifyContent="space-between"
-      >
+      <Grid.Root columns={{ initial: '1', md: '12' }} gap="4">
         {(postFilters || answerFilters) && (
-          <Grid item xs={12} md={4}>
-            <FormGroup>
-              <FormLabel id="qeta-filter-quick" className={styles.label}>
-                <FilterListIcon />
+          <Grid.Item colSpan={{ initial: '1', md: '4' }}>
+            <Flex align="center" gap="1" className={styles.label}>
+              <RiFilterLine size={16} />
+              <Text as="span" variant="body-small" weight="bold">
                 {t('filterPanel.quickFilters.label')}
-              </FormLabel>
+              </Text>
+            </Flex>
+            <Flex direction="column" gap="2">
               {postFilters && type === 'question' && (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      name="noAnswers"
-                      onChange={handleChange}
-                      checked={filters.noAnswers === 'true'}
-                    />
+                <Checkbox
+                  isSelected={filters.noAnswers === 'true'}
+                  onChange={checked =>
+                    updateCheckboxFilter('noAnswers' as keyof T, checked)
                   }
-                  label={t('filterPanel.noAnswers.label')}
-                />
+                >
+                  {t('filterPanel.noAnswers.label')}
+                </Checkbox>
               )}
               {postFilters && (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      name="status"
-                      onChange={e => {
-                        const newStatus = e.target.checked
-                          ? 'draft'
-                          : undefined;
-                        handleChange({
-                          target: { name: 'status', value: newStatus },
-                        });
-                      }}
-                      checked={filters.status === 'draft'}
-                    />
+                <Checkbox
+                  isSelected={filters.status === 'draft'}
+                  onChange={checked =>
+                    updateFilter('status', checked ? 'draft' : undefined)
                   }
-                  label={t('filterPanel.drafts.label')}
-                />
+                >
+                  {t('filterPanel.drafts.label')}
+                </Checkbox>
               )}
               {(postFilters || answerFilters) && type === 'question' && (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      name="noCorrectAnswer"
-                      checked={filters.noCorrectAnswer === 'true'}
-                      onChange={handleChange}
-                    />
+                <Checkbox
+                  isSelected={filters.noCorrectAnswer === 'true'}
+                  onChange={checked =>
+                    updateCheckboxFilter('noCorrectAnswer' as keyof T, checked)
                   }
-                  label={t('filterPanel.noCorrectAnswers.label')}
-                />
+                >
+                  {t('filterPanel.noCorrectAnswers.label')}
+                </Checkbox>
               )}
               {(postFilters || answerFilters) && type !== 'link' && (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      name="noVotes"
-                      checked={filters.noVotes === 'true'}
-                      onChange={handleChange}
-                    />
+                <Checkbox
+                  isSelected={filters.noVotes === 'true'}
+                  onChange={checked =>
+                    updateCheckboxFilter('noVotes' as keyof T, checked)
                   }
-                  label={t('filterPanel.noVotes.label')}
-                />
+                >
+                  {t('filterPanel.noVotes.label')}
+                </Checkbox>
               )}
               {starredEntitiesApi.starredEntities.size > 0 && (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      name="starredEntities"
-                      onChange={e => handleStarredEntities(e.target.checked)}
-                      checked={starredEntities}
-                    />
-                  }
-                  label={t('filterPanel.starredEntities.label')}
-                />
+                <Checkbox
+                  isSelected={starredEntities}
+                  onChange={handleStarredEntities}
+                >
+                  {t('filterPanel.starredEntities.label')}
+                </Checkbox>
               )}
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    size="small"
-                    name="ownedEntities"
-                    onChange={e => handleOwnedEntities(e.target.checked)}
-                    checked={ownedEntities}
-                  />
-                }
-                label={t('filterPanel.ownedEntities.label')}
-              />
-            </FormGroup>
-          </Grid>
+              <Checkbox
+                isSelected={ownedEntities}
+                onChange={handleOwnedEntities}
+              >
+                {t('filterPanel.ownedEntities.label')}
+              </Checkbox>
+            </Flex>
+          </Grid.Item>
         )}
-        <Grid item xs={12} md={5}>
-          <FormControl component="fieldset" style={{ width: '100%' }}>
-            <FormLabel id="qeta-filter-order-by" className={styles.label}>
-              <SortIcon />
+        <Grid.Item colSpan={{ initial: '1', md: '5' }}>
+          <Flex align="center" gap="1" className={styles.label}>
+            <RiSortDesc size={16} />
+            <Text as="span" variant="body-small" weight="bold">
               {t('filterPanel.orderBy.label')}
-            </FormLabel>
-            <RadioGroup
-              aria-labelledby="qeta-filter-order-by"
-              name="orderBy"
-              value={filters.orderBy}
-              onChange={handleChange}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '0 1em',
-              }}
-            >
-              {postFilters &&
-                filters.collectionId !== undefined &&
-                radioSelect('rank', t('filterPanel.orderBy.rank'))}
-              {mode !== 'users' &&
-                mode !== 'tags' &&
-                mode !== 'entities' &&
-                radioSelect('created', t('filterPanel.orderBy.created'))}
-              {(postFilters || collectionFilters) &&
-                mode !== 'tags' &&
-                mode !== 'entities' &&
-                mode !== 'users' &&
-                radioSelect('title', t('filterPanel.orderBy.title'))}
-              {postFilters &&
-                type !== 'link' &&
-                radioSelect('views', t('filterPanel.orderBy.views'))}
-              {(postFilters || answerFilters) &&
-                radioSelect(
-                  'score',
-                  type !== 'link'
-                    ? t('filterPanel.orderBy.score')
-                    : t('filterPanel.orderBy.clicks'),
-                )}
-              {postFilters &&
-                radioSelect('trend', t('filterPanel.orderBy.trend'))}
-              {postFilters &&
-                type === 'question' &&
-                radioSelect('answersCount', t('filterPanel.orderBy.answers'))}
-              {(postFilters || answerFilters) &&
-                radioSelect('updated', t('filterPanel.orderBy.updated'))}
+            </Text>
+          </Flex>
+          <RadioGroup
+            aria-label={t('filterPanel.orderBy.label')}
+            value={filters.orderBy ?? null}
+            onChange={value => updateFilter('orderBy', value)}
+            className={styles.orderByGroup}
+          >
+            {postFilters &&
+              filters.collectionId !== undefined &&
+              radioSelect('rank', t('filterPanel.orderBy.rank'))}
+            {mode !== 'users' &&
+              mode !== 'tags' &&
+              mode !== 'entities' &&
+              radioSelect('created', t('filterPanel.orderBy.created'))}
+            {(postFilters || collectionFilters) &&
+              mode !== 'tags' &&
+              mode !== 'entities' &&
+              mode !== 'users' &&
+              radioSelect('title', t('filterPanel.orderBy.title'))}
+            {postFilters &&
+              type !== 'link' &&
+              radioSelect('views', t('filterPanel.orderBy.views'))}
+            {(postFilters || answerFilters) &&
+              radioSelect(
+                'score',
+                type !== 'link'
+                  ? t('filterPanel.orderBy.score')
+                  : t('filterPanel.orderBy.clicks'),
+              )}
+            {postFilters &&
+              radioSelect('trend', t('filterPanel.orderBy.trend'))}
+            {postFilters &&
+              type === 'question' &&
+              radioSelect('answersCount', t('filterPanel.orderBy.answers'))}
+            {(postFilters || answerFilters) &&
+              radioSelect('updated', t('filterPanel.orderBy.updated'))}
 
-              {mode === 'tags' &&
-                radioSelect('tag', t('filterPanel.orderBy.tag'))}
-              {mode === 'entities' &&
-                radioSelect('entityRef', t('filterPanel.orderBy.entityRef'))}
-              {mode === 'users' &&
-                radioSelect('userRef', t('filterPanel.orderBy.user'))}
+            {mode === 'tags' &&
+              radioSelect('tag', t('filterPanel.orderBy.tag'))}
+            {mode === 'entities' &&
+              radioSelect('entityRef', t('filterPanel.orderBy.entityRef'))}
+            {mode === 'users' &&
+              radioSelect('userRef', t('filterPanel.orderBy.user'))}
 
-              {(mode === 'tags' ||
-                mode === 'entities' ||
-                mode === 'collections') &&
-                radioSelect('postsCount', t('filterPanel.orderBy.posts'))}
-              {(mode === 'tags' ||
-                mode === 'entities' ||
-                mode === 'collections') &&
-                radioSelect(
-                  'questionsCount',
-                  t('filterPanel.orderBy.questions'),
-                )}
-              {(mode === 'tags' ||
-                mode === 'entities' ||
-                mode === 'collections') &&
-                radioSelect('articlesCount', t('filterPanel.orderBy.articles'))}
-              {(mode === 'tags' ||
-                mode === 'entities' ||
-                mode === 'collections') &&
-                radioSelect('linksCount', t('filterPanel.orderBy.links'))}
-              {(mode === 'tags' ||
-                mode === 'entities' ||
-                mode === 'users' ||
-                mode === 'collections') &&
-                radioSelect(
-                  'followerCount',
-                  t('filterPanel.orderBy.followers'),
-                )}
+            {(mode === 'tags' ||
+              mode === 'entities' ||
+              mode === 'collections') &&
+              radioSelect('postsCount', t('filterPanel.orderBy.posts'))}
+            {(mode === 'tags' ||
+              mode === 'entities' ||
+              mode === 'collections') &&
+              radioSelect('questionsCount', t('filterPanel.orderBy.questions'))}
+            {(mode === 'tags' ||
+              mode === 'entities' ||
+              mode === 'collections') &&
+              radioSelect('articlesCount', t('filterPanel.orderBy.articles'))}
+            {(mode === 'tags' ||
+              mode === 'entities' ||
+              mode === 'collections') &&
+              radioSelect('linksCount', t('filterPanel.orderBy.links'))}
+            {(mode === 'tags' ||
+              mode === 'entities' ||
+              mode === 'users' ||
+              mode === 'collections') &&
+              radioSelect('followerCount', t('filterPanel.orderBy.followers'))}
 
-              {mode === 'users' &&
-                radioSelect('totalPosts', t('filterPanel.orderBy.posts'))}
-              {mode === 'users' &&
-                radioSelect(
-                  'totalQuestions',
-                  t('filterPanel.orderBy.questions'),
-                )}
-              {mode === 'users' &&
-                radioSelect('totalAnswers', t('filterPanel.orderBy.answers'))}
-              {mode === 'users' &&
-                radioSelect('totalArticles', t('filterPanel.orderBy.articles'))}
-              {mode === 'users' &&
-                radioSelect('totalLinks', t('filterPanel.orderBy.links'))}
-              {mode === 'users' &&
-                radioSelect('totalViews', t('filterPanel.orderBy.views'))}
-              {mode === 'users' &&
-                radioSelect('totalVotes', t('filterPanel.orderBy.votes'))}
-              {mode === 'users' &&
-                radioSelect('reputation', t('filterPanel.orderBy.reputation'))}
-            </RadioGroup>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <FormControl component="fieldset">
-            <FormLabel id="qeta-filter-order" className={styles.label}>
-              <SwapVertIcon />
+            {mode === 'users' &&
+              radioSelect('totalPosts', t('filterPanel.orderBy.posts'))}
+            {mode === 'users' &&
+              radioSelect('totalQuestions', t('filterPanel.orderBy.questions'))}
+            {mode === 'users' &&
+              radioSelect('totalAnswers', t('filterPanel.orderBy.answers'))}
+            {mode === 'users' &&
+              radioSelect('totalArticles', t('filterPanel.orderBy.articles'))}
+            {mode === 'users' &&
+              radioSelect('totalLinks', t('filterPanel.orderBy.links'))}
+            {mode === 'users' &&
+              radioSelect('totalViews', t('filterPanel.orderBy.views'))}
+            {mode === 'users' &&
+              radioSelect('totalVotes', t('filterPanel.orderBy.votes'))}
+            {mode === 'users' &&
+              radioSelect('reputation', t('filterPanel.orderBy.reputation'))}
+          </RadioGroup>
+        </Grid.Item>
+        <Grid.Item colSpan={{ initial: '1', md: '3' }}>
+          <Flex align="center" gap="1" className={styles.label}>
+            <RiArrowUpDownLine size={16} />
+            <Text as="span" variant="body-small" weight="bold">
               {t('filterPanel.order.label')}
-            </FormLabel>
-            <RadioGroup
-              aria-labelledby="qeta-filter-order"
-              name="order"
-              value={filters.order}
-              onChange={handleChange}
-            >
-              {radioSelect('desc', t('filterPanel.order.desc'))}
-              {radioSelect('asc', t('filterPanel.order.asc'))}
-            </RadioGroup>
-          </FormControl>
-        </Grid>
-      </Grid>
+            </Text>
+          </Flex>
+          <RadioGroup
+            aria-label={t('filterPanel.order.label')}
+            value={filters.order ?? null}
+            onChange={value => updateFilter('order', value)}
+          >
+            {radioSelect('desc', t('filterPanel.order.desc'))}
+            {radioSelect('asc', t('filterPanel.order.asc'))}
+          </RadioGroup>
+        </Grid.Item>
+      </Grid.Root>
       {showBottomSection && (
         <>
-          <Box marginY="24px">
-            <Divider />
-          </Box>
-          <Box marginBottom="1em">
-            <FormLabel className={styles.label}>
-              <TuneIcon />
+          <div className={styles.divider} />
+          <Flex align="center" gap="1" className={styles.label}>
+            <RiEqualizerLine size={16} />
+            <Text as="span" variant="body-small" weight="bold">
               {t('filterPanel.filters.label')}
-            </FormLabel>
-          </Box>
-          <Grid
-            container
-            spacing={2}
-            alignItems="flex-start"
-            justifyContent="flex-start"
-          >
-            <Grid item xs={12} md={4}>
+            </Text>
+          </Flex>
+          <Grid.Root columns={{ initial: '1', md: '12' }} gap="4">
+            <Grid.Item colSpan={{ initial: '1', md: '4' }}>
+              <Flex align="center" gap="1" className={styles.label}>
+                <RiCalendarLine size={16} />
+                <Text as="span" variant="body-small" weight="bold">
+                  {t('datePicker.range.label')}
+                </Text>
+              </Flex>
               <DateRangeFilter
                 value={filters.dateRange}
                 onChange={val => onChange({ key: 'dateRange', value: val })}
               />
-            </Grid>
+            </Grid.Item>
             {showEntityFilter && (
-              <Grid item xs={12} md={4}>
-                <Grid container alignItems="center">
-                  <Grid item xs>
+              <Grid.Item colSpan={{ initial: '1', md: '4' }}>
+                <Flex align="center" gap="1" className={styles.label}>
+                  <RiApps2Line size={16} />
+                  <Text as="span" variant="body-small" weight="bold">
+                    {t('filterPanel.filters.entity.label')}
+                  </Text>
+                </Flex>
+                <Flex align="center" gap="1">
+                  <Box style={{ flex: '1 1 0%', minWidth: 0 }}>
                     <EntitiesInput
                       disabled={starredEntities || ownedEntities}
                       style={{ width: '100%' }}
@@ -617,57 +536,60 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                         const entityRefs = (newEntities ?? []).map(e =>
                           stringifyEntityRef(e),
                         );
-                        handleChange({
-                          target: { name: 'entities', value: entityRefs },
-                        });
+                        updateFilter('entities', entityRefs);
                         setEntities(newEntities);
                       }}
                       value={entities}
                       useOnlyUsedEntities
                       hideHelpText
                     />
-                  </Grid>
+                  </Box>
                   {entities && entities?.length > 1 && (
-                    <Grid item>
-                      <Tooltip
-                        title={
+                    <TooltipTrigger>
+                      <ButtonIcon
+                        aria-label={
                           filters.entitiesRelation === 'or'
                             ? t('filterPanel.toggleEntityRelation.and')
                             : t('filterPanel.toggleEntityRelation.or')
                         }
-                      >
-                        <IconButton
-                          disabled={starredEntities || ownedEntities}
-                          onClick={() => {
-                            if (filters.entitiesRelation === 'or') {
-                              onChange({
-                                key: 'entitiesRelation',
-                                value: 'and',
-                              });
-                            } else {
-                              onChange({
-                                key: 'entitiesRelation',
-                                value: 'or',
-                              });
-                            }
-                          }}
-                        >
-                          {filters.entitiesRelation === 'or' ? (
-                            <AdjustIcon />
+                        variant="tertiary"
+                        size="small"
+                        isDisabled={starredEntities || ownedEntities}
+                        icon={
+                          filters.entitiesRelation === 'or' ? (
+                            <RiFocusLine size={16} />
                           ) : (
-                            <FiberManualRecordIcon />
-                          )}
-                        </IconButton>
+                            <RiCheckboxBlankCircleFill size={16} />
+                          )
+                        }
+                        onPress={() => {
+                          onChange({
+                            key: 'entitiesRelation',
+                            value:
+                              filters.entitiesRelation === 'or' ? 'and' : 'or',
+                          });
+                        }}
+                      />
+                      <Tooltip>
+                        {filters.entitiesRelation === 'or'
+                          ? t('filterPanel.toggleEntityRelation.and')
+                          : t('filterPanel.toggleEntityRelation.or')}
                       </Tooltip>
-                    </Grid>
+                    </TooltipTrigger>
                   )}
-                </Grid>
-              </Grid>
+                </Flex>
+              </Grid.Item>
             )}
             {showTagFilter && (
-              <Grid item xs={12} md={4}>
-                <Grid container alignItems="center">
-                  <Grid item xs>
+              <Grid.Item colSpan={{ initial: '1', md: '4' }}>
+                <Flex align="center" gap="1" className={styles.label}>
+                  <RiPriceTag3Line size={16} />
+                  <Text as="span" variant="body-small" weight="bold">
+                    {t('filterPanel.filters.tag.label')}
+                  </Text>
+                </Flex>
+                <Flex align="center" gap="1">
+                  <Box style={{ flex: '1 1 0%', minWidth: 0 }}>
                     <TagInput
                       style={{ width: '100%' }}
                       onChange={(newTags: string[]) =>
@@ -677,38 +599,42 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
                       hideHelpText
                       allowCreate={false}
                     />
-                  </Grid>
+                  </Box>
                   {filters.tags && filters.tags?.length > 1 && (
-                    <Grid item>
-                      <Tooltip
-                        title={
+                    <TooltipTrigger>
+                      <ButtonIcon
+                        aria-label={
                           filters.tagsRelation === 'or'
                             ? t('filterPanel.toggleTagRelation.and')
                             : t('filterPanel.toggleTagRelation.or')
                         }
-                      >
-                        <IconButton
-                          onClick={() => {
-                            if (filters.tagsRelation === 'or') {
-                              onChange({ key: 'tagsRelation', value: 'and' });
-                            } else {
-                              onChange({ key: 'tagsRelation', value: 'or' });
-                            }
-                          }}
-                        >
-                          {filters.tagsRelation === 'or' ? (
-                            <AdjustIcon />
+                        variant="tertiary"
+                        size="small"
+                        icon={
+                          filters.tagsRelation === 'or' ? (
+                            <RiFocusLine size={16} />
                           ) : (
-                            <FiberManualRecordIcon />
-                          )}
-                        </IconButton>
+                            <RiCheckboxBlankCircleFill size={16} />
+                          )
+                        }
+                        onPress={() => {
+                          onChange({
+                            key: 'tagsRelation',
+                            value: filters.tagsRelation === 'or' ? 'and' : 'or',
+                          });
+                        }}
+                      />
+                      <Tooltip>
+                        {filters.tagsRelation === 'or'
+                          ? t('filterPanel.toggleTagRelation.and')
+                          : t('filterPanel.toggleTagRelation.or')}
                       </Tooltip>
-                    </Grid>
+                    </TooltipTrigger>
                   )}
-                </Grid>
-              </Grid>
+                </Flex>
+              </Grid.Item>
             )}
-          </Grid>
+          </Grid.Root>
         </>
       )}
     </Box>

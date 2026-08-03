@@ -3,220 +3,94 @@ import {
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useState } from 'react';
-import { DeleteModal } from '../Modals';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import RestoreIcon from '@material-ui/icons/Restore';
 import { FavoriteButton } from '../Buttons/FavoriteButton';
 import { TagsAndEntities } from '../TagsAndEntities/TagsAndEntities';
 import { CommentSection } from '../CommentSection/CommentSection';
-import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { LinkButton } from '../Buttons/LinkButton';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
-import { editLinkRouteRef } from '../../routes';
-import { useNavigate } from 'react-router-dom';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { qetaTranslationRef } from '../../translation.ts';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  makeStyles,
-} from '@material-ui/core';
-import { useIsModerator } from '../../hooks';
-import { AuthorBoxes } from '../AuthorBox/AuthorBoxes.tsx';
+import { Box, Card, CardBody, Flex } from '@backstage/ui';
 import { OpenLinkButton } from '../Buttons/OpenLinkButton.tsx';
 import { qetaApiRef } from '../../api.ts';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {},
-    contentContainer: {
-      marginLeft: '0.5em',
-      width: 'calc(100% - 70px)',
-    },
-    markdownContainer: {
-      paddingBottom: '0.5em',
-    },
-    buttons: {
-      marginTop: '1em',
-      '& *:not(:last-child)': {
-        marginRight: '0.3em',
-      },
-    },
-    metadata: {
-      marginTop: theme.spacing(3),
-    },
-  }),
-  { name: 'QetaLinkCard' },
-);
+import styles from './LinkCard.module.css';
+import { useFavicon } from '../../hooks';
+import { RiLinkM } from '@remixicon/react';
 
 export const LinkCard = (props: { link: PostResponse }) => {
   const { link } = props;
-  const navigate = useNavigate();
   const qetaApi = useApi(qetaApiRef);
-  const editLinkRoute = useRouteRef(editLinkRouteRef);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [linkEntity, setLinkEntity] = useState(link);
-  const { isModerator } = useIsModerator();
-  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
-  const handleDeleteModalClose = () => setDeleteModalOpen(false);
-  const { t } = useTranslationRef(qetaTranslationRef);
   const onCommentAction = (l: PostResponse, _?: AnswerResponse) => {
     setLinkEntity(l);
   };
-  const alertApi = useApi(alertApiRef);
-  const styles = useStyles();
-
-  const restoreLink = async () => {
-    qetaApi
-      .restorePost(link.id)
-      .catch(e =>
-        alertApi.post({
-          message: e.message,
-          display: 'transient',
-          severity: 'error',
-        }),
-      )
-      .then(l => {
-        if (l) {
-          setLinkEntity(l);
-        }
-      });
-  };
+  const favicon = useFavicon(link.url);
 
   return (
     <>
-      <Card variant="outlined" className={styles.root}>
-        <CardContent>
-          <Box
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="flex-start"
-            mb={1}
+      <Card>
+        <CardBody>
+          <Flex
+            align="center"
+            justify="between"
+            gap="2"
+            className={styles.header}
           >
-            <Box display="flex" alignItems="center" flexGrow={1}>
-              <a
-                href={linkEntity.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  fontWeight: 400,
-                  fontSize: '1.2rem',
-                  marginRight: 16,
-                  wordBreak: 'break-all',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                }}
-                onClick={event => {
-                  event.stopPropagation();
-                  qetaApi.clickLink(linkEntity.id);
-                }}
-              >
-                {linkEntity.url}
-              </a>
-            </Box>
-            <LinkButton entity={linkEntity} />
-            <FavoriteButton entity={linkEntity} />
-            <OpenLinkButton entity={linkEntity} />
-          </Box>
-          <Grid
-            container
-            spacing={2}
-            justifyContent="flex-start"
-            style={{ flexWrap: 'nowrap' }}
-          >
-            <Grid
-              item
-              className={styles.contentContainer}
-              style={{ flexGrow: '1' }}
-            >
+            <Box>
               {linkEntity.headerImage && (
-                <Grid
-                  item
-                  justifyContent="center"
-                  style={{ textAlign: 'center' }}
-                >
-                  <img
-                    src={linkEntity.headerImage}
-                    alt={linkEntity.title}
-                    onError={e => (e.currentTarget.style.display = 'none')}
-                    style={{
-                      maxWidth: '90%',
-                      maxHeight: '300px',
-                      margin: '1rem',
-                    }}
-                  />
-                </Grid>
+                <img
+                  src={linkEntity.headerImage}
+                  alt={linkEntity.title}
+                  onError={e => (e.currentTarget.style.display = 'none')}
+                  className={styles.headerImage}
+                />
               )}
-              <Grid item className={styles.markdownContainer}>
-                <MarkdownRenderer content={linkEntity.content} />
-              </Grid>
-              <Box
-                display="flex"
-                alignItems="flex-start"
-                justifyContent="space-between"
-                className={styles.metadata}
-                style={{ width: '100%' }}
-              >
-                <Box flex="1 1 0%" minWidth={0}>
-                  <TagsAndEntities entity={linkEntity} />
-                  <Box className={styles.buttons}>
-                    {link.canEdit && link.status !== 'obsolete' && (
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<EditIcon />}
-                        onClick={() =>
-                          navigate(
-                            editLinkRoute({
-                              id: link.id.toString(10),
-                            }),
-                          )
-                        }
-                        className="qetaQuestionCardEditBtn"
-                      >
-                        {t('linkPage.editButton')}
-                      </Button>
-                    )}
-                    {link.canDelete && (
-                      <>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          color="secondary"
-                          onClick={handleDeleteModalOpen}
-                          startIcon={<DeleteIcon />}
-                        >
-                          {t('deleteModal.deleteButton')}
-                        </Button>
-                        <DeleteModal
-                          open={deleteModalOpen}
-                          onClose={handleDeleteModalClose}
-                          entity={linkEntity}
-                        />
-                      </>
-                    )}
-                    {isModerator && linkEntity.status === 'deleted' && (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<RestoreIcon />}
-                        onClick={() => restoreLink()}
-                        className="qetaLinkCardRestoreBtn"
-                      >
-                        {t('linkPage.restoreButton')}
-                      </Button>
-                    )}
-                  </Box>
-                </Box>
-                <AuthorBoxes entity={linkEntity} />
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
+              {favicon ? (
+                <img
+                  src={favicon}
+                  alt={link.title}
+                  style={{
+                    height: 24,
+                    width: 24,
+                    objectFit: 'contain',
+                  }}
+                  onError={e => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <RiLinkM size={24} />
+              )}
+            </Box>
+            <a
+              href={linkEntity.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.linkUrl}
+              onClick={event => {
+                event.stopPropagation();
+                qetaApi.clickLink(linkEntity.id);
+              }}
+            >
+              {linkEntity.url}
+            </a>
+            <Flex align="center" gap="1">
+              <LinkButton entity={linkEntity} />
+              <FavoriteButton entity={linkEntity} />
+              <OpenLinkButton entity={linkEntity} />
+            </Flex>
+          </Flex>
+          <MarkdownRenderer content={linkEntity.content} />
+          <Flex
+            align="start"
+            justify="between"
+            gap="4"
+            className={styles.metadata}
+          >
+            <Box className={styles.metaMain}>
+              <TagsAndEntities entity={linkEntity} />
+            </Box>
+          </Flex>
+        </CardBody>
       </Card>
       {(link.status === 'active' || link.status === 'obsolete') && (
         <CommentSection post={linkEntity} onCommentAction={onCommentAction} />

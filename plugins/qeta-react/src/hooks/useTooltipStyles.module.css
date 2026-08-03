@@ -1,0 +1,18 @@
+@layer components {
+  .statsRow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--bui-space-4);
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-1);
+  }
+
+  .followButton {
+    width: 100%;
+  }
+}

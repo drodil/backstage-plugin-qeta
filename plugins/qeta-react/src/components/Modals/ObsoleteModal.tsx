@@ -1,19 +1,22 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import {
-  Backdrop,
+  Alert,
   Button,
-  Modal,
-  TextField,
-  Typography,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import BlockIcon from '@material-ui/icons/Block';
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Flex,
+  Text,
+  TextAreaField,
+} from '@backstage/ui';
+import { RiForbidLine } from '@remixicon/react';
 import { useState } from 'react';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { ModalContent } from '../Utility/ModalContent';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const ObsoleteModal = (props: {
   post: PostResponse;
@@ -22,7 +25,7 @@ export const ObsoleteModal = (props: {
   onConfirm?: () => void;
 }) => {
   const qetaApi = useApi(qetaApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const { post, open, onClose, onConfirm } = props;
   const [error, setError] = useState(false);
   const [comment, setComment] = useState<undefined | string>(undefined);
@@ -36,10 +39,9 @@ export const ObsoleteModal = (props: {
         if (ret) {
           onClose();
           onConfirm?.();
-          alertApi.post({
-            message: t('obsoleteModal.success', {}),
-            severity: 'success',
-            display: 'transient',
+          toastApi.post({
+            title: t('obsoleteModal.success', {}),
+            status: 'success',
           });
         } else {
           setError(true);
@@ -48,59 +50,54 @@ export const ObsoleteModal = (props: {
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      className="qetaObsoleteModal"
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{
-        timeout: 500,
+    <Dialog
+      isOpen={open}
+      isDismissable
+      onOpenChange={isOpenState => {
+        if (!isOpenState) onClose();
       }}
+      className="qetaObsoleteModal"
     >
-      <ModalContent>
-        {error && (
-          <Alert severity="error">{t('obsoleteModal.errorMarking', {})}</Alert>
-        )}
-        <Typography
-          id="modal-modal-title"
-          className="qetaObsoleteModalTitle"
-          variant="h6"
-          component="h2"
-        >
-          {t('obsoleteModal.title', {})}
-        </Typography>
-        <Typography variant="body2" style={{ marginTop: 8 }}>
-          {t('obsoleteModal.description', {})}
-        </Typography>
-        <TextField
-          variant="outlined"
-          multiline
-          style={{ marginTop: 16 }}
-          minRows={4}
-          label={t('obsoleteModal.comment', {})}
-          id="comment"
-          fullWidth
-          value={comment}
-          InputLabelProps={{ shrink: true }}
-          onChange={e => {
-            setComment(e.target.value);
-          }}
-        />
+      <DialogHeader className="qetaObsoleteModalTitle">
+        {t('obsoleteModal.title', {})}
+      </DialogHeader>
+      <DialogBody>
+        <Flex direction="column" gap="4">
+          {error && (
+            <Alert
+              status="danger"
+              icon
+              description={t('obsoleteModal.errorMarking', {})}
+            />
+          )}
+          <Text variant="body-small">{t('obsoleteModal.description', {})}</Text>
+          <TextAreaField
+            label={t('obsoleteModal.comment', {})}
+            id="comment"
+            rows={4}
+            value={comment}
+            onChange={value => setComment(value)}
+          />
+        </Flex>
+      </DialogBody>
+      <DialogFooter>
         <Button
           onClick={handleMarkObsolete}
           className="qetaObsoleteModalConfirmBtn"
-          startIcon={<BlockIcon />}
-          color="secondary"
+          iconStart={<RiForbidLine />}
+          variant="primary"
         >
           {t('obsoleteModal.confirmButton', {})}
         </Button>
-        <Button onClick={onClose} className="qetaObsoleteModalCancelBtn">
+        <Button
+          onClick={onClose}
+          className="qetaObsoleteModalCancelBtn"
+          variant="secondary"
+          slot="close"
+        >
           {t('obsoleteModal.cancelButton', {})}
         </Button>
-      </ModalContent>
-    </Modal>
+      </DialogFooter>
+    </Dialog>
   );
 };

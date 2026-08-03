@@ -1,7 +1,7 @@
 import { PostResponse } from '@drodil/backstage-plugin-qeta-common';
 import { qetaApiRef } from '../../api.ts';
 import { useApi } from '@backstage/core-plugin-api';
-import LinkIcon from '@material-ui/icons/Link';
+import { RiLinkM } from '@remixicon/react';
 import { useState } from 'react';
 import { useFavicon } from '../../hooks';
 
@@ -18,7 +18,7 @@ export const FaviconItem = (props: { entity: PostResponse }) => {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      style={{ display: 'inline-block', marginRight: 8 }}
+      style={{ display: 'inline-block', marginRight: 4 }}
       onClick={event => {
         event.stopPropagation();
         qetaApi.clickLink(entity.id);
@@ -35,24 +35,11 @@ export const FaviconItem = (props: { entity: PostResponse }) => {
             setError(true);
           }}
           style={{
-            display: 'inline-block',
-            verticalAlign: 'middle',
             objectFit: 'contain',
-            marginBottom: 5,
           }}
         />
       )}
-      {error && (
-        <LinkIcon
-          width={16}
-          height={16}
-          style={{
-            display: 'inline-block',
-            marginBottom: 5,
-            verticalAlign: 'middle',
-          }}
-        />
-      )}
+      {error || (!favicon && <RiLinkM size={16} />)}
     </a>
   );
 };
