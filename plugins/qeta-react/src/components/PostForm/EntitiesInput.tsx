@@ -682,7 +682,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
               </TagGroup>
             )}
             {open && (
-              <div className={styles.dropdown}>
+              <div className={styles.dropdown} role="listbox">
                 {loading && (
                   <div className={styles.statusText}>{t('common.loading')}</div>
                 )}
@@ -700,6 +700,8 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
                           <TooltipTrigger key={stringified}>
                             <button
                               type="button"
+                              role="option"
+                              aria-selected={false}
                               className={styles.option}
                               onMouseDown={event => event.preventDefault()}
                               onClick={() => handleSelect(option)}

@@ -271,6 +271,7 @@ export const CollectionForm = (props: CollectionFormProps) => {
       <Box mb="4">
         <TextField
           id="title"
+          name="title"
           label={t('collectionForm.titleInput.label')}
           className="qetaCollectionFormTitle"
           isRequired

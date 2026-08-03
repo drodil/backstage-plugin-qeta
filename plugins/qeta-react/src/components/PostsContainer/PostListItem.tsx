@@ -147,7 +147,10 @@ export const PostListItem = (props: PostListItemProps) => {
         )}
 
         <TooltipTrigger>
-          <Box className={styles.metaItem}>
+          <Box
+            className={styles.metaItem}
+            title={t('common.viewsCount', { count: views })}
+          >
             <RiEyeLine size={16} className={styles.metaIcon} />
             <Text as="span" variant="body-small" className={styles.metaValue}>
               {formatShortNumber(views)}

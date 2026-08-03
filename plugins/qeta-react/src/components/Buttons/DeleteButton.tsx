@@ -33,6 +33,7 @@ export const DeleteButton = (props: {
           <ButtonIcon
             variant="tertiary"
             size="small"
+            aria-label={tooltip}
             onClick={handleDeleteModalOpen}
             icon={<RiDeleteBinLine size={16} />}
           />
