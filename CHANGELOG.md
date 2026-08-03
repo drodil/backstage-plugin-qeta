@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.60.0...v4.0.0) (2026-08-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* initial mui to bui conversion
+* only backstage NFS is supported
+
+### Features
+
+* drop old frontend system exports ([6422711](https://github.com/drodil/backstage-plugin-qeta/commit/6422711064589c9a755af7294fd80fa109cdc3f6))
+* initial mui to bui conversion ([5c923f3](https://github.com/drodil/backstage-plugin-qeta/commit/5c923f306e812dffefda25e228eb3d9b40d7710d))
+* rest of the pages conversion to bui ([251365b](https://github.com/drodil/backstage-plugin-qeta/commit/251365bf3ea2a2c09c0324bc161959b8dd0adb18))
+
+
+### Bug Fixes
+
+* bui related e2e tests ([f8432e8](https://github.com/drodil/backstage-plugin-qeta/commit/f8432e89e64e140395c4ec5987f37bf23b5c5d2d))
+* collections page ([f21cfbe](https://github.com/drodil/backstage-plugin-qeta/commit/f21cfbe0df65c1ed19b44b848d040c8939fb8a4d))
+* css prettier ([c51647b](https://github.com/drodil/backstage-plugin-qeta/commit/c51647b281c96fd1753f49efa6d27fab4fc87808))
+* entities input unit test ([b9eb14f](https://github.com/drodil/backstage-plugin-qeta/commit/b9eb14ffe0ddd921f2cc6e1f115329729688aef2))
+* question page rendering ([9aa8f48](https://github.com/drodil/backstage-plugin-qeta/commit/9aa8f48e878ae8a4fc82f58a1526c03a1efe599c))
+* tooltip rendering ([e43f037](https://github.com/drodil/backstage-plugin-qeta/commit/e43f037c9229df1d2222a0c3aceff63f1dc96278))
+
 ## [3.60.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.59.10...v3.60.0) (2026-07-29)
 
 
