@@ -11,6 +11,7 @@ import {
 } from '@drodil/backstage-plugin-qeta-react';
 import { Alert, Box, Grid, Header, Skeleton } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 export const CollectionPage = () => {
   const { id } = useParams();
@@ -54,6 +55,10 @@ export const CollectionPage = () => {
           {
             label: t('metadata.followers'),
             value: collection.followers,
+          },
+          {
+            label: t('metadata.owner'),
+            value: <EntityRefLink entityRef={collection.owner} />,
           },
         ]}
         customActions={
