@@ -231,7 +231,14 @@ export class CollectionsStore extends BaseStore {
     user_ref: string,
     options?: CollectionOptions,
   ): Promise<{ collections: Collection[]; count: number }> {
-    const results = await this.getCollections(user_ref, options || {});
+    const followedRows = await this.db('user_collections')
+      .where('userRef', user_ref)
+      .select('collectionId');
+    if (followedRows.length === 0) {
+      return { collections: [], count: 0 };
+    }
+    const ids = followedRows.map((r: any) => r.collectionId);
+    const results = await this.getCollections(user_ref, { ids }, options);
     return { collections: results.collections, count: results.total };
   }
 

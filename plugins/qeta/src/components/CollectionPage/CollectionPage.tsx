@@ -1,35 +1,21 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   CollectionFollowButton,
-  ContentHeaderButton,
-  DeleteModal,
-  collectionEditRouteRef,
-  qetaTranslationRef,
-  useQetaApi,
+  DeleteButton,
+  EditButton,
   PostsContainer,
+  qetaTranslationRef,
   TagsAndEntities,
+  useQetaApi,
   useQetaConfig,
 } from '@drodil/backstage-plugin-qeta-react';
 import { Alert, Box, Grid, Header, Skeleton } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { useState } from 'react';
-import {
-  RiDeleteBinLine,
-  RiEditLine,
-  RiGroupLine,
-  RiQuestionAnswerLine,
-} from '@remixicon/react';
-import { useRouteRef } from '@backstage/core-plugin-api';
 
 export const CollectionPage = () => {
   const { id } = useParams();
   const { t } = useTranslationRef(qetaTranslationRef);
   const { disabled } = useQetaConfig();
-  const navigate = useNavigate();
-  const editCollectionRoute = useRouteRef(collectionEditRouteRef);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
-  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   const {
     value: collection,
@@ -62,54 +48,19 @@ export const CollectionPage = () => {
         description={collection.description}
         metadata={[
           {
-            label: t('common.postsLabel', {
-              count: collection.postsCount,
-              itemType: 'post',
-            }),
-            value: (
-              <>
-                <RiQuestionAnswerLine size={16} /> {collection.postsCount}
-              </>
-            ),
+            label: t('metadata.posts'),
+            value: collection.postsCount,
           },
           {
-            label: t('common.followersLabel', {
-              count: collection.followers,
-            }),
-            value: (
-              <>
-                <RiGroupLine size={16} /> {collection.followers}
-              </>
-            ),
+            label: t('metadata.followers'),
+            value: collection.followers,
           },
         ]}
         customActions={
           <>
+            <EditButton entity={collection} compact />
+            <DeleteButton entity={collection} compact />
             <CollectionFollowButton collection={collection} />
-            {collection.canEdit && (
-              <ContentHeaderButton
-                icon={<RiEditLine />}
-                onClick={() =>
-                  editCollectionRoute &&
-                  navigate(
-                    editCollectionRoute({
-                      id: collection.id.toString(10),
-                    }),
-                  )
-                }
-              >
-                {t('templateList.editButton', {})}
-              </ContentHeaderButton>
-            )}
-            {collection.canDelete && (
-              <ContentHeaderButton
-                icon={<RiDeleteBinLine />}
-                color="secondary"
-                onClick={handleDeleteModalOpen}
-              >
-                {t('templateList.deleteButton', {})}
-              </ContentHeaderButton>
-            )}
           </>
         }
       />
@@ -129,13 +80,6 @@ export const CollectionPage = () => {
           />
         </Grid.Item>
       </Grid.Root>
-      {collection.canDelete && (
-        <DeleteModal
-          open={deleteModalOpen}
-          onClose={handleDeleteModalClose}
-          entity={collection}
-        />
-      )}
     </>
   );
 };

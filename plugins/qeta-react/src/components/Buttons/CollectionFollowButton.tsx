@@ -23,6 +23,7 @@ export const CollectionFollowButton = (props: {
         aria-label={t('collectionButton.tooltip')}
         size="small"
         variant={isFollowing ? 'secondary' : 'tertiary'}
+        onClick={e => e.preventDefault()}
         onPress={() => {
           if (isFollowing) {
             collections.unfollowCollection(collection);

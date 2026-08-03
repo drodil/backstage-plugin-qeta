@@ -53,7 +53,7 @@ export const CollectionsGridItem = (props: PostsGridItemProps) => {
         )}
         <div className={`${classes.cardContent} ${styles.body}`}>
           <Flex align="start" justify="between" gap="2">
-            <Text variant="title-small" weight="bold" truncate>
+            <Text variant="title-x-small" weight="bold" truncate>
               {collection.title}
             </Text>
             <Box
