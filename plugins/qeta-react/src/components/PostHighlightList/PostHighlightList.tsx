@@ -8,7 +8,7 @@ import {
 import { useQetaApi, useQetaConfig } from '../../hooks';
 import { Link } from 'react-router-dom';
 import { RightList, RightListContainer } from '../Utility/RightList';
-import { Box, List, ListRow, Skeleton } from '@backstage/ui';
+import { List, ListRow, Skeleton } from '@backstage/ui';
 import { qetaTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
