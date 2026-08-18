@@ -164,6 +164,7 @@ export const TagInput = forwardRef<
     content?: string;
     entities?: string[];
     label?: string;
+    size?: 'small' | 'medium';
   }
 >((props, _ref) => {
   const {
@@ -178,6 +179,7 @@ export const TagInput = forwardRef<
     content,
     entities,
     label,
+    size = 'small',
   } = props;
   const qetaApi = useApi(qetaApiRef);
   const config = useApi(configApiRef);
@@ -422,6 +424,7 @@ export const TagInput = forwardRef<
         <div className={styles.fieldWrapper}>
           <TextField
             className="qetaTagInput"
+            size={size}
             label={label ?? undefined}
             placeholder={t('tagsInput.placeholder')}
             description={error ? error.message : getHelperText()}

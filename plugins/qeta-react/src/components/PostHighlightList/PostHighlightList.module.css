@@ -6,17 +6,25 @@
   }
 
   .voteBox {
-    min-width: 28px;
-    max-width: 28px;
-    height: 24px;
+    min-width: 26px;
+    max-width: 26px;
+    height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: var(--bui-radius-2);
     font-weight: var(--bui-font-weight-bold);
-    background: var(--bui-bg-neutral-1);
+    background: transparent;
     color: var(--bui-fg-primary);
     border: 1px solid var(--bui-border-1);
+  }
+
+  .listRow {
+    gap: var(--bui-space-1);
+  }
+
+  .listRow > div:first-child > div {
+    background: transparent;
   }
 
   .voteBoxPositive {

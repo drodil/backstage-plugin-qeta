@@ -9,6 +9,7 @@ import {
   Box,
   Button,
   ButtonIcon,
+  Card,
   Flex,
   Link,
   Switch,
@@ -574,309 +575,317 @@ export const PostForm = (props: PostFormProps) => {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(data =>
-        postQuestion({ ...data, status: 'active' }),
-      )}
-      className={styles.form}
-    >
-      {error && (
-        <Alert
-          status="danger"
-          description={t('postForm.errorPosting', { type })}
-        />
-      )}
-      {type === 'article' && (
-        <Controller
-          control={control}
-          render={({ field: { onChange, value } }) => (
-            <HeaderImageInput
-              onChange={onChange}
-              onImageUpload={onImageUpload}
-              url={value}
-              postId={id ? Number(id) : undefined}
-            />
-          )}
-          name="headerImage"
-        />
-      )}
-      {isLink && (
-        <Flex align="center" gap="2" mb="4">
-          {favicon && (
-            <img
-              src={favicon}
-              alt="Favicon"
-              className={styles.favicon}
-              onError={e => (e.currentTarget.style.display = 'none')}
-            />
-          )}
-          <Controller
-            name="url"
-            control={control}
-            rules={{
-              required: true,
-              validate: validateUrl,
-            }}
-            render={() => (
-              <TextField
-                label={t('postForm.urlInput.label')}
-                className="qetaAskFormTitle"
-                isRequired
-                isInvalid={!!errors.url}
-                name="url"
-                description={
-                  errors.url?.message ?? t('postForm.urlInput.helperText')
-                }
-                placeholder={t('postForm.urlInput.placeholder')}
-                value={control._formValues.url ?? ''}
-                onChange={handleUrlChange}
-                style={{ flex: 1 }}
-              />
-            )}
-          />
-          {control._formValues.headerImage && (
-            <img
-              src={control._formValues.headerImage}
-              alt="Preview"
-              onError={e => (e.currentTarget.style.display = 'none')}
-              className={styles.headerImagePreview}
-            />
-          )}
-        </Flex>
-      )}
-      <Box mb="4">
-        <TextField
-          label={t('postForm.titleInput.label')}
-          className="qetaAskFormTitle"
-          isRequired
-          isInvalid={'title' in errors}
-          name="title"
-          size="medium"
-          placeholder={t(
-            isLink
-              ? 'postForm.titleInput.placeholder_link'
-              : 'postForm.titleInput.placeholder',
-          )}
-          value={control._formValues.title}
-          onChange={handleTitleChange}
-          maxLength={255}
-        />
-        <Flex justify="between" className={styles.titleHelper}>
-          <Text variant="body-small" color="secondary">
-            {t('postForm.titleInput.helperText', { type })}
-          </Text>
-          <Text variant="body-small" color="secondary">
-            {titleCharCount}/255
-          </Text>
-        </Flex>
-      </Box>
-      <Flex align="center" justify="between" mb="2">
-        <Text variant="title-small" weight="bold">
-          {t('postForm.contentInput.label', { type })}
-          <TooltipTrigger>
-            <ButtonIcon
-              aria-label="Tips for a good question"
-              size="small"
-              variant="tertiary"
-              icon={
-                showTips ? (
-                  <RiArrowUpSLine size={16} />
-                ) : (
-                  <RiArrowDownSLine size={16} />
-                )
-              }
-              onPress={() => setShowTips(v => !v)}
-            />
-            <Tooltip>Tips for a good question</Tooltip>
-          </TooltipTrigger>
-        </Text>
-        <Link
-          href="https://www.markdownguide.org/cheat-sheet/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.markdownHelpLink}
-        >
-          {t('postForm.contentInput.markdownHelp')}
-          <RiQuestionLine size={12} className={styles.markdownHelpIcon} />
-        </Link>
-      </Flex>
-      {showTips && (
-        <Box mb="4" p="4">
-          <Text variant="body-small">
-            <ul style={{ margin: 0, paddingLeft: 20 }}>
-              {selectByPostType(
-                type,
-                <>
-                  <li>{t('postForm.tips_question_1')}</li>
-                  <li>{t('postForm.tips_question_2')}</li>
-                  <li>{t('postForm.tips_question_3')}</li>
-                  <li>{t('postForm.tips_question_4')}</li>
-                </>,
-                <>
-                  <li>{t('postForm.tips_article_1')}</li>
-                  <li>{t('postForm.tips_article_2')}</li>
-                  <li>{t('postForm.tips_article_3')}</li>
-                  <li>{t('postForm.tips_article_4')}</li>
-                </>,
-                <>
-                  <li>{t('postForm.tips_link_1')}</li>
-                  <li>{t('postForm.tips_link_2')}</li>
-                </>,
-              )}
-            </ul>
-          </Text>
-        </Box>
-      )}
-      <Controller
-        control={control}
-        rules={{
-          required: !isLink,
-        }}
-        render={({ field: { onChange, value } }) => (
-          <MarkdownEditor
-            required={!isLink}
-            value={value}
-            onChange={onChange}
-            height={!isLink ? 400 : 150}
-            error={'content' in errors}
-            placeholder={selectByPostType(
-              type,
-              t('postForm.contentInput.placeholder_question'),
-              t('postForm.contentInput.placeholder_article'),
-              t('postForm.contentInput.placeholder_link'),
-            )}
-            onImageUpload={onImageUpload}
-            postId={id ? Number(id) : undefined}
-            onTagsChange={tags => {
-              if (tags && tags.length > 0) {
-                const existing = getFormValues('tags') ?? [];
-                const newTags = [...new Set([...existing, ...tags])];
-                setValue('tags', newTags, { shouldValidate: true });
-              }
-            }}
+    <Card className={styles.card}>
+      <form
+        onSubmit={handleSubmit(data =>
+          postQuestion({ ...data, status: 'active' }),
+        )}
+        className={styles.form}
+      >
+        {error && (
+          <Alert
+            status="danger"
+            description={t('postForm.errorPosting', { type })}
           />
         )}
-        name="content"
-      />
-      <Box mt="2" mb="2">
+        {type === 'article' && (
+          <Controller
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <HeaderImageInput
+                onChange={onChange}
+                onImageUpload={onImageUpload}
+                url={value}
+                postId={id ? Number(id) : undefined}
+              />
+            )}
+            name="headerImage"
+          />
+        )}
+        {isLink && (
+          <Flex align="center" gap="2" mb="4">
+            {favicon && (
+              <img
+                src={favicon}
+                alt="Favicon"
+                className={styles.favicon}
+                onError={e => (e.currentTarget.style.display = 'none')}
+              />
+            )}
+            <Controller
+              name="url"
+              control={control}
+              rules={{
+                required: true,
+                validate: validateUrl,
+              }}
+              render={() => (
+                <TextField
+                  label={t('postForm.urlInput.label')}
+                  className="qetaAskFormTitle"
+                  size="medium"
+                  isRequired
+                  isInvalid={!!errors.url}
+                  name="url"
+                  description={
+                    errors.url?.message ?? t('postForm.urlInput.helperText')
+                  }
+                  placeholder={t('postForm.urlInput.placeholder')}
+                  value={control._formValues.url ?? ''}
+                  onChange={handleUrlChange}
+                  style={{ flex: 1 }}
+                />
+              )}
+            />
+            {control._formValues.headerImage && (
+              <img
+                src={control._formValues.headerImage}
+                alt="Preview"
+                onError={e => (e.currentTarget.style.display = 'none')}
+                className={styles.headerImagePreview}
+              />
+            )}
+          </Flex>
+        )}
+        <Box mb="4">
+          <TextField
+            label={t('postForm.titleInput.label')}
+            className="qetaAskFormTitle"
+            isRequired
+            isInvalid={'title' in errors}
+            name="title"
+            size="medium"
+            placeholder={t(
+              isLink
+                ? 'postForm.titleInput.placeholder_link'
+                : 'postForm.titleInput.placeholder',
+            )}
+            value={control._formValues.title}
+            onChange={handleTitleChange}
+            maxLength={255}
+          />
+          <Flex justify="between" className={styles.titleHelper}>
+            <Text variant="body-medium" color="secondary">
+              {t('postForm.titleInput.helperText', { type })}
+            </Text>
+            <Text variant="body-medium" color="secondary">
+              {titleCharCount}/255
+            </Text>
+          </Flex>
+        </Box>
+        <Flex align="center" justify="between" mb="2">
+          <Text variant="title-small" weight="bold">
+            {t('postForm.contentInput.label', { type })}
+            <TooltipTrigger>
+              <ButtonIcon
+                aria-label="Tips for a good question"
+                size="small"
+                variant="tertiary"
+                icon={
+                  showTips ? (
+                    <RiArrowUpSLine size={16} />
+                  ) : (
+                    <RiArrowDownSLine size={16} />
+                  )
+                }
+                onPress={() => setShowTips(v => !v)}
+              />
+              <Tooltip>Tips for a good question</Tooltip>
+            </TooltipTrigger>
+          </Text>
+          <Link
+            href="https://www.markdownguide.org/cheat-sheet/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.markdownHelpLink}
+          >
+            {t('postForm.contentInput.markdownHelp')}
+            <RiQuestionLine size={12} className={styles.markdownHelpIcon} />
+          </Link>
+        </Flex>
+        {showTips && (
+          <Box mb="4" p="4">
+            <Text variant="body-medium">
+              <ul style={{ margin: 0, paddingLeft: 20 }}>
+                {selectByPostType(
+                  type,
+                  <>
+                    <li>{t('postForm.tips_question_1')}</li>
+                    <li>{t('postForm.tips_question_2')}</li>
+                    <li>{t('postForm.tips_question_3')}</li>
+                    <li>{t('postForm.tips_question_4')}</li>
+                  </>,
+                  <>
+                    <li>{t('postForm.tips_article_1')}</li>
+                    <li>{t('postForm.tips_article_2')}</li>
+                    <li>{t('postForm.tips_article_3')}</li>
+                    <li>{t('postForm.tips_article_4')}</li>
+                  </>,
+                  <>
+                    <li>{t('postForm.tips_link_1')}</li>
+                    <li>{t('postForm.tips_link_2')}</li>
+                  </>,
+                )}
+              </ul>
+            </Text>
+          </Box>
+        )}
         <Controller
           control={control}
           rules={{
-            validate: value => {
-              if (minEntities > 0 && value && value.length < minEntities) {
-                return t('entitiesInput.minimumError', {
-                  min: minEntities.toString(),
-                });
-              }
-              return true;
-            },
+            required: !isLink,
           }}
-          render={({ field, fieldState: { error: entityError } }) => (
-            <EntitiesInput
-              {...field}
-              label={t('entitiesInput.label')}
-              singleValue={entityRef}
-              error={entityError}
-              title={getFormValues('title')}
-              content={getFormValues('content')}
-              tags={getFormValues('tags')}
+          render={({ field: { onChange, value } }) => (
+            <MarkdownEditor
+              required={!isLink}
+              value={value}
+              onChange={onChange}
+              height={!isLink ? 400 : 150}
+              error={'content' in errors}
+              placeholder={selectByPostType(
+                type,
+                t('postForm.contentInput.placeholder_question'),
+                t('postForm.contentInput.placeholder_article'),
+                t('postForm.contentInput.placeholder_link'),
+              )}
+              onImageUpload={onImageUpload}
+              postId={id ? Number(id) : undefined}
+              onTagsChange={tags => {
+                if (tags && tags.length > 0) {
+                  const existing = getFormValues('tags') ?? [];
+                  const newTags = [...new Set([...existing, ...tags])];
+                  setValue('tags', newTags, { shouldValidate: true });
+                }
+              }}
             />
           )}
-          name="entities"
+          name="content"
         />
-      </Box>
-      <Box mt="2" mb="2">
-        <Controller
-          control={control}
-          rules={{
-            validate: value => {
-              if (minTags > 0 && value && value.length < minTags) {
-                return t('tagsInput.minimumError', { min: minTags.toString() });
-              }
-              return true;
-            },
-          }}
-          render={({ field, fieldState: { error: tagError } }) => {
-            return (
-              <TagInput
-                {...field}
-                label={t('tagsInput.label')}
-                error={tagError}
-                title={watch('title')}
-                content={watch('content')}
-                entities={watch('entities')?.map(stringifyEntityRef)}
-              />
-            );
-          }}
-          name="tags"
-        />
-      </Box>
-      {isModerator && (
         <Box mt="2" mb="2">
           <Controller
             control={control}
-            render={({ field, fieldState: { error: authorError } }) => {
+            rules={{
+              validate: value => {
+                if (minEntities > 0 && value && value.length < minEntities) {
+                  return t('entitiesInput.minimumError', {
+                    min: minEntities.toString(),
+                  });
+                }
+                return true;
+              },
+            }}
+            render={({ field, fieldState: { error: entityError } }) => (
+              <EntitiesInput
+                {...field}
+                label={t('entitiesInput.label')}
+                size="medium"
+                singleValue={entityRef}
+                error={entityError}
+                title={getFormValues('title')}
+                content={getFormValues('content')}
+                tags={getFormValues('tags')}
+              />
+            )}
+            name="entities"
+          />
+        </Box>
+        <Box mt="2" mb="2">
+          <Controller
+            control={control}
+            rules={{
+              validate: value => {
+                if (minTags > 0 && value && value.length < minTags) {
+                  return t('tagsInput.minimumError', {
+                    min: minTags.toString(),
+                  });
+                }
+                return true;
+              },
+            }}
+            render={({ field, fieldState: { error: tagError } }) => {
               return (
-                <EntitiesInput
-                  label={t('postForm.authorInput.label')}
-                  placeholder={t('postForm.authorInput.placeholder')}
-                  hideHelpText
-                  multiple={false}
-                  kind={['User']}
-                  required
-                  skipDisabledEntitiesCheck
+                <TagInput
                   {...field}
-                  error={authorError}
+                  label={t('tagsInput.label')}
+                  size="medium"
+                  error={tagError}
+                  title={watch('title')}
+                  content={watch('content')}
+                  entities={watch('entities')?.map(stringifyEntityRef)}
                 />
               );
             }}
-            name="author"
+            name="tags"
           />
         </Box>
-      )}
-      {allowAnonymous && !id && (
-        <Flex align="center" gap="1" mt="4" mb="4">
-          <PostAnonymouslyCheckbox
-            control={control}
-            label={t('anonymousCheckbox.postAnonymously')}
-          />
+        {isModerator && (
+          <Box mt="2" mb="2">
+            <Controller
+              control={control}
+              render={({ field, fieldState: { error: authorError } }) => {
+                return (
+                  <EntitiesInput
+                    label={t('postForm.authorInput.label')}
+                    placeholder={t('postForm.authorInput.placeholder')}
+                    size="medium"
+                    hideHelpText
+                    multiple={false}
+                    kind={['User']}
+                    required
+                    skipDisabledEntitiesCheck
+                    {...field}
+                    error={authorError}
+                  />
+                );
+              }}
+              name="author"
+            />
+          </Box>
+        )}
+        {allowAnonymous && !id && (
+          <Flex align="center" gap="1" mt="4" mb="4">
+            <PostAnonymouslyCheckbox
+              control={control}
+              label={t('anonymousCheckbox.postAnonymously')}
+            />
+            <TooltipTrigger>
+              <RiInformationLine size={16} />
+              <Tooltip>{t('anonymousCheckbox.tooltip')}</Tooltip>
+            </TooltipTrigger>
+          </Flex>
+        )}
+        <Flex justify="between" gap="4" mt="6">
+          <Flex gap="4">
+            <Button
+              variant="primary"
+              type="submit"
+              isDisabled={loading || posting || isSubmitting}
+            >
+              {getSubmitButtonText()}
+            </Button>
+            {status === 'draft' && !loading && !customAuthor && (
+              <Button
+                variant="secondary"
+                isDisabled={loading || posting || isSubmitting}
+                onClick={handleSubmit(data =>
+                  postQuestion({ ...data, status: 'draft' }),
+                )}
+              >
+                {getDraftButtonText()}
+              </Button>
+            )}
+          </Flex>
           <TooltipTrigger>
-            <RiInformationLine size={16} />
-            <Tooltip>{t('anonymousCheckbox.tooltip')}</Tooltip>
+            <Switch
+              isSelected={autoSaveEnabled}
+              onChange={handleAutoSaveChange}
+              isDisabled={loading || posting || isSubmitting}
+              label={t('postForm.autoSaveDraft')}
+            />
+            <Tooltip>{t('postForm.autoSaveDraftTooltip')}</Tooltip>
           </TooltipTrigger>
         </Flex>
-      )}
-      <Flex justify="between" gap="4" mt="6">
-        <Flex gap="4">
-          <Button
-            variant="primary"
-            type="submit"
-            isDisabled={loading || posting || isSubmitting}
-          >
-            {getSubmitButtonText()}
-          </Button>
-          {status === 'draft' && !loading && !customAuthor && (
-            <Button
-              variant="secondary"
-              isDisabled={loading || posting || isSubmitting}
-              onClick={handleSubmit(data =>
-                postQuestion({ ...data, status: 'draft' }),
-              )}
-            >
-              {getDraftButtonText()}
-            </Button>
-          )}
-        </Flex>
-        <TooltipTrigger>
-          <Switch
-            isSelected={autoSaveEnabled}
-            onChange={handleAutoSaveChange}
-            isDisabled={loading || posting || isSubmitting}
-            label={t('postForm.autoSaveDraft')}
-          />
-          <Tooltip>{t('postForm.autoSaveDraftTooltip')}</Tooltip>
-        </TooltipTrigger>
-      </Flex>
-    </form>
+      </form>
+    </Card>
   );
 };

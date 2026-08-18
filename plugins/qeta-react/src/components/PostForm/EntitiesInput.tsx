@@ -53,6 +53,7 @@ type CommonEntitiesInputProps = {
   content?: string;
   tags?: string[];
   skipDisabledEntitiesCheck?: boolean;
+  size?: 'small' | 'medium';
 };
 type SingleEntitiesInputValue = CommonEntitiesInputProps & {
   multiple: false;
@@ -292,6 +293,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
       content,
       tags,
       skipDisabledEntitiesCheck = false,
+      size = 'small',
     } = props;
 
     const configApi = useApi(configApiRef);
@@ -652,6 +654,7 @@ export const EntitiesInput = forwardRef<any, EntitiesInputProps>(
           <div className={styles.fieldWrapper}>
             <TextField
               className="qetaEntitiesInput"
+              size={size}
               isDisabled={disabled}
               isRequired={required}
               label={label ?? undefined}

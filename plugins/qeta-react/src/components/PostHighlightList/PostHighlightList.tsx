@@ -123,7 +123,8 @@ export const PostHighlightListContent = (props: {
                   <Link to={href} className={styles.link} aria-label={q.title}>
                     <List>
                       <ListRow
-                        icon={<Box className={voteBoxClass}>{vote}</Box>}
+                        className={styles.listRow}
+                        icon={<div className={voteBoxClass}>{vote}</div>}
                       >
                         {q.title}
                       </ListRow>
