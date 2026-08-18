@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.0.2](https://github.com/drodil/backstage-plugin-qeta/compare/v4.0.1...v4.0.2) (2026-08-18)
+
+
+### Bug Fixes
+
+* ui improvements for post form and highlight lists ([604e722](https://github.com/drodil/backstage-plugin-qeta/commit/604e722ca2e836b8866a8e1d228429a5a2196580))
+
 ### [4.0.1](https://github.com/drodil/backstage-plugin-qeta/compare/v4.0.0...v4.0.1) (2026-08-11)
 
 ## [4.0.0](https://github.com/drodil/backstage-plugin-qeta/compare/v3.60.0...v4.0.0) (2026-08-03)
