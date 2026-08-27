@@ -109,6 +109,7 @@ export function QetaEntityContainer<
     onPageSizeChange,
     pageSize,
     retry,
+    response,
   } = useQetaEntities<T, F>({
     ...hookProps,
     getKey,
@@ -136,7 +137,9 @@ export function QetaEntityContainer<
     offset: '800px',
   });
 
-  const resolvedTitle = typeof title === 'function' ? title(total) : title;
+  const currentTotal = response?.total ?? total;
+  const resolvedTitle =
+    typeof title === 'function' ? title(currentTotal) : title;
 
   return (
     <div ref={topRef}>
@@ -236,7 +239,7 @@ export function QetaEntityContainer<
           </>
         )}
 
-        {settings.usePagination && total > pageSize && (
+        {settings.usePagination && currentTotal > pageSize && (
           <QetaPagination
             pageSize={pageSize}
             handlePageSizeChange={e =>
@@ -244,7 +247,7 @@ export function QetaEntityContainer<
             }
             handlePageChange={(_e, p) => onPageChange(p)}
             page={page}
-            pageCount={Math.ceil(total / pageSize)}
+            pageCount={Math.ceil(currentTotal / pageSize)}
           />
         )}
       </Box>

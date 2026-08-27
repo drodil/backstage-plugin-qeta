@@ -3,9 +3,8 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useQetaApi } from './useQetaApi';
-import { QetaApi } from '@drodil/backstage-plugin-qeta-common';
+import { filterTags, QetaApi } from '@drodil/backstage-plugin-qeta-common';
 import { filterKeys as globalFilterKeys } from '../components/FilterPanel/FilterPanel';
-import { filterTags } from '@drodil/backstage-plugin-qeta-common';
 import { useUserSettings } from './useUserSettings';
 
 export type QetaEntitiesProps<T, F> = {
@@ -152,6 +151,9 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
         } else if (key === `${prefix}PerPage`) {
           const qpp = Number.parseInt(value, 10);
           if (qpp > 0) setPageSize(qpp);
+        } else if (key === 'entity') {
+          filtersApplied = true;
+          (filters as any).entities = [value];
         } else if ((filterKeys ?? globalFilterKeys).includes(key as any)) {
           filtersApplied = true;
           if (key === 'tags') {
@@ -166,7 +168,7 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
         // NOOP
       }
     });
-    setFilters(filters);
+    setFilters({ ...filters });
     if (filtersApplied) {
       setShowFilterPanel(true);
     }

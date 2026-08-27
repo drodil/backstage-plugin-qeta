@@ -41,6 +41,18 @@ describe('Posts Routes', () => {
       expect(response.body).toEqual({ posts: [], total: 0 });
     });
 
+    it('returns the total number of matching posts across all pages', async () => {
+      qetaStore.getPosts.mockResolvedValue({
+        posts: [question],
+        total: 42,
+      });
+
+      const response = await request(app).get('/posts?limit=1');
+
+      expect(response.status).toEqual(200);
+      expect(response.body.total).toEqual(42);
+    });
+
     it('filters out tags in list view when tag read permission is fully denied', async () => {
       qetaStore.getPosts.mockImplementation(async (_u, _opts, _f, options) => ({
         posts: [options?.tagsFilter ? { ...question, tags: [] } : question],
@@ -846,6 +858,20 @@ describe('Posts Routes', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ posts: [], total: 0 });
+    });
+
+    it('returns the total number of matching posts across all pages', async () => {
+      qetaStore.getPosts.mockResolvedValue({
+        posts: [question],
+        total: 42,
+      });
+
+      const response = await request(app)
+        .post('/posts/query')
+        .send({ limit: 1 });
+
+      expect(response.status).toEqual(200);
+      expect(response.body.total).toEqual(42);
     });
   });
 

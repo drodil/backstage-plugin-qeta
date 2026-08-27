@@ -319,7 +319,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     response.json({
       ...posts,
       posts: visiblePosts,
-      total: visiblePosts.length,
     });
   });
 
@@ -385,7 +384,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     response.json({
       ...posts,
       posts: visiblePosts,
-      total: visiblePosts.length,
     });
   });
 
