@@ -81,9 +81,6 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
   const tagsDisabled = config.getOptionalBoolean('qeta.tags.disabled') ?? false;
   const entitiesDisabled =
     config.getOptionalBoolean('qeta.entities.disabled') ?? false;
-  const hasDisabledPostTypes =
-    questionsDisabled || articlesDisabled || linksDisabled;
-
   const isPostTypeDisabled = (postType?: PostType): boolean => {
     if (!postType) {
       return false;
@@ -102,15 +99,9 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     return false;
   };
 
-  const filterDisabledPosts = <T extends { type: PostType }>(
-    posts: T[],
-  ): T[] => {
-    if (!hasDisabledPostTypes) {
-      return posts;
-    }
-
-    return posts.filter(post => !isPostTypeDisabled(post.type));
-  };
+  const allowedPostTypes: PostType[] = (
+    ['question', 'article', 'link'] as PostType[]
+  ).filter(postType => !isPostTypeDisabled(postType));
 
   const notifyAutomaticCollectionAdditions = async (
     postId: number,
@@ -311,15 +302,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       reviewNeeded: opts.reviewNeeded,
     });
 
-    const visiblePosts = filterDisabledPosts(posts.posts);
-    await mapAdditionalFields(request, visiblePosts, options, {
+    await mapAdditionalFields(request, posts.posts, options, {
       checkRights: opts.checkAccess ?? false,
       username,
     });
-    response.json({
-      ...posts,
-      posts: visiblePosts,
-    });
+    response.json(posts);
   });
 
   router.post(`/posts/query`, async (request, response) => {
@@ -376,15 +363,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       reviewThresholdMs,
       reviewNeeded: opts.reviewNeeded,
     });
-    const visiblePosts = filterDisabledPosts(posts.posts);
-    await mapAdditionalFields(request, visiblePosts, options, {
+    await mapAdditionalFields(request, posts.posts, options, {
       checkRights: opts.checkAccess ?? false,
       username,
     });
-    response.json({
-      ...posts,
-      posts: visiblePosts,
-    });
+    response.json(posts);
   });
 
   // POST /posts/suggest
@@ -452,12 +435,11 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     } else if (type === 'recent') {
       const limit = Number(request.query.limit) || 5;
       const posts = await database.getMostRecentViewedPosts(username, limit);
-      const visiblePosts = filterDisabledPosts(posts);
-      await mapAdditionalFields(request, visiblePosts, options, {
+      await mapAdditionalFields(request, posts, options, {
         checkRights: false,
         username,
       });
-      response.json({ posts: visiblePosts, total: visiblePosts.length });
+      response.json({ posts, total: posts.length });
       return;
     }
     const opts = { ...request.query, ...optionOverride };
@@ -471,7 +453,7 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       await getPostFilters(request, opts);
 
     // Act
-    const key = `qeta:posts:list:${type}:${username}:${JSON.stringify(opts)}`;
+    const key = `qeta:posts:list:${type}:${username}:${allowedPostTypes.join(',')}:${JSON.stringify(opts)}`;
     const ttl = 300 * 1000;
 
     const posts = await getCachedData(
@@ -496,16 +478,13 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
       options.logger,
     );
 
-    const visiblePosts = filterDisabledPosts(posts.posts);
-
-    await mapAdditionalFields(request, visiblePosts, options, {
+    await mapAdditionalFields(request, posts.posts, options, {
       checkRights: opts.checkAccess ?? false,
       username,
     });
     response.json({
       ...posts,
-      posts: visiblePosts,
-      total: visiblePosts.length,
+      total: posts.posts.length,
     });
   });
 

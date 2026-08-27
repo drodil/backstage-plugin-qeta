@@ -120,7 +120,7 @@ export class DatabaseQetaStore implements QetaStore {
 
     const commentsStore = new CommentsStore(client, config);
     const tagsStore = new TagsStore(client, tagDatabase);
-    const entitiesStore = new EntitiesStore(client);
+    const entitiesStore = new EntitiesStore(client, config);
     const usersStore = new UsersStore(client);
     const templatesStore = new TemplatesStore(client, tagsStore, entitiesStore);
     const attachmentsStore = new AttachmentsStore(client);
@@ -144,10 +144,12 @@ export class DatabaseQetaStore implements QetaStore {
       client,
       postsStore,
       attachmentsStore,
+      tagDatabase,
+      config,
     );
     const statsStore = new StatsStore(client);
     const badgesStore = new BadgesStore(client);
-    const helpersStore = new HelpersStore(client);
+    const helpersStore = new HelpersStore(client, config);
 
     postsStore.setAnswersStore(answersStore);
 

@@ -4,8 +4,18 @@ import {
   TimelineOptions,
   TimelineResponse,
 } from '@drodil/backstage-plugin-qeta-common';
+import { Config } from '@backstage/config';
+import { Knex } from 'knex';
+import { getAllowedPostTypes } from '../postTypes';
 
 export class HelpersStore extends BaseStore {
+  constructor(
+    db: Knex,
+    private readonly config: Config,
+  ) {
+    super(db);
+  }
+
   async getTimeline(
     _user_ref: string,
     options: TimelineOptions,
@@ -13,6 +23,7 @@ export class HelpersStore extends BaseStore {
   ): Promise<TimelineResponse> {
     const limit = options.limit ?? 10;
     const offset = options.offset ?? 0;
+    const allowedPostTypes = getAllowedPostTypes(this.config);
 
     const collectionsQuery = this.db('collections').select(
       this.db.raw("'collection' as type"),
@@ -52,7 +63,8 @@ export class HelpersStore extends BaseStore {
         'title as postTitle',
         'type as postType',
       )
-      .where('status', 'active');
+      .where('status', 'active')
+      .whereIn('type', allowedPostTypes);
     if (filters?.posts) {
       this.parseFilter(filters.posts, postsQuery, this.db, 'post');
     }
@@ -73,6 +85,7 @@ export class HelpersStore extends BaseStore {
         'type as postType',
       )
       .where('status', 'active')
+      .whereIn('type', allowedPostTypes)
       .whereNotNull('updated')
       .whereRaw('updated > created');
     if (filters?.posts) {
@@ -95,7 +108,8 @@ export class HelpersStore extends BaseStore {
         'posts.title as postTitle',
         'posts.type as postType',
       )
-      .where('posts.status', 'active');
+      .where('posts.status', 'active')
+      .whereIn('posts.type', allowedPostTypes);
     if (filters?.posts) {
       this.parseFilter(filters.posts, answersQuery, this.db, 'post');
     }
@@ -120,6 +134,7 @@ export class HelpersStore extends BaseStore {
         'posts.type as postType',
       )
       .where('posts.status', 'active')
+      .whereIn('posts.type', allowedPostTypes)
       .whereNotNull('answers.updated')
       .whereRaw('answers.updated > answers.created');
     if (filters?.posts) {
@@ -157,6 +172,11 @@ export class HelpersStore extends BaseStore {
         builder
           .where('posts.status', 'active')
           .orWhere('answerPosts.status', 'active');
+      })
+      .where(builder => {
+        builder
+          .whereIn('posts.type', allowedPostTypes)
+          .orWhereIn('answerPosts.type', allowedPostTypes);
       });
     if (filters?.comments) {
       this.parseFilter(filters.comments, commentsQuery, this.db, 'comments');

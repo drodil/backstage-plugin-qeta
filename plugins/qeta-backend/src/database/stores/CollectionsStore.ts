@@ -15,6 +15,8 @@ import { AttachmentsStore } from './AttachmentsStore';
 import { PostsStore } from './PostsStore';
 import { TAGS } from '../../tagDb';
 import { TagDatabase } from '@drodil/backstage-plugin-qeta-node';
+import { Config } from '@backstage/config';
+import { getAllowedPostTypes } from '../postTypes';
 
 export interface RawCollectionEntity {
   id: number;
@@ -36,6 +38,7 @@ export class CollectionsStore extends BaseStore {
     private readonly postsStore: PostsStore,
     private readonly attachmentsStore: AttachmentsStore,
     private readonly tagDatabase?: TagDatabase,
+    private readonly config?: Config,
   ) {
     super(db);
   }
@@ -666,6 +669,7 @@ export class CollectionsStore extends BaseStore {
     }
 
     const collectionIds = rows.map(r => r.id);
+    const allowedPostTypes = new Set(getAllowedPostTypes(this.config));
     const {
       postFilters,
       includePosts = true,
@@ -737,6 +741,15 @@ export class CollectionsStore extends BaseStore {
 
     return rows.map(val => {
       const collectionPosts = postsMap.get(val.id) || [];
+      const questionsCount = allowedPostTypes.has('question')
+        ? this.mapToInteger(val.questionsCount)
+        : 0;
+      const articlesCount = allowedPostTypes.has('article')
+        ? this.mapToInteger(val.articlesCount)
+        : 0;
+      const linksCount = allowedPostTypes.has('link')
+        ? this.mapToInteger(val.linksCount)
+        : 0;
       const postEntities = compact([
         ...new Set(collectionPosts.map((p: any) => p.entities).flat()),
       ]);
@@ -752,10 +765,10 @@ export class CollectionsStore extends BaseStore {
         created: val.created as Date,
         posts: collectionPosts,
         headerImage: val.headerImage,
-        postsCount: this.mapToInteger(val.postsCount),
-        questionsCount: this.mapToInteger(val.questionsCount),
-        articlesCount: this.mapToInteger(val.articlesCount),
-        linksCount: this.mapToInteger(val.linksCount),
+        postsCount: questionsCount + articlesCount + linksCount,
+        questionsCount,
+        articlesCount,
+        linksCount,
         entities: entities.get(val.id) || [],
         tags: tags.get(val.id) || [],
         users: users.get(val.id) || [],

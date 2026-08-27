@@ -15,6 +15,7 @@ const databases = TestDatabases.create({
 
 async function createStore(databaseId: TestDatabaseId) {
   const knex = await databases.init(databaseId);
+  const disabledConfigKeys = new Set<string>();
   const databaseManager = {
     getClient: async () => knex,
     migrations: {
@@ -24,6 +25,7 @@ async function createStore(databaseId: TestDatabaseId) {
 
   return {
     knex,
+    disabledConfigKeys,
     storage: await DatabaseQetaStore.create({
       database: databaseManager,
       config: {
@@ -31,6 +33,7 @@ async function createStore(databaseId: TestDatabaseId) {
         getOptionalString: () => undefined,
         getOptionalBoolean: (key: string) => {
           if (key === 'qeta.history.enabled') return true;
+          if (disabledConfigKeys.has(key)) return true;
           return undefined;
         },
         getOptionalStringArray: (key: string) => {
@@ -71,6 +74,7 @@ describe.each(databases.eachSupportedId())(
   databaseId => {
     let storage: DatabaseQetaStore;
     let knex: Knex;
+    let disabledConfigKeys: Set<string>;
 
     const insertPost = async (data: InsertPostType) =>
       (await knex<InsertPostType>('posts').insert(data).returning('id'))[0]
@@ -104,11 +108,12 @@ describe.each(databases.eachSupportedId())(
     };
 
     beforeAll(async () => {
-      ({ storage, knex } = await createStore(databaseId));
+      ({ storage, knex, disabledConfigKeys } = await createStore(databaseId));
     });
 
     afterEach(async () => {
       jest.resetAllMocks();
+      disabledConfigKeys.clear();
 
       await knex('posts').del();
       await knex('answers').del();
@@ -172,6 +177,18 @@ describe.each(databases.eachSupportedId())(
         await insertPost({ ...post, title: 'title2' });
         const ret = await storage.getPosts('user1', { type: 'question' });
         expect(ret?.posts.length).toEqual(2);
+      });
+
+      it('should filter and count only allowed post types', async () => {
+        await insertPost(post);
+        await insertPost({ ...post, title: 'article', type: 'article' });
+        disabledConfigKeys.add('qeta.articles.disabled');
+
+        const ret = await storage.getPosts('user1', {});
+
+        expect(ret.posts).toHaveLength(1);
+        expect(ret.posts[0].type).toEqual('question');
+        expect(ret.total).toEqual(1);
       });
 
       it('should fetch questions within fromDate and toDate DateRange', async () => {
@@ -597,6 +614,46 @@ describe.each(databases.eachSupportedId())(
         expect(found?.postsCount).toBe(0);
         expect(found?.posts).toEqual([]);
       });
+
+      it('should exclude disabled post types from collections', async () => {
+        const questionId = await insertPost(post);
+        const articleId = await insertPost({
+          ...post,
+          title: 'article',
+          type: 'article',
+        });
+        const collection = await storage.createCollection({
+          user_ref: 'user1',
+          title: 'Filtered Collection',
+          created: new Date(),
+        });
+        await storage.addPostToCollection('user1', collection.id, questionId);
+        await storage.addPostToCollection('user1', collection.id, articleId);
+        disabledConfigKeys.add('qeta.articles.disabled');
+
+        const result = await storage.getCollection('user1', collection.id);
+
+        expect(result?.posts?.map(item => item.type)).toEqual(['question']);
+        expect(result?.postsCount).toEqual(1);
+        expect(result?.questionsCount).toEqual(1);
+        expect(result?.articlesCount).toEqual(0);
+      });
+
+      it('should exclude disabled post types from the timeline', async () => {
+        await insertPost(post);
+        await insertPost({ ...post, title: 'article', type: 'article' });
+        disabledConfigKeys.add('qeta.articles.disabled');
+
+        const result = await storage.getTimeline('user1', {
+          includeTotal: true,
+        });
+
+        expect(result.items.map(item => item.postType)).not.toContain(
+          'article',
+        );
+        expect(result.items.map(item => item.postType)).toContain('question');
+        expect(result.total).toEqual(result.items.length);
+      });
     });
 
     describe('links', () => {
@@ -792,6 +849,22 @@ describe.each(databases.eachSupportedId())(
 
       it('should return empty array when no entity links exist', async () => {
         const result = await storage.getEntityLinks();
+        expect(result).toEqual([]);
+      });
+
+      it('should exclude entity links when links are disabled', async () => {
+        const entityId = await insertEntity('component:default/disabled-link');
+        const linkPost = await insertPost({
+          ...post,
+          type: 'link',
+          url: 'https://example.com',
+          status: 'active',
+        });
+        await insertPostEntity(linkPost, entityId);
+        disabledConfigKeys.add('qeta.links.disabled');
+
+        const result = await storage.getEntityLinks();
+
         expect(result).toEqual([]);
       });
 

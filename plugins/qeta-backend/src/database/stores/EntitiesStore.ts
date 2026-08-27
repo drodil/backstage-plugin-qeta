@@ -8,10 +8,15 @@ import {
 import { Knex } from 'knex';
 import { EntityLink } from '@backstage/catalog-model';
 import { BaseStore } from './BaseStore';
+import { Config } from '@backstage/config';
+import { getAllowedPostTypes } from '../postTypes';
 import { RawTagEntity } from './TagsStore';
 
 export class EntitiesStore extends BaseStore {
-  constructor(protected readonly db: Knex) {
+  constructor(
+    protected readonly db: Knex,
+    private readonly config?: Config,
+  ) {
     super(db);
   }
 
@@ -129,6 +134,7 @@ export class EntitiesStore extends BaseStore {
       .whereNotNull('posts.url')
       .where('posts.status', 'active')
       .where('posts.type', 'link')
+      .whereIn('posts.type', getAllowedPostTypes(this.config))
       .whereNotNull('entities.entity_ref')
       .select('entities.entity_ref as entityRef', 'posts.title', 'posts.url');
 

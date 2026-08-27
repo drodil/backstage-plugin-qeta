@@ -27,6 +27,7 @@ import { Config } from '@backstage/config';
 
 import { eng, removeStopwords } from 'stopword';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import { getAllowedPostTypes } from '../postTypes';
 
 export interface RawPostEntity {
   id: number;
@@ -242,6 +243,7 @@ export class PostsStore extends BaseStore {
       includeHealth = false,
     } = opts ?? {};
     const query = this.getPostsBaseQuery(user_ref, options);
+    query.whereIn('posts.type', getAllowedPostTypes(this.config));
     if (options.type) {
       query.where('posts.type', options.type);
     }
@@ -957,14 +959,17 @@ export class PostsStore extends BaseStore {
     user_ref: string,
     limit: number,
   ): Promise<Post[]> {
-    const rows = await this.db('post_views')
+    const query = this.db('post_views')
       .join('posts', 'post_views.postId', 'posts.id')
       .where('post_views.author', user_ref)
       .groupBy('posts.id')
       .orderByRaw('MAX(post_views.timestamp) DESC')
       .select('posts.*')
-      .whereIn('posts.status', ['active', 'obsolete'])
-      .limit(limit);
+      .whereIn('posts.status', ['active', 'obsolete']);
+
+    query.whereIn('posts.type', getAllowedPostTypes(this.config));
+
+    const rows = await query.limit(limit);
 
     return this.mapPostEntities(rows as unknown as RawPostEntity[], user_ref, {
       includeVotes: true,
@@ -1015,6 +1020,7 @@ export class PostsStore extends BaseStore {
       })
       .whereNot('posts.id', postId)
       .whereIn('posts.status', ['active', 'obsolete'])
+      .whereIn('posts.type', getAllowedPostTypes(this.config))
       .distinct('posts.id');
 
     return this.mapPostEntities(rows as unknown as RawPostEntity[], user_ref, {
