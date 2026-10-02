@@ -70,7 +70,7 @@
     "@types/multiparty": "^0.0.33",
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
-    "body-parser": "^1.20.3",
+    "body-parser": "^2.3.0",
     "cheerio": "^1.0.0-rc.12",
     "date-fns": "^2.30.0",
     "express": "^4.20.0",
@@ -80,7 +80,7 @@
     "lodash": "^4.17.23",
     "mime-types": "^3.0.1",
     "multiparty": "^4.3.0",
-    "sanitize-html": "^2.13.0",
+    "sanitize-html": "^2.17.7",
     "stopword": "^3.1.5",
     "uuid": "^9.0.1"
   },
