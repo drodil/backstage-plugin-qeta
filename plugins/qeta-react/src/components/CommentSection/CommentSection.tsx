@@ -39,7 +39,7 @@ export const CommentSection = (props: {
   // Determine the entity to get comments from
   const entity = answer ?? post;
   const commentsCount = entity.comments?.length || 0;
-  const [commentsVisible, setCommentsVisible] = useState(true);
+  const [commentsVisible, setCommentsVisible] = useState(false);
   const toastApi = useApi(toastApiRef);
 
   const postComment = (data: { content: string }) => {
@@ -59,6 +59,7 @@ export const CommentSection = (props: {
           setEdited(false);
           if (a) {
             onCommentAction(post, a);
+            setCommentsVisible(true);
           }
         })
         .finally(() => setPosting(false));
@@ -77,6 +78,7 @@ export const CommentSection = (props: {
           setEdited(false);
           if (q) {
             onCommentAction(q);
+            setCommentsVisible(true);
           }
         })
         .finally(() => setPosting(false));
@@ -95,24 +97,22 @@ export const CommentSection = (props: {
     <Box
       className={`${styles.commentSection} ${props.className ?? ''} qetaCommentSection`}
     >
-      {commentsCount > 0 && (
-        <Flex align="center" pl="1">
-          <Button
-            size="small"
-            variant="tertiary"
-            onClick={() => setCommentsVisible(v => !v)}
-            iconEnd={
-              commentsVisible ? (
-                <RiArrowUpSLine size={16} />
-              ) : (
-                <RiArrowDownSLine size={16} />
-              )
-            }
-          >
-            {`${commentsCount} ${t('common.comments')}`}
-          </Button>
-        </Flex>
-      )}
+      <Flex align="center" pl="1">
+        <Button
+          size="small"
+          variant="tertiary"
+          onClick={() => setCommentsVisible(v => !v)}
+          iconEnd={
+            commentsVisible ? (
+              <RiArrowUpSLine size={16} />
+            ) : (
+              <RiArrowDownSLine size={16} />
+            )
+          }
+        >
+          {`${commentsCount} ${t('common.comments')}`}
+        </Button>
+      </Flex>
       {commentsVisible && (
         <Box pl="1">
           <CommentList
@@ -140,7 +140,7 @@ export const CommentSection = (props: {
             </Flex>
           )}
           {!formVisible && !showProminentButton && (
-            <Flex justify="end">
+            <Flex justify="start">
               <Button
                 size="small"
                 variant="tertiary"

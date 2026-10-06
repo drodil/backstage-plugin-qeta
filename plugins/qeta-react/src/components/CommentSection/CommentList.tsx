@@ -19,7 +19,7 @@ export const CommentList = (props: {
   }
 
   return (
-    <Box>
+    <Box className={styles.container}>
       {entity.comments?.map((c, i) => {
         return (
           <div key={c.id}>
