@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Box, Button, Flex } from '@backstage/ui';
 import {
   AnswerResponse,
+  Comment,
   PostResponse,
   qetaCreateCommentPermission,
 } from '@drodil/backstage-plugin-qeta-common';
@@ -10,11 +11,7 @@ import { CommentList } from './CommentList';
 import { qetaApiRef } from '../../api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import {
-  RiArrowDownSLine,
-  RiArrowUpSLine,
-  RiChatNewLine,
-} from '@remixicon/react';
+import { RiChatNewLine } from '@remixicon/react';
 import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import { CommentForm } from './CommentForm.tsx';
 import { useConfirmNavigationIfEdited } from '../../utils';
@@ -33,14 +30,30 @@ export const CommentSection = (props: {
   const qetaApi = useApi(qetaApiRef);
   const [posting, setPosting] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
+  const [replyContent, setReplyContent] = useState('');
   const [edited, setEdited] = useState(false);
   const { t } = useTranslationRef(qetaTranslationRef);
 
-  // Determine the entity to get comments from
-  const entity = answer ?? post;
-  const commentsCount = entity.comments?.length || 0;
-  const [commentsVisible, setCommentsVisible] = useState(false);
   const toastApi = useApi(toastApiRef);
+
+  const closeForm = () => {
+    setReplyContent('');
+    setFormVisible(false);
+  };
+
+  const beginReply = (comment: Comment, replyAction: HTMLElement) => {
+    const mention = `@${comment.author} `;
+    setReplyContent(mention);
+    setFormVisible(true);
+    requestAnimationFrame(() => {
+      const textareas = replyAction
+        .closest('.qetaCommentSection')
+        ?.querySelectorAll<HTMLTextAreaElement>('.qetaCommentForm textarea');
+      const textarea = textareas?.[textareas.length - 1];
+      textarea?.focus();
+      textarea?.setSelectionRange(mention.length, mention.length);
+    });
+  };
 
   const postComment = (data: { content: string }) => {
     setPosting(true);
@@ -54,12 +67,11 @@ export const CommentSection = (props: {
           });
         })
         .then(a => {
-          setFormVisible(false);
+          closeForm();
           analytics.captureEvent('comment', 'answer');
           setEdited(false);
           if (a) {
             onCommentAction(post, a);
-            setCommentsVisible(true);
           }
         })
         .finally(() => setPosting(false));
@@ -73,12 +85,11 @@ export const CommentSection = (props: {
           });
         })
         .then(q => {
-          setFormVisible(false);
+          closeForm();
           analytics.captureEvent('comment', 'question');
           setEdited(false);
           if (q) {
             onCommentAction(q);
-            setCommentsVisible(true);
           }
         })
         .finally(() => setPosting(false));
@@ -97,31 +108,14 @@ export const CommentSection = (props: {
     <Box
       className={`${styles.commentSection} ${props.className ?? ''} qetaCommentSection`}
     >
-      <Flex align="center" pl="1">
-        <Button
-          size="small"
-          variant="tertiary"
-          onClick={() => setCommentsVisible(v => !v)}
-          iconEnd={
-            commentsVisible ? (
-              <RiArrowUpSLine size={16} />
-            ) : (
-              <RiArrowDownSLine size={16} />
-            )
-          }
-        >
-          {`${commentsCount} ${t('common.comments')}`}
-        </Button>
-      </Flex>
-      {commentsVisible && (
-        <Box pl="1">
-          <CommentList
-            post={post}
-            answer={answer}
-            onCommentAction={onCommentAction}
-          />
-        </Box>
-      )}
+      <Box pl="1">
+        <CommentList
+          post={post}
+          answer={answer}
+          onCommentAction={onCommentAction}
+          onReply={beginReply}
+        />
+      </Box>
       {!isObsolete && (
         <OptionalRequirePermission
           permission={qetaCreateCommentPermission}
@@ -132,7 +126,10 @@ export const CommentSection = (props: {
               <Button
                 variant="primary"
                 iconStart={<RiChatNewLine size={16} />}
-                onClick={() => setFormVisible(true)}
+                onClick={() => {
+                  setReplyContent('');
+                  setFormVisible(true);
+                }}
                 className={styles.prominentButton}
               >
                 {t('commentSection.leaveComment')}
@@ -145,7 +142,10 @@ export const CommentSection = (props: {
                 size="small"
                 variant="tertiary"
                 iconStart={<RiChatNewLine size={16} />}
-                onClick={() => setFormVisible(true)}
+                onClick={() => {
+                  setReplyContent('');
+                  setFormVisible(true);
+                }}
               >
                 {t('commentSection.addComment')}
               </Button>
@@ -154,10 +154,12 @@ export const CommentSection = (props: {
           {formVisible && (
             <Box className={styles.commentForm}>
               <CommentForm
+                key={replyContent}
                 submit={postComment}
                 saveButtonTitle={t('commentSection.post')}
+                defaultValues={{ content: replyContent }}
                 disabled={posting}
-                onDiscard={() => setFormVisible(false)}
+                onDiscard={closeForm}
               />
             </Box>
           )}

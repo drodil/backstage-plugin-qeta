@@ -1,5 +1,6 @@
 import {
   AnswerResponse,
+  Comment,
   PostResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { Box } from '@backstage/ui';
@@ -10,8 +11,9 @@ export const CommentList = (props: {
   onCommentAction: (question: PostResponse, answer?: AnswerResponse) => void;
   post: PostResponse;
   answer?: AnswerResponse;
+  onReply: (comment: Comment, replyAction: HTMLElement) => void;
 }) => {
-  const { post, answer, onCommentAction } = props;
+  const { post, answer, onCommentAction, onReply } = props;
   const entity = answer ?? post;
 
   if (!entity.comments || entity.comments.length === 0) {
@@ -27,6 +29,7 @@ export const CommentList = (props: {
             <CommentListItem
               comment={c}
               onCommentAction={onCommentAction}
+              onReply={onReply}
               post={post}
               answer={answer}
             />

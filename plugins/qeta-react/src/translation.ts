@@ -37,6 +37,7 @@ export const qetaTranslationRef = createTranslationRef({
       links: 'links',
       collection: 'collection',
       comment: 'comment',
+      reply: 'reply',
       answer: 'answer',
       score: '{{score}} score',
       comments: 'Comments',

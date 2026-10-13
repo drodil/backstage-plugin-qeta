@@ -13,15 +13,35 @@ jest.mock('../Utility/OptionalRequirePermission', () => ({
 }));
 
 jest.mock('./CommentForm', () => ({
-  CommentForm: (props: { submit: (data: { content: string }) => void }) => (
-    <button type="button" onClick={() => props.submit({ content: 'New' })}>
-      Submit comment
-    </button>
+  CommentForm: (props: {
+    submit: (data: { content: string }) => void;
+    defaultValues?: { content: string };
+  }) => (
+    <div>
+      <span data-testid="form-default">{props.defaultValues?.content}</span>
+      <button type="button" onClick={() => props.submit({ content: 'New' })}>
+        Submit comment
+      </button>
+    </div>
   ),
 }));
 
 jest.mock('./CommentList', () => ({
-  CommentList: () => <div>Rendered comments</div>,
+  CommentList: (props: {
+    onReply: (comment: unknown, element: HTMLElement) => void;
+  }) => (
+    <div>
+      Rendered comments
+      <button
+        type="button"
+        onClick={e =>
+          props.onReply({ id: 1, author: 'user:default/john' }, e.currentTarget)
+        }
+      >
+        Reply to john
+      </button>
+    </div>
+  ),
 }));
 
 jest.mock('../../utils', () => ({
@@ -58,19 +78,18 @@ describe('CommentSection', () => {
     jest.clearAllMocks();
   });
 
-  it('starts with comments collapsed and expands them on request', () => {
+  it('shows existing comments without a collapse toggle', () => {
     render(<CommentSection post={post} onCommentAction={jest.fn()} />, {
       wrapper,
     });
 
-    expect(screen.queryByText('Rendered comments')).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: /1 comments/i }));
-
     expect(screen.getByText('Rendered comments')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /1 comments/i }),
+    ).not.toBeInTheDocument();
   });
 
-  it('expands comments after successfully posting a new comment', async () => {
+  it('keeps comments visible after successfully posting a new comment', async () => {
     mockQetaApi.commentPost.mockResolvedValue(post);
 
     render(<CommentSection post={post} onCommentAction={jest.fn()} />, {
@@ -81,8 +100,36 @@ describe('CommentSection', () => {
     fireEvent.click(screen.getByRole('button', { name: /submit comment/i }));
 
     await waitFor(() =>
-      expect(screen.getByText('Rendered comments')).toBeInTheDocument(),
+      expect(screen.queryByText('Submit comment')).not.toBeInTheDocument(),
     );
+    expect(screen.getByText('Rendered comments')).toBeInTheDocument();
     expect(mockQetaApi.commentPost).toHaveBeenCalledWith(1, 'New');
+  });
+
+  it('opens the comment form prefilled with a mention when replying', () => {
+    render(<CommentSection post={post} onCommentAction={jest.fn()} />, {
+      wrapper,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /reply to john/i }));
+
+    expect(screen.getByTestId('form-default')).toHaveTextContent(
+      '@user:default/john',
+    );
+  });
+
+  it('posts a reply as a comment on the post', async () => {
+    mockQetaApi.commentPost.mockResolvedValue(post);
+
+    render(<CommentSection post={post} onCommentAction={jest.fn()} />, {
+      wrapper,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /reply to john/i }));
+    fireEvent.click(screen.getByRole('button', { name: /submit comment/i }));
+
+    await waitFor(() =>
+      expect(mockQetaApi.commentPost).toHaveBeenCalledWith(1, 'New'),
+    );
   });
 });
