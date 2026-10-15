@@ -175,10 +175,12 @@ export const QetaPage = (props?: Props) => {
                   )}
                   <Route path={usersRouteRef.path} element={<UsersPage />} />
                   <Route path={userRouteRef.path} element={<UserPage />} />
-                  <Route
-                    path={statisticsRouteRef.path}
-                    element={<StatisticsPage />}
-                  />
+                  {!disabled.statistics && (
+                    <Route
+                      path={statisticsRouteRef.path}
+                      element={<StatisticsPage />}
+                    />
+                  )}
                   {!disabled.collections && (
                     <>
                       <Route

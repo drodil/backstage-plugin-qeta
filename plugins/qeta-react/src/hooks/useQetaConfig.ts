@@ -7,7 +7,9 @@ export type QetaConfigSection =
   | 'links'
   | 'collections'
   | 'tags'
-  | 'entities';
+  | 'entities'
+  | 'statistics'
+  | 'userStatistics';
 
 const postTypeToSection: Record<PostType, QetaConfigSection> = {
   question: 'questions',
@@ -19,7 +21,11 @@ export const useQetaConfig = () => {
   const configApi = useApi(configApiRef);
 
   const isSectionDisabled = (section: QetaConfigSection) =>
-    configApi.getOptionalBoolean(`qeta.${section}.disabled`) ?? false;
+    configApi.getOptionalBoolean(
+      section === 'userStatistics'
+        ? 'qeta.statistics.users.disabled'
+        : `qeta.${section}.disabled`,
+    ) ?? false;
 
   const isPostTypeDisabled = (postType?: PostType) =>
     postType ? isSectionDisabled(postTypeToSection[postType]) : false;
@@ -34,6 +40,10 @@ export const useQetaConfig = () => {
       collections: isSectionDisabled('collections'),
       tags: isSectionDisabled('tags'),
       entities: isSectionDisabled('entities'),
+      statistics: isSectionDisabled('statistics'),
+      userStatistics: isSectionDisabled('userStatistics'),
     },
+    showLastSeen:
+      configApi.getOptionalBoolean('qeta.statistics.users.lastSeen') ?? true,
   };
 };

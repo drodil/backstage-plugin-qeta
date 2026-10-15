@@ -1,7 +1,6 @@
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import useDebounce from 'react-use/lib/useDebounce';
 import { useQetaApi } from './useQetaApi';
 import { filterTags, QetaApi } from '@drodil/backstage-plugin-qeta-common';
 import { filterKeys as globalFilterKeys } from '../components/FilterPanel/FilterPanel';
@@ -124,17 +123,9 @@ export function useQetaEntities<T, F>(props: QetaEntitiesProps<T, F>) {
       analytics.captureEvent(`qeta_search_${prefix}`, query);
     }
     setSearchQuery(query);
+    setItems([]);
+    setFilters(prev => ({ ...prev, searchQuery: query }));
   };
-
-  useDebounce(
-    () => {
-      if ((filters as any).searchQuery !== searchQuery) {
-        setFilters({ ...filters, searchQuery: searchQuery });
-      }
-    },
-    400,
-    [searchQuery],
-  );
 
   useEffect(() => {
     let filtersApplied = false;

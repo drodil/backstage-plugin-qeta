@@ -43,6 +43,12 @@ Post trend determines the popularity of a post based on views, votes, answers, a
             .enum(['question', 'article', 'link'])
             .optional()
             .describe('Filter posts by type'),
+          favorite: z
+            .boolean()
+            .optional()
+            .describe(
+              'When true, return only posts favorited by the current user',
+            ),
           limit: z
             .number()
             .optional()
@@ -73,6 +79,10 @@ Post trend determines the popularity of a post based on views, votes, answers, a
               type: z
                 .enum(['question', 'article', 'link'])
                 .describe('The type of the post'),
+              favorite: z
+                .boolean()
+                .optional()
+                .describe('Whether the current user has favorited the post'),
               title: z.string().describe('The title of the post'),
               content: z
                 .string()

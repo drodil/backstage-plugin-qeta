@@ -247,6 +247,28 @@ describe('Statistics Routes', () => {
         }),
       );
     });
+
+    it('disables global statistics endpoints when configured', async () => {
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        { qeta: { statistics: { disabled: true } } },
+      );
+
+      const globalResponse =
+        await request(disabledApp).get('/statistics/global');
+      const activityResponse = await request(disabledApp).get(
+        '/statistics/activity',
+      );
+      const leaderboardResponse = await request(disabledApp).get(
+        '/statistics/posts/most-questions',
+      );
+
+      expect(globalResponse.status).toEqual(404);
+      expect(activityResponse.status).toEqual(404);
+      expect(leaderboardResponse.status).toEqual(404);
+      expect(disabledStore.getGlobalStats).not.toHaveBeenCalled();
+      expect(disabledStore.getCommunityActivity).not.toHaveBeenCalled();
+      expect(disabledStore.getTotalPosts).not.toHaveBeenCalled();
+    });
   });
 
   describe('GET /statistics/user/:userRef', () => {
@@ -360,6 +382,86 @@ describe('Statistics Routes', () => {
           correctAnswers: 0,
         }),
       );
+    });
+
+    it('prevents access to another user’s activity when disabled', async () => {
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        {
+          qeta: {
+            allowMetadataInput: true,
+            statistics: { users: { disabled: true } },
+          },
+        },
+      );
+
+      const response = await request(disabledApp)
+        .get('/statistics/user/user:default/test')
+        .set('x-qeta-user', 'user:default/test');
+
+      expect(response.status).toEqual(403);
+      expect(disabledStore.getUserStats).not.toHaveBeenCalled();
+      expect(disabledStore.getUser).not.toHaveBeenCalled();
+    });
+
+    it('allows access to the requesting user’s activity when disabled', async () => {
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        { qeta: { statistics: { users: { disabled: true } } } },
+      );
+      disabledStore.getUserStats.mockResolvedValue([]);
+      disabledStore.getUser.mockResolvedValue({
+        userRef: 'user:default/mock',
+        totalViews: 0,
+        totalQuestions: 0,
+        totalAnswers: 0,
+        totalComments: 0,
+        totalVotes: 0,
+        totalArticles: 0,
+        totalLinks: 0,
+        totalFollowers: 0,
+        reputation: 0,
+        answerScore: 0,
+        postScore: 0,
+        correctAnswers: 0,
+      });
+
+      const response = await request(disabledApp).get(
+        '/statistics/user/user:default/mock',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(disabledStore.getUserStats).toHaveBeenCalledWith(
+        'user:default/mock',
+      );
+    });
+
+    it('omits lastSeen from user statistics when disabled', async () => {
+      const { app: disabledApp, qetaStore: disabledStore } = await setupTestApp(
+        { qeta: { statistics: { users: { lastSeen: false } } } },
+      );
+      disabledStore.getUserStats.mockResolvedValue([]);
+      disabledStore.getUser.mockResolvedValue({
+        userRef: 'user:default/test',
+        totalViews: 0,
+        totalQuestions: 0,
+        totalAnswers: 0,
+        totalComments: 0,
+        totalVotes: 0,
+        totalArticles: 0,
+        totalLinks: 0,
+        totalFollowers: 0,
+        reputation: 0,
+        answerScore: 0,
+        postScore: 0,
+        correctAnswers: 0,
+        lastSeen: new Date('2025-01-01T00:00:00Z'),
+      });
+
+      const response = await request(disabledApp).get(
+        '/statistics/user/user:default/test',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body.summary).not.toHaveProperty('lastSeen');
     });
   });
 

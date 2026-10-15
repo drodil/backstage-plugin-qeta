@@ -7,6 +7,11 @@ import {
   StatisticsOptions,
 } from '@drodil/backstage-plugin-qeta-common';
 import { RouteOptions } from '../types';
+import {
+  AuthenticationError,
+  NotAllowedError,
+  NotFoundError,
+} from '@backstage/errors';
 
 export const statisticRoutes = (router: Router, options: RouteOptions) => {
   const { database, permissionMgr } = options;
@@ -18,6 +23,19 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
     options.config.getOptionalBoolean('qeta.links.disabled') ?? false;
   const tagsDisabled =
     options.config.getOptionalBoolean('qeta.tags.disabled') ?? false;
+  const statisticsDisabled =
+    options.config.getOptionalBoolean('qeta.statistics.disabled') ?? false;
+  const userStatisticsDisabled =
+    options.config.getOptionalBoolean('qeta.statistics.users.disabled') ??
+    false;
+  const lastSeenEnabled =
+    options.config.getOptionalBoolean('qeta.statistics.users.lastSeen') ?? true;
+
+  const ensureStatisticsEnabled = () => {
+    if (statisticsDisabled) {
+      throw new NotFoundError('Statistics are disabled');
+    }
+  };
 
   const applyDisabledStatFields = <T extends object>(stat: T): T => {
     return {
@@ -86,6 +104,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/statistics/global', async (_req, response) => {
+    ensureStatisticsEnabled();
     const key = 'qeta:statistics:global';
     const ttl = 3600 * 1000;
 
@@ -136,6 +155,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   });
 
   router.get('/statistics/activity', async (req, response) => {
+    ensureStatisticsEnabled();
     const period = (req.query.period as string) || '3600'; // Default 1 hour
     const activity = await database.getCommunityActivity(period);
     if (questionsDisabled) {
@@ -146,6 +166,27 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
 
   router.get('/statistics/user/:userRef(*)', async (req, response) => {
     const userRef = req.params.userRef;
+    if (userStatisticsDisabled) {
+      const allowAnonymous =
+        options.config.getOptionalBoolean('qeta.allowAnonymous') ?? false;
+      let credentials;
+      try {
+        credentials = await permissionMgr.getCredentials(req);
+      } catch (error) {
+        if (!allowAnonymous || !(error instanceof AuthenticationError)) {
+          throw error;
+        }
+      }
+      let requestingUserRef: string | undefined;
+      if (credentials && options.auth.isPrincipal(credentials, 'user')) {
+        requestingUserRef = credentials.principal.userEntityRef;
+      } else if (allowAnonymous) {
+        requestingUserRef = 'user:default/guest';
+      }
+      if (requestingUserRef !== userRef) {
+        throw new NotAllowedError("Cannot view another user's statistics");
+      }
+    }
     const key = `qeta:statistics:user:${userRef}`;
     const ttl = 3600 * 1000;
 
@@ -202,6 +243,12 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
       options.logger,
     );
 
+    if (!lastSeenEnabled && data.summary) {
+      const summary = { ...data.summary };
+      delete summary.lastSeen;
+      return response.status(200).json({ ...data, summary });
+    }
+
     return response.status(200).json(data);
   });
 
@@ -209,6 +256,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   router.get(
     '/statistics/posts/top-upvoted-users',
     async (request, response) => {
+      ensureStatisticsEnabled();
       const { period, limit } = request.query;
       const userRef = await permissionMgr.getUsername(request);
 
@@ -266,6 +314,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   router.get(
     '/statistics/answers/top-upvoted-users',
     async (request, response) => {
+      ensureStatisticsEnabled();
       const { period, limit } = request.query;
       const userRef = await permissionMgr.getUsername(request);
 
@@ -320,6 +369,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
   router.get(
     '/statistics/answers/top-correct-upvoted-users',
     async (request, response) => {
+      ensureStatisticsEnabled();
       const { period, limit } = request.query;
       const userRef = await permissionMgr.getUsername(request);
 
@@ -375,6 +425,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
 
   // GET /statistics/posts/most-questions?period=x&limit=x
   router.get('/statistics/posts/most-questions', async (request, response) => {
+    ensureStatisticsEnabled();
     const { period, limit } = request.query;
     const userRef = await permissionMgr.getUsername(request);
 
@@ -424,6 +475,7 @@ export const statisticRoutes = (router: Router, options: RouteOptions) => {
 
   // GET /statistics/answers/most-answers?period=x&limit=x
   router.get('/statistics/answers/most-answers', async (request, response) => {
+    ensureStatisticsEnabled();
     const { period, limit } = request.query;
     const userRef = await permissionMgr.getUsername(request);
 

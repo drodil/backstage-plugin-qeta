@@ -166,6 +166,38 @@ export interface Config {
       disabled?: boolean;
     };
     /**
+     * Statistics visibility and privacy configuration.
+     *
+     * @visibility frontend
+     */
+    statistics?: {
+      /**
+       * Disable the global statistics page and global statistics endpoints.
+       *
+       * @visibility frontend
+       */
+      disabled?: boolean;
+      /**
+       * User-specific statistics and activity privacy configuration.
+       *
+       * @visibility frontend
+       */
+      users?: {
+        /**
+         * Hide user profile statistics and prevent access to other users' activity.
+         *
+         * @visibility frontend
+         */
+        disabled?: boolean;
+        /**
+         * Include last-seen timestamps in user statistics responses.
+         *
+         * @visibility frontend
+         */
+        lastSeen?: boolean;
+      };
+    };
+    /**
      * If desire to disable image upload.
      * @visibility frontend
      */

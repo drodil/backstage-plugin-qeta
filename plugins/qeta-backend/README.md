@@ -70,6 +70,22 @@ In your `packages/backend/src/index.ts` make the following changes:
   backend.start();
 ```
 
+### MCP actions
+
+The backend registers `ask-question`, `write-article`, `post-link`, and
+`answer-question` actions. The post creation actions accept optional `draft`
+and `collectionId` inputs to save the post as a draft and add it to a
+collection. They also support tags, catalog entities, and image files as
+`{ base64, mimeType }` values. `headerImage` accepts either a URL string or the
+same base64 image object. `write-article` also accepts a related
+URL. For `post-link`, the required `content` URL is also stored as the link's
+destination URL. `answer-question` accepts the same base64 image objects for
+answer attachments.
+
+Read actions include `get-posts`, `get-tags`, and `get-collections`.
+`get-posts` accepts `favorite: true` to return only posts favorited by the
+current user. `add-post-to-collection` can add an existing post to a collection.
+
 ### Integration with `@backstage/plugin-search`
 
 > [!WARNING]  

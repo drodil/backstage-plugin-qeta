@@ -121,7 +121,10 @@ export class DatabaseQetaStore implements QetaStore {
     const commentsStore = new CommentsStore(client, config);
     const tagsStore = new TagsStore(client, tagDatabase);
     const entitiesStore = new EntitiesStore(client, config);
-    const usersStore = new UsersStore(client);
+    const usersStore = new UsersStore(
+      client,
+      config.getOptionalBoolean('qeta.statistics.users.lastSeen') ?? true,
+    );
     const templatesStore = new TemplatesStore(client, tagsStore, entitiesStore);
     const attachmentsStore = new AttachmentsStore(client);
     const postsStore = new PostsStore(

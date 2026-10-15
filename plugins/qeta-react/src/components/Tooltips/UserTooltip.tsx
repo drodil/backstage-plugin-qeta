@@ -23,6 +23,7 @@ import { qetaTranslationRef } from '../../translation';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { UserStat } from '@drodil/backstage-plugin-qeta-common';
 import { qetaApiRef } from '../../api';
+import { useQetaConfig } from '../../hooks/useQetaConfig';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles';
 
 const cache: Map<string, { data: UserStat; timestamp: number }> = new Map();
@@ -53,6 +54,7 @@ const UserTooltipContent = ({
   const { t } = useTranslationRef(qetaTranslationRef);
   const qetaApi = useApi(qetaApiRef);
   const styles = useTooltipStyles();
+  const { disabled } = useQetaConfig();
 
   const { name, user, secondaryTitle } = useUserInfo(
     entityRef,
@@ -61,6 +63,10 @@ const UserTooltipContent = ({
   const [stats, setStats] = useState<UserStat | undefined>();
 
   useEffect(() => {
+    if (disabled.userStatistics) {
+      return;
+    }
+
     const cached = cache.get(entityRef);
     if (cached && Date.now() - cached.timestamp < TTL) {
       setStats(cached.data);
@@ -87,9 +93,9 @@ const UserTooltipContent = ({
       if (res) setStats(res);
       requestCache.delete(entityRef);
     });
-  }, [qetaApi, entityRef]);
+  }, [qetaApi, entityRef, disabled.userStatistics]);
 
-  if (!stats) {
+  if (!stats && !disabled.userStatistics) {
     return (
       <Flex align="center" gap="4">
         <Skeleton rounded width={40} height={40} />
@@ -118,44 +124,46 @@ const UserTooltipContent = ({
           </Text>
         </div>
       </Flex>
-      <div className={styles.statsRow}>
-        <div className={styles.stat}>
-          <RiQuestionLine size={14} />
-          <Text variant="body-x-small">
-            {stats.totalQuestions} {t('common.questions')}
-          </Text>
+      {!disabled.userStatistics && stats && (
+        <div className={styles.statsRow}>
+          <div className={styles.stat}>
+            <RiQuestionLine size={14} />
+            <Text variant="body-x-small">
+              {stats.totalQuestions} {t('common.questions')}
+            </Text>
+          </div>
+          <div className={styles.stat}>
+            <RiQuestionAnswerLine size={14} />
+            <Text variant="body-x-small">
+              {stats.totalAnswers} {t('common.answers', {})}
+            </Text>
+          </div>
+          <div className={styles.stat}>
+            <RiFileTextLine size={14} />
+            <Text variant="body-x-small">
+              {stats.totalArticles} {t('common.articles')}
+            </Text>
+          </div>
+          <div className={styles.stat}>
+            <RiStarFill size={14} color="var(--bui-fg-warning)" />
+            <Text variant="body-x-small">
+              {stats.reputation} {t('impactCard.reputation')}
+            </Text>
+          </div>
+          <div className={styles.stat}>
+            <RiEyeLine size={14} />
+            <Text variant="body-x-small">
+              {stats.totalViews} {t('common.views')}
+            </Text>
+          </div>
+          <div className={styles.stat}>
+            <RiCheckboxCircleLine size={14} color="var(--bui-fg-positive)" />
+            <Text variant="body-x-small">
+              {stats.correctAnswers} {t('impactCard.correctAnswers')}
+            </Text>
+          </div>
         </div>
-        <div className={styles.stat}>
-          <RiQuestionAnswerLine size={14} />
-          <Text variant="body-x-small">
-            {stats.totalAnswers} {t('common.answers', {})}
-          </Text>
-        </div>
-        <div className={styles.stat}>
-          <RiFileTextLine size={14} />
-          <Text variant="body-x-small">
-            {stats.totalArticles} {t('common.articles')}
-          </Text>
-        </div>
-        <div className={styles.stat}>
-          <RiStarFill size={14} color="var(--bui-fg-warning)" />
-          <Text variant="body-x-small">
-            {stats.reputation} {t('impactCard.reputation')}
-          </Text>
-        </div>
-        <div className={styles.stat}>
-          <RiEyeLine size={14} />
-          <Text variant="body-x-small">
-            {stats.totalViews} {t('common.views')}
-          </Text>
-        </div>
-        <div className={styles.stat}>
-          <RiCheckboxCircleLine size={14} color="var(--bui-fg-positive)" />
-          <Text variant="body-x-small">
-            {stats.correctAnswers} {t('impactCard.correctAnswers')}
-          </Text>
-        </div>
-      </div>
+      )}
     </Flex>
   );
 };

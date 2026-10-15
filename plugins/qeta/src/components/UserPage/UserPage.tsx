@@ -32,15 +32,20 @@ export const UserPage = () => {
   const [tab, setTab] = useState('statistics');
   const { t } = useTranslationRef(qetaTranslationRef);
   const [_searchParams, setSearchParams] = useSearchParams();
-  const { disabled } = useQetaConfig();
+  const { disabled, showLastSeen } = useQetaConfig();
   const {
     value: currentUser,
     loading: loadingUser,
     error: userError,
   } = useIdentityApi(api => api.getBackstageIdentity(), []);
+  const canReadUserStats =
+    !disabled.userStatistics || currentUser?.userEntityRef === identity;
   const { value: userStats, loading: loadingUserStats } = useQetaApi(
-    api => api.getUserStats(identity),
-    [identity],
+    api =>
+      canReadUserStats
+        ? api.getUserStats(identity)
+        : Promise.resolve(undefined),
+    [identity, canReadUserStats],
   );
 
   const handleChange = (newValue: string) => {
@@ -50,7 +55,7 @@ export const UserPage = () => {
 
   const availableTabs = useMemo(() => {
     return [
-      'statistics',
+      !disabled.userStatistics ? 'statistics' : null,
       !disabled.questions ? 'questions' : null,
       !disabled.articles ? 'articles' : null,
       !disabled.links ? 'links' : null,
@@ -73,12 +78,14 @@ export const UserPage = () => {
   );
 
   const tabItems = [
-    <Tab key="statistics" id="statistics">
-      <TabLabel
-        icon={<RiBarChartLine size={16} />}
-        label={t('userPage.statistics', {})}
-      />
-    </Tab>,
+    !disabled.userStatistics ? (
+      <Tab key="statistics" id="statistics">
+        <TabLabel
+          icon={<RiBarChartLine size={16} />}
+          label={t('userPage.statistics', {})}
+        />
+      </Tab>
+    ) : null,
     !disabled.questions ? (
       <Tab key="questions" id="questions">
         <TabLabel
@@ -135,7 +142,7 @@ export const UserPage = () => {
                 },
               ]
             : []),
-          ...(userStats?.summary?.lastSeen
+          ...(showLastSeen && userStats?.summary?.lastSeen
             ? [
                 {
                   label: t('stats.lastSeen'),
@@ -174,13 +181,15 @@ export const UserPage = () => {
         onSelectionChange={key => handleChange(key as string)}
       >
         <TabList aria-label={t('userPage.profileTab', {})}>{tabItems}</TabList>
-        <TabPanel id="statistics" className={styles.tabPanel}>
-          <UserStatsContent
-            userRef={identity ?? ''}
-            stats={userStats}
-            loading={loadingUserStats}
-          />
-        </TabPanel>
+        {!disabled.userStatistics && (
+          <TabPanel id="statistics" className={styles.tabPanel}>
+            <UserStatsContent
+              userRef={identity ?? ''}
+              stats={userStats}
+              loading={loadingUserStats}
+            />
+          </TabPanel>
+        )}
         {!disabled.questions && (
           <TabPanel id="questions" className={styles.tabPanel}>
             <PostsContainer

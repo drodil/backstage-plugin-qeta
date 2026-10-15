@@ -1,6 +1,7 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
+import { uploadPostImages } from './util';
 
 export const registerPostActions = (options: {
   actionsRegistry: ActionsRegistryService;
@@ -25,6 +26,43 @@ export const registerPostActions = (options: {
           content: z
             .string()
             .describe('The content/body of the question in markdown format'),
+          draft: z
+            .boolean()
+            .optional()
+            .describe('Whether to save the question as a draft'),
+          collectionId: z
+            .number()
+            .int()
+            .positive()
+            .optional()
+            .describe('Optional collection ID to add the question to'),
+          images: z
+            .array(
+              z.object({
+                base64: z
+                  .string()
+                  .min(1)
+                  .describe('Base64-encoded image bytes'),
+                mimeType: z.string().min(1).describe('Image MIME type'),
+              }),
+            )
+            .optional()
+            .describe(
+              'Optional image files to upload and attach to the question',
+            ),
+          headerImage: z
+            .union([
+              z.string().url(),
+              z.object({
+                base64: z
+                  .string()
+                  .min(1)
+                  .describe('Base64-encoded image bytes'),
+                mimeType: z.string().min(1).describe('Image MIME type'),
+              }),
+            ])
+            .optional()
+            .describe('Optional header image URL or base64-encoded image'),
           tags: z
             .array(z.string())
             .optional()
@@ -53,6 +91,14 @@ export const registerPostActions = (options: {
             .array(z.string())
             .optional()
             .describe('Catalog entity references attached to the question'),
+          status: z
+            .enum(['active', 'draft', 'deleted', 'obsolete'])
+            .optional()
+            .describe('Question status'),
+          collectionId: z
+            .number()
+            .optional()
+            .describe('Collection the question was added to'),
           self: z.string().describe('Link to created question').optional(),
         }),
     },
@@ -61,14 +107,37 @@ export const registerPostActions = (options: {
         onBehalfOf: credentials,
         targetPluginId: 'qeta',
       });
+      const {
+        draft,
+        collectionId,
+        images: imageInputs,
+        headerImage,
+        ...questionInput
+      } = input;
+      const imageFields = await uploadPostImages(
+        api,
+        imageInputs,
+        headerImage,
+        token,
+      );
       const question = await api.createPost(
         {
-          ...input,
+          ...questionInput,
+          ...imageFields,
           type: 'question',
+          status: draft ? 'draft' : 'active',
         },
         { token },
       );
-      return { output: question };
+      if (collectionId !== undefined) {
+        await api.addPostToCollection(collectionId, question.id, { token });
+      }
+      return {
+        output: {
+          ...question,
+          ...(collectionId !== undefined ? { collectionId } : {}),
+        },
+      };
     },
   });
 
@@ -84,6 +153,44 @@ export const registerPostActions = (options: {
         z.object({
           title: z.string().describe('The title of the article'),
           content: z.string().describe('The content/body of the article'),
+          draft: z
+            .boolean()
+            .optional()
+            .describe('Whether to save the article as a draft'),
+          collectionId: z
+            .number()
+            .int()
+            .positive()
+            .optional()
+            .describe('Optional collection ID to add the article to'),
+          images: z
+            .array(
+              z.object({
+                base64: z
+                  .string()
+                  .min(1)
+                  .describe('Base64-encoded image bytes'),
+                mimeType: z.string().min(1).describe('Image MIME type'),
+              }),
+            )
+            .optional()
+            .describe(
+              'Optional image files to upload and attach to the article',
+            ),
+          headerImage: z
+            .union([
+              z.string().url(),
+              z.object({
+                base64: z
+                  .string()
+                  .min(1)
+                  .describe('Base64-encoded image bytes'),
+                mimeType: z.string().min(1).describe('Image MIME type'),
+              }),
+            ])
+            .optional()
+            .describe('Optional header image URL or base64-encoded image'),
+          url: z.string().url().optional().describe('Optional related URL'),
           tags: z
             .array(z.string())
             .optional()
@@ -110,6 +217,14 @@ export const registerPostActions = (options: {
             .array(z.string())
             .optional()
             .describe('Catalog entity references attached to the article'),
+          status: z
+            .enum(['active', 'draft', 'deleted', 'obsolete'])
+            .optional()
+            .describe('Article status'),
+          collectionId: z
+            .number()
+            .optional()
+            .describe('Collection the article was added to'),
           self: z.string().describe('Link to created article').optional(),
         }),
     },
@@ -118,14 +233,37 @@ export const registerPostActions = (options: {
         onBehalfOf: credentials,
         targetPluginId: 'qeta',
       });
+      const {
+        draft,
+        collectionId,
+        images: imageInputs,
+        headerImage,
+        ...articleInput
+      } = input;
+      const imageFields = await uploadPostImages(
+        api,
+        imageInputs,
+        headerImage,
+        token,
+      );
       const article = await api.createPost(
         {
-          ...input,
+          ...articleInput,
+          ...imageFields,
           type: 'article',
+          status: draft ? 'draft' : 'active',
         },
         { token },
       );
-      return { output: article };
+      if (collectionId !== undefined) {
+        await api.addPostToCollection(collectionId, article.id, { token });
+      }
+      return {
+        output: {
+          ...article,
+          ...(collectionId !== undefined ? { collectionId } : {}),
+        },
+      };
     },
   });
 
@@ -143,6 +281,41 @@ export const registerPostActions = (options: {
         z.object({
           title: z.string().describe('The title of the link'),
           content: z.string().url().describe('The URL'),
+          draft: z
+            .boolean()
+            .optional()
+            .describe('Whether to save the link as a draft'),
+          collectionId: z
+            .number()
+            .int()
+            .positive()
+            .optional()
+            .describe('Optional collection ID to add the link to'),
+          images: z
+            .array(
+              z.object({
+                base64: z
+                  .string()
+                  .min(1)
+                  .describe('Base64-encoded image bytes'),
+                mimeType: z.string().min(1).describe('Image MIME type'),
+              }),
+            )
+            .optional()
+            .describe('Optional image files to upload and attach to the link'),
+          headerImage: z
+            .union([
+              z.string().url(),
+              z.object({
+                base64: z
+                  .string()
+                  .min(1)
+                  .describe('Base64-encoded image bytes'),
+                mimeType: z.string().min(1).describe('Image MIME type'),
+              }),
+            ])
+            .optional()
+            .describe('Optional header image URL or base64-encoded image'),
           tags: z
             .array(z.string())
             .optional()
@@ -167,6 +340,14 @@ export const registerPostActions = (options: {
             .array(z.string())
             .optional()
             .describe('Catalog entity references attached to the link'),
+          status: z
+            .enum(['active', 'draft', 'deleted', 'obsolete'])
+            .optional()
+            .describe('Link status'),
+          collectionId: z
+            .number()
+            .optional()
+            .describe('Collection the link was added to'),
           self: z.string().describe('Link to created link').optional(),
         }),
     },
@@ -175,14 +356,38 @@ export const registerPostActions = (options: {
         onBehalfOf: credentials,
         targetPluginId: 'qeta',
       });
+      const {
+        draft,
+        collectionId,
+        images: imageInputs,
+        headerImage,
+        ...linkInput
+      } = input;
+      const imageFields = await uploadPostImages(
+        api,
+        imageInputs,
+        headerImage,
+        token,
+      );
       const link = await api.createPost(
         {
-          ...input,
+          ...linkInput,
+          ...imageFields,
+          url: input.content,
           type: 'link',
+          status: draft ? 'draft' : 'active',
         },
         { token },
       );
-      return { output: link };
+      if (collectionId !== undefined) {
+        await api.addPostToCollection(collectionId, link.id, { token });
+      }
+      return {
+        output: {
+          ...link,
+          ...(collectionId !== undefined ? { collectionId } : {}),
+        },
+      };
     },
   });
 };

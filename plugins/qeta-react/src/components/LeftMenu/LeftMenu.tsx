@@ -256,11 +256,13 @@ export const LeftMenu = (props: {
         />
       )}
 
-      <CustomMenuItem
-        route={statisticsRoute()}
-        icon={<RiTrophyLine size={16} />}
-        label={t('leftMenu.statistics')}
-      />
+      {!disabled.statistics && (
+        <CustomMenuItem
+          route={statisticsRoute()}
+          icon={<RiTrophyLine size={16} />}
+          label={t('leftMenu.statistics')}
+        />
+      )}
 
       <Text as="div" className={styles.sectionHeader}>
         {t('leftMenu.manage')}

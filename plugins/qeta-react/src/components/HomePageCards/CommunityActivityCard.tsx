@@ -30,9 +30,16 @@ export const CommunityActivityCard = () => {
   const [period, setPeriod] = useState('7d');
 
   const { value: stats, loading } = useQetaApi(
-    api => api.getCommunityActivity(period),
-    [period],
+    api =>
+      disabled.statistics
+        ? Promise.resolve(undefined)
+        : api.getCommunityActivity(period),
+    [period, disabled.statistics],
   );
+
+  if (disabled.statistics) {
+    return null;
+  }
 
   const renderContent = () => {
     if (loading) {

@@ -1,6 +1,7 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { QetaClient } from '@drodil/backstage-plugin-qeta-common';
+import { uploadImages } from './util';
 
 export const registerAnswerQuestionAction = (options: {
   actionsRegistry: ActionsRegistryService;
@@ -30,6 +31,20 @@ export const registerAnswerQuestionAction = (options: {
           answer: z
             .string()
             .describe('The content/body of the answer in markdown format'),
+          images: z
+            .array(
+              z.object({
+                base64: z
+                  .string()
+                  .min(1)
+                  .describe('Base64-encoded image bytes'),
+                mimeType: z.string().min(1).describe('Image MIME type'),
+              }),
+            )
+            .optional()
+            .describe(
+              'Optional image files to upload and attach to the answer',
+            ),
         }),
       output: z =>
         z.object({
@@ -50,7 +65,17 @@ export const registerAnswerQuestionAction = (options: {
         onBehalfOf: credentials,
         targetPluginId: 'qeta',
       });
-      const answer = await api.postAnswer(input, { token });
+      const { images: imageInputs, ...answerInput } = input;
+      const uploadedImages = await uploadImages(api, imageInputs, token);
+      const answer = await api.postAnswer(
+        {
+          ...answerInput,
+          ...(uploadedImages !== undefined
+            ? { images: uploadedImages.map(image => image.id) }
+            : {}),
+        },
+        { token },
+      );
       return { output: answer };
     },
   });

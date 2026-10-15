@@ -4,8 +4,8 @@ import { qetaApiRef } from '../api';
 
 interface UseFollowOptions<T> {
   fetchFollowed: () => Promise<T[]>;
-  followItem: (item: T) => Promise<unknown>;
-  unfollowItem: (item: T) => Promise<unknown>;
+  followItem: (item: T) => Promise<boolean>;
+  unfollowItem: (item: T) => Promise<boolean>;
   isEqual: (a: T, b: T) => boolean;
 }
 
@@ -46,21 +46,25 @@ export const useFollow = <T>(key: string, options: UseFollowOptions<T>) => {
   }, [qetaApi, fetchFollowed, cache]);
 
   const follow = useCallback(
-    (item: T) => {
-      followItem(item).then(() => {
-        setItems(prev => [...prev, item]);
-        cache.data?.push(item);
-      });
+    async (item: T) => {
+      const succeeded = await followItem(item);
+      if (!succeeded) {
+        return;
+      }
+      setItems(prev => [...prev, item]);
+      cache.data?.push(item);
     },
     [followItem, cache],
   );
 
   const unfollow = useCallback(
-    (item: T) => {
-      unfollowItem(item).then(() => {
-        setItems(prev => prev.filter(i => !isEqual(i, item)));
-        cache.data = cache.data?.filter(i => !isEqual(i, item));
-      });
+    async (item: T) => {
+      const succeeded = await unfollowItem(item);
+      if (!succeeded) {
+        return;
+      }
+      setItems(prev => prev.filter(i => !isEqual(i, item)));
+      cache.data = cache.data?.filter(i => !isEqual(i, item));
     },
     [unfollowItem, isEqual, cache],
   );
