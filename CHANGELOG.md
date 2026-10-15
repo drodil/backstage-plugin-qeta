@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/drodil/backstage-plugin-qeta/compare/v4.0.5...v4.1.0) (2026-10-15)
+
+
+### Features
+
+* feature dump ([d2d1252](https://github.com/drodil/backstage-plugin-qeta/commit/d2d12524974d2d01f6cb0681d6238a148b04eb91)), closes [#438](https://github.com/drodil/backstage-plugin-qeta/issues/438) [#440](https://github.com/drodil/backstage-plugin-qeta/issues/440) [#443](https://github.com/drodil/backstage-plugin-qeta/issues/443) [#444](https://github.com/drodil/backstage-plugin-qeta/issues/444) [#445](https://github.com/drodil/backstage-plugin-qeta/issues/445)
+
+
+### Bug Fixes
+
+* improve comment section UI ([9aa583a](https://github.com/drodil/backstage-plugin-qeta/commit/9aa583a820990f2eca68116700291cdb3e497063))
+* keep comments visible and add reply action ([5264421](https://github.com/drodil/backstage-plugin-qeta/commit/526442197d2dd0e452b20cc6be70a0151e9e08f3))
+* skip template select with prefilled inputs ([3688654](https://github.com/drodil/backstage-plugin-qeta/commit/3688654fb7df49bf802ee1634cb9bd7d7893cb12))
+* tsc errors due to backstage update ([5b6598d](https://github.com/drodil/backstage-plugin-qeta/commit/5b6598dc87ea1f0e5a08669c88850483aa36d242))
+
 ### [4.0.5](https://github.com/drodil/backstage-plugin-qeta/compare/v4.0.4...v4.0.5) (2026-08-27)
 
 
