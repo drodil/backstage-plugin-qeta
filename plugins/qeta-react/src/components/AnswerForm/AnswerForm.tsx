@@ -193,7 +193,7 @@ export const AnswerForm = (props: {
       permission={qetaCreateAnswerPermission}
       errorPage={<></>}
     >
-      <Card>
+      <Card style={{ marginTop: '1rem' }}>
         <CardBody>
           <form
             onSubmit={handleSubmit(postAnswer)}

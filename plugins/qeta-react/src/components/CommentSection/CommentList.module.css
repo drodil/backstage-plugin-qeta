@@ -1,9 +1,9 @@
 @layer components {
   .container {
     overflow: hidden;
-    border: 1px solid var(--bui-border-1);
     border-radius: var(--bui-radius-2);
-    background-color: var(--bui-bg-neutral-1-hover);
+    background-color: var(--bui-bg-neutral-2-disabled);
+    margin-top: var(--bui-space-1);
   }
 
   .divider {

@@ -43,6 +43,19 @@ export const AskPage = () => {
   const questionTitle = searchParams.get('title') ?? undefined;
   const content = searchParams.get('content') ?? undefined;
   const tags = filterTags(searchParams.get('tags'));
+  const hasPrefilledInputs = [
+    'entity',
+    'entityPage',
+    'title',
+    'content',
+    'tags',
+  ].some(param => searchParams.has(param));
+  const requestedTemplateId = searchParams.get('template');
+  const requestedTemplate = value?.templates.find(
+    item =>
+      requestedTemplateId !== null && item.id === Number(requestedTemplateId),
+  );
+  const selectedTemplate = template ?? requestedTemplate;
   const { t } = useTranslationRef(qetaTranslationRef);
   let title;
   if (id) {
@@ -74,7 +87,9 @@ export const AskPage = () => {
     value &&
     value.templates &&
     value.total > 0 &&
-    template === undefined
+    template === undefined &&
+    !requestedTemplate &&
+    !hasPrefilledInputs
   ) {
     return (
       <Box role="region" aria-label={t('askPage.templateSelection')}>
@@ -115,7 +130,7 @@ export const AskPage = () => {
           entityPage={entityPage}
           tags={tags}
           type="question"
-          template={template}
+          template={selectedTemplate}
           onFormChange={handleFormChange}
           aria-label={t('askPage.questionForm')}
           title={questionTitle}

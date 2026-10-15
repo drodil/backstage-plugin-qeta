@@ -4,8 +4,10 @@
   }
 
   .commentForm {
-    margin-left: var(--bui-space-5);
-    margin-top: var(--bui-space-2);
+    background-color: var(--bui-bg-neutral-2-disabled);
+    padding: var(--bui-space-4) var(--bui-space-4);
+    margin-left: var(--bui-space-1);
+    border-top: 1px solid var(--bui-border-1);
   }
 
   .prominentButton {
