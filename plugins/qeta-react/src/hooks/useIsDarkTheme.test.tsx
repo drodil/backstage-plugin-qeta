@@ -39,7 +39,7 @@ function createActiveThemeSubject(initialValue: string | undefined) {
       const observable: ReturnType<AppThemeApi['activeThemeId$']> = {
         [Symbol.observable]: () => observable,
         subscribe(
-          observerOrNext:
+          observerOrNext?:
             | ((themeId: string | undefined) => void)
             | {
                 next?(themeId: string | undefined): void;
@@ -52,7 +52,7 @@ function createActiveThemeSubject(initialValue: string | undefined) {
           const onNext =
             typeof observerOrNext === 'function'
               ? observerOrNext
-              : observerOrNext.next?.bind(observerOrNext);
+              : observerOrNext?.next?.bind(observerOrNext);
           if (onNext) {
             onNext(value);
             listeners.add(onNext);
