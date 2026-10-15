@@ -1,4 +1,11 @@
 @layer components {
+  .container {
+    overflow: hidden;
+    border: 1px solid var(--bui-border-1);
+    border-radius: var(--bui-radius-2);
+    background-color: var(--bui-bg-neutral-1-hover);
+  }
+
   .divider {
     border-top: 1px solid var(--bui-border-1);
   }

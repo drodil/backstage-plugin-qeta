@@ -9,11 +9,13 @@ import {
   AnswerResponse,
   Comment,
   PostResponse,
+  qetaCreateCommentPermission,
 } from '@drodil/backstage-plugin-qeta-common';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api.ts';
 import { CommentForm } from './CommentForm.tsx';
 import { ExpertIcon } from '../Icons/ExpertIcon.tsx';
+import { OptionalRequirePermission } from '../Utility/OptionalRequirePermission';
 import styles from './CommentListItem.module.css';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
 
@@ -22,9 +24,10 @@ export const CommentListItem = (props: {
   onCommentAction: (question: PostResponse, answer?: AnswerResponse) => void;
   post: PostResponse;
   answer?: AnswerResponse;
+  onReply: (comment: Comment, replyAction: HTMLElement) => void;
 }) => {
   const { t } = useTranslationRef(qetaTranslationRef);
-  const { comment, onCommentAction, post, answer } = props;
+  const { comment, onCommentAction, onReply, post, answer } = props;
   const qetaApi = useApi(qetaApiRef);
   const [posting, setPosting] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -126,6 +129,20 @@ export const CommentListItem = (props: {
             {comment.expert && <ExpertIcon />}
             {' • '}
             <RelativeTimeWithTooltip value={comment.created} />
+            {post.status !== 'obsolete' && (
+              <OptionalRequirePermission
+                permission={qetaCreateCommentPermission}
+                errorPage={<></>}
+              >
+                <Link
+                  standalone
+                  className={`${styles.actionBtn} qetaCommentReplyBtn`}
+                  onPress={e => onReply(comment, e.target as HTMLElement)}
+                >
+                  {t('common.reply')}
+                </Link>
+              </OptionalRequirePermission>
+            )}
             {comment.canEdit && post.status !== 'obsolete' && (
               <Link
                 standalone
