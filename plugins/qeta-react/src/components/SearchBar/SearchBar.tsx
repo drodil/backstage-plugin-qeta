@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SearchField } from '@backstage/ui';
-import debounce from 'lodash/debounce';
 import styles from './SearchBar.module.css';
 
 export const SearchBar = (props: {
@@ -28,20 +27,27 @@ export const SearchBar = (props: {
     [onSearch, minSearchLength],
   );
 
-  const debouncedSearchCallback = useMemo(
-    () => debounce(debouncedSearch, debounceTime),
-    [debouncedSearch, debounceTime],
+  const debounceTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
   );
 
   useEffect(() => {
     return () => {
-      debouncedSearchCallback.cancel();
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
     };
-  }, [debouncedSearchCallback]);
+  }, [debouncedSearch, debounceTime]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    debouncedSearchCallback(query);
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+    debounceTimeout.current = setTimeout(
+      () => debouncedSearch(query),
+      debounceTime,
+    );
   };
 
   const handleClear = () => {

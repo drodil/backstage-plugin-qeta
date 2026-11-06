@@ -3,7 +3,12 @@ import { CalendarDate, parseDate } from '@internationalized/date';
 import { formatDate } from '../../utils/utils';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
-import { Box, DateRangePicker, Select } from '@backstage/ui';
+import {
+  Box,
+  DateRangePicker,
+  Select,
+  type DateRangePickerProps,
+} from '@backstage/ui';
 import styles from './DateRangeFilter.module.css';
 
 export interface DateRangeFilterProps {
@@ -81,10 +86,18 @@ export const DateRangeFilter = (props: DateRangeFilterProps) => {
           className={styles.dateRange}
           label={t('datePicker.range.custom')}
           maxValue={maxDateValue}
-          value={customDateRangeValue}
+          value={
+            customDateRangeValue as unknown as DateRangePickerProps['value']
+          }
           onChange={range => {
-            if (range?.start && range?.end) {
-              handleCustom(range.start.toString(), range.end.toString());
+            const selectedRange = range as NonNullable<
+              DateRangePickerProps['value']
+            > | null;
+            if (selectedRange?.start && selectedRange.end) {
+              handleCustom(
+                selectedRange.start.toString(),
+                selectedRange.end.toString(),
+              );
             }
           }}
         />

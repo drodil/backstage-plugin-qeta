@@ -23,7 +23,6 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation.ts';
 import { qetaApiRef } from '../../api';
-import { compact } from 'lodash';
 import { FieldError } from 'react-hook-form';
 import type { CatalogApi } from '@backstage/catalog-client';
 import type {
@@ -172,7 +171,9 @@ const loadUsedEntities = async (params: {
     ...(catalogQuery ? { query: catalogQuery } : {}),
   });
 
-  return compact(catalogData.items);
+  return catalogData.items.filter(
+    (entity): entity is NonNullable<typeof entity> => Boolean(entity),
+  );
 };
 
 const loadCatalogEntities = async (params: {
@@ -197,7 +198,9 @@ const loadCatalogEntities = async (params: {
 
   const entities = await queryEntities(request);
 
-  return compact(entities.items);
+  return entities.items.filter((entity): entity is NonNullable<typeof entity> =>
+    Boolean(entity),
+  );
 };
 
 const mergeEntities = (...groups: Array<Array<Entity | null | undefined>>) => {

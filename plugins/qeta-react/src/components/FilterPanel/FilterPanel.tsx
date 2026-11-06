@@ -35,7 +35,6 @@ import {
   RiApps2Line,
   RiPriceTag3Line,
 } from '@remixicon/react';
-import { compact } from 'lodash';
 import styles from './FilterPanel.module.css';
 
 const radioSelect = (value: string, label: string) => {
@@ -309,7 +308,11 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
           fields: ['kind', 'metadata.name', 'metadata.namespace'],
         })
         .then(data => {
-          setEntities(compact(data.items));
+          setEntities(
+            data.items.filter((entity): entity is NonNullable<typeof entity> =>
+              Boolean(entity),
+            ),
+          );
         });
     }
   }, [catalogApi, filters.entities]);

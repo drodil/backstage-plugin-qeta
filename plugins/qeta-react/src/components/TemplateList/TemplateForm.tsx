@@ -6,7 +6,6 @@ import { qetaApiRef } from '../../api';
 import { Controller, useForm } from 'react-hook-form';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
-import { compact } from 'lodash';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { TagInput } from '../PostForm/TagInput';
@@ -61,7 +60,12 @@ const getValues = async (
     questionTitle: template.questionTitle,
     questionContent: template.questionContent,
     tags: template.tags ?? [],
-    entities: 'items' in entities ? compact(entities.items) : [],
+    entities:
+      'items' in entities
+        ? entities.items.filter(
+            (entity): entity is NonNullable<typeof entity> => Boolean(entity),
+          )
+        : [],
   };
 };
 

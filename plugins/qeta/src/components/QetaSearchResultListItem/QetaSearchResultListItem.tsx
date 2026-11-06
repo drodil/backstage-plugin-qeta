@@ -16,7 +16,6 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import DOMPurify from 'dompurify';
-import { capitalize } from 'lodash';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '@drodil/backstage-plugin-qeta-react';
 import { parseEntityRef } from '@backstage/catalog-model';
@@ -82,7 +81,8 @@ const Excerpt = (props: {
           variant="body-small"
           color="secondary"
         >
-          {capitalize(t(`common.${document.postType}`))}
+          {t(`common.${document.postType}`).charAt(0).toLocaleUpperCase() +
+            t(`common.${document.postType}`).slice(1).toLocaleLowerCase()}
           {' · '}
           {t('searchResult.created')}{' '}
           {DateTime.fromISO(document.created.toString() as string).toRelative()}
@@ -131,7 +131,8 @@ const Excerpt = (props: {
           variant="body-small"
           color="secondary"
         >
-          {capitalize(t(`common.collection`))}
+          {t('common.collection').charAt(0).toLocaleUpperCase() +
+            t('common.collection').slice(1).toLocaleLowerCase()}
           {' · '}
           {t('searchResult.created')}{' '}
           {DateTime.fromISO(document.created.toString() as string).toRelative()}

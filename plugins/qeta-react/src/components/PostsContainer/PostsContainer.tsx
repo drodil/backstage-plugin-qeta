@@ -8,7 +8,6 @@ import { TagFollowButton } from '../Buttons/TagFollowButton';
 import { EntityFollowButton } from '../Buttons/EntityFollowButton';
 import { CreateLinkButton, WriteArticleButton } from '../Buttons';
 import { ViewType } from '../ViewToggle/ViewToggle';
-import { capitalize } from 'lodash';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { qetaTranslationRef } from '../../translation';
 import { Box, Flex, Text } from '@backstage/ui';
@@ -90,7 +89,10 @@ export const PostsContainer = (props: PostsContainerProps) => {
     return null;
   }
 
-  const itemType = capitalize(t(`common.${type ?? 'post'}` as any, {}));
+  const rawItemType = t(`common.${type ?? 'post'}` as any, {});
+  const itemType =
+    rawItemType.charAt(0).toLocaleUpperCase() +
+    rawItemType.slice(1).toLocaleLowerCase();
   let shownTitle: React.ReactNode = title;
   let link = undefined;
   let btn = undefined;

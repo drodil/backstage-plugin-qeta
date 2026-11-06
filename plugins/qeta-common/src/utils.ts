@@ -1,5 +1,4 @@
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
-import { compact } from 'lodash';
 import { isValidTag } from './tags';
 import { PostType } from './types.ts';
 import { Config } from '@backstage/config';
@@ -38,8 +37,8 @@ export const detectFileType = async (
 export const findUserMentions = (text: string): string[] => {
   const mentions = text.match(/@(\S+)/g);
   const ret = mentions ? Array.from(new Set(mentions)) : [];
-  return compact(
-    ret.map(mention => {
+  return ret
+    .map(mention => {
       try {
         const parsed = parseEntityRef(mention.replace(/^@+/, ''));
         if (parsed.kind.toLocaleLowerCase('en-US') !== 'user') {
@@ -49,8 +48,8 @@ export const findUserMentions = (text: string): string[] => {
       } catch (e) {
         return undefined;
       }
-    }),
-  );
+    })
+    .filter((mention): mention is string => mention !== undefined);
 };
 
 /**
@@ -63,8 +62,8 @@ export const findEntityMentions = (text: string): string[] => {
   const mentions = text.match(/@(\S+)/g);
   const ret = mentions ? Array.from(new Set(mentions)) : [];
 
-  return compact(
-    ret.map(mention => {
+  return ret
+    .map(mention => {
       try {
         const parsed = parseEntityRef(mention.replace(/^@+/, ''));
         const kind = parsed.kind.toLocaleLowerCase('en-US');
@@ -75,18 +74,14 @@ export const findEntityMentions = (text: string): string[] => {
       } catch {
         return undefined;
       }
-    }),
-  );
+    })
+    .filter((mention): mention is string => mention !== undefined);
 };
 
 export const findTagMentions = (text: string): string[] => {
   const mentions = text.match(/#(\S+)/g);
   const ret = mentions ? Array.from(new Set(mentions)) : [];
-  return compact(
-    ret.filter(tag => {
-      return isValidTag(tag.slice(1));
-    }),
-  );
+  return ret.filter(tag => isValidTag(tag.slice(1)));
 };
 
 // Covers many common but not all cases of markdown formatting

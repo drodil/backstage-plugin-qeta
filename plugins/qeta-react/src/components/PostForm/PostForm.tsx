@@ -40,7 +40,6 @@ import { MarkdownEditor } from '../MarkdownEditor/MarkdownEditor';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
-import { compact } from 'lodash';
 import { TagInput } from './TagInput';
 import { QuestionFormValues } from './types';
 import { EntitiesInput } from './EntitiesInput';
@@ -136,7 +135,12 @@ const getValues = async (
     content: post.content,
     author: authorEntity,
     tags: post.tags ?? [],
-    entities: 'items' in entities ? compact(entities.items) : [],
+    entities:
+      'items' in entities
+        ? entities.items.filter(
+            (entity): entity is NonNullable<typeof entity> => Boolean(entity),
+          )
+        : [],
     type,
     headerImage: post.headerImage,
     url: post.url,
@@ -383,7 +387,12 @@ export const PostForm = (props: PostFormProps) => {
           setValues(v => {
             return {
               ...v,
-              entities: compact([...(v.entities ?? []), ...data.items]),
+              entities: [...(v.entities ?? []), ...data.items].filter(
+                (
+                  selectedEntity,
+                ): selectedEntity is NonNullable<typeof selectedEntity> =>
+                  Boolean(selectedEntity),
+              ),
             };
           });
         });

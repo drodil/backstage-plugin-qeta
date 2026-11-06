@@ -32,7 +32,6 @@ import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
-import { compact } from 'lodash';
 import {
   RiArrowDownSLine,
   RiArrowUpSLine,
@@ -118,8 +117,18 @@ const getValues = async (
       headerImage: collection.headerImage,
       images: collection.images,
       tags: collection.tags || [],
-      entities: 'items' in entities ? compact(entities.items) : [],
-      users: 'items' in users ? compact(users.items) : [],
+      entities:
+        'items' in entities
+          ? entities.items.filter(
+              (entity): entity is NonNullable<typeof entity> => Boolean(entity),
+            )
+          : [],
+      users:
+        'items' in users
+          ? users.items.filter((entity): entity is NonNullable<typeof entity> =>
+              Boolean(entity),
+            )
+          : [],
     },
     collection,
   };

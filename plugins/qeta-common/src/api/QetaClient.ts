@@ -70,7 +70,6 @@ import type {
   PostRevisionsResponse,
 } from '../types';
 import { CustomErrorBase } from '@backstage/errors';
-import omitBy from 'lodash/omitBy';
 import crossFetch from 'cross-fetch';
 import qs from 'qs';
 
@@ -1662,7 +1661,9 @@ export class QetaClient implements QetaApi {
     if (!params) {
       return '';
     }
-    const cleaned = omitBy(params, v => !Boolean(v));
+    const cleaned = Object.fromEntries(
+      Object.entries(params).filter(([, value]) => Boolean(value)),
+    );
     return qs.stringify(cleaned);
   }
 

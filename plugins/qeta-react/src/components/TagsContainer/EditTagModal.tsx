@@ -17,7 +17,6 @@ import { qetaTranslationRef } from '../../translation';
 import { EntitiesInput } from '../PostForm/EntitiesInput';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { compact } from 'lodash';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 export const EditTagModal = (props: {
@@ -49,7 +48,11 @@ export const EditTagModal = (props: {
       })
       .then(resp => {
         if (resp) {
-          setExperts(compact(resp.items));
+          setExperts(
+            resp.items.filter((entity): entity is NonNullable<typeof entity> =>
+              Boolean(entity),
+            ),
+          );
         }
       });
   }, [toastApi, catalogApi, isModerator, tag.experts]);

@@ -9,7 +9,6 @@ import {
   Collections,
 } from '../QetaStore';
 import { Knex } from 'knex';
-import { compact } from 'lodash';
 import { BaseStore } from './BaseStore';
 import { AttachmentsStore } from './AttachmentsStore';
 import { PostsStore } from './PostsStore';
@@ -750,12 +749,12 @@ export class CollectionsStore extends BaseStore {
       const linksCount = allowedPostTypes.has('link')
         ? this.mapToInteger(val.linksCount)
         : 0;
-      const postEntities = compact([
+      const postEntities = [
         ...new Set(collectionPosts.map((p: any) => p.entities).flat()),
-      ]);
-      const postTags = compact([
+      ].filter((value): value is NonNullable<typeof value> => Boolean(value));
+      const postTags = [
         ...new Set(collectionPosts.map((p: any) => p.tags).flat()),
-      ]);
+      ].filter((value): value is NonNullable<typeof value> => Boolean(value));
 
       return {
         id: val.id,

@@ -5,7 +5,6 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { articleRouteRef, linkRouteRef, questionRouteRef } from '../../routes';
 import { AuthorLink } from '../Links';
 import { Chip } from '../Utility/Chip.tsx';
-import { capitalize } from 'lodash';
 import {
   RiFileTextLine,
   RiLinkM,
@@ -46,7 +45,7 @@ export const PostsTableRow = (props: { post: Post; showIcon?: boolean }) => {
               <RiLinkM size={14} />,
             )}
           >
-            {capitalize(post.type)}
+            {post.type.charAt(0).toLocaleUpperCase() + post.type.slice(1)}
           </Chip>
         </td>
       )}

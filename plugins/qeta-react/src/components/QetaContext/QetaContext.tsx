@@ -12,7 +12,6 @@ import {
 } from 'react';
 import type { PluggableList } from 'unified';
 import { storageApiRef, useApi } from '@backstage/core-plugin-api';
-import { merge } from 'lodash';
 import { ViewType } from '../ViewToggle/ViewToggle';
 
 export type UserSettings = {
@@ -32,6 +31,16 @@ const DEFAULT_SETTINGS: UserSettings = {
   aiAnswerExpanded: false,
   usePagination: false,
 };
+
+const mergeSettings = (stored: Partial<UserSettings>): UserSettings => ({
+  ...DEFAULT_SETTINGS,
+  ...stored,
+  filterPanelExpanded: {
+    ...DEFAULT_SETTINGS.filterPanelExpanded,
+    ...stored.filterPanelExpanded,
+  },
+  viewType: { ...DEFAULT_SETTINGS.viewType, ...stored.viewType },
+});
 
 const BUCKET_KEY = 'qeta';
 const STORAGE_KEY = 'qeta-user-settings';
@@ -109,7 +118,7 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
     const stored = snapshot.value as UserSettings | undefined;
 
     if (stored) {
-      const merged = merge({}, DEFAULT_SETTINGS, stored);
+      const merged = mergeSettings(stored);
       setSettings(merged);
       settingsRef.current = merged;
     } else {
@@ -127,7 +136,7 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
 
         const value = newSnapshot.value;
         if (value) {
-          const merged = merge({}, DEFAULT_SETTINGS, value);
+          const merged = mergeSettings(value);
           setSettings(merged);
           settingsRef.current = merged;
         }
@@ -156,7 +165,7 @@ export const QetaProvider = (props: PropsWithChildren<QetaContextProps>) => {
       const snapshot = bucket.snapshot(STORAGE_KEY);
       const storedSettings = snapshot.value as UserSettings | undefined;
       const currentSettings = storedSettings
-        ? merge({}, DEFAULT_SETTINGS, storedSettings)
+        ? mergeSettings(storedSettings)
         : settingsRef.current;
 
       let newSettings: UserSettings;

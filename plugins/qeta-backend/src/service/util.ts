@@ -34,7 +34,6 @@ import {
 } from '@drodil/backstage-plugin-qeta-common';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { HttpsProxyAgent } from 'hpagent';
-import { compact } from 'lodash';
 import {
   ConditionTransformer,
   createConditionTransformer,
@@ -356,7 +355,9 @@ const mapResourceComments = async (
       };
     }),
   );
-  return compact(comments);
+  return comments.filter((comment): comment is NonNullable<typeof comment> =>
+    Boolean(comment),
+  );
 };
 
 const mapAnswerAdditionalFields = async (

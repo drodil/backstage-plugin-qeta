@@ -6,7 +6,6 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from '@backstage/plugin-permission-node';
-import { compact } from 'lodash';
 
 function isQetaFilter(filter: any): filter is QetaFilter {
   return filter.hasOwnProperty('property');
@@ -105,7 +104,9 @@ export abstract class BaseStore {
     }
 
     if (isQetaFilter(filter)) {
-      const values: string[] = compact(filter.values) ?? [];
+      const values = filter.values.filter((value): value is string =>
+        Boolean(value),
+      );
 
       let fk = 'posts.id';
       if (type === 'answer') {
