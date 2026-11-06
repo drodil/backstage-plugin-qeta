@@ -143,6 +143,45 @@ test.describe('Questions - Independent Tests', () => {
     }).toPass({ timeout: 10000 });
   });
 
+  test('post an answer through the form', async ({ page, request }) => {
+    const { id: questionId } = await createQuestion(request);
+    const answer = `Browser-submitted answer ${faker.string.uuid()}`;
+
+    await page.goto(`/qeta/questions/${questionId}`);
+
+    const answerForm = page.locator('#qeta-answer-form form');
+    const answerInput = answerForm.locator('textarea.mde-text');
+    await expect(answerInput).toBeVisible();
+    await answerInput.fill(answer);
+    await answerForm.locator('button[type="submit"]').click();
+
+    await expect(page.getByText(answer, { exact: true })).toBeVisible();
+    await page.reload();
+    await expect(page.getByText(answer, { exact: true })).toBeVisible();
+  });
+
+  test('favorite a question and find it on the favorites page', async ({
+    page,
+    request,
+  }) => {
+    const { id: questionId, title } = await createQuestion(request);
+
+    await page.goto(`/qeta/questions/${questionId}`);
+
+    const favoriteButton = page.getByRole('button', {
+      name: 'favorite',
+      exact: true,
+    });
+    await expect(favoriteButton).toBeVisible();
+    await favoriteButton.click();
+    await expect(
+      page.getByRole('button', { name: 'unfavorite', exact: true }),
+    ).toBeVisible();
+
+    await page.goto('/qeta/favorites');
+    await expect(page.getByRole('link', { name: title }).first()).toBeVisible();
+  });
+
   test('mark answer as correct', async ({ page, request }) => {
     const { id: questionId } = await createQuestion(request, {
       user: 'user:development/guest',

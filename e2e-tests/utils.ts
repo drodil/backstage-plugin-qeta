@@ -4,11 +4,9 @@ import { faker } from '@faker-js/faker';
 export async function loginAsGuest(page: Page) {
   const enterButton = page.getByRole('button', { name: 'Enter' });
 
-  try {
-    await enterButton.waitFor({ state: 'visible', timeout: 5000 });
-    await enterButton.click();
-    await expect(enterButton).not.toBeVisible();
-  } catch (e) {}
+  await expect(enterButton).toBeVisible();
+  await enterButton.click();
+  await expect(enterButton).not.toBeVisible();
 }
 
 const AUTH_HEADER = 'Bearer FO23CjUG7SNlPWPCO3x25W3TlPC8lh8l';
@@ -55,6 +53,10 @@ export const createQuestion = async (
     data: question,
   });
 
+  if (!response.ok()) {
+    throw new Error(`Failed to create question: HTTP ${response.status()}`);
+  }
+
   return await response.json();
 };
 
@@ -87,6 +89,10 @@ export const createArticle = async (
     },
     data: article,
   });
+
+  if (!response.ok()) {
+    throw new Error(`Failed to create article: HTTP ${response.status()}`);
+  }
 
   return await response.json();
 };
@@ -123,6 +129,10 @@ export const createLink = async (
     data: link,
   });
 
+  if (!response.ok()) {
+    throw new Error(`Failed to create link: HTTP ${response.status()}`);
+  }
+
   return await response.json();
 };
 
@@ -150,6 +160,10 @@ export const createAnswer = async (
       data: answer,
     },
   );
+
+  if (!response.ok()) {
+    throw new Error(`Failed to create answer: HTTP ${response.status()}`);
+  }
 
   return await response.json();
 };

@@ -95,6 +95,9 @@ test.describe('Collections', () => {
     await expect(option).toBeVisible({ timeout: 5000 });
     await option.click();
     await page.keyboard.press('Escape');
+    await expect(
+      page.getByRole('gridcell', { name: /test component 2/i }),
+    ).toBeVisible();
 
     await page.getByRole('button', { name: 'Create Collection' }).click();
 
@@ -119,18 +122,34 @@ test.describe('Collections', () => {
     await expect(postEntityOption).toBeVisible({ timeout: 5000 });
     await postEntityOption.click();
     await page.keyboard.press('Escape');
+    await expect(
+      page.getByRole('gridcell', { name: /test component 2/i }),
+    ).toBeVisible();
 
+    const createPostResponse = page.waitForResponse(
+      response =>
+        response.request().method() === 'POST' &&
+        new URL(response.url()).pathname === '/api/qeta/posts',
+      { timeout: 15000 },
+    );
     await page.getByRole('button', { name: /Publish|Post/i }).click();
-    await expect(page).toHaveURL(/\/qeta\/questions\/\d+/);
+    const response = await createPostResponse;
+    expect(
+      response.ok(),
+      `Question creation failed with HTTP ${response.status()}`,
+    ).toBe(true);
+    await expect(page).toHaveURL(/\/qeta\/questions\/\d+/, { timeout: 15000 });
     await expect(page.getByRole('heading', { name: postTitle })).toBeVisible();
 
-    await page.waitForTimeout(1000);
     await page.goto(collectionUrl);
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByRole('link', { name: postTitle })).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(
+      page
+        .locator('.qetaPostsContainer')
+        .getByRole('link', { name: postTitle })
+        .first(),
+    ).toBeVisible({ timeout: 15000 });
   });
 
   test('create automatic collection with combined rules (OR logic)', async ({
