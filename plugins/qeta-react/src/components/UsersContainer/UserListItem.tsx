@@ -61,65 +61,67 @@ export const UserListItem = (props: { user: UserResponse }) => {
                 e.stopPropagation();
               }}
             >
-              <div className={styles.statsWrapper}>
-                <TooltipTrigger>
-                  <div className={styles.statItem}>
-                    <RiStarFill size={16} color="var(--bui-fg-warning)" />
-                    <Text variant="body-small">{user.reputation}</Text>
-                  </div>
-                  <Tooltip>{t('impactCard.reputation')}</Tooltip>
-                </TooltipTrigger>
-                {!disabled.questions && (
+              {!disabled.userStatistics && (
+                <div className={styles.statsWrapper}>
                   <TooltipTrigger>
                     <div className={styles.statItem}>
-                      <RiQuestionLine size={16} />
-                      <Text variant="body-small">{user.totalQuestions}</Text>
+                      <RiStarFill size={16} color="var(--bui-fg-warning)" />
+                      <Text variant="body-small">{user.reputation}</Text>
                     </div>
-                    <Tooltip>{t('common.questions')}</Tooltip>
+                    <Tooltip>{t('impactCard.reputation')}</Tooltip>
                   </TooltipTrigger>
-                )}
-                {!disabled.questions && (
+                  {!disabled.questions && (
+                    <TooltipTrigger>
+                      <div className={styles.statItem}>
+                        <RiQuestionLine size={16} />
+                        <Text variant="body-small">{user.totalQuestions}</Text>
+                      </div>
+                      <Tooltip>{t('common.questions')}</Tooltip>
+                    </TooltipTrigger>
+                  )}
+                  {!disabled.questions && (
+                    <TooltipTrigger>
+                      <div className={styles.statItem}>
+                        <RiQuestionAnswerLine size={16} />
+                        <Text variant="body-small">{user.totalAnswers}</Text>
+                      </div>
+                      <Tooltip>{t('common.answers')}</Tooltip>
+                    </TooltipTrigger>
+                  )}
+                  {!disabled.articles && (
+                    <TooltipTrigger>
+                      <div className={styles.statItem}>
+                        <RiFileTextLine size={16} />
+                        <Text variant="body-small">{user.totalArticles}</Text>
+                      </div>
+                      <Tooltip>{t('common.articles')}</Tooltip>
+                    </TooltipTrigger>
+                  )}
+                  {!disabled.links && (
+                    <TooltipTrigger>
+                      <div className={styles.statItem}>
+                        <RiLinkM size={16} />
+                        <Text variant="body-small">{user.totalLinks}</Text>
+                      </div>
+                      <Tooltip>{t('common.links')}</Tooltip>
+                    </TooltipTrigger>
+                  )}
                   <TooltipTrigger>
                     <div className={styles.statItem}>
-                      <RiQuestionAnswerLine size={16} />
-                      <Text variant="body-small">{user.totalAnswers}</Text>
+                      <RiThumbUpLine size={16} />
+                      <Text variant="body-small">{user.totalVotes}</Text>
                     </div>
-                    <Tooltip>{t('common.answers')}</Tooltip>
+                    <Tooltip>{t('common.votes')}</Tooltip>
                   </TooltipTrigger>
-                )}
-                {!disabled.articles && (
                   <TooltipTrigger>
                     <div className={styles.statItem}>
-                      <RiFileTextLine size={16} />
-                      <Text variant="body-small">{user.totalArticles}</Text>
+                      <RiEyeLine size={16} />
+                      <Text variant="body-small">{user.totalViews}</Text>
                     </div>
-                    <Tooltip>{t('common.articles')}</Tooltip>
+                    <Tooltip>{t('common.views')}</Tooltip>
                   </TooltipTrigger>
-                )}
-                {!disabled.links && (
-                  <TooltipTrigger>
-                    <div className={styles.statItem}>
-                      <RiLinkM size={16} />
-                      <Text variant="body-small">{user.totalLinks}</Text>
-                    </div>
-                    <Tooltip>{t('common.links')}</Tooltip>
-                  </TooltipTrigger>
-                )}
-                <TooltipTrigger>
-                  <div className={styles.statItem}>
-                    <RiThumbUpLine size={16} />
-                    <Text variant="body-small">{user.totalVotes}</Text>
-                  </div>
-                  <Tooltip>{t('common.votes')}</Tooltip>
-                </TooltipTrigger>
-                <TooltipTrigger>
-                  <div className={styles.statItem}>
-                    <RiEyeLine size={16} />
-                    <Text variant="body-small">{user.totalViews}</Text>
-                  </div>
-                  <Tooltip>{t('common.views')}</Tooltip>
-                </TooltipTrigger>
-              </div>
+                </div>
+              )}
               {!loadingUser &&
                 !userError &&
                 currentUser?.userEntityRef !== user.userRef && (

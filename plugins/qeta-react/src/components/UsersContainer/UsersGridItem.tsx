@@ -98,97 +98,99 @@ export const UsersGridItem = (props: { user: UserResponse }) => {
             )}
         </Flex>
         <div className={`${classes.cardContent} ${styles.flexColumn}`}>
-          <Grid.Root
-            columns={{ sm: '12' }}
-            gap="1"
-            className={styles.statsGrid}
-          >
-            <Grid.Item colSpan={{ sm: row1ColSpan }}>
-              <div className={styles.statItem}>
-                <RiStarFill size={16} color="var(--bui-fg-warning)" />
-                <Text variant="body-small" weight="bold">
-                  {user.reputation}
-                </Text>
-                <Text variant="body-x-small" color="secondary">
-                  {t('impactCard.reputation')}
-                </Text>
-              </div>
-            </Grid.Item>
-            {!disabled.questions && (
+          {!disabled.userStatistics && (
+            <Grid.Root
+              columns={{ sm: '12' }}
+              gap="1"
+              className={styles.statsGrid}
+            >
               <Grid.Item colSpan={{ sm: row1ColSpan }}>
                 <div className={styles.statItem}>
-                  <RiQuestionLine size={16} />
+                  <RiStarFill size={16} color="var(--bui-fg-warning)" />
                   <Text variant="body-small" weight="bold">
-                    {user.totalQuestions}
+                    {user.reputation}
                   </Text>
                   <Text variant="body-x-small" color="secondary">
-                    {t('common.questions')}
+                    {t('impactCard.reputation')}
                   </Text>
                 </div>
               </Grid.Item>
-            )}
-            {!disabled.articles && (
-              <Grid.Item colSpan={{ sm: row1ColSpan }}>
-                <div className={styles.statItem}>
-                  <RiFileTextLine size={16} />
-                  <Text variant="body-small" weight="bold">
-                    {user.totalArticles}
-                  </Text>
-                  <Text variant="body-x-small" color="secondary">
-                    {t('common.articles')}
-                  </Text>
-                </div>
-              </Grid.Item>
-            )}
-            {!disabled.links && (
-              <Grid.Item colSpan={{ sm: row1ColSpan }}>
-                <div className={styles.statItem}>
-                  <RiLinkM size={16} />
-                  <Text variant="body-small" weight="bold">
-                    {user.totalLinks}
-                  </Text>
-                  <Text variant="body-x-small" color="secondary">
-                    {t('common.links')}
-                  </Text>
-                </div>
-              </Grid.Item>
-            )}
-            {!disabled.questions && (
+              {!disabled.questions && (
+                <Grid.Item colSpan={{ sm: row1ColSpan }}>
+                  <div className={styles.statItem}>
+                    <RiQuestionLine size={16} />
+                    <Text variant="body-small" weight="bold">
+                      {user.totalQuestions}
+                    </Text>
+                    <Text variant="body-x-small" color="secondary">
+                      {t('common.questions')}
+                    </Text>
+                  </div>
+                </Grid.Item>
+              )}
+              {!disabled.articles && (
+                <Grid.Item colSpan={{ sm: row1ColSpan }}>
+                  <div className={styles.statItem}>
+                    <RiFileTextLine size={16} />
+                    <Text variant="body-small" weight="bold">
+                      {user.totalArticles}
+                    </Text>
+                    <Text variant="body-x-small" color="secondary">
+                      {t('common.articles')}
+                    </Text>
+                  </div>
+                </Grid.Item>
+              )}
+              {!disabled.links && (
+                <Grid.Item colSpan={{ sm: row1ColSpan }}>
+                  <div className={styles.statItem}>
+                    <RiLinkM size={16} />
+                    <Text variant="body-small" weight="bold">
+                      {user.totalLinks}
+                    </Text>
+                    <Text variant="body-x-small" color="secondary">
+                      {t('common.links')}
+                    </Text>
+                  </div>
+                </Grid.Item>
+              )}
+              {!disabled.questions && (
+                <Grid.Item colSpan={{ sm: row2ColSpan }}>
+                  <div className={styles.statItem}>
+                    <RiQuestionAnswerLine size={16} />
+                    <Text variant="body-small" weight="bold">
+                      {user.totalAnswers}
+                    </Text>
+                    <Text variant="body-x-small" color="secondary">
+                      {t('common.answers')}
+                    </Text>
+                  </div>
+                </Grid.Item>
+              )}
               <Grid.Item colSpan={{ sm: row2ColSpan }}>
                 <div className={styles.statItem}>
-                  <RiQuestionAnswerLine size={16} />
+                  <RiThumbUpLine size={16} />
                   <Text variant="body-small" weight="bold">
-                    {user.totalAnswers}
+                    {user.totalVotes}
                   </Text>
                   <Text variant="body-x-small" color="secondary">
-                    {t('common.answers')}
+                    {t('common.votes')}
                   </Text>
                 </div>
               </Grid.Item>
-            )}
-            <Grid.Item colSpan={{ sm: row2ColSpan }}>
-              <div className={styles.statItem}>
-                <RiThumbUpLine size={16} />
-                <Text variant="body-small" weight="bold">
-                  {user.totalVotes}
-                </Text>
-                <Text variant="body-x-small" color="secondary">
-                  {t('common.votes')}
-                </Text>
-              </div>
-            </Grid.Item>
-            <Grid.Item colSpan={{ sm: row2ColSpan }}>
-              <div className={styles.statItem}>
-                <RiEyeLine size={16} />
-                <Text variant="body-small" weight="bold">
-                  {user.totalViews}
-                </Text>
-                <Text variant="body-x-small" color="secondary">
-                  {t('common.views')}
-                </Text>
-              </div>
-            </Grid.Item>
-          </Grid.Root>
+              <Grid.Item colSpan={{ sm: row2ColSpan }}>
+                <div className={styles.statItem}>
+                  <RiEyeLine size={16} />
+                  <Text variant="body-small" weight="bold">
+                    {user.totalViews}
+                  </Text>
+                  <Text variant="body-x-small" color="secondary">
+                    {t('common.views')}
+                  </Text>
+                </div>
+              </Grid.Item>
+            </Grid.Root>
+          )}
         </div>
       </ClickableLink>
     </Card>

@@ -73,6 +73,60 @@ describe('Helpers Routes', () => {
           }),
         );
       });
+
+      it('hides user activity and activity-based ordering when disabled', async () => {
+        const { app: disabledApp, qetaStore: disabledStore } =
+          await setupTestApp({
+            qeta: {
+              statistics: { users: { disabled: true } },
+            },
+          });
+        disabledStore.getUsers.mockResolvedValue({
+          users: [
+            {
+              userRef: 'user:default/test',
+              totalViews: 10,
+              totalQuestions: 3,
+              totalAnswers: 4,
+              totalComments: 5,
+              totalVotes: 6,
+              totalArticles: 7,
+              totalLinks: 8,
+              reputation: 9,
+              totalFollowers: 1,
+              postScore: 2,
+              answerScore: 3,
+              correctAnswers: 1,
+            },
+          ],
+          total: 1,
+        });
+
+        const response = await request(disabledApp)
+          .get('/users')
+          .query({ orderBy: 'reputation' });
+
+        expect(response.status).toEqual(200);
+        expect(response.body.users[0]).toEqual(
+          expect.objectContaining({
+            totalViews: 0,
+            totalQuestions: 0,
+            totalAnswers: 0,
+            totalComments: 0,
+            totalVotes: 0,
+            totalArticles: 0,
+            totalLinks: 0,
+            totalFollowers: 0,
+            reputation: 0,
+            postScore: 0,
+            answerScore: 0,
+            correctAnswers: 0,
+          }),
+        );
+        expect(disabledStore.getUsers).toHaveBeenCalledWith(
+          expect.objectContaining({ orderBy: 'userRef' }),
+        );
+      });
     });
 
     describe('GET /users/followed', () => {

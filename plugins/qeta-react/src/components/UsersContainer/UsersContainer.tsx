@@ -9,6 +9,7 @@ import {
 } from '../FilterPanel/FilterPanel';
 import { qetaTranslationRef } from '../../translation';
 import { ViewType } from '../ViewToggle/ViewToggle';
+import { useQetaConfig } from '../../hooks/useQetaConfig';
 
 export const UsersContainer = (props: {
   filterPanelProps?: CommonFilterPanelProps;
@@ -16,6 +17,7 @@ export const UsersContainer = (props: {
 }) => {
   const { filterPanelProps, defaultView } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
 
   return (
     <QetaEntityContainer<UserResponse, UserFilters>
@@ -24,7 +26,7 @@ export const UsersContainer = (props: {
       defaultView={defaultView}
       initialFilters={{
         order: 'desc',
-        orderBy: 'totalPosts',
+        orderBy: disabled.userStatistics ? 'userRef' : 'totalPosts',
         searchQuery: '',
       }}
       fetch={(api, limit, offset, filters) => {

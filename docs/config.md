@@ -108,7 +108,7 @@ The allowed configuration values are:
 ## Statistics and privacy
 
 - `statistics.disabled`, boolean, hide the global Statistics page and disable its global and leaderboard API endpoints. Default is `false`.
-- `statistics.users.disabled`, boolean, hide the Statistics tab on user profiles and prevent users from accessing other users' activity history. A user can still access their own activity. Default is `false`.
+- `statistics.users.disabled`, boolean, hide the Statistics tab on user profiles, suppress activity metrics and activity-based sorting in the user directory, and prevent users from accessing other users' activity history. A user can still access their own activity on their profile. Default is `false`.
 - `statistics.users.lastSeen`, boolean, include the `lastSeen` timestamp in user statistics responses and show it on user profiles. The timestamp includes activity such as viewing posts, not only contributions. Set to `false` to omit it. Default is `true`.
 
 These options let operators limit employee activity monitoring while leaving Q&A content available.

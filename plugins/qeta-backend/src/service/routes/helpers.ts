@@ -55,6 +55,8 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
   const tagsDisabled = config.getOptionalBoolean('qeta.tags.disabled') ?? false;
   const entitiesDisabled =
     config.getOptionalBoolean('qeta.entities.disabled') ?? false;
+  const userStatisticsDisabled =
+    config.getOptionalBoolean('qeta.statistics.users.disabled') ?? false;
 
   const mapDisabledUserTotals = (user: UserResponse): UserResponse => {
     return {
@@ -62,6 +64,28 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       ...(questionsDisabled ? { totalQuestions: 0, totalAnswers: 0 } : {}),
       ...(articlesDisabled ? { totalArticles: 0 } : {}),
       ...(linksDisabled ? { totalLinks: 0 } : {}),
+    };
+  };
+
+  const mapUserStatistics = (user: UserResponse): UserResponse => {
+    if (!userStatisticsDisabled) {
+      return mapDisabledUserTotals(user);
+    }
+
+    return {
+      ...mapDisabledUserTotals(user),
+      totalViews: 0,
+      totalQuestions: 0,
+      totalAnswers: 0,
+      totalComments: 0,
+      totalVotes: 0,
+      totalArticles: 0,
+      totalFollowers: 0,
+      totalLinks: 0,
+      reputation: 0,
+      answerScore: 0,
+      postScore: 0,
+      correctAnswers: 0,
     };
   };
 
@@ -121,10 +145,14 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
         .filter((e): e is string => e !== null);
     }
 
-    const users = await database.getUsers({ entityRefs, ...request.query });
+    const users = await database.getUsers({
+      entityRefs,
+      ...request.query,
+      ...(userStatisticsDisabled ? { orderBy: 'userRef' } : {}),
+    });
     response.json({
       ...users,
-      users: users.users.map(mapDisabledUserTotals),
+      users: users.users.map(mapUserStatistics),
     });
   });
 

@@ -184,7 +184,8 @@ export interface Config {
        */
       users?: {
         /**
-         * Hide user profile statistics and prevent access to other users' activity.
+         * Hide user profile statistics, user-directory activity metrics, and
+         * activity-based sorting. Prevent access to other users' activity.
          *
          * @visibility frontend
          */

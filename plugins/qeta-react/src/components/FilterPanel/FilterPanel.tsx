@@ -36,6 +36,7 @@ import {
   RiPriceTag3Line,
 } from '@remixicon/react';
 import styles from './FilterPanel.module.css';
+import { useQetaConfig } from '../../hooks/useQetaConfig';
 
 const radioSelect = (value: string, label: string) => {
   return <Radio value={value}>{label}</Radio>;
@@ -188,6 +189,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
     mode = 'posts',
   } = props;
   const { t } = useTranslationRef(qetaTranslationRef);
+  const { disabled } = useQetaConfig();
   const [entities, setEntities] = useState<Entity[] | undefined>(undefined);
   const [starredEntities, setStarredEntities] = useState(false);
   const [ownedEntities, setOwnedEntities] = useState(false);
@@ -197,6 +199,7 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
   const identityApi = useApi(identityApiRef);
   const [searchParams, setSearchParams] = useSearchParams();
   const initializedRef = useRef(false);
+  const showUserStatistics = mode === 'users' && !disabled.userStatistics;
 
   // Initialize filters from URL parameters only once
   useEffect(() => {
@@ -461,25 +464,25 @@ export const FilterPanel = <T extends Filters>(props: FilterPanelProps<T>) => {
               radioSelect('linksCount', t('filterPanel.orderBy.links'))}
             {(mode === 'tags' ||
               mode === 'entities' ||
-              mode === 'users' ||
+              showUserStatistics ||
               mode === 'collections') &&
               radioSelect('followerCount', t('filterPanel.orderBy.followers'))}
 
-            {mode === 'users' &&
+            {showUserStatistics &&
               radioSelect('totalPosts', t('filterPanel.orderBy.posts'))}
-            {mode === 'users' &&
+            {showUserStatistics &&
               radioSelect('totalQuestions', t('filterPanel.orderBy.questions'))}
-            {mode === 'users' &&
+            {showUserStatistics &&
               radioSelect('totalAnswers', t('filterPanel.orderBy.answers'))}
-            {mode === 'users' &&
+            {showUserStatistics &&
               radioSelect('totalArticles', t('filterPanel.orderBy.articles'))}
-            {mode === 'users' &&
+            {showUserStatistics &&
               radioSelect('totalLinks', t('filterPanel.orderBy.links'))}
-            {mode === 'users' &&
+            {showUserStatistics &&
               radioSelect('totalViews', t('filterPanel.orderBy.views'))}
-            {mode === 'users' &&
+            {showUserStatistics &&
               radioSelect('totalVotes', t('filterPanel.orderBy.votes'))}
-            {mode === 'users' &&
+            {showUserStatistics &&
               radioSelect('reputation', t('filterPanel.orderBy.reputation'))}
           </RadioGroup>
         </Grid.Item>
