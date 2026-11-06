@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { RouteOptions, TemplateSchema } from '../types';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import { getEntities, getTags } from './routeUtil';
+import { getEntities, getTags, resolveEntityRefs } from './routeUtil';
 import { entityToJsonObject } from './util.ts';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
@@ -57,8 +57,18 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const tags = await getTags(request, options, await database.getTags());
-    const entities = getEntities(request, config);
+    const [tags, entityResolution] = await Promise.all([
+      Promise.resolve(database.getTags()).then(existingTags =>
+        getTags(request, options, existingTags),
+      ),
+      resolveEntityRefs(request, options, getEntities(request, config)),
+    ]);
+    if (!entityResolution.ok) {
+      response
+        .status(400)
+        .json({ errors: entityResolution.error, type: 'body' });
+      return;
+    }
 
     // Act
     const template = await database.createTemplate({
@@ -67,7 +77,7 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
       questionTitle: request.body.questionTitle,
       questionContent: request.body.questionContent,
       tags,
-      entities,
+      entities: entityResolution.entityRefs,
     });
 
     if (!template) {
@@ -133,8 +143,18 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const tags = await getTags(request, options, await database.getTags());
-    const entities = getEntities(request, config);
+    const [tags, entityResolution] = await Promise.all([
+      Promise.resolve(database.getTags()).then(existingTags =>
+        getTags(request, options, existingTags),
+      ),
+      resolveEntityRefs(request, options, getEntities(request, config)),
+    ]);
+    if (!entityResolution.ok) {
+      response
+        .status(400)
+        .json({ errors: entityResolution.error, type: 'body' });
+      return;
+    }
 
     // Act
     const template = await database.updateTemplate({
@@ -144,7 +164,7 @@ export const templateRoutes = (router: Router, options: RouteOptions) => {
       questionTitle: request.body.questionTitle,
       questionContent: request.body.questionContent,
       tags,
-      entities,
+      entities: entityResolution.entityRefs,
     });
 
     if (!template) {

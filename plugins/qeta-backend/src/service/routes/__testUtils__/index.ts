@@ -273,7 +273,12 @@ export const createMockPermissionEvaluator = () => {
   return { permissionEvaluator, mockedAuthorize, mockedPermissionQuery };
 };
 
-export const mockCatalog: CatalogApi = {} as unknown as CatalogApi;
+export const mockCatalogQueryEntities = jest.fn();
+export const mockCatalogGetEntityByRef = jest.fn();
+export const mockCatalog: CatalogApi = {
+  queryEntities: mockCatalogQueryEntities,
+  getEntityByRef: mockCatalogGetEntityByRef,
+} as unknown as CatalogApi;
 
 export const mockSystemDate = (mockDate: Date) => {
   jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
@@ -325,6 +330,11 @@ export const setupTestApp = async (
   qetaConfig?: Record<string, string | object>,
   cache?: CacheService,
 ) => {
+  mockCatalogQueryEntities.mockReset().mockResolvedValue({ items: [] });
+  mockCatalogGetEntityByRef.mockReset().mockResolvedValue({
+    kind: 'Component',
+    metadata: { name: 'test', namespace: 'default' },
+  });
   const qetaStore = createMockQetaStore();
   const { permissionEvaluator, mockedAuthorize, mockedPermissionQuery } =
     createMockPermissionEvaluator();

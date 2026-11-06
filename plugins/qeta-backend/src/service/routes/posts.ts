@@ -38,7 +38,12 @@ import {
   validateDateRange,
   wrapAsync,
 } from './util';
-import { getCachedData, getEntities, getTags } from './routeUtil';
+import {
+  getCachedData,
+  getEntities,
+  getTags,
+  resolveEntityRefs,
+} from './routeUtil';
 import { PostOptions } from '../../database/QetaStore';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
@@ -895,12 +900,19 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     );
 
     const existingTags = await database.getTags();
-    const [tags, entities, username, created] = await Promise.all([
+    const [tags, entityResolution, username, created] = await Promise.all([
       getTags(request, options, existingTags),
-      getEntities(request, config),
+      resolveEntityRefs(request, options, getEntities(request, config)),
       permissionMgr.getUsername(request),
       getCreated(request, options),
     ]);
+    if (!entityResolution.ok) {
+      response
+        .status(400)
+        .json({ errors: entityResolution.error, type: 'body' });
+      return;
+    }
+    const entities = entityResolution.entityRefs;
 
     if (request.body.author && request.body.author !== username) {
       if (!(await permissionMgr.isModerator(request))) {
@@ -1043,10 +1055,17 @@ export const postsRoutes = (router: Router, options: RouteOptions) => {
     }
 
     const existingTags = await database.getTags();
-    const [tags, entities] = await Promise.all([
+    const [tags, entityResolution] = await Promise.all([
       getTags(request, options, existingTags),
-      getEntities(request, config),
+      resolveEntityRefs(request, options, getEntities(request, config)),
     ]);
+    if (!entityResolution.ok) {
+      response
+        .status(400)
+        .json({ errors: entityResolution.error, type: 'body' });
+      return;
+    }
+    const entities = entityResolution.entityRefs;
 
     // Act
     const post = await database.updatePost({

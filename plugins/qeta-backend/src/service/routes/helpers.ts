@@ -8,7 +8,7 @@ import {
   UsersQuerySchema,
 } from '../types';
 import { mapAdditionalFields } from '../util';
-import { getCachedData } from './routeUtil';
+import { getCachedData, resolveEntityRef } from './routeUtil';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   filterTags,
@@ -743,9 +743,15 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const { entityRef } = request.params;
-    validateEntityRef(entityRef);
-    const username = await permissionMgr.getUsername(request, false);
+    const [resolution, username] = await Promise.all([
+      resolveEntityRef(request, options, request.params.entityRef),
+      permissionMgr.getUsername(request, false),
+    ]);
+    if (!resolution.ok) {
+      response.status(400).send({ errors: resolution.error, type: 'body' });
+      return;
+    }
+    const { entityRef } = resolution;
     await database.followEntity(username, entityRef);
     auditor?.createEvent({
       eventId: 'follow-entity',
@@ -767,9 +773,15 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    const { entityRef } = request.params;
-    validateEntityRef(entityRef);
-    const username = await permissionMgr.getUsername(request, false);
+    const [resolution, username] = await Promise.all([
+      resolveEntityRef(request, options, request.params.entityRef),
+      permissionMgr.getUsername(request, false),
+    ]);
+    if (!resolution.ok) {
+      response.status(400).send({ errors: resolution.error, type: 'body' });
+      return;
+    }
+    const { entityRef } = resolution;
     await database.unfollowEntity(username, entityRef);
     auditor?.createEvent({
       eventId: 'unfollow-entity',
@@ -789,8 +801,17 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       return;
     }
 
-    validateEntityRef(request.params.entityRef);
-    const entity = await database.getEntity(request.params.entityRef);
+    const resolution = await resolveEntityRef(
+      request,
+      options,
+      request.params.entityRef,
+    );
+    if (!resolution.ok) {
+      response.status(400).send({ errors: resolution.error, type: 'query' });
+      return;
+    }
+
+    const entity = await database.getEntity(resolution.entityRef);
     if (entity === null) {
       response.sendStatus(404);
       return;
@@ -799,7 +820,7 @@ export const helperRoutes = (router: Router, options: RouteOptions) => {
       eventId: 'read-entity',
       severityLevel: 'low',
       request,
-      meta: { entityRef: request.params.entityRef },
+      meta: { entityRef: resolution.entityRef },
     });
     response.json(entity);
   });

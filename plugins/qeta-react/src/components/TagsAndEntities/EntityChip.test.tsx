@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -51,9 +51,30 @@ describe('EntityChip', () => {
     </MemoryRouter>
   );
 
+  const CurrentLocation = () => {
+    const location = useLocation();
+    return <span data-testid="location">{location.pathname}</span>;
+  };
+
   it('renders without a TagGroup ancestor without throwing', () => {
     render(<EntityChip entity={testEntity} />, { wrapper });
     expect(screen.getByText('Test Service')).toBeInTheDocument();
+  });
+
+  it('reproduces navigation with a name-only entity ref', async () => {
+    render(
+      <>
+        <EntityChip entity="acs" />
+        <CurrentLocation />
+      </>,
+      { wrapper },
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'acs' }));
+
+    expect(screen.getByTestId('location')).toHaveTextContent(
+      '/qeta/entities/acs',
+    );
   });
 
   it('renders as a link when useHref is set', () => {

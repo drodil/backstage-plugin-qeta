@@ -1,11 +1,109 @@
 import { Config } from '@backstage/config';
 import { Request } from 'express';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
 import {
   qetaCreateTagPermission,
   TagsResponse,
 } from '@drodil/backstage-plugin-qeta-common';
 import { RouteOptions } from '../types';
+
+export type EntityRefResolution =
+  | { ok: true; entityRef: string }
+  | { ok: false; error: string };
+
+export type EntityRefsResolution =
+  | { ok: true; entityRefs: string[] }
+  | { ok: false; error: string };
+
+export const resolveEntityRef = async (
+  request: Request,
+  options: RouteOptions,
+  entityRef: string,
+): Promise<EntityRefResolution> => {
+  let canonicalRef: string | undefined;
+  try {
+    canonicalRef = stringifyEntityRef(
+      parseEntityRef(entityRef),
+    ).toLocaleLowerCase('en-US');
+  } catch {
+    // Incomplete refs are resolved by exact catalog name below.
+  }
+
+  const { token } = await options.auth.getPluginRequestToken({
+    onBehalfOf: await options.httpAuth.credentials(request),
+    targetPluginId: 'catalog',
+  });
+
+  if (canonicalRef) {
+    const entity = await options.catalog.getEntityByRef(canonicalRef, {
+      token,
+    });
+    if (!entity) {
+      return {
+        ok: false,
+        error: `Catalog entity "${canonicalRef}" was not found or is not accessible to the current user.`,
+      };
+    }
+    return { ok: true, entityRef: canonicalRef };
+  }
+
+  const name = entityRef.trim();
+  if (!name || name.includes(':') || name.includes('/')) {
+    return {
+      ok: false,
+      error: `Invalid entity ref "${entityRef}". Use a complete ref (kind:namespace/name) or a catalog entity name.`,
+    };
+  }
+
+  const result = await options.catalog.queryEntities(
+    {
+      query: { 'metadata.name': name },
+      fields: ['kind', 'metadata.name', 'metadata.namespace'],
+      limit: 2,
+    },
+    { token },
+  );
+  const matches = result.items.filter(
+    entity =>
+      entity.metadata.name.toLocaleLowerCase('en-US') ===
+      name.toLocaleLowerCase('en-US'),
+  );
+
+  if (matches.length === 0) {
+    return {
+      ok: false,
+      error: `No catalog entity named "${name}" was found. Use an existing entity name or a complete entity ref (kind:namespace/name).`,
+    };
+  }
+  if (matches.length > 1) {
+    return {
+      ok: false,
+      error: `Multiple catalog entities named "${name}" were found. Use a complete entity ref (kind:namespace/name).`,
+    };
+  }
+
+  return {
+    ok: true,
+    entityRef: stringifyEntityRef(matches[0]).toLocaleLowerCase('en-US'),
+  };
+};
+
+export const resolveEntityRefs = async (
+  request: Request,
+  options: RouteOptions,
+  entityRefs: readonly string[] | undefined,
+): Promise<EntityRefsResolution> => {
+  const resolved: string[] = [];
+  for (const entityRef of entityRefs ?? []) {
+    const result = await resolveEntityRef(request, options, entityRef);
+    if (!result.ok) {
+      return result;
+    }
+    resolved.push(result.entityRef);
+  }
+  return { ok: true, entityRefs: resolved };
+};
 
 export const getTags = async (
   request: Request,

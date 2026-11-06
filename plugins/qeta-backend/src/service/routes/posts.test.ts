@@ -9,6 +9,8 @@ import {
 import {
   answer,
   comment,
+  mockCatalogGetEntityByRef,
+  mockCatalogQueryEntities,
   mockSystemDate,
   question,
   questionWithComment,
@@ -339,6 +341,54 @@ describe('Posts Routes', () => {
           includeVotes: false,
         },
       });
+    });
+
+    it('resolves a name-only entity before creating a question', async () => {
+      qetaStore.createPost.mockResolvedValue(question);
+      mockSystemDate(question.created);
+      mockCatalogQueryEntities.mockResolvedValue({
+        items: [
+          {
+            kind: 'System',
+            metadata: { name: 'acs', namespace: 'default' },
+          },
+        ],
+      });
+
+      const response = await request(app)
+        .post('/posts')
+        .send({
+          title: 'title',
+          content: 'content',
+          entities: ['acs'],
+          type: 'question',
+        });
+
+      expect(response.status).toEqual(201);
+      expect(qetaStore.createPost).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entities: ['system:default/acs'],
+        }),
+      );
+    });
+
+    it('rejects a complete entity ref that the user cannot access', async () => {
+      mockCatalogGetEntityByRef.mockResolvedValue(undefined);
+
+      const response = await request(app)
+        .post('/posts')
+        .send({
+          title: 'title',
+          content: 'content',
+          entities: ['system:default/acs'],
+          type: 'question',
+        });
+
+      expect(response.status).toEqual(400);
+      expect(response.body.errors).toContain(
+        'was not found or is not accessible to the current user',
+      );
+      expect(qetaStore.createPost).not.toHaveBeenCalled();
     });
 
     it('uses empty tags and entities when both are disabled in config', async () => {

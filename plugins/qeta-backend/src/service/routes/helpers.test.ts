@@ -1,6 +1,10 @@
 import request from 'supertest';
 import express from 'express';
-import { setupTestApp } from './__testUtils__';
+import {
+  mockCatalogGetEntityByRef,
+  mockCatalogQueryEntities,
+  setupTestApp,
+} from './__testUtils__';
 import { QetaStore } from '../../database/QetaStore';
 
 describe('Helpers Routes', () => {
@@ -380,6 +384,71 @@ describe('Helpers Routes', () => {
         );
 
         expect(response.status).toEqual(200);
+        expect(mockCatalogGetEntityByRef).toHaveBeenCalledWith(
+          'component:default/test',
+          { token: expect.any(String) },
+        );
+      });
+
+      it('resolves a name-only ref when the catalog has one match', async () => {
+        const entity = {
+          id: 1,
+          entityRef: 'system:default/acs',
+          postsCount: 1,
+          questionsCount: 1,
+          articlesCount: 0,
+          linksCount: 0,
+          followerCount: 0,
+        };
+        mockCatalogQueryEntities.mockResolvedValue({
+          items: [
+            {
+              kind: 'System',
+              metadata: { name: 'acs', namespace: 'default' },
+            },
+          ],
+        });
+        qetaStore.getEntity.mockResolvedValue(entity);
+
+        const response = await request(app).get('/entities/acs');
+
+        expect(qetaStore.getEntity).toHaveBeenCalledWith('system:default/acs');
+        expect(response.status).toEqual(200);
+      });
+
+      it('returns 400 when a name-only ref has no catalog match', async () => {
+        qetaStore.getEntity.mockResolvedValue(null);
+
+        const response = await request(app).get('/entities/missing');
+
+        expect(qetaStore.getEntity).not.toHaveBeenCalled();
+        expect(response.status).toEqual(400);
+        expect(response.body.errors).toContain(
+          'No catalog entity named "missing" was found',
+        );
+      });
+
+      it('returns 400 when a name-only ref has multiple catalog matches', async () => {
+        mockCatalogQueryEntities.mockResolvedValue({
+          items: [
+            {
+              kind: 'System',
+              metadata: { name: 'acs', namespace: 'default' },
+            },
+            {
+              kind: 'Component',
+              metadata: { name: 'acs', namespace: 'default' },
+            },
+          ],
+        });
+
+        const response = await request(app).get('/entities/acs');
+
+        expect(qetaStore.getEntity).not.toHaveBeenCalled();
+        expect(response.status).toEqual(400);
+        expect(response.body.errors).toContain(
+          'Multiple catalog entities named "acs" were found',
+        );
       });
     });
   });

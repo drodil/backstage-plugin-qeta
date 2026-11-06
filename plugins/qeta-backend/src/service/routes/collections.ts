@@ -20,6 +20,7 @@ import {
   RouteOptions,
 } from '../types';
 import { entityToJsonObject, validateDateRange, wrapAsync } from './util';
+import { resolveEntityRefs } from './routeUtil';
 
 const ajv = new Ajv({ coerceTypes: 'array' });
 addFormats(ajv);
@@ -198,8 +199,17 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       { throwOnDeny: true },
     );
 
-    const username = await permissionMgr.getUsername(request);
-    const created = await getCreated(request, options);
+    const [username, created, entityResolution] = await Promise.all([
+      permissionMgr.getUsername(request),
+      getCreated(request, options),
+      resolveEntityRefs(request, options, request.body.entities),
+    ]);
+    if (!entityResolution.ok) {
+      response
+        .status(400)
+        .json({ errors: entityResolution.error, type: 'body' });
+      return;
+    }
 
     // Act
     const collection = await database.createCollection({
@@ -210,7 +220,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       images: request.body.images,
       headerImage: request.body.headerImage,
       tags: request.body.tags,
-      entities: request.body.entities,
+      entities: entityResolution.entityRefs,
       users: request.body.users,
       opts: { includePosts: false },
     });
@@ -302,19 +312,28 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       { throwOnDeny: true },
     );
 
-    const [postFilters, filters, tagFilters] = await Promise.all([
-      permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
-        allowServicePrincipal: true,
-      }),
-      permissionMgr.getAuthorizeConditions(
-        request,
-        qetaReadCollectionPermission,
-        { allowServicePrincipal: true },
-      ),
-      permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
-        allowServicePrincipal: true,
-      }),
-    ]);
+    const [postFilters, filters, tagFilters, entityResolution] =
+      await Promise.all([
+        permissionMgr.getAuthorizeConditions(request, qetaReadPostPermission, {
+          allowServicePrincipal: true,
+        }),
+        permissionMgr.getAuthorizeConditions(
+          request,
+          qetaReadCollectionPermission,
+          { allowServicePrincipal: true },
+        ),
+        permissionMgr.getAuthorizeConditions(request, qetaReadTagPermission, {
+          allowServicePrincipal: true,
+        }),
+        resolveEntityRefs(request, options, request.body.entities),
+      ]);
+
+    if (!entityResolution.ok) {
+      response
+        .status(400)
+        .json({ errors: entityResolution.error, type: 'body' });
+      return;
+    }
 
     // Act
     const collection = await database.updateCollection({
@@ -325,7 +344,7 @@ export const collectionsRoutes = (router: Router, options: RouteOptions) => {
       images: request.body.images,
       headerImage: request.body.headerImage,
       tags: request.body.tags,
-      entities: request.body.entities,
+      entities: entityResolution.entityRefs,
       users: request.body.users,
       opts: { postFilters, tagFilters, filters },
     });
