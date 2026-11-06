@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.1.1](https://github.com/drodil/backstage-plugin-qeta/compare/v4.1.0...v4.1.1) (2026-11-06)
+
+
+### Bug Fixes
+
+* make auto save toasts transient ([cf13243](https://github.com/drodil/backstage-plugin-qeta/commit/cf132438a5c644ece5be33d034bb1d574d4312da)), closes [#451](https://github.com/drodil/backstage-plugin-qeta/issues/451)
+* user list filtering based on config ([e8051ef](https://github.com/drodil/backstage-plugin-qeta/commit/e8051ef3cb6a8edfe39127eac330068cb2ec3fd6)), closes [#445](https://github.com/drodil/backstage-plugin-qeta/issues/445)
+* validate entity refs on post ([f720bfb](https://github.com/drodil/backstage-plugin-qeta/commit/f720bfbd341deff5b18942f71f7dd5b63bf33227))
+
 ## [4.1.0](https://github.com/drodil/backstage-plugin-qeta/compare/v4.0.5...v4.1.0) (2026-10-15)
 
 
