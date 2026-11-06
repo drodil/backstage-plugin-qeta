@@ -242,11 +242,13 @@ export const PostForm = (props: PostFormProps) => {
                 toastApi.post({
                   title: t('postForm.autoSaveSuccess'),
                   status: 'success',
+                  timeout: 5000,
                 });
               } else {
                 toastApi.post({
                   title: t('postForm.draftSaved'),
                   status: 'success',
+                  timeout: 5000,
                 });
               }
               return;
@@ -287,11 +289,13 @@ export const PostForm = (props: PostFormProps) => {
               toastApi.post({
                 title: t('postForm.autoSaveSuccess'),
                 status: 'success',
+                timeout: 5000,
               });
             } else {
               toastApi.post({
                 title: t('postForm.draftSaved'),
                 status: 'success',
+                timeout: 5000,
               });
             }
             return;
