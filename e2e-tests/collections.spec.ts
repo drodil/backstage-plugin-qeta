@@ -77,7 +77,7 @@ test.describe('Collections', () => {
     await expect(page.getByRole('link', { name: postTitle })).toBeVisible();
   });
 
-  test('create automatic collection by entities', async ({ page, request }) => {
+  test('create automatic collection by entities', async ({ page }) => {
     const title = `Auto Entity Collection ${faker.string.uuid()}`;
     await page.goto('/qeta/collections/create');
     await page.waitForLoadState('networkidle');
@@ -100,17 +100,33 @@ test.describe('Collections', () => {
 
     await expect(page).toHaveURL(/\/qeta\/collections\/\d+/);
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
+    const collectionUrl = page.url();
 
     const postTitle = `Auto Entity Post ${faker.string.uuid()}`;
-    await createQuestion(request, {
-      title: postTitle,
-      entities: ['component:default/test-component-2'],
-      user: 'user:development/guest',
-    });
-
-    await page.reload();
+    await page.goto('/qeta/questions/ask');
     await page.waitForLoadState('networkidle');
+
+    await page.locator('input[name="title"]').fill(postTitle);
+    await page.locator('.mde-text').fill(faker.lorem.paragraph());
+
+    const postEntitiesInput = page.getByRole('textbox', { name: 'Entities' });
+    await postEntitiesInput.click();
+    await postEntitiesInput.fill('test component 2');
+
+    const postEntityOption = page.getByRole('option', {
+      name: /test component 2/i,
+    });
+    await expect(postEntityOption).toBeVisible({ timeout: 5000 });
+    await postEntityOption.click();
+    await page.keyboard.press('Escape');
+
+    await page.getByRole('button', { name: /Publish|Post/i }).click();
+    await expect(page).toHaveURL(/\/qeta\/questions\/\d+/);
+    await expect(page.getByRole('heading', { name: postTitle })).toBeVisible();
+
     await page.waitForTimeout(1000);
+    await page.goto(collectionUrl);
+    await page.waitForLoadState('networkidle');
 
     await expect(page.getByRole('link', { name: postTitle })).toBeVisible({
       timeout: 10000,

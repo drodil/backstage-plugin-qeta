@@ -10,12 +10,20 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
   },
-  webServer: {
-    command: 'yarn dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
+  webServer: [
+    {
+      command: 'yarn start',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    },
+    {
+      command: 'yarn start-backend',
+      url: 'http://localhost:7007/api/qeta/collections',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    },
+  ],
   projects: [
     {
       name: 'chromium',
