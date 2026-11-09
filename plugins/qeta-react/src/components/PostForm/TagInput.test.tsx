@@ -262,4 +262,112 @@ describe('TagInput', () => {
 
     expect(handleChange).toHaveBeenCalledWith(['new-tag']);
   });
+
+  describe('pressing Enter', () => {
+    const renderAndType = async (text: string, value: string[] = []) => {
+      const handleChange = jest.fn();
+      // The label matters: BUI renders the field description (where the
+      // messages go) only when the field has a label, as in PostForm.
+      render(<TagInput value={value} onChange={handleChange} label="Tags" />, {
+        wrapper,
+      });
+      await waitFor(() => {
+        expect(mockQetaApi.getTags).toHaveBeenCalledTimes(1);
+      });
+      const input = screen.getByRole('textbox', { name: 'Tags' });
+      act(() => {
+        input.focus();
+      });
+      fireEvent.change(input, { target: { value: text } });
+      // fireEvent returns false when the handler called preventDefault, which
+      // is what stops the browser from submitting the surrounding form.
+      const notPrevented = () => fireEvent.keyDown(input, { key: 'Enter' });
+      return { handleChange, input, notPrevented };
+    };
+
+    it('adds a new tag', async () => {
+      const { handleChange, notPrevented } = await renderAndType('deploy');
+
+      expect(notPrevented()).toBe(false);
+      expect(handleChange).toHaveBeenCalledWith(['deploy']);
+    });
+
+    it('adds the known tag when the text is another spelling of it', async () => {
+      mockQetaApi.getTags.mockResolvedValue({
+        tags: [{ tag: 'my-tag' }],
+        total: 1,
+      });
+      const { handleChange, notPrevented } = await renderAndType('My Tag');
+
+      expect(notPrevented()).toBe(false);
+      expect(handleChange).toHaveBeenCalledWith(['my-tag']);
+    });
+
+    it('does not submit the form on text that is not a valid tag', async () => {
+      const { handleChange, input, notPrevented } =
+        await renderAndType('säkerhet');
+
+      expect(notPrevented()).toBe(false);
+      expect(handleChange).not.toHaveBeenCalled();
+      expect(input).toHaveValue('säkerhet');
+      expect(
+        screen.getByText(
+          'Tags can only contain lowercase letters a-z, numbers, +, hyphens and underscores',
+        ),
+      ).toBeInTheDocument();
+
+      fireEvent.change(input, { target: { value: 'sakerhet' } });
+
+      expect(
+        screen.queryByText(/Tags can only contain/),
+      ).not.toBeInTheDocument();
+    });
+
+    it('does not submit the form when the maximum number of tags is reached', async () => {
+      const { handleChange, notPrevented } = await renderAndType('deploy', [
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+      ]);
+
+      expect(notPrevented()).toBe(false);
+      expect(handleChange).not.toHaveBeenCalled();
+      expect(screen.getByText('You can add up to 5 tags')).toBeInTheDocument();
+    });
+
+    it('does not submit the form on a tag that is already added', async () => {
+      const { handleChange, notPrevented } = await renderAndType('react', [
+        'react',
+      ]);
+
+      expect(notPrevented()).toBe(false);
+      expect(handleChange).not.toHaveBeenCalled();
+      expect(
+        screen.getByText('Tag react is already added'),
+      ).toBeInTheDocument();
+    });
+
+    it('does not submit the form on an unknown tag when tag creation is not allowed', async () => {
+      mockConfigApi.getOptionalBoolean.mockImplementation((key: string) =>
+        key === 'qeta.tags.allowCreation' ? false : undefined,
+      );
+      const { handleChange, notPrevented } = await renderAndType('deploy');
+
+      expect(notPrevented()).toBe(false);
+      expect(handleChange).not.toHaveBeenCalled();
+      expect(
+        screen.getByText('Select an existing tag from the list'),
+      ).toBeInTheDocument();
+    });
+
+    it('leaves Enter alone when the field is empty and there is nothing to pick', async () => {
+      mockQetaApi.getTags.mockResolvedValue({ tags: [], total: 0 });
+      const { handleChange, notPrevented } = await renderAndType('');
+
+      expect(notPrevented()).toBe(true);
+      expect(handleChange).not.toHaveBeenCalled();
+    });
+  });
 });

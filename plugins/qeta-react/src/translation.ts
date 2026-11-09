@@ -252,6 +252,11 @@ export const qetaTranslationRef = createTranslationRef({
         'You can create new tags by typing the tag and pressing enter',
       createOption: 'Add {{tag}}',
       minimumError: 'Please add at least {{min}} tags',
+      maximumError: 'You can add up to {{max}} tags',
+      duplicateError: 'Tag {{tag}} is already added',
+      invalidTagError:
+        'Tags can only contain lowercase letters a-z, numbers, +, hyphens and underscores',
+      selectExistingError: 'Select an existing tag from the list',
       suggestedTags: 'Suggested tags',
     },
     askPage: {
