@@ -193,6 +193,7 @@ export const TagInput = forwardRef<
   const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [inputError, setInputError] = useState<string | undefined>();
   const containerRef = useRef<HTMLDivElement>(null);
   const searchCache = useRef<
     Map<string, { tags: string[]; descriptions: Record<string, string> }>
@@ -380,6 +381,32 @@ export const TagInput = forwardRef<
       onChange(tags);
     }
     setInputValue('');
+    setInputError(undefined);
+  };
+
+  const handleInputChange = (text: string) => {
+    setInputValue(text);
+    setInputError(undefined);
+  };
+
+  // Enter pressed on text that matches no option. Adds the tag when the text
+  // is just another spelling of a known tag ("my tag" for "my-tag"), otherwise
+  // tells the user why the text can't be added.
+  const handleUnmatchedEnter = (text: string) => {
+    const normalizedTag = normalizeTagInput(text.trim());
+    if (normalizedTag && selectedTags.includes(normalizedTag)) {
+      setInputError(t('tagsInput.duplicateError', { tag: normalizedTag }));
+    } else if (selectedTags.length >= maximumTags) {
+      setInputError(
+        t('tagsInput.maximumError', { max: maximumTags.toString(10) }),
+      );
+    } else if (!normalizedTag) {
+      setInputError(t('tagsInput.invalidTagError'));
+    } else if (availableTags.includes(normalizedTag)) {
+      selectOption(normalizedTag);
+    } else {
+      setInputError(t('tagsInput.selectExistingError'));
+    }
   };
 
   const handleRemoveTags = (keys: Iterable<string | number>) => {
@@ -410,9 +437,16 @@ export const TagInput = forwardRef<
       return;
     }
 
-    if (event.key === 'Enter' && filteredOptions.length > 0) {
-      event.preventDefault();
-      selectOption(filteredOptions[0]);
+    if (event.key === 'Enter') {
+      if (filteredOptions.length > 0) {
+        event.preventDefault();
+        selectOption(filteredOptions[0]);
+      } else if (inputValue.trim()) {
+        // Without this, Enter on text that can't become a tag submits the
+        // surrounding form, and the typed tag is lost.
+        event.preventDefault();
+        handleUnmatchedEnter(inputValue);
+      }
     }
   };
 
@@ -427,12 +461,14 @@ export const TagInput = forwardRef<
             size={size}
             label={label ?? undefined}
             placeholder={t('tagsInput.placeholder')}
-            description={error ? error.message : getHelperText()}
-            isInvalid={error !== undefined}
+            description={
+              error ? error.message : (inputError ?? getHelperText())
+            }
+            isInvalid={error !== undefined || inputError !== undefined}
             name={name}
             style={style}
             value={inputValue}
-            onChange={setInputValue}
+            onChange={handleInputChange}
             onFocus={() => setOpen(true)}
             onBlur={handleFieldBlur}
             onKeyDown={handleKeyDown}
