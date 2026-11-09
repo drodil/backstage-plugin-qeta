@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.1.2](https://github.com/drodil/backstage-plugin-qeta/compare/v4.1.1...v4.1.2) (2026-11-09)
+
+
+### Bug Fixes
+
+* **ci:** upgrade Playwright for Ubuntu 26.04 support ([bc1b198](https://github.com/drodil/backstage-plugin-qeta/commit/bc1b19893faaec3aa1a71984b6f486b914f09691))
+* stop Enter in the tag input from submitting the post form ([da3217f](https://github.com/drodil/backstage-plugin-qeta/commit/da3217f0e9c22b90408a8ec7fadf2b7a568b2885))
+
 ### [4.1.1](https://github.com/drodil/backstage-plugin-qeta/compare/v4.1.0...v4.1.1) (2026-11-06)
 
 
