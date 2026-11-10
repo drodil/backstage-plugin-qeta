@@ -1,4 +1,4 @@
-import { filterTags, TAGS_REGEX } from './tags';
+import { filterTags, isValidTag, TAGS_REGEX } from './tags';
 
 describe('TAGS_REGEX', () => {
   it('should match valid tags', () => {
@@ -7,6 +7,26 @@ describe('TAGS_REGEX', () => {
     expect(TAGS_REGEX.test('tag-1')).toBe(true);
     expect(TAGS_REGEX.test('tag_1')).toBe(true);
     expect(TAGS_REGEX.test('tag+1')).toBe(true);
+  });
+
+  it('should match tags with letters outside a-z', () => {
+    expect(TAGS_REGEX.test('säkerhet')).toBe(true);
+    expect(TAGS_REGEX.test('åäö-öppen_källkod')).toBe(true);
+    expect(TAGS_REGEX.test('café')).toBe(true);
+    expect(TAGS_REGEX.test('straße')).toBe(true);
+    expect(TAGS_REGEX.test('日本語')).toBe(true);
+    expect(TAGS_REGEX.test('हिन्दी')).toBe(true);
+  });
+
+  it('should not match uppercase letters or punctuation outside a-z', () => {
+    expect(TAGS_REGEX.test('Säkerhet')).toBe(false);
+    expect(TAGS_REGEX.test('ÅÄÖ')).toBe(false);
+    expect(TAGS_REGEX.test('tag…')).toBe(false);
+    expect(TAGS_REGEX.test('tag–1')).toBe(false);
+    expect(TAGS_REGEX.test('tag·1')).toBe(false);
+    expect(TAGS_REGEX.test('🙂')).toBe(false);
+    expect(TAGS_REGEX.test('-tag')).toBe(false);
+    expect(TAGS_REGEX.test('tag--1')).toBe(false);
   });
 
   it('should not match invalid tags', () => {
@@ -53,5 +73,29 @@ describe('filterTags', () => {
 
   it('should filter out empty tags', () => {
     expect(filterTags('tag1,,tag-3')).toEqual(['tag1', 'tag-3']);
+  });
+
+  it('should lowercase tags with letters outside a-z', () => {
+    expect(filterTags('Säkerhet,ÖPPEN KÄLLKOD')).toEqual([
+      'säkerhet',
+      'öppen-källkod',
+    ]);
+  });
+
+  it('should store a decomposed letter in its composed form', () => {
+    // "ä" typed as "a" followed by a combining diaeresis (U+0308)
+    const decomposed = 'säkerhet';
+    expect(filterTags(decomposed)).toEqual(['säkerhet']);
+    expect(filterTags(decomposed)[0]).toBe('säkerhet');
+  });
+});
+
+describe('isValidTag', () => {
+  it('should accept tags with letters outside a-z', () => {
+    expect(isValidTag('säkerhet')).toBe(true);
+  });
+
+  it('should reject a decomposed letter so it cannot duplicate the composed tag', () => {
+    expect(isValidTag('säkerhet')).toBe(false);
   });
 });
