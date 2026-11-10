@@ -292,6 +292,13 @@ describe('TagInput', () => {
       expect(handleChange).toHaveBeenCalledWith(['deploy']);
     });
 
+    it('adds a new tag with non-ASCII letters', async () => {
+      const { handleChange, notPrevented } = await renderAndType('Säkerhet');
+
+      expect(notPrevented()).toBe(false);
+      expect(handleChange).toHaveBeenCalledWith(['säkerhet']);
+    });
+
     it('adds the known tag when the text is another spelling of it', async () => {
       mockQetaApi.getTags.mockResolvedValue({
         tags: [{ tag: 'my-tag' }],
@@ -305,18 +312,18 @@ describe('TagInput', () => {
 
     it('does not submit the form on text that is not a valid tag', async () => {
       const { handleChange, input, notPrevented } =
-        await renderAndType('säkerhet');
+        await renderAndType('node.js');
 
       expect(notPrevented()).toBe(false);
       expect(handleChange).not.toHaveBeenCalled();
-      expect(input).toHaveValue('säkerhet');
+      expect(input).toHaveValue('node.js');
       expect(
         screen.getByText(
-          'Tags can only contain lowercase letters a-z, numbers, +, hyphens and underscores',
+          'Tags can only contain lowercase letters, numbers, +, hyphens and underscores',
         ),
       ).toBeInTheDocument();
 
-      fireEvent.change(input, { target: { value: 'sakerhet' } });
+      fireEvent.change(input, { target: { value: 'nodejs' } });
 
       expect(
         screen.queryByText(/Tags can only contain/),

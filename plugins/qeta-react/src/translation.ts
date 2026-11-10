@@ -255,7 +255,7 @@ export const qetaTranslationRef = createTranslationRef({
       maximumError: 'You can add up to {{max}} tags',
       duplicateError: 'Tag {{tag}} is already added',
       invalidTagError:
-        'Tags can only contain lowercase letters a-z, numbers, +, hyphens and underscores',
+        'Tags can only contain lowercase letters, numbers, +, hyphens and underscores',
       selectExistingError: 'Select an existing tag from the list',
       suggestedTags: 'Suggested tags',
     },
