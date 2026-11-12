@@ -115,6 +115,9 @@ These options let operators limit employee activity monitoring while leaving Q&A
 
 ## Storage
 
+When image uploads are enabled, header images can be added by dragging an image
+into the upload area or activating **Select File** with a mouse or keyboard.
+
 - `storage.type`, string, what kind of storage is used to upload images used in questions. Default is `database`. Available values are 'filesystem', 'database', 's3' and 'azure'.
 - `storage.maxSizeImage`, number, the maximum allowed size of upload files in bytes. Default is `2500000`
 - `storage.folder`, string, what folder is used to storage temporarily images to convert and send to frontend. Default is `/tmp/backstage-qeta-images`

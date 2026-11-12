@@ -95,7 +95,7 @@ export const HeaderImageInput = (props: {
     [qetaApi, errorApi, onImageUpload, postId, collectionId],
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: acceptObj,
     maxFiles: 1,
@@ -150,7 +150,9 @@ export const HeaderImageInput = (props: {
               })}
             </Text>
             <Box className={styles.selectFileButton}>
-              <Button variant="primary">{t('fileInput.selectFile')}</Button>
+              <Button variant="primary" onPress={open}>
+                {t('fileInput.selectFile')}
+              </Button>
             </Box>
           </Flex>
         </div>
