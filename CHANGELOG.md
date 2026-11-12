@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.1.3](https://github.com/drodil/backstage-plugin-qeta/compare/v4.1.2...v4.1.3) (2026-11-12)
+
+
+### Bug Fixes
+
+* allow letters outside a-z in tags ([600c3ae](https://github.com/drodil/backstage-plugin-qeta/commit/600c3ae3cfbaea7dd4db9622d1bd583bf972d8fc))
+* open header image file picker on button press ([707c521](https://github.com/drodil/backstage-plugin-qeta/commit/707c52188e2348cea2d6a42ea23b098b7b5f12ad)), closes [#458](https://github.com/drodil/backstage-plugin-qeta/issues/458)
+
 ### [4.1.2](https://github.com/drodil/backstage-plugin-qeta/compare/v4.1.1...v4.1.2) (2026-11-09)
 
 
