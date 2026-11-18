@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.1.4](https://github.com/drodil/backstage-plugin-qeta/compare/v4.1.3...v4.1.4) (2026-11-18)
+
+
+### Bug Fixes
+
+* call useEntityPresentation unconditionally in AskPage ([aa23bcd](https://github.com/drodil/backstage-plugin-qeta/commit/aa23bcd3a5745ef84d7e016f9674f8510a99d845))
+
 ### [4.1.3](https://github.com/drodil/backstage-plugin-qeta/compare/v4.1.2...v4.1.3) (2026-11-12)
 
 
