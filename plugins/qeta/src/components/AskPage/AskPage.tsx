@@ -17,6 +17,16 @@ import { filterTags, Template } from '@drodil/backstage-plugin-qeta-common';
 import { Box, Header, Skeleton } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
+const EntityQuestionHeader = ({ entityRef }: { entityRef: string }) => {
+  const { t } = useTranslationRef(qetaTranslationRef);
+  const { primaryTitle } = useEntityPresentation(entityRef);
+  return (
+    <Header
+      title={t('askPage.title.entityQuestion', { entity: primaryTitle })}
+    />
+  );
+};
+
 export const AskPage = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -57,18 +67,6 @@ export const AskPage = () => {
   );
   const selectedTemplate = template ?? requestedTemplate;
   const { t } = useTranslationRef(qetaTranslationRef);
-  let title;
-  if (id) {
-    title = t('askPage.title.existingQuestion');
-  } else if (entity) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const representation = useEntityPresentation(entity);
-    title = t('askPage.title.entityQuestion', {
-      entity: representation.primaryTitle,
-    });
-  } else {
-    title = t('askPage.title.newQuestion');
-  }
 
   if (disabled.questions) {
     return null;
@@ -122,7 +120,15 @@ export const AskPage = () => {
 
   return (
     <>
-      <Header title={title} />
+      {!id && entity ? (
+        <EntityQuestionHeader entityRef={entity} />
+      ) : (
+        <Header
+          title={t(
+            id ? 'askPage.title.existingQuestion' : 'askPage.title.newQuestion',
+          )}
+        />
+      )}
       <Box>
         <PostForm
           id={id}
