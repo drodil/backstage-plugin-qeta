@@ -34,8 +34,15 @@ export class AttachmentCleaner {
     const taskRunner = scheduler.createScheduledTaskRunner(schedule);
     await taskRunner.run({
       id: 'qeta-attachment-cleaner',
-      fn: async () => {
-        await this.cleanAttachments(config, logger, database, discovery, auth);
+      fn: async signal => {
+        await this.cleanAttachments(
+          config,
+          logger,
+          database,
+          discovery,
+          auth,
+          signal,
+        );
       },
     });
   };
@@ -46,6 +53,7 @@ export class AttachmentCleaner {
     database: QetaStore,
     discovery: DiscoveryService,
     auth: AuthService,
+    signal?: AbortSignal,
   ) => {
     logger.info('Cleaning attachments');
 
@@ -60,6 +68,10 @@ export class AttachmentCleaner {
     const attachments = await database.getDeletableAttachments(dayLimit);
 
     for (const attachment of attachments) {
+      if (signal?.aborted) {
+        logger.warn('Attachment cleaning aborted');
+        return;
+      }
       try {
         logger.info(`Deleting attachment ${attachment.uuid}`);
         const response = await fetch(`${url}/attachments/${attachment.uuid}`, {
@@ -67,6 +79,7 @@ export class AttachmentCleaner {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          signal,
         });
         if (!response.ok) {
           throw new Error(`Response not ok: ${response.status}`);

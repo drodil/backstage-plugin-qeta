@@ -115,5 +115,50 @@ describe('TagsUpdater', () => {
       });
       expect(mockDatabase.updateTag).not.toHaveBeenCalled();
     });
+
+    it('should stop updating tags when aborted', async () => {
+      const controller = new AbortController();
+      mockDatabase.getTags = jest.fn().mockResolvedValue({
+        tags: [
+          { id: 1, tag: 'java' },
+          { id: 2, tag: 'python' },
+        ],
+        total: 2,
+      });
+      mockDatabase.updateTag = jest.fn().mockImplementation(async () => {
+        controller.abort();
+      });
+
+      await TagsUpdater.updateTags(
+        mockLogger,
+        mockDatabase,
+        undefined,
+        controller.signal,
+      );
+
+      expect(mockDatabase.updateTag).toHaveBeenCalledTimes(1);
+      expect(mockLogger.warn).toHaveBeenCalledWith('Tag update aborted');
+    });
+  });
+
+  it('should pass the scheduler abort signal to updateTags', async () => {
+    const mockTaskRunner = { run: jest.fn() };
+    mockScheduler.createScheduledTaskRunner = jest
+      .fn()
+      .mockReturnValue(mockTaskRunner);
+    mockDatabase.getTags = jest.fn().mockResolvedValue({
+      tags: [{ id: 1, tag: 'java' }],
+      total: 1,
+    });
+
+    await TagsUpdater.initTagsUpdater(
+      mockConfig,
+      mockScheduler,
+      mockLogger,
+      mockDatabase,
+    );
+    await mockTaskRunner.run.mock.calls[0][0].fn(AbortSignal.abort());
+
+    expect(mockDatabase.updateTag).not.toHaveBeenCalled();
   });
 });
