@@ -35,8 +35,8 @@ export class StatsCollector {
     const taskRunner = scheduler.createScheduledTaskRunner(schedule);
     await taskRunner.run({
       id: 'qeta-stats-collector',
-      fn: async () => {
-        await this.collectStats(config, logger, database, badgeManager);
+      fn: async signal => {
+        await this.collectStats(config, logger, database, badgeManager, signal);
       },
     });
 
@@ -86,6 +86,7 @@ export class StatsCollector {
     logger: LoggerService,
     database: QetaStore,
     badgeManager: BadgeManager,
+    signal?: AbortSignal,
   ) => {
     logger.info('Starting to collect Q&A stats');
     const now = new Date();
@@ -93,6 +94,10 @@ export class StatsCollector {
 
     const users = await database.getUsers();
     for (const user of users.users) {
+      if (signal?.aborted) {
+        logger.warn('Q&A stats collection aborted');
+        return;
+      }
       await this.updateUser(logger, database, badgeManager, user, now);
       // Give some slack for the processing
       await new Promise(resolve => setTimeout(resolve, 100));

@@ -33,8 +33,8 @@ export class TagsUpdater {
     const taskRunner = scheduler.createScheduledTaskRunner(schedule);
     await taskRunner.run({
       id: 'qeta-tag-updater',
-      fn: async () => {
-        await this.updateTags(logger, database, tagDatabase);
+      fn: async signal => {
+        await this.updateTags(logger, database, tagDatabase, signal);
       },
     });
   };
@@ -43,6 +43,7 @@ export class TagsUpdater {
     logger: LoggerService,
     database: QetaStore,
     tagDatabase?: TagDatabase,
+    signal?: AbortSignal,
   ) => {
     logger.info('Updating tags');
     const tagsWithoutDescription = await database.getTags({
@@ -56,6 +57,10 @@ export class TagsUpdater {
     };
 
     for (const tag of tagsWithoutDescription.tags) {
+      if (signal?.aborted) {
+        logger.warn('Tag update aborted');
+        return;
+      }
       if (tag.tag.toLowerCase() in allTags) {
         await database.updateTag(tag.id, TAGS[tag.tag]);
       }
