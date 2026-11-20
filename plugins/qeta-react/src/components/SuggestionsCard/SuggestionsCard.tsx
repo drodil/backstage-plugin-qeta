@@ -40,8 +40,20 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { getPostDisplayDate } from '../../utils/utils';
 import styles from './SuggestionsCard.module.css';
 
-const getRandomVariant = (key: string) => {
-  return `${key}${Math.floor(Math.random() * 5) + 1}`;
+type SuggestionVariant =
+  | 'noCorrectAnswer'
+  | 'newQuestion'
+  | 'draftPost'
+  | 'newArticle'
+  | 'newLink'
+  | 'randomPost'
+  | 'needsReview';
+
+const getRandomVariant = <K extends `suggestionsCard.${SuggestionVariant}`>(
+  key: K,
+) => {
+  const index = (Math.floor(Math.random() * 5) + 1) as 1 | 2 | 3 | 4 | 5;
+  return `${key}${index}` as const;
 };
 
 const SuggestionListItem = (props: {
@@ -86,7 +98,7 @@ const NoCorrectAnswerSuggestionItem = (props: {
         <RelativeTimeWithTooltip value={suggestion.question.created} />
       }
     >
-      {t(variant as any, {
+      {t(variant, {
         title: suggestion.question.title,
       })}
     </SuggestionListItem>
@@ -111,7 +123,7 @@ const NewQuestionSuggestionItem = (props: {
         <RelativeTimeWithTooltip value={suggestion.question.created} />
       }
     >
-      {t(variant as any, {
+      {t(variant, {
         title: suggestion.question.title,
       })}
     </SuggestionListItem>
@@ -142,7 +154,7 @@ const DraftPostSuggestionItem = (props: {
       icon={<RiQuestionLine size={16} />}
       timestamp={<RelativeTimeWithTooltip value={suggestion.post.created} />}
     >
-      {t(variant as any, {
+      {t(variant, {
         title: suggestion.post.title,
       })}
     </SuggestionListItem>
@@ -169,7 +181,7 @@ const NewArticleSuggestionItem = (props: {
         />
       }
     >
-      {t(variant as any, {
+      {t(variant, {
         title: suggestion.article.title,
       })}
     </SuggestionListItem>
@@ -192,7 +204,7 @@ const NewLinkSuggestionItem = (props: { suggestion: NewLinkSuggestion }) => {
         <RelativeTimeWithTooltip value={getPostDisplayDate(suggestion.link)} />
       }
     >
-      {t(variant as any, {
+      {t(variant, {
         title: suggestion.link.title,
       })}
     </SuggestionListItem>
@@ -223,7 +235,7 @@ const RandomPostSuggestionItem = (props: {
       icon={<RiQuestionLine size={16} />}
       timestamp={<RelativeTimeWithTooltip value={suggestion.post.created} />}
     >
-      {t(variant as any, {
+      {t(variant, {
         title: suggestion.post.title,
       })}
     </SuggestionListItem>
@@ -254,7 +266,7 @@ const NeedsReviewSuggestionItem = (props: {
       icon={<RiEditLine size={16} />}
       timestamp={<RelativeTimeWithTooltip value={suggestion.post.created} />}
     >
-      {t(variant as any, {
+      {t(variant, {
         title: suggestion.post.title,
       })}
     </SuggestionListItem>

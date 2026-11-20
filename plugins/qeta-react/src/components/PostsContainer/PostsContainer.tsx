@@ -89,7 +89,7 @@ export const PostsContainer = (props: PostsContainerProps) => {
     return null;
   }
 
-  const rawItemType = t(`common.${type ?? 'post'}` as any, {});
+  const rawItemType = t(`common.${type ?? 'post'}` as const);
   const itemType =
     rawItemType.charAt(0).toLocaleUpperCase() +
     rawItemType.slice(1).toLocaleLowerCase();
