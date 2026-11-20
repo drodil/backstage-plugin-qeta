@@ -40,16 +40,7 @@ import { RelativeTimeWithTooltip } from '../RelativeTimeWithTooltip';
 import { getPostDisplayDate } from '../../utils/utils';
 import styles from './SuggestionsCard.module.css';
 
-type SuggestionVariant =
-  | 'noCorrectAnswer'
-  | 'newQuestion'
-  | 'draftPost'
-  | 'newArticle'
-  | 'newLink'
-  | 'randomPost'
-  | 'needsReview';
-
-const getRandomVariant = <K extends `suggestionsCard.${SuggestionVariant}`>(
+const getRandomVariant = <K extends `suggestionsCard.${SuggestionType}`>(
   key: K,
 ) => {
   const index = (Math.floor(Math.random() * 5) + 1) as 1 | 2 | 3 | 4 | 5;
