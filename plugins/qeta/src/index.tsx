@@ -7,11 +7,6 @@ import {
   PluginHeaderActionBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
-  compatWrapper,
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
-import {
   askRouteRef,
   markdownPlugin,
   qetaApiRef,
@@ -117,18 +112,16 @@ const qetaPage = PageBlueprint.makeWithOverrides({
       path: config.path ?? '/qeta',
       title: config.title ?? 'Q&A',
       icon: <RiQuestionAnswerLine />,
-      routeRef: convertLegacyRouteRef(qetaRouteRef),
+      routeRef: qetaRouteRef,
       loader: () =>
-        import('./components/QetaPage').then(m =>
-          compatWrapper(
-            <m.QetaPage
-              themeId={config.themeId}
-              introElement={introElement}
-              remarkPlugins={remarkPlugins}
-              rehypePlugins={rehypePlugins}
-            />,
-          ),
-        ),
+        import('./components/QetaPage').then(m => (
+          <m.QetaPage
+            themeId={config.themeId}
+            introElement={introElement}
+            remarkPlugins={remarkPlugins}
+            rehypePlugins={rehypePlugins}
+          />
+        )),
     });
   },
 });
@@ -163,14 +156,13 @@ const EntityPostsContent = EntityContentBlueprint.makeWithOverrides({
         const remarkPlugins = pluginsApi?.getRemarkPlugins();
         const rehypePlugins = pluginsApi?.getRehypePlugins();
         return import('./components/EntityPostsContent/EntityPostsContent.tsx').then(
-          m =>
-            compatWrapper(
-              <m.EntityPostsContent
-                {...config}
-                remarkPlugins={remarkPlugins}
-                rehypePlugins={rehypePlugins}
-              />,
-            ),
+          m => (
+            <m.EntityPostsContent
+              {...config}
+              remarkPlugins={remarkPlugins}
+              rehypePlugins={rehypePlugins}
+            />
+          ),
         );
       },
     });
@@ -301,9 +293,9 @@ const entityContextMenuItem = EntityContextMenuItemBlueprint.make({
 const qetaPlugin = createFrontendPlugin({
   pluginId: 'qeta',
   info: { packageJson: () => import('../package.json') },
-  routes: convertLegacyRouteRefs({
+  routes: {
     root: qetaRouteRef,
-  }),
+  },
   extensions: [
     qetaApi,
     qetaPage,
