@@ -100,6 +100,7 @@
     "@drodil/backstage-plugin-catalog-backend-module-qeta": "workspace:^",
     "@drodil/backstage-plugin-qeta-backend-module-openai": "workspace:^",
     "@drodil/backstage-plugin-search-backend-module-qeta": "workspace:^",
+    "@types/body-parser": "^1.19.5",
     "@types/sanitize-html": "^2.9.5",
     "@types/stopword": "^2.0.3",
     "@types/supertest": "^2.0.12",

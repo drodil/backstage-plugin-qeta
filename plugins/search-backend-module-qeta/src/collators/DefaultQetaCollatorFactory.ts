@@ -1,6 +1,7 @@
 import { Config } from '@backstage/config';
 import { Readable } from 'stream';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import {
   QetaApi,
   QetaClient,
@@ -23,7 +24,7 @@ export type QetaCollatorFactoryOptions = {
 
 export class DefaultQetaCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'qeta';
-  visibilityPermission = qetaReadPostPermission;
+  visibilityPermission: ResourcePermission<'post'> = qetaReadPostPermission;
   private readonly logger: LoggerService;
   private readonly auth?: AuthService;
   private readonly api: QetaApi;
