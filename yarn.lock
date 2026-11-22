@@ -4807,7 +4807,7 @@ __metadata:
     "@testing-library/react": "npm:^16.0.1"
     "@types/luxon": "npm:^3"
     "@types/react": "npm:^18"
-    "@types/react-dom": "npm:^19.1.9"
+    "@types/react-dom": "npm:^18"
     cross-fetch: "npm:^3.1.5"
     dompurify: "npm:^3.2.4"
     luxon: "npm:^3.5.0"
@@ -10704,12 +10704,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^19.1.9":
-  version: 19.1.9
-  resolution: "@types/react-dom@npm:19.1.9"
+"@types/react-dom@npm:^18":
+  version: 18.3.7
+  resolution: "@types/react-dom@npm:18.3.7"
   peerDependencies:
-    "@types/react": ^19.0.0
-  checksum: 10c0/34c8dda86c1590b3ef0e7ecd38f9663a66ba2dd69113ba74fb0adc36b83bbfb8c94c1487a2505282a5f7e5e000d2ebf36f4c0fd41b3b672f5178fd1d4f1f8f58
+    "@types/react": ^18.0.0
+  checksum: 10c0/8bd309e2c3d1604a28a736a24f96cbadf6c05d5288cfef8883b74f4054c961b6b3a5e997fd5686e492be903c8f3380dba5ec017eff3906b1256529cd2d39603e
   languageName: node
   linkType: hard
 

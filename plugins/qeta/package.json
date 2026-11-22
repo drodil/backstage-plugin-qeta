@@ -111,7 +111,7 @@
     "@testing-library/react": "^16.0.1",
     "@types/luxon": "^3",
     "@types/react": "^18",
-    "@types/react-dom": "^19.1.9",
+    "@types/react-dom": "^18",
     "cross-fetch": "^3.1.5",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
