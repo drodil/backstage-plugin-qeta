@@ -76,10 +76,7 @@ import { BadgesStore } from './stores/BadgesStore';
 import { HelpersStore } from './stores/HelpersStore';
 import { Config } from '@backstage/config';
 
-const migrationsDir = resolvePackagePath(
-  '@drodil/backstage-plugin-qeta-backend',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 
 // Local interfaces removed, imported from stores
 
