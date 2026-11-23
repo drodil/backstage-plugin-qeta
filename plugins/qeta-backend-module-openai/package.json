@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "backstage:^",
+    "@backstage/catalog-model": "backstage:^",
     "@backstage/config": "backstage:^",
     "@backstage/types": "backstage:^",
     "@drodil/backstage-plugin-qeta-common": "workspace:^",

@@ -44,6 +44,8 @@
     }
   },
   "ignoreDependencies": [
+    "@types/react",
+    "@types/webpack-env",
     "react",
     "react-dom",
     "react-router",

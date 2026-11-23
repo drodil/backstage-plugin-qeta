@@ -61,6 +61,7 @@
     "@backstage/catalog-model": "^1.10.3"
   },
   "devDependencies": {
+    "@backstage/catalog-model": "backstage:^",
     "@backstage/cli": "backstage:^",
     "@types/qs": "^6"
   },
