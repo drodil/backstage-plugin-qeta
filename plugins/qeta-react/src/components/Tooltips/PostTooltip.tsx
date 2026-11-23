@@ -27,8 +27,7 @@ import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { qetaApiRef } from '../../api';
 import { useTooltipStyles } from '../../hooks/useTooltipStyles';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
+import { RelativeTime } from '../RelativeTimeWithTooltip/RelativeTime';
 
 const cache: Map<string, { data: Post; timestamp: number }> = new Map();
 const requestCache: Map<string, Promise<Post | undefined>> = new Map();
