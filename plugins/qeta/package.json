@@ -7,7 +7,7 @@
     "frontend",
     "backstage.io"
   ],
-  "version": "4.1.5",
+  "version": "4.1.6",
   "main": "src/index.tsx",
   "types": "src/index.tsx",
   "prepublishOnly": "yarn tsc && yarn build",

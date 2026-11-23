@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.1.6](https://github.com/drodil/backstage-plugin-qeta/compare/v4.1.5...v4.1.6) (2026-11-23)
+
+
+### Bug Fixes
+
+* declare dependencies that only resolved through hoisting ([d8ae510](https://github.com/drodil/backstage-plugin-qeta/commit/d8ae51080c51bbf8f4647898d75861726c2dcca7))
+* **qeta-backend:** locate migrations relative to the package ([0cc4303](https://github.com/drodil/backstage-plugin-qeta/commit/0cc4303dd1a84973cf2a29846b7f26a0c7e59beb))
+* **qeta:** use React 18 DOM typings in development ([14b76a5](https://github.com/drodil/backstage-plugin-qeta/commit/14b76a5a46e2f200cb3110f449567c8e65a16d5b))
+
 ### [4.1.5](https://github.com/drodil/backstage-plugin-qeta/compare/v4.1.4...v4.1.5) (2026-11-19)
 
 
