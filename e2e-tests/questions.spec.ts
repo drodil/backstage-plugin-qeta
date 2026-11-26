@@ -102,6 +102,28 @@ test.describe('Questions - Independent Tests', () => {
     await loginAsGuest(page);
   });
 
+  test('uses readable body text when writing and previewing question details', async ({
+    page,
+  }) => {
+    await page.goto('/qeta/questions/ask');
+
+    const bodyFontSize = await page.locator('html').evaluate(element => {
+      return getComputedStyle(element).fontSize;
+    });
+    const content = 'Readable question details';
+    const contentInput = page.locator('textarea.mde-text');
+    await expect(contentInput).toHaveCSS('font-size', bodyFontSize);
+    await contentInput.fill(content);
+
+    await page.getByRole('button', { name: 'Preview', exact: true }).click();
+
+    const preview = page.locator('.mde-preview').getByText(content, {
+      exact: true,
+    });
+    await expect(preview).toBeVisible();
+    await expect(preview).toHaveCSS('font-size', bodyFontSize);
+  });
+
   test('increase view count', async ({ page, request }) => {
     const { title } = await createQuestion(request);
 
